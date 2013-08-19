@@ -1,0 +1,58 @@
+#pragma once
+#ifndef TIKI_TEXTUREDESCRIPTION_HPP__INCLUDED
+#define TIKI_TEXTUREDESCRIPTION_HPP__INCLUDED
+
+#include "tiki/base/types.hpp"
+#include "tiki/graphicsbase/pixelformat.hpp"
+
+namespace tiki
+{
+	enum TextureType
+	{
+		TextureType_Invalid,
+
+		TextureType_1d,
+		TextureType_2d,
+		TextureType_3d,
+		TextureType_Cube,
+
+		TextureType_Count
+	};
+
+	enum TextureFlags
+	{
+		TextureFlags_None			= 0u,
+
+		TextureFlags_RenderTarget	= 1u << 0u,
+		TextureFlags_ShaderInput	= 1u << 1u,
+		TextureFlags_DepthStencil	= 1u << 2u,
+
+		TextureFlags_Count
+	};
+
+	struct TextureDescription
+	{
+		TextureDescription()
+		{
+			width		= 0u;
+			height		= 0u;
+			depth		= 0u;
+			arrayCount	= 0u;
+
+			flags		= TextureFlags_None;
+			format		= PixelFormat_Invalid;
+			type		= TextureType_Invalid;
+		}
+
+		uint16	width;
+		uint16	height;
+		uint16	depth;
+		uint16	arrayCount;
+
+		uint16	flags;		// see TextureFlags
+		uint8	format;		// see PixelFormat
+		uint8	type;		// see TextureType
+	};
+}
+
+#endif // TIKI_TEXTUREDESCRIPTION_HPP__INCLUDED

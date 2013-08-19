@@ -1,0 +1,5 @@
+<tikiasset output-name="replaceme_cube">
+  <input file="replaceme_cube.dae" type="model" />
+  <param key="material" value="replaceme_cube.mat" />
+  <param key="scale" value="0.1" />
+</tikiasset>

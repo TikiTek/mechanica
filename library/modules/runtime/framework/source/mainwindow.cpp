@@ -1,0 +1,214 @@
+
+#include "tiki/framework/mainwindow.hpp"
+
+#include <windows.h>
+#include <windowsx.h>
+
+#define GET_HWND (HWND)m_pHandle
+
+namespace tiki
+{
+	static bool					s_mainWindowCreated	= false;
+	static WindowEventBuffer*	s_pEventBuffer		= nullptr;
+
+	LRESULT CALLBACK windowProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+	{
+		TIKI_ASSERT( s_mainWindowCreated );
+
+		switch (message)
+		{
+		case WM_CREATE:
+			s_pEventBuffer->pushEvent( WET_Create );
+			break;
+		case WM_DESTROY:
+			PostQuitMessage( 0 );
+			s_pEventBuffer->pushEvent( WET_Destroy );
+			break;
+		case WM_SIZE:
+			{
+				RECT rect;
+				GetClientRect( hWnd, &rect );
+
+				WindowEvent& event					= s_pEventBuffer->pushEvent( WET_SizeChanged );
+				event.data.sizeChangedEvent.size.x	= (rect.right - rect.left);
+				event.data.sizeChangedEvent.size.y	= (rect.bottom - rect.top);
+			}
+			break;
+		case WM_KEYDOWN:
+			{
+				WindowEvent& event		= s_pEventBuffer->pushEvent( WET_KeyDown );
+				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+			}
+			break;
+		case WM_KEYUP:
+			{
+				WindowEvent& event		= s_pEventBuffer->pushEvent( WET_KeyUp );
+				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+			}
+			break;
+		case WM_MOUSEMOVE:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseMove );
+				event.data.mouseMoveEvent.position.x	= GET_X_LPARAM( lParam ); 
+				event.data.mouseMoveEvent.position.y	= GET_Y_LPARAM( lParam ); 
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				event.data.mouseButtonEvent.button		= MouseButton_Left;
+			}
+			break;
+		case WM_MBUTTONDOWN:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				event.data.mouseButtonEvent.button		= MouseButton_Middle;
+			}
+			break;
+		case WM_RBUTTONDOWN:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				event.data.mouseButtonEvent.button		= MouseButton_Right;
+			}
+			break;
+		case WM_LBUTTONUP:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				event.data.mouseButtonEvent.button		= MouseButton_Left;
+			}
+			break;
+		case WM_MBUTTONUP:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				event.data.mouseButtonEvent.button		= MouseButton_Middle;
+			}
+			break;
+		case WM_RBUTTONUP:
+			{
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				event.data.mouseButtonEvent.button		= MouseButton_Right;
+			}
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+			break;
+		}
+
+		return 0;
+	}
+
+	MainWindow::MainWindow()
+		: m_pHandle( nullptr )
+	{
+	}
+
+
+	bool MainWindow::create( const WindowParameters& params )
+	{
+		TIKI_ASSERT( s_mainWindowCreated == false );
+		s_mainWindowCreated = true;
+
+		m_windowClass	= convertString( params.pClassName );
+		m_windowTitle	= convertString( params.pWindowTitle );
+
+		HINSTANCE hInst = GetModuleHandle( nullptr );
+
+		TIKI_DECLARE_STACKANDZERO( WNDCLASSEX, win );
+		win.cbSize			= sizeof( WNDCLASSEX );
+		win.hInstance		= hInst;
+		win.lpfnWndProc		= &windowProc;
+		win.lpszClassName	= m_windowClass.cStr();
+		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
+		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
+
+		HRESULT r = RegisterClassEx( &win );
+		if (FAILED(r))
+		{
+			MessageBoxA(NULL, "Can't register Class.", params.pWindowTitle, MB_HELP);
+			return false;
+		}
+
+		m_eventBuffer.create();
+		s_pEventBuffer = &m_eventBuffer;
+
+		HWND hWnd = CreateWindow(
+			m_windowClass.cStr(),
+			m_windowTitle.cStr(),
+			WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			params.width,
+			params.height,
+			NULL,
+			NULL,
+			hInst,
+			NULL
+		);
+
+		if (!hWnd)
+		{
+			MessageBoxA(NULL, "Can't create Window.", params.pWindowTitle, MB_HELP);
+			return false;
+		}
+		m_pHandle = hWnd;
+		
+		ShowWindow(hWnd, 1);
+		UpdateWindow(hWnd);
+
+		return true;
+	}
+
+	void MainWindow::dispose()
+	{
+		HWND hWnd = GET_HWND;
+		CloseWindow( hWnd );
+		m_pHandle			= nullptr;
+
+		m_windowClass		= L"";
+		m_windowTitle		= L"";
+
+		s_pEventBuffer		= nullptr;
+		s_mainWindowCreated	= false;
+
+		m_eventBuffer.dispose();
+	}
+
+	void MainWindow::update()
+	{
+		m_eventBuffer.clear();
+
+		MSG msg;
+		if (PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ))
+		{
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
+		}
+	}
+
+	void* MainWindow::getHandle() const
+	{
+		return m_pHandle;
+	}
+
+	uint2 MainWindow::getClientSize() const
+	{
+		HWND hWnd = GET_HWND;
+
+		RECT rect;
+		GetClientRect( hWnd, &rect );
+
+		uint2 size =
+		{
+			rect.right - rect.left,
+			rect.bottom - rect.top
+		};
+
+		return size;
+	}
+
+	const WindowEventBuffer& MainWindow::getEventBuffer() const
+	{
+		return m_eventBuffer;
+	}
+
+}

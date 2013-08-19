@@ -1,0 +1,19 @@
+
+add_module(framework)
+
+module_add_includes(include)
+module_add_includes(source)
+
+module_add_sources(source/*.cpp)
+module_add_sources(include/tiki/framework/*.hpp)
+
+module_import(base)
+module_import(math)
+module_import(graphics)
+module_import(physic)
+module_import(component)
+module_import(gamecore)
+module_import(input)
+module_import(events)
+
+module_add_define(TIKI_WINDOWEVENTBUFFER_SIZE 32)

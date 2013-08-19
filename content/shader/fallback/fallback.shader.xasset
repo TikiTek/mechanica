@@ -1,0 +1,7 @@
+<tikiasset output-name="fallback">
+  <input file="fallback.vs.hlsl" type="vs_5_0" />
+  <input file="fallback.ps.hlsl" type="ps_5_0" />
+  <param key="supported_renderer" value="directx11" />
+  <param key="ps_function_name" value="PS_Main" />
+  <param key="vs_function_name" value="VS_Main" />
+<tikiasset>

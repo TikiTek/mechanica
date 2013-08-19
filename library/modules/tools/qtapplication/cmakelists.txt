@@ -1,0 +1,14 @@
+
+add_module(qtapplication)
+
+module_add_includes(include)
+module_add_includes(source)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/qtapplication/*.?pp)
+
+module_import(qt)
+module_import(toolbase)
+
+module_add_linklib(qtmain.lib)
+module_add_linklib(Qt5Widgets.lib)

@@ -1,0 +1,10 @@
+add_module(input)
+
+module_add_includes(include)
+module_add_includes(source)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/input/*.hpp)
+
+module_add_linklib(dinput8.lib)
+module_add_linklib(dxguid.lib)
