@@ -1,0 +1,7 @@
+#pragma once
+#ifndef TIKI_MENUSTATE_HPP__INCLUDED
+#define TIKI_MENUSTATE_HPP__INCLUDED
+
+
+
+#endif // TIKI_MENUSTATE_HPP__INCLUDED

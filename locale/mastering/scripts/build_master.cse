@@ -1,0 +1,12 @@
+// CreateDefaultClass true
+
+// using System.Collections.Generic
+// using System.Diagnostics
+
+//List<string> args = new List<string>();
+//test.Add("xxx");
+//Console.WriteLine( test[0] );
+
+//throw new Exception();
+
+Console.WriteLine(Environment.CurrentDirectory);

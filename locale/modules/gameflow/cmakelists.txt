@@ -1,0 +1,9 @@
+
+add_module(gameflow)
+
+module_add_includes(include)
+
+module_add_sources(include/tiki/gameflow/*.hpp)
+module_add_sources(source/*.cpp)
+
+module_import(gameclient)

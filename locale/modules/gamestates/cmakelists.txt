@@ -1,0 +1,10 @@
+
+add_module(gamestates)
+
+module_import(gameflow)
+module_import(gameplay)
+
+module_add_includes(include)
+
+module_add_sources(source/*.cpp) 
+module_add_sources(include/tiki/gamestates/*.hpp) 
