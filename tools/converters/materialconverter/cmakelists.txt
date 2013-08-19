@@ -1,0 +1,9 @@
+
+add_module(materialconverter)
+
+module_add_includes(include)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/materialconverter/*.hpp)
+
+module_import(converterbase)
