@@ -1,0 +1,28 @@
+
+add_module(textureexport)
+
+module_add_includes(include)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/textureexport/*.hpp)
+
+module_import(math)
+module_import(graphicsbase)
+module_import(libpsd)
+module_import(opencv)
+
+if (TIKI_BUILD_DEBUG)
+  module_add_linklib(opencv_core246d.lib)
+  module_add_linklib(opencv_imgproc246d.lib)
+  module_add_linklib(opencv_highgui246d.lib)
+
+  module_add_binlib(opencv_core246d.dll)
+  module_add_binlib(opencv_imgproc246d.dll)
+  module_add_binlib(opencv_highgui246d.dll)
+else()
+  module_add_linklib(opencv_core246.lib)
+  module_add_linklib(opencv_imgproc246.lib)
+
+  module_add_binlib(opencv_core246.dll)
+  module_add_binlib(opencv_imgproc246.dll)
+endif()

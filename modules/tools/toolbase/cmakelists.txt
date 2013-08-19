@@ -1,0 +1,10 @@
+
+add_module(toolbase)
+
+module_add_includes(include)
+module_add_includes(source)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/toolbase/*.?pp)
+
+module_add_define(TIKI_BUILD_TOOLS 1)

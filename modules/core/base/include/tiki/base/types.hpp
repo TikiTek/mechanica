@@ -1,0 +1,108 @@
+#pragma once
+#ifndef TIKI_TYPES_HPP
+#define TIKI_TYPES_HPP
+
+#if !defined( TIKI_PLATFORM_WIN )
+#	define TIKI_PLATFORM_WIN 1
+#endif
+
+namespace tiki
+{
+#if TIKI_PLATFORM_WIN
+
+	typedef unsigned __int8		uint8;
+	typedef unsigned __int16	uint16;
+	typedef unsigned __int32	uint32;
+	typedef unsigned __int64	uint64;
+
+	typedef __int8				sint8;
+	typedef __int16				sint16;
+	typedef __int32				sint32;
+	typedef __int64				sint64;
+
+	typedef unsigned __int32	crc32;
+	typedef unsigned __int32	fourcc;
+
+#	if TIKI_BUILD_64BIT
+	typedef __int64				sint;
+	typedef unsigned __int64	uint;
+	typedef unsigned __int64	size_t;
+#	else
+	typedef __int32				sint;
+	typedef unsigned __int32	uint;
+	typedef unsigned __int32	size_t;
+#	endif
+
+#elif TIKI_PLATFORM_LINUX
+
+	typedef unsigned char		uint8;
+	typedef unsigned short		uint16;
+	typedef unsigned int		uint32;
+	typedef unsigned long int	uint64;
+
+	typedef char				sint8;
+	typedef short				sint16;
+	typedef int					sint32;
+	typedef long int			sint64;
+
+	typedef unsigned int		crc32;
+	typedef unsigned int		fourcc;
+
+#	if TIKI_BUILD_64BIT
+	typedef long int			sint;
+	typedef unsigned long int	uint;
+	typedef unsigned long int	size_t;
+#	else
+	typedef int					sint;
+	typedef unsigned int		uint;
+	typedef unsigned int		size_t;
+#	endif
+
+#	define nullptr 0
+
+#else
+
+#	error Platform not supported (or you must rebuild solution)
+
+#endif
+
+	typedef uint16				float16;
+	typedef float				float32;
+	typedef double				float64;
+	
+	typedef const char*			cstring;
+	typedef const wchar_t*		wcstring;
+
+	typedef unsigned char		byte;
+
+	static const size_t			s_unsignedMinusOne	= 0u - 1u;
+}
+
+#define TIKI_COUNT( var ) ( sizeof( var ) / sizeof( *var ) )
+#define TIKI_OFFSETOF( s, m )   (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
+#define TIKI_CONTAINEROF( type, ptr, atr ) (type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
+
+#define TIKI_NONCOPYABLE_CLASS( class_name ) private: \
+	class_name ( const class_name & ); \
+	void operator=( const class_name & )
+
+#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name ) public: \
+	class_name##() {}\
+	~##class_name() {}\
+	\
+	private: \
+		class_name ( const class_name & ); \
+		void operator=( const class_name & )
+
+#if TIKI_PLATFORM_WIN && !TIKI_BUILD_MASTER
+#	include <crtdbg.h>
+#	define TIKI_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
+#	define TIKI_DEL delete
+#	define TIKI_DELARR delete[]
+#else
+#	define TIKI_NEW new
+#	define TIKI_DEL delete
+#	define TIKI_DELARR delete[]
+#endif
+
+#endif // TIKI_TYPES_HPP

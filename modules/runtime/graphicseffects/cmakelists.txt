@@ -1,0 +1,11 @@
+
+add_module(graphicseffects)
+
+module_add_includes(include)
+module_add_includes(source)
+
+module_add_sources(source/*.*)
+module_add_sources(include/tiki/${MODULE}/*.hpp)
+
+module_import(graphics)
+module_import(graphicsresources)
