@@ -3,7 +3,6 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/vertexcolor.hpp"
 #include "tiki/graphics/dynamicbuffer.hpp"
 
 namespace tiki

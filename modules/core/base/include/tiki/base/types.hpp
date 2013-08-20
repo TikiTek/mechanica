@@ -72,15 +72,19 @@ namespace tiki
 	
 	typedef const char*			cstring;
 	typedef const wchar_t*		wcstring;
-
-	typedef unsigned char		byte;
-
-	static const size_t			s_unsignedMinusOne	= 0u - 1u;
 }
 
 #define TIKI_COUNT( var ) ( sizeof( var ) / sizeof( *var ) )
 #define TIKI_OFFSETOF( s, m )   (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
 #define TIKI_CONTAINEROF( type, ptr, atr ) (type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
+
+#if TIKI_BUILD_32BIT
+#	define TIKI_SIZE_T_MAX 0xffffffff
+#elif TIKI_BUILD_64BIT
+#	define TIKI_SIZE_T_MAX 0xffffffffffffffff
+#else
+#	error Platform not suppored
+#endif
 
 #define TIKI_NONCOPYABLE_CLASS( class_name ) private: \
 	class_name ( const class_name & ); \

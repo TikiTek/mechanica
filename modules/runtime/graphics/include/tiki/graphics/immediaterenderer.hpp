@@ -7,8 +7,8 @@
 #include "tiki/base/types.hpp"
 
 #include "tiki/graphics/dynamicbuffer.hpp"
-#include "tiki/graphics/sampler.hpp"
-#include "tiki/graphics/texture.hpp"
+#include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphicsresources/texture.hpp"
 #include "tiki/graphicsbase/fontchar.hpp"
 
 #include "tiki/base/structs.hpp"
