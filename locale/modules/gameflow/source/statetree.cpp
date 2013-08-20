@@ -12,7 +12,7 @@ namespace tiki
 		m_currentState					= 0;		
 		m_transitionNextState			= 0;
 		m_transitionPathSize			= 0;
-		m_transitionCurrentPathIndex	= s_unsignedMinusOne;
+		m_transitionCurrentPathIndex	= TIKI_SIZE_T_MAX;
 		
 		m_currentStep	= StateTree_InvalidTransitionStep;
 		m_isCreating	= false;
@@ -21,7 +21,7 @@ namespace tiki
 
 	void StateTree::dispose()
 	{
-		TIKI_ASSERT( m_transitionCurrentPathIndex == s_unsignedMinusOne );
+		TIKI_ASSERT( m_transitionCurrentPathIndex == TIKI_SIZE_T_MAX );
 
 		m_stateDefinition.dispose();
 	}
@@ -29,7 +29,7 @@ namespace tiki
 	void StateTree::startTransition( const int stateIndex )
 	{
 		TIKI_ASSERT( stateIndex < (int)m_stateDefinition.getCount() );
-		TIKI_ASSERT( m_transitionCurrentPathIndex == s_unsignedMinusOne );
+		TIKI_ASSERT( m_transitionCurrentPathIndex == TIKI_SIZE_T_MAX );
 
 		if ( m_currentState == stateIndex )
 		{
@@ -42,7 +42,7 @@ namespace tiki
 		size_t curIndex = 0u;
 		size_t destIndex = 0u;
 
-		for (size_t i = curDef.hierarchyLength - 1u; i != s_unsignedMinusOne && curIndex == 0u; --i)
+		for (size_t i = curDef.hierarchyLength - 1u; i != TIKI_SIZE_T_MAX && curIndex == 0u; --i)
 		{
 			for (size_t j = 0u; j < destDef.hierarchyLength; ++j)
 			{
@@ -58,7 +58,7 @@ namespace tiki
 		m_transitionPathSize = 0u;
 
 		const size_t curStart = curDef.hierarchyLength - 1u;
-		for (size_t i = curStart; i >= curIndex && i != s_unsignedMinusOne; --i)
+		for (size_t i = curStart; i >= curIndex && i != TIKI_SIZE_T_MAX; --i)
 		{
 			m_transitionPath[ m_transitionPathSize++ ] = curDef.stateHierarchy[ i ];
 		}

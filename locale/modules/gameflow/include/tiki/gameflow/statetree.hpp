@@ -11,7 +11,7 @@ namespace tiki
 	{
 		StateTree_MaxStateCount			= 16u,
 		StateTree_MaxTransitionPathSize	= 16u * 2u,
-		StateTree_InvalidTransitionStep	= s_unsignedMinusOne
+		StateTree_InvalidTransitionStep	= TIKI_SIZE_T_MAX
 	};
 
 	enum TransitionState
@@ -48,7 +48,7 @@ namespace tiki
 		const StateDefinition&		getCurrentStateDefinition() const { return m_stateDefinition[ m_currentState ]; }
 		int							getCurrentState() const { return m_currentState; }
 		int							getTransitionState() const { return m_transitionNextState; }
-		bool						isInTransition() const { return m_transitionCurrentPathIndex != s_unsignedMinusOne; }
+		bool						isInTransition() const { return m_transitionCurrentPathIndex != TIKI_SIZE_T_MAX; }
 
 		int							getCurrentStep() const { return m_currentStep; }
 		bool						isCreating() const { return m_isCreating; }

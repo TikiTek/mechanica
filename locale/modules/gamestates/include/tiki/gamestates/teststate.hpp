@@ -4,7 +4,7 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
-#include "tiki/gamecore/freecamera.hpp"
+//#include "tiki/gamecore/freecamera.hpp"
 
 namespace tiki
 {
@@ -14,7 +14,6 @@ namespace tiki
 	class Font;
 	class Model;
 	class SkinnedModelComponent;
-	class Transform;
 
 	enum TestStateTransitionSteps
 	{
@@ -42,30 +41,6 @@ namespace tiki
 	private:
 		
 		ApplicationState*		m_pParentState;
-
-		FreeCamera				m_freeCamera;
-
-		enum 
-		{
-			testCount = 3
-		};
-
-		const Font*				m_pFont;
-
-		Transform*				m_pTransform[ testCount ];
-		SkinnedModelComponent*	m_pModelComponent[ testCount ];
-		AnimationComponent*		m_pAnimationComponent[ testCount ];
-
-		const Model*			m_pHelm;
-		const Model*			m_pShoulderL;
-		const Model*			m_pShoulderR;
-
-		Transform*				m_pAttTrans[ testCount * 3 ];
-		StaticModelComponent*	m_pAttModel[ testCount * 3];
-		ItemAttachment*			m_pAtt[ testCount * 3 ];
-
-		const Model*			m_pModel[ testCount ];
-		const Animation*		m_pAnimation[ testCount ];
 
 	};
 }
