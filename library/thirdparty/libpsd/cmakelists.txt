@@ -1,0 +1,8 @@
+
+add_module(libpsd)
+
+module_add_includes(include)
+module_add_includes(src)
+
+module_add_sources(include/*.h)
+module_add_sources(src/*.c)

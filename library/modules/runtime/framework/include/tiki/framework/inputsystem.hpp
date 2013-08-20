@@ -8,14 +8,23 @@
 #include "tiki/input/mousemanager.hpp"
 
 struct IDirectInputA;
+struct IDirectInputDeviceA;
 
 namespace tiki
 {
+	class WindowEventBuffer;
+
 	struct InputSystemParameters
 	{
 		void*	p_hWnd;
-		uint	screenWidth;
-		uint	screenHeight;
+		size_t	screenWidth;
+		size_t	screenHeight;
+	};
+
+	struct InputSystemState
+	{
+		uint8		mouseState[ 16u ];
+		uint8		keyboardState[ 256u ];
 	};
 
 	class InputSystem
@@ -25,20 +34,23 @@ namespace tiki
 		friend class GameFramework;
 
 	public:
-							InputSystem();
-							~InputSystem();
 
-		bool				isKeyDown( const Keys key ) const;
-		bool				isKeyUp( const Keys key ) const;
+		bool				create( const InputSystemParameters& params );
+		void				dispose( void );
 
-		bool				isKeyPressed( const Keys key ) const;
-		bool				isKeyReleased( const Keys key ) const;
+		void				update( const WindowEventBuffer& windowEvents );
 
-		bool				isButtonDown( const MouseButtons& button ) const;
-		bool				isButtonUp( const MouseButtons& button ) const;
+		bool				isKeyDown( Keys key ) const;
+		bool				isKeyUp( Keys key ) const;
 
-		bool				isButtonPressed( const MouseButtons& button ) const;
-		bool				isButtonReleased( const MouseButtons& button ) const;
+		bool				hasKeyPressed( Keys key ) const;
+		bool				hasKeyReleased( Keys key ) const;
+
+		bool				isButtonDown( MouseButtons button ) const;
+		bool				isButtonUp( MouseButtons button ) const;
+
+		bool				isButtonPressed( MouseButtons button ) const;
+		bool				isButtonReleased( MouseButtons button ) const;
 
 		const Vector2&		getMousePosition( void ) const;
 		const Vector2&		getMousePositionDisplay( void ) const;
@@ -46,16 +58,12 @@ namespace tiki
 							
 	private:
 
-		bool				create( const InputSystemParameters& params );
+		IDirectInputA*			m_pInputDevice;
+		IDirectInputDeviceA*	m_pMouse;
+		IDirectInputDeviceA*	m_pKeyboard;
 
-		void				dispose( void );
-
-		void				frame( void );
-
-		IDirectInputA*		m_pInputDevice;
-
-		KeyboardManager		m_keyboardManager;
-		MouseManager		m_mouseManager;	
+		InputSystemState		m_currentState;
+		InputSystemState		m_previousState;
 		
 	};
 }

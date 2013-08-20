@@ -3,7 +3,6 @@
 
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/functions.hpp"
 
 #include "graphicstypes.hpp"
 
@@ -12,10 +11,6 @@ namespace tiki
 	class BaseBuffer
 	{
 		friend class GpuContext;
-
-	public:
-
-		ID3D11Buffer*			getBuffer() const { return m_pBuffer; }
 
 	protected:
 

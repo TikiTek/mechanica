@@ -27,7 +27,7 @@ namespace tiki
 			}
 
 			index = i;
-			for (size_t j = count - 1u; j != s_unsignedMinusOne; --j)
+			for (size_t j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
 			{
 				targetDef.stateHierarchy[ j ] = index;
 				index = pDefinition[ index ].parentStateIndex;

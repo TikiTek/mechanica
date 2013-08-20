@@ -4,104 +4,74 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/linerenderer.hpp"
-#include "tiki/graphics/deferredrenderer.hpp"
-#include "tiki/graphics/spriterenderer.hpp"
+#include "tiki/graphicsbase/color.hpp"
 
 namespace tiki
 {
 	class GraphicsSystem;
 	class Material;
+	class RenderTarget;
+	class TextureData;
+	class SamplerState;
 	class Shader;
-	class Sampler;
 	class VertexFormat;
-
-	struct Color;
+	enum PrimitiveTopology;
 	struct GraphicsHandles;
+	struct Rectangle;
 	struct Vector2;
 	struct Vector3;
 
-	struct Rectangle;
+	enum ClearMask
+	{
+		ClearMask_Color			= 1u << 0u,
+		ClearMask_Depth			= 1u << 1u,
+		ClearMask_Stencil		= 1u << 2u,
 
-	enum PrimitiveTopology;
+		ClearMask_All			= ClearMask_Color | ClearMask_Depth | ClearMask_Stencil,
+		ClearMask_DepthStencil	= ClearMask_Depth | ClearMask_Stencil
+	};
 
-	class GpuContext
+	class GraphicsContext
 	{
 	public:
 
-		GpuContext();
-		~GpuContext();
+		bool				create( GraphicsSystem& graphicsSystem );
+		void				dispose();
 
-		bool		create( GraphicsSystem& graphicsSystem );
-		void		dispose();
+		void				beginFrame();
+		void				endFrame();
 
-		void		beginFrame();
-		void		endFrame();
+		void				clear( const RenderTarget& renderTarget, const Color& color = Color::black, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
 
-		void		clearRenderTarget( const RenderTarget& renderTarget, const Color& color = Color::black );
-		void		clearBackBuffer( const Color& color = Color::black );
-		void		clearDepthBuffer();
+		void				beginRenderPass( const RenderTarget& renderTarget );
+		void				endRenderPass();
 
-		void		enableDepth();
-		void		disableDepth();
+		void				setVertexShader( const Shader* pVertexShader );
+		void				setPixelShader( const Shader* pPixelShader );
 
-		void		enableAlpha();
-		void		disableAlpha();
+		void				setInputLayout( const VertexFormat* pVertexFormat );
 
-		void		setMaterial( const Material* pMaterial );
-		void		setVertexShader( const Shader* pVertexShader );
-		void		setPixelShader( const Shader* pPixelShader );
+		void				setIndexBuffer( const BaseBuffer& buffer );
+		void				setVertexBuffer( size_t slot, const BaseBuffer& buffer );
+		void				setConstantBuffer( size_t slot, const BaseBuffer& buffer );
 
-		void		setInputLayout( const VertexFormat* pVertexFormat );
-		template<typename Buffer>
-		void		setVertexBuffer( const Buffer& buffer, const uint slot = 0u );
-		template<typename Buffer>
-		void		setIndexBuffer( const Buffer& buffer );
-		template<typename Buffer>
-		void		setConstantBuffer( const Buffer& buffer, const uint slot = 0u );
+		void				setSampler( size_t slot, const SamplerState& sampler );
 
-		void		beginLightPass();
-		void		endLightPass();
+		void				setVertexShaderTexture( size_t slot, const TextureData* pTextureData );
+		void				setPixelShaderTexture( size_t slot, const TextureData* pTextureData );
 
-		void		mapRenderTargets();
-		void		unmapRenderTargets();
+		void				setPrimitiveTopology( PrimitiveTopology topology );
 
-		void		flushSpriteRenderer();
-
-		void		setSampler( const Sampler& sampler, const uint slot = 0u );
-
-		void		setVertexShaderTexture( const TextureData* pTextureData, const size_t slot = 0u );
-		void		setPixelShaderTexture( const TextureData* pTextureData, const size_t slot = 0u );
-
-		void		setPrimitiveTopology( PrimitiveTopology topology );
-
-		void		clearRenderTargetStack();
-		void		pushRenderTarget( const RenderTarget& renderTarget );
-		void		pushBackBufferTarget();
-		void		flushRenderTargetStack();
-
-		void		drawIndexed( const uint indexcount, const uint startIndex = 0u, const uint basevertex = 0u );
-		void		drawLine( const Vector3& start, const Vector3& end, const Color& color );
-		void		draw( const uint count, const uint offset = 0u );
-
-		void		drawText( const Vector2& position, const Font& font, const string& text );
-		void		drawTexture( const Rectangle& rect, const TextureData& textureData, bool percentage = false );
-		void		drawTexture( const Rectangle& dest, const Rectangle& src, const TextureData& tex );
-
-		const Vector2&	getBackBufferSize() const;
+		void				drawGeometry( const uint indexcount, const uint startIndex = 0u, const uint basevertex = 0u );
+		void				drawIndexed( const Vector3& start, const Vector3& end, const Color& color );
 
 	private:
 
-		GraphicsSystem*					m_pGraphics;
-		GraphicsHandles*				m_pHandles;
+		GraphicsSystem*		m_pGraphics;
+		GraphicsHandles*	m_pHandles;
 
-		Array< const TGRenderTarget* >	m_renderTargets;
-		uint							m_renderTargetCount;
+		const RenderTarget*	m_renderTargets;
 
-
-		LineRenderer					m_lineRender;
-		SpritRenderer					m_spriteRenderer;
-		DeferredRenderer				m_deferredRenderer;
 	};
 }
 

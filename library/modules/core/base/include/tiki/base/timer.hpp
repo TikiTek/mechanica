@@ -2,32 +2,37 @@
 #ifndef TIKI_TIMESYSTEM_HPP
 #define TIKI_TIMESYSTEM_HPP
 
-#include <Windows.h>
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class TimeSystem
+	class Timer
 	{
 	public:
-								TimeSystem();
-								~TimeSystem();
 
-		void					initzilize();
-		void					update();
+		void		create();
 
-		double					getElapsedTime() const { return m_elapsedTime; };
-		double					getTotalTime() const { return m_totalTime; };
+		void		update();
 
-		void					setTimeScale( const double timeScale ) { m_timeScale = timeScale; }
+		double		getElapsedTime() const	{ return m_elapsedTime; };
+		double		getTotalTime() const	{ return m_totalTime; };
+
+		void		setTimeScale( const double timeScale ) { m_timeScale = timeScale; }
 
 	private:
-		LARGE_INTEGER			m_freq;
-		LARGE_INTEGER			m_last;
-		LARGE_INTEGER			m_current;
 
-		double					m_elapsedTime;
-		double					m_totalTime;
-		double					m_timeScale;
+		struct TimeStemp
+		{
+			uint64 time;
+		};
+
+		TimeStemp	m_freq;
+		TimeStemp	m_last;
+		TimeStemp	m_current;
+
+		double		m_elapsedTime;
+		double		m_totalTime;
+		double		m_timeScale;
 
 	};
 }

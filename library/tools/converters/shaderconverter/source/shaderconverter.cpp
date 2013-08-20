@@ -8,11 +8,9 @@
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/graphics/functions.hpp"
 #include "tiki/toolbase/filestream.hpp"
 
 #if TIKI_PLATFORM_WIN
-//#	include <D3DX11.h>
 #	include <d3dcompiler.h>
 #endif
 
