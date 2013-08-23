@@ -47,7 +47,7 @@ namespace tiki
 		}
 
 		TIKI_BREAK( "[graphics] Unkown pixel format.\n" );
-		return s_unsignedMinusOne;
+		return TIKI_SIZE_T_MAX;
 	}
 }
 

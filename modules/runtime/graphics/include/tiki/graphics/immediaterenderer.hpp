@@ -18,79 +18,60 @@
 
 namespace tiki
 {
-	class GpuContext;
-	class Material;
-	class VertexFormat;
-	class TextureData;
 	class Font;
+	class GraphicsContext;
+	class Material;
+	class TextureData;
+	class VertexFormat;
+	struct SamplerState;
 
-	class SpritRenderer
+	class ImmediateRenderer
 	{
-		TIKI_NONCOPYABLE_CLASS( SpritRenderer );
-	public:
-		friend class GpuContext;
+		TIKI_NONCOPYABLE_CLASS( ImmediateRenderer );
 
-							~SpritRenderer();
+	public:
+
+							~ImmediateRenderer();
 		
-		bool				create( GpuContext* pContext );
+		bool				create();
 		void				dispose();
 
-		void				flush();
+		void				flush( GraphicsContext& graphicsContext );
 
 		void				drawText( const Vector2& position, const Font& font, const string& text );
 
-		void				drawTexture( const Rectangle& rect, const TextureData& textureData, bool percentage = false  );
-		void				drawTexture( const Rectangle& dest, const Rectangle& src, const TextureData& tex );
+		void				drawTexture( const TextureData& texture, const Rectangle& dest );
+		void				drawTexture( const TextureData& texture, const Rectangle& dest, const Rectangle& src );
 
 	private:
 
 		enum
 		{
 			MaxSprites		= 100,
-			MaxTextTextures = 100,
-			MaxTextChars	= 1000
+			MaxVertices		= 1000
+		};
+
+		struct Sprite
+		{
+			size_t				offset;
+			size_t				count;
+			const TextureData*	pTexture;
 		};
 
 		struct SpriteVertex
 		{
-			float3 position;
-			float2 uv;
+			float3	position;
+			float2	uv;
+			float4	color;
 		};
-
-		struct FontVertex
-		{
-			float2		position;
-			byte4		identifier;
-			FontChar	character;
-		};
-
-											SpritRenderer();
-
-		void								toScreenSpace( Rectangle& result );
-		void								toScreenSpacePercentage( Rectangle& result );
-
-		void								toUVSpace( Rectangle& rec, const TextureData& texture );
-
-
-		GpuContext*							m_pGpuContext;
 
 		const Material*						m_pMaterial;
 		const VertexFormat*					m_pVertexFormat;
-		Sampler								m_sampler;
+		const SamplerState*					m_samplerState;
 
-		Vector2								m_viewPort;
-
-		SizedArray< const TextureData* >	m_textures;
-		SizedArray< SpriteVertex >			m_sprites;
-
-		const VertexFormat*					m_pTextVertexFormat;
-		const Material*						m_pTextMaterial;
-		DVertexBuffer< FontVertex >			m_textVertexBuffer;
-
-		SizedArray< const TextureData* >	m_textTextures;
-		SizedArray< FontVertex >			m_textChars;
-		SizedArray< size_t >				m_textLength;
-
+		SizedArray< Sprite >				m_sprites;
+		SizedArray< SpriteVertex >			m_vertices;
+		
 		DVertexBuffer< SpriteVertex >		m_vertexBuffer;
 
 	};

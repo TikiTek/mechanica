@@ -5,53 +5,74 @@
 
 namespace tiki
 {
-	RenderTarget::RenderTarget() 
-		: m_pRenderTarget( nullptr )
-	{
-	}
-
 	RenderTarget::~RenderTarget()
 	{
 	}
 
-	void RenderTarget::create( GraphicsSystem& graphicsSystem, PixelFormat format, size_t width /* = 0u */, size_t height /* = 0u */ )
+	void RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
-		const uint2 backBufferSize = graphicsSystem.getBackBufferSize();
+		m_colorBufferCount = colorBufferCount;
+		TIKI_ASSERT( m_colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
 
-		width	= width  == 0u ? backBufferSize.x : width;
-		height	= height == 0u ? backBufferSize.y : height;
+		for (size_t i = 0u; i < m_colorBufferCount; ++i)
+		{
+			m_colorBuffers[ i ] = pColorBuffers[ i ];
 
-		TextureDescription desc;
-		desc.width	= width;
-		desc.height	= height;
-		desc.depth	= 1u;
-		desc.arrayCount	= 1u;
-		
-		desc.format		= format;
-		desc.type		= TextureType_2d;
-		desc.flags		= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
+			TGRenderTargetDescription renderTargetDesc;
+			renderTargetDesc.Format				= getD3dFormat( pColorBuffers[ i ].pDataBuffer->getDesription().format );
+			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
+			renderTargetDesc.Texture2D.MipSlice	= 0;
 
-		TIKI_VERIFY( m_textureData.create( graphicsSystem, desc, nullptr ) );
+			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( m_textureData.m_pTexture2d, &renderTargetDesc, &m_pColorViews[ i ] ) ) );
+			TIKI_ASSERT( m_pColorViews[ i ] != nullptr );
+		}
 
-		TGTexture2DDesc dxDesc;
-		m_textureData.m_pTexture2d->GetDesc( &dxDesc );
+		for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
+		{
+			m_colorBuffers[ i ].format		= PixelFormat_Invalid;
+			m_colorBuffers[ i ].pDataBuffer	= nullptr;
 
-		TGRenderTargetDescription renderTargetDesc;
-		renderTargetDesc.Format				= dxDesc.Format;
-		renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
-		renderTargetDesc.Texture2D.MipSlice	= 0;
+			m_pColorViews[ i ] = nullptr;
+		}
 
-		TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( m_textureData.m_pTexture2d, &renderTargetDesc, &m_pRenderTarget ) ) );
+		if ( pDepthBuffer != nullptr )
+		{
+			m_depthBuffer = pDepthBuffer;
+
+			TGRenderTargetDescription renderTargetDesc;
+			renderTargetDesc.Format				= getD3dFormat( pDepthBuffer->pDataBuffer->getDesription().format );
+			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
+			renderTargetDesc.Texture2D.MipSlice	= 0;
+
+			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( m_textureData.m_pTexture2d, &renderTargetDesc, &m_pDepthView ) ) );
+		}
+		else
+		{
+			m_depthBuffer.format		= PixelFormat_Invalid;
+			m_depthBuffer.pDataBuffer	= nullptr;
+
+			m_pDepthView = nullptr;
+		}
 	}
 
 	void RenderTarget::dispose()
 	{
-		m_textureData.dispose();
-
-		if ( m_pRenderTarget != nullptr ) 
+		for (size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i)
 		{
-			m_pRenderTarget->Release();
-			m_pRenderTarget = nullptr;
+			m_colorBuffers[ i ].format		= PixelFormat_Invalid;
+			m_colorBuffers[ i ].pDataBuffer	= nullptr;
+
+			if ( m_pColorViews[ i ] != nullptr )
+			{
+				m_pColorViews[ i ]->Release();
+				m_pColorViews[ i ] = nullptr;
+			}
+		}
+
+		if ( m_pDepthView != nullptr )
+		{
+			m_pDepthView->Release();
+			m_pDepthView = nullptr;
 		}
 	}
 }

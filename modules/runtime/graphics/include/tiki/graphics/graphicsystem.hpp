@@ -63,10 +63,8 @@ namespace tiki
 		bool					createContext( void );
 		void					disposeContext( void );
 
-		void					beginFrame();
+		GraphicsContext*		beginFrame();
 		void					endFrame();
-
-		GpuContext*				getCommandBuffer();
 
 		const Vector2&			getBackBufferSizeFloat() const	{ return m_backBufferSizeFloat; }
 		const uint2&			getBackBufferSize() const		{ return m_backBufferSize; }
@@ -79,7 +77,7 @@ namespace tiki
 		uint2					m_backBufferSize;
 
 		GraphicsHandles*		m_pHandles;
-		GpuContext				m_commandBuffer;
+		GraphicsContext			m_commandBuffer;
 
 	};
 }
