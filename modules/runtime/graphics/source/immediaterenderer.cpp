@@ -16,17 +16,19 @@ namespace tiki
 	{
 	}
 
-	bool ImmediateRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool ImmediateRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const WindowEventBuffer& eventBuffer )
 	{
+		m_pEventBuffer	= &eventBuffer;
+
 		m_pMaterial = resourceManager.loadResource< Material >( "immediate.material" );
 		TIKI_ASSERT( m_pMaterial );
 
-		// create sprite vertex format
 		{
 			const VertexAttribute attributes[] =
 			{
-				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex }
+				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
+				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex },
+				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex }
 			};		
 
 			VertexFormatParameters vertexParams;
@@ -158,21 +160,22 @@ namespace tiki
 		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
 
 		FontChar chars[ 128u ];
-		font.fillVertices( &chars, sizeof( FontChar ), 1u, text.cStr(), text.length() );
+		font.fillVertices( chars, TIKI_COUNT( chars ), text.cStr(), text.length() );
 
-		//const Vector2& screenSize = m_pGpuContext->getBackBufferSize();
+		const Vector2& screenSize = m_pGpuContext->getBackBufferSize();
 
 		float x = 0.0f;
 		for (size_t i = 0u; i < vertexCount; i += 4u)
 		{
-		//	const FontChar& character = pVertices[ i ].character;
+			const size_t vertexIndex = i * 4u;
+			const FontChar& character = chars[ i ];
 
-		//	const Rectangle rect = Rectangle(
-		//		( position.x + x ) / screenSize.x,
-		//		position.y / screenSize.y,
-		//		character.width / screenSize.x,
-		//		character.height / screenSize.y
-		//	);
+			const Rectangle rect = Rectangle(
+				( position.x + x ) / screenSize.x,
+				position.y / screenSize.y,
+				character.width / screenSize.x,
+				character.height / screenSize.y
+			);
 
 		//	// bottom left
 		//	createFloat3( pVertices[ i + 0u ].position, rect.x, rect.y + rect.height, 0.0f );
