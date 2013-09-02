@@ -34,7 +34,6 @@ namespace tiki
 
 	void NavMeshConverter::getDependingType( List< crc32 >& types ) const
 	{
-		types.add( crcString( "model" ) );
 	}
 
 	bool NavMeshConverter::initializeConverter()

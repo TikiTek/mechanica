@@ -18,7 +18,7 @@ namespace tiki
 		m_events.clear();
 	}
 
-	WindowEvent& WindowEventBuffer::pushEvent( WindowEventTypes type )
+	WindowEvent& WindowEventBuffer::pushEvent( WindowEventType type )
 	{
 		if ( m_events.getCount() > 0u && ( m_events.getTop().type == type || m_events.getCount() == m_events.getCapacity() ) )
 		{

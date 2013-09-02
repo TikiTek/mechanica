@@ -1,5 +1,5 @@
 
-#include "tiki/graphics/model.hpp"
+#include "tiki/graphicsresources/model.hpp"
 
 #include "tiki/base/memory.hpp"
 

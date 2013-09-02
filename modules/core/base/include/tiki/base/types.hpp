@@ -86,17 +86,22 @@ namespace tiki
 #	error Platform not suppored
 #endif
 
-#define TIKI_NONCOPYABLE_CLASS( class_name ) private: \
-	class_name ( const class_name & ); \
-	void operator=( const class_name & )
+#define TIKI_NONCOPYABLE_CLASS( class_name )		\
+	private:										\
+		class_name ## ( const class_name ## & );	\
+		void operator=( const class_name ## & )
 
-#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name ) public: \
-	class_name##() {}\
-	~##class_name() {}\
-	\
-	private: \
-		class_name ( const class_name & ); \
+#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name ) public:	\
+		class_name ## () {}										\
+		~ ## class_name() {}									\
+																\
+	private:													\
+		class_name ( const class_name & );						\
 		void operator=( const class_name & )
+
+#define TIKI_DEFINE_HANLE( handle_name )		\
+	struct handle_name ## Type;					\
+	typedef handle_name ## Type* handle_name;
 
 #if TIKI_PLATFORM_WIN && !TIKI_BUILD_MASTER
 #	include <crtdbg.h>

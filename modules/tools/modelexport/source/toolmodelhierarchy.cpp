@@ -9,7 +9,7 @@ namespace tiki
 	ToolModelHierarchy::ToolModelHierarchy()
 	{
 		m_pXml				= nullptr;
-		m_finalJointCount	= s_unsignedMinusOne;
+		m_finalJointCount	= TIKI_SIZE_T_MAX;
 		m_hasFinalIndices	= false;
 	}
 
@@ -95,8 +95,8 @@ namespace tiki
 			joint.pParentNode		= pNode;
 			joint.parentIndex		= parentIndex;
 			joint.used				= false;
-			joint.finalIndex		= s_unsignedMinusOne;
-			joint.finalParentIndex	= s_unsignedMinusOne;
+			joint.finalIndex		= TIKI_SIZE_T_MAX;
+			joint.finalParentIndex	= TIKI_SIZE_T_MAX;
 
 			targetList.add( joint );
 
@@ -111,11 +111,11 @@ namespace tiki
 		// mark parents as used
 		for (size_t i = 0u; i < m_joints.getCount(); ++i)
 		{
-			if ( m_joints[ i ].parentIndex != s_unsignedMinusOne )
+			if ( m_joints[ i ].parentIndex != TIKI_SIZE_T_MAX )
 			{
 				size_t parentIndex = m_joints[ i ].parentIndex;
 
-				while ( parentIndex != s_unsignedMinusOne )
+				while ( parentIndex != TIKI_SIZE_T_MAX )
 				{
 					m_joints[ parentIndex ].used = true;
 

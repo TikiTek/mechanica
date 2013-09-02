@@ -9,6 +9,8 @@
 
 namespace tiki
 {
+	TIKI_DEFINE_HANLE( WindowHandle )
+
 	struct WindowParameters
 	{
 		uint		width;
@@ -29,13 +31,13 @@ namespace tiki
 
 		void						update();
 
-		void*						getHandle() const;
+		WindowHandle				getHandle() const;
 		uint2						getClientSize() const;
 		const WindowEventBuffer&	getEventBuffer() const;
 
 	private:
 
-		void*						m_pHandle;
+		WindowHandle				m_pHandle;
 		wstring						m_windowClass;
 		wstring						m_windowTitle;
 

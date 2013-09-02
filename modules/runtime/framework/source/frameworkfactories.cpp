@@ -22,21 +22,14 @@ namespace tiki
 		m_pResourceManager	= &resourceManager;
 
 		m_fontFactory.create( graphicsSystem );
-		m_levelFactory.create();
-		m_levelcolliderFactory.create();
 		m_materialFactory.create();
 		m_modelFactory.create( &graphicsSystem );
-		m_navmeshfactory.create();
 		m_shaderFactory.create( &graphicsSystem );
 		m_textureFactory.create( graphicsSystem );
 		
-		m_pResourceManager->registerFactory( &m_animationFactory );
 		m_pResourceManager->registerFactory( &m_fontFactory );
-		m_pResourceManager->registerFactory( &m_levelFactory );
-		m_pResourceManager->registerFactory( &m_levelcolliderFactory );
 		m_pResourceManager->registerFactory( &m_materialFactory );
 		m_pResourceManager->registerFactory( &m_modelFactory );
-		m_pResourceManager->registerFactory( &m_navmeshfactory );
 		m_pResourceManager->registerFactory( &m_shaderFactory );
 		m_pResourceManager->registerFactory( &m_textureFactory );
 	}
@@ -48,22 +41,15 @@ namespace tiki
 			return;
 		}
 
-		m_pResourceManager->unregisterFactory( &m_animationFactory );
 		m_pResourceManager->unregisterFactory( &m_fontFactory );
-		m_pResourceManager->unregisterFactory( &m_levelFactory );
-		m_pResourceManager->unregisterFactory( &m_levelcolliderFactory );
 		m_pResourceManager->unregisterFactory( &m_materialFactory );
 		m_pResourceManager->unregisterFactory( &m_modelFactory );
-		m_pResourceManager->unregisterFactory( &m_navmeshfactory );
 		m_pResourceManager->unregisterFactory( &m_shaderFactory );
 		m_pResourceManager->unregisterFactory( &m_textureFactory );
 
 		m_fontFactory.dispose();
-		m_levelFactory.dispose();
-		m_levelcolliderFactory.dispose();
 		m_materialFactory.dispose();
 		m_modelFactory.dispose();
-		m_navmeshfactory.dispose();
 		m_shaderFactory.dispose();
 		m_textureFactory.dispose();
 

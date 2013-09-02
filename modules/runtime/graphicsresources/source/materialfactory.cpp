@@ -1,6 +1,7 @@
-#include "tiki/graphics/materialfactory.hpp"
 
-#include "tiki/graphics/material.hpp"
+#include "tiki/graphicsresources/materialfactory.hpp"
+
+#include "tiki/graphicsresources/material.hpp"
 
 namespace tiki
 {

@@ -52,8 +52,8 @@ namespace tiki
 		virtual void				initialize() = 0;
 		virtual void				shutdown() = 0;
 
-		virtual void				update( void ) = 0;
-		virtual void				render( GpuContext* pCommandBuffer ) const = 0;
+		virtual void				update() = 0;
+		virtual void				render( GraphicsContext* pGraphicsContext ) const = 0;
 
 	private:
 

@@ -96,27 +96,12 @@ namespace tiki
 			ID3D10Blob* pBlob		= nullptr;
 			ID3D10Blob* pErrorBlob	= nullptr;
 
-			uint shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+			size_t shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-#if defined( _DEBUG )
-			shaderFlags |= D3DCOMPILE_DEBUG;
-#endif
-
-			//HRESULT r = D3DX11CompileFromMemory(
-			//	data.getData(),
-			//	data.getCount(),
-			//	file.fileName.cStr(), 
-			//	nullptr,
-			//	nullptr,
-			//	pFunctionName,
-			//	file.typeString.cStr(), 
-			//	shaderFlags, //0,
-			//	0,
-			//	0,
-			//	&pBlob,
-			//	&pErrorBlob,
-			//	0
-			//);
+			if ( params.arguments.getBool( "compile_debug" ) )
+			{
+				shaderFlags |= D3DCOMPILE_DEBUG;
+			}
 
 			HRESULT r = D3DCompile(
 				data.getData(),
@@ -126,7 +111,7 @@ namespace tiki
 				nullptr,
 				pFunctionName,
 				file.typeString.cStr(), 
-				shaderFlags, //0,
+				shaderFlags,
 				0,
 				&pBlob,
 				&pErrorBlob
@@ -162,8 +147,17 @@ namespace tiki
 				closeResourceWriter( &writer );
 			}
 
-			safeRelease( &pBlob );
-			safeRelease( &pErrorBlob );
+			if ( pBlob != nullptr )
+			{
+				pBlob->Release();
+				pBlob = nullptr;
+			}
+
+			if ( pErrorBlob != nullptr )
+			{
+				pErrorBlob->Release();
+				pErrorBlob = nullptr;
+			}
 #else
 			ResourceWriter writer;
 			openResourceWriter( &writer, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), params.outputName, file.typeString );

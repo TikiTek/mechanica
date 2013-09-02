@@ -1,12 +1,13 @@
-#include "tiki/graphics/material.hpp"
+
+#include "tiki/graphicsresources/material.hpp"
 
 #include "tiki/base/memory.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 
-#include "tiki/graphics/shader.hpp"
-#include "tiki/graphics/texture.hpp"
+#include "tiki/graphicsresources/shader.hpp"
+#include "tiki/graphicsresources/texture.hpp"
 
 #include "tiki/framework/framework.hpp"
 #include "tiki/resource/resourcemanager.hpp"

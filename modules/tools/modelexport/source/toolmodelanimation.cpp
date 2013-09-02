@@ -12,7 +12,7 @@ namespace tiki
 	void ToolModelAnimation::create( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const _XmlElement* pNode )
 	{
 		m_isCreated		= true;
-		m_frameCount	= s_unsignedMinusOne;
+		m_frameCount	= TIKI_SIZE_T_MAX;
 		m_joints.create( hierarchy.getJointCount() );
 
 		for (size_t i = 0u; i < m_joints.getCount(); ++i)
@@ -26,7 +26,7 @@ namespace tiki
 		{
 			const size_t index = createJoint( pXml, pAnimation, hierarchy );
 
-			if ( index != s_unsignedMinusOne )
+			if ( index != TIKI_SIZE_T_MAX )
 			{
 				hierarchy.markJointAsUsed( *m_joints[ index ].pJoint );
 			}
@@ -55,7 +55,7 @@ namespace tiki
 
 		if ( pNode == nullptr )
 		{
-			return s_unsignedMinusOne;
+			return TIKI_SIZE_T_MAX;
 		}
 
 		ToolModelSource< float > times;
@@ -67,7 +67,7 @@ namespace tiki
 
 		if ( pSampler == nullptr || pChannel == nullptr )
 		{
-			return s_unsignedMinusOne;
+			return TIKI_SIZE_T_MAX;
 		}
 
 		// parse channel
@@ -83,7 +83,7 @@ namespace tiki
 
 			if ( second != "matrix" )
 			{
-				return s_unsignedMinusOne;
+				return TIKI_SIZE_T_MAX;
 			}
 
 			jointName = first;
@@ -152,7 +152,7 @@ namespace tiki
 			}
 		}
 
-		size_t index = s_unsignedMinusOne;
+		size_t index = TIKI_SIZE_T_MAX;
 
 		if ( times.isCreated() && transforms.isCreated() ) // && interpolators.isCreated()
 		{

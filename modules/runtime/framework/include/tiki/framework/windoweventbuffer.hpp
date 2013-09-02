@@ -16,7 +16,7 @@ namespace tiki
 		void						dispose();
 
 		void						clear();
-		WindowEvent&				pushEvent( WindowEventTypes type );
+		WindowEvent&				pushEvent( WindowEventType type );
 
 		size_t						getEventCount() const;
 		const WindowEvent&			getEventByIndex( size_t index ) const;

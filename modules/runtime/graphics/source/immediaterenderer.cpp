@@ -1,37 +1,30 @@
-#include "tiki/graphics/spriterenderer.hpp"
+
+#include "tiki/graphics/immediaterenderer.hpp"
+
 #include "tiki/framework/framework.hpp"
-#include "tiki/resource/resourcemanager.hpp"
-#include "tiki/graphics/graphicsystem.hpp"
-#include "tiki/graphics/shader.hpp"
-#include "tiki/graphics/material.hpp"
-#include "tiki/graphics/texture.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphicsresources/material.hpp"
+#include "tiki/graphicsresources/shader.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 
 
 namespace tiki
 {
-	tiki::SpritRenderer::SpritRenderer() 
-		: m_pGpuContext( nullptr ), m_pMaterial( nullptr ), m_pVertexFormat( nullptr )
-	{
-
-	}
-
-	tiki::SpritRenderer::~SpritRenderer()
+	ImmediateRenderer::~ImmediateRenderer()
 	{
 	}
 
-	bool tiki::SpritRenderer::create( GpuContext* pContext )
+	bool ImmediateRenderer::create()
 	{
-		TIKI_ASSERT( pContext );
-		m_pGpuContext = pContext;
-
 		ResourceManager& content = framework::getResourceManager();
 
 		m_pMaterial = content.loadResource< Material >( "sprite.material" );
 		TIKI_ASSERT( m_pMaterial );
 
-		m_pTextMaterial = content.loadResource< Material >( "font.material" );
-		TIKI_ASSERT( m_pTextMaterial );
+		//m_pTextMaterial = content.loadResource< Material >( "font.material" );
+		//TIKI_ASSERT( m_pTextMaterial );
 
 		// create sprite vertex format
 		{
@@ -84,7 +77,7 @@ namespace tiki
 		return true;
 	}
 
-	void tiki::SpritRenderer::dispose()
+	void tiki::ImmediateRenderer::dispose()
 	{
 		framework::getResourceManager().unloadResource( m_pMaterial );
 		m_pMaterial = nullptr;
@@ -110,7 +103,7 @@ namespace tiki
 		m_textLength.dispose();
 	}
 
-	void tiki::SpritRenderer::drawTexture( const Rectangle& rect, const TextureData& textureData, bool percentage /*= false*/ )
+	void tiki::ImmediateRenderer::drawTexture( const Rectangle& rect, const TextureData& textureData, bool percentage /*= false*/ )
 	{
 		Rectangle r = rect;
 
@@ -153,7 +146,7 @@ namespace tiki
 		pVertices[ 3u ].uv.y = 0.0f;
 	}
 
-	void SpritRenderer::drawTexture( const Rectangle& dest, const Rectangle& src, const TextureData& tex )
+	void ImmediateRenderer::drawTexture( const Rectangle& dest, const Rectangle& src, const TextureData& tex )
 	{
 		Rectangle d = dest;
 		Rectangle s = src;
@@ -195,7 +188,7 @@ namespace tiki
 		pVertices[ 3u ].uv.y = s.y;
 	}
 
-	void SpritRenderer::drawText( const Vector2& position, const Font& font, const string& text )
+	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const string& text )
 	{
 		if ( text.isEmpty() )
 		{
@@ -244,13 +237,13 @@ namespace tiki
 		m_textLength.push( text.length() );
 	}
 
-	void SpritRenderer::toUVSpace( Rectangle& rec, const TextureData& texture )
+	void ImmediateRenderer::toUVSpace( Rectangle& rec, const TextureData& texture )
 	{
 		const Vector2 scal( 1.0f / texture.getWidth(), 1.0f / texture.getHeight() );
 		rec.mul( scal );
 	}
 
-	void tiki::SpritRenderer::toScreenSpace( Rectangle& rect )
+	void ImmediateRenderer::toScreenSpace( Rectangle& rect )
 	{
 		rect = Rectangle( rect.x * m_viewPort.x ,
 						  rect.y * m_viewPort.y,
@@ -258,7 +251,7 @@ namespace tiki
 						  rect.height * m_viewPort.y );
 	}
 
-	void tiki::SpritRenderer::toScreenSpacePercentage( Rectangle& rect )
+	void ImmediateRenderer::toScreenSpacePercentage( Rectangle& rect )
 	{
 		Vector2 vp = m_pGpuContext->getBackBufferSize();
 		rect = Rectangle( rect.x * 2.0f, 
@@ -267,12 +260,12 @@ namespace tiki
 							rect.height * 2.0f);
 	}
 
-	void tiki::SpritRenderer::flush()
+	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
 	{
-		m_pGpuContext->setSampler( m_sampler );
+		graphicsContext.setSamplerState( m_sampler );
 
-		m_pGpuContext->disableDepth();
-		m_pGpuContext->enableAlpha();
+		//m_pGpuContext->disableDepth();
+		//m_pGpuContext->enableAlpha();
 
 		// render sprites
 		if( m_sprites.getCount() )
@@ -297,40 +290,40 @@ namespace tiki
 			}
 		}
 
-		// render text
-		if ( m_textChars.getCount() )
-		{
-			FontVertex* pTextVertices = m_textVertexBuffer.map( m_textChars.getCount() );
-			memory::copy( pTextVertices, m_textChars.getData(), m_textChars.getCount() * sizeof( FontVertex ) );
-			m_textVertexBuffer.unmap();
+		//// render text
+		//if ( m_textChars.getCount() )
+		//{
+		//	FontVertex* pTextVertices = m_textVertexBuffer.map( m_textChars.getCount() );
+		//	memory::copy( pTextVertices, m_textChars.getData(), m_textChars.getCount() * sizeof( FontVertex ) );
+		//	m_textVertexBuffer.unmap();
 
-			m_pGpuContext->setInputLayout( m_pTextVertexFormat );
-			m_pGpuContext->setMaterial( m_pTextMaterial );
+		//	m_pGpuContext->setInputLayout( m_pTextVertexFormat );
+		//	m_pGpuContext->setMaterial( m_pTextMaterial );
 
-			m_pGpuContext->setVertexBuffer( m_textVertexBuffer );
-			m_pGpuContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+		//	m_pGpuContext->setVertexBuffer( m_textVertexBuffer );
+		//	m_pGpuContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
-			size_t offset = 0u;
-			while ( m_textTextures.getCount() )
-			{
-				const TextureData* pTextureData = m_textTextures.pop();
-				const size_t vertexCount = m_textLength.pop() * 4u;
-				
-				m_pGpuContext->setPixelShaderTexture( pTextureData );
-				m_pGpuContext->draw( vertexCount, offset );
-				offset += vertexCount;
-			}
+		//	size_t offset = 0u;
+		//	while ( m_textTextures.getCount() )
+		//	{
+		//		const TextureData* pTextureData = m_textTextures.pop();
+		//		const size_t vertexCount = m_textLength.pop() * 4u;
+		//		
+		//		m_pGpuContext->setPixelShaderTexture( pTextureData );
+		//		m_pGpuContext->draw( vertexCount, offset );
+		//		offset += vertexCount;
+		//	}
 
-			m_textChars.clear();
-			TIKI_ASSERT( m_textLength.getCount() == 0u );
-			TIKI_ASSERT( m_textTextures.getCount() == 0u );
-		}
+		//	m_textChars.clear();
+		//	TIKI_ASSERT( m_textLength.getCount() == 0u );
+		//	TIKI_ASSERT( m_textTextures.getCount() == 0u );
+		//}
 
-		m_pGpuContext->enableDepth();
-		m_pGpuContext->disableAlpha();
+		//m_pGpuContext->enableDepth();
+		//m_pGpuContext->disableAlpha();
 
 		m_sprites.clear();
-		m_textures.clear();
+		m_vertices.clear();
 	}
 }
 

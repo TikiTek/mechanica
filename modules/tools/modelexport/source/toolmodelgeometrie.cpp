@@ -135,7 +135,7 @@ namespace tiki
 		for (size_t i = 0u; i < sources.getCount(); ++i)
 		{
 			sources[ i ].create( pXml, sourcesNodes[ i ], stringSourceToFloat, 1u );
-			sources[ i ].userData = s_unsignedMinusOne;
+			sources[ i ].userData = TIKI_SIZE_T_MAX;
 		}
 
 		// parse vertex layout
@@ -322,7 +322,7 @@ namespace tiki
 			{
 				const ToolModelSource< float >& source = sources[ i ];
 
-				if ( source.userData == s_unsignedMinusOne )
+				if ( source.userData == TIKI_SIZE_T_MAX )
 				{
 					continue;
 				}
@@ -506,16 +506,16 @@ namespace tiki
 
 			size_t i = 0u;
 			size_t c = 0u;
-			size_t count = s_unsignedMinusOne;
+			size_t count = TIKI_SIZE_T_MAX;
 			size_t index = 0u;
 			size_t sourceIndex = 0u;
-			while ( index != s_unsignedMinusOne )
+			while ( index != TIKI_SIZE_T_MAX )
 			{
-				if ( c == count || count == s_unsignedMinusOne )
+				if ( c == count || count == TIKI_SIZE_T_MAX )
 				{
 					//TIKI_ASSERT( f32::isEquals( m_vertices[ i ].jointWeights.x + m_vertices[ i ].jointWeights.y + m_vertices[ i ].jointWeights.z + m_vertices[ i ].jointWeights.w, 1.0f, 0.01f ) );
 
-					if ( count != s_unsignedMinusOne ) i++;
+					if ( count != TIKI_SIZE_T_MAX ) i++;
 
 					const string countString	= tokenCount.findNext();
 					count						= ParseString::parseUInt32( countString );
