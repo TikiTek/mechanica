@@ -36,17 +36,14 @@ namespace tiki
 		m_textureData.dispose();
 	}
 
-	void Font::fillVertices( FontChar* pChars, size_t vertexStride, size_t repeateChar, cstring text, size_t capacity ) const
+	void Font::fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const
 	{
+		TIKI_ASSERT( capacity >= textLength );
+
 		for (size_t i = 0u; i < capacity; ++i)
 		{
 			TIKI_ASSERT( text[ i ] != '\0' );
-
-			for (size_t j = 0u; j < repeateChar; ++j)
-			{
-				pChars[ 0u ]	= m_chars[ text[ i ] ];
-				pChars			= addPtr( pChars, vertexStride );
-			}
+			pChars[ i ]	= m_chars[ text[ i ] ];
 		}
 	}
 }

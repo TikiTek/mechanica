@@ -10,13 +10,13 @@ namespace tiki
 {
 	class BaseBuffer
 	{
-		friend class GpuContext;
+		friend class GraphicsContext;
 
 	protected:
 
-		ID3D11Buffer*			m_pBuffer;
+		TGBuffer*				m_pBuffer;
 
-		void					create( const size_t size, const uint binding );
+		void					create( const size_t size, const size_t binding );
 		void					dispose();
 
 		void*					map();

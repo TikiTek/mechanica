@@ -25,7 +25,7 @@ namespace tiki
 		friend class GpuContext;
 
 		const TextureData&		getTextureData() const { return m_textureData; }	
-		void					fillVertices( FontChar* pChars, size_t vertexStride, size_t repeateChar, cstring text, size_t capacity ) const;
+		void					fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const;
 
 	protected:
 

@@ -2,19 +2,13 @@
 #ifndef TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 #define TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/base/types.hpp"
-
-#include "tiki/graphics/dynamicbuffer.hpp"
-#include "tiki/graphics/samplerstate.hpp"
-#include "tiki/graphicsresources/texture.hpp"
-#include "tiki/graphicsbase/fontchar.hpp"
-
 #include "tiki/base/structs.hpp"
-#include "tiki/math/vector2.hpp"
-#include "tiki/math/vector3.hpp"
+#include "tiki/base/types.hpp"
+#include "tiki/graphics/dynamicbuffer.hpp"
+#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphicsbase/fontchar.hpp"
 #include "tiki/math/rectangle.hpp"
 
 namespace tiki
@@ -24,7 +18,8 @@ namespace tiki
 	class Material;
 	class TextureData;
 	class VertexFormat;
-	struct SamplerState;
+	class SamplerState;
+	struct Rectangle; 
 
 	class ImmediateRenderer
 	{
@@ -32,10 +27,13 @@ namespace tiki
 
 	public:
 
+							ImmediateRenderer();
 							~ImmediateRenderer();
 		
-		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const WindowEventBuffer& eventBuffer );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+
+		void				update();
 
 		void				flush( GraphicsContext& graphicsContext );
 
@@ -66,6 +64,8 @@ namespace tiki
 			float4	color;
 		};
 
+		const WindowEventBuffer*			m_pEventBuffer;
+
 		const Material*						m_pMaterial;
 		const VertexFormat*					m_pVertexFormat;
 		const SamplerState*					m_pSamplerState;
@@ -73,7 +73,7 @@ namespace tiki
 		SizedArray< Sprite >				m_sprites;
 		SizedArray< SpriteVertex >			m_vertices;
 		
-		DVertexBuffer< SpriteVertex >		m_vertexBuffer;
+		VertexBuffer						m_vertexBuffer;
 
 	};
 }
