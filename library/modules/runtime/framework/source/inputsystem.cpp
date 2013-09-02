@@ -1,8 +1,7 @@
 
-#include "tiki/input/inputsystem.hpp"
+#include "tiki/framework/inputsystem.hpp"
 
-#include "tiki/graphics/functions.hpp"
-#include "tiki/framework/framework.hpp"
+#include "tiki/base/platform.hpp"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -11,43 +10,66 @@
 namespace tiki
 {
 	InputSystem::InputSystem()
-		: m_pInputDevice( nullptr )
 	{
+		m_pInputDevice	= nullptr;
+		m_pMouse		= nullptr;
+		m_pKeyboard		= nullptr;
 
+		TIKI_COMPILETIME_ASSERT( sizeof( m_currentState.mouseState ) == sizeof( DIMOUSESTATE ) );
 	}
 
 	InputSystem::~InputSystem()
 	{
-
+		TIKI_ASSERT( m_pInputDevice == nullptr );
+		TIKI_ASSERT( m_pMouse == nullptr );
+		TIKI_ASSERT( m_pKeyboard == nullptr );
 	}
 
 	bool InputSystem::create( const InputSystemParameters& params )
 	{
 		HINSTANCE hinst = GetModuleHandle( nullptr );
 
-		HRESULT result = DirectInput8Create( hinst, 
-											DIRECTINPUT_VERSION, 
-											IID_IDirectInput8, 
-											(void**)&m_pInputDevice, 
-											nullptr);
+		HRESULT result = DirectInput8Create( hinst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pInputDevice, nullptr );
+		if( FAILED( result ) || m_pInputDevice == nullptr )
+		{
+			return false;
+		}
+
+		// keyboard
+		result = m_pInputDevice->CreateDevice( GUID_SysKeyboard, &m_pKeyboard, nullptr );
+		if( FAILED( result ) || m_pKeyboard == nullptr )
+		{
+			return false;
+		}
+
+		result = m_pKeyboard->SetDataFormat( &c_dfDIKeyboard );
+		if( FAILED( result ) )
+		{
+			return false;
+		}
+
+		result = m_pKeyboard->SetCooperativeLevel( (HWND)params.pWindow->getHandle(), DISCL_FOREGROUND | DISCL_EXCLUSIVE );
 		if( FAILED( result ) )
 			return false;
 
-		KeyboardManagerParameter keyboardParams;
-		keyboardParams.m_pInputDevice	= m_pInputDevice;
-		keyboardParams.m_phWnd			= params.p_hWnd;
-		
-		if( !m_keyboardManager.create( keyboardParams ) )
+		// mouse
+		result = m_pInputDevice->CreateDevice( GUID_SysMouse, &m_pMouse, nullptr );
+		if( FAILED( result ) )
+		{
 			return false;
+		}
 
-		MouseManagerParameter mouseParams;
-		mouseParams.m_phWnd			= params.p_hWnd;
-		mouseParams.m_pInputDevice	= m_pInputDevice;
-		mouseParams.m_screenwidth	= params.screenWidth;
-		mouseParams.m_screenheight	= params.screenHeight;
-
-		if( !m_mouseManager.create( mouseParams ) )
+		result = m_pMouse->SetDataFormat( &c_dfDIMouse );
+		if( FAILED( result ) )
+		{
 			return false;
+		}
+
+		result = m_pMouse->SetCooperativeLevel( (HWND)params.pWindow->getHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
+		if( FAILED( result ) )
+		{
+			return false;		
+		}
 
 		return true;
 	}
@@ -59,69 +81,110 @@ namespace tiki
 			return;
 		}
 
-		m_mouseManager.dispose();
-		m_keyboardManager.dispose();
-		safeRelease( &m_pInputDevice );
+		m_pKeyboard->Unacquire();
+		if ( m_pKeyboard != nullptr )
+		{
+			m_pKeyboard->Release();
+			m_pKeyboard = nullptr;
+		}
+
+		m_pMouse->Unacquire();
+		if ( m_pMouse != nullptr )
+		{
+			m_pMouse->Release();
+			m_pMouse = nullptr;
+		}
+
+		if ( m_pInputDevice != nullptr )
+		{
+			m_pInputDevice->Release();
+			m_pInputDevice = nullptr;
+		}
 	}
 
-	void InputSystem::frame( void )
+	void InputSystem::update( const WindowEventBuffer& windowEvents )
 	{
-		m_keyboardManager.frame();
-		m_mouseManager.frame();
+		m_previousState = m_currentState;
+
+		HRESULT result = m_pKeyboard->GetDeviceState( 256, (void*)&m_currentState.keyboardState );
+		if( FAILED( result ) )
+		{
+			if( result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED )
+			{
+				m_pKeyboard->Acquire();
+			}
+		}
+
+		result = m_pMouse->GetDeviceState( sizeof( DIMOUSESTATE ), (void*)m_currentState.mouseState );
+		if( FAILED( result ) )
+		{
+			if( result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED )
+			{
+				m_pMouse->Acquire();
+			}
+		}
 	}
 
-	bool InputSystem::isKeyDown( const Keys key ) const
+	bool InputSystem::isButtonDown( const MouseButtons button ) const
 	{
-		return m_keyboardManager.isKeyDown( key );
+		const DIMOUSESTATE* pState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
+		return pState->rgbButtons[ button ] != 0;
 	}
 
-	bool InputSystem::isKeyUp( const Keys key ) const
+	bool InputSystem::isButtonUp( const MouseButtons button ) const
 	{
-		return m_keyboardManager.isKeyUp( key );
+		const DIMOUSESTATE* pState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
+		return pState->rgbButtons[ button ] == 0;
 	}
 
-	bool InputSystem::isKeyPressed( const Keys key ) const
+	bool InputSystem::isButtonPressed( const MouseButtons button ) const
 	{
-		return m_keyboardManager.isKeyPressed( key );
+		const DIMOUSESTATE* pPreviousState = reinterpret_cast< const DIMOUSESTATE* >( m_previousState.mouseState );
+		const DIMOUSESTATE* pCurrentState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
+
+		return ( pPreviousState->rgbButtons[ button ] == 0 ) && ( pCurrentState->rgbButtons[ button ] != 0 );
 	}
 
-	bool InputSystem::isKeyReleased( const Keys key ) const
+	bool InputSystem::isButtonReleased( const MouseButtons button ) const
 	{
-		return m_keyboardManager.isKeyReleased( key );
+		const DIMOUSESTATE* pPreviousState = reinterpret_cast< const DIMOUSESTATE* >( m_previousState.mouseState );
+		const DIMOUSESTATE* pCurrentState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
+
+		return ( pPreviousState->rgbButtons[ button ] != 0 ) && ( pCurrentState->rgbButtons[ button ] == 0 );
 	}
 
-	bool InputSystem::isButtonDown( const MouseButtons& button ) const
+	//const Vector2& InputSystem::getMousePosition( void ) const
+	//{
+	//	return m_position;
+	//}
+
+	//const Vector2& InputSystem::getMousePositionDisplay( void ) const
+	//{
+	//	return m_positionDisplay;
+	//}
+
+	//const Vector2& InputSystem::getDistance( void ) const
+	//{
+	//	return m_distance;
+	//}
+
+	bool InputSystem::isKeyDown( Keys key ) const
 	{
-		return m_mouseManager.isButtonDown( button );
+		return ( m_currentState.keyboardState[ key ] & 0x80 ) != 0;
 	}
 
-	bool InputSystem::isButtonUp( const MouseButtons& button ) const
+	bool InputSystem::isKeyUp( Keys key ) const
 	{
-		return m_mouseManager.isButtonUp( button );
+		return ( m_currentState.keyboardState[ key ] & 0x80 ) == 0;
 	}
 
-	bool InputSystem::isButtonPressed( const MouseButtons& button ) const
+	bool InputSystem::hasKeyPressed( Keys key ) const
 	{
-		return m_mouseManager.isButtonPressed( button );
+		return ( !( m_previousState.keyboardState[ key ] & 0x80 ) && ( m_currentState.keyboardState[ key ] & 0x80 ) );
 	}
 
-	bool InputSystem::isButtonReleased( const MouseButtons& button ) const
+	bool InputSystem::hasKeyReleased( Keys key ) const
 	{
-		return m_mouseManager.isButtonReleased( button );
-	}
-
-	const Vector2& InputSystem::getMousePosition( void ) const
-	{
-		return m_mouseManager.getMousePosition();
-	}
-
-	const Vector2& InputSystem::getMousePositionDisplay( void ) const
-	{
-		return m_mouseManager.getMousePositionDisplay();
-	}
-
-	const Vector2& InputSystem::getDistance( void ) const
-	{
-		return m_mouseManager.getDistance();
+		return (( m_previousState.keyboardState[ key ] & 0x80 ) && !( m_currentState.keyboardState[ key ] & 0x80 ) );
 	}
 }

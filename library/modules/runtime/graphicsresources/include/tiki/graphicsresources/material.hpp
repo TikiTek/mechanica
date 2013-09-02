@@ -13,7 +13,7 @@ namespace tiki
 	class Material : public Resource
 	{
 		TIKI_DEFINE_RESOURCE( MaterialFactory, TIKI_FOURCC( 'M', 'A', 'T', 'T' ) );
-		friend class GpuContext;
+		friend class GraphicsContext;
 	public:
 
 										Material();

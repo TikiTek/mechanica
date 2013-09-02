@@ -87,7 +87,7 @@ namespace tiki
 		}
 	}
 
-	void GameFlowSystem::render( GpuContext* pCommandWriter ) const
+	void GameFlowSystem::render( GraphicsContext* pGraphicsContext ) const
 	{
 		const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
 
@@ -100,7 +100,7 @@ namespace tiki
 				continue;
 			}
 
-			m_states[ index ].pState->render( pCommandWriter );
+			m_states[ index ].pState->render( pGraphicsContext );
 		}
 	}
 

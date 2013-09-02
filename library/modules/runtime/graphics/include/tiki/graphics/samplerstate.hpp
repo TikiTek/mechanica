@@ -5,20 +5,26 @@
 
 namespace tiki
 {
-	class Sampler
+	class SamplerState
 	{
+		TIKI_NONCOPYABLE_CLASS( SamplerState );
+		friend class GraphicsContext;
+		friend class GraphicsSystem;
+
 	public:
-								Sampler();
-								~Sampler();
+
+	protected:
+
+		SamplerState();
+		~SamplerState();
 
 		void					create();
 		void					dispose();
 
-		TGSamplerState*const*	getState() const { return (TGSamplerState*const*)&m_pSampler; }
-
 	private:
 
-		TGSamplerState*			m_pSampler;
+		TGSamplerState*			m_pSamplerState;
+
 	};
 }
 

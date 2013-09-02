@@ -18,74 +18,74 @@ namespace tiki
 		switch (message)
 		{
 		case WM_CREATE:
-			s_pEventBuffer->pushEvent( WET_Create );
+			s_pEventBuffer->pushEvent( WindowEventType_Create );
 			break;
 		case WM_DESTROY:
 			PostQuitMessage( 0 );
-			s_pEventBuffer->pushEvent( WET_Destroy );
+			s_pEventBuffer->pushEvent( WindowEventType_Destroy );
 			break;
 		case WM_SIZE:
 			{
 				RECT rect;
 				GetClientRect( hWnd, &rect );
 
-				WindowEvent& event					= s_pEventBuffer->pushEvent( WET_SizeChanged );
+				WindowEvent& event					= s_pEventBuffer->pushEvent( WindowEventType_SizeChanged );
 				event.data.sizeChangedEvent.size.x	= (rect.right - rect.left);
 				event.data.sizeChangedEvent.size.y	= (rect.bottom - rect.top);
 			}
 			break;
 		case WM_KEYDOWN:
 			{
-				WindowEvent& event		= s_pEventBuffer->pushEvent( WET_KeyDown );
+				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
 				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_KEYUP:
 			{
-				WindowEvent& event		= s_pEventBuffer->pushEvent( WET_KeyUp );
+				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
 				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_MOUSEMOVE:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseMove );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
 				event.data.mouseMoveEvent.position.x	= GET_X_LPARAM( lParam ); 
 				event.data.mouseMoveEvent.position.y	= GET_Y_LPARAM( lParam ); 
 			}
 			break;
 		case WM_LBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
 				event.data.mouseButtonEvent.button		= MouseButton_Left;
 			}
 			break;
 		case WM_MBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
 				event.data.mouseButtonEvent.button		= MouseButton_Middle;
 			}
 			break;
 		case WM_RBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseDown );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
 				event.data.mouseButtonEvent.button		= MouseButton_Right;
 			}
 			break;
 		case WM_LBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
 				event.data.mouseButtonEvent.button		= MouseButton_Left;
 			}
 			break;
 		case WM_MBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
 				event.data.mouseButtonEvent.button		= MouseButton_Middle;
 			}
 			break;
 		case WM_RBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WET_MouseUp );
+				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
 				event.data.mouseButtonEvent.button		= MouseButton_Right;
 			}
 			break;
@@ -150,7 +150,7 @@ namespace tiki
 			MessageBoxA(NULL, "Can't create Window.", params.pWindowTitle, MB_HELP);
 			return false;
 		}
-		m_pHandle = hWnd;
+		m_pHandle = (WindowHandle)hWnd;
 		
 		ShowWindow(hWnd, 1);
 		UpdateWindow(hWnd);
@@ -185,7 +185,7 @@ namespace tiki
 		}
 	}
 
-	void* MainWindow::getHandle() const
+	WindowHandle MainWindow::getHandle() const
 	{
 		return m_pHandle;
 	}

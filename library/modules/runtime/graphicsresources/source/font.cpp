@@ -1,5 +1,5 @@
 
-#include "tiki/graphicsresouces/font.hpp"
+#include "tiki/graphicsresources/font.hpp"
 
 namespace tiki
 {

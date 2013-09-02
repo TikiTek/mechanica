@@ -12,10 +12,9 @@ namespace tiki
 
 	class TextureData
 	{
-		friend class GpuContext;
-		friend class RenderTarget;
-
 		TIKI_NONCOPYABLE_CLASS( TextureData );
+		friend class GraphicsContext;
+		friend class RenderTarget;
 
 	public:
 

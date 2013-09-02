@@ -22,7 +22,7 @@ namespace tiki
 	class VertexFormat
 	{
 		TIKI_NONCOPYABLE_CLASS( VertexFormat );
-		friend class GpuContext;
+		friend class GraphicsContext;
 		friend struct VertexFormatInfo;
 
 	public:

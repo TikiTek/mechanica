@@ -66,9 +66,7 @@ namespace tiki
 			return false;
 
 		InputSystemParameters inputParams;
-		inputParams.p_hWnd				= m_frameworkData.mainWindow.getHandle();
-		inputParams.screenWidth			= windowSize.x;
-		inputParams.screenHeight		= windowSize.y;
+		inputParams.pWindow = &m_frameworkData.mainWindow;
 
 		if( !m_frameworkData.inputSystem.create( inputParams ) )
 			return false;
@@ -78,15 +76,7 @@ namespace tiki
 		if( !m_frameworkData.graphicSystem.createContext() )
 			return false;
 
-		if( !m_frameworkData.componentManager.create() )
-			return false;
-
-		if( !m_frameworkData.physicSystem.create() )
-			return false;
-
-		m_frameworkData.timeSystem.initzilize();
-
-		m_frameworkData.eventSystem.create();
+		m_frameworkData.frameTimer.create();
 
 		initialize();
 
@@ -99,20 +89,17 @@ namespace tiki
 
 		m_frameworkData.graphicSystem.disposeContext();
 
-		m_frameworkData.componentManager.dispose();
 		m_frameworkData.factories.dispose();
 
 		m_frameworkData.inputSystem.dispose();
 		m_frameworkData.graphicSystem.dispose();
-		m_frameworkData.physicSystem.dispose();
 		m_frameworkData.resourceManager.dispose();
 		m_frameworkData.mainWindow.dispose();
-		m_frameworkData.eventSystem.dispose();
 	}
 
 	bool GameFramework::frame()
 	{
-		m_frameworkData.timeSystem.update();
+		m_frameworkData.frameTimer.update();
 		m_frameworkData.mainWindow.update();
 
 		for (size_t i = 0u; i < m_frameworkData.mainWindow.getEventBuffer().getEventCount(); ++i)
@@ -121,26 +108,24 @@ namespace tiki
 
 			switch (event.type)
 			{
-			case WET_Destroy:
+			case WindowEventType_Destroy:
 				return false;
 			default:
 				break;
 			}
 		}
 
-		m_frameworkData.inputSystem.frame();
+		m_frameworkData.inputSystem.update( m_frameworkData.mainWindow.getEventBuffer() );
 
-		if( m_frameworkData.inputSystem.isKeyReleased( KEY_ESCAPE ) )
+		if( m_frameworkData.inputSystem.hasKeyReleased( KEY_ESCAPE ) )
 		{
 			return false;
 		}
 		
-		m_frameworkData.physicSystem.update();
-
 		update();
 
-		m_frameworkData.graphicSystem.beginFrame();
-		render( m_frameworkData.graphicSystem.getCommandBuffer() );
+		GraphicsContext* pContext = m_frameworkData.graphicSystem.beginFrame();
+		render( pContext );
 		m_frameworkData.graphicSystem.endFrame();
 
 		return true;

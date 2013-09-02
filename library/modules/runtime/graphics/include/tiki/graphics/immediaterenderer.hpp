@@ -1,5 +1,6 @@
-#ifndef TIKI_SPRITEBATCH_HPP__
-#define TIKI_SPRITEBATCH_HPP__
+#pragma once
+#ifndef TIKI_IMMEDIATERENDERER_HPP__INCLUDED
+#define TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/sizedarray.hpp"
@@ -77,4 +78,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_SPRITEBATCH_HPP__
+#endif // TIKI_IMMEDIATERENDERER_HPP__INCLUDED

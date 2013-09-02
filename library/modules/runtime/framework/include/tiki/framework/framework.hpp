@@ -6,26 +6,21 @@ namespace tiki
 	class GraphicsSystem;
 	class InputSystem;
 	class MainWindow;
-	class PhysicSystem;
 	class ResourceManager;
-	class TimeSystem;
+	class Timer;
 	class WindowEventBuffer;
-	class EventSystem;
 
 	namespace framework
 	{
 		int							run();
 
 		MainWindow&					getMainWindow();
-		PhysicSystem&				getPhysicSystem();
 
 		GraphicsSystem&				getGraphicsSystem();
 		ResourceManager&			getResourceManager();
 
-		EventSystem&				getEventSystem();
-
 		InputSystem&				getInputSystem();
-		TimeSystem&					getTimeSystem();
+		const Timer&				getFrameTimer();
 		const WindowEventBuffer&	getWindowEventBuffer();
 	}
 }

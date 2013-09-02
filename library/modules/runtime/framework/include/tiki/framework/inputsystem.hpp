@@ -1,24 +1,22 @@
 #ifndef TIKI_INPUTSYSTEM_HPP__
 #define TIKI_INPUTSYSTEM_HPP__
 
+#include "tiki/base/keys.hpp"
+#include "tiki/base/mouse.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicsystem.hpp"
-
-#include "tiki/input/keyboardmanager.hpp"
-#include "tiki/input/mousemanager.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
 struct IDirectInputA;
 struct IDirectInputDeviceA;
 
 namespace tiki
 {
+	class MainWindow;
 	class WindowEventBuffer;
 
 	struct InputSystemParameters
 	{
-		void*	p_hWnd;
-		size_t	screenWidth;
-		size_t	screenHeight;
+		const MainWindow*	pWindow;
 	};
 
 	struct InputSystemState
@@ -30,31 +28,35 @@ namespace tiki
 	class InputSystem
 	{
 		TIKI_NONCOPYABLE_CLASS( InputSystem );
-
-		friend class GameFramework;
+		friend struct FrameworkData;
 
 	public:
 
-		bool				create( const InputSystemParameters& params );
-		void				dispose( void );
+		bool					create( const InputSystemParameters& params );
+		void					dispose( void );
 
-		void				update( const WindowEventBuffer& windowEvents );
+		void					update( const WindowEventBuffer& windowEvents );
 
-		bool				isKeyDown( Keys key ) const;
-		bool				isKeyUp( Keys key ) const;
+		bool					isKeyDown( Keys key ) const;
+		bool					isKeyUp( Keys key ) const;
 
-		bool				hasKeyPressed( Keys key ) const;
-		bool				hasKeyReleased( Keys key ) const;
+		bool					hasKeyPressed( Keys key ) const;
+		bool					hasKeyReleased( Keys key ) const;
 
-		bool				isButtonDown( MouseButtons button ) const;
-		bool				isButtonUp( MouseButtons button ) const;
+		bool					isButtonDown( MouseButtons button ) const;
+		bool					isButtonUp( MouseButtons button ) const;
 
-		bool				isButtonPressed( MouseButtons button ) const;
-		bool				isButtonReleased( MouseButtons button ) const;
+		bool					isButtonPressed( MouseButtons button ) const;
+		bool					isButtonReleased( MouseButtons button ) const;
 
-		const Vector2&		getMousePosition( void ) const;
-		const Vector2&		getMousePositionDisplay( void ) const;
-		const Vector2&		getDistance( void ) const;
+		const Vector2&			getMousePosition( void ) const;
+		const Vector2&			getMousePositionDisplay( void ) const;
+		const Vector2&			getDistance( void ) const;
+
+	protected:
+
+								InputSystem();
+								~InputSystem();
 							
 	private:
 

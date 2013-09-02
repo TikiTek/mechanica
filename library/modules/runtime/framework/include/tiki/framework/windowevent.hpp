@@ -9,16 +9,16 @@
 
 namespace tiki
 {
-	enum WindowEventTypes
+	enum WindowEventType
 	{
-		WET_Create,
-		WET_Destroy,
-		WET_KeyDown,
-		WET_KeyUp,
-		WET_MouseDown,
-		WET_MouseUp,
-		WET_MouseMove,
-		WET_SizeChanged
+		WindowEventType_Create,
+		WindowEventType_Destroy,
+		WindowEventType_KeyDown,
+		WindowEventType_KeyUp,
+		WindowEventType_MouseDown,
+		WindowEventType_MouseUp,
+		WindowEventType_MouseMove,
+		WindowEventType_SizeChanged
 	};
 
 	struct WindowKeyEvent
@@ -43,7 +43,7 @@ namespace tiki
 
 	struct WindowEvent
 	{
-		WindowEventTypes			type;
+		WindowEventType			type;
 		union
 		{
 			WindowKeyEvent			keyEvent;

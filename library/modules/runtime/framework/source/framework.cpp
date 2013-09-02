@@ -17,11 +17,6 @@ namespace tiki
 		return getFrameworkData().mainWindow;
 	}
 
-	PhysicSystem& framework::getPhysicSystem()
-	{
-		return getFrameworkData().physicSystem;
-	}
-
 	GraphicsSystem& framework::getGraphicsSystem()
 	{
 		return getFrameworkData().graphicSystem;
@@ -32,19 +27,14 @@ namespace tiki
 		return getFrameworkData().resourceManager;
 	}
 
-	EventSystem& framework::getEventSystem()
-	{
-		return getFrameworkData().eventSystem;
-	}
-
 	InputSystem& framework::getInputSystem()
 	{
 		return getFrameworkData().inputSystem;
 	}
 
-	TimeSystem& framework::getTimeSystem()
+	const Timer& framework::getFrameTimer()
 	{
-		return getFrameworkData().timeSystem;
+		return getFrameworkData().frameTimer;
 	}
 
 	const WindowEventBuffer& framework::getWindowEventBuffer()

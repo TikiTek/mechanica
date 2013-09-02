@@ -9,7 +9,7 @@
 namespace tiki
 {
 	class GameState;
-	class GpuContext;
+	class GraphicsContext;
 
 	struct GameStateDefinition
 	{
@@ -28,7 +28,7 @@ namespace tiki
 		void				dispose();
 
 		void				update();
-		void				render( GpuContext* pGraphicsCommands ) const;
+		void				render( GraphicsContext* pGraphicsContext ) const;
 
 		void				startTransition( const int stateIndex );
 

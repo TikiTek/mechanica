@@ -1,7 +1,7 @@
 
-#include "tiki/graphics/fontfactory.hpp"
+#include "tiki/graphicsresources/fontfactory.hpp"
 
-#include "tiki/graphics/font.hpp"
+#include "tiki/graphicsresources/font.hpp"
 
 namespace tiki
 {

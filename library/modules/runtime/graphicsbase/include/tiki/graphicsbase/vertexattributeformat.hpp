@@ -66,7 +66,7 @@ namespace tiki
 			break;
 		}
 
-		return s_unsignedMinusOne;
+		return TIKI_SIZE_T_MAX;
 	}
 
 	TIKI_FORCE_INLINE size_t getVertexAttributeFormatElementCount( VertexAttributeFormat format )
@@ -105,7 +105,7 @@ namespace tiki
 			break;
 		}
 
-		return s_unsignedMinusOne;
+		return TIKI_SIZE_T_MAX;
 	}
 }
 
