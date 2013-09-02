@@ -34,12 +34,12 @@ namespace tiki
 
 							~ImmediateRenderer();
 		
-		bool				create();
-		void				dispose();
+		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		void				flush( GraphicsContext& graphicsContext );
 
-		void				drawText( const Vector2& position, const Font& font, const string& text );
+		void				drawText( const Vector2& position, const Font& font, const string& text, Color color );
 
 		void				drawTexture( const TextureData& texture, const Rectangle& dest );
 		void				drawTexture( const TextureData& texture, const Rectangle& dest, const Rectangle& src );
@@ -68,7 +68,7 @@ namespace tiki
 
 		const Material*						m_pMaterial;
 		const VertexFormat*					m_pVertexFormat;
-		const SamplerState*					m_samplerState;
+		const SamplerState*					m_pSamplerState;
 
 		SizedArray< Sprite >				m_sprites;
 		SizedArray< SpriteVertex >			m_vertices;

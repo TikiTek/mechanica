@@ -2,14 +2,17 @@
 #ifndef TIKI_GRAPHICSYSTEM_HPP
 #define TIKI_GRAPHICSYSTEM_HPP
 
-#include "tiki/base/types.hpp"
 #include "tiki/base/structs.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphicsbase/graphicsstateobject.hpp"
 #include "tiki/math/vector2.hpp"
 
 namespace tiki
 {
-	struct GraphicsHandles;
+	struct GraphicsHandles;	
+	class RenderTarget;
 
 	enum GraphicsRendererMode
 	{
@@ -47,14 +50,14 @@ namespace tiki
 
 	public:
 
-		bool					createContext( void );
-		void					disposeContext( void );
+		const SamplerState*		createSamplerState( const SamplerStateParamters& creationParameters );
+		const SamplerState*		createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
+		void					disposeSamplerState( const SamplerState* samplerState );
 
 		GraphicsContext*		beginFrame();
 		void					endFrame();
 
-		const Vector2&			getBackBufferSizeFloat() const	{ return m_backBufferSizeFloat; }
-		const uint2&			getBackBufferSize() const		{ return m_backBufferSize; }
+		const RenderTarget*		getBackBuffer() const { return m_pBackBufferTarget; }
 
 	protected:
 
@@ -73,6 +76,10 @@ namespace tiki
 
 		GraphicsHandles*		m_pHandles;
 		GraphicsContext			m_commandBuffer;
+
+		RenderTarget*			m_pBackBufferTarget;
+
+		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
 
 	};
 }

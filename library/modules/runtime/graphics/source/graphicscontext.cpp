@@ -48,7 +48,7 @@ namespace tiki
 		m_pHandles	= nullptr;
 	}
 
-	void GraphicsContext::clear( const RenderTarget& renderTarget, const Color& color /* = Color::black */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
+	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
 	{
 		//m_pHandles->pContext->ClearRenderTargetView( (TGRenderTarget*)renderTarget.getRenderTarget(), &color.r );
 	}
@@ -91,9 +91,9 @@ namespace tiki
 		m_pHandles->pContext->PSSetShader( (TGPixelShader*) pShader->getShaderObject(), nullptr, 0 );
 	}
 
-	void GraphicsContext::setInputLayout( const VertexFormat& vertexFormat )
+	void GraphicsContext::setInputLayout( const VertexFormat* pVertexFormat )
 	{
-		m_pHandles->pContext->IASetInputLayout( vertexFormat.m_pInputLayout );
+		m_pHandles->pContext->IASetInputLayout( pVertexFormat->m_pInputLayout );
 	}
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
@@ -109,7 +109,7 @@ namespace tiki
 		m_pHandles->pContext->IASetPrimitiveTopology( topologies[ topology ] );
 	}
 
-	void GraphicsContext::setSamplerState( size_t slot, const SamplerState& sampler )
+	void GraphicsContext::setSamplerState( size_t slot, const SamplerState* pSampler )
 	{
 		//m_pHandles->pContext->PSSetSamplers( slot, 1, sampler.getState() );
 	}

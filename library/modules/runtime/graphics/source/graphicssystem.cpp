@@ -307,21 +307,18 @@ namespace tiki
 
 		VertexFormat::initializeSystem();
 
+		if ( !m_commandBuffer.create( *this ) )
+		{
+			return false;
+		}
+
 		return true;
-	}
-
-	bool GraphicsSystem::createContext()
-	{
-		return m_commandBuffer.create( *this );
-	}
-
-	void GraphicsSystem::disposeContext()
-	{
-		m_commandBuffer.dispose();
 	}
 
 	void GraphicsSystem::dispose()
 	{
+		m_commandBuffer.dispose();
+
 		VertexFormat::disposeSystem();
 		
 		GraphicsHandles& handles = *m_pHandles;

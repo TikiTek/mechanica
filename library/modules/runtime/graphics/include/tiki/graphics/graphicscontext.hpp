@@ -44,7 +44,7 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem );
 		void				dispose();
 
-		void				clear( const RenderTarget& renderTarget, const Color& color = Color::black, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
+		void				clear( const RenderTarget& renderTarget, Color color = TIKI_COLOR_BLACK, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
 
 		void				beginRenderPass( const RenderTarget& renderTarget );
 		void				endRenderPass();
@@ -52,13 +52,13 @@ namespace tiki
 		void				setVertexShader( const Shader* pVertexShader );
 		void				setPixelShader( const Shader* pPixelShader );
 
-		void				setInputLayout( const VertexFormat& vertexFormat );
+		void				setInputLayout( const VertexFormat* pVertexFormat );
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
 		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );
 		void				setConstantBuffer( size_t slot, const ConstantBuffer& buffer );
 
-		void				setSamplerState( size_t slot, const SamplerState& sampler );
+		void				setSamplerState( size_t slot, const SamplerState* pSampler );
 
 		void				setVertexShaderTexture( size_t slot, const TextureData* pTextureData );
 		void				setPixelShaderTexture( size_t slot, const TextureData* pTextureData );

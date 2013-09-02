@@ -22,6 +22,7 @@ namespace tiki
 
 	public:
 
+									RenderTarget();
 									~RenderTarget();
 
 		void						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
@@ -32,7 +33,11 @@ namespace tiki
 
 		const TextureData*			getDepthTextureData() const { return m_depthBuffer.pDataBuffer; }
 
+
 	private:
+
+		size_t						m_width;
+		size_t						m_height;
 
 		RenderTargetBuffer			m_colorBuffers[ GraphicsSystemLimits_RenderTargetSlots ];
 		TGRenderTarget*				m_pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];

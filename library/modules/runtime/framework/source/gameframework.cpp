@@ -73,9 +73,6 @@ namespace tiki
 
 		m_frameworkData.factories.create( m_frameworkData.resourceManager, m_frameworkData.graphicSystem );
 
-		if( !m_frameworkData.graphicSystem.createContext() )
-			return false;
-
 		m_frameworkData.frameTimer.create();
 
 		initialize();
@@ -86,8 +83,6 @@ namespace tiki
 	void GameFramework::internShutdown()
 	{
 		shutdown();
-
-		m_frameworkData.graphicSystem.disposeContext();
 
 		m_frameworkData.factories.dispose();
 
