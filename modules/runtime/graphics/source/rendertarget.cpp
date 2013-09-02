@@ -5,6 +5,11 @@
 
 namespace tiki
 {
+	RenderTarget::RenderTarget()
+		: m_width( 0u ), m_height( 0u ), m_colorBufferCount( 0u ), m_pDepthView( nullptr )
+	{		
+	}
+
 	RenderTarget::~RenderTarget()
 	{
 	}
@@ -19,11 +24,11 @@ namespace tiki
 			m_colorBuffers[ i ] = pColorBuffers[ i ];
 
 			TGRenderTargetDescription renderTargetDesc;
-			renderTargetDesc.Format				= getD3dFormat( pColorBuffers[ i ].pDataBuffer->getDesription().format );
+			renderTargetDesc.Format				= getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDesription().format );
 			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
 			renderTargetDesc.Texture2D.MipSlice	= 0;
 
-			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( m_textureData.m_pTexture2d, &renderTargetDesc, &m_pColorViews[ i ] ) ) );
+			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_pResource, &renderTargetDesc, &m_pColorViews[ i ] ) ) );
 			TIKI_ASSERT( m_pColorViews[ i ] != nullptr );
 		}
 
@@ -37,14 +42,14 @@ namespace tiki
 
 		if ( pDepthBuffer != nullptr )
 		{
-			m_depthBuffer = pDepthBuffer;
+			m_depthBuffer = *pDepthBuffer;
 
 			TGRenderTargetDescription renderTargetDesc;
-			renderTargetDesc.Format				= getD3dFormat( pDepthBuffer->pDataBuffer->getDesription().format );
+			renderTargetDesc.Format				= getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDesription().format );
 			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
 			renderTargetDesc.Texture2D.MipSlice	= 0;
 
-			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( m_textureData.m_pTexture2d, &renderTargetDesc, &m_pDepthView ) ) );
+			TIKI_VERIFY( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateRenderTargetView( pDepthBuffer->pDataBuffer->m_pResource, &renderTargetDesc, &m_pDepthView ) ) );
 		}
 		else
 		{

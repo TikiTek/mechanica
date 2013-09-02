@@ -5,10 +5,10 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphicsresources/font.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/graphicsresources/shader.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-
 
 namespace tiki
 {
@@ -16,15 +16,10 @@ namespace tiki
 	{
 	}
 
-	bool ImmediateRenderer::create()
+	bool ImmediateRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		ResourceManager& content = framework::getResourceManager();
-
-		m_pMaterial = content.loadResource< Material >( "sprite.material" );
+		m_pMaterial = resourceManager.loadResource< Material >( "immediate.material" );
 		TIKI_ASSERT( m_pMaterial );
-
-		//m_pTextMaterial = content.loadResource< Material >( "font.material" );
-		//TIKI_ASSERT( m_pTextMaterial );
 
 		// create sprite vertex format
 		{
@@ -43,79 +38,40 @@ namespace tiki
 			TIKI_ASSERT( m_pVertexFormat );
 		}
 
-		// create font vertex format
-		{
-			const VertexAttribute attributes[] =
-			{
-				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x8y8z8w8_unorm,		0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	1u,	VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	2u,	VertexAttributeFormat_x16y16z16w16_unorm,	0u, VertexInputType_PerVertex }
-			};		
+		SamplerStateParamters samplerParams;
+		m_pSamplerState = graphicsSystem.createSamplerState( samplerParams );
 
-			VertexFormatParameters vertexParams;
-			vertexParams.pAttributes	= attributes;
-			vertexParams.attributeCount	= TIKI_COUNT( attributes );
-			vertexParams.pShader		= m_pTextMaterial->getVertexShader();
-
-			m_pTextVertexFormat = VertexFormat::getVertexFormat( vertexParams );
-			TIKI_ASSERT( m_pTextVertexFormat );
-		}
-
-		m_sampler.create();
-
-		const Vector2 screen = m_pGpuContext->getBackBufferSize();
-		m_viewPort.div( Vector2( 2.0f ), screen );
-
-		m_textures.create( MaxSprites );
-		m_sprites.create( MaxSprites * 4u );
+		m_sprites.create( MaxSprites );
+		m_vertices.create( MaxVertices );
 		
-		m_textTextures.create( MaxTextTextures );
-		m_textChars.create( MaxTextChars );
-		m_textLength.create( MaxTextTextures );
-
 		return true;
 	}
 
-	void tiki::ImmediateRenderer::dispose()
+	void ImmediateRenderer::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		framework::getResourceManager().unloadResource( m_pMaterial );
+		resourceManager.unloadResource( m_pMaterial );
 		m_pMaterial = nullptr;
 
 		VertexFormat::releaseVertexFormat( m_pVertexFormat );
 		m_pVertexFormat = nullptr;
 
-		framework::getResourceManager().unloadResource( m_pTextMaterial );
-		m_pTextMaterial = nullptr;
+		graphicsSystem.disposeSamplerState( m_pSamplerState );
+		m_pSamplerState = nullptr;
 
-		VertexFormat::releaseVertexFormat( m_pTextVertexFormat );
-		m_pTextVertexFormat = nullptr;
-
-		m_sampler.dispose();
-		m_vertexBuffer.dispose();
-
-		m_textures.dispose();
 		m_sprites.dispose();
+		m_vertices.dispose();
 
-		m_textVertexBuffer.dispose();
-		m_textChars.dispose();
-		m_textTextures.dispose();
-		m_textLength.dispose();
+		m_vertexBuffer.dispose();
 	}
 
-	void tiki::ImmediateRenderer::drawTexture( const Rectangle& rect, const TextureData& textureData, bool percentage /*= false*/ )
+	void tiki::ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& r )
 	{
-		Rectangle r = rect;
+		Sprite& sprite = m_sprites.push();
+		sprite.offset	= m_vertices.getCount();
+		sprite.count	= 4u;
+		sprite.pTexture = &texture;
 
-		if( percentage )
-			toScreenSpacePercentage( r );
-		else
-			toScreenSpace( r );
-
-
-		m_textures.push( &textureData );
-
-		SpriteVertex* pVertices = m_sprites.pushRange( 4u );
+		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
 
 		// bottom left
 		pVertices[ 0u ].position.x = -1.0f + r.x;
@@ -146,18 +102,14 @@ namespace tiki
 		pVertices[ 3u ].uv.y = 0.0f;
 	}
 
-	void ImmediateRenderer::drawTexture( const Rectangle& dest, const Rectangle& src, const TextureData& tex )
+	void ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& d, const Rectangle& s )
 	{
-		Rectangle d = dest;
-		Rectangle s = src;
+		Sprite& sprite = m_sprites.push();
+		sprite.offset	= m_vertices.getCount();
+		sprite.count	= 4u;
+		sprite.pTexture = &texture;
 
-		toScreenSpace( d );
-		toUVSpace( s, tex );
-
-
-		m_textures.push( &tex );
-
-		SpriteVertex* pVertices = m_sprites.pushRange( 4u );
+		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
 
 		// bottom left
 		pVertices[ 0u ].position.x = -1.0f	+ d.x;
@@ -188,81 +140,66 @@ namespace tiki
 		pVertices[ 3u ].uv.y = s.y;
 	}
 
-	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const string& text )
+	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const string& text, Color color )
 	{
 		if ( text.isEmpty() )
 		{
 			return;
 		}
 
+		TIKI_ASSERT( text.length() <= 128u );
 		const size_t vertexCount = text.length() * 4u;
-		FontVertex* pVertices = m_textChars.pushRange( vertexCount );
 
-		font.fillVertices( &pVertices->character, sizeof( FontVertex ), 4u, text.cStr(), text.length() );
+		Sprite& sprite = m_sprites.push();
+		sprite.offset	= m_vertices.getCount();
+		sprite.count	= vertexCount;
+		sprite.pTexture = &font.getTextureData();
 
-		const Vector2& screenSize = m_pGpuContext->getBackBufferSize();
+		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
+
+		FontChar chars[ 128u ];
+		font.fillVertices( &chars, sizeof( FontChar ), 1u, text.cStr(), text.length() );
+
+		//const Vector2& screenSize = m_pGpuContext->getBackBufferSize();
 
 		float x = 0.0f;
 		for (size_t i = 0u; i < vertexCount; i += 4u)
 		{
-			const FontChar& character = pVertices[ i ].character;
+		//	const FontChar& character = pVertices[ i ].character;
 
-			const Rectangle rect = Rectangle(
-				( position.x + x ) / screenSize.x,
-				position.y / screenSize.y,
-				character.width / screenSize.x,
-				character.height / screenSize.y
-			);
+		//	const Rectangle rect = Rectangle(
+		//		( position.x + x ) / screenSize.x,
+		//		position.y / screenSize.y,
+		//		character.width / screenSize.x,
+		//		character.height / screenSize.y
+		//	);
 
-			// bottom left
-			createFloat2( pVertices[ i + 0u ].position, rect.x, rect.y + rect.height );
-			createByte4( pVertices[ i + 0u ].identifier, 255u, 0u, 0u, 255u );
+		//	// bottom left
+		//	createFloat3( pVertices[ i + 0u ].position, rect.x, rect.y + rect.height, 0.0f );
+		//	createByte4( pVertices[ i + 0u ].identifier, 255u, 0u, 0u, 255u );
 
-			// top left
-			createFloat2( pVertices[ i + 1u ].position, rect.x, rect.y );
-			createByte4( pVertices[ i + 1u ].identifier, 255u, 255u, 0u, 0u );
+		//	// top left
+		//	createFloat2( pVertices[ i + 1u ].position, rect.x, rect.y );
+		//	createByte4( pVertices[ i + 1u ].identifier, 255u, 255u, 0u, 0u );
 
-			// bottom right
-			createFloat2( pVertices[ i + 2u ].position, rect.x + rect.width, rect.y + rect.height );
-			createByte4( pVertices[ i + 2u ].identifier, 0u, 0u, 255u, 255u );
+		//	// bottom right
+		//	createFloat2( pVertices[ i + 2u ].position, rect.x + rect.width, rect.y + rect.height );
+		//	createByte4( pVertices[ i + 2u ].identifier, 0u, 0u, 255u, 255u );
 
-			// top right
-			createFloat2( pVertices[ i + 3u ].position, rect.x + rect.width, rect.y );
-			createByte4( pVertices[ i + 3u ].identifier, 0u, 255u, 255u, 0u );
-		
-			x += pVertices[ i ].character.width;
+		//	// top right
+		//	createFloat2( pVertices[ i + 3u ].position, rect.x + rect.width, rect.y );
+		//	createByte4( pVertices[ i + 3u ].identifier, 0u, 255u, 255u, 0u );
+		//
+		//	x += pVertices[ i ].character.width;
 		}
 
-		m_textTextures.push( &font.getTextureData() );
-		m_textLength.push( text.length() );
-	}
-
-	void ImmediateRenderer::toUVSpace( Rectangle& rec, const TextureData& texture )
-	{
-		const Vector2 scal( 1.0f / texture.getWidth(), 1.0f / texture.getHeight() );
-		rec.mul( scal );
-	}
-
-	void ImmediateRenderer::toScreenSpace( Rectangle& rect )
-	{
-		rect = Rectangle( rect.x * m_viewPort.x ,
-						  rect.y * m_viewPort.y,
-						  rect.width * m_viewPort.x,
-						  rect.height * m_viewPort.y );
-	}
-
-	void ImmediateRenderer::toScreenSpacePercentage( Rectangle& rect )
-	{
-		Vector2 vp = m_pGpuContext->getBackBufferSize();
-		rect = Rectangle( rect.x * 2.0f, 
-							rect.y * 2.0f, 
-							rect.width * 2.0f, 
-							rect.height * 2.0f);
+		//m_textTextures.push( &font.getTextureData() );
+		//m_textLength.push( text.length() );
 	}
 
 	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
 	{
-		graphicsContext.setSamplerState( m_sampler );
+		graphicsContext.setSamplerState( 0u, m_pSamplerState );
 
 		//m_pGpuContext->disableDepth();
 		//m_pGpuContext->enableAlpha();
@@ -270,23 +207,25 @@ namespace tiki
 		// render sprites
 		if( m_sprites.getCount() )
 		{
-			const uint vertexCount	= m_sprites.getCount();
-			const uint count		= vertexCount / 4u;
+			const uint vertexCount	= m_vertices.getCount();
+			const uint count		= m_sprites.getCount();
 
 			SpriteVertex* sv = m_vertexBuffer.map( vertexCount );
 			memory::copy( sv, m_sprites.getData(), sizeof( SpriteVertex ) * vertexCount );
 			m_vertexBuffer.unmap();
 
-			m_pGpuContext->setInputLayout( m_pVertexFormat );
-			m_pGpuContext->setMaterial( m_pMaterial );
+			graphicsContext.setInputLayout( m_pVertexFormat );
+			//graphicsContext.setMaterial( m_pMaterial );
 
-			m_pGpuContext->setVertexBuffer( m_vertexBuffer );
-			m_pGpuContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+			graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
+			graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
 			for( uint i = 0u; i < count; ++i )
 			{
-				m_pGpuContext->setPixelShaderTexture( m_textures[ i ] );
-				m_pGpuContext->draw( 4u, i * 4u );
+				const Sprite& sprite = m_sprites[ i ];
+
+				graphicsContext.setPixelShaderTexture( 0u, sprite.pTexture );
+				graphicsContext.draw( 4u, i * 4u );
 			}
 		}
 

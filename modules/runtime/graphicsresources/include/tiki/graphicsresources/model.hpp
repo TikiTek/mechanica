@@ -4,8 +4,8 @@
 #include "tiki/resource/resource.hpp"
 
 #include "tiki/base/array.hpp"
-#include "tiki/graphics/modelhierarchy.hpp"
-#include "tiki/graphics/modelgeometry.hpp"
+#include "tiki/graphicsresources/modelhierarchy.hpp"
+#include "tiki/graphicsresources/modelgeometry.hpp"
 
 namespace tiki
 {
