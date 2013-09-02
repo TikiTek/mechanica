@@ -78,7 +78,7 @@ namespace tiki
 	{
 	}
 
-	void TestState::render( GpuContext* pCommandWriter ) const
+	void TestState::render( GraphicsContext* pGraphicsContext ) const
 	{
 	}
 }

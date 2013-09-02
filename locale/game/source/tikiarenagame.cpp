@@ -6,6 +6,8 @@
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
 
+#include <windows.h>
+
 namespace tiki
 {
 	struct TikiArenaStates
@@ -29,16 +31,6 @@ namespace tiki
 			return TikiArenaGameStates_Test;
 		}
 
-		//if( userName == "adrian.lück")
-		//{
-		//	return TikiArenaGameStates_Test;
-		//}
-
-		if( userName == "lukas.pieper" )
-		{
-			return TikiArenaGameStates_Play;
-		}
-
 		return TikiArenaGameStates_Play;
 	}
 
@@ -46,7 +38,6 @@ namespace tiki
 	{
 		pParams->screenWidth	= 1280;
 		pParams->screenHeight	= 720;
-		//hi, das ist nur wegen lukas!!!
 	}
 
 	void TikiArenaGame::initialize()
@@ -96,29 +87,29 @@ namespace tiki
 		memory::deleteAlign( m_pStates );
 	}
 
-	void TikiArenaGame::update( void )
+	void TikiArenaGame::update()
 	{
 		m_gameFlow.update();
 
 		if ( !m_gameFlow.isInTransition() )
 		{
-			//InputSystem& input = framework::getInputSystem();
+			InputSystem& input = framework::getInputSystem();
 
-			//for (size_t i = 0u; i < m_gameFlow.getStateCount() - 1u; ++i)
-			//{
-			//	if ( input.isKeyPressed( (Keys)( KEY_F5 + i ) ) )
-			//	{
-			//		m_gameFlow.startTransition( i + 1u );
-			//	}
-			//}
+			for (size_t i = 0u; i < m_gameFlow.getStateCount() - 1u; ++i)
+			{
+				if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
+				{
+					m_gameFlow.startTransition( i + 1u );
+				}
+			}
 		}
 
 		Sleep( 15 );
 	}
 
-	void TikiArenaGame::render( GpuContext* pCommandBuffer ) const
+	void TikiArenaGame::render( GraphicsContext* pGraphicsContext ) const
 	{
-		m_gameFlow.render( pCommandBuffer );
+		m_gameFlow.render( pGraphicsContext );
 	}
 
 	GameFramework& getGameFramework()

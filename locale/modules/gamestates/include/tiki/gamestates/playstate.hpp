@@ -32,7 +32,7 @@ namespace tiki
 		virtual TransitionState			processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
 		virtual void					update();
-		virtual void					render( GpuContext* pCommandWriter ) const;
+		virtual void					render( GraphicsContext* pGraphicsContext ) const;
 
 	private:
 		

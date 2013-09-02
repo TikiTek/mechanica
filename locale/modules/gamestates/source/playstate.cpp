@@ -96,7 +96,7 @@ namespace tiki
 	{
 	}
 
-	void PlayState::render( GpuContext* pCommandWriter ) const
+	void PlayState::render( GraphicsContext* pGraphicsContext ) const
 	{
 	}
 }

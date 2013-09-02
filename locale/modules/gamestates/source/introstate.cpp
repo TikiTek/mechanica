@@ -20,7 +20,7 @@ namespace tiki
 	{
 	}
 
-	void IntroState::render( GpuContext* pCommandWriter ) const
+	void IntroState::render( GraphicsContext* pGraphicsContext ) const
 	{
 	}
 }
