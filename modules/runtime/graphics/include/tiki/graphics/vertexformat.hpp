@@ -2,7 +2,7 @@
 #define TIKI_VERTEXFORMAT_HPP
 
 #include "tiki/base/types.hpp"
-
+#include "tiki/graphicsbase/graphissystemlimits.hpp"
 #include "tiki/graphicsbase/vertexattribute.hpp"
 
 #include "graphicstypes.hpp"

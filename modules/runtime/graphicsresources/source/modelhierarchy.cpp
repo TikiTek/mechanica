@@ -1,5 +1,5 @@
 
-#include "tiki/graphics/modelhierarchy.hpp"
+#include "tiki/graphicsresources/modelhierarchy.hpp"
 
 namespace tiki
 {

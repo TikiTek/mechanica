@@ -9,6 +9,7 @@
 
 namespace tiki
 {
+	class BaseBuffer;
 	class ConstantBuffer;
 	class GraphicsSystem;
 	class IndexBuffer;
@@ -27,13 +28,22 @@ namespace tiki
 
 	enum ClearMask
 	{
-		ClearMask_Color			= 1u << 0u,
-		ClearMask_Depth			= 1u << 1u,
-		ClearMask_Stencil		= 1u << 2u,
+		ClearMask_Color0		= 1u << 0u,
+		ClearMask_Color1		= 1u << 1u,
+		ClearMask_Color2		= 1u << 2u,
+		ClearMask_Color3		= 1u << 3u,
+		ClearMask_Color4		= 1u << 4u,
+		ClearMask_Color5		= 1u << 5u,
+		ClearMask_Color6		= 1u << 6u,
+		ClearMask_Color7		= 1u << 7u,
+		ClearMask_Depth			= 1u << 8u,
+		ClearMask_Stencil		= 1u << 9u,
 
+		ClearMask_Color			= ClearMask_Color0 | ClearMask_Color1 | ClearMask_Color2 | ClearMask_Color3 | ClearMask_Color4 | ClearMask_Color5 | ClearMask_Color6 | ClearMask_Color7,
+		ClearMask_DepthStencil	= ClearMask_Depth | ClearMask_Stencil,
 		ClearMask_All			= ClearMask_Color | ClearMask_Depth | ClearMask_Stencil,
-		ClearMask_DepthStencil	= ClearMask_Depth | ClearMask_Stencil
 	};
+	TIKI_COMPILETIME_ASSERT( GraphicsSystemLimits_RenderTargetSlots == 8u );
 
 	class GraphicsContext
 	{
@@ -58,15 +68,21 @@ namespace tiki
 		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );
 		void				setConstantBuffer( size_t slot, const ConstantBuffer& buffer );
 
-		void				setSamplerState( size_t slot, const SamplerState* pSampler );
-
+		void				setVertexShaderSamplerState( size_t slot, const SamplerState* pSampler );
 		void				setVertexShaderTexture( size_t slot, const TextureData* pTextureData );
+		void				setVertexShaderConstant( size_t slot, const ConstantBuffer& buffer );
+
+		void				setPixelShaderSamplerState( size_t slot, const SamplerState* pSampler );
 		void				setPixelShaderTexture( size_t slot, const TextureData* pTextureData );
+		void				setPixelShaderConstant( size_t slot, const ConstantBuffer& buffer );
 
 		void				setPrimitiveTopology( PrimitiveTopology topology );
 
 		void				drawGeometry( const uint indexcount, const uint startIndex = 0u, const uint basevertex = 0u );
 		void				drawIndexed( const Vector3& start, const Vector3& end, const Color& color );
+
+		void*				mapBuffer( BaseBuffer& buffer );
+		void				unmapBuffer( BaseBuffer& buffer );
 
 		const RenderTarget*	getBackBuffer() const;
 
@@ -77,16 +93,20 @@ namespace tiki
 
 	private:
 
-		GraphicsSystem*		m_pGraphics;
+		GraphicsSystem*		m_pGraphicsSystem;
 		GraphicsHandles*	m_pHandles;
 
 		const RenderTarget*	m_pRenderTarget;
 
-		const SamplerState*	m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
-		const SamplerState*	m_pVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const Shader*			m_pVertexShader;
+		const SamplerState*		m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const TextureData*		m_pVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const ConstantBuffer*	m_pVertexConstants[ GraphicsSystemLimits_VertexShaderConstantSlots ];
 
-		const SamplerState*	m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
-		const SamplerState*	m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const Shader*			m_pPixelShader;
+		const SamplerState*		m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const TextureData*		m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const ConstantBuffer*	m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 
 	};
 }

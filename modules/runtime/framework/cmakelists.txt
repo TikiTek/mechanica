@@ -13,3 +13,6 @@ module_import(graphics)
 module_import(graphicsresources)
 
 module_add_define(TIKI_WINDOWEVENTBUFFER_SIZE 32)
+
+module_add_linklib(dinput8.lib)
+module_add_linklib(dxguid.lib)

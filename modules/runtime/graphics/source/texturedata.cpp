@@ -1,7 +1,7 @@
 
 #include "tiki/graphics/texturedata.hpp"
 
-#include "tiki/base/bits.hpp"
+#include "tiki/base/functions.hpp"
 
 #include "graphicshandles.hpp"
 
@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-	static DXGI_FORMAT getD3dFormat( tiki::PixelFormat pixelFormat )
+	static DXGI_FORMAT getD3dFormat2( tiki::PixelFormat pixelFormat )
 	{
 		switch ( pixelFormat )
 		{

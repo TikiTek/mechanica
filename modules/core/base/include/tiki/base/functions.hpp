@@ -64,33 +64,23 @@ namespace tiki
 		return static_cast< const T* >( static_cast< const void* >( static_cast< const uint8* >( pPtr ) + byteCountToAdd ) );
 	}
 
-	template <class T>
-	TIKI_FORCE_INLINE void safeDelete( T** ppPtr )
+	TIKI_FORCE_INLINE bool isBitSet( uint32 bitMask, uint32 flag )
 	{
-		if ( *ppPtr )
-		{
-			TIKI_DEL *ppPtr;
-			(*ppPtr) = nullptr;
-		}
+		return ( bitMask & flag ) == flag;
 	}
 
-	template <class T>
-	TIKI_FORCE_INLINE void safeDeleteArray( T** ppPtr )
+	TIKI_FORCE_INLINE bool isBitSet64( uint64 bitMask, uint64 flag )
 	{
-		if (*ppPtr)
-		{
-			TIKI_DELARR *ppPtr;
-			(*ppPtr) = nullptr;
-		}
+		return ( bitMask & flag ) == flag;
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE bool isPowerOfTwo( const T x )
+	TIKI_FORCE_INLINE bool isPowerOfTwo( T x )
 	{
 		return ( x & ( x - 1 ) ) == 0;
 	}
 
-	TIKI_FORCE_INLINE size_t countPopulation64( const uint64 w )
+	TIKI_FORCE_INLINE size_t countPopulation64( uint64 w )
 	{
 		uint64 w1 = (w & 0x2222222222222222) + ((w+w) & 0x2222222222222222);
 		uint64 w2 = (w >> 1 & 0x2222222222222222) + (w >> 2 & 0x2222222222222222);
@@ -99,7 +89,7 @@ namespace tiki
 		return (w1 + w2) * 0x0101010101010101 >> 57;
 	}
 
-	TIKI_FORCE_INLINE size_t countLeadingZeros64( const uint64 value )
+	TIKI_FORCE_INLINE size_t countLeadingZeros64( uint64 value )
 	{
 		register uint64 x = value;
 		x |= (x >> 1);

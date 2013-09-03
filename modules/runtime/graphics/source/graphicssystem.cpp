@@ -2,8 +2,8 @@
 #include "tiki/graphics/graphicssystem.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/buffer.hpp"
 #include "tiki/graphicsbase/color.hpp"
 #include "tiki/graphicsresources/material.hpp"
 
@@ -26,7 +26,7 @@ namespace tiki
 		return graphicsSystem.m_pHandles;
 	}
 
-	bool initSwapChain( GraphicsHandles& handles, const GraphicsSystemParameters& params, const uint2& backBufferSize )
+	static bool initSwapChain( GraphicsHandles& handles, const GraphicsSystemParameters& params, const uint2& backBufferSize )
 	{
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
 		swapDesc.BufferCount						= 2;
@@ -81,7 +81,7 @@ namespace tiki
 		return SUCCEEDED( r );
 	}
 
-	bool initBackBuffer( GraphicsHandles& handles, const GraphicsSystemParameters& params )
+	static bool initBackBuffer( GraphicsHandles& handles, const GraphicsSystemParameters& params )
 	{
 		ID3D11Texture2D* pBackBufferPtr;
 		HRESULT r = handles.pSwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferPtr );
@@ -96,7 +96,7 @@ namespace tiki
 		return true;
 	}
 
-	bool initDepthStencilBuffer( GraphicsHandles& handles, const GraphicsSystemParameters& params, const uint2& backBufferSize )
+	static bool initDepthStencilBuffer( GraphicsHandles& handles, const GraphicsSystemParameters& params, const uint2& backBufferSize )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, depthDesc );
 		depthDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -127,7 +127,7 @@ namespace tiki
 		return true;
 	}
 
-	bool initStates( GraphicsHandles& handles )
+	static bool initStates( GraphicsHandles& handles )
 	{
 		// Create and set DepthStencilState - Normal
 		TIKI_DECLARE_STACKANDZERO( D3D11_DEPTH_STENCIL_DESC, depthStencilDesc );
@@ -180,7 +180,7 @@ namespace tiki
 		return true;
 	}
 
-	bool initBlendStates( GraphicsHandles& handles )
+	static bool initBlendStates( GraphicsHandles& handles )
 	{
 		D3D11_BLEND_DESC blendStateDesc;
 		ZeroMemory( &blendStateDesc, sizeof(blendStateDesc) );
@@ -216,7 +216,7 @@ namespace tiki
 		return true;
 	}
 
-	void initViewPort( GraphicsHandles& handles, const Vector2& backBufferSize )
+	static void initViewPort( GraphicsHandles& handles, const Vector2& backBufferSize )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D11_VIEWPORT, viewPort );
 		viewPort.Width		= (float)backBufferSize.x;
@@ -338,7 +338,12 @@ namespace tiki
 		safeRelease( &handles.pContext );
 		safeRelease( &handles.pDevice );
 		safeRelease( &handles.pSwapChain );
-		safeDelete( &m_pHandles );
+
+		if ( m_pHandles != nullptr )
+		{
+			TIKI_DEL m_pHandles;
+			m_pHandles = nullptr;
+		}
 	}
 
 	GraphicsContext* GraphicsSystem::beginFrame()
@@ -351,6 +356,43 @@ namespace tiki
 	void GraphicsSystem::endFrame()
 	{
 		m_pHandles->pSwapChain->Present( 1, 0 );
+	}
+
+	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
+	{
+		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
+		TIKI_ASSERT( pSampler != nullptr );
+
+		if ( pSampler->icCreated() == false )
+		{
+			pSampler->create( *this, creationParameters );
+		}
+
+		return pSampler;
+	}
+
+	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy /*= 1*/, Color borderColor /*= TIKI_COLOR_BLACK */ )
+	{
+		SamplerStateParamters creationParameters;
+		creationParameters.addressU			= addressU;
+		creationParameters.addressV			= addressV;
+		creationParameters.addressW			= addressW;
+		creationParameters.magFilter		= magFilter;
+		creationParameters.mipFilter		= mipFilter;
+		creationParameters.maxAnisotropy	= maxAnisotropy;
+		creationParameters.borderColor		= borderColor;
+
+		return createSamplerState( creationParameters );
+	}
+
+	void GraphicsSystem::disposeSamplerState( const SamplerState* pSamplerState )
+	{
+		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
+
+		if ( pNonConstState->releaseRef() == true )
+		{
+			pNonConstState->dispose();
+		}
 	}
 
 }

@@ -5,7 +5,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/framework/framework.hpp"
-#include "tiki/graphics/shader.hpp"
+#include "tiki/graphicsresources/shader.hpp"
 
 #include "graphicshandles.hpp"
 #include <d3d11.h>
@@ -25,7 +25,7 @@ namespace tiki
 		size_t			refCount;
 	};
 
-	static Array< VertexFormatInfo >	s_formats;
+	static Array< VertexFormatInfo > s_formats;
 
 	static cstring s_semanticNames[] =
 	{

@@ -1,7 +1,7 @@
 
-#include "tiki/graphics/modelfactory.hpp"
+#include "tiki/graphicsresources/modelfactory.hpp"
 
-#include "tiki/graphics/model.hpp"
+#include "tiki/graphicsresources/model.hpp"
 
 namespace tiki
 {
@@ -43,10 +43,7 @@ namespace tiki
 
 	bool ModelFactory::initializeResource( Resource* pResource, const void* pInitData ) const
 	{
-		TIKI_ASSERT( pResource );
-
-		Model* pModel = (Model*)pResource;
-		
-		return pModel->initialize( m_pGraphicsSystem, pInitData );
+		TIKI_ASSERT( pResource != nullptr );
+		return static_cast< Model* >( pResource )->initialize( *m_pGraphicsSystem, pInitData );
 	}
 }

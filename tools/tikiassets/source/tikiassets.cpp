@@ -20,7 +20,7 @@ namespace tiki
 		m_fontConverter.create( &m_manager );
 		m_materialConverter.create( &m_manager );
 		m_modelConverter.create( &m_manager );
-		m_navmeshConverter.create( &m_manager );
+		//m_navmeshConverter.create( &m_manager );
 		m_shaderConverter.create( &m_manager );
 		m_textureConverter.create( &m_manager );
 
@@ -33,7 +33,7 @@ namespace tiki
 		m_fontConverter.dispose();
 		m_materialConverter.dispose();
 		m_modelConverter.dispose();
-		m_navmeshConverter.dispose();
+		//m_navmeshConverter.dispose();
 		m_shaderConverter.dispose();
 		m_textureConverter.dispose();
 

@@ -1,9 +1,9 @@
 
-#include "tiki/graphics/shaderfactory.hpp"
+#include "tiki/graphicsresources/shaderfactory.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/graphics/shader.hpp"
+#include "tiki/graphicsresources/shader.hpp"
 
 #include "graphicshandles.hpp"
 

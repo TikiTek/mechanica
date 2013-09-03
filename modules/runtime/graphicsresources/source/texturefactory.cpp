@@ -1,7 +1,7 @@
 
-#include "tiki/graphics/texturefactory.hpp"
+#include "tiki/graphicsresources/texturefactory.hpp"
 
-#include "tiki/graphics/texture.hpp"
+#include "tiki/graphicsresources/texture.hpp"
 
 namespace tiki
 {
