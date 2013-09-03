@@ -24,4 +24,3 @@ finalize_exe(tikiassets "")
 
 # size of void pointer for 32 or 64 bit evaluation
 #message(${CMAKE_SIZEOF_VOID_P})
-
