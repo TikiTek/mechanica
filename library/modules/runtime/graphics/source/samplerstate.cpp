@@ -89,10 +89,10 @@ namespace tiki
 		samplerDesc.MipLODBias		= 0.0f;
 		samplerDesc.MaxAnisotropy	= creationParamter.maxAnisotropy;
 		samplerDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
-		samplerDesc.BorderColor[0]	= creationParamter.borderColor.r;
-		samplerDesc.BorderColor[1]	= creationParamter.borderColor.g;
-		samplerDesc.BorderColor[2]	= creationParamter.borderColor.b;
-		samplerDesc.BorderColor[3]	= creationParamter.borderColor.a;
+		samplerDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
+		samplerDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );
+		samplerDesc.BorderColor[2]	= color::getFloatChannelB( creationParamter.borderColor );
+		samplerDesc.BorderColor[3]	= color::getFloatChannelA( creationParamter.borderColor );
 		samplerDesc.MinLOD			= 0;
 		samplerDesc.MaxLOD			= D3D11_FLOAT32_MAX;
 

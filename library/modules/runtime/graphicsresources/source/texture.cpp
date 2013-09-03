@@ -1,7 +1,5 @@
 
-#include "tiki/graphics/texture.hpp"
-
-#include <d3d11.h>
+#include "tiki/graphicsresources/texture.hpp"
 
 namespace tiki
 {

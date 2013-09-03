@@ -8,51 +8,33 @@
 
 namespace tiki
 {
+	class GraphicsSystem;
+
+	enum GraphicsBufferType
+	{
+		GraphicsBufferType_ConstantBuffer,
+		GraphicsBufferType_IndexBuffer,
+		GraphicsBufferType_VertexBuffer
+	};
+
 	class BaseBuffer
 	{
 		friend class GraphicsContext;
 
 	protected:
 
-		TGBuffer*				m_pBuffer;
+								BaseBuffer();
+								~BaseBuffer();
 
-		void					create( const size_t size, const size_t binding );
+		void					create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
 		void					dispose();
-
-		void*					map();
-		void					unmap();
-
-		void					apply( const size_t index, const size_t stride, const size_t size, const uint binding ) const;
-
-	};
-
-	template<typename T, uint binding >
-	class Buffer : public BaseBuffer
-	{
-		TIKI_NONCOPYABLE_CLASS( Buffer );
-
-	public:
-								Buffer( void );
-								~Buffer( void );
-
-		TIKI_FORCE_INLINE void	create( void );
-		TIKI_FORCE_INLINE void	dispose( void );
-
-		TIKI_FORCE_INLINE uint	getStride() const	{ return sizeof( T ); }
-		TIKI_FORCE_INLINE uint	getCount() const	{ return m_count; }
-
-		TIKI_FORCE_INLINE T*	map( const uint count );
-		TIKI_FORCE_INLINE void	unmap( void );
-
-		TIKI_FORCE_INLINE void	apply( const uint index = 0 );
-				
+		
 	private:
 
-		uint					m_count;
+		TGBuffer*				m_pBuffer;
+		bool					m_dynamic;
 
 	};
 }
-
-#include "buffer.inl"
 
 #endif // TIKI_BUFFER_HPP__

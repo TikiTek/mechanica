@@ -22,7 +22,7 @@ namespace tiki
 
 	}
 
-	bool Model::initialize( GraphicsSystem* pGraphicsSystem, const void* pData )
+	bool Model::initialize( GraphicsSystem& graphicsSystem, const void* pData )
 	{
 		const uint materialLength = *(uint*)pData;
 		pData = addPtr( pData, sizeof(uint) );
@@ -47,7 +47,7 @@ namespace tiki
 		m_geometries.create( pInfo->geometrieCount );
 		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
 		{
-			pData = m_geometries[ i ].initialize( pGraphicsSystem, pData, m_pMaterial );
+			pData = m_geometries[ i ].initialize( graphicsSystem, pData, m_pMaterial );
 		}
 
 		return true;

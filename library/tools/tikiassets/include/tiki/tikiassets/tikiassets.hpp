@@ -38,7 +38,7 @@ namespace tiki
 		FontConverter		m_fontConverter;
 		MaterialConverter	m_materialConverter;
 		ModelConverter		m_modelConverter;
-		NavMeshConverter	m_navmeshConverter;
+		//NavMeshConverter	m_navmeshConverter;
 		ShaderConverter		m_shaderConverter;
 		TextureConverter	m_textureConverter;
 

@@ -35,17 +35,20 @@
 #	define TIKI_VERIFY0( expr ) expr
 #endif
 
-#define TIKI_TRACE( format, ... ) ::tiki::debug::trace( format, ##__VA_ARGS__ )
-#define TIKI_TRACE_INFO( format, ... ) ::tiki::debug::traceInfo( format, ##__VA_ARGS__ )
-#define TIKI_TRACE_WARNING( format, ... ) ::tiki::debug::traceWarning( format, ##__VA_ARGS__ )
-#define TIKI_TRACE_ERROR( format, ... ) ::tiki::debug::traceError( format, ##__VA_ARGS__ )
+#define TIKI_TRACE( format, ... ) ::tiki::debug::trace( format, __VA_ARGS__ )
+#define TIKI_TRACE_INFO( format, ... ) ::tiki::debug::traceInfo( format, __VA_ARGS__ )
+#define TIKI_TRACE_WARNING( format, ... ) ::tiki::debug::traceWarning( format, __VA_ARGS__ )
+#define TIKI_TRACE_ERROR( format, ... ) ::tiki::debug::traceError( format, __VA_ARGS__ )
 
 #if TIKI_BUILD_DEBUG
-#	define TIKI_TRACE_DEBUG( format, ... ) TIKI_TRACE( format, ##__VA_ARGS__ )
+#	define TIKI_TRACE_DEBUG( format, ... ) TIKI_TRACE( format, __VA_ARGS__ )
 #else
 #	define TIKI_TRACE_DEBUG( format, ... )
 #endif
 
-#define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } __tiki__assert__##__COUNTER__
+#define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT2( x1, x2 )
+#define TIKI_CONCAT2( x1, x2 ) x1 ## x2
+
+#define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __LINE__ )
 
 #endif // TIKI_ASSERT_HPP

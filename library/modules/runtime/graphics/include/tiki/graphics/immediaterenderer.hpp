@@ -6,8 +6,8 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/dynamicbuffer.hpp"
 #include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphicsbase/fontchar.hpp"
 #include "tiki/math/rectangle.hpp"
 
@@ -15,10 +15,13 @@ namespace tiki
 {
 	class Font;
 	class GraphicsContext;
+	class GraphicsSystem;
 	class Material;
+	class ResourceManager;
+	class SamplerState;
 	class TextureData;
 	class VertexFormat;
-	class SamplerState;
+	class WindowEventBuffer;
 	struct Rectangle; 
 
 	class ImmediateRenderer

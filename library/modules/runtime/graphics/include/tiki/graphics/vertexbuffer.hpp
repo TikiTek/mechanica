@@ -1,5 +1,5 @@
-#ifndef TIKI_DYNAMICBUFFER_HPP__
-#define TIKI_DYNAMICBUFFER_HPP__
+#ifndef TIKI_VERTEXBUFFER_HPP
+#define TIKI_VERTEXBUFFER_HPP
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
@@ -10,119 +10,54 @@ namespace tiki
 	class VertexBuffer : public BaseBuffer
 	{
 		TIKI_NONCOPYABLE_CLASS( VertexBuffer );
+		friend class GraphicsContext;
 
 	public:
 
-					VertexBuffer();
-					~VertexBuffer();
+		VertexBuffer()
+		{
+			m_stride	= 0u;
+			m_count		= 0u;
+		}
 
-		void		create( size_t stride, size_t bufferSize );
-		void		dispose();
+		~VertexBuffer()
+		{
+			TIKI_ASSERT( m_stride == 0u );
+			TIKI_ASSERT( m_count == 0u );
+		}
 
-		uint		getStride() const;
-		uint		getCount( void ) const;
+		TIKI_FORCE_INLINE void		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr )
+		{
+			m_stride	= vertexStride;
+			m_count		= vertexCount;
+
+			BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, GraphicsBufferType_VertexBuffer, pInitData );
+		}
+
+		TIKI_FORCE_INLINE void		dispose()
+		{
+			m_stride	= 0u;
+			m_count		= 0u;
+
+			BaseBuffer::dispose();
+		}
+
+		TIKI_FORCE_INLINE size_t	getStride() const
+		{
+			return m_stride;
+		}
+		
+		TIKI_FORCE_INLINE size_t	getCount() const
+		{
+			return m_count;
+		}
 			
-		T*			map( const uint count );
-		void		unmap( void );
-
 	private:
 
-		TGBuffer*	m_pBuffer;
-		uint		m_count;
+		size_t						m_stride;
+		size_t						m_count;
+
 	};
-
-	template<typename T, uint binding>
-	tiki::DynamicBuffer<T, binding>::DynamicBuffer( void ) :
-		m_pBuffer( nullptr ), m_count( 0u )
-	{
-
-	}
-
-	template<typename T, uint binding>
-	tiki::DynamicBuffer<T, binding>::~DynamicBuffer( void )
-	{
-		TIKI_ASSERT( m_pBuffer == nullptr );
-	}
-
-	template<typename T, uint binding>
-	void tiki::DynamicBuffer<T, binding>::dispose( void )
-	{
-		safeRelease( &m_pBuffer );
-		m_count = 0u;
-	}
-
-	template<typename T, uint binding>
-	T* tiki::DynamicBuffer<T, binding>::map( const uint count )
-	{
-		TIKI_ASSERT( count > 0u );
-
-		GraphicsHandles* pHandles = getHandles( framework::getGraphicsSystem() );
-		TIKI_ASSERT( pHandles );
-
-		if( count > m_count )
-		{
-			m_count = count;
-			safeRelease( &m_pBuffer );
-
-			TGDevice* pDevice = pHandles->pDevice;
-			TIKI_ASSERT( pDevice );
-
-			D3D11_BUFFER_DESC desc;
-			desc.Usage					= D3D11_USAGE_DYNAMIC;
-			desc.CPUAccessFlags			= D3D11_CPU_ACCESS_WRITE;
-			desc.StructureByteStride	= 0;
-			desc.BindFlags				= binding;
-			desc.ByteWidth				= sizeof( T ) * m_count;
-			desc.MiscFlags				= 0;
-
-			TIKI_VERIFY0( pDevice->CreateBuffer( &desc, 0, &m_pBuffer ) );
-		}
-
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		TGContext* context = pHandles->pContext;
-
-		TIKI_VERIFY0( context->Map( m_pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped ) );
-
-		return (T*)mapped.pData;
-	}
-
-	template<typename T, uint binding>
-	void tiki::DynamicBuffer<T, binding>::unmap( void )
-	{
-		if( m_pBuffer )
-		{
-			TGContext* pContext = getHandles( framework::getGraphicsSystem() )->pContext;
-			TIKI_ASSERT( pContext );
-			pContext->Unmap( m_pBuffer, 0 );
-		}
-	}
-
-	template<typename T, uint binding>
-	uint tiki::DynamicBuffer<T, binding>::getCount( void ) const
-	{
-		return m_count;
-	}
-
-	template<typename T, uint binding>
-	uint tiki::DynamicBuffer<T, binding>::getType( void ) const
-	{
-		return binding;
-	}
-
-	template<typename T, uint binding>
-	uint tiki::DynamicBuffer<T, binding>::getStride( void ) const
-	{
-		return sizeof( T );
-	}
-
-	template< typename T >
-	class DVertexBuffer : public DynamicBuffer< T, 1u > { };
-
-	template< typename T >
-	class DIndexBuffer : public DynamicBuffer< T, 2u > { };
-
-	template<typename T>
-	class DConstantBuffer : public DynamicBuffer< T, 4u > { };
 }
 
-#endif // TIKI_DYNAMICBUFFER_HPP__
+#endif // TIKI_VERTEXBUFFER_HPP

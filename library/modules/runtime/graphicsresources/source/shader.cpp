@@ -1,7 +1,9 @@
 
-#include "tiki/graphics/shader.hpp"
+#include "tiki/graphicsresources/shader.hpp"
+
 #include "tiki/framework/framework.hpp"
-#include "tiki/graphics/graphicsystem.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+
 #include "graphicshandles.hpp"
 
 #include <dxgi.h>

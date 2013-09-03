@@ -2,7 +2,7 @@
 #define TIKI_RENDERTARGET_HPP__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicsystem.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/pixelformat.hpp"
 
 namespace tiki
@@ -44,7 +44,7 @@ namespace tiki
 		size_t						m_colorBufferCount;
 
 		RenderTargetBuffer			m_depthBuffer;
-		TGRenderTarget*				m_pDepthView;
+		TGDepthStencil*				m_pDepthView;
 
 	};
 }

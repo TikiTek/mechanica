@@ -45,6 +45,8 @@ namespace tiki
 
 		m_sprites.create( MaxSprites );
 		m_vertices.create( MaxVertices );
+
+		m_vertexBuffer.create( graphicsSystem, MaxVertices, sizeof( SpriteVertex ), true );
 		
 		return true;
 	}
@@ -162,7 +164,7 @@ namespace tiki
 		FontChar chars[ 128u ];
 		font.fillVertices( chars, TIKI_COUNT( chars ), text.cStr(), text.length() );
 
-		const Vector2& screenSize = m_pGpuContext->getBackBufferSize();
+		const Vector2 screenSize; // = m_pGpuContext->getBackBufferSize();
 
 		float x = 0.0f;
 		for (size_t i = 0u; i < vertexCount; i += 4u)
@@ -202,7 +204,7 @@ namespace tiki
 
 	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
 	{
-		graphicsContext.setSamplerState( 0u, m_pSamplerState );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
 
 		//m_pGpuContext->disableDepth();
 		//m_pGpuContext->enableAlpha();
@@ -213,9 +215,9 @@ namespace tiki
 			const uint vertexCount	= m_vertices.getCount();
 			const uint count		= m_sprites.getCount();
 
-			SpriteVertex* sv = m_vertexBuffer.map( vertexCount );
+			SpriteVertex* sv = (SpriteVertex*)graphicsContext.mapBuffer( m_vertexBuffer );
 			memory::copy( sv, m_sprites.getData(), sizeof( SpriteVertex ) * vertexCount );
-			m_vertexBuffer.unmap();
+			graphicsContext.unmapBuffer( m_vertexBuffer );
 
 			graphicsContext.setInputLayout( m_pVertexFormat );
 			//graphicsContext.setMaterial( m_pMaterial );
@@ -228,7 +230,7 @@ namespace tiki
 				const Sprite& sprite = m_sprites[ i ];
 
 				graphicsContext.setPixelShaderTexture( 0u, sprite.pTexture );
-				graphicsContext.draw( 4u, i * 4u );
+				//graphicsContext.draw( 4u, i * 4u );
 			}
 		}
 

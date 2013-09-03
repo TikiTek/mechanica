@@ -27,7 +27,9 @@ struct ID3D11PixelShader;
 
 struct ID3D11Buffer;
 
+struct ID3D11DepthStencilView;
 struct ID3D11RenderTargetView;
+struct D3D11_DEPTH_STENCIL_VIEW_DESC;
 struct D3D11_RENDER_TARGET_VIEW_DESC;
 
 struct ID3D11ShaderResourceView;
@@ -61,7 +63,9 @@ namespace tiki
 
 	typedef ID3D11Buffer					TGBuffer;
 
+	typedef ID3D11DepthStencilView			TGDepthStencil;
 	typedef ID3D11RenderTargetView			TGRenderTarget;
+	typedef D3D11_DEPTH_STENCIL_VIEW_DESC	TGDepthStencilDescription;
 	typedef D3D11_RENDER_TARGET_VIEW_DESC	TGRenderTargetDescription;
 
 	typedef ID3D11ShaderResourceView		TGShaderResource;

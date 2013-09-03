@@ -36,7 +36,7 @@ namespace tiki
 
 		Array< ModelGeometry >				m_geometries;
 
-		bool								initialize( GraphicsSystem* pGraphicsSystem, const void* pData );
+		bool								initialize( GraphicsSystem& graphicsSystem, const void* pData );
 		void								dispose();
 		
 	};

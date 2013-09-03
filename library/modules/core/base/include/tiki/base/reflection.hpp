@@ -5,7 +5,7 @@
 
 #if TIKI_BUILD_TOOLS
 #	include "tiki/base/array.hpp"
-#	include "tiki/base/bits.hpp"
+#	include "tiki/base/functions.hpp"
 #	include "tiki/base/list.hpp"
 #	include "tiki/base/string.hpp"
 
