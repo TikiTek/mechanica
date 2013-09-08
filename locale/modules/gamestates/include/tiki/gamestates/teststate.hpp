@@ -40,6 +40,8 @@ namespace tiki
 		
 		ApplicationState*		m_pParentState;
 
+		const Model*			m_pModel;
+
 	};
 }
 

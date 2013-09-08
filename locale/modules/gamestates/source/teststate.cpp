@@ -1,6 +1,10 @@
 
 #include "tiki/gamestates/teststate.hpp"
 
+#include "tiki/framework/framework.hpp"
+#include "tiki/graphicsresources/model.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
 namespace tiki
 {
 	void TestState::create( ApplicationState* pParentState )
@@ -22,6 +26,8 @@ namespace tiki
 			{
 				if ( isInital )
 				{
+					m_pModel = framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
+
 					return TransitionState_Finish;
 				}
 				else

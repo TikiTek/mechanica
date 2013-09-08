@@ -287,6 +287,11 @@ namespace tiki
 		size_t start = 0u;
 		size_t length = data->stringLength;
 
+		if (length == 0u)
+		{
+			return *this;
+		}
+
 		bool isWhiteSpace = false;
 		do 
 		{
