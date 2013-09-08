@@ -174,13 +174,45 @@ namespace tiki
 
 		// parse triangles
 		{
+			bool polymode = false;
 			const XmlElement* pTriangles = pXml->findFirstChild( "triangles", m_pMeshNode );
 			if ( pTriangles == nullptr )
 			{
-				TIKI_TRACE_ERROR( "no triangles node in geometry '%s'", m_desc.name.cStr() );
-				return;
+				pTriangles = pXml->findFirstChild( "polylist", m_pMeshNode );
+				polymode = true;
+
+				if ( pTriangles == nullptr )
+				{
+					TIKI_TRACE_ERROR( "no triangles/polylist node in geometry '%s'\n", m_desc.name.cStr() );
+					return;
+				}
 			}
 
+			if (polymode)
+			{
+				const XmlElement* pVertexCount = pXml->findFirstChild( "vcount", pTriangles );
+
+				Tokenizer token;
+				token.create( pVertexCount->content, " " );
+
+				size_t index = 0u;
+				while ( index != -1 )
+				{
+					const string value = token.findNext( &index ).trim();
+
+					if ( !value.isEmpty() )
+					{
+						size_t i = ParseString::parseUInt32( value );
+
+						if ( i != 3u )
+						{
+							TIKI_TRACE_ERROR( "model ist not triangulated.\n" );
+							return;
+						}
+					}
+				}
+			}
+			
 			//const XmlAttribute* pCountAtt = pXml->findAttributeByName( "count", pTriangles );			
 			//if ( pCountAtt == nullptr )
 			//{
