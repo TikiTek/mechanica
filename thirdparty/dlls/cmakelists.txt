@@ -1,0 +1,4 @@
+
+add_module(dlls)
+
+module_add_binarys(.)
