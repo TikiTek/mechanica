@@ -35,11 +35,14 @@ namespace tiki
 		TIKI_FORCE_INLINE T&		getTop();
 		TIKI_FORCE_INLINE const T&	getTop() const;
 
+		TIKI_FORCE_INLINE bool		remove( const T& value );
+		TIKI_FORCE_INLINE void		removeAt( size_t index );
+
 		TIKI_FORCE_INLINE T&		pop();
 		TIKI_FORCE_INLINE T&		push();
 		TIKI_FORCE_INLINE T&		push( const T& value );
-		TIKI_FORCE_INLINE T*		pushRange( const uint count );
-		TIKI_FORCE_INLINE void		pushRange( const T* pData, const uint count );
+		TIKI_FORCE_INLINE T*		pushRange( uint count );
+		TIKI_FORCE_INLINE void		pushRange( const T* pData, uint count );
 
 		TIKI_FORCE_INLINE T&		operator[]( size_t index );
 		TIKI_FORCE_INLINE const T&	operator[]( size_t index ) const;

@@ -4,11 +4,11 @@
 #include "tiki/animationconverter/datablock.hpp"
 #include "tiki/animationconverter/splinefitter.hpp"
 #include "tiki/base/array.hpp"
-#include "tiki/base/list.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector3.hpp"
+#include "tiki/toolbase/list.hpp"
 
 namespace tiki
 {

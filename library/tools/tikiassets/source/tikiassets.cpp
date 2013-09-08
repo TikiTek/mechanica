@@ -1,8 +1,8 @@
 
 #include "tiki/tikiassets/tikiassets.hpp"
 
-#include "tiki/base/directory.hpp"
 #include "tiki/base/path.hpp"
+#include "tiki/toolbase/directory.hpp"
 
 namespace tiki
 {

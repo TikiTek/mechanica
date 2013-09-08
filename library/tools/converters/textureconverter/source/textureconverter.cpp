@@ -55,7 +55,8 @@ namespace tiki
 			string mapCrop = params.arguments.getOptionalString( "crop", "" );
 			if ( !mapCrop.isEmpty() )
 			{
-				List< string > values = mapCrop.split( "," );
+				Array< string > values;
+				mapCrop.split( values, "," );
 
 				if ( values.getCount() != 4u )
 				{
@@ -73,6 +74,8 @@ namespace tiki
 
 					image.cropImage( rect );
 				}
+
+				values.dispose();
 			}
 
 			const string scaleX = params.arguments.getOptionalString( "width", "/1" );

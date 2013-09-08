@@ -7,4 +7,4 @@ module_add_includes(source)
 module_add_sources(source/*.*)
 module_add_sources(include/tiki/toolbase/*.?pp)
 
-module_add_define(TIKI_BUILD_TOOLS 1)
+module_add_define_bool(TIKI_BUILD_TOOLS 1)

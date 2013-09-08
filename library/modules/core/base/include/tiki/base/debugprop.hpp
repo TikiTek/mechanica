@@ -4,10 +4,10 @@
 
 #include "tiki/base/types.hpp"
 
-#if TIKI_BUILD_MASTER
+#if TIKI_ENABLED( TIKI_BUILD_MASTER )
 
 #	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static const bool varname = defaultValue;
-#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue ) static const float varname = defaultValue;
+#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static const float varname = defaultValue;
 
 #else
 

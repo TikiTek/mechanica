@@ -2,7 +2,7 @@
 #ifndef TIKI_DIRECTORY_HPP
 #define TIKI_DIRECTORY_HPP
 
-#include "tiki/base/list.hpp"
+#include "tiki/base/array.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 
@@ -15,8 +15,8 @@ namespace tiki
 
 		bool	exists( const string& path );
 
-		bool	getFiles( const string& path, List< string >& targetList );
-		bool	getDirectories( const string& path, List< string >& targetList );
+		//bool	getFiles( const string& path, Array< string >& targetList );
+		//bool	getDirectories( const string& path, Array< string >& targetList );
 	}
 }
 

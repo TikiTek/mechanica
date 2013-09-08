@@ -99,6 +99,43 @@ namespace tiki
 	}
 
 	template<typename T>
+	TIKI_FORCE_INLINE bool tiki::SizedArray<T>::remove( const T& value )
+	{
+		bool found = false;
+		size_t offset = 0u;
+
+		for (size_t i = 0u; i < m_count - offset; ++i)
+		{
+			if ( m_pData[ i ] == value )
+			{
+				found = true;
+				offset++;
+			}
+
+			if ( offset > 0u )
+			{
+				m_pData[ i ] = m_pData[ i + offset ];
+			}
+		}
+		m_count -= offset;
+
+		return found;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeAt( size_t index )
+	{
+		TIKI_ASSERT( index < m_count );
+		
+		for (size_t i = index; i < m_count - 1u; ++i)
+		{
+			m_pData[ i ] = m_pData[ i + 1u ];
+		}
+
+		m_count--;
+	}
+
+	template<typename T>
 	TIKI_FORCE_INLINE T& SizedArray<T>::pop()
 	{
 		TIKI_ASSERT( m_count > 0u );

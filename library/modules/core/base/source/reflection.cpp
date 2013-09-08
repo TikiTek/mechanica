@@ -1,7 +1,7 @@
 
 #include "tiki/base/reflection.hpp"
 
-#if TIKI_BUILD_TOOLS
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
 	namespace reflection
@@ -130,7 +130,8 @@ namespace tiki
 			m_alignment		= 0u;
 			m_structString	= structString;
 
-			List< string > fields = m_structString.split( ";" );
+			Array< string > fields;
+			m_structString.split( fields, ";" );
 
 			for (size_t i = 0u; i < fields.getCount(); ++i)
 			{
@@ -204,6 +205,8 @@ namespace tiki
 				m_size		+= fieldSize;
 				m_alignment	 = TIKI_MAX( m_alignment, fieldAlign );
 			}
+
+			fields.dispose();
 
 			TypeBase::addType( this );
 		}

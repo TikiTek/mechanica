@@ -3,11 +3,11 @@
 
 #include "tiki/base/types.hpp"
 
-#if TIKI_BUILD_TOOLS
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 #	include "tiki/base/array.hpp"
 #	include "tiki/base/functions.hpp"
-#	include "tiki/base/list.hpp"
 #	include "tiki/base/string.hpp"
+#	include "tiki/toolbase/list.hpp"
 
 #	define TIKI_REFLECTION_STRUCT( name, ... ) struct name\
 	{ \
@@ -39,7 +39,7 @@
 #	define TIKI_REFLECTION_CPPDECLARE( type )
 #endif
 
-#if TIKI_BUILD_TOOLS
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
 	namespace reflection

@@ -17,7 +17,7 @@ namespace tiki
 	struct ResourceId
 	{
 		crc32	crcName;
-#if TIKI_BUILD_MASTER == 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		string	fileName;
 #endif
 	};
@@ -29,7 +29,7 @@ namespace tiki
 	public:
 
 		crc32			getCrcName() const { return m_id.crcName; }
-#if TIKI_BUILD_MASTER == 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const string&	getFileName() const { return m_id.fileName; }
 #endif
 

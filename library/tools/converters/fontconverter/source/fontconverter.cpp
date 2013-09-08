@@ -3,7 +3,6 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/list.hpp"
 #include "tiki/base/numbers.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
@@ -11,6 +10,7 @@
 #include "tiki/graphicsbase/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
+#include "tiki/toolbase/list.hpp"
 
 #include "ft2build.h"
 #include FT_FREETYPE_H

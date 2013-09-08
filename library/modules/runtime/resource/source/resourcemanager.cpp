@@ -18,13 +18,16 @@ namespace tiki
 	{
 		m_gamebuildPath = params.pGamebuildPath;
 
+		m_resources.create( 1000u );
+		m_factories.create( 10u );
+
 		return true;
 	}
 
 	void ResourceManager::dispose()
 	{
-		TIKI_ASSERT( m_factories.getCount() == 0 );
-		TIKI_ASSERT( m_resources.getCount() == 0 );
+		TIKI_ASSERT( m_factories.getCount() == 0u );
+		TIKI_ASSERT( m_resources.getCount() == 0u );
 
 		m_gamebuildPath = "";
 
@@ -34,7 +37,7 @@ namespace tiki
 
 	void ResourceManager::registerFactory( FactoryBase* pFactory )
 	{
-		m_factories.add( pFactory );
+		m_factories.push( pFactory );
 	}
 
 	void ResourceManager::unregisterFactory( FactoryBase* pFactory )
@@ -64,7 +67,7 @@ namespace tiki
 			}
 		}
 
-#if TIKI_BUILD_MASTER == 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( pFactory == nullptr )
 		{
 			TIKI_TRACE( "Factory not registed for Resource '%s'\n", resourceId.fileName.cStr() );
@@ -73,7 +76,7 @@ namespace tiki
 #endif
 
 		Array< uint8 > fileContent;
-#if TIKI_BUILD_MASTER == 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		string fullPath = path::combine( m_gamebuildPath, resourceId.fileName );
 
 		if ( !file::exists( fullPath ) )
@@ -104,7 +107,7 @@ namespace tiki
 			return nullptr;
 		}
 #else
-		TIKI_BREAK( "not implemented" );
+#	error not implemented
 #endif
 
 		Resource* pResource = pFactory->createResource();
@@ -118,7 +121,7 @@ namespace tiki
 			if ( pFactory->initializeResource( pResource, pData ) )
 			{
 				pResource->addReference();
-				m_resources.add( pResource );
+				m_resources.push( pResource );
 			}
 			else
 			{

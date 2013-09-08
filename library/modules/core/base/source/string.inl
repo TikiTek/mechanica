@@ -2,8 +2,8 @@
 #ifndef TIKI_STRING_INL
 #define TIKI_STRING_INL
 
-#include "tiki/base/list.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/base/sizedarray.hpp"
 
 namespace tiki
 {
@@ -173,18 +173,20 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE List< BasicString< TChar > > BasicString<TChar>::split( const BasicString<TChar>& seperator ) const
+	TIKI_FORCE_INLINE void BasicString<TChar>::split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const
 	{
-		List< BasicString< TChar > > list;
+		const uint32 count = countSubstring( seperator );
+
+		SizedArray< BasicString< TChar > > list;
+		list.create( count + 1u );
 
 		uint32 i = 0;
 		uint32 lastIndex = 0;
-		uint32 count = countSubstring(seperator);
 		while (i < count)
 		{
 			uint32 index = indexOf(seperator, lastIndex + seperator.data->stringLength);
 
-			list.add(
+			list.push(
 				substring( lastIndex, index - lastIndex )
 			);
 
@@ -194,12 +196,13 @@ namespace tiki
 
 		if (data->stringLength - lastIndex > 0)
 		{
-			list.add(
+			list.push(
 				substring( lastIndex, data->stringLength - lastIndex )
 			);
 		}
 
-		return list;
+		output.create( list.getData(), list.getCount() );
+		list.dispose();
 	}
 
 	template<typename TChar>
@@ -634,7 +637,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE void BasicString<TChar>::operator=(const BasicString<TChar>& rhs)
+	TIKI_FORCE_INLINE BasicString<TChar>& BasicString<TChar>::operator=(const BasicString<TChar>& rhs)
 	{
 		StringRefData<TChar>* oldData = data;
 
@@ -642,6 +645,8 @@ namespace tiki
 		data->addRef();
 
 		oldData->release();
+
+		return *this;
 	}
 
 	template<typename TChar>

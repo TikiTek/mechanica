@@ -11,6 +11,6 @@ module_import(framework)
 module_import(gamestates)
 module_import(recast)
 
-module_add_define(TIKI_BUILD_TOOLS 0)
+module_add_define_bool(TIKI_BUILD_TOOLS 0)
 
 
