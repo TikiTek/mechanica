@@ -1,8 +1,10 @@
 
 #include "tiki/graphics/immediaterenderer.hpp"
 
+#include "tiki/base/numbers.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsresources/font.hpp"
@@ -26,9 +28,9 @@ namespace tiki
 		{
 			const VertexAttribute attributes[] =
 			{
-				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex },
-				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex }
+				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
+				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x16y16_unorm,		0u, VertexInputType_PerVertex },
+				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
 			};		
 
 			VertexFormatParameters vertexParams;
@@ -47,6 +49,7 @@ namespace tiki
 		m_vertices.create( MaxVertices );
 
 		m_vertexBuffer.create( graphicsSystem, MaxVertices, sizeof( SpriteVertex ), true );
+		m_constantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) );
 		
 		return true;
 	}
@@ -66,11 +69,12 @@ namespace tiki
 		m_vertices.dispose();
 
 		m_vertexBuffer.dispose();
+		m_constantBuffer.dispose();
 	}
 
 	void tiki::ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& r )
 	{
-		Sprite& sprite = m_sprites.push();
+		Sprite& sprite	= m_sprites.push();
 		sprite.offset	= m_vertices.getCount();
 		sprite.count	= 4u;
 		sprite.pTexture = &texture;
@@ -78,32 +82,36 @@ namespace tiki
 		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
 
 		// bottom left
-		pVertices[ 0u ].position.x = -1.0f + r.x;
-		pVertices[ 0u ].position.y =  1.0f  - r.y - r.height;
-		pVertices[ 0u ].position.z =  0.0f;
-		pVertices[ 0u ].uv.x = 0.0f;
-		pVertices[ 0u ].uv.y = 1.0f;
+		pVertices[ 0u ].position.x	= -1.0f + r.x;
+		pVertices[ 0u ].position.y	=  1.0f  - r.y - r.height;
+		pVertices[ 0u ].position.z	=  0.0f;
+		pVertices[ 0u ].u			= u16::floatToUnorm( 0.0f );
+		pVertices[ 0u ].v			= u16::floatToUnorm( 1.0f );
+		pVertices[ 0u ].color		= TIKI_COLOR_WHITE;
 
 		// top left
-		pVertices[ 1u ].position.x = -1.0f + r.x;
-		pVertices[ 1u ].position.y =  1.0f - r.y;
-		pVertices[ 1u ].position.z =  0.0f;
-		pVertices[ 1u ].uv.x = 0.0f;
-		pVertices[ 1u ].uv.y = 0.0f;
+		pVertices[ 1u ].position.x	= -1.0f + r.x;
+		pVertices[ 1u ].position.y	=  1.0f - r.y;
+		pVertices[ 1u ].position.z	=  0.0f;
+		pVertices[ 1u ].u			= u16::floatToUnorm( 0.0f );
+		pVertices[ 1u ].v			= u16::floatToUnorm( 0.0f );
+		pVertices[ 1u ].color		= TIKI_COLOR_WHITE;
 
 		// bottom right
-		pVertices[ 2u ].position.x = -1.0f + r.x + r.width;
-		pVertices[ 2u ].position.y =  1.0f - r.y - r.height;
-		pVertices[ 2u ].position.z =  0.0f;
-		pVertices[ 2u ].uv.x = 1.0f;
-		pVertices[ 2u ].uv.y = 1.0f;
+		pVertices[ 2u ].position.x	= -1.0f + r.x + r.width;
+		pVertices[ 2u ].position.y	=  1.0f - r.y - r.height;
+		pVertices[ 2u ].position.z	=  0.0f;
+		pVertices[ 2u ].u			= u16::floatToUnorm( 1.0f );
+		pVertices[ 2u ].v			= u16::floatToUnorm( 1.0f );
+		pVertices[ 2u ].color		= TIKI_COLOR_WHITE;
 
 		// top right
-		pVertices[ 3u ].position.x = -1.0f + r.x + r.width;
-		pVertices[ 3u ].position.y =  1.0f - r.y;
-		pVertices[ 3u ].position.z =  0.0f;
-		pVertices[ 3u ].uv.x = 1.0f;
-		pVertices[ 3u ].uv.y = 0.0f;
+		pVertices[ 3u ].position.x	= -1.0f + r.x + r.width;
+		pVertices[ 3u ].position.y	=  1.0f - r.y;
+		pVertices[ 3u ].position.z	=  0.0f;
+		pVertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
+		pVertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
+		pVertices[ 3u ].color		= TIKI_COLOR_WHITE;
 	}
 
 	void ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& d, const Rectangle& s )
@@ -113,35 +121,40 @@ namespace tiki
 		sprite.count	= 4u;
 		sprite.pTexture = &texture;
 
+		const float uScale = 1.0f / (float)texture.getWidth();
+		const float vScale = 1.0f / (float)texture.getHeight();
+
+		const float uRight	= s.x + s.width;
+		const float vBottom	= s.y + s.height;
+
+		const float posRight	= d.x + d.width;
+		const float posBottom	= d.y + d.height;
+
 		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
 
 		// bottom left
-		pVertices[ 0u ].position.x = -1.0f	+ d.x;
-		pVertices[ 0u ].position.y =  1.0f  - d.y - d.height;
-		pVertices[ 0u ].position.z =  0.0f;
-		pVertices[ 0u ].uv.x = s.x;
-		pVertices[ 0u ].uv.y = s.y + s.height;
+		createFloat3( pVertices[ 0u ].position, d.x, posBottom, 0.0f );
+		pVertices[ 0u ].u			= u16::floatToUnorm( s.x * uScale );
+		pVertices[ 0u ].v			= u16::floatToUnorm( vBottom * vScale );
+		pVertices[ 0u ].color		= TIKI_COLOR_WHITE;
 
 		// top left
-		pVertices[ 1u ].position.x = -1.0f + d.x;
-		pVertices[ 1u ].position.y =  1.0f - d.y;
-		pVertices[ 1u ].position.z =  0.0f;
-		pVertices[ 1u ].uv.x = s.x;
-		pVertices[ 1u ].uv.y = s.y;
+		createFloat3( pVertices[ 1u ].position, d.x, d.y, 0.0f );
+		pVertices[ 1u ].u			= u16::floatToUnorm( s.x * uScale );
+		pVertices[ 1u ].v			= u16::floatToUnorm( s.y * vScale );
+		pVertices[ 1u ].color		= TIKI_COLOR_WHITE;
 
 		// bottom right
-		pVertices[ 2u ].position.x = -1.0f + d.x + d.width;
-		pVertices[ 2u ].position.y =  1.0f - d.y - d.height;
-		pVertices[ 2u ].position.z =  0.0f;
-		pVertices[ 2u ].uv.x = s.x + s.width;
-		pVertices[ 2u ].uv.y = s.y + s.height;
+		createFloat3( pVertices[ 2u ].position, posRight, posBottom, 0.0f );
+		pVertices[ 2u ].u			= u16::floatToUnorm( uRight * uScale );
+		pVertices[ 2u ].v			= u16::floatToUnorm( vBottom * vScale );
+		pVertices[ 2u ].color		= TIKI_COLOR_WHITE;
 
 		// top right
-		pVertices[ 3u ].position.x = -1.0f + d.x + d.width;
-		pVertices[ 3u ].position.y =  1.0f - d.y;
-		pVertices[ 3u ].position.z =  0.0f;
-		pVertices[ 3u ].uv.x = s.x + s.width;
-		pVertices[ 3u ].uv.y = s.y;
+		createFloat3( pVertices[ 3u ].position, posRight, d.y, 0.0f );
+		pVertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
+		pVertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
+		pVertices[ 3u ].color		= TIKI_COLOR_WHITE;
 	}
 
 	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const string& text, Color color )
@@ -152,19 +165,18 @@ namespace tiki
 		}
 
 		TIKI_ASSERT( text.length() <= 128u );
-		const size_t vertexCount = text.length() * 4u;
+		const size_t charCount = text.length();
+		const size_t vertexCount = charCount * 4u;
 
 		Sprite& sprite = m_sprites.push();
 		sprite.offset	= m_vertices.getCount();
 		sprite.count	= vertexCount;
 		sprite.pTexture = &font.getTextureData();
 
-		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
-
 		FontChar chars[ 128u ];
 		font.fillVertices( chars, TIKI_COUNT( chars ), text.cStr(), text.length() );
 
-		const Vector2 screenSize; // = m_pGpuContext->getBackBufferSize();
+		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
 
 		float x = 0.0f;
 		for (size_t i = 0u; i < vertexCount; i += 4u)
@@ -172,34 +184,37 @@ namespace tiki
 			const size_t vertexIndex = i * 4u;
 			const FontChar& character = chars[ i ];
 
-			const Rectangle rect = Rectangle(
-				( position.x + x ) / screenSize.x,
-				position.y / screenSize.y,
-				character.width / screenSize.x,
-				character.height / screenSize.y
-			);
+			const float left = position.x + x;
 
-		//	// bottom left
-		//	createFloat3( pVertices[ i + 0u ].position, rect.x, rect.y + rect.height, 0.0f );
-		//	createByte4( pVertices[ i + 0u ].identifier, 255u, 0u, 0u, 255u );
+			const float right = x + character.width;
+			const float bottom = position.y + character.height;
 
-		//	// top left
-		//	createFloat2( pVertices[ i + 1u ].position, rect.x, rect.y );
-		//	createByte4( pVertices[ i + 1u ].identifier, 255u, 255u, 0u, 0u );
+			// bottom left
+			createFloat3( pVertices[ vertexIndex + 0u ].position, left, bottom, 0.0f );
+			pVertices[ vertexIndex + 0u ].u		= character.x1; 
+			pVertices[ vertexIndex + 0u ].v		= character.y2; 
+			pVertices[ vertexIndex + 0u ].color	= TIKI_COLOR_WHITE;
 
-		//	// bottom right
-		//	createFloat2( pVertices[ i + 2u ].position, rect.x + rect.width, rect.y + rect.height );
-		//	createByte4( pVertices[ i + 2u ].identifier, 0u, 0u, 255u, 255u );
+			// top left
+			createFloat3( pVertices[ vertexIndex + 1u ].position, left, position.y, 0.0f );
+			pVertices[ vertexIndex + 1u ].u		= character.x1; 
+			pVertices[ vertexIndex + 1u ].v		= character.y1; 
+			pVertices[ vertexIndex + 1u ].color	= TIKI_COLOR_WHITE;
 
-		//	// top right
-		//	createFloat2( pVertices[ i + 3u ].position, rect.x + rect.width, rect.y );
-		//	createByte4( pVertices[ i + 3u ].identifier, 0u, 255u, 255u, 0u );
-		//
-		//	x += pVertices[ i ].character.width;
+			// bottom right
+			createFloat3( pVertices[ vertexIndex + 2u ].position, right, bottom, 0.0f );
+			pVertices[ vertexIndex + 2u ].u		= character.x2; 
+			pVertices[ vertexIndex + 2u ].v		= character.y2; 
+			pVertices[ vertexIndex + 2u ].color	= TIKI_COLOR_WHITE;
+
+			// top right
+			createFloat3( pVertices[ vertexIndex + 3u ].position, right, position.y, 0.0f );
+			pVertices[ vertexIndex + 3u ].u		= character.x2; 
+			pVertices[ vertexIndex + 3u ].v		= character.y1; 
+			pVertices[ vertexIndex + 3u ].color	= TIKI_COLOR_WHITE;
+		
+			x += character.width;
 		}
-
-		//m_textTextures.push( &font.getTextureData() );
-		//m_textLength.push( text.length() );
 	}
 
 	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )

@@ -2,9 +2,9 @@
 #ifndef TIKI_STRING_HPP
 #define TIKI_STRING_HPP
 
-#include "tiki/base/types.hpp"
+#include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
-#include "tiki/base/list.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
@@ -34,7 +34,7 @@ namespace tiki
 		TIKI_FORCE_INLINE const TChar*					cStr() const;
 		TIKI_FORCE_INLINE TChar*						createCStr() const;
 
-		TIKI_FORCE_INLINE List< BasicString< TChar > >	split( const BasicString<TChar>& seperator ) const;
+		TIKI_FORCE_INLINE void							split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( TChar oldValue, TChar newValue ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( const BasicString<TChar>& oldValue, const BasicString<TChar>& newValue ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			substring( uint32 startIndex, sint32 length = -1 ) const;
@@ -68,7 +68,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE bool							operator==(const BasicString<TChar>& rhs) const;
 		TIKI_FORCE_INLINE bool							operator!=(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE void							operator=(const BasicString<TChar>& rhs);
+		TIKI_FORCE_INLINE BasicString< TChar >&			operator=(const BasicString<TChar>& rhs);
 
 		TIKI_FORCE_INLINE BasicString<TChar>			operator+(const BasicString<TChar>& rhs) const;
 		TIKI_FORCE_INLINE BasicString<TChar>&			operator+=(const BasicString<TChar>& rhs);

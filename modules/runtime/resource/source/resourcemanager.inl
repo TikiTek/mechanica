@@ -11,7 +11,7 @@ namespace tiki
 	{
 		ResourceId id;
 		id.crcName		= crcString( fileName );
-#if TIKI_BUILD_MASTER == 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		id.fileName		= fileName;
 #endif
 

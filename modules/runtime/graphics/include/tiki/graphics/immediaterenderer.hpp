@@ -6,10 +6,8 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
-#include "tiki/graphicsbase/fontchar.hpp"
-#include "tiki/math/rectangle.hpp"
 
 namespace tiki
 {
@@ -63,8 +61,9 @@ namespace tiki
 		struct SpriteVertex
 		{
 			float3	position;
-			float2	uv;
-			float4	color;
+			uint16	u;
+			uint16	v;
+			Color	color;
 		};
 
 		const WindowEventBuffer*			m_pEventBuffer;
@@ -77,6 +76,7 @@ namespace tiki
 		SizedArray< SpriteVertex >			m_vertices;
 		
 		VertexBuffer						m_vertexBuffer;
+		ConstantBuffer						m_constantBuffer;
 
 	};
 }

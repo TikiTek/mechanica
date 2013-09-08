@@ -4,6 +4,7 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/toolbase/list.hpp"
 
 #include "xml.h"
 

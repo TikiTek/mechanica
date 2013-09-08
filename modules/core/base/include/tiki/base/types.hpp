@@ -2,13 +2,12 @@
 #ifndef TIKI_TYPES_HPP
 #define TIKI_TYPES_HPP
 
-#if !defined( TIKI_PLATFORM_WIN )
-#	define TIKI_PLATFORM_WIN 1
-#endif
+#define TIKI_ENABLED( value ) ( ( value ) == TIKI_ON )
+#define TIKI_DISABLED( value ) ( ( value ) != TIKI_ON )
 
 namespace tiki
 {
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 
 	typedef unsigned __int8		uint8;
 	typedef unsigned __int16	uint16;
@@ -23,7 +22,7 @@ namespace tiki
 	typedef unsigned __int32	crc32;
 	typedef unsigned __int32	fourcc;
 
-#	if TIKI_BUILD_64BIT
+#	if TIKI_ENABLED( TIKI_BUILD_64BIT )
 	typedef __int64				sint;
 	typedef unsigned __int64	uint;
 	typedef unsigned __int64	size_t;
@@ -33,7 +32,7 @@ namespace tiki
 	typedef unsigned __int32	size_t;
 #	endif
 
-#elif TIKI_PLATFORM_LINUX
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 
 	typedef unsigned char		uint8;
 	typedef unsigned short		uint16;
@@ -48,7 +47,7 @@ namespace tiki
 	typedef unsigned int		crc32;
 	typedef unsigned int		fourcc;
 
-#	if TIKI_BUILD_64BIT
+#	if TIKI_ENABLED( TIKI_BUILD_64BIT )
 	typedef long int			sint;
 	typedef unsigned long int	uint;
 	typedef unsigned long int	size_t;
@@ -78,9 +77,9 @@ namespace tiki
 #define TIKI_OFFSETOF( s, m )   (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
 #define TIKI_CONTAINEROF( type, ptr, atr ) (type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
 
-#if TIKI_BUILD_32BIT
+#if TIKI_ENABLED( TIKI_BUILD_32BIT )
 #	define TIKI_SIZE_T_MAX 0xffffffff
-#elif TIKI_BUILD_64BIT
+#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 #	define TIKI_SIZE_T_MAX 0xffffffffffffffff
 #else
 #	error Platform not suppored
@@ -103,7 +102,7 @@ namespace tiki
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name;
 
-#if TIKI_PLATFORM_WIN && !TIKI_BUILD_MASTER
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	include <crtdbg.h>
 #	define TIKI_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #	define TIKI_DEL delete

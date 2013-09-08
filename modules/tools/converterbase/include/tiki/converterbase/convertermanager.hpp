@@ -2,12 +2,12 @@
 #ifndef TIKI_CONVERTERMANAGER_HPP
 #define TIKI_CONVERTERMANAGER_HPP
 
-#include "tiki/base/list.hpp"
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/filestream.hpp"
+#include "tiki/toolbase/list.hpp"
 
 #include <map>
 
