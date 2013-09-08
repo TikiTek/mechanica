@@ -6,14 +6,14 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
-  !include "gamedefinition.nsh"
+  !include "..\configuration\gamedefinition.nsh"
 
 ;--------------------------------
 ;General
 
   ;Name and file
   Name "${TIKI_PRODUCT_NAME}"
-  OutFile "${TIKI_OUTPUT_EXE}"
+  OutFile "..\output\setup\${TIKI_OUTPUT_EXE}"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\${TIKI_PUBLISHER}\${TIKI_NAME}"

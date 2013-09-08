@@ -17,6 +17,6 @@
   
   !define TIKI_GAME_EXE "Game.exe"
   
-  !define TIKI_BINARY_PATH "..\..\..\binary\master"
-  !define TIKI_GAMEBUILD_PATH "..\..\..\gamebuild"
+  !define TIKI_BINARY_PATH "..\..\..\..\binary\debug"
+  !define TIKI_GAMEBUILD_PATH "..\..\..\..\gamebuild"
   

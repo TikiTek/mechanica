@@ -1,6 +1,10 @@
 @echo off
 
+IF "%1" == "--master" GOTO nomode
+
 mode 120, 50
+
+:nomode
 
 SET CURDIR=%CD%
 SET PATH=%WINDIR%/System32;%CURDIR%/library/buildtools/cmake/bin;%CURDIR%/library/thirdparty/platform/MinGW/bin
