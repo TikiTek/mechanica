@@ -1,0 +1,5 @@
+[AutoRun]
+open=BattleOfAges_Setup.exe
+icon=game.ico
+action=Install Game
+
