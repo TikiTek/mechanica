@@ -1,0 +1,7 @@
+
+add_module(trex)
+
+module_set_c()
+
+module_add_includes(include)
+module_add_sources(source/*.c)
