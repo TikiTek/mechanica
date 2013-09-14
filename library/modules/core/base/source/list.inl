@@ -154,6 +154,13 @@ namespace tiki
 	}
 
 	template<typename T>
+	TIKI_FORCE_INLINE const T* tiki::List<T>::getLast() const
+	{
+		TIKI_ASSERT( m_count > 0u );
+		return m_pData + m_count - 1u;
+	}
+
+	template<typename T>
 	TIKI_FORCE_INLINE const T* List< T >::getEnd() const
 	{
 		return m_pData + m_count;

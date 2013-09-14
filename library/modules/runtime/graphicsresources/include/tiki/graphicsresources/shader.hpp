@@ -11,16 +11,16 @@ namespace tiki
 {
 	class ShaderFactory;
 
-	enum ShaderTypes
+	enum ShaderType
 	{
-		ShaderTypes_Effect,
-		ShaderTypes_VertexShader,
-		ShaderTypes_PixelShader,
-		ShaderTypes_GeometrieShader,
-		ShaderTypes_HullShader,
-		ShaderTypes_DomainShader,
-		ShaderTypes_ComputeShader,
-		ShaderTypes_Count
+		ShaderType_Effect,
+		ShaderType_VertexShader,
+		ShaderType_PixelShader,
+		ShaderType_GeometrieShader,
+		ShaderType_HullShader,
+		ShaderType_DomainShader,
+		ShaderType_ComputeShader,
+		ShaderType_Count
 	};
 
 	class Shader : public Resource
@@ -32,21 +32,21 @@ namespace tiki
 
 		//fourcc					getType() const { return  }
 
-		ShaderTypes					getShaderType() const { return m_type; }
+		ShaderType					getShaderType() const { return m_type; }
 		void*						getShaderObject() const { return m_pShaderObject; }
 
 		TGInputLayout*				createInputLayout( TGInputElementDesc* desc, const int count ) const;
 
 	protected:
 
-		ShaderTypes					m_type;
+		ShaderType					m_type;
 		void*						m_pShaderObject;
 		TGBlob*						m_pBlob;
 				
 									Shader();
 		virtual						~Shader();
 
-		void						initialize( ShaderTypes type, void* pShaderObject, TGBlob* pBlob );
+		void						initialize( ShaderType type, void* pShaderObject, TGBlob* pBlob );
 	};
 }
 

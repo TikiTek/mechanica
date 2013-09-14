@@ -423,13 +423,13 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::indexOf( TChar c ) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf( TChar c ) const
 	{
 		return indexOf( c, 0 );
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::indexOf(TChar c, uint32 index) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(TChar c, uint32 index) const
 	{
 		uint32 i = index;
 		while (i < data->stringLength)
@@ -441,13 +441,13 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::indexOf( const BasicString<TChar>& str ) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf( const BasicString<TChar>& str ) const
 	{
 		return indexOf( str, 0 );
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::indexOf(const BasicString<TChar>& str, uint32 index) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(const BasicString<TChar>& str, uint32 index) const
 	{
 		if (str.data->stringLength > data->stringLength) return -1;
 
@@ -481,9 +481,9 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::lastIndexOf( TChar c ) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf( TChar c ) const
 	{
-		sint32 i = data->stringLength - 1;
+		int i = data->stringLength - 1;
 		while (i >= 0)
 		{
 			if ( data->pData[i] == c ) return i;
@@ -494,12 +494,12 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE sint32 BasicString<TChar>::lastIndexOf(const BasicString<TChar>& str) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf(const BasicString<TChar>& str) const
 	{
-		sint32 i = (data->stringLength - str.data->stringLength);
+		int i = (data->stringLength - str.data->stringLength);
 		while (i >= 0)
 		{
-			uint32 b = 0;
+			int b = 0;
 			bool found = true;
 			while (b < str.data->stringLength)
 			{

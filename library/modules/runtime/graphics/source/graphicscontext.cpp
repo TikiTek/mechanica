@@ -160,7 +160,7 @@ namespace tiki
 	void GraphicsContext::setVertexShader( const Shader* pShader )
 	{
 		TIKI_ASSERT( pShader != nullptr );
-		TIKI_ASSERT( pShader->getShaderType() == ShaderTypes_VertexShader );
+		TIKI_ASSERT( pShader->getShaderType() == ShaderType_VertexShader );
 
 		if ( m_pVertexShader != pShader )
 		{
@@ -211,7 +211,7 @@ namespace tiki
 	void GraphicsContext::setPixelShader( const Shader* pShader )
 	{
 		TIKI_ASSERT( pShader );
-		TIKI_ASSERT( pShader->getShaderType() == ShaderTypes_PixelShader );
+		TIKI_ASSERT( pShader->getShaderType() == ShaderType_PixelShader );
 
 		if ( m_pPixelShader != pShader )
 		{

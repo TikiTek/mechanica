@@ -47,12 +47,12 @@ namespace tiki
 		TIKI_FORCE_INLINE BasicString<TChar>			toUpper() const;
 
 		TIKI_FORCE_INLINE uint32						countSubstring( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE sint32						indexOf( TChar c ) const;
-		TIKI_FORCE_INLINE sint32						indexOf( TChar c, uint32 index ) const;
-		TIKI_FORCE_INLINE sint32						indexOf( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE sint32						indexOf( const BasicString<TChar>& str, uint32 index ) const;
-		TIKI_FORCE_INLINE sint32						lastIndexOf( TChar c ) const;
-		TIKI_FORCE_INLINE sint32						lastIndexOf( const BasicString<TChar>& str ) const;
+		TIKI_FORCE_INLINE int							indexOf( TChar c ) const;
+		TIKI_FORCE_INLINE int							indexOf( TChar c, uint32 index ) const;
+		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str ) const;
+		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str, uint32 index ) const;
+		TIKI_FORCE_INLINE int							lastIndexOf( TChar c ) const;
+		TIKI_FORCE_INLINE int							lastIndexOf( const BasicString<TChar>& str ) const;
 
 		TIKI_FORCE_INLINE bool							contains(TChar c) const;
 		TIKI_FORCE_INLINE bool							contains(const BasicString<TChar>& str) const;

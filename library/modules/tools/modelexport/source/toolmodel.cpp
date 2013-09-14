@@ -76,7 +76,7 @@ namespace tiki
 		// Skinning
 		const XmlElement* pControllers = m_xml.findNodeByName( "library_controllers" );
 
-		if ( pControllers != nullptr )
+		if ( pControllers != nullptr && pControllers->elements != nullptr )
 		{
 			const XmlElement* pController = m_xml.findFirstChild( "controller", pControllers );
 
