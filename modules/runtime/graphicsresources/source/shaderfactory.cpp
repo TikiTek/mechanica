@@ -60,37 +60,37 @@ namespace tiki
 		{
 			switch ( pShaderResource->getShaderType() )
 			{
-			case ShaderTypes_ComputeShader:
+			case ShaderType_ComputeShader:
 				{
 					ID3D11ComputeShader* pComputeShader = (ID3D11ComputeShader*)pShaderObject;
 					pComputeShader->Release();
 				}
 				break;
-			case ShaderTypes_DomainShader:
+			case ShaderType_DomainShader:
 				{
 					ID3D11DomainShader* pDomainShader = (ID3D11DomainShader*)pShaderObject;
 					pDomainShader->Release();
 				}
 				break;
-			case ShaderTypes_GeometrieShader:
+			case ShaderType_GeometrieShader:
 				{
 					ID3D11GeometryShader* pGeometryShader = (ID3D11GeometryShader*)pShaderObject;
 					pGeometryShader->Release();
 				}
 				break;
-			case ShaderTypes_HullShader:
+			case ShaderType_HullShader:
 				{
 					ID3D11HullShader* pHullShader = (ID3D11HullShader*)pShaderObject;
 					pHullShader->Release();
 				}
 				break;
-			case ShaderTypes_PixelShader:
+			case ShaderType_PixelShader:
 				{
 					ID3D11PixelShader* pPixelShader = (ID3D11PixelShader*)pShaderObject;
 					pPixelShader->Release();
 				}
 				break;
-			case ShaderTypes_VertexShader:
+			case ShaderType_VertexShader:
 				{
 					ID3D11VertexShader* pVertexShader = (ID3D11VertexShader*)pShaderObject;
 					pVertexShader->Release();
@@ -109,7 +109,7 @@ namespace tiki
 		TIKI_ASSERT( pInitData );
 
 		const uint32* pInfo		= (const uint32*)pInitData;
-		const ShaderTypes type	= (ShaderTypes)pInfo[ 0u ];
+		const ShaderType type	= (ShaderType)pInfo[ 0u ];
 		const uint32 dataLength	= pInfo[ 1u ];
 		pInfo += 2u;
 
@@ -118,7 +118,7 @@ namespace tiki
 
 		switch ( type )
 		{
-		case ShaderTypes_ComputeShader:
+		case ShaderType_ComputeShader:
 			{
 				ID3D11ComputeShader* pComputeShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreateComputeShader( pData, dataLength, nullptr, &pComputeShader ) );
@@ -126,7 +126,7 @@ namespace tiki
 				pShader = pComputeShader;
 			}
 			break;
-		case ShaderTypes_DomainShader:
+		case ShaderType_DomainShader:
 			{
 				ID3D11DomainShader* pDomainShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreateDomainShader( pData, dataLength, nullptr, &pDomainShader ) );
@@ -134,7 +134,7 @@ namespace tiki
 				pShader = pDomainShader;
 			}
 			break;
-		case ShaderTypes_GeometrieShader:
+		case ShaderType_GeometrieShader:
 			{
 				ID3D11GeometryShader* pGeometryShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreateGeometryShader( pData, dataLength, nullptr, &pGeometryShader ) );
@@ -142,7 +142,7 @@ namespace tiki
 				pShader = pGeometryShader;
 			}
 			break;
-		case ShaderTypes_HullShader:
+		case ShaderType_HullShader:
 			{
 				ID3D11HullShader* pHullShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreateHullShader( pData, dataLength, nullptr, &pHullShader ) );
@@ -150,7 +150,7 @@ namespace tiki
 				pShader = pHullShader;
 			}
 			break;
-		case ShaderTypes_PixelShader:
+		case ShaderType_PixelShader:
 			{
 				ID3D11PixelShader* pPixelShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreatePixelShader( pData, dataLength, nullptr, &pPixelShader ) );
@@ -158,7 +158,7 @@ namespace tiki
 				pShader = pPixelShader;
 			}
 			break;
-		case ShaderTypes_VertexShader:
+		case ShaderType_VertexShader:
 			{
 				ID3D11VertexShader* pVertexShader = nullptr;
 				TIKI_VERIFY0( m_pGraphicsHandles->pDevice->CreateVertexShader( pData, dataLength, nullptr, &pVertexShader ) );

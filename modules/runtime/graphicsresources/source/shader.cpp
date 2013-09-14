@@ -21,7 +21,7 @@ namespace tiki
 		
 	}
 
-	void Shader::initialize( ShaderTypes type, void* pShaderObject, TGBlob* pBlob )
+	void Shader::initialize( ShaderType type, void* pShaderObject, TGBlob* pBlob )
 	{
 		TIKI_ASSERT( pShaderObject );
 

@@ -7,6 +7,7 @@ module_add_sources(source/*.*)
 module_add_sources(include/tiki/shaderconverter/*.hpp)
 
 module_import(dlls)
+module_import(trex)
 module_import(converterbase)
 
 module_add_linklib(d3dcompiler.lib)

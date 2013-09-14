@@ -43,8 +43,8 @@ namespace tiki
 	{
 		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 
-		string functionNames[ ShaderTypes_Count ];
-		for (size_t i = 0u; i < ShaderTypes_Count; ++i)
+		string functionNames[ ShaderType_Count ];
+		for (size_t i = 0u; i < ShaderType_Count; ++i)
 		{
 			functionNames[ i ] = shaderStart[ i ].toUpper() + "_Main";
 		}
@@ -53,7 +53,7 @@ namespace tiki
 		{
 			if ( it->first.endsWith( "_function_name" ) )
 			{
-				for (size_t i = 1u; i < ShaderTypes_Count; ++i)
+				for (size_t i = 1u; i < ShaderType_Count; ++i)
 				{
 					if ( it->first.toLower().startsWith( shaderStart[ i ] ) )
 					{
@@ -73,12 +73,12 @@ namespace tiki
 			const ConversionInputFile& file = params.inputFiles[ i ];
 
 			const char* pFunctionName	= nullptr;
-			ShaderTypes type			= ShaderTypes_Effect;
-			for (size_t i = 1u; i < ShaderTypes_Count; ++i)
+			ShaderType type				= ShaderType_Effect;
+			for (size_t i = 1u; i < ShaderType_Count; ++i)
 			{
 				if ( file.typeString.toLower().startsWith( shaderStart[ i ] ) )
 				{
-					type			= (ShaderTypes)i;
+					type			= (ShaderType)i;
 					pFunctionName	= functionNames[ i ].cStr();
 					break;
 				}
@@ -98,7 +98,7 @@ namespace tiki
 
 			size_t shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-			if ( params.arguments.getBool( "compile_debug" ) )
+			if ( params.arguments.getOptionalBool( "compile_debug", false ) )
 			{
 				shaderFlags |= D3DCOMPILE_DEBUG;
 			}

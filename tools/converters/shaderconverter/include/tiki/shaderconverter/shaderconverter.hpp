@@ -15,18 +15,6 @@ namespace tiki
 
 	protected:
 
-		enum ShaderTypes
-		{
-			ShaderTypes_Effect,
-			ShaderTypes_VertexShader,
-			ShaderTypes_PixelShader,
-			ShaderTypes_GeometrieShader,
-			ShaderTypes_HullShader,
-			ShaderTypes_DomainShader,
-			ShaderTypes_ComputeShader,
-			ShaderTypes_Count
-		};
-
 		virtual size_t			getConverterRevision() const { return 1u; }
 
 		virtual crc32			getInputType() const;
@@ -39,6 +27,18 @@ namespace tiki
 		virtual bool			startConversionJob( const ConversionParameters& params ) const;
 
 	private:
+
+		enum ShaderType
+		{
+			ShaderType_Effect,
+			ShaderType_VertexShader,
+			ShaderType_PixelShader,
+			ShaderType_GeometrieShader,
+			ShaderType_HullShader,
+			ShaderType_DomainShader,
+			ShaderType_ComputeShader,
+			ShaderType_Count
+		};
 
 		//Mutex					m_mutex;
 
