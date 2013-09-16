@@ -1,7 +1,10 @@
 
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
+#include "tiki/base/file.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/stringparse.hpp"
+
 #include "trexpp.h"
 
 namespace tiki
@@ -78,7 +81,7 @@ namespace tiki
 		}
 	}
 
-	static string resolveIncludes( const string& shaderCode )
+	static string resolveIncludes( const string& shaderCode, const List< string >& includeDirs )
 	{
 		string resultCode = shaderCode;
 
@@ -89,9 +92,34 @@ namespace tiki
 		cstring endPath;
 		while ( regex.Search( resultCode.cStr(), &beginPath, &endPath ) )
 		{
-			const string path = string( beginPath, endPath - beginPath );
+			string path = string( beginPath, endPath - beginPath );
 			
-			resultCode = resultCode.replace( path, "penis" );
+			for (size_t i = 0u; i < includeDirs.getCount(); ++i)
+			{
+				const string fullPath = path::combine( includeDirs[ i ], path );
+
+				if ( file::exists( fullPath ) )
+				{
+					path = fullPath;
+					break;
+				}
+			}
+
+			if ( !file::exists( path ) )
+			{
+				TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
+				return nullptr;
+			}
+
+			Array< uint8 > fileData;
+			if ( !file::readAllBytes( path, fileData ) )
+			{
+				TIKI_TRACE_ERROR( "open include file failed: %s\n", path.cStr() );
+				return nullptr;
+			}
+
+			const string fileText = string( reinterpret_cast< const char* >( fileData.getData() ) );			
+			resultCode = resultCode.replace( path, fileText );
 		}
 
 		return resultCode;
@@ -99,30 +127,65 @@ namespace tiki
 
 	void ShaderPreprocessor::create( const string& shaderText )
 	{
-		string featuresLine = shaderText.substring( 0u, shaderText.indexOf( '\n' ) );
+		// resolve includes
+		List< string > includeDirs;
+
+
+
+		const string shaderSourceCode = resolveIncludes( shaderText, includeDirs );
+
+		// parse features
+		const string featuresLine = shaderText.substring( 0u, shaderText.indexOf( '\n' ) );
 
 		if ( featuresLine.startsWith( "//" ) == false )
 		{
-			ShaderVariant variant;
-			variant.variantHash = 0u;
-			variant.sourceCode = shaderText;
-
-			m_variants.create( &variant, 1u );
+			TIKI_TRACE_ERROR( "no feature list found. shader can't converted.\n" );
 			return;
 		}
-
+		
 		const cstring shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		bool shaderEnabled[ TIKI_COUNT( shaderStart ) ];
 		List< ShaderFeature > shaderFeatures[ TIKI_COUNT( shaderStart ) ];
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( shaderStart ) == ShaderType_Count );
 
 		parseShaderFeatures( shaderEnabled, shaderFeatures, shaderStart, TIKI_COUNT( shaderStart ), featuresLine );
 
+		for (size_t i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
+		{
+			if ( shaderEnabled[ i ] )
+			{
+				List< ShaderVariant > variants;
 
+				for (size_t j = 0u; j < shaderFeatures[ i ].getCount(); ++j)
+				{
+					const ShaderFeature& feature = shaderFeatures[ i ][ j ];
+					List< ShaderVariant > featureVariants;
+
+					for (size_t l = 0u; l < feature.maxValue; ++l)
+					{
+						const size_t bitMask = l << feature.startBit;
+
+						for (size_t k = 0u; k < variants.getCount(); ++k)
+						{
+							ShaderVariant variant = variants[ k ];
+							variant.bitMask |= bitMask;
+							
+							featureVariants.add( variant );
+						}
+					}
+
+					variants.addRange( featureVariants );
+				}
+			}
+		}
 
 	}
 
 	void ShaderPreprocessor::dispose()
 	{
-		m_variants.dispose();
+		for (size_t i = 0u; i < TIKI_COUNT( m_variants ); ++i)
+		{
+			m_variants[ i ].dispose();
+		}
 	}
 }

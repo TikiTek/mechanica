@@ -10,18 +10,7 @@
 namespace tiki
 {
 	class ShaderFactory;
-
-	enum ShaderType
-	{
-		ShaderType_Effect,
-		ShaderType_VertexShader,
-		ShaderType_PixelShader,
-		ShaderType_GeometrieShader,
-		ShaderType_HullShader,
-		ShaderType_DomainShader,
-		ShaderType_ComputeShader,
-		ShaderType_Count
-	};
+	enum ShaderType;
 
 	class Shader : public Resource
 	{

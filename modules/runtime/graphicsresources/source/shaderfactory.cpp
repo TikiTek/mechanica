@@ -3,6 +3,7 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/fourcc.hpp"
+#include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/graphicsresources/shader.hpp"
 
 #include "graphicshandles.hpp"

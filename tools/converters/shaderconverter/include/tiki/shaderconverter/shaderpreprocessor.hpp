@@ -3,14 +3,14 @@
 #define TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
 
 #include "tiki/base/string.hpp"
+#include "tiki/graphicsbase/shadertype.hpp"
 
 namespace tiki
 {
 	struct ShaderVariant
 	{
-		crc32	variantHash;
-
-		string	sourceCode;
+		crc32	bitMask;
+		string	defineCode;
 	};
 
 	class ShaderPreprocessor
@@ -22,12 +22,13 @@ namespace tiki
 		void					create( const string& shaderText );
 		void					dispose();
 
-		size_t					getVariantCount() const				{ return m_variants.getCount(); }
-		const ShaderVariant&	getVariantByIndex( size_t index )	{ return m_variants[ index ]; }
+		bool					isTypeEnabled( ShaderType type ) const				{ return m_variants[ type ].getCount() != 0u; }
+		size_t					getVariantCount( ShaderType type ) const			{ return m_variants[ type ].getCount(); }
+		const ShaderVariant&	getVariantByIndex( ShaderType type, size_t index )	{ return m_variants[ type ][ index ]; }
 
 	private:
 
-		Array< ShaderVariant >	m_variants;
+		Array< ShaderVariant >	m_variants[ ShaderType_Count ];
 
 	};
 }
