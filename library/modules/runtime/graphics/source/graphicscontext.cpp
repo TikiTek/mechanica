@@ -11,6 +11,7 @@
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsbase/primitivetopologies.hpp"
+#include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/graphicsresources/shader.hpp"
 #include "tiki/math/rectangle.hpp"

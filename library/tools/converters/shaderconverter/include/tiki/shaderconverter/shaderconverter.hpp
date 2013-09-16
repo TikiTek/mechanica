@@ -3,7 +3,7 @@
 #define TIKI_SHADERCONVERTER_HPP
 
 #include "tiki/converterbase/converterbase.hpp"
-#include "tiki/threading/mutex.hpp"
+//#include "tiki/threading/mutex.hpp"
 
 namespace tiki
 {
@@ -27,18 +27,6 @@ namespace tiki
 		virtual bool			startConversionJob( const ConversionParameters& params ) const;
 
 	private:
-
-		enum ShaderType
-		{
-			ShaderType_Effect,
-			ShaderType_VertexShader,
-			ShaderType_PixelShader,
-			ShaderType_GeometrieShader,
-			ShaderType_HullShader,
-			ShaderType_DomainShader,
-			ShaderType_ComputeShader,
-			ShaderType_Count
-		};
 
 		//Mutex					m_mutex;
 

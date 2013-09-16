@@ -8,6 +8,7 @@
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/toolbase/filestream.hpp"
 
 #if TIKI_PLATFORM_WIN
