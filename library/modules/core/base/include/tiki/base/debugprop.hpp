@@ -57,7 +57,7 @@ namespace tiki
 	public:
 
 		DebugPropBool( cstring pName, const bool defaultValue )
-			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
+			: DebugProp( pName, "PENIS"/*TIKI_CURRENT_MODULE*/, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
 		{			
 		}
 
@@ -83,7 +83,7 @@ namespace tiki
 	public:
 
 		DebugPropFloat( cstring pName, const float defaultValue, const float minValue, const float maxValue )
-			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
+			: DebugProp( pName, "PENIS"/*TIKI_CURRENT_MODULE*/, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
 		}
 

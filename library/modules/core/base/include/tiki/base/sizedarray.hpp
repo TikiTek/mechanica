@@ -57,6 +57,6 @@ namespace tiki
 	};
 }
 
-#include "sizedarray.inl"
+#include "../../../source/sizedarray.inl"
 
 #endif // TIKI_SIZEDARRAY_HPP

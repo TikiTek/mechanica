@@ -2,6 +2,7 @@
 #include "tiki/framework/inputsystem.hpp"
 
 #include "tiki/base/platform.hpp"
+#include "tiki/framework/mainwindow.hpp"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>

@@ -1,5 +1,5 @@
 
-Module = class{ name = nil, config = nil, dependencies = {}, files = {}, includes = {} };
+Module = class{ name = nil, config = nil, dependencies = {}, source_files = {}, includes = {} };
 
 global_module_storage = {};
 
@@ -14,24 +14,24 @@ function find_module( module_name )
 	return nil;
 end
 
-function Module:new( name )
-	local module_new = setmetatable( {}, self );
+function Module:new( name, initFunc )
+	local module_new = class_instance( self );
 	module_new.name		= name;
 	module_new.config	= PlatformConfiguration:new();
 	
 	table.insert( global_module_storage, module_new );
 
-	print( name..": "..path.getdirectory( _SCRIPT ) );
+	--print( name..": "..path.getdirectory( _SCRIPT ) );
+
+	if ( initFunc ~= nil and type( initFunc ) == "function" ) then
+		initFunc( module_new );
+	end
 
 	return module_new;
 end
 
 function Module:add_files( file_name )
-	--print( "add_files:" );
-	--print( file_name );
-	--print( path.getabsolute( file_name ) );
-	--print( path.getdirectory( file_name ) );
-	table.insert( self.files, path.getabsolute( file_name ) );
+	table.insert( self.source_files, path.getabsolute( file_name ) );
 end
 
 function Module:add_include_dir( include_dir )
@@ -39,11 +39,11 @@ function Module:add_include_dir( include_dir )
 end
 
 function Module:set_define( name, value, configuration, platform )
-	self.config.set_define( name, value, configuration, platform );
+	self.config:set_define( name, value, configuration, platform );
 end
 
 function Module:set_flag( name, configuration, platform )
-	self.config.set_flag( name, configuration, platform );
+	self.config:set_flag( name, configuration, platform );
 end
 
 function Module:add_dependency( module_name )
@@ -67,17 +67,16 @@ end
 
 function Module:finalize( configuration, platform )
 	if ( configuration == nil and platform == nil ) then
-		files( self.files );
+		files( self.source_files );
 		includedirs( self.includes );
-		for i,file in pairs( self.files ) do
+		
+		--[[for i,file in pairs( self.source_files ) do
 			print( "File: "..file );
 		end
 		for i,incdir in pairs( self.includes ) do
 			print( "Include: "..incdir );
-		end
-	elseif ( platform == nil and self.config.configurations[ configuration ] ~= nil ) then
-		self.config.configurations[ configuration ].apply();
-	elseif ( self.config.platforms[ platform ] ~= nil and self.config.platforms[ platform ].configurations[ configuration ] ~= nil ) then
-		self.config.platforms[ platform ].configurations[ configuration ].apply();
+		end]]--
 	end
+
+	self.config:get_config( configuration, platform ):apply();
 end

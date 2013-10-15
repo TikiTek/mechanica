@@ -94,6 +94,6 @@ namespace tiki
 	} TIKI_POST_ALIGN( 16 );
 }
 
-#include "quaternion.inl"
+#include "../../../source/quaternion.inl"
 
 #endif // TIKI_QUATERNION_HPP__

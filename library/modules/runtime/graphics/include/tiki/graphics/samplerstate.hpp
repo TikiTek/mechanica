@@ -3,6 +3,8 @@
 
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
 
+#include "tiki/graphicsbase/color.hpp"
+
 #include "graphicstypes.hpp"
 
 namespace tiki

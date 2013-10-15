@@ -26,7 +26,7 @@ function Project:new( name, platforms, configurations, module, type )
 		error("Not enough arguments.")
 	end
 
-	local project_new = setmetatable( {}, self );
+	local project_new = class_instance( self );
 	project_new.name			= name;
 	project_new.type			= type;
 	project_new.config			= PlatformConfiguration:new();
@@ -43,11 +43,11 @@ function Project:new( name, platforms, configurations, module, type )
 end
 
 function Project:set_define( name, value, configuration, platform )
-	self.config.set_define( name, value, configuration, platform );
+	self.config:set_define( name, value, configuration, platform );
 end
 
 function Project:set_flag( name, configuration, platform )
-	self.config.set_flag( name, configuration, platform );
+	self.config:set_flag( name, configuration, platform );
 end
 
 function Project:finalize()
@@ -58,11 +58,44 @@ function Project:finalize()
 	local modules = {};
 	self.module:resolve_dependency( modules );
 
-	for i,module in pairs( modules ) do
-		module:finalize();
+	self.module:finalize();
+	for i,cur_module in pairs( modules ) do
+		--print( "Module: "..cur_module.name );
+		cur_module:finalize();
 	end
-   
-	--files { "include/**/*.hpp", "source/*.cpp" }
+
+	for i,configuration in pairs( self.configurations ) do
+		self.module:finalize( configuration );
+
+		for j,cur_module in pairs( modules ) do
+			cur_module:finalize( configuration );
+		end
+
+		local project_config = self.config:get_config( configuration );
+		if project_config then
+			project_config:apply();
+		end
+	end
+
+	for platform_name,platform in pairs( self.platforms ) do
+		for j,configuration in pairs( self.configurations ) do
+			self.module:finalize( configuration, platform_name );
+
+			for k,cur_module in pairs( modules ) do
+				cur_module:finalize( configuration, platform_name );
+			end	
+			
+			local project_config = self.config:get_config( configuration, platform_name );
+			if project_config then
+				project_config:apply();
+			end				
+		end
+	end
+
+	defines { "DEBUG", "TIKI_ON=2", "TIKI_OFF=1", "TIKI_CURRENT_MODULE=PENIS" }
+	   
+	configuration "x32"
+	defines { "TIKI_BUILD_32BIT=TIKI_ON", "TIKI_BUILD_64BIT=TIKI_OFF", "TIKI_PLATFORM_WIN=TIKI_ON", "TIKI_PLATFORM_LINUX=TIKI_OFF" }
  
 	configuration "Debug"
 	defines { "DEBUG", "TIKI_BUILD_DEBUG=TIKI_ON" }

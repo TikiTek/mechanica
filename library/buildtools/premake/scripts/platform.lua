@@ -2,7 +2,7 @@
 Platform = class{ name = nil, configurations = {} };
 
 function Platform:new( name, configs )
-	local platform_new = setmetatable( {}, self );
+	local platform_new = class_instance( self );
 
 	platform_new.name = name;
 	

@@ -52,6 +52,6 @@ namespace tiki
 	};
 }
 
-#include "resourcemanager.inl"
+#include "../../../source/resourcemanager.inl"
 
 #endif // TIKI_RESOURCEMANAGER_HPP

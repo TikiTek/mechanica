@@ -7,9 +7,11 @@
 #include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphicsbase/primitivetopologies.hpp"
 #include "tiki/graphicsresources/font.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/graphicsresources/shader.hpp"
+#include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki

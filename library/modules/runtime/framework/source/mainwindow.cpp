@@ -113,15 +113,15 @@ namespace tiki
 
 		HINSTANCE hInst = GetModuleHandle( nullptr );
 
-		TIKI_DECLARE_STACKANDZERO( WNDCLASSEX, win );
-		win.cbSize			= sizeof( WNDCLASSEX );
+		TIKI_DECLARE_STACKANDZERO( WNDCLASSEXW, win );
+		win.cbSize			= sizeof( WNDCLASSEXW );
 		win.hInstance		= hInst;
 		win.lpfnWndProc		= &windowProc;
 		win.lpszClassName	= m_windowClass.cStr();
 		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
 		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
 
-		HRESULT r = RegisterClassEx( &win );
+		HRESULT r = RegisterClassExW( &win );
 		if (FAILED(r))
 		{
 			MessageBoxA(NULL, "Can't register Class.", params.pWindowTitle, MB_HELP);
@@ -131,7 +131,7 @@ namespace tiki
 		m_eventBuffer.create();
 		s_pEventBuffer = &m_eventBuffer;
 
-		HWND hWnd = CreateWindow(
+		HWND hWnd = CreateWindowW(
 			m_windowClass.cStr(),
 			m_windowTitle.cStr(),
 			WS_OVERLAPPEDWINDOW,

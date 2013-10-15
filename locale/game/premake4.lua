@@ -7,6 +7,9 @@ game:add_files( "include/**/*.hpp" );
 game:add_include_dir( "include" );
 
 game:add_dependency( "base" );
+game:add_dependency( "framework" );
+game:add_dependency( "gameflow" );
+game:add_dependency( "gamestates" );
 
 local game_project = Project:new(
 	"game",

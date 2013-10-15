@@ -194,7 +194,11 @@ namespace tiki
 
 		if ( info.refCount == 0u )
 		{
-			safeRelease( &info.format.m_pInputLayout );
+			if ( info.format.m_pInputLayout != nullptr )
+			{
+				info.format.m_pInputLayout->Release();
+				info.format.m_pInputLayout = nullptr;
+			}
 			info.typeCrc = 0u;
 		}
 	}

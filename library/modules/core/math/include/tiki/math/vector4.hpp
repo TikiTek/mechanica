@@ -92,6 +92,6 @@ namespace tiki
 	} TIKI_POST_ALIGN( 16 );
 }
 
-#include "vector4.inl"
+#include "../../../source/vector4.inl"
 
 #endif // TIKI_VECTOR4_HPP__

@@ -2,6 +2,7 @@
 #ifndef TIKI_PIXELFORMAT_HPP__INCLUDED
 #define TIKI_PIXELFORMAT_HPP__INCLUDED
 
+#include "tiki/base/assert.hpp"
 #include "tiki/base/inline.hpp"
 
 namespace tiki

@@ -41,11 +41,30 @@ function vardump(value, depth, key)
   end
 end
 
+function copy_instance( target, source )
+	for name,value in pairs( source ) do		
+		if ( type( value ) == "table" and name ~= "__index" ) then
+			target[ name ] = {};
+			copy_instance( target[ name ], value );
+		else
+			target[ name ] = value;
+		end
+	end
+end
+
 function class( init )
 	local cls = init;
 	cls.__index = cls;
 
 	return cls;
+end
+
+function class_instance( class )
+	local new_instance = {};
+	copy_instance( new_instance, class );
+	setmetatable( new_instance, class );
+
+	return new_instance;
 end
 
 function include_sub_directories()

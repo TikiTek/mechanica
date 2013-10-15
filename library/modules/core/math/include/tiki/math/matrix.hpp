@@ -135,6 +135,6 @@ namespace tiki
 	} TIKI_POST_ALIGN( 16 );
 }
 
-#include "matrix.inl"
+#include "../../../source/matrix.inl"
 
 #endif // TIKI_MATRIX_HPP__

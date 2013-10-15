@@ -2,6 +2,9 @@
 #include "tiki/graphicsresources/model.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/framework/framework.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/graphicsresources/material.hpp"
 
 namespace tiki
 {

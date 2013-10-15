@@ -2,6 +2,7 @@
 #include "tiki/base/string.hpp"
 
 #include <string>
+#include <stdarg.h>
 
 namespace tiki
 {
