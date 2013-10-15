@@ -9,6 +9,7 @@
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/shaderconverter/shaderpreprocessor.hpp"
 #include "tiki/toolbase/filestream.hpp"
 
 #if TIKI_PLATFORM_WIN
@@ -45,34 +46,27 @@ namespace tiki
 		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 
 		string functionNames[ ShaderType_Count ];
-		for (size_t i = 0u; i < ShaderType_Count; ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
-			functionNames[ i ] = shaderStart[ i ].toUpper() + "_Main";
-		}
-
-		for (auto it = params.arguments.getMap().begin(); it != params.arguments.getMap().end(); it++)
-		{
-			if ( it->first.endsWith( "_function_name" ) )
-			{
-				for (size_t i = 1u; i < ShaderType_Count; ++i)
-				{
-					if ( it->first.toLower().startsWith( shaderStart[ i ] ) )
-					{
-						functionNames[ i ] = it->second;
-						break;
-					}
-				}
-			}
-			else
-			{
-				TIKI_TRACE_WARNING( "unknown argument: %s\n", it->first.cStr() );
-			}
+			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
 
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const ConversionInputFile& file = params.inputFiles[ i ];
 
+			string sourceCode;
+			if ( file::readAllText( file.fileName, sourceCode ) == false )
+			{
+				TIKI_TRACE_ERROR( "Can't open file.\n" );
+				continue;
+			}
+
+			ShaderPreprocessor preprocessor;
+			preprocessor.create( sourceCode );
+
+			
+			
 			const char* pFunctionName	= nullptr;
 			ShaderType type				= ShaderType_Effect;
 			for (size_t i = 1u; i < ShaderType_Count; ++i)

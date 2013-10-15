@@ -34,6 +34,27 @@ namespace tiki
 		return DeleteFileA( fileName.cStr() ) != 0; 
 	}
 
+	bool file::readAllText( const string& fileName, string& contentTarget )
+	{
+		FILE* pFile;
+		fpos_t len;
+
+		if ( fopen_s( &pFile, fileName.cStr(), "rb" ) )
+		{
+			return false;
+		}
+
+		fseek( pFile, 0, SEEK_END );
+		fgetpos( pFile, &len );
+		fseek( pFile, 0, SEEK_SET );
+
+		contentTarget = string( (uint)len );
+		fread_s( const_cast< char* >( contentTarget.cStr() ), (size_t)len, (size_t)len, 1u, pFile );
+		fclose( pFile );
+
+		return true;		
+	}
+
 	bool file::readAllBytes( const string& fileName, Array< uint8 >& buffer, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
 		FILE* pFile;
