@@ -116,6 +116,6 @@ namespace tiki
 	string							convertString( const wstring& str );
 }
 
-#include "string.inl"
+#include "../../../source/string.inl"
 
 #endif // TIKI_STRING_HPP

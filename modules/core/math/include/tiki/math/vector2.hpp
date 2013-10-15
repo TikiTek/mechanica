@@ -92,6 +92,6 @@ namespace tiki
 	} TIKI_POST_ALIGN( 16 );
 }
 
-#include "vector2.inl"
+#include "../../../source/vector2.inl"
 
 #endif // TIKI_VECTOR2_HPP

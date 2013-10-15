@@ -2,7 +2,10 @@
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "tiki/base/file.hpp"
+#include "tiki/base/fourcc.hpp"
 #include "tiki/base/path.hpp"
+#include "tiki/resource/factorybase.hpp"
+#include "tiki/resource/resource.hpp"
 
 namespace tiki
 {

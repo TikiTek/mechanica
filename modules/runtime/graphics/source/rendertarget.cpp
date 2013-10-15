@@ -1,7 +1,9 @@
 #include "tiki/graphics/rendertarget.hpp"
 
-#include "graphicshandles.hpp"
 #include "tiki/framework/framework.hpp"
+#include "tiki/graphics/texturedata.hpp"
+
+#include "graphicshandles.hpp"
 
 namespace tiki
 {

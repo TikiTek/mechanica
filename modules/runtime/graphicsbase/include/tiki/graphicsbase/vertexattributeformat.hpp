@@ -2,6 +2,9 @@
 #ifndef TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED
 #define TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED
 
+#include "tiki/base/assert.hpp"
+#include "tiki/base/inline.hpp"
+
 namespace tiki
 {
 	enum VertexAttributeFormat

@@ -104,6 +104,6 @@ namespace tiki
 	} TIKI_POST_ALIGN(16);
 }
 
-#include "vector3.inl"
+#include "../../../source/vector3.inl"
 
 #endif // TIKI_VECTOR3_HPP__

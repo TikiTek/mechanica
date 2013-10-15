@@ -8,6 +8,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/graphicsbase/color.hpp"
 
 namespace tiki
 {
@@ -21,6 +22,7 @@ namespace tiki
 	class VertexFormat;
 	class WindowEventBuffer;
 	struct Rectangle; 
+	struct Vector2;
 
 	class ImmediateRenderer
 	{

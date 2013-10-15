@@ -207,7 +207,7 @@ namespace tiki
 }
 
 #if TIKI_PLATFORM_WIN
-#	include "simd_win.inl"
+#	include "../../../source/simd_win.inl"
 #endif
 
 #endif // TIKI_SIMD_HPP

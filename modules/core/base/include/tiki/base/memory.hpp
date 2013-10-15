@@ -43,6 +43,6 @@ namespace tiki
 	}
 }
 
-#include "memory.inl"
+#include "../../../source/memory.inl"
 
 #endif // TIKI_MEMORY_HPP

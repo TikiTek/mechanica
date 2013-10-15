@@ -1,6 +1,7 @@
 
 #include "tiki/base/timer.hpp"
 
+#include "tiki/base/assert.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/base/types.hpp"
 

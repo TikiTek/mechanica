@@ -1,6 +1,7 @@
 
 #include "tiki/graphics/texturedata.hpp"
 
+#include "tiki/base/memory.hpp"
 #include "tiki/base/functions.hpp"
 
 #include "graphicshandles.hpp"
@@ -74,7 +75,7 @@ namespace tiki
 		m_description = description;
 
 		TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
-		desc.Format				= getD3dFormat( (PixelFormat)description.format );
+		desc.Format				= getD3dFormat2( (PixelFormat)description.format );
 		desc.Width				= description.width;
 		desc.Height				= description.height;
 		desc.Usage				= D3D11_USAGE_DEFAULT;
