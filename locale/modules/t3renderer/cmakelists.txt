@@ -1,0 +1,7 @@
+
+add_module(t3renderer)
+
+module_add_includes(include)
+
+module_add_sources(source/*.cpp) 
+module_add_sources(include/tiki/t3renderer/*.hpp) 
