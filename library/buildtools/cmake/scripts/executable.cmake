@@ -168,6 +168,14 @@ function(finalize_exe NAME SUBSYSTEM)
 	  set(ALL_SOURCE ${ALL_SOURCE} ${FILE})
     endforeach(FILE)
   endforeach(VAR)
+  
+  # write include directories
+  set(INCLUDE_DIRECTORIES_LISTFILE "${CMAKE_CURRENT_BINARY_DIR}/lists/include_directories.txt")
+  file(WRITE ${INCLUDE_DIRECTORIES_LISTFILE} "")
+ 
+  foreach(DIR ${EXE_INCLUDE})
+	file(APPEND ${INCLUDE_DIRECTORIES_LISTFILE} "${DIR}\n")
+  endforeach(DIR)
 
   #########
   # WICHTIG
