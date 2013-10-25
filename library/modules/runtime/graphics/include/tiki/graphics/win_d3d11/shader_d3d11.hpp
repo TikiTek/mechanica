@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	class ShaderPlatformData
+	struct ShaderPlatformData
 	{
 		union
 		{

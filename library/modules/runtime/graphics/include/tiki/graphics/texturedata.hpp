@@ -26,15 +26,13 @@ namespace tiki
 		TextureData();
 		~TextureData();
 
+		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData = nullptr );
+		void						dispose();
+
 		size_t						getWidth() const		{ return m_description.width; }
 		size_t						getHeight() const		{ return m_description.height; }
 
 		const TextureDescription&	getDesription() const	{ return m_description; }
-
-	private: // friends
-
-		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData = nullptr );
-		void						dispose();
 
 	private:
 

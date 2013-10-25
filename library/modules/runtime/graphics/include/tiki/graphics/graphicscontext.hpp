@@ -29,6 +29,7 @@ namespace tiki
 	class TextureData;
 	class VertexBuffer;
 	class VertexFormat;
+	class VertexInputBinding;
 	struct GraphicsHandles;
 	struct Rectangle;
 	struct Vector2;
@@ -70,7 +71,7 @@ namespace tiki
 		void				setVertexShader( const Shader* pVertexShader );
 		void				setPixelShader( const Shader* pPixelShader );
 
-		void				setInputLayout( const VertexFormat* pVertexFormat );
+		void				setInputLayout( const VertexInputBinding* pVertexInputBinding );
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
 		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );
@@ -106,6 +107,9 @@ namespace tiki
 
 		const RenderTarget*			m_pRenderTarget;
 
+		const RenderTarget*			m_pRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
+		size_t						m_currentRenderPassDepth;
+
 		const Shader*				m_pVertexShader;
 		const VertexInputBinding*	m_pVertexInputBinding;
 		const SamplerState*			m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
@@ -116,6 +120,10 @@ namespace tiki
 		const SamplerState*			m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
 		const TextureData*			m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
 		const ConstantBuffer*		m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
+
+		void						invalidateState();
+		bool						validateDrawCall() const;
+
 	};
 }
 

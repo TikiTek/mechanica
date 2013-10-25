@@ -4,12 +4,9 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/functions.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicshandles.hpp"
-
-#include <d3d11.h>
+#include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki
 {
@@ -68,16 +65,6 @@ namespace tiki
 		return D3D11_FILTER_COMPARISON_ANISOTROPIC;
 	}
 
-	SamplerState::SamplerState()
-		: m_pSamplerState( nullptr )
-	{
-	}
-
-	SamplerState::~SamplerState()
-	{
-		TIKI_ASSERT( m_pSamplerState == nullptr );
-	}
-
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
 		GraphicsStateObject::create( crcT( &creationParamter ) );
@@ -97,20 +84,20 @@ namespace tiki
 		samplerDesc.MinLOD			= 0;
 		samplerDesc.MaxLOD			= D3D11_FLOAT32_MAX;
 
-		HRESULT result = getHandles( graphicsSystem )->pDevice->CreateSamplerState( &samplerDesc, &m_pSamplerState );
+		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &samplerDesc, &m_platformData.pSamplerState );
 		if( FAILED( result ) )
 		{
 			return false;
 		}
 
-		return m_pSamplerState != nullptr;
+		return m_platformData.pSamplerState != nullptr;
 	}
 
 	void SamplerState::dispose()
 	{
-		TIKI_ASSERT( m_pSamplerState != nullptr );
-		m_pSamplerState->Release();
-		m_pSamplerState = nullptr;
+		TIKI_ASSERT( m_platformData.pSamplerState != nullptr );
+		m_platformData.pSamplerState->Release();
+		m_platformData.pSamplerState = nullptr;
 
 		GraphicsStateObject::dispose();
 	}

@@ -25,6 +25,11 @@ namespace tiki
 		static GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 	}
 
+	static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
+	{
+		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, 4u );
+	}
+
 	TGDevice*	graphics::getDevice( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pDevice; }
 	TGContext*	graphics::getContext( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pContext; }
 
@@ -78,6 +83,8 @@ namespace tiki
 		}
 
 		graphics::initViewPort( m_platformData, backBufferSize );
+
+		m_samplerStates.create( 32u );
 
 		if ( !m_commandBuffer.create( *this ) )
 		{

@@ -7,6 +7,7 @@ namespace tiki
 	enum GraphicsSystemLimits
 	{
 		GraphicsSystemLimits_RenderTargetSlots			= 8u,
+		GraphicsSystemLimits_RenderPassStackDepth		= 4u,
 		GraphicsSystemLimits_MaxInputStreams			= 4u,
 		GraphicsSystemLimits_VertexShaderTextureSlots	= 16u,	
 		GraphicsSystemLimits_PixelShaderTextureSlots	= 16u,	
