@@ -1,40 +1,23 @@
-#ifndef TIKI_BUFFER_HPP__
-#define TIKI_BUFFER_HPP__
+#ifndef TIKI_BASEBUFFER_HPP__
+#define TIKI_BASEBUFFER_HPP__
 
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
-#include "graphicstypes.hpp"
-
 namespace tiki
 {
-	class GraphicsSystem;
-
 	enum GraphicsBufferType
 	{
 		GraphicsBufferType_ConstantBuffer,
 		GraphicsBufferType_IndexBuffer,
 		GraphicsBufferType_VertexBuffer
 	};
-
-	class BaseBuffer
-	{
-		friend class GraphicsContext;
-
-	protected:
-
-								BaseBuffer();
-								~BaseBuffer();
-
-		void					create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
-		void					dispose();
-		
-	private:
-
-		TGBuffer*				m_pBuffer;
-		bool					m_dynamic;
-
-	};
 }
 
-#endif // TIKI_BUFFER_HPP__
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/basebuffer_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/basebuffer_opengl4.hpp"
+#endif
+
+#endif // TIKI_BASEBUFFER_HPP__

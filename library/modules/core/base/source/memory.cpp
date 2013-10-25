@@ -4,9 +4,13 @@
 #include <memory>
 #include <malloc.h>
 
+#if TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+#	include <string.h>
+#endif
+
 namespace tiki
 {
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 	void* memory::allocAlign( size_t size, size_t alignment )
 	{
 		return _aligned_malloc( size, alignment );

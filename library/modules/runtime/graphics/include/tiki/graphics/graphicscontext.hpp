@@ -6,6 +6,15 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphicsbase/color.hpp"
 #include "tiki/graphicsbase/graphissystemlimits.hpp"
+#include "tiki/graphicsbase/primitivetopologies.hpp"
+
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/graphicscontext_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/graphicscontext_d3d11.hpp"
+#else
+#	error Platform not supported
+#endif
 
 namespace tiki
 {
@@ -20,7 +29,6 @@ namespace tiki
 	class TextureData;
 	class VertexBuffer;
 	class VertexFormat;
-	enum PrimitiveTopology;
 	struct GraphicsHandles;
 	struct Rectangle;
 	struct Vector2;
@@ -41,7 +49,7 @@ namespace tiki
 
 		ClearMask_Color			= ClearMask_Color0 | ClearMask_Color1 | ClearMask_Color2 | ClearMask_Color3 | ClearMask_Color4 | ClearMask_Color5 | ClearMask_Color6 | ClearMask_Color7,
 		ClearMask_DepthStencil	= ClearMask_Depth | ClearMask_Stencil,
-		ClearMask_All			= ClearMask_Color | ClearMask_Depth | ClearMask_Stencil,
+		ClearMask_All			= ClearMask_Color | ClearMask_DepthStencil,
 	};
 	TIKI_COMPILETIME_ASSERT( GraphicsSystemLimits_RenderTargetSlots == 8u );
 
@@ -93,21 +101,21 @@ namespace tiki
 
 	private:
 
-		GraphicsSystem*		m_pGraphicsSystem;
-		GraphicsHandles*	m_pHandles;
+		GraphicsSystem*				m_pGraphicsSystem;
+		GraphicsContextPlatformData	m_platformData;
 
-		const RenderTarget*	m_pRenderTarget;
+		const RenderTarget*			m_pRenderTarget;
 
-		const Shader*			m_pVertexShader;
-		const SamplerState*		m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
-		const TextureData*		m_pVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
-		const ConstantBuffer*	m_pVertexConstants[ GraphicsSystemLimits_VertexShaderConstantSlots ];
+		const Shader*				m_pVertexShader;
+		const VertexInputBinding*	m_pVertexInputBinding;
+		const SamplerState*			m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const TextureData*			m_pVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const ConstantBuffer*		m_pVertexConstants[ GraphicsSystemLimits_VertexShaderConstantSlots ];
 
-		const Shader*			m_pPixelShader;
-		const SamplerState*		m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
-		const TextureData*		m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
-		const ConstantBuffer*	m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
-
+		const Shader*				m_pPixelShader;
+		const SamplerState*			m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const TextureData*			m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const ConstantBuffer*		m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 	};
 }
 

@@ -6,6 +6,8 @@ namespace tiki
 {
 	enum ShaderType
 	{
+		ShaderType_Invalid = -1,
+
 		ShaderType_Effect,
 		ShaderType_VertexShader,
 		ShaderType_PixelShader,
@@ -13,6 +15,7 @@ namespace tiki
 		ShaderType_HullShader,
 		ShaderType_DomainShader,
 		ShaderType_ComputeShader,
+
 		ShaderType_Count
 	};
 }

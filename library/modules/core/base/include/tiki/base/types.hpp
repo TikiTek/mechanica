@@ -2,8 +2,8 @@
 #ifndef TIKI_TYPES_HPP
 #define TIKI_TYPES_HPP
 
-#define TIKI_ENABLED( value ) ( ( value ) == TIKI_ON )
-#define TIKI_DISABLED( value ) ( ( value ) != TIKI_ON )
+#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )
+#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )
 
 namespace tiki
 {
@@ -37,20 +37,20 @@ namespace tiki
 	typedef unsigned char		uint8;
 	typedef unsigned short		uint16;
 	typedef unsigned int		uint32;
-	typedef unsigned long int	uint64;
+	typedef unsigned long long int	uint64;
 
 	typedef char				sint8;
 	typedef short				sint16;
 	typedef int					sint32;
-	typedef long int			sint64;
+	typedef long long int		sint64;
 
 	typedef unsigned int		crc32;
 	typedef unsigned int		fourcc;
 
 #	if TIKI_ENABLED( TIKI_BUILD_64BIT )
-	typedef long int			sint;
-	typedef unsigned long int	uint;
-	typedef unsigned long int	size_t;
+	typedef long long int		sint;
+	typedef unsigned long long int	uint;
+	typedef unsigned long long int	size_t;
 #	else
 	typedef int					sint;
 	typedef unsigned int		uint;
@@ -87,12 +87,12 @@ namespace tiki
 
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
-		class_name ## ( const class_name ## & );	\
-		void operator=( const class_name ## & )
+		class_name ( const class_name & );			\
+		void operator=( const class_name & )
 
 #define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name ) public:	\
-		class_name ## () {}										\
-		~ ## class_name() {}									\
+		class_name () {}										\
+		~ class_name() {}										\
 																\
 	private:													\
 		class_name ( const class_name & );						\
@@ -100,7 +100,7 @@ namespace tiki
 
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\
-	typedef handle_name ## Type* handle_name;
+	typedef handle_name ## Type* handle_name
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	include <crtdbg.h>

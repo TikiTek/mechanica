@@ -6,8 +6,8 @@
 
 namespace tiki
 {
-	struct InstanceHandleType;
-	typedef InstanceHandleType* InstanceHandle;
+	TIKI_DEFINE_HANLE( InstanceHandle );
+	TIKI_DEFINE_HANLE( WindowHandle );
 
 	enum PlatformType
 	{

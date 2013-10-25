@@ -4,7 +4,11 @@
 
 #include "tiki/graphicsbase/texturedescription.hpp"
 
-#include "graphicstypes.hpp"
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/texturedata_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/texturedata_opengl4.hpp"
+#endif
 
 namespace tiki
 {
@@ -14,34 +18,29 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_CLASS( TextureData );
 		friend class GraphicsContext;
+		friend class GraphicsSystem;
 		friend class RenderTarget;
 
 	public:
 
-									TextureData();
-									~TextureData();
-
-		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData = nullptr );
-		void						dispose();
+		TextureData();
+		~TextureData();
 
 		size_t						getWidth() const		{ return m_description.width; }
 		size_t						getHeight() const		{ return m_description.height; }
 
 		const TextureDescription&	getDesription() const	{ return m_description; }
 
+	private: // friends
+
+		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData = nullptr );
+		void						dispose();
+
 	private:
 
 		TextureDescription	m_description;
+		TextureDataPlatform	m_platformData;
 
-		union
-		{
-			TGResource*		m_pResource;
-			TGTexture1D*	m_pTexture1d;
-			TGTexture2D*	m_pTexture2d;
-			TGTexture3D*	m_pTexture3d;
-		};
-		TGShaderResource*	m_pShaderView;
-		
 	};
 }
 

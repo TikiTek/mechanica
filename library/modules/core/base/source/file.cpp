@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 	bool file::exists( const string& fileName )
 	{
 		return (GetFileAttributesA( fileName.cStr() ) != INVALID_FILE_ATTRIBUTES);
@@ -111,7 +111,8 @@ namespace tiki
 		return 0u;
 	}
 
-#elif TIKI_PLATFORM_LINUX
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+
 	bool file::exists( const string& fileName )
 	{
 		return false;
@@ -142,7 +143,7 @@ namespace tiki
 		return false;
 	}
 
-	tiki::uint32 file::getLastChange( const string& fileName )
+	crc32 file::getLastChangeCrc( const string& fileName )
 	{
 		return 0u;
 	}

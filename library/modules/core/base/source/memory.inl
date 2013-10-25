@@ -5,7 +5,7 @@
 
 namespace tiki
 {
-#if TIKI_BUILD_TOOLS
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 	template<typename T>
 	TIKI_FORCE_INLINE T* memory::newAlign( size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{

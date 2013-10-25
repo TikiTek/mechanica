@@ -9,8 +9,6 @@
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphicsbase/fontchar.hpp"
 
-#include "graphicstypes.hpp"
-
 namespace tiki
 {
 	class FontFactory;
@@ -21,8 +19,6 @@ namespace tiki
 		TIKI_NONCOPYABLE_CLASS( Font );
 
 	public:
-
-		friend class GpuContext;
 
 		const TextureData&		getTextureData() const { return m_textureData; }	
 		void					fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const;

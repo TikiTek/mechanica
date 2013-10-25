@@ -5,7 +5,13 @@
 
 #include "tiki/graphicsbase/color.hpp"
 
-#include "graphicstypes.hpp"
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/graphicsstatesplatformdata_d3d11.hpp"
+#elif  TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/graphicsstatesplatformdata_opengl4.hpp"
+#else
+#	error Platform not supported
+#endif
 
 namespace tiki
 {
@@ -34,20 +40,20 @@ namespace tiki
 		AddressMode addressV;
 		AddressMode addressW;
 		
-		FilterMode magFilter;
-		FilterMode mipFilter;
+		FilterMode	magFilter;
+		FilterMode	mipFilter;
 		
-		size_t maxAnisotropy;
-		Color borderColor;
+		uint		maxAnisotropy;
+		Color		borderColor;
 
 		SamplerStateParamters()
 		{
-			addressU = AddressMode_Wrap;
-			addressV = AddressMode_Wrap;
-			addressW = AddressMode_Wrap;
+			addressU		= AddressMode_Wrap;
+			addressV		= AddressMode_Wrap;
+			addressW		= AddressMode_Wrap;
 			
-			magFilter = FilterMode_Linear;
-			mipFilter = FilterMode_Neares;
+			magFilter		= FilterMode_Linear;
+			mipFilter		= FilterMode_Neares;
 
 			maxAnisotropy	= 1u;
 			borderColor		= TIKI_COLOR_BLACK;
@@ -56,21 +62,18 @@ namespace tiki
 
 	class SamplerState : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_CLASS( SamplerState );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( SamplerState );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 
-	protected:
+	private: // friends
 
-		SamplerState();
-		~SamplerState();
-
-		bool				create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter );
-		void				dispose();
+		bool						create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter );
+		void						dispose();
 
 	private:
 
-		TGSamplerState*		m_pSamplerState;
+		SamplerStatePlatformData	m_platformData;
 
 	};
 }

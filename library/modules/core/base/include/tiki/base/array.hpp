@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __TIKI_ARRAY_HPP_INCLUDED__
+#define __TIKI_ARRAY_HPP_INCLUDED__
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
@@ -116,3 +118,5 @@ namespace tiki
 
 	};
 }
+
+#endif // __TIKI_ARRAY_HPP_INCLUDED__

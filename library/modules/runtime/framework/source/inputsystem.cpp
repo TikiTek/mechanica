@@ -4,6 +4,11 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/framework/mainwindow.hpp"
 
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dinput8.lib")
+
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <Windows.h>
@@ -28,7 +33,7 @@ namespace tiki
 
 	bool InputSystem::create( const InputSystemParameters& params )
 	{
-		HINSTANCE hinst = GetModuleHandle( nullptr );
+		HINSTANCE hinst = (HINSTANCE)getInstanceHandle();
 
 		HRESULT result = DirectInput8Create( hinst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pInputDevice, nullptr );
 		if( FAILED( result ) || m_pInputDevice == nullptr )
@@ -189,3 +194,71 @@ namespace tiki
 		return (( m_previousState.keyboardState[ key ] & 0x80 ) && !( m_currentState.keyboardState[ key ] & 0x80 ) );
 	}
 }
+
+#else
+
+namespace tiki
+{
+	InputSystem::InputSystem()
+	{
+	}
+
+	InputSystem::~InputSystem()
+	{
+	}
+
+	bool InputSystem::create( const InputSystemParameters& params )
+	{
+		return true;
+	}
+
+	void InputSystem::dispose( void )
+	{
+	}
+
+	void InputSystem::update( const WindowEventBuffer& windowEvents )
+	{
+	}
+
+	bool InputSystem::isButtonDown( const MouseButtons button ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::isButtonUp( const MouseButtons button ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::isButtonPressed( const MouseButtons button ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::isButtonReleased( const MouseButtons button ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::isKeyDown( Keys key ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::isKeyUp( Keys key ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::hasKeyPressed( Keys key ) const
+	{
+		return false;
+	}
+
+	bool InputSystem::hasKeyReleased( Keys key ) const
+	{
+		return false;
+	}
+}
+
+#endif

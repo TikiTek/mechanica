@@ -22,9 +22,8 @@ namespace tiki
 		VertexFormatParameters vertexParams;
 		vertexParams.pAttributes	= (const VertexAttribute*)pBinary;
 		vertexParams.attributeCount	= m_desc.vertexAttributeCount;
-		vertexParams.pShader		= pMaterial->getVertexShader();
 
-		m_pVertexFormat				= VertexFormat::getVertexFormat( vertexParams );
+		//m_pVertexFormat				= VertexFormat::getVertexFormat( vertexParams );
 
 		pBinary = alignPtr( pBinary + sizeof( VertexAttribute ) * m_desc.vertexAttributeCount, 16u );
 		m_vertexBuffer.create( graphicsSystem, m_desc.vertexCount, m_desc.vertexStride, false, pBinary );
@@ -39,7 +38,7 @@ namespace tiki
 
 	void ModelGeometry::dispose()
 	{
-		VertexFormat::releaseVertexFormat( m_pVertexFormat );
+		//VertexFormat::releaseVertexFormat( m_pVertexFormat );
 		m_pVertexFormat	= nullptr;
 
 		m_vertexBuffer.dispose();

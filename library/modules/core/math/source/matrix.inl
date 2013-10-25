@@ -632,7 +632,7 @@ namespace tiki
 		const float num8 = -(m5 * num - m7 * num4 + m8 * num5);
 		const float num9 = m5 * num2 - m6 * num4 + m8 * num6;
 		const float num10 = -(m5 * num3 - m6 * num5 + m7 * num6);
-#if TIKI_BUILD_DEBUG
+#if TIKI_ENABLED( TIKI_USE_ASSERT )
 		const float tmp = (m * num7 + m2 * num8 + m3 * num9 + m4 * num10);
 		TIKI_ASSERT( !f32::isZero( tmp ) );
 		const float num11 = 1.0f / tmp;

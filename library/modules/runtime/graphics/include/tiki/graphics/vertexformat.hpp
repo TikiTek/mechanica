@@ -1,11 +1,12 @@
 #ifndef TIKI_VERTEXFORMAT_HPP
 #define TIKI_VERTEXFORMAT_HPP
 
+#include "tiki/base/fixedarray.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphicsbase/graphicsstateobject.hpp"
 #include "tiki/graphicsbase/graphissystemlimits.hpp"
 #include "tiki/graphicsbase/vertexattribute.hpp"
-
-#include "graphicstypes.hpp"
 
 namespace tiki
 {
@@ -15,40 +16,24 @@ namespace tiki
 	{
 		const VertexAttribute*	pAttributes;
 		size_t					attributeCount;
-
-		const Shader*			pShader;
 	};
 
-	class VertexFormat
+	class VertexFormat : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_CLASS( VertexFormat );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( VertexFormat );
 		friend class GraphicsContext;
-		friend struct VertexFormatInfo;
 
 	public:
 
-		static void					initializeSystem();
-		static void					disposeSystem();
+		void		create( const VertexFormatParameters& creationParameters );
+		void		dispose();
 
-		static const VertexFormat*	getVertexFormat( const VertexFormatParameters& params );
-		static void					releaseVertexFormat( const VertexFormat* pVertexFormat );
-
-		size_t						getVertexStride( const size_t streamIndex ) const { return m_vertexStride[ streamIndex ]; }
+		uint		getVertexStride( uint streamIndex ) const { return m_vertexStride[ streamIndex ]; }
 
 	private:
 
-		enum
-		{
-			MaxVertexFormatCount	= 64u,
-			MaxFormatDescCount		= 16u,
-		};
-
-									VertexFormat();
-									~VertexFormat();
-
-		size_t						m_vertexStride[ GraphicsSystemLimits_MaxInputStreams ];
-		TGInputLayout*				m_pInputLayout;
-		VertexAttribute				m_attributes[ MaxFormatDescCount ];
+		FixedSizedArray< VertexAttribute, GraphicsSystemLimits_MaxVertexAttributes >	m_attributes[ GraphicsSystemLimits_MaxInputStreams ];
+		FixedSizedArray< uint, GraphicsSystemLimits_MaxInputStreams >					m_vertexStride;
 
 	};
 }

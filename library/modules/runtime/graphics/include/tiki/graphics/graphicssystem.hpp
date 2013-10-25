@@ -9,6 +9,14 @@
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
 #include "tiki/math/vector2.hpp"
 
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/graphicssystem_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/graphicssystem_opengl4.hpp"
+#else
+#	error Platform not implemented
+#endif
+
 namespace tiki
 {
 	struct GraphicsHandles;	
@@ -69,15 +77,12 @@ namespace tiki
 
 	private:
 		
-		size_t					m_frameCount;
+		size_t											m_frameNumber;
+		
+		GraphicsSystemPlatformData						m_platformData;
+		GraphicsContext									m_commandBuffer;
 
-		Vector2					m_backBufferSizeFloat;
-		uint2					m_backBufferSize;
-
-		GraphicsHandles*		m_pHandles;
-		GraphicsContext			m_commandBuffer;
-
-		RenderTarget*			m_pBackBufferTarget;
+		RenderTarget*									m_pBackBufferTarget;
 
 		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
 
