@@ -19,8 +19,9 @@ namespace tiki
 
 	class Shader
 	{
-		friend class GraphicsSystem;
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Shader );
+		friend class GraphicsContext;
+		friend class GraphicsSystem;
 
 	public:
 		

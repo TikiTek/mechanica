@@ -32,16 +32,14 @@ namespace tiki
 		RenderTarget();
 		~RenderTarget();
 
+		void						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
+		void						dispose();
+
 		const TextureData*			getColorTextureData( size_t index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
 		size_t						getColorBufferCount() const					{ return m_colorBufferCount; }
 
 		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }
-
-	private: // friend
-
-		void						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
-		void						dispose();
-
+		
 	private:
 
 		size_t						m_width;

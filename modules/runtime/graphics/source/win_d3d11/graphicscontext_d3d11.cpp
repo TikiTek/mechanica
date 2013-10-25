@@ -11,6 +11,7 @@
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphics/vertexinputbining.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/math/rectangle.hpp"
@@ -22,64 +23,43 @@ namespace tiki
 	GraphicsContext::GraphicsContext()
 	{
 		m_pGraphicsSystem	= nullptr;
-		m_pHandles			= nullptr;
 	}
 
 	GraphicsContext::~GraphicsContext()
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-		TIKI_ASSERT( m_pHandles == nullptr );
+		TIKI_ASSERT( m_platformData.pDevice == nullptr );
+		TIKI_ASSERT( m_platformData.pContext == nullptr );
 	}
 
 	bool GraphicsContext::create( GraphicsSystem& graphicsSystem )
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-		TIKI_ASSERT( m_pHandles == nullptr );
+		TIKI_ASSERT( m_platformData.pDevice == nullptr );
+		TIKI_ASSERT( m_platformData.pContext == nullptr );
 
-		m_pVertexShader = nullptr;
+		m_pGraphicsSystem		= &graphicsSystem;
+		m_platformData.pDevice	= graphics::getDevice( graphicsSystem );
+		m_platformData.pContext	= graphics::getContext( graphicsSystem );
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexSamplerStates ); ++i)
+		m_pRenderTarget = nullptr;
+
+		for (uint i = 0u; i < TIKI_COUNT( m_pRenderPassesStack ); ++i)
 		{
-			m_pVertexSamplerStates[ i ] = nullptr;
+			m_pRenderPassesStack[ i ] = nullptr;
 		}
+		m_currentRenderPassDepth = 0u;
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexTextures ); ++i)
-		{
-			m_pVertexTextures[ i ] = nullptr;
-		}
-
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexConstants ); ++i)
-		{
-			m_pVertexConstants[ i ] = nullptr;
-		}
-
-		m_pPixelShader = nullptr;
-
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelSamplerStates ); ++i)
-		{
-			m_pPixelSamplerStates[ i ] = nullptr;
-		}
-
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelTextures ); ++i)
-		{
-			m_pPixelTextures[ i ] = nullptr;
-		}
-
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelConstants ); ++i)
-		{
-			m_pPixelConstants[ i ] = nullptr;
-		}
-
-		m_pGraphicsSystem	= &graphicsSystem;
-		m_pHandles			= getHandles( graphicsSystem );
+		invalidateState();
 
 		return true;
 	}
 
 	void GraphicsContext::dispose()
 	{
-		m_pGraphicsSystem	= nullptr;
-		m_pHandles			= nullptr;
+		m_pGraphicsSystem		= nullptr;
+		m_platformData.pDevice	= nullptr;
+		m_platformData.pContext	= nullptr;
 	}
 
 	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
@@ -100,7 +80,7 @@ namespace tiki
 
 		if ( depthClearFlags != 0u )
 		{
-			m_pHandles->pContext->ClearDepthStencilView( renderTarget.m_pDepthView, depthClearFlags, depthValue, stencilValue );
+			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.m_pDepthView, depthClearFlags, depthValue, stencilValue );
 		}
 
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
@@ -114,14 +94,14 @@ namespace tiki
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
 			{
-				m_pHandles->pContext->ClearRenderTargetView( renderTarget.m_pColorViews[ i ], &floatColor.x );
+				m_platformData.pContext->ClearRenderTargetView( renderTarget.m_platformData.m_pColorViews[ i ], &floatColor.x );
 			}
 		}
 	}
 
 	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
 	{
-
+		// set render target
 	}
 
 	void GraphicsContext::endRenderPass()
@@ -129,26 +109,9 @@ namespace tiki
 
 	}
 
-	//void GraphicsContext::setMaterial( const Material* pMaterial )
-	//{
-	//	TIKI_ASSERT( pMaterial );
-	//	TIKI_ASSERT( pMaterial->m_pPixelShader );
-	//	TIKI_ASSERT( pMaterial->m_pVertexShader );
-
-	//	setVertexShader( pMaterial->m_pVertexShader );
-	//	setPixelShader( pMaterial->m_pPixelShader );
-
-	//	for( uint i = 0; i < pMaterial->m_textures.getCount(); ++i )
-	//	{
-	//		auto& iatr = pMaterial->m_textures[ i ];
-
-	//		setPixelShaderTexture( &iatr.m_pTexture->getTextureData(), iatr.m_slot );
-	//	}
-	//}
-
-	void GraphicsContext::setInputLayout( const VertexFormat* pVertexFormat )
+	void GraphicsContext::setInputLayout( const VertexInputBinding* pVertexInputBinding )
 	{
-		m_pHandles->pContext->IASetInputLayout( pVertexFormat->m_pInputLayout );
+		m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
 	}
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
@@ -161,7 +124,7 @@ namespace tiki
 		};
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( topologies ) == PrimitiveTopology_Count );
 
-		m_pHandles->pContext->IASetPrimitiveTopology( topologies[ topology ] );
+		m_platformData.pContext->IASetPrimitiveTopology( topologies[ topology ] );
 	}
 
 	void GraphicsContext::setVertexShader( const Shader* pShader )
@@ -171,7 +134,7 @@ namespace tiki
 
 		if ( m_pVertexShader != pShader )
 		{
-			m_pHandles->pContext->VSSetShader( (TGVertexShader*)pShader->getShaderObject(), nullptr, 0 );
+			m_platformData.pContext->VSSetShader( pShader->m_platformData.pVertexShader, nullptr, 0 );
 			m_pVertexShader = pShader;
 		}
 	}
@@ -182,12 +145,11 @@ namespace tiki
 		{
 			if ( pSampler == nullptr )
 			{
-				ID3D11SamplerState* pNullSampler = nullptr;
-				m_pHandles->pContext->VSSetSamplers( slot, 1u, &pNullSampler );
+				m_platformData.pContext->VSSetSamplers( slot, 1u, nullptr );
 			}
 			else
 			{
-				m_pHandles->pContext->VSSetSamplers( slot, 1u, &pSampler->m_pSamplerState );
+				m_platformData.pContext->VSSetSamplers( slot, 1u, &pSampler->m_platformData.pSamplerState );
 			}
 
 			m_pVertexSamplerStates[ slot ] = pSampler;
@@ -196,13 +158,18 @@ namespace tiki
 
 	void GraphicsContext::setVertexShaderTexture( size_t slot, const TextureData* pTextureData )
 	{
-		if ( pTextureData == nullptr )
+		if ( m_pVertexTextures[ slot ] != pTextureData )
 		{
-			m_pHandles->pContext->VSSetShaderResources( slot, 1, nullptr );
-		}
-		else
-		{
-			m_pHandles->pContext->VSSetShaderResources( slot, 1, &pTextureData->m_pShaderView );
+			if ( pTextureData == nullptr )
+			{
+				m_platformData.pContext->VSSetShaderResources( slot, 1, nullptr );
+			}
+			else
+			{
+				m_platformData.pContext->VSSetShaderResources( slot, 1, &pTextureData->m_platformData.pShaderView );
+			}
+
+			m_pVertexTextures[ slot ] = pTextureData;
 		}
 	}
 
@@ -210,7 +177,7 @@ namespace tiki
 	{
 		if ( m_pVertexConstants[ slot ] != &buffer )
 		{
-			m_pHandles->pContext->VSSetConstantBuffers( slot, 1u, &buffer.m_pBuffer );
+			m_platformData.pContext->VSSetConstantBuffers( slot, 1u, &buffer.m_pBuffer );
 			m_pVertexConstants[ slot ] = &buffer;
 		}
 	}
@@ -222,7 +189,7 @@ namespace tiki
 
 		if ( m_pPixelShader != pShader )
 		{
-			m_pHandles->pContext->PSSetShader( (TGPixelShader*) pShader->getShaderObject(), nullptr, 0 );
+			m_platformData.pContext->PSSetShader( pShader->m_platformData.pPixelShader, nullptr, 0 );
 			m_pPixelShader = pShader;
 		}
 	}
@@ -233,12 +200,11 @@ namespace tiki
 		{
 			if ( pSampler == nullptr )
 			{
-				ID3D11SamplerState* pNullSampler = nullptr;
-				m_pHandles->pContext->PSSetSamplers( slot, 1u, &pNullSampler );
+				m_platformData.pContext->PSSetSamplers( slot, 1u, nullptr );
 			}
 			else
 			{
-				m_pHandles->pContext->PSSetSamplers( slot, 1u, &pSampler->m_pSamplerState );
+				m_platformData.pContext->PSSetSamplers( slot, 1u, &pSampler->m_platformData.pSamplerState );
 			}
 
 			m_pPixelSamplerStates[ slot ] = pSampler;
@@ -252,11 +218,11 @@ namespace tiki
 			if ( pTextureData == nullptr )
 			{
 				ID3D11ShaderResourceView* pNullResourceView = nullptr;
-				m_pHandles->pContext->PSSetShaderResources( slot, 1u, &pNullResourceView );
+				m_platformData.pContext->PSSetShaderResources( slot, 1u, &pNullResourceView );
 			}
 			else
 			{
-				m_pHandles->pContext->PSSetShaderResources( slot, 1u, &pTextureData->m_pShaderView );
+				m_platformData.pContext->PSSetShaderResources( slot, 1u, &pTextureData->m_platformData.pShaderView );
 			}
 
 			m_pPixelTextures[ slot ] = pTextureData;
@@ -267,14 +233,14 @@ namespace tiki
 	{
 		if ( m_pPixelConstants[ slot ] != &buffer)
 		{
-			m_pHandles->pContext->PSSetConstantBuffers( slot, 1u, &buffer.m_pBuffer );
+			m_platformData.pContext->PSSetConstantBuffers( slot, 1u, &buffer.m_pBuffer );
 			m_pPixelConstants[ slot ] = &buffer;
 		}
 	}
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		m_pHandles->pContext->IASetIndexBuffer( 
+		m_platformData.pContext->IASetIndexBuffer( 
 			indexBuffer.m_pBuffer,
 			( indexBuffer.m_indexType == IndexType_Uint32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
 			0u
@@ -284,7 +250,7 @@ namespace tiki
 	void GraphicsContext::setVertexBuffer( size_t slot, const VertexBuffer& buffer )
 	{
 		const size_t offset = 0u;
-		m_pHandles->pContext->IASetVertexBuffers( slot, 1u, &buffer.m_pBuffer, &buffer.m_stride, &offset );
+		m_platformData.pContext->IASetVertexBuffers( slot, 1u, &buffer.m_pBuffer, &buffer.m_stride, &offset );
 	}
 	
 	void GraphicsContext::drawGeometry( const uint indexcount, const uint startIndex /*= 0u*/, const uint basevertex /*= 0u */ )
@@ -295,14 +261,14 @@ namespace tiki
 	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )
 	{
 		D3D11_MAPPED_SUBRESOURCE mapped;
-		m_pHandles->pContext->Map( buffer.m_pBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped );
+		m_platformData.pContext->Map( buffer.m_pBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped );
 
 		return mapped.pData;
 	}
 
 	void GraphicsContext::unmapBuffer( BaseBuffer& buffer )
 	{
-		m_pHandles->pContext->Unmap( buffer.m_pBuffer, 0u );
+		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
 	}
 
 	const RenderTarget* GraphicsContext::getBackBuffer() const

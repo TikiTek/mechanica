@@ -8,11 +8,21 @@ namespace tiki
 {
 	struct SamplerStatePlatformData
 	{
+		SamplerStatePlatformData()
+		{
+			pSamplerState = nullptr;
+		}
+
 		TGSamplerState* pSamplerState;
 	};
 
 	struct VertexInputBindingPlatformData
 	{
+		VertexInputBindingPlatformData()
+		{
+			pInputLayout = nullptr;
+		}
+
 		TGInputLayout*	pInputLayout;
 	};
 }
