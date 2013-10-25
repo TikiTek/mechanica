@@ -1,8 +1,8 @@
+#pragma  once
 #ifndef TIKI_RENDERTARGET_HPP__
 #define TIKI_RENDERTARGET_HPP__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/pixelformat.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
@@ -14,6 +14,8 @@
 namespace tiki
 {
 	class GraphicsContext;
+	class GraphicsSystem;
+	class TextureData;
 
 	struct RenderTargetBuffer
 	{

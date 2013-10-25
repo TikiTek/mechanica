@@ -93,7 +93,7 @@ namespace tiki
 		void*				mapBuffer( BaseBuffer& buffer );
 		void				unmapBuffer( BaseBuffer& buffer );
 
-		const RenderTarget*	getBackBuffer() const;
+		const RenderTarget&	getBackBuffer() const;
 
 	protected:
 

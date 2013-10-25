@@ -3,7 +3,8 @@
 local module = Module:new( "graphics" );
 
 module:add_files( "source/global/*.*" );
-module:add_files( "include/tiki/graphics/*.hpp" );
+module:add_files( "source/shader/*.fx" );
+module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "math" );
