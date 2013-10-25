@@ -63,7 +63,7 @@ function Project:finalize()
 
 	for i,var_configuration in pairs( self.configurations ) do
 		configuration{ var_configuration };
-		print( "Configuration: " .. var_configuration );
+		--print( "Configuration: " .. var_configuration );
 
 		self.module:finalize( var_configuration );
 
@@ -80,7 +80,12 @@ function Project:finalize()
 	for i,var_platform in pairs( self.platforms ) do
 		for j,var_configuration in pairs( self.configurations ) do
 			configuration{ var_configuration, var_platform };
-			print( "Configuration: " .. var_configuration .. "/" .. var_platform );
+
+			local path = get_config_dir( var_platform, var_configuration );
+			targetdir( path );
+			objdir( path .. "/obj" );
+
+			print( "Configuration: " .. var_platform .. "/" .. var_configuration );
 
 			self.module:finalize( var_configuration, var_platform );
 

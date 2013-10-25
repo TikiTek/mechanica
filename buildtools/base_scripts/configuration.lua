@@ -19,10 +19,10 @@ function Configuration:apply()
 	for k, v in pairs( self.defines ) do
 		if v ~= nil then
 			defines( { k.."="..v } );
-			print( k.."="..v );
+			--print( k.."="..v );
 		else
 			defines( { k } );
-			print( k );
+			--print( k );
 		end
 	end
 

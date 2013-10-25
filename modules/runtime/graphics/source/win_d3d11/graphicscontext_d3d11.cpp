@@ -4,6 +4,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
@@ -80,7 +81,7 @@ namespace tiki
 
 		if ( depthClearFlags != 0u )
 		{
-			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.m_pDepthView, depthClearFlags, depthValue, stencilValue );
+			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.pDepthView, depthClearFlags, depthValue, stencilValue );
 		}
 
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
@@ -94,7 +95,7 @@ namespace tiki
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
 			{
-				m_platformData.pContext->ClearRenderTargetView( renderTarget.m_platformData.m_pColorViews[ i ], &floatColor.x );
+				m_platformData.pContext->ClearRenderTargetView( renderTarget.m_platformData.pColorViews[ i ], &floatColor.x );
 			}
 		}
 	}
@@ -271,7 +272,7 @@ namespace tiki
 		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
 	}
 
-	const RenderTarget* GraphicsContext::getBackBuffer() const
+	const RenderTarget& GraphicsContext::getBackBuffer() const
 	{
 		return m_pGraphicsSystem->getBackBuffer();
 	}

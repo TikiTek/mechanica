@@ -5,9 +5,9 @@
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
-#include "tiki/math/vector2.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/graphicssystem_d3d11.hpp"
@@ -19,9 +19,6 @@
 
 namespace tiki
 {
-	struct GraphicsHandles;	
-	class RenderTarget;
-
 	enum GraphicsRendererMode
 	{
 		GraphicsRendererMode_Hardware,
@@ -52,11 +49,14 @@ namespace tiki
 	class GraphicsSystem
 	{
 		TIKI_NONCOPYABLE_CLASS( GraphicsSystem );
-		friend GraphicsHandles* getHandles( GraphicsSystem& graphicsSystem );
-		friend class GameFramework;
-		friend struct FrameworkData;
 
 	public:
+
+		GraphicsSystem();
+		~GraphicsSystem();
+
+		bool					create( const GraphicsSystemParameters& params );
+		void					dispose();
 
 		const SamplerState*		createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*		createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
@@ -65,15 +65,8 @@ namespace tiki
 		GraphicsContext*		beginFrame();
 		void					endFrame();
 
-		const RenderTarget*		getBackBuffer() const { return m_pBackBufferTarget; }
+		const RenderTarget&		getBackBuffer() const { return m_backBufferTarget; }
 
-	protected:
-
-		GraphicsSystem();
-		~GraphicsSystem();
-
-		bool					create( const GraphicsSystemParameters& params );
-		void					dispose();
 
 	private:
 		
@@ -82,7 +75,7 @@ namespace tiki
 		GraphicsSystemPlatformData						m_platformData;
 		GraphicsContext									m_commandBuffer;
 
-		RenderTarget*									m_pBackBufferTarget;
+		RenderTarget									m_backBufferTarget;
 
 		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
 

@@ -79,6 +79,14 @@ function include_sub_directories()
 	end
 end
 
+function get_config_dir( platform, configuration )
+	if ( platform == nil or configuration == nil ) then
+		throw( "get_config_dir: too few arguments." );
+	end
+
+	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
+end
+
 function finalize( output_name, projects )
 	local var_platforms = {};
 	local var_configurations = {};
@@ -99,7 +107,7 @@ function finalize( output_name, projects )
 	solution( output_name );
 	configurations( var_configurations );
 	platforms( var_platforms );
-	location( _OPTIONS["outpath"] )
+	location( _OPTIONS[ "outpath" ] )
 
 	for i,project in pairs( projects ) do
 		project:finalize();
