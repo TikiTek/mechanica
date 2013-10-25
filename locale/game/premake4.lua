@@ -6,6 +6,7 @@ game:add_files( "source/*.cpp" );
 game:add_files( "include/**/*.hpp" );
 game:add_include_dir( "include" );
 
+game:add_dependency( "config" );
 game:add_dependency( "base" );
 game:add_dependency( "framework" );
 game:add_dependency( "gameflow" );
