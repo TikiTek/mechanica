@@ -16,12 +16,6 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T isPowerOfTwo( T value )
-	{
-		return countPopulation64( (uint64)value ) == 1;
-	}
-
-	template<typename T>
 	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
 	{
 		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );

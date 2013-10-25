@@ -11,8 +11,8 @@
 
 #else
 
-#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname##( name, defaultValue );
-#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname##( name, defaultValue, minValue, maxValue );
+#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, defaultValue );
+#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname ( name, defaultValue, minValue, maxValue );
 
 #endif
 

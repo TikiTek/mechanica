@@ -1,8 +1,9 @@
 
 #include "tiki/base/string.hpp"
 
-#include <string>
+#include <string.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 namespace tiki
 {
@@ -30,14 +31,14 @@ namespace tiki
 	template<> const wchar_t BasicString<wchar_t>::whiteSpaces[ 4u ]	= { L' ', L'\t', L'\r', L'\n' };
 	template<> StringRefData<wchar_t> BasicString<wchar_t>::emptyData	= StringRefData<wchar_t>();
 
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+
 	string formatString( cstring format, ... )
 	{
 		va_list argptr;
 		va_start( argptr, format );
-
-#if TIKI_PLATFORM_WIN
-
-#pragma warning( disable : 4996 ) //maybe unsafe
+		
+#pragma warning( disable : 4996 )
 		const size_t len = _vsnprintf( nullptr, 0u, format, argptr );
 #pragma warning( default : 4996 )
 		
@@ -50,17 +51,30 @@ namespace tiki
 			nullptr,
 			argptr
 		);
-#elif TIKI_PLATFORM_LINUX
-		size_t len = snprintf( nullptr, 0u, 0u, format, argptr );
-		string str( len );
-
-		sprintf( (char*)str.cStr(), format, argptr );
-#endif
 
 		va_end( argptr );
 
 		return str;
 	}
+
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+
+	string formatString( cstring format, ... )
+	{
+		va_list argptr;
+		va_start( argptr, format );
+
+		const size_t len = snprintf( nullptr, 0u, format, argptr );
+		string str( len );
+
+		sprintf( (char*)str.cStr(), format, argptr );
+
+		va_end( argptr );
+
+		return str;
+	}
+
+#endif
 
 	wstring convertString( const string& str )
 	{

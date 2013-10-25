@@ -38,6 +38,11 @@
 #	define TIKI_TRACE_INFO( format, ... ) ::tiki::debug::traceInfo( format, __VA_ARGS__ )
 #	define TIKI_TRACE_WARNING( format, ... ) ::tiki::debug::traceWarning( format, __VA_ARGS__ )
 #	define TIKI_TRACE_ERROR( format, ... ) ::tiki::debug::traceError( format, __VA_ARGS__ )
+#else
+#	define TIKI_TRACE( format, ... )
+#	define TIKI_TRACE_INFO( format, ... )
+#	define TIKI_TRACE_WARNING( format, ... )
+#	define TIKI_TRACE_ERROR( format, ... )
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )

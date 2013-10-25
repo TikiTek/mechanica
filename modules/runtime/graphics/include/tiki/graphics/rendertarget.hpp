@@ -5,6 +5,12 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/pixelformat.hpp"
 
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	include "win_d3d11/rendertarget_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	include "global_opengl4/rendertarget_opengl4.hpp"
+#endif
+
 namespace tiki
 {
 	class GraphicsContext;
@@ -19,20 +25,22 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_CLASS( RenderTarget );
 		friend class GraphicsContext;
+		friend class GraphicsSystem;
 
 	public:
 
-									RenderTarget();
-									~RenderTarget();
+		RenderTarget();
+		~RenderTarget();
+
+		const TextureData*			getColorTextureData( size_t index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
+		size_t						getColorBufferCount() const					{ return m_colorBufferCount; }
+
+		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }
+
+	private: // friend
 
 		void						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
 		void						dispose();
-
-		const TextureData*			getColorTextureData( size_t index ) const { return m_colorBuffers[ index ].pDataBuffer; }
-		size_t						getColorBufferCount() const { return m_colorBufferCount; }
-
-		const TextureData*			getDepthTextureData() const { return m_depthBuffer.pDataBuffer; }
-
 
 	private:
 
@@ -40,11 +48,11 @@ namespace tiki
 		size_t						m_height;
 
 		RenderTargetBuffer			m_colorBuffers[ GraphicsSystemLimits_RenderTargetSlots ];
-		TGRenderTarget*				m_pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];
 		size_t						m_colorBufferCount;
 
 		RenderTargetBuffer			m_depthBuffer;
-		TGDepthStencil*				m_pDepthView;
+
+		RenderTargetPlatformData	m_platformData;
 
 	};
 }

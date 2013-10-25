@@ -1,16 +1,15 @@
 
 #include "tiki/graphics/texturedata.hpp"
 
-#include "tiki/base/memory.hpp"
+#include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
+#include "tiki/base/memory.hpp"
 
-#include "graphicshandles.hpp"
-
-#include <d3d11.h>
+#include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki
 {
-	static DXGI_FORMAT getD3dFormat2( tiki::PixelFormat pixelFormat )
+	TGFormat graphics::getD3dFormat( PixelFormat pixelFormat )
 	{
 		switch ( pixelFormat )
 		{
@@ -33,21 +32,21 @@ namespace tiki
 		}
 	}
 
-	static UINT getD3dFlags( tiki::TextureFlags flags )
+	static UINT getD3dFlags( TextureFlags flags )
 	{
 		UINT result = 0u;
 
-		if ( tiki::isBitSet( flags, TextureFlags_RenderTarget ) )
+		if ( isBitSet( flags, TextureFlags_RenderTarget ) )
 		{
 			result |= D3D11_BIND_RENDER_TARGET;
 		}
 
-		if ( tiki::isBitSet( flags, TextureFlags_DepthStencil ) )
+		if ( isBitSet( flags, TextureFlags_DepthStencil ) )
 		{
 			result |= D3D11_BIND_DEPTH_STENCIL;
 		}
 
-		if ( tiki::isBitSet( flags, TextureFlags_ShaderInput ) )
+		if ( isBitSet( flags, TextureFlags_ShaderInput ) )
 		{
 			result |= D3D11_BIND_SHADER_RESOURCE;
 		}
@@ -57,34 +56,33 @@ namespace tiki
 
 	TextureData::TextureData()
 	{
-		m_pResource		= nullptr;
-		m_pShaderView	= nullptr;
 	}
 
 	TextureData::~TextureData()
 	{
-		TIKI_ASSERT( m_pResource == nullptr );
-		TIKI_ASSERT( m_pShaderView == nullptr );
+		TIKI_ASSERT( m_platformData.pResource == nullptr );
+		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 	}
 
 	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData /*= nullptr */ )
 	{
-		TIKI_ASSERT( m_pResource == nullptr );
+		TIKI_ASSERT( m_platformData.pResource == nullptr );
+		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 		TIKI_ASSERT( description.type == TextureType_2d ); // currently only 2D textures supported
 
 		m_description = description;
 
 		TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
-		desc.Format				= getD3dFormat2( (PixelFormat)description.format );
+		desc.Format				= graphics::getD3dFormat( (PixelFormat)description.format );
 		desc.Width				= description.width;
-		desc.Height				= description.height;
+		desc.Height				= description.height;		
 		desc.Usage				= D3D11_USAGE_DEFAULT;
 		desc.MipLevels			= 1u;
 		desc.ArraySize			= description.arrayCount;
 		desc.SampleDesc.Count	= 1u;
 		desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );		
 
-		if ( FAILED( getHandles( graphicsSystem )->pDevice->CreateTexture2D( &desc, nullptr, &m_pTexture2d ) ) )
+		if ( FAILED( graphics::getDevice( graphicsSystem )->CreateTexture2D( &desc, nullptr, &m_platformData.pTexture2d ) ) )
 		{
 			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
 			return false;
@@ -95,7 +93,7 @@ namespace tiki
 			const size_t rowPitch	= description.width * ( getBitsPerPixel( (PixelFormat)description.format ) / 8u );
 			const size_t depthPitch	= rowPitch * description.height;
 
-			getHandles( graphicsSystem )->pContext->UpdateSubresource( m_pResource, 0u, nullptr, pInitData, rowPitch, depthPitch );
+			graphics::getContext( graphicsSystem )->UpdateSubresource( m_platformData.pResource, 0u, nullptr, pInitData, rowPitch, depthPitch );
 		}
 
 		if ( isBitSet( description.flags, TextureFlags_ShaderInput ) )
@@ -106,7 +104,7 @@ namespace tiki
 			srvDesc.Texture2D.MipLevels = desc.MipLevels;
 			srvDesc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
 
-			if ( FAILED( getHandles( graphicsSystem )->pDevice->CreateShaderResourceView( m_pResource, &srvDesc, &m_pShaderView ) ) )
+			if ( FAILED( graphics::getDevice( graphicsSystem )->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
 			{
 				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );
 				return false;
@@ -118,16 +116,16 @@ namespace tiki
 
 	void TextureData::dispose()
 	{
-		if ( m_pShaderView != nullptr )
+		if ( m_platformData.pShaderView != nullptr )
 		{
-			m_pShaderView->Release();
-			m_pShaderView = nullptr;
+			m_platformData.pShaderView->Release();
+			m_platformData.pShaderView = nullptr;
 		}
 
-		if ( m_pResource != nullptr )
+		if ( m_platformData.pResource != nullptr )
 		{
-			m_pResource->Release();
-			m_pResource = nullptr;
+			m_platformData.pResource->Release();
+			m_platformData.pResource = nullptr;
 		}
 	}
 }

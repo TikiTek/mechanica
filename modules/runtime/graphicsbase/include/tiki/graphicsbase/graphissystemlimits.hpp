@@ -12,6 +12,8 @@ namespace tiki
 		GraphicsSystemLimits_PixelShaderTextureSlots	= 16u,	
 		GraphicsSystemLimits_VertexShaderConstantSlots	= 4u,	
 		GraphicsSystemLimits_PixelShaderConstantSlots	= 4u,	
+
+		GraphicsSystemLimits_MaxVertexAttributes		= 16u,	
 	};
 }
 

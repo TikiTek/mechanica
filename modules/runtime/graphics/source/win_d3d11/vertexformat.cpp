@@ -106,7 +106,7 @@ namespace tiki
 
 	void VertexFormat::disposeSystem()
 	{
-#if TIKI_USE_ASSERT
+#if TIKI_ENABLED( TIKI_USE_ASSERT )
 		size_t count = 0u;
 		for (size_t i = 0u; i < s_formats.getCount(); ++i)
 		{

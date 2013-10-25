@@ -7,16 +7,15 @@
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphicsbase/primitivetopologies.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/graphicsresources/material.hpp"
-#include "tiki/graphicsresources/shader.hpp"
 #include "tiki/math/rectangle.hpp"
 
-#include "graphicshandles.hpp"
+#include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki
 {
@@ -87,7 +86,7 @@ namespace tiki
 	{
 		float4 floatColor;
 		color::toFloat4( floatColor, color );
-
+		
 		UINT depthClearFlags = 0u;
 		if ( isBitSet( clearMask, ClearMask_Depth ) )
 		{
@@ -104,6 +103,13 @@ namespace tiki
 			m_pHandles->pContext->ClearDepthStencilView( renderTarget.m_pDepthView, depthClearFlags, depthValue, stencilValue );
 		}
 
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color2 == ClearMask_Color0 << 2u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color3 == ClearMask_Color0 << 3u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color4 == ClearMask_Color0 << 4u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color5 == ClearMask_Color0 << 5u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color6 == ClearMask_Color0 << 6u );
+		TIKI_COMPILETIME_ASSERT( ClearMask_Color7 == ClearMask_Color0 << 7u );
 		for (size_t i = 0u; i < renderTarget.m_colorBufferCount; ++i)
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )

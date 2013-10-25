@@ -1,7 +1,7 @@
 
 #include "tiki/base/platform.hpp"
 
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 
 #include <windows.h>
 
@@ -34,9 +34,9 @@ namespace tiki
 	}
 }
 
-#elif TIKI_PLATFORM_LINUX
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 
-int main( int argc, cstring* argv )
+int main( int argc, const char** argv )
 {
 	return tiki::mainEntryPoint();	
 }
@@ -54,6 +54,8 @@ namespace tiki
 	}
 }
 
-#elif TIKI_PLATFORM_APPLE
+#else
+
 #	error Platform not implemented
+
 #endif

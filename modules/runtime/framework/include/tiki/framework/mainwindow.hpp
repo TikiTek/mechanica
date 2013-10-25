@@ -2,6 +2,7 @@
 #ifndef TIKI_MAINWINDOW_HPP
 #define TIKI_MAINWINDOW_HPP
 
+#include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
@@ -9,8 +10,6 @@
 
 namespace tiki
 {
-	TIKI_DEFINE_HANLE( WindowHandle )
-
 	struct WindowParameters
 	{
 		uint		width;

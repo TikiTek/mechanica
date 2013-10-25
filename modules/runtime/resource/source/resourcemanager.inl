@@ -3,6 +3,7 @@
 #define TIKI_RESOURCEMANAGER_INL
 
 #include "tiki/base/crc32.hpp"
+#include "tiki/resource/resource.hpp"
 
 namespace tiki
 {

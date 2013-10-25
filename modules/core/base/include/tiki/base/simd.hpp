@@ -5,15 +5,15 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/inline.hpp"
 
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include <emmintrin.h>
 #	include <xmmintrin.h>
 #endif
 
-#define TIKI_USE_SIMDINLINE 1
+#define TIKI_USE_SIMDINLINE TIKI_ON
 #define TIKI_SIMD_ALIGNMENT 16u
 
-#if TIKI_USE_SIMDINLINE
+#if TIKI_ENABLED( TIKI_USE_SIMDINLINE )
 #	define TIKI_SIMD_INLINE TIKI_FORCE_INLINE
 #else
 #	define TIKI_SIMD_INLINE
@@ -206,7 +206,7 @@ namespace tiki
 	}
 }
 
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include "../../../source/simd_win.inl"
 #endif
 

@@ -3,12 +3,8 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/framework/framework.hpp"
 
-#include "graphicshandles.hpp"
-
-#include <dxgi.h>
-#include <d3d11.h>
+#include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki
 {
@@ -56,7 +52,7 @@ namespace tiki
 		initData.pSysMem = pInitData;
 		const D3D11_SUBRESOURCE_DATA* pD3dInitData = ( pInitData != nullptr ? &initData : nullptr );
 
-		TIKI_ASSERT( SUCCEEDED( getHandles( graphicsSystem )->pDevice->CreateBuffer( &desc, pD3dInitData, &m_pBuffer ) ) );
+		TIKI_ASSERT( SUCCEEDED( graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer ) ) );
 	}
 
 	void BaseBuffer::dispose()
