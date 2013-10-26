@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE Quaternion::Quaternion( void ):
+	TIKI_FORCE_INLINE Quaternion::Quaternion():
 		x( 0.0f ), y( 0.0f ), z( 0.0f ), w( 1.0f )
 	{
 
@@ -36,7 +36,7 @@ namespace tiki
 
 	}
 
-	TIKI_FORCE_INLINE Quaternion::~Quaternion( void )
+	TIKI_FORCE_INLINE Quaternion::~Quaternion()
 	{
 
 	}
@@ -72,12 +72,12 @@ namespace tiki
 		return arr[ index ];
 	}
 
-	TIKI_FORCE_INLINE Quaternion::operator float*( void )
+	TIKI_FORCE_INLINE Quaternion::operator float*()
 	{
 		return arr;
 	}
 
-	TIKI_FORCE_INLINE Quaternion::operator const float*( void ) const
+	TIKI_FORCE_INLINE Quaternion::operator const float*() const
 	{
 		return arr;
 	}
@@ -106,18 +106,18 @@ namespace tiki
 			f32::isEquals( w, 1.0f, epsilon );
 	}
 
-	TIKI_FORCE_INLINE float Quaternion::length( void ) const
+	TIKI_FORCE_INLINE float Quaternion::length() const
 	{
 		const float num = x * x + y * y + z * z + w * w;
 		return sqrtf( num );
 	}
 
-	TIKI_FORCE_INLINE float Quaternion::lengthSq( void ) const
+	TIKI_FORCE_INLINE float Quaternion::lengthSq() const
 	{
 		return x * x + y * y + z * z + w * w;
 	}
 
-	TIKI_FORCE_INLINE void Quaternion::conjugate( void )
+	TIKI_FORCE_INLINE void Quaternion::conjugate()
 	{
 		x = -x;
 		y = -y;
@@ -131,10 +131,10 @@ namespace tiki
 		z = -quat.z;
 	}
 
-	TIKI_FORCE_INLINE void Quaternion::normalize( void )
+	TIKI_FORCE_INLINE void Quaternion::normalize()
 	{
 		TIKI_ASSERT( !f32::isZero( this->lengthSq() ) );
-		const float tmp = tiki::rsqrt( this->lengthSq() );
+		const float tmp = math::rsqrt( this->lengthSq() );
 		mul( tmp );
 	}
 
@@ -142,7 +142,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( !f32::isZero( quat.lengthSq() ) );
 
-		const float tmp = tiki::rsqrt( quat.lengthSq() );
+		const float tmp = math::rsqrt( quat.lengthSq() );
 		mul( tmp );
 	}
 
@@ -198,7 +198,7 @@ namespace tiki
 		result.z += tmp * to.z;
 		result.w += tmp * to.w;
 
-		const float rsqrt = tiki::rsqrt( result.lengthSq() );
+		const float rsqrt = math::rsqrt( result.lengthSq() );
 
 		mul( result, rsqrt );
 	}
@@ -218,12 +218,12 @@ namespace tiki
 		}
 
 		Quaternion result;
-		result.x = tiki::lerp( from.x, secound.x, koeff );
-		result.y = tiki::lerp( from.y, secound.y, koeff );
-		result.z = tiki::lerp( from.z, secound.z, koeff );
-		result.w = tiki::lerp( from.w, secound.w, koeff );
+		result.x = f32::lerp( from.x, secound.x, koeff );
+		result.y = f32::lerp( from.y, secound.y, koeff );
+		result.z = f32::lerp( from.z, secound.z, koeff );
+		result.w = f32::lerp( from.w, secound.w, koeff );
 
-		const float rsqrt = tiki::rsqrt( result.lengthSq() );
+		const float rsqrt = math::rsqrt( result.lengthSq() );
 
 		mul( result, rsqrt );
 	}
@@ -258,7 +258,7 @@ namespace tiki
 		w = num2 * from.w + num3 * to.w;
 	}
 
-	TIKI_FORCE_INLINE void Quaternion::negate( void )
+	TIKI_FORCE_INLINE void Quaternion::negate()
 	{
 		x = -x;
 		y = -y;
