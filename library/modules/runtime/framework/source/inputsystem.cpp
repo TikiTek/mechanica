@@ -80,7 +80,7 @@ namespace tiki
 		return true;
 	}
 
-	void InputSystem::dispose( void )
+	void InputSystem::dispose()
 	{
 		if ( m_pInputDevice == nullptr )
 		{
@@ -159,17 +159,17 @@ namespace tiki
 		return ( pPreviousState->rgbButtons[ button ] != 0 ) && ( pCurrentState->rgbButtons[ button ] == 0 );
 	}
 
-	//const Vector2& InputSystem::getMousePosition( void ) const
+	//const Vector2& InputSystem::getMousePosition() const
 	//{
 	//	return m_position;
 	//}
 
-	//const Vector2& InputSystem::getMousePositionDisplay( void ) const
+	//const Vector2& InputSystem::getMousePositionDisplay() const
 	//{
 	//	return m_positionDisplay;
 	//}
 
-	//const Vector2& InputSystem::getDistance( void ) const
+	//const Vector2& InputSystem::getDistance() const
 	//{
 	//	return m_distance;
 	//}
@@ -212,7 +212,7 @@ namespace tiki
 		return true;
 	}
 
-	void InputSystem::dispose( void )
+	void InputSystem::dispose()
 	{
 	}
 

@@ -33,7 +33,7 @@ namespace tiki
 		virtual void			initialize();
 		virtual void			shutdown();
 
-		virtual void			update( void );
+		virtual void			update();
 		virtual void			render( GraphicsContext* pGraphicsContext ) const;
 
 	private:

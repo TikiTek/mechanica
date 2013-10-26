@@ -33,7 +33,7 @@ namespace tiki
 	public:
 
 		bool					create( const InputSystemParameters& params );
-		void					dispose( void );
+		void					dispose();
 
 		void					update( const WindowEventBuffer& windowEvents );
 
@@ -49,9 +49,9 @@ namespace tiki
 		bool					isButtonPressed( MouseButtons button ) const;
 		bool					isButtonReleased( MouseButtons button ) const;
 
-		const Vector2&			getMousePosition( void ) const;
-		const Vector2&			getMousePositionDisplay( void ) const;
-		const Vector2&			getDistance( void ) const;
+		const Vector2&			getMousePosition() const;
+		const Vector2&			getMousePositionDisplay() const;
+		const Vector2&			getDistance() const;
 
 	protected:
 

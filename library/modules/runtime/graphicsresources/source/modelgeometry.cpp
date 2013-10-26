@@ -48,19 +48,19 @@ namespace tiki
 		m_vertexData.dispose();
 	}
 
-	void ModelGeometry::getMinMax( Vector3& min, Vector3& max ) const
-	{
-		const void* pData = (uint8*)m_vertexData.getData();
+	//void ModelGeometry::getMinMax( Vector3& min, Vector3& max ) const
+	//{
+	//	const void* pData = (uint8*)m_vertexData.getData();
 
-		for( uint i = 0; i < m_desc.vertexCount; ++i )
-		{
-			Vector3 tmp( (float*)pData );
+	//	for( uint i = 0; i < m_desc.vertexCount; ++i )
+	//	{
+	//		Vector3 tmp( (float*)pData );
 
-			min.minVec( tmp );
-			max.maxVec( tmp );
+	//		min.min( tmp );
+	//		max.max( tmp );
 
-			pData = addPtr( pData, m_desc.vertexStride );
-		}
-	}
+	//		pData = addPtr( pData, m_desc.vertexStride );
+	//	}
+	//}
 
 }

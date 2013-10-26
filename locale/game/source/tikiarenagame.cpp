@@ -64,7 +64,7 @@ namespace tiki
 		m_gameFlow.startTransition( getStartState() );
 	}
 
-	void TikiArenaGame::shutdown( void )
+	void TikiArenaGame::shutdown()
 	{
 		while ( m_gameFlow.isInTransition() )
 		{

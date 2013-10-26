@@ -43,7 +43,7 @@ namespace tiki
 		const uint32*				getIndexData() const { return m_indexData.getData(); }
 		size_t						getIndexCount() const { return m_indexData.getCount(); }
 
-		void						getMinMax( Vector3& min, Vector3& max ) const;
+		//void						getMinMax( Vector3& min, Vector3& max ) const;
 
 		const ModelGeometryDesc&	getDesc() const { return m_desc; }
 
