@@ -2,22 +2,30 @@
 #ifndef TIKI_VECTOR3_INL
 #define TIKI_VECTOR3_INL
 
+#include "tiki/base/assert.hpp"
+#include "tiki/base/functions.hpp"
+
 #include <math.h>
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE Vector3::Vector3( void )
-		:x(0.0f), y(0.0f), z(0.0f)
+	TIKI_FORCE_INLINE Vector3::Vector3()
+		:x( 0.0f ), y( 0.0f ), z( 0.0f )
 	{
 	}
 
-	TIKI_FORCE_INLINE Vector3::Vector3( const float all )
-		:x(all), y(all), z(all)
+	TIKI_FORCE_INLINE Vector3::Vector3( float all )
+		: x( all ), y( all ), z( all )
 	{
 	}
 
 	TIKI_FORCE_INLINE Vector3::Vector3( const float* data )
-		:x(data[0]), y(data[1]), z(data[2])
+		: x( data[ 0u ] ), y( data[ 1u ] ), z( data[ 2u ] )
+	{
+	}
+
+	TIKI_FORCE_INLINE Vector3::Vector3( float _x, float _y, float _z )
+		: x( _x ), y( _y ), z( _z )
 	{
 	}
 
@@ -26,19 +34,16 @@ namespace tiki
 	{
 	}
 
-	TIKI_FORCE_INLINE Vector3::Vector3( const float nx, const float ny, const float nz )
-		:x(nx), y(ny), z(nz)
+	TIKI_FORCE_INLINE float& Vector3::operator[]( uint index )
 	{
+		TIKI_ASSERT( index >= 0u && index < TIKI_COUNT( xyz ) );
+		return xyz[ index ];
 	}
 
-	TIKI_FORCE_INLINE Vector3::Vector3( const Vector3& vec )
-		:x(vec.x), y(vec.y), z(vec.z)
+	TIKI_FORCE_INLINE float Vector3::operator[]( uint index ) const
 	{
-	}
-
-	TIKI_FORCE_INLINE Vector3::~Vector3( void )
-	{
-
+		TIKI_ASSERT( index >= 0u && index < TIKI_COUNT( xyz ) );
+		return xyz[ index ];
 	}
 
 	TIKI_FORCE_INLINE Vector3& Vector3::operator=( const Vector3& vec )
@@ -47,33 +52,6 @@ namespace tiki
 		y = vec.y;
 		z = vec.z;
 		return *this;
-	}
-
-	TIKI_FORCE_INLINE bool Vector3::operator==( const Vector3& vec ) const
-	{
-		return Vector3::isEquals( vec );
-	}
-
-	TIKI_FORCE_INLINE bool Vector3::operator!=( const Vector3& vec ) const
-	{
-		return !Vector3::isEquals( vec );
-	}
-
-	TIKI_FORCE_INLINE float& Vector3::operator[]( const int index )
-	{
-		TIKI_ASSERT( index >= 0 && index <= 2 );
-		return arr[ index ];
-	}
-
-	TIKI_FORCE_INLINE float Vector3::operator[]( const int index ) const
-	{
-		TIKI_ASSERT( index >= 0 && index <= 2 );
-		return arr[ index ];
-	}
-
-	TIKI_FORCE_INLINE Vector3 Vector3::operator-( void ) const
-	{
-		return Vector3( -x, -y, -z );
 	}
 
 	TIKI_FORCE_INLINE Vector3& Vector3::operator+=( const Vector3& vec )
@@ -92,31 +70,36 @@ namespace tiki
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE Vector3::operator float*( void )
+	TIKI_FORCE_INLINE Vector3 Vector3::operator-() const
 	{
-		return arr;
+		return Vector3( -x, -y, -z );
 	}
 
-	TIKI_FORCE_INLINE Vector3::operator const float*( void ) const
+	TIKI_FORCE_INLINE bool Vector3::operator==( const Vector3& vec ) const
 	{
-		return arr;
+		return Vector3::isEquals( vec );
 	}
 
-	TIKI_FORCE_INLINE bool Vector3::isEquals( const Vector3& other, const float epsilon /*= f32::s_epsilon*/ ) const
+	TIKI_FORCE_INLINE bool Vector3::operator!=( const Vector3& vec ) const
+	{
+		return !Vector3::isEquals( vec );
+	}
+
+	TIKI_FORCE_INLINE bool Vector3::isEquals( const Vector3& other, float epsilon /*= f32::s_epsilon*/ ) const
 	{
 		return f32::isEquals( x, other.x, epsilon ) &&
 			f32::isEquals( y, other.y, epsilon ) &&
 			f32::isEquals( z, other.z, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool Vector3::isZero( const float epsilon /*= f32::s_epsilon*/ ) const
+	TIKI_FORCE_INLINE bool Vector3::isZero( float epsilon /*= f32::s_epsilon*/ ) const
 	{
 		return f32::isZero( x ) &&
 			f32::isZero( y ) &&
 			f32::isZero( z );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::negate( void )
+	TIKI_FORCE_INLINE void Vector3::negate()
 	{
 		x = -x;
 		y = -y;
@@ -172,14 +155,14 @@ namespace tiki
 		z = vec1.z * vec2.z;
 	}
 
-	TIKI_FORCE_INLINE void Vector3::mul( const Vector3& vec, const float scalar )
+	TIKI_FORCE_INLINE void Vector3::mul( const Vector3& vec, float scalar )
 	{
 		x = vec.x * scalar;
 		y = vec.y * scalar;
 		z = vec.z * scalar;
 	}
 
-	TIKI_FORCE_INLINE void Vector3::mul( const float scalar )
+	TIKI_FORCE_INLINE void Vector3::mul( float scalar )
 	{
 		x *= scalar;
 		y *= scalar;
@@ -200,7 +183,7 @@ namespace tiki
 		z = vec1.z / vec2.z;
 	}
 
-	TIKI_FORCE_INLINE void Vector3::div( const Vector3& vec, const float scalar )
+	TIKI_FORCE_INLINE void Vector3::div( const Vector3& vec, float scalar )
 	{
 		const float tmp = 1.0f / scalar;
 		x = vec.x * tmp;
@@ -208,7 +191,7 @@ namespace tiki
 		z = vec.z * tmp;
 	}
 
-	TIKI_FORCE_INLINE void Vector3::div( const float scalar )
+	TIKI_FORCE_INLINE void Vector3::div( float scalar )
 	{
 		const float tmp = 1.0f / scalar;
 		x *= tmp;
@@ -216,52 +199,55 @@ namespace tiki
 		z *= tmp;
 	}
 
-	TIKI_FORCE_INLINE float Vector3::length( void ) const
+	TIKI_FORCE_INLINE float Vector3::length() const
 	{
-		return tiki::sqrt( x * x + y * y + z * z );
+		return math::sqrt( x * x + y * y + z * z );
 	}
 
-	TIKI_FORCE_INLINE float Vector3::lengthSq( void ) const
+	TIKI_FORCE_INLINE float Vector3::squareLength() const
 	{
 		return x * x + y * y + z * z;
 	}
 
-	TIKI_FORCE_INLINE void Vector3::normalize( void )
+	TIKI_FORCE_INLINE void Vector3::normalize()
 	{
-		TIKI_ASSERT( !f32::isZero( this->lengthSq() ) );
-		const float num = tiki::rsqrt( this->lengthSq() );
-		mul( num );
-	}
-
-	TIKI_FORCE_INLINE void Vector3::normalize0()
-	{
-		if ( f32::isZero( lengthSq() ) )
-		{
-			return;
-		}
-
-		const float num = tiki::rsqrt( this->lengthSq() );
+		TIKI_ASSERT( !f32::isZero( squareLength() ) );
+		const float num = math::rsqrt( squareLength() );
 		mul( num );
 	}
 
 	TIKI_FORCE_INLINE void Vector3::normalize( const Vector3& vec )
 	{
-		TIKI_ASSERT( !f32::isZero( vec.lengthSq() ) );
-		const float num = tiki::rsqrt( vec.lengthSq() );
+		TIKI_ASSERT( !f32::isZero( vec.squareLength() ) );
+		const float num = math::rsqrt( vec.squareLength() );
 		mul( vec, num );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::truncate( const float length )
+	TIKI_FORCE_INLINE void Vector3::normalize0()
+	{
+		if ( f32::isZero( squareLength() ) )
+		{
+			x = 0.0f;
+			y = 0.0f;
+			z = 0.0f;
+			return;
+		}
+
+		const float num = math::rsqrt( squareLength() );
+		mul( num );
+	}
+
+	TIKI_FORCE_INLINE void Vector3::truncate( float length )
 	{
 		TIKI_ASSERT( !f32::isZero( length ) );
-		const float tmp = length * tiki::rsqrt( this->lengthSq() );
+		const float tmp = length * math::rsqrt( squareLength() );
 		mul( tmp );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::truncate( const Vector3& vec, const float length )
+	TIKI_FORCE_INLINE void Vector3::truncate( const Vector3& vec, float length )
 	{
 		TIKI_ASSERT( !f32::isZero( length ) );
-		const float tmp = length * tiki::rsqrt( vec.lengthSq() );
+		const float tmp = length * math::rsqrt( vec.squareLength() );
 		mul( vec, tmp );
 	}
 
@@ -274,7 +260,7 @@ namespace tiki
 		return sqrtf( dx * dx + dy * dy + dz * dz );
 	}
 
-	TIKI_FORCE_INLINE float Vector3::distanceSq( const Vector3& start, const Vector3& end )
+	TIKI_FORCE_INLINE float Vector3::squareDistance( const Vector3& start, const Vector3& end )
 	{
 		const float dx = end.x - start.x;
 		const float dy = end.y - start.y;
@@ -305,61 +291,47 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void Vector3::clamp( const Vector3& min, const Vector3& max )
 	{
-		x = tiki::clamp( x, min.x, max.x );
-		y = tiki::clamp( y, min.y, max.y );
-		z = tiki::clamp( z, min.z, max.z );
+		x = f32::clamp( x, min.x, max.x );
+		y = f32::clamp( y, min.y, max.y );
+		z = f32::clamp( z, min.z, max.z );
 	}
 
 	TIKI_FORCE_INLINE void Vector3::clamp( const Vector3& vec, const Vector3& min, const Vector3& max )
 	{
-		x = tiki::clamp( vec.x, min.x, max.x );
-		y = tiki::clamp( vec.y, min.y, max.y );
-		z = tiki::clamp( vec.z, min.z, max.z );
+		x = f32::clamp( vec.x, min.x, max.x );
+		y = f32::clamp( vec.y, min.y, max.y );
+		z = f32::clamp( vec.z, min.z, max.z );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::snap( void )
+	TIKI_FORCE_INLINE void Vector3::lerp( const Vector3& vec1, const Vector3& vec2, float amount )
 	{
-		x = tiki::snap( x );
-		y = tiki::snap( y );
-		z = tiki::snap( z );
+		x = f32::lerp( vec1.x, vec2.x, amount );
+		y = f32::lerp( vec1.y, vec2.y, amount );
+		z = f32::lerp( vec1.z, vec2.z, amount );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::snap( const Vector3& vec )
+	TIKI_FORCE_INLINE void Vector3::smooth( const Vector3& vec1, const Vector3& vec2, float amount )
 	{
-		x = tiki::snap( vec.x );
-		y = tiki::snap( vec.y );
-		z = tiki::snap( vec.z );
-	}
-
-	TIKI_FORCE_INLINE void Vector3::lerp( const Vector3& vec1, const Vector3& vec2, const float amount )
-	{
-		x = tiki::lerp( vec1.x, vec2.x, amount );
-		y = tiki::lerp( vec1.y, vec2.y, amount );
-		z = tiki::lerp( vec1.z, vec2.z, amount );
-	}
-
-	TIKI_FORCE_INLINE void Vector3::smooth( const Vector3& vec1, const Vector3& vec2, const float amount )
-	{
-		float val = tiki::clamp( amount, 0.0f, 1.0f );
+		float val = f32::clamp( amount, 0.0f, 1.0f );
 		val = val * val * ( 3.0f - 2.0f * val );
 
-		x = tiki::lerp( vec1.x, vec2.x, val );
-		y = tiki::lerp( vec1.y, vec2.y, val );
-		z = tiki::lerp( vec1.z, vec2.z, val );
+		x = f32::lerp( vec1.x, vec2.x, val );
+		y = f32::lerp( vec1.y, vec2.y, val );
+		z = f32::lerp( vec1.z, vec2.z, val );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::maxVec( const Vector3& vec )
+	TIKI_FORCE_INLINE void Vector3::max( const Vector3& vec )
 	{
-		x = TIKI_MAX ( x, vec.x );
-		y = TIKI_MAX ( y, vec.y );
-		z = TIKI_MAX ( z, vec.z );
+		x = TIKI_MAX( x, vec.x );
+		y = TIKI_MAX( y, vec.y );
+		z = TIKI_MAX( z, vec.z );
 	}
 
-	TIKI_FORCE_INLINE void Vector3::minVec( const Vector3& vec )
+	TIKI_FORCE_INLINE void Vector3::min( const Vector3& vec )
 	{
-		x = TIKI_MIN ( x, vec.x );
-		y = TIKI_MIN ( y, vec.y );
-		z = TIKI_MIN ( z, vec.z );
+		x = TIKI_MIN( x, vec.x );
+		y = TIKI_MIN( y, vec.y );
+		z = TIKI_MIN( z, vec.z );
 	}
 
 	TIKI_FORCE_INLINE void Vector3::toFloat3( float3& target ) const

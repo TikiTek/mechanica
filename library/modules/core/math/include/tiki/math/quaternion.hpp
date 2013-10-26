@@ -22,12 +22,12 @@ namespace tiki
 
 		static const Quaternion			identity;
 		
-		TIKI_FORCE_INLINE				Quaternion( void );
+		TIKI_FORCE_INLINE				Quaternion();
 		TIKI_FORCE_INLINE				Quaternion( const float x, const float y, const float z, const float w );
 		TIKI_FORCE_INLINE				Quaternion( const float* arr );
 		TIKI_FORCE_INLINE				Quaternion( const Vector3& vec, const float scalar );
 		TIKI_FORCE_INLINE				Quaternion( const Quaternion& quat );
-		TIKI_FORCE_INLINE				~Quaternion( void );
+		TIKI_FORCE_INLINE				~Quaternion();
 
 		TIKI_FORCE_INLINE Quaternion&	operator=( const Quaternion& rhs );
 		TIKI_FORCE_INLINE bool			operator==( const Quaternion& quat );
@@ -35,8 +35,8 @@ namespace tiki
 		TIKI_FORCE_INLINE float&		operator[]( const int index );
 		TIKI_FORCE_INLINE float			operator[]( const int index ) const;
 
-		TIKI_FORCE_INLINE operator		float*( void );
-		TIKI_FORCE_INLINE operator		const float*( void ) const;
+		TIKI_FORCE_INLINE operator		float*();
+		TIKI_FORCE_INLINE operator		const float*() const;
 
 		void							fromMatrix( const Matrix& matrix );
 		void							fromAxisAngle( const Vector3& axis, const float radians );
@@ -46,13 +46,13 @@ namespace tiki
 		TIKI_FORCE_INLINE bool			isIdentity( const float epsilon = f32::s_epsilon ) const;
 		TIKI_FORCE_INLINE bool			isZero( const float epsilon = f32::s_epsilon ) const;
 
-		TIKI_FORCE_INLINE float			length( void ) const;
-		TIKI_FORCE_INLINE float			lengthSq( void ) const;
+		TIKI_FORCE_INLINE float			length() const;
+		TIKI_FORCE_INLINE float			lengthSq() const;
 
-		TIKI_FORCE_INLINE void			conjugate( void );
+		TIKI_FORCE_INLINE void			conjugate();
 		TIKI_FORCE_INLINE void			conjugate( const Quaternion& quat );
 
-		TIKI_FORCE_INLINE void			normalize( void );
+		TIKI_FORCE_INLINE void			normalize();
 		TIKI_FORCE_INLINE void			normalize( const Quaternion& quat );
 
 		TIKI_FORCE_INLINE void			lookAt( const Vector3& target, const Vector3& up = Vector3::up );
@@ -63,7 +63,7 @@ namespace tiki
 		TIKI_FORCE_INLINE void			nlerp( const Quaternion& from, const Quaternion& to, const float amount );
 		TIKI_FORCE_INLINE void			slerp( const Quaternion& from, const Quaternion& to, const float amount );
 
-		TIKI_FORCE_INLINE void			negate( void );
+		TIKI_FORCE_INLINE void			negate();
 		TIKI_FORCE_INLINE void			negate( const Quaternion& quat );
 
 		TIKI_FORCE_INLINE void			add( const Quaternion& quat );

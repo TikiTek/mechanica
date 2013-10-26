@@ -74,7 +74,7 @@ namespace tiki
 		return n[ index ];
 	}
 
-	TIKI_FORCE_INLINE Matrix Matrix::operator-( void ) const
+	TIKI_FORCE_INLINE Matrix Matrix::operator-() const
 	{
 		return Matrix( 
 			-M11, -M21, -M31, -M41,
@@ -83,12 +83,12 @@ namespace tiki
 			-M14, -M24, -M34, -M44 );
 	}
 
-	TIKI_FORCE_INLINE Matrix::operator float*( void )
+	TIKI_FORCE_INLINE Matrix::operator float*()
 	{
 		return n;
 	}
 
-	TIKI_FORCE_INLINE Matrix::operator const float*( void ) const
+	TIKI_FORCE_INLINE Matrix::operator const float*() const
 	{
 		return n;
 	}
@@ -165,7 +165,7 @@ namespace tiki
 			f32::isEquals( M44, 1.0f, epsilon );
 	}
 
-	TIKI_FORCE_INLINE void Matrix::negate( void )
+	TIKI_FORCE_INLINE void Matrix::negate()
 	{
 		mul( -1.0f );
 	}
@@ -178,7 +178,7 @@ namespace tiki
 		M14 = -mat.M14; M24 = -mat.M24; M34 = -mat.M34; M44 = -mat.M44;
 	}
 
-	TIKI_FORCE_INLINE void Matrix::makeIdentity( void )
+	TIKI_FORCE_INLINE void Matrix::makeIdentity()
 	{
 		M11 = 1.0f; M21 = 0.0f; M31 = 0.0f; M41 = 0.0f;
 		M12 = 0.0f; M22 = 1.0f; M32 = 0.0f; M42 = 0.0f;
@@ -593,16 +593,15 @@ namespace tiki
 		M43 = nearPlane * farPlane / ( nearPlane - farPlane );
 	}
 
-	TIKI_FORCE_INLINE void Matrix::transpose( void )
+	TIKI_FORCE_INLINE void Matrix::transpose()
 	{
-		tikiSwap( M12, M21 );
-		tikiSwap( M13, M31 ); tikiSwap( M23, M32 );
-		tikiSwap( M14, M41 ); tikiSwap( M24, M42 ); tikiSwap( M34, M43 ); 
+		Matrix source = *this;
+		transpose( source );
 	}
 
 	TIKI_FORCE_INLINE void Matrix::transpose( const Matrix& mat )
 	{
-		TIKI_ASSERT( &*this != &mat );
+		TIKI_ASSERT( this != &mat );
 
 		M11 = mat.M11; M21 = mat.M12; M31 = mat.M13; M41 = mat.M14;
 		M12 = mat.M21; M22 = mat.M22; M32 = mat.M23; M42 = mat.M24;
@@ -610,7 +609,7 @@ namespace tiki
 		M14 = mat.M41; M24 = mat.M42; M34 = mat.M43; M44 = mat.M44;
 	}
 
-	TIKI_FORCE_INLINE void Matrix::invert( void )
+	TIKI_FORCE_INLINE void Matrix::invert()
 	{
 		invert( *this );
 	}
@@ -672,42 +671,27 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void Matrix::lerp( const Matrix& mat, const float amount )
 	{
-		M11 = tiki::lerp( M11, mat.M11, amount );
-		M12 = tiki::lerp( M12, mat.M12, amount );
-		M13 = tiki::lerp( M13, mat.M13, amount );
-		M14 = tiki::lerp( M14, mat.M14, amount );
-		M21 = tiki::lerp( M21, mat.M21, amount );
-		M22 = tiki::lerp( M22, mat.M22, amount );
-		M23 = tiki::lerp( M23, mat.M23, amount );
-		M24 = tiki::lerp( M24, mat.M24, amount );
-		M31 = tiki::lerp( M31, mat.M31, amount );
-		M32 = tiki::lerp( M32, mat.M32, amount );
-		M33 = tiki::lerp( M33, mat.M33, amount );
-		M34 = tiki::lerp( M34, mat.M34, amount );
-		M41 = tiki::lerp( M41, mat.M41, amount );
-		M42 = tiki::lerp( M42, mat.M42, amount );
-		M43 = tiki::lerp( M43, mat.M43, amount );
-		M44 = tiki::lerp( M44, mat.M44, amount );
+		lerp( *this, mat, amount );
 	}
 
 	TIKI_FORCE_INLINE void Matrix::lerp( const Matrix& mat1, const Matrix& mat2, const float amount )
 	{
-		M11 = tiki::lerp( mat1.M11, mat2.M11, amount );
-		M12 = tiki::lerp( mat1.M12, mat2.M12, amount );
-		M13 = tiki::lerp( mat1.M13, mat2.M13, amount );
-		M14 = tiki::lerp( mat1.M14, mat2.M14, amount );
-		M21 = tiki::lerp( mat1.M21, mat2.M21, amount );
-		M22 = tiki::lerp( mat1.M22, mat2.M22, amount );
-		M23 = tiki::lerp( mat1.M23, mat2.M23, amount );
-		M24 = tiki::lerp( mat1.M24, mat2.M24, amount );
-		M31 = tiki::lerp( mat1.M31, mat2.M31, amount );
-		M32 = tiki::lerp( mat1.M32, mat2.M32, amount );
-		M33 = tiki::lerp( mat1.M33, mat2.M33, amount );
-		M34 = tiki::lerp( mat1.M34, mat2.M34, amount );
-		M41 = tiki::lerp( mat1.M41, mat2.M41, amount );
-		M42 = tiki::lerp( mat1.M42, mat2.M42, amount );
-		M43 = tiki::lerp( mat1.M43, mat2.M43, amount );
-		M44 = tiki::lerp( mat1.M44, mat2.M44, amount );
+		M11 = f32::lerp( mat1.M11, mat2.M11, amount );
+		M12 = f32::lerp( mat1.M12, mat2.M12, amount );
+		M13 = f32::lerp( mat1.M13, mat2.M13, amount );
+		M14 = f32::lerp( mat1.M14, mat2.M14, amount );
+		M21 = f32::lerp( mat1.M21, mat2.M21, amount );
+		M22 = f32::lerp( mat1.M22, mat2.M22, amount );
+		M23 = f32::lerp( mat1.M23, mat2.M23, amount );
+		M24 = f32::lerp( mat1.M24, mat2.M24, amount );
+		M31 = f32::lerp( mat1.M31, mat2.M31, amount );
+		M32 = f32::lerp( mat1.M32, mat2.M32, amount );
+		M33 = f32::lerp( mat1.M33, mat2.M33, amount );
+		M34 = f32::lerp( mat1.M34, mat2.M34, amount );
+		M41 = f32::lerp( mat1.M41, mat2.M41, amount );
+		M42 = f32::lerp( mat1.M42, mat2.M42, amount );
+		M43 = f32::lerp( mat1.M43, mat2.M43, amount );
+		M44 = f32::lerp( mat1.M44, mat2.M44, amount );
 	}
 
 	TIKI_FORCE_INLINE void Matrix::scale( const Vector3& scale )

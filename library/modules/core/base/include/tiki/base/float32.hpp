@@ -37,6 +37,16 @@ namespace tiki
 		{
 			return powf( value, power );
 		}
+
+		TIKI_FORCE_INLINE float lerp( float from, float to, float position )
+		{
+			return from + ( to - from ) * position;
+		}
+
+		TIKI_FORCE_INLINE float clamp( float value, float min, float max )
+		{
+			return ( value < min ? min : ( value > max ? max : value ) );
+		}
 	}
 }
 

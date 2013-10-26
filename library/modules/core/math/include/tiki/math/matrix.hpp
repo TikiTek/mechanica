@@ -27,7 +27,7 @@ namespace tiki
 
 		static const	Matrix identity;
 
-		TIKI_FORCE_INLINE Matrix( void );
+		TIKI_FORCE_INLINE Matrix();
 		TIKI_FORCE_INLINE Matrix( float m11, float m12, float m13, float m14,
 			float m21, float m22, float m23, float m24,
 			float m31, float m32, float m33, float m34,
@@ -35,7 +35,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Matrix( const float* arr );
 		TIKI_FORCE_INLINE Matrix( const Matrix& mat );
-		TIKI_FORCE_INLINE ~Matrix( void );
+		TIKI_FORCE_INLINE ~Matrix();
 
 		TIKI_FORCE_INLINE Matrix&			operator=( const Matrix& mat );
 		TIKI_FORCE_INLINE bool				operator==( const Matrix& mat ) const;
@@ -43,18 +43,18 @@ namespace tiki
 
 		TIKI_FORCE_INLINE float&			operator[]( const int index );
 		TIKI_FORCE_INLINE const float		operator[]( const int index ) const;
-		TIKI_FORCE_INLINE Matrix			operator-( void ) const;
+		TIKI_FORCE_INLINE Matrix			operator-() const;
 
-		TIKI_FORCE_INLINE operator			float*( void );
-		TIKI_FORCE_INLINE operator const	float*( void ) const;
+		TIKI_FORCE_INLINE operator			float*();
+		TIKI_FORCE_INLINE operator const	float*() const;
 
 		TIKI_FORCE_INLINE bool				isEquals( const Matrix& other, const float epsilon = f32::s_epsilon ) const;
 		TIKI_FORCE_INLINE bool				isIdentity( const float epsilon = f32::s_epsilon ) const;
 		TIKI_FORCE_INLINE bool				isZero( const float epsilon = f32::s_epsilon ) const;
 
-		TIKI_FORCE_INLINE void				negate( void );
+		TIKI_FORCE_INLINE void				negate();
 		TIKI_FORCE_INLINE void				negate( const Matrix& mat );
-		TIKI_FORCE_INLINE void				makeIdentity( void );
+		TIKI_FORCE_INLINE void				makeIdentity();
 
 		TIKI_FORCE_INLINE void				add( const Matrix& mat );
 		TIKI_FORCE_INLINE void				add( const Matrix& mat1, const Matrix& mat2 );
@@ -113,10 +113,10 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void				transformAndClipToViewport( Vector3& vec, const Vector2& viewport ) const;
 
-		TIKI_FORCE_INLINE void				transpose( void );
+		TIKI_FORCE_INLINE void				transpose();
 		TIKI_FORCE_INLINE void				transpose( const Matrix& mat );
 
-		TIKI_FORCE_INLINE void				invert( void );
+		TIKI_FORCE_INLINE void				invert();
 		TIKI_FORCE_INLINE void				invert( const Matrix& mat );
 
 		TIKI_FORCE_INLINE void				lerp( const Matrix& mat, const float amount );

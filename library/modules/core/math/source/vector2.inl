@@ -2,45 +2,48 @@
 #ifndef TIKI_VECTOR2_INL
 #define TIKI_VECTOR2_INL
 
+#include "tiki/base/assert.hpp"
+#include "tiki/base/functions.hpp"
+
 #include <math.h>
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE Vector2::Vector2( void )
-		:x(0), y(0)
+	TIKI_FORCE_INLINE Vector2::Vector2()
+		: x( 0.0f ), y( 0.0f )
 	{
 	}
 
-	TIKI_FORCE_INLINE Vector2::Vector2( const float all )
-		:x(all), y(all)
+	TIKI_FORCE_INLINE Vector2::Vector2( float all )
+		: x( all ), y( all )
 	{
 	}
 
 	TIKI_FORCE_INLINE Vector2::Vector2( const float* data )
-		:x(data[0]), y(data[1])
+		: x( data[ 0u ] ), y( data[ 1u ] )
 	{
 	}
 
-	TIKI_FORCE_INLINE Vector2::Vector2( const float nx, const float ny )
-		:x(nx), y(ny)
+	TIKI_FORCE_INLINE Vector2::Vector2( float _x, float _y )
+		: x( _x ), y( _y )
 	{
-
 	}
 	
 	TIKI_FORCE_INLINE Vector2::Vector2( const float2& vec )
 		: x( vec.x ), y( vec.y )
 	{
-
 	}
 
-	TIKI_FORCE_INLINE Vector2::Vector2( const Vector2& vec )
-		:x(vec.x), y(vec.y)
+	TIKI_FORCE_INLINE float& Vector2::operator[]( uint index )
 	{
+		TIKI_ASSERT( index >= 0u && index < TIKI_COUNT( xy ) );
+		return xy[ index ];
 	}
 
-	TIKI_FORCE_INLINE Vector2::~Vector2( void )
+	TIKI_FORCE_INLINE float Vector2::operator[]( uint index ) const
 	{
-
+		TIKI_ASSERT( index >= 0u && index < TIKI_COUNT( xy ) );
+		return xy[ index ];
 	}
 
 	TIKI_FORCE_INLINE Vector2& Vector2::operator=( const Vector2& rhs )
@@ -49,34 +52,7 @@ namespace tiki
 		y = rhs.y;
 		return *this;
 	}
-
-	TIKI_FORCE_INLINE bool Vector2::operator==( const Vector2& vec ) const
-	{
-		return isEquals( vec );
-	}
-
-	TIKI_FORCE_INLINE bool Vector2::operator!=( const Vector2& vec ) const
-	{
-		return !isEquals( vec );
-	}
-
-	TIKI_FORCE_INLINE float& Vector2::operator[]( const int index )
-	{
-		TIKI_ASSERT( index >= 0 && index <= 1 );
-		return arr[ index ];
-	}
-
-	TIKI_FORCE_INLINE float Vector2::operator[]( const int index ) const
-	{
-		TIKI_ASSERT( index >= 0 && index <= 1 );
-		return arr[ index ];
-	}
-
-	TIKI_FORCE_INLINE Vector2 Vector2::operator-( void ) const
-	{
-		return Vector2( -x, -y );
-	}
-
+	
 	TIKI_FORCE_INLINE Vector2& Vector2::operator+=( const Vector2& rhs )
 	{
 		x += rhs.x;
@@ -91,29 +67,34 @@ namespace tiki
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE Vector2::operator float*( void )
+	TIKI_FORCE_INLINE Vector2 Vector2::operator-() const
 	{
-		return arr;
+		return Vector2( -x, -y );
 	}
 
-	TIKI_FORCE_INLINE Vector2::operator const float*( void ) const
+	TIKI_FORCE_INLINE bool Vector2::operator==( const Vector2& vec ) const
 	{
-		return arr;
+		return isEquals( vec );
 	}
 
-	TIKI_FORCE_INLINE bool Vector2::isZero( const float epsilon /*= f32::s_epsilon*/) const 
+	TIKI_FORCE_INLINE bool Vector2::operator!=( const Vector2& vec ) const
+	{
+		return !isEquals( vec );
+	}
+
+	TIKI_FORCE_INLINE bool Vector2::isZero( float epsilon /*= f32::s_epsilon*/) const 
 	{
 		return f32::isZero( x, epsilon ) &&
 			f32::isZero( y, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool Vector2::isEquals( const Vector2& other, const float epsilon /*= f32::s_epsilon*/) const 
+	TIKI_FORCE_INLINE bool Vector2::isEquals( const Vector2& other, float epsilon /*= f32::s_epsilon*/) const 
 	{
 		return f32::isEquals( x, other.x, epsilon ) &&
 			f32::isEquals( y, other.y, epsilon );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::negate( void )
+	TIKI_FORCE_INLINE void Vector2::negate()
 	{
 		x = -x;
 		y = -y;
@@ -161,13 +142,13 @@ namespace tiki
 		y = vec1.y * vec2.y;
 	}
 
-	TIKI_FORCE_INLINE void Vector2::mul( const Vector2& vec, const float scalar )
+	TIKI_FORCE_INLINE void Vector2::mul( const Vector2& vec, float scalar )
 	{
 		x = vec.x * scalar;
 		y = vec.y * scalar;
 	}
 
-	TIKI_FORCE_INLINE void Vector2::mul( const float scalar )
+	TIKI_FORCE_INLINE void Vector2::mul( float scalar )
 	{
 		x *= scalar;
 		y *= scalar;
@@ -185,55 +166,55 @@ namespace tiki
 		y = vec1.y / vec2.y;
 	}
 
-	TIKI_FORCE_INLINE void Vector2::div( const Vector2& vec, const float scalar )
+	TIKI_FORCE_INLINE void Vector2::div( const Vector2& vec, float scalar )
 	{
 		const float tmp = 1.0f / scalar;
 		x = vec.x * tmp;
 		y = vec.y * tmp;
 	}
 
-	TIKI_FORCE_INLINE void Vector2::div( const float scalar )
+	TIKI_FORCE_INLINE void Vector2::div( float scalar )
 	{
 		const float tmp = 1.0f / scalar;
 		x *= tmp;
 		y *= tmp;
 	}
 
-	TIKI_FORCE_INLINE float Vector2::length( void ) const
+	TIKI_FORCE_INLINE float Vector2::length() const
 	{
-		return tiki::sqrt( x * x + y * y );
+		return math::sqrt( x * x + y * y );
 	}
 
-	TIKI_FORCE_INLINE float Vector2::lengthSq( void ) const
+	TIKI_FORCE_INLINE float Vector2::lengthSq() const
 	{
 		return ( x * x + y * y );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::normalize( void )
+	TIKI_FORCE_INLINE void Vector2::normalize()
 	{
 		TIKI_ASSERT( !f32::isZero( lengthSq() ) );
-		const float num = tiki::rsqrt( lengthSq() );
+		const float num = math::rsqrt( lengthSq() );
 		mul( num );
 	}
 
 	TIKI_FORCE_INLINE void Vector2::normalize( const Vector2& vec )
 	{
 		TIKI_ASSERT( !f32::isZero( vec.lengthSq() ) );
-		const float tmp = tiki::rsqrt( vec.lengthSq() );
+		const float tmp = math::rsqrt( vec.lengthSq() );
 		mul( vec, tmp );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::truncate( const float length )
+	TIKI_FORCE_INLINE void Vector2::truncate( float length )
 	{
 		TIKI_ASSERT( !f32::isZero( length ) );
-		const float tmp = length * tiki::rsqrt( this->lengthSq() );
+		const float tmp = length * math::rsqrt( this->lengthSq() );
 		mul( tmp );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::truncate( const Vector2& vec, const float length )
+	TIKI_FORCE_INLINE void Vector2::truncate( const Vector2& vec, float length )
 	{
 		TIKI_ASSERT( !f32::isZero( length ) );
-		const float tmp = length * tiki::rsqrt( vec.lengthSq() );
+		const float tmp = length * math::rsqrt( vec.lengthSq() );
 		mul( vec, tmp );
 	}
 
@@ -265,41 +246,29 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void Vector2::clamp( const Vector2& min, const Vector2& max )
 	{
-		x = tiki::clamp( x, min.x, max.x );
-		y = tiki::clamp( y, min.y, max.y );
+		x = f32::clamp( x, min.x, max.x );
+		y = f32::clamp( y, min.y, max.y );
 	}
 
 	TIKI_FORCE_INLINE void Vector2::clamp( const Vector2& vec, const Vector2& min, const Vector2& max)
 	{
-		x = tiki::clamp( vec.x, min.x, max.x );
-		y = tiki::clamp( vec.y, min.y, max.y );
+		x = f32::clamp( vec.x, min.x, max.x );
+		y = f32::clamp( vec.y, min.y, max.y );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::snap( void )
+	TIKI_FORCE_INLINE void Vector2::lerp( const Vector2& vec1, const Vector2& vec2, float amount )
 	{
-		x = tiki::snap( x );
-		y = tiki::snap( y );
+		x = f32::lerp( vec1.x, vec2.x, amount );
+		y = f32::lerp( vec1.y, vec2.y, amount );
 	}
 
-	TIKI_FORCE_INLINE void Vector2::snap( const Vector2& vec )
+	TIKI_FORCE_INLINE void Vector2::smooth( const Vector2& vec1, const Vector2& vec2, float amount )
 	{
-		x = tiki::snap( vec.x );
-		y = tiki::snap( vec.y );
-	}
-
-	TIKI_FORCE_INLINE void Vector2::lerp( const Vector2& vec1, const Vector2& vec2, const float amount )
-	{
-		x = tiki::lerp( vec1.x, vec2.x, amount );
-		y = tiki::lerp( vec1.y, vec2.y, amount );
-	}
-
-	TIKI_FORCE_INLINE void Vector2::smooth( const Vector2& vec1, const Vector2& vec2, const float amount )
-	{
-		float val =tiki::clamp( amount, 0.0f, 1.0f );
+		float val = f32::clamp( amount, 0.0f, 1.0f );
 		val = val * val * ( 3.0f - 2.0f * val );
 
-		x = tiki::lerp( vec1.x, vec2.x, val );
-		y = tiki::lerp( vec1.y, vec2.y, val );
+		x = f32::lerp( vec1.x, vec2.x, val );
+		y = f32::lerp( vec1.y, vec2.y, val );
 	}
 
 	TIKI_FORCE_INLINE void Vector2::toFloat2( float2& target ) const
