@@ -7,6 +7,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphicsbase/vertexsemantic.hpp"
 #include "tiki/toolbase/tokenizer.hpp"
 
 namespace tiki
@@ -218,7 +219,7 @@ namespace tiki
 		}
 	};
 
-	void parseMatrix( Matrix& mtx, cstring str, float scale )
+	TIKI_FORCE_INLINE void parseMatrix( Matrix& mtx, cstring str, float scale )
 	{
 		Tokenizer token;
 		token.create( str, " \n\t\r", true );

@@ -4,17 +4,30 @@
 
 #include "tiki/base/types.hpp"
 
-#if TIKI_PLATFORM_WIN
-#endif
-
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include <windows.h>
-#elif TIKI_PLATFORM_LINUX
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 #	include <pthread.h>
+#else
+#	error Platform not suported
 #endif
 
 namespace tiki
 {
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+	struct MutexPlatformData
+	{
+		CRITICAL_SECTION mutex;
+	};
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+	struct MutexPlatformData
+	{
+		pthread_mutex_t mutex;
+	};
+#else
+#	error Platform not suported
+#endif
+
 	class Mutex
 	{
 	public:
@@ -28,14 +41,7 @@ namespace tiki
 
 	private:
 
-#if TIKI_PLATFORM_WIN
-		CRITICAL_SECTION	m_mutex;
-#elif TIKI_PLATFORM_LINUX
-		pthread_mutex_t		m_mutex;
-#else
-#	error Platform not suported
-#endif
-
+		MutexPlatformData	m_platformData;
 
 	};
 }

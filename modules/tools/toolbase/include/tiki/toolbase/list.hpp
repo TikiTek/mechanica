@@ -61,6 +61,6 @@ namespace tiki
 	};
 }
 
-#include "list.inl"
+#include "../../../source/list.inl"
 
 #endif // TIKI_LIST_HPP

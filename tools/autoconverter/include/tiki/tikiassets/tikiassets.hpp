@@ -7,11 +7,11 @@
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/toolbase/list.hpp"
 
-#include "tiki/animationconverter/animationconverter.hpp"
+//#include "tiki/animationconverter/animationconverter.hpp"
 #include "tiki/fontconverter/fontconverter.hpp"
-#include "tiki/materialconverter/materialconverter.hpp"
+//#include "tiki/materialconverter/materialconverter.hpp"
 #include "tiki/modelconverter/modelconverter.hpp"
-#include "tiki/navmeshconverter/navmeshconverter.hpp"
+//#include "tiki/navmeshconverter/navmeshconverter.hpp"
 #include "tiki/shaderconverter/shaderconverter.hpp"
 #include "tiki/textureconverter/textureconverter.hpp"
 
@@ -34,9 +34,9 @@ namespace tiki
 
 		ConverterManager	m_manager;
 
-		AnimationConverter	m_animationConverter;
+		//AnimationConverter	m_animationConverter;
 		FontConverter		m_fontConverter;
-		MaterialConverter	m_materialConverter;
+		//MaterialConverter	m_materialConverter;
 		ModelConverter		m_modelConverter;
 		//NavMeshConverter	m_navmeshConverter;
 		ShaderConverter		m_shaderConverter;

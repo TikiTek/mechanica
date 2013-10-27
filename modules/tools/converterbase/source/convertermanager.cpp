@@ -2,7 +2,11 @@
 #include "tiki/converterbase/convertermanager.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/path.hpp"
+#include "tiki/base/file.hpp"
+#include "tiki/base/iopath.hpp"
+#include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/converterbase.hpp"
+#include "tiki/toolbase/tikixml.hpp"
 
 #include "sqlite/sqlite3.h"
 

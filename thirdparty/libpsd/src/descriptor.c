@@ -34,13 +34,13 @@
 
 typedef psd_double psd_matrix[4][4];
 
-//static psd_matrix psd_basis_matrix =
-//{
-//  { -0.5,  1.5, -1.5,  0.5 },
-//  {  1.0, -2.5,  2.0, -0.5 },
-//  { -0.5,  0.0,  0.5,  0.0 },
-//  {  0.0,  1.0,  0.0,  0.0 },
-//};
+static psd_matrix psd_basis_matrix =
+{
+	{ -0.5,  1.5, -1.5,  0.5 },
+	{  1.0, -2.5,  2.0, -0.5 },
+	{ -0.5,  0.0,  0.5,  0.0 },
+	{  0.0,  1.0,  0.0,  0.0 },
+};
 
 /*  this can be adjusted to give a finer or coarser curve  */
 #define PSD_CURVES_SUBDIVIDE  512

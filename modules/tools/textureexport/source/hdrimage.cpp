@@ -6,7 +6,7 @@
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/structs.hpp"
 
-#include <libpsd.h>
+#include "libpsd.h"
 #include "opencv2/opencv.hpp"
 
 namespace tiki

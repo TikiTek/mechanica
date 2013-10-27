@@ -21,14 +21,26 @@ function find_project( project_name )
 	return nil;
 end
 
-function Project:new( name, platforms, configurations, module, type )
-	if not ( name and platforms and configurations and module and type ) then
-		throw("Not enough arguments.")
+function Project:new( name, platforms, configurations, module, type2 )
+	if not name then 
+		throw( "[Project:new] No name given." );
+	end
+
+	if ( type( platforms ) ~= "table" or type( configurations ) ~= "table" ) then 
+		throw( "[Project:new] platforms or configurations are invalid." );
+	end
+
+	if not module then 
+		throw( "[Project:new] No module given." );
+	end
+
+	if not type2 then 
+		throw( "[Project:new] type is invalid." );
 	end
 
 	local project_new = class_instance( self );
 	project_new.name			= name;
-	project_new.type			= type;
+	project_new.type			= type2;
 	project_new.config			= PlatformConfiguration:new();
 	project_new.module			= module;
 	project_new.configurations	= configurations;

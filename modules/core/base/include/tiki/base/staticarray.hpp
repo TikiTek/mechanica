@@ -34,6 +34,6 @@ namespace tiki
 	};
 }
 
-#include "staticarray.inl"
+#include "../../../source/staticarray.inl"
 
 #endif // TIKI_STATICARRAY_HPP
