@@ -28,14 +28,7 @@ void psd_freeif(void * block)
 
 void * psd_fopen(psd_char * file_name)
 {
-#if TIKI_PLATFORM_WIN
-	FILE* pFile = nullptr;
-	fopen_s( &pFile, file_name, "rb" );
-
-	return (void *)pFile;
-#elif TIKI_PLATFORM_LINUX
 	return (void*)fopen( file_name, "rb" );
-#endif
 }
 
 psd_int psd_fsize(void * file)

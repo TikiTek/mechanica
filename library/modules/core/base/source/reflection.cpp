@@ -65,11 +65,11 @@ namespace tiki
 				ValueType( "sint64", 8u, ValueTypeVariants_SignedInteger ),
 				ValueType( "float",  4u, ValueTypeVariants_FloatingPoint ),
 				ValueType( "double", 8u, ValueTypeVariants_FloatingPoint ),
-#if TIKI_BUILD_32BIT
+#if TIKI_ENABLED( TIKI_BUILD_32BIT )
 				ValueType( "size_t", 4u, ValueTypeVariants_UnsignedInteger ),
 				ValueType( "int",	 4u, ValueTypeVariants_SignedInteger ),
 				ValueType( "uint",	 4u, ValueTypeVariants_UnsignedInteger ),
-#elif TIKI_BUILD_64BIT
+#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 				ValueType( "size_t", 8u, ValueTypeVariants_UnsignedInteger ),
 				ValueType( "int",	 8u, ValueTypeVariants_SignedInteger ),
 				ValueType( "uint",	 8u, ValueTypeVariants_UnsignedInteger ),

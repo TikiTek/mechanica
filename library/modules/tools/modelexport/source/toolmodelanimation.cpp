@@ -3,6 +3,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/math/matrix.hpp"
+#include "tiki/modelexport/toolmodelhierarchy.hpp"
 #include "tiki/toolbase/tikixml.hpp"
 
 #include "toolmodelsource.hpp"

@@ -29,6 +29,13 @@ if _ACTION == "vs2010" then
 	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
 	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
 
+	module:set_define( "WIN32" );
+	module:set_define( "_WIN32" );
+
+	module:set_define( "_WIN64", nil, "Debug", "x64" );
+	module:set_define( "_WIN64", nil, "Release", "x64" );
+	module:set_define( "_WIN64", nil, "Master", "x64" );
+
 	is_windows = true;
 	is_linux = false;
 elseif _ACTION == "gmake" then

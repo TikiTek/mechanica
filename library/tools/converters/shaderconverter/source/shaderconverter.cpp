@@ -3,6 +3,7 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
+#include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
@@ -12,7 +13,7 @@
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 #include "tiki/toolbase/filestream.hpp"
 
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include <d3dcompiler.h>
 #endif
 
@@ -87,7 +88,7 @@ namespace tiki
 			stream.read( data.getData(), data.getCount() );
 			stream.dispose();
 			
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 			ID3D10Blob* pBlob		= nullptr;
 			ID3D10Blob* pErrorBlob	= nullptr;
 

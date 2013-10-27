@@ -34,11 +34,7 @@ namespace tiki
 			break;
 		}
 
-#if TIKI_PLATFORM_WIN
-		fopen_s( &m_pHandle, fileName.cStr(), pMode );
-#elif TIKI_PLATFORM_LINUX
 		m_pHandle = fopen( fileName.cStr(), pMode );
-#endif
 	}
 
 	void FileStream::dispose()
@@ -58,12 +54,7 @@ namespace tiki
 	size_t FileStream::read( void* pData, size_t length ) const
 	{
 		TIKI_ASSERT( m_pHandle );
-
-#if TIKI_PLATFORM_WIN
-		return fread_s( pData, length, length, 1, m_pHandle );
-#else
 		return fread( pData, length, 1u, m_pHandle );
-#endif
 	}
 
 	void FileStream::write( const void* pData, size_t length ) const

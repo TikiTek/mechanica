@@ -6,6 +6,7 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/math/matrix.hpp"
+#include "tiki/modelexport/toolmodelhierarchy.hpp"
 #include "tiki/toolbase/tokenizer.hpp"
 
 #include "toolmodelsource.hpp"

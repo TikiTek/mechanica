@@ -4,6 +4,8 @@
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/tikixml.hpp"
 
+#include "toolmodelsource.hpp"
+
 namespace tiki
 {
 	ToolModelHierarchy::ToolModelHierarchy()

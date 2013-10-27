@@ -32,10 +32,12 @@ namespace tiki
 
 	public:
 
+		const VertexFormat*				getVertexFormat() const { return m_pVertexFormat; }
+
+	private: // friends
+
 		void							create( const VertexInputBindingParameters& creationParameters );
 		void							dispose();
-
-		const VertexFormat*				getVertexFormat() const { return m_pVertexFormat; }
 
 	private:
 

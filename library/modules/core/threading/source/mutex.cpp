@@ -3,32 +3,35 @@
 
 namespace tiki
 {
-#if TIKI_PLATFORM_WIN
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+
 	void Mutex::create()
 	{
-		InitializeCriticalSection( &m_mutex );
+		InitializeCriticalSection( &m_platformData.mutex );
 	}
 
 	void Mutex::dispose()
 	{
-		DeleteCriticalSection( &m_mutex );
+		DeleteCriticalSection( &m_platformData.mutex );
 	}
 
 	void Mutex::lock()
 	{
-		EnterCriticalSection( &m_mutex );
+		EnterCriticalSection( &m_platformData.mutex );
 	}
 
 	bool Mutex::tryLock( size_t timeOut )
 	{
-		return TryEnterCriticalSection( &m_mutex ) != 0;
+		return TryEnterCriticalSection( &m_platformData.mutex ) != 0;
 	}
 
 	void Mutex::unlock()
 	{
-		LeaveCriticalSection( &m_mutex );
+		LeaveCriticalSection( &m_platformData.mutex );
 	}
-#elif TIKI_PLATFORM_LINUX
+
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+
 	void Mutex::create()
 	{
 		pthread_mutex_init( &m_mutex, nullptr );
@@ -53,6 +56,7 @@ namespace tiki
 	{
 		pthread_mutex_unlock( &m_mutex );
 	}
+
 #else
 #	error Platform not supported
 #endif
