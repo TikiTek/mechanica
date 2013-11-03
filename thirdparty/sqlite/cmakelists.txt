@@ -1,9 +1,0 @@
-
-add_module(sqlite)
-
-module_set_c()
-
-module_add_includes(include)
-
-module_add_sources(include/*.h)
-module_add_sources(source/*.c)
