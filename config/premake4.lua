@@ -31,34 +31,31 @@ if _ACTION == "vs2010" then
 
 	module:set_define( "WIN32" );
 	module:set_define( "_WIN32" );
+	module:set_define( "_WIN64", nil, nil, "x64" );
 
-	module:set_define( "_WIN64", nil, "Debug", "x64" );
-	module:set_define( "_WIN64", nil, "Release", "x64" );
-	module:set_define( "_WIN64", nil, "Master", "x64" );
-
-	is_windows = true;
-	is_linux = false;
+	is_windows	= true;
+	is_linux	= false;
+	is_apple	= false;
 elseif _ACTION == "gmake" then
 	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_OFF" );
 	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_ON" );
 	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
 
-	is_windows = false;
-	is_linux = true;
+	is_windows	= false;
+	is_linux	= true;
+	is_apple	= false;
+elseif _ACTION == "xcode" then
+	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_OFF" );
+	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
+	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_ON" );
+
+	is_windows	= false;
+	is_linux	= false;
+	is_apple	= true;
 end
 
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", "Debug", "x32" );
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", "Release", "x32" );
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", "Master", "x32" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", "Debug", "x32" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", "Release", "x32" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", "Master", "x32" );
+module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", nil, "x32" );
+module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", nil, "x32" );
 
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", "Debug", "x64" );
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", "Release", "x64" );
-module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", "Master", "x64" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", "Debug", "x64" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", "Release", "x64" );
-module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", "Master", "x64" );
-
-module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
+module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", nil, "x64" );
+module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );

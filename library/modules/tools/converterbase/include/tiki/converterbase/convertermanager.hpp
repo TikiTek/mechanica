@@ -67,6 +67,7 @@ namespace tiki
 		string						m_outputPath;
 
 		sqlite3*					m_pDataBase;
+		bool						m_rebuildForced;
 
 		mutable Mutex				m_loggingMutex;
 		mutable FileStream			m_loggingStream;

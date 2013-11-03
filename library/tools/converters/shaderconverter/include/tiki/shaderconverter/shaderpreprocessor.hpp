@@ -26,7 +26,11 @@ namespace tiki
 		size_t					getVariantCount( ShaderType type ) const			{ return m_variants[ type ].getCount(); }
 		const ShaderVariant&	getVariantByIndex( ShaderType type, size_t index )	{ return m_variants[ type ][ index ]; }
 
+		const string&			getSourceCode() const								{ return m_sourceCode; };
+
 	private:
+
+		string					m_sourceCode;
 
 		Array< ShaderVariant >	m_variants[ ShaderType_Count ];
 

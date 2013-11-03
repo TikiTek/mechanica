@@ -22,13 +22,25 @@ namespace tiki
 
 	static void addFeature( List< ShaderFeature >& features, const string& name, size_t maxValue )
 	{
-		const ShaderFeature* pLastFeature = features.getLast();
+		const ShaderFeature* pLastFeature = nullptr;
+		if ( features.getCount() > 0u )
+		{
+			pLastFeature = features.getLast();
+		}
 
 		ShaderFeature& feature = features.add();
 		feature.name		= name;
-		feature.startBit	= pLastFeature->startBit + pLastFeature->bitCount;
 		feature.bitCount	= 64u - countLeadingZeros64( maxValue );
 		feature.maxValue	= maxValue;
+
+		if ( pLastFeature != nullptr )
+		{
+			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount;
+		}
+		else
+		{
+			feature.startBit = 0u;
+		}
 	}
 
 	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, size_t typeCount, const string& featuresLine )
@@ -38,13 +50,16 @@ namespace tiki
 			const string search = formatString( "%s-features=", pShaderTypes[ i ] );
 
 			const int index = featuresLine.indexOf( search );
+			pShaderEnabled[ i ] = ( index >= 0 );
+
 			if ( index != -1 )
 			{
-				const int length = featuresLine.indexOf( ' ', index ) - index;
-				const string featuresString = featuresLine.substring( index, length );
+				const int baseIndex = index + search.getLength();
+				const int length = featuresLine.indexOf( ' ', baseIndex ) - baseIndex;
+				const string featuresString = featuresLine.substring( baseIndex, length );
 
 				Array< string > featuresList;
-				featuresString.split( featuresList, "," );
+				featuresString.trim().split( featuresList, "," );
 
 				for (size_t j = 0u; j < featuresList.getCount(); ++j)
 				{
@@ -76,9 +91,9 @@ namespace tiki
 
 					addFeature( pShaderFeatures[ i ], name, maxValue );
 				}
-			}
 
-			pShaderEnabled[ i ] = ( index >= 0 );
+				featuresList.dispose();
+			}
 		}
 	}
 
@@ -130,8 +145,8 @@ namespace tiki
 	{
 		// resolve includes
 		List< string > includeDirs;
-
-
+		
+		includeDirs.add( "../../../../../../library/modules/runtime/graphics/include/tiki/graphics/shader" );
 
 		const string shaderSourceCode = resolveIncludes( shaderText, includeDirs );
 
@@ -153,7 +168,7 @@ namespace tiki
 
 		for (size_t i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
-			if ( shaderEnabled[ i ] )
+			if ( shaderEnabled[ i ] && shaderFeatures[ i ].getCount() > 0u )
 			{
 				List< ShaderVariant > variants;
 
@@ -177,9 +192,17 @@ namespace tiki
 
 					variants.addRange( featureVariants );
 				}
+
+				m_variants[ i ].create( variants.getData(), variants.getCount() );
+			}
+			else if ( shaderEnabled[ i ] )
+			{
+				ShaderVariant variant;
+				variant.bitMask = 0u;
+
+				m_variants[ i ].create( &variant, 1u );
 			}
 		}
-
 	}
 
 	void ShaderPreprocessor::dispose()

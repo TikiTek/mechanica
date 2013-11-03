@@ -13,6 +13,10 @@ end
 function vardump(value, depth, key)
   local linePrefix = ""
   local spaces = ""
+
+  if key == "__index" then
+	return
+  end
   
   if key ~= nil then
     linePrefix = "["..key.."] = "
@@ -45,6 +49,44 @@ function vardump(value, depth, key)
   else
     print(spaces..linePrefix.."("..type(value)..") "..tostring(value))
   end
+end
+
+function table.join( table, src1, src2, src3 )
+	if ( table == nil or src1 == nil ) then
+		throw( "table.join: null argument exception" );
+	end
+
+	for i,val in pairs( src1 ) do
+		table[ i ] = val;
+	end
+
+	if src2 ~= nil then
+		for i,val in pairs( src2 ) do
+			table[ i ] = val;
+		end
+	end
+
+	if src3 ~= nil then
+		for i,val in pairs( src3 ) do
+			table[ i ] = val;
+		end
+	end
+
+	return table;
+end
+
+function table.join_array( table, array )
+	if ( table == nil or array == nil ) then
+		throw( "table.join_array: null argument exception" );
+	end
+
+	for i,arr in pairs( array ) do
+		for j,val in pairs( arr ) do
+			table[ j ] = val;
+		end
+	end
+
+	return table;
 end
 
 function copy_instance( target, source )
@@ -88,6 +130,14 @@ function get_config_dir( platform, configuration )
 end
 
 function finalize( output_name, projects )
+	if type( output_name ) ~= "string" then
+		throw "finalize: output_name is not a string.";
+	end
+
+	if type( projects ) ~= "table" then
+		throw "finalize: projects argument are invalid.";
+	end
+
 	local var_platforms = {};
 	local var_configurations = {};
 

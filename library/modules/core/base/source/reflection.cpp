@@ -169,7 +169,7 @@ namespace tiki
 
 				if ( isBitSet( flags, FieldFlags_Pointer ) || isBitSet( flags, FieldFlags_Reference ) )
 				{
-					typeName = typeName.substring( 0u, typeName.length() - 1u );
+					typeName = typeName.substring( 0u, typeName.getLength() - 1u );
 
 					fieldSize	= sizeof( void* );
 					fieldAlign	= sizeof( void* );
@@ -231,7 +231,7 @@ namespace tiki
 
 			if ( index == -1 )
 			{
-				index		= name.length();
+				index		= name.getLength();
 				lastField	= true;
 			}
 

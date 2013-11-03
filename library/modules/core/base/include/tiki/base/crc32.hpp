@@ -74,7 +74,7 @@ namespace tiki
 
 	 TIKI_FORCE_INLINE crc32 crcString( const string& str )
 	 {
-		 return crcBytes( (const uint8*)str.cStr(), str.length() );
+		 return crcBytes( (const uint8*)str.cStr(), str.getLength() );
 	 }
 
 	 template<typename T>

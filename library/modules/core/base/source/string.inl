@@ -146,7 +146,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE uint32 BasicString<TChar>::length() const
+	TIKI_FORCE_INLINE uint32 BasicString<TChar>::getLength() const
 	{
 		return data->stringLength;
 	}
@@ -161,15 +161,6 @@ namespace tiki
 	TIKI_FORCE_INLINE const TChar* BasicString<TChar>::cStr() const
 	{
 		return data->pData;
-	}
-
-	template<typename TChar>
-	TIKI_FORCE_INLINE TChar* BasicString<TChar>::createCStr() const
-	{
-		TChar* str = TIKI_NEW TChar[data->stringLength + 1];
-		memory::copy(str, data->pData, sizeof(TChar) * (data->stringLength + 1));
-
-		return str;
 	}
 
 	template<typename TChar>

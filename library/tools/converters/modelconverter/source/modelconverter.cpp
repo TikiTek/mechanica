@@ -62,7 +62,7 @@ namespace tiki
 			ResourceWriter writer;
 			openResourceWriter( &writer, TIKI_FOURCC( 'M', 'O', 'D', 'L' ), params.outputName, "model" );
 
-			writer.writeString( model.getMaterial() );
+			//writer.writeString( model.getMaterial() );
 
 			writer.writeUInt32( model.getGeometyCount() );
 			writer.writeUInt32( model.getHierarchy().isCreated() );

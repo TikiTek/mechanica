@@ -12,6 +12,8 @@ game:add_dependency( "framework" );
 game:add_dependency( "gameflow" );
 game:add_dependency( "gamestates" );
 
+game:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
+
 local game_project = Project:new(
 	"game",
 	{ "x32", "x64" },

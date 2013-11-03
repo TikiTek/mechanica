@@ -2,7 +2,7 @@
 #include "tiki/tikiassets/tikiassets.hpp"
 
 #include "tiki/base/iopath.hpp"
-#include "tiki/toolbase/directory.hpp"
+#include "tiki/toolbase/tooldirectory.hpp"
 
 namespace tiki
 {

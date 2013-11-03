@@ -36,8 +36,6 @@ namespace tiki
 		void			writeFloat( float value );
 		void			writeDouble( double value );
 
-		void			writeString( const string& text );
-
 	private:
 
 		string			m_fileName;
@@ -46,7 +44,7 @@ namespace tiki
 		fourcc			m_fourcc;
 		PlatformType	m_platform;
 
-		void			create( fourcc cc, const string& fileName, PlatformType platform = Platform_Win );
+		void			create( fourcc cc, const string& fileName, PlatformType platform = PlatformType_Win );
 		void			dispose();
 
 	};

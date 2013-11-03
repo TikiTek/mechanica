@@ -9,5 +9,8 @@ module:add_include_dir( "include" );
 module:add_dependency( "converterbase" );
 module:add_dependency( "graphicsbase" );
 module:add_dependency( "trex" );
+module:add_dependency( "dlls" );
 
-module:add_library( "d3dcompiler" );
+module:add_library_file( "d3dcompiler" );
+
+module:add_binary_file( "d3dcompiler_46.dll" );
