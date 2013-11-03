@@ -1,7 +1,0 @@
-
-add_module(gameplay)
-
-module_add_includes(include)
-
-module_add_sources(source/*.cpp) 
-module_add_sources(include/tiki/gameplay/*.hpp) 
