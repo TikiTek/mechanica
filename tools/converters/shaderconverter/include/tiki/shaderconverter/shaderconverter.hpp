@@ -3,10 +3,12 @@
 #define TIKI_SHADERCONVERTER_HPP
 
 #include "tiki/converterbase/converterbase.hpp"
-//#include "tiki/threading/mutex.hpp"
 
 namespace tiki
 {
+	enum GraphicsApi;
+	enum ShaderType;
+
 	class ShaderConverter : public ConverterBase
 	{
 	public:
@@ -28,7 +30,24 @@ namespace tiki
 
 	private:
 
-		//Mutex					m_mutex;
+		struct ShaderArguments
+		{
+			ShaderType		type;
+
+			string			fileName;
+			string			outputName;
+
+			string			version;
+			string			entryPoint;
+			string			sourceCode;
+
+			bool			debugMode;
+		};
+
+		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, GraphicsApi targetApi ) const;
+
+		bool					compileD3d11Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
+		bool					compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
 
 	};
 }

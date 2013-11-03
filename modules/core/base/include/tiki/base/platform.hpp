@@ -3,6 +3,7 @@
 #define TIKI_PLATFORM_HPP
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/forwarddeclaration.hpp"
 
 namespace tiki
 {
@@ -11,15 +12,27 @@ namespace tiki
 
 	enum PlatformType
 	{
-		Platform_Win,
-		Platform_Linux,
-		Platform_Apple
+		PlatformType_Win,
+		PlatformType_Linux,
+		PlatformType_Apple,
+
+		PlatformType_Count
 	};
 
-	PlatformType	getHostPlatform();
-	InstanceHandle	getInstanceHandle();
+	enum GraphicsApi
+	{
+		GraphicsApi_D3D11,
+		GraphicsApi_OpenGL4,
 
-	int				mainEntryPoint();
+		GraphicsApi_Count
+	};
+
+	PlatformType			getHostPlatform();
+	InstanceHandle			getInstanceHandle();
+	const Array< string >&	getArguments();
+	bool					hasArgument( const string& name );
+
+	int						mainEntryPoint();
 }
 
 #endif // TIKI_PLATFORM_HPP

@@ -106,11 +106,4 @@ namespace tiki
 	{
 		m_fileStream.write( &value, sizeof( value ) );
 	}
-
-	void ResourceWriter::writeString( const string& text )
-	{
-		writeUInt32( text.length() );
-		writeData( text.cStr(), text.length() );
-	}
-
 }

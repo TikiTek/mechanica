@@ -28,11 +28,10 @@ namespace tiki
 														BasicString( const BasicString<TChar>& copy );
 														~BasicString();
 
-		TIKI_FORCE_INLINE uint32						length() const;
+		TIKI_FORCE_INLINE uint32						getLength() const;
 		TIKI_FORCE_INLINE bool							isEmpty() const;
 
 		TIKI_FORCE_INLINE const TChar*					cStr() const;
-		TIKI_FORCE_INLINE TChar*						createCStr() const;
 
 		TIKI_FORCE_INLINE void							split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( TChar oldValue, TChar newValue ) const;

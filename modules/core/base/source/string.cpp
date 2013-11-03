@@ -46,7 +46,7 @@ namespace tiki
 
 		_vsprintf_s_l(
 			(char*)str.cStr(),
-			str.length() + 1u,
+			str.getLength() + 1u,
 			format,
 			nullptr,
 			argptr
@@ -78,9 +78,9 @@ namespace tiki
 
 	wstring convertString( const string& str )
 	{
-		wstring result( str.length() );
+		wstring result( str.getLength() );
 
-		for (size_t i = 0u; i < str.length(); ++i)
+		for (size_t i = 0u; i < str.getLength(); ++i)
 		{
 			result[ i ] = str[ i ];
 		}
@@ -90,9 +90,9 @@ namespace tiki
 
 	string convertString( const wstring& str )
 	{
-		string result( str.length() );
+		string result( str.getLength() );
 
-		for (size_t i = 0u; i < str.length(); ++i)
+		for (size_t i = 0u; i < str.getLength(); ++i)
 		{
 			result[ i ] = (char)str[ i ];
 		}

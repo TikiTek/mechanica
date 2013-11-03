@@ -32,7 +32,7 @@ namespace tiki
 			{
 				const char tc = pText[ ++index ];
 
-				for (size_t i = 0u; i < m_token.length(); ++i)
+				for (size_t i = 0u; i < m_token.getLength(); ++i)
 				{
 					if ( tc == m_token[ i ])
 					{
@@ -47,11 +47,11 @@ namespace tiki
 					found = false;
 				}
 			}
-			while ( !found && index < m_text.length() );
+			while ( !found && index < m_text.getLength() );
 
 			nextIndex = index;
 
-			if ( index == m_text.length() )
+			if ( index == m_text.getLength() )
 			{
 				nextIndex = -1;
 			}
@@ -71,7 +71,7 @@ namespace tiki
 
 		if ( nextIndex == (size_t)-1 )
 		{
-			nextIndex	= m_text.length();
+			nextIndex	= m_text.getLength();
 		}
 
 		if ( m_currentIndex >= nextIndex )

@@ -4,6 +4,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/iopath.hpp"
+#include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
 #include "tiki/toolbase/tikixml.hpp"
@@ -28,6 +29,7 @@ namespace tiki
 	{
 		m_outputPath	= outputPath;
 		m_returnValue	= 0;
+		m_rebuildForced	= hasArgument( "--rebuild" );
 
 		bool newDatabase = !file::exists( "build.sqlite" );
 		if ( sqlite3_open( "build.sqlite", &m_pDataBase ) != SQLITE_OK )
@@ -164,7 +166,7 @@ namespace tiki
 		}
 
 		m_loggingMutex.lock();
-		m_loggingStream.write( line.cStr(), line.length() );
+		m_loggingStream.write( line.cStr(), line.getLength() );
 
 		if ( level >= debug::TraceLevel_Warning )
 		{
@@ -181,12 +183,28 @@ namespace tiki
 			return true;
 		}
 
+		const crc32 fileHash = 0u;
+		const crc32 fileTime = file::getLastChangeCrc( fileName );
+
+		if ( m_rebuildForced )
+		{
+			char* pErrorMsg;
+			const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
+
+			if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
+			{
+				TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
+			}
+
+			return true;
+		}
+
 		const string sql = formatString( "SELECT * FROM files WHERE filename='%s';", fileName.cStr() );
 
 		cstring pTail;
 		sqlite3_stmt* pState;
 		
-		if ( sqlite3_prepare( m_pDataBase, sql.cStr(), sql.length(), &pState, &pTail ) != SQLITE_OK )
+		if ( sqlite3_prepare( m_pDataBase, sql.cStr(), sql.getLength(), &pState, &pTail ) != SQLITE_OK )
 		{
 			TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", pTail );
 			return true;
@@ -198,9 +216,6 @@ namespace tiki
 		//file::readAllBytes( fileName, fileContent );		
 		//const crc32 fileHash = crcBytes( fileContent.getData(), fileContent.getCount() );
 		//fileContent.dispose();
-		const crc32 fileHash = 0u;
-
-		const crc32 fileTime = file::getLastChangeCrc( fileName );
 
 		if ( sqlite3_step( pState ) == SQLITE_ROW )
 		{
@@ -334,7 +349,7 @@ namespace tiki
 					params.inputFiles.add( input );
 				}
 
-				needBuild |=  checkBuildNeeded( input.fileName, pConverter->getConverterRevision() );
+				needBuild |= checkBuildNeeded( input.fileName, pConverter->getConverterRevision() );
 			}
 
 			pInput							= xmlFile.findNext( "input", pInput );

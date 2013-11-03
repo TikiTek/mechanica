@@ -103,7 +103,7 @@ namespace tiki
 
 		_vsprintf_s_l(
 			(char*)message.cStr(),
-			message.length() + 1u,
+			message.getLength() + 1u,
 			format.cStr(),
 			nullptr,
 			pArgs
