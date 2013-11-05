@@ -148,7 +148,7 @@ namespace tiki
 		
 		includeDirs.add( "../../../../../../library/modules/runtime/graphics/include/tiki/graphics/shader" );
 
-		const string shaderSourceCode = resolveIncludes( shaderText, includeDirs );
+		m_sourceCode = resolveIncludes( shaderText, includeDirs );
 
 		// parse features
 		const string featuresLine = shaderText.substring( 0u, shaderText.indexOf( '\n' ) );

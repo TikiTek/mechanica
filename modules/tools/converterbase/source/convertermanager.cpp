@@ -305,7 +305,7 @@ namespace tiki
 		if ( pOutput == nullptr )
 		{
 			params.outputName = path::getFilenameWithoutExtension( path::getFilenameWithoutExtension( sourceFile ) );
-			TIKI_TRACE_WARNING( "no output name given. use xasset filename: %s\n", params.outputName.cStr() );
+			TIKI_TRACE_DEBUG( "no output name given. use xasset filename: %s\n", params.outputName.cStr() );
 		}
 		else
 		{

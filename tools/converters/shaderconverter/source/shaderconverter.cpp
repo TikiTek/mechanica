@@ -5,6 +5,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
+#include "tiki/base/iopath.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
@@ -19,6 +20,107 @@
 
 namespace tiki
 {
+	class ShaderIncludeHandler : public ID3DInclude
+	{
+		TIKI_NONCOPYABLE_CLASS( ShaderIncludeHandler );
+
+	public:
+
+		ShaderIncludeHandler()
+		{
+			m_includeDirs.add( "./" );
+
+			string text;
+			if ( file::readAllText( "../../shaderinc.lst", text ) )
+			{
+				Array< string > dirs;
+				text.split( dirs, "\n" );
+
+				m_includeDirs.addRange( dirs.getData(), dirs.getCount() );
+				dirs.dispose();
+			}
+		}
+
+		~ShaderIncludeHandler()
+		{
+			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
+			{
+				if ( m_fileData[ i ].getCount() > 0u )
+				{
+					m_fileData[ i ].dispose();
+				}
+			}
+
+			m_includeDirs.dispose();
+		}
+
+		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
+		{
+			for (uint i = 0u; i < m_includeDirs.getCount(); ++i)
+			{
+				const string fullName = path::combine( m_includeDirs[ i ], pFileName );
+
+				if ( file::exists( fullName ) )
+				{			
+					size_t freeStreamIndex = TIKI_SIZE_T_MAX;
+					for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
+					{
+						if ( m_fileData[ j ].getCount() == 0u )
+						{
+							freeStreamIndex = j;
+							break;
+						}
+					} 
+
+					if ( freeStreamIndex == TIKI_SIZE_T_MAX )
+					{
+						TIKI_TRACE_ERROR( "No free Filestream.\n" );
+						return S_FALSE;
+					}
+
+					if ( file::readAllBytes( fullName, m_fileData[ freeStreamIndex ] ) == false )
+					{
+						TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
+						return S_FALSE;
+					}
+
+					*ppData = m_fileData[ freeStreamIndex ].getData();
+					*pBytes	= m_fileData[ freeStreamIndex ].getCount();
+					return S_OK;
+				}
+			} 
+
+			TIKI_TRACE_ERROR( "Could find File: %s.\n", pFileName );
+			return S_FALSE;
+		}
+
+		virtual HRESULT	STDMETHODCALLTYPE Close( LPCVOID pData )
+		{
+			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
+			{
+				if ( m_fileData[ i ].getData() == pData )
+				{
+					m_fileData[ i ].dispose();
+					return S_OK;
+				}
+			} 
+
+			return S_FALSE;
+		}
+
+	private:
+
+		enum
+		{
+			MaxFileStreams = 8u
+		};
+
+		List< string >	m_includeDirs;
+		Array< uint8 >	m_fileData[ MaxFileStreams ];
+
+	};
+
+
 	tiki::crc32 ShaderConverter::getInputType() const
 	{
 		return crcString( "shader" );
@@ -35,11 +137,19 @@ namespace tiki
 
 	bool ShaderConverter::initializeConverter()
 	{
+		m_baseSourceCode =	"#define TIKI_ON 2-\n"
+							"#define TIKI_OFF 1-\n"
+							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
+							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
+
+		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler();
+
 		return true;
 	}
 
 	void ShaderConverter::disposeConverter()
 	{
+		TIKI_DEL m_pIncludeHandler;
 	}
 	
 	bool ShaderConverter::startConversionJob( const ConversionParameters& params ) const
@@ -93,12 +203,28 @@ namespace tiki
 					args.version	= shaderStart[ type ] + "_5_0";
 					args.debugMode	= debugMode;
 
-					args.sourceCode	= formatString( "#define %s TIKI_ON\n", shaderDefine[ type ].cStr() );
-					args.sourceCode += variant.defineCode;
-					args.sourceCode += preprocessor.getSourceCode();
+					args.defineCode = m_baseSourceCode;
+					args.defineCode += variant.defineCode;
+
+					for (uint k = 1u; k < ShaderType_Count; ++k)
+					{
+						args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ k ].cStr(), ( i == k ? "TIKI_ON" : "TIKI_OFF" ) );
+					} 
 
 					Array< uint8 > variantData;
-					compilePlatformShader( variantData, args, GraphicsApi_D3D11 );
+					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
+					{
+						ResourceWriter writer;
+						openResourceWriter( &writer, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), args.outputName, args.version.substring( 0u, 2u ) );
+
+						writer.writeUInt32( args.type );
+						writer.writeUInt32( variantData.getCount() );
+						writer.writeData( variantData.getData(), variantData.getCount() );
+
+						closeResourceWriter( &writer );
+
+						variantData.dispose();
+					}
 				} 
 			}
 
@@ -137,12 +263,14 @@ namespace tiki
 			shaderFlags |= D3DCOMPILE_DEBUG;
 		}
 
+		const string sourceCode = args.defineCode + formatString( "\n#include \"%s\"", args.fileName.cStr() );
+
 		HRESULT result = D3DCompile(
-			args.sourceCode.cStr(),
-			args.sourceCode.getLength(),
+			sourceCode.cStr(),
+			sourceCode.getLength(),
 			args.fileName.cStr(), 
 			nullptr,
-			nullptr,
+			m_pIncludeHandler,
 			args.entryPoint.cStr(),
 			args.version.cStr(),
 			shaderFlags,
@@ -166,17 +294,12 @@ namespace tiki
 			{
 				TIKI_TRACE_ERROR( "failed to compile effect: unknown error.\n" );
 			}
+
+			return false;
 		}
 		else
 		{
-			ResourceWriter writer;
-			openResourceWriter( &writer, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), args.outputName, args.version.substring( 0u, 2u ) );
-
-			writer.writeUInt32( args.type );
-			writer.writeUInt32( pBlob->GetBufferSize() );
-			writer.writeData( pBlob->GetBufferPointer(), pBlob->GetBufferSize() );
-
-			closeResourceWriter( &writer );
+			targetData.create( static_cast< uint8* >( pBlob->GetBufferPointer() ), pBlob->GetBufferSize() );
 		}
 
 		if ( pBlob != nullptr )

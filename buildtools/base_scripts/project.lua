@@ -59,6 +59,10 @@ function Project:set_flag( name, configuration, platform )
 	self.config:set_flag( name, configuration, platform );
 end
 
+function Project:add_shader_dir( shader_dir, configuration, platform )
+	self.config:add_shader_dir( shader_dir, configuration, platform );
+end
+
 function Project:add_binary_dir( binary_dir, configuration, platform )
 	self.config:add_binary_dir( binary_dir, configuration, platform );
 end
@@ -105,14 +109,15 @@ function Project:finalize()
 	language "C++"
 
 	local modules = {};
+	local shader_global_dirs = {};
 	local binary_global_dirs = {};
 	local binary_global_files = {};
 	self.module:resolve_dependency( modules );
 
-	self.module:finalize( binary_global_dirs, binary_global_files );
+	self.module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files );
 	for i,cur_module in pairs( modules ) do
 		--print( "Module: "..cur_module.name );
-		cur_module:finalize( binary_global_dirs, binary_global_files );
+		cur_module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files );
 	end
 	self:finalize_binary( { binary_global_dirs }, { binary_global_files } );
 
@@ -125,15 +130,15 @@ function Project:finalize()
 		binary_platform_dirs[ var_platform ] = {};
 		binary_platform_files[ var_platform ] = {};
 
-		self.module:finalize( binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
+		self.module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
 
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize( binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
+			cur_module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
 		end
 
 		local project_config = self.config:get_config( nil, var_platform );
 		if project_config then
-			project_config:apply( binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ] );
+			project_config:apply( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ] );
 		end
 
 		self:finalize_binary( { binary_global_dirs, binary_platform_dirs[ var_platform ] }, { binary_platform_files[ var_platform ] } );
@@ -148,15 +153,15 @@ function Project:finalize()
 		binary_configuration_dirs[ var_configuration ] = {};
 		binary_configuration_files[ var_configuration ] = {};
 
-		self.module:finalize( binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
+		self.module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
 
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize( binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
+			cur_module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
 		end
 
 		local project_config = self.config:get_config( var_configuration );
 		if project_config then
-			project_config:apply( binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ] );
+			project_config:apply( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ] );
 		end
 
 		self:finalize_binary( { binary_global_dirs, binary_configuration_dirs[ var_configuration ] }, { binary_configuration_files[ var_configuration ] } );
@@ -181,18 +186,30 @@ function Project:finalize()
 			binary_pc_dirs[ var_platform ][ var_configuration ] = {};
 			binary_pc_files[ var_platform ][ var_configuration ] = {};
 			
-			self.module:finalize( binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
+			self.module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
 
 			for k,cur_module in pairs( modules ) do
-				cur_module:finalize( binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
+				cur_module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
 			end	
 			
 			local project_config = self.config:get_config( var_configuration, var_platform );
 			if project_config then
-				project_config:apply( binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ] );
+				project_config:apply( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ] );
 			end	
 			
 			self:finalize_binary( { binary_global_dirs, binary_platform_dirs[ var_platform ], binary_configuration_dirs[ var_configuration ], binary_pc_dirs[ var_platform ][ var_configuration ] }, { binary_platform_files[ var_platform ], binary_configuration_files[ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ] } );
 		end
+	end
+
+	local shader_file = io.open( _OPTIONS[ "outpath" ] .. "/shaderinc.lst", "w" );
+	if shader_file ~= nil then
+		for i,dir in pairs( shader_global_dirs ) do
+			if i > 1 then
+				shader_file:write( "\n" );
+			end
+
+			shader_file:write( dir );
+		end
+		shader_file:close();
 	end
 end

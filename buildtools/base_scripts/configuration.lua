@@ -1,5 +1,5 @@
 
-Configuration = class{ defines = {}, flags = {}, binary_dirs = {}, include_dirs = {}, library_dirs = {}, binary_files = {}, library_files = {} };
+Configuration = class{ defines = {}, flags = {}, shader_dirs = {}, binary_dirs = {}, include_dirs = {}, library_dirs = {}, binary_files = {}, library_files = {} };
 
 function Configuration:new()
 	local configuration_new = class_instance( self );
@@ -13,6 +13,10 @@ end
 
 function Configuration:set_flag( name )
 	table.insert( self.flags, name );
+end
+
+function Configuration:add_shader_dir( shader_dir )
+	table.insert( self.shader_dirs, path.getabsolute( shader_dir ) );
 end
 
 function Configuration:add_binary_dir( binary_dir )
@@ -35,7 +39,7 @@ function Configuration:add_library_file( library_filename )
 	table.insert( self.library_files, library_filename );
 end
 
-function Configuration:apply( binary_dirs, binary_files )
+function Configuration:apply( shader_dirs, binary_dirs, binary_files )
 	if ( binary_dirs == nil or  binary_files == nil ) then
 		throw "[Configuration:apply] too few arguments.";
 	end
@@ -55,6 +59,12 @@ function Configuration:apply( binary_dirs, binary_files )
 	includedirs( self.include_dirs );
 	libdirs( self.library_dirs );		
 	links( self.library_files );
+
+	if shader_dirs ~= nil then
+		for i,dir in pairs( self.shader_dirs ) do
+			table.insert( shader_dirs, dir );
+		end
+	end
 
 	for i,dir in pairs( self.binary_dirs ) do
 		table.insert( binary_dirs, dir );
@@ -129,6 +139,14 @@ function PlatformConfiguration:set_flag( name, configuration, platform )
 		self:get_config( configuration, platform ):set_flag( name );
 	else
 		throw("[set_flag] Invalid args.")
+	end
+end
+
+function PlatformConfiguration:add_shader_dir( shader_dir, configuration, platform )
+	if type( shader_dir ) == "string" then
+		self:get_config( configuration, platform ):add_shader_dir( shader_dir );
+	else
+		throw "[add_shader_dir] Invalid args.";
 	end
 end
 

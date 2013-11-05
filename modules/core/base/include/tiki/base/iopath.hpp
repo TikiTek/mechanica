@@ -20,6 +20,8 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 		string getProjectDir();
+		string getCurrentDir();
+		string getExecutablePath();
 #endif
 
 	}

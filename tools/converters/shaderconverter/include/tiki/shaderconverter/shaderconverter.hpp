@@ -8,7 +8,8 @@ namespace tiki
 {
 	enum GraphicsApi;
 	enum ShaderType;
-
+	class ShaderIncludeHandler;
+	
 	class ShaderConverter : public ConverterBase
 	{
 	public:
@@ -39,10 +40,13 @@ namespace tiki
 
 			string			version;
 			string			entryPoint;
-			string			sourceCode;
+			string			defineCode;
 
 			bool			debugMode;
 		};
+		
+		string					m_baseSourceCode;
+		ShaderIncludeHandler*	m_pIncludeHandler;
 
 		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, GraphicsApi targetApi ) const;
 
