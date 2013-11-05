@@ -1,6 +1,8 @@
 
 #include "tiki/base/iopath.hpp"
 
+#include <windows.h>
+
 namespace tiki
 {
 	string path::checkSlashes( const string& path )
@@ -63,6 +65,24 @@ namespace tiki
 	string path::getProjectDir()
 	{
 		return nullptr;
+	}
+
+	string path::getCurrentDir()
+	{
+		char buffer[ 256u ];
+		GetCurrentDirectoryA( TIKI_COUNT( buffer ), buffer );
+
+		return buffer;
+	}
+
+	string path::getExecutablePath()
+	{
+		HMODULE currentModule = GetModuleHandleA( nullptr );
+
+		char buffer[ 256u ];
+		GetModuleFileNameA( currentModule, buffer, TIKI_COUNT( buffer ) );
+
+		return path::getDirectoryName( buffer );
 	}
 #endif
 }

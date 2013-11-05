@@ -1,6 +1,3 @@
-<tikiasset output-name="font">
-  <input file="font.vs.hlsl" type="vs_5_0" />
-  <input file="font.ps.hlsl" type="ps_5_0" />
-  <param key="ps_function_name" value="PS_Main" />
-  <param key="vs_function_name" value="VS_Main" />
+<tikiasset>
+  <input file="font.fx" type="shader" />
 <tikiasset>

@@ -8,7 +8,7 @@
 #if TIKI_HLSL4
 
 // constants
-#define TIKI_DEFINE_CONSTANT( slot, type, name ); cbuffer type name : register( TIKI_CONCAT( b, slot ) )
+#define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
 
 #define TIKI_DEFINE_TEXTURE1D( slot, name ); Texture1D name : register( TIKI_CONCAT( t, slot ) )
 #define TIKI_DEFINE_TEXTURE2D( slot, name ); Texture2D name : register( TIKI_CONCAT( t, slot ) )

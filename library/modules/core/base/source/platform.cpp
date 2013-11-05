@@ -2,6 +2,7 @@
 #include "tiki/base/platform.hpp"
 
 #include "tiki/base/array.hpp"
+#include "tiki/base/iopath.hpp"
 #include "tiki/base/string.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
@@ -21,6 +22,16 @@ int main( int argc, char** argv )
 		s_arguments[ i ] = argv[ i ];
 	} 
 	
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+	{
+		const tiki::string currentPath = tiki::path::getCurrentDir();
+		const tiki::string exePath = tiki::path::getExecutablePath();
+
+		TIKI_TRACE_DEBUG( "Executable Path: %s\n", exePath.cStr() );
+		TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.cStr() );
+	}
+#endif
+
 	int returnValue = tiki::mainEntryPoint();
 	
 	s_arguments.dispose();

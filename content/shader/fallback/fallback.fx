@@ -9,7 +9,7 @@ struct VertexToPixel
 	float2	texcoord	: TIKI_TEXCOORD;
 };
 
-#if TIKI_VERTEX_SHADER
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 
 // types
 struct VertexInput
@@ -31,7 +31,7 @@ TIKI_DEFINE_CONSTANT( 0, VertexConstants, c_instanceData );
 
 VertexToPixel main( VertexInput input )
 {
-	VertexToPixel output;
+	VertexToPixel output = (VertexToPixel)0;
 
 	output.position = float4( input.position, 1.0f );
 	output.position = mul( output.position, c_instanceData.worldMatrix );
@@ -44,7 +44,7 @@ VertexToPixel main( VertexInput input )
 	return output;
 }
 
-#elif TIKI_PIXEL_SHADER
+#elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
 
 ////////////////////////////////////////////////////////////////////////////////
 // Pixel Shader
