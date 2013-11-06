@@ -78,9 +78,11 @@ namespace tiki
 #define TIKI_CONTAINEROF( type, ptr, atr ) (type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
-#	define TIKI_SIZE_T_MAX 0xffffffff
+#	define TIKI_SIZE_T_MAX	0xffffffff
+#	define TIKI_SIZE_T_BITS 32
 #elif TIKI_ENABLED( TIKI_BUILD_64BIT )
-#	define TIKI_SIZE_T_MAX 0xffffffffffffffff
+#	define TIKI_SIZE_T_MAX	0xffffffffffffffff
+#	define TIKI_SIZE_T_BITS 64
 #else
 #	error Platform not suppored
 #endif

@@ -33,6 +33,7 @@
 #include "psd_math.h"
 #include "psd_descriptor.h"
 
+#include <string.h>
 
 extern psd_status psd_get_layer_drop_shadow(psd_context * context, psd_layer_effects_drop_shadow * drop_shadow);
 extern psd_status psd_get_layer_drop_shadow2(psd_context * context, psd_layer_effects_drop_shadow * drop_shadow);

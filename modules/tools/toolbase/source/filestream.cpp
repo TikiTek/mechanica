@@ -3,6 +3,7 @@
 
 #include "tiki/toolbase/filestream.hpp"
 
+#pragma warning(disable: 4996)
 #include <stdio.h>
 
 namespace tiki

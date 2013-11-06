@@ -33,6 +33,7 @@
 #include "psd_bitmap.h"
 #include "psd_descriptor.h"
 
+#include <string.h>
 
 extern psd_status psd_pattern_fill(psd_bitmap * dst_bmp, psd_pattern * pattern, psd_int scale, psd_int offset_x, psd_int offset_y);
 

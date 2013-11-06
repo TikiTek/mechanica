@@ -35,6 +35,8 @@
 #include "psd_gradient.h"
 #include "psd_math.h"
 
+extern psd_float psd_carm_sqrt(psd_float x);
+
 
 static void psd_set_layer_gradient_overlay_default(psd_layer_effects_gradient_overlay * gradient_overlay)
 {

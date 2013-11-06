@@ -4,6 +4,7 @@
 #include "libpsd.h"
 #include "psd_system.h"
 
+#pragma warning(disable: 4996)
 
 void * psd_malloc(psd_int size)
 {
