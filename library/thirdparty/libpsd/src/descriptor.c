@@ -31,6 +31,7 @@
 #include "psd_color.h"
 #include "psd_math.h"
 
+#include <string.h>
 
 typedef psd_double psd_matrix[4][4];
 

@@ -35,9 +35,11 @@
 #include "psd_math.h"
 #include "psd_descriptor.h"
 
+#include "string.h"
 
 extern psd_bool psd_draw_stroke(psd_bitmap * dst_bmp, psd_bitmap * src_bmp, psd_int stroke_size);
 extern psd_status psd_pattern_fill(psd_bitmap * dst_bmp, psd_pattern * pattern, psd_int scale, psd_int offset_x, psd_int offset_y);
+extern psd_float psd_carm_sqrt(psd_float x);
 
 
 static void psd_set_layer_stroke_default(psd_layer_effects_stroke * stroke)

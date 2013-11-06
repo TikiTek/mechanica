@@ -3,7 +3,7 @@
 
 #include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/path.hpp"
+#include "tiki/base/iopath.hpp"
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
 

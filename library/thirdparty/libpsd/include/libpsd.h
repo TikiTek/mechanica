@@ -28,6 +28,8 @@
 
 #include "psd_types.h"
 
+#include <memory.h>
+
 
 #ifdef __cplusplus
 extern "C" {

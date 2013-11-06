@@ -30,6 +30,8 @@
 #include FT_INTERNAL_RFORK_H
 #include "basepic.h"
 
+#pragma warning(disable: 4996)
+
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_raccess
 

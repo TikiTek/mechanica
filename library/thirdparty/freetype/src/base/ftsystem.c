@@ -33,6 +33,8 @@
 #include FT_ERRORS_H
 #include FT_TYPES_H
 
+#pragma warning(disable: 4996)
+
 
   /*************************************************************************/
   /*                                                                       */
