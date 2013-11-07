@@ -60,8 +60,8 @@ namespace tiki
 			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
 			
 			ResourceWriter writer;
-			openResourceWriter( &writer, TIKI_FOURCC( 'M', 'O', 'D', 'L' ), params.outputName, "model" );
-
+			openResourceWriter( &writer, params.outputName, "model" );
+			//TIKI_FOURCC( 'M', 'O', 'D', 'L' )
 			//writer.writeString( model.getMaterial() );
 
 			writer.writeUInt32( model.getGeometyCount() );

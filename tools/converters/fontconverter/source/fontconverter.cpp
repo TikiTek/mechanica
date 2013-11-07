@@ -137,8 +137,8 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, TIKI_FOURCC( 'F', 'O', 'N', 'T' ), params.outputName, "font" );
-
+			openResourceWriter( &writer, params.outputName, "font" );
+			//TIKI_FOURCC( 'F', 'O', 'N', 'T' )
 			TextureWriter textureWriter;
 			textureWriter.create();
 

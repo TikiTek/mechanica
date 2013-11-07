@@ -215,8 +215,8 @@ namespace tiki
 					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
 					{
 						ResourceWriter writer;
-						openResourceWriter( &writer, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), args.outputName, args.version.substring( 0u, 2u ) );
-
+						openResourceWriter( &writer, args.outputName, args.version.substring( 0u, 2u ) );
+						//TIKI_FOURCC( 'T', 'G', 'F', 'X' )
 						writer.writeUInt32( args.type );
 						writer.writeUInt32( variantData.getCount() );
 						writer.writeData( variantData.getData(), variantData.getCount() );

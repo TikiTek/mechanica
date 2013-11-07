@@ -51,10 +51,10 @@ namespace tiki
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter* pWriter, fourcc cc, const string& fileName, const string& extension ) const
+	void ConverterBase::openResourceWriter( ResourceWriter* pWriter, const string& fileName, const string& extension, PlatformType platform ) const
 	{
 		string realName = path::combine( m_pManager->getOutputPath(), fileName + "." + extension );
-		pWriter->create( cc, realName );
+		pWriter->create( realName, platform );
 	}
 
 	void ConverterBase::closeResourceWriter( ResourceWriter* pWriter ) const
