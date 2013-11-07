@@ -7,11 +7,19 @@
 
 namespace tiki
 {
+	// :TODO: eliminate all padding
+
 	struct ResourceFileHeader
 	{
+		enum
+		{
+			CurrentFormatVersion = 1u
+		};
+
 		fourcc	tikiFourcc;
 		uint8	version;
 		uint8	resourceCount;
+		// 2 bytes padding
 	};
 
 	struct ResourceHeader
@@ -24,13 +32,20 @@ namespace tiki
 		uint8	sectionCount;
 		uint16	stringCount;
 		uint16	linkCount;
-
+		// 2 bytes padding
 		uint32	stringSizeInBytes;
+	};
+
+	enum AllocatorType
+	{
+		AllocatorType_TemporaryMemory,
+		AllocatorType_MainMemory,
+		AllocatorType_GraphicsMemory
 	};
 
 	struct SectionHeader
 	{
-		uint8	allocatorId;
+		uint8	allocatorType_allocatorId; // 2 bits - type / 6 bits - id // if type is AllocatorType_TemporaryMemory the id will be ignored
 		uint8	alignment;
 
 		uint16	referenceCount;
@@ -52,6 +67,7 @@ namespace tiki
 
 		uint32	offsetInTargetSection;
 		uint16	targetId;
+		// 2 bytes padding
 	};
 
 	enum StringType

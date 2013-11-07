@@ -2,6 +2,7 @@
 #ifndef TIKI_CONVERTERBASE_HPP
 #define TIKI_CONVERTERBASE_HPP
 
+#include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/list.hpp"
@@ -30,7 +31,7 @@ namespace tiki
 
 	protected:
 
-		void					openResourceWriter( ResourceWriter* pWriter, fourcc cc, const string& fileName, const string& extension ) const;
+		void					openResourceWriter( ResourceWriter* pWriter, const string& fileName, const string& extension, PlatformType platform = PlatformType_Win ) const;
 		void					closeResourceWriter( ResourceWriter* pWriter ) const;
 
 		virtual crc32			getInputType() const = 0;

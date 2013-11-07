@@ -26,7 +26,7 @@ namespace tiki
 		m_isReadOnly	= copy.m_isReadOnly;
 		m_pData			= memory::newArray<T>( m_capacity );
 
-		for (size_t i = 0u; i < m_count; ++i)
+		for (uint i = 0u; i < m_count; ++i)
 		{
 			m_pData[ i ] = copy.m_pData[ i ];
 		}
@@ -40,7 +40,7 @@ namespace tiki
 		m_isReadOnly	= readOnly;
 		m_pData			= memory::newArray<T>( m_capacity );
 
-		for (size_t i = 0u; i < m_count; ++i)
+		for (uint i = 0u; i < m_count; ++i)
 		{
 			m_pData[ i ] = pData[ i ];
 		}
@@ -62,9 +62,15 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE size_t List< T >::getCount() const
+	TIKI_FORCE_INLINE uint List< T >::getCount() const
 	{
 		return m_count;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE bool tiki::List<T>::isEmpty() const
+	{
+		return m_count == 0u;
 	}
 
 	template<typename T>
@@ -117,25 +123,25 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::addRange( const T* pData, size_t length )
+	TIKI_FORCE_INLINE void List< T >::addRange( const T* pData, uint length )
 	{
 		TIKI_ASSERT( m_isReadOnly == false );
 
 		if(length == 0)	return;
 		checkArraySize( m_count + length );
 
-		for (size_t i = 0u; i < length; ++i)
+		for (uint i = 0u; i < length; ++i)
 		{
 			m_pData[ m_count++ ] = pData[ i ];
 		}
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::insert( size_t index, const T& item)
+	TIKI_FORCE_INLINE void List< T >::insert( uint index, const T& item)
 	{
 		TIKI_ASSERT( m_isReadOnly == false );
 
-		size_t i = m_count;
+		uint i = m_count;
 
 		add();
 
@@ -182,7 +188,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::removeAt( size_t index )
+	TIKI_FORCE_INLINE void List< T >::removeAt( uint index )
 	{
 		TIKI_ASSERT( m_isReadOnly == false );
 		TIKI_ASSERT( index < m_count );
@@ -198,19 +204,19 @@ namespace tiki
 	}  
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::reserve( const size_t count )
+	TIKI_FORCE_INLINE void List< T >::reserve( const uint count )
 	{
 		checkArraySize( count );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T& List< T >::operator[]( size_t index ) const
+	TIKI_FORCE_INLINE const T& List< T >::operator[]( uint index ) const
 	{
 		return m_pData[ index ];
 	}  
 
 	template<typename T>
-	TIKI_FORCE_INLINE T& List< T >::operator[]( size_t index )
+	TIKI_FORCE_INLINE T& List< T >::operator[]( uint index )
 	{
 		return m_pData[index];
 	} 
@@ -225,7 +231,7 @@ namespace tiki
 		m_count		= copy.m_count;
 		m_pData			= memory::newArray< T >( m_capacity );
 
-		for (size_t i = 0u; i < m_count; ++i)
+		for (uint i = 0u; i < m_count; ++i)
 		{
 			m_pData[ i ] = copy.m_pData[ i ];
 		}
@@ -234,7 +240,7 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE uint List< T >::getNextSize(uint targetSize)
 	{
-		size_t capacity = TIKI_MAX( 2u, m_capacity );
+		uint capacity = TIKI_MAX( 2u, m_capacity );
 
 		while ( capacity <= targetSize )
 		{
@@ -249,10 +255,10 @@ namespace tiki
 	{
 		if ( m_capacity < neddedSize )
 		{
-			const size_t capacity = getNextSize( neddedSize );
+			const uint capacity = getNextSize( neddedSize );
 			T* pNewData = memory::newArray< T >( capacity );
 
-			for (size_t i = 0u; i < m_count; ++i)
+			for (uint i = 0u; i < m_count; ++i)
 			{
 				pNewData[ i ] = m_pData[ i ];
 			}

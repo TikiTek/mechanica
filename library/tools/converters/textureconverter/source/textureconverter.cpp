@@ -95,8 +95,8 @@ namespace tiki
 
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, TIKI_FOURCC( 'T', 'E', 'X', 'R' ), params.outputName, "ttx" );
-
+			openResourceWriter( &writer, params.outputName, "ttx" );
+			//TIKI_FOURCC( 'T', 'E', 'X', 'R' )
 			TextureWriter textureWriter;
 			textureWriter.create();
 

@@ -12,6 +12,8 @@ namespace tiki
 
 	enum PlatformType
 	{
+		PlatformType_Invalid = -1,
+
 		PlatformType_Win,
 		PlatformType_Linux,
 		PlatformType_Apple,

@@ -8,16 +8,14 @@ namespace tiki
 {
 	ResourceWriter::~ResourceWriter()
 	{
-		TIKI_ASSERT( m_fileStream.isOpen() == false );
+		TIKI_ASSERT( m_fileName.isEmpty() );
+		TIKI_ASSERT( m_resources.isEmpty() );
 	}
 
-	void ResourceWriter::create( fourcc cc, const string& fileName, PlatformType platform /*= Platform_Win */ )
+	void ResourceWriter::create( const string& fileName, PlatformType platform )
 	{
-		m_fourcc	= cc;
 		m_fileName	= fileName;
 		m_platform	= platform;
-
-		m_fileStream.create();
 	}
 
 	void ResourceWriter::dispose()
@@ -25,85 +23,151 @@ namespace tiki
 		FileStream stream;
 		stream.create( m_fileName, FOM_Write );
 
-		const fourcc tiki = TIKI_FOURCC( 'T', 'I', 'K', 'I' );
-		const uint32 size = m_fileStream.getLength();
-		const uint32 null = 0u;
+		ResourceFileHeader fileHeader;
+		fileHeader.tikiFourcc		= TIKI_FOURCC( 'T', 'I', 'K', 'I' );
+		fileHeader.version			= ResourceFileHeader::CurrentFormatVersion;
+		fileHeader.resourceCount	= m_resources.getCount();
 
-		stream.write( &tiki, sizeof( fourcc ) );
-		stream.write( &m_fourcc, sizeof( fourcc ) );
-		stream.write( &size, sizeof( uint32 ) );
-		stream.write( &null, sizeof( uint32 ) );
+		stream.write( &fileHeader, sizeof( ResourceFileHeader ) );
 
-		stream.write( m_fileStream.getData(), size );
+		for (uint i = 0u; i < m_resources.getCount(); ++i)
+		{
+			const ResourceData& resource = m_resources[ i ];
+
+			// :TODO: write resource
+		}
 
 		stream.dispose();
-		m_fileStream.dispose();
-		m_fourcc	= 0u;
+
+		m_resources.dispose();
 		m_fileName	= "";
+		m_platform	= PlatformType_Invalid;
 	}
 
-	void ResourceWriter::writeAlignment( size_t alignment )
+	void ResourceWriter::openResource( const string& name, fourcc type, uint8 resourceFormatVersion )
 	{
-		const uint8 null = 0u;
+		TIKI_ASSERT( m_pCurrentResource == nullptr );
 
-		while ( m_fileStream.getLength() % alignment )
+		ResourceData& resource = m_resources.add();
+		resource.name		= name;
+		resource.type		= type;
+		resource.version	= resourceFormatVersion;
+
+		m_pCurrentResource = &resource;
+	}
+
+	void ResourceWriter::closeResource()
+	{
+		TIKI_ASSERT( m_pCurrentResource != nullptr );
+		m_pCurrentResource = nullptr;
+	}
+
+	void ResourceWriter::openDataSection( uint8 AllocatorId, uint8 alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
+	{
+		TIKI_ASSERT( m_pCurrentResource != nullptr );
+	}
+
+	void ResourceWriter::closeDataSection()
+	{
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+
+	}
+
+	ReferenceKey ResourceWriter::addString( StringType type, const string& text )
+	{
+		return ReferenceKey();
+	}
+
+	ReferenceKey ResourceWriter::addResourceLink( const string& fileName, crc32 resourceKey )
+	{
+		return ReferenceKey();
+	}
+
+	ReferenceKey ResourceWriter::addDataPoint()
+	{
+		return ReferenceKey();
+	}
+
+	void ResourceWriter::writeAlignment( uint alignment )
+	{
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+
+		const uint8 null = 0u;
+		while ( m_pCurrentSection->binaryData.getLength() % alignment )
 		{
-			m_fileStream.write( &null, 1u );
+			m_pCurrentSection->binaryData.write( &null, 1u );
 		}
 	}
 	
-	void ResourceWriter::writeData( const void* pData, size_t length )
+	void ResourceWriter::writeReference( const ReferenceKey& key )
 	{
-		m_fileStream.write( pData, length );
+
+	}
+
+	void ResourceWriter::writeData( const void* pData, uint length )
+	{
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( pData, length );
 	}
 
 	void ResourceWriter::writeUInt8( uint8 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeUInt16( uint16 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeUInt32( uint32 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeUInt64( uint64 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeSInt8( sint8 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeSInt16( sint16 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeSInt32( sint32 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeSInt64( sint64 value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeFloat( float value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
 	void ResourceWriter::writeDouble( double value )
 	{
-		m_fileStream.write( &value, sizeof( value ) );
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
+
 }

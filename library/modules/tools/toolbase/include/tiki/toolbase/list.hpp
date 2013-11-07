@@ -21,7 +21,8 @@ namespace tiki
 		TIKI_FORCE_INLINE void		clear();
 		TIKI_FORCE_INLINE void		dispose();
 
-		TIKI_FORCE_INLINE size_t	getCount() const;
+		TIKI_FORCE_INLINE uint		getCount() const;
+		TIKI_FORCE_INLINE bool		isEmpty() const;
 
 		TIKI_FORCE_INLINE sint		indexOf( const T& item ) const;
 		TIKI_FORCE_INLINE bool		contains( const T& item ) const;
@@ -29,35 +30,35 @@ namespace tiki
 		TIKI_FORCE_INLINE T&		add();
 		TIKI_FORCE_INLINE void		add( const T& item );
 		TIKI_FORCE_INLINE void		addRange( const List<T>& list );
-		TIKI_FORCE_INLINE void		addRange( const T* src, size_t length );
-		TIKI_FORCE_INLINE void		insert( size_t index, const T& item );
+		TIKI_FORCE_INLINE void		addRange( const T* src, uint length );
+		TIKI_FORCE_INLINE void		insert( uint index, const T& item );
 
 		TIKI_FORCE_INLINE const T*	getData() const;
 		TIKI_FORCE_INLINE const T*	getLast() const;
 		TIKI_FORCE_INLINE const T*	getEnd() const;
 
 		TIKI_FORCE_INLINE bool		remove( const T& item );
-		TIKI_FORCE_INLINE void		removeAt( size_t index );
+		TIKI_FORCE_INLINE void		removeAt( uint index );
 
-		TIKI_FORCE_INLINE void		reserve( const size_t count );
+		TIKI_FORCE_INLINE void		reserve( const uint count );
 
-		TIKI_FORCE_INLINE const T&	operator[]( size_t index ) const;
-		TIKI_FORCE_INLINE T&		operator[]( size_t index );
+		TIKI_FORCE_INLINE const T&	operator[]( uint index ) const;
+		TIKI_FORCE_INLINE T&		operator[]( uint index );
 
 		TIKI_FORCE_INLINE void		operator=( const List<T>& copy );
 
 	protected:
 
 		T*							m_pData;
-		size_t						m_count;
-		size_t						m_capacity;
+		uint						m_count;
+		uint						m_capacity;
 
 		bool						m_isReadOnly;
 
 	private:
 
-		TIKI_FORCE_INLINE size_t	getNextSize( size_t targetSize );
-		TIKI_FORCE_INLINE void		checkArraySize( size_t neddedSize );
+		TIKI_FORCE_INLINE uint		getNextSize( uint targetSize );
+		TIKI_FORCE_INLINE void		checkArraySize( uint neddedSize );
 	};
 }
 
