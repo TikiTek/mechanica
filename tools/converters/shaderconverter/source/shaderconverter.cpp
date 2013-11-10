@@ -179,6 +179,10 @@ namespace tiki
 			ShaderPreprocessor preprocessor;
 			preprocessor.create( sourceCode );
 
+			ResourceWriter writer;
+			openResourceWriter( &writer, params.outputName, args.version.substring( 0u, 2u ) );
+			writer.openResource( params.outputName, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), getConverterRevision() );
+
 			for (uint i = 1u; i < ShaderType_Count; ++i)
 			{
 				const ShaderType type = (ShaderType)i;
@@ -213,20 +217,20 @@ namespace tiki
 
 					Array< uint8 > variantData;
 					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
-					{
-						ResourceWriter writer;
-						openResourceWriter( &writer, args.outputName, args.version.substring( 0u, 2u ) );
-						//TIKI_FOURCC( 'T', 'G', 'F', 'X' )
+					{						
+						writer.openDataSection( 0u, AllocatorType_MainMemory );
 						writer.writeUInt32( args.type );
 						writer.writeUInt32( variantData.getCount() );
 						writer.writeData( variantData.getData(), variantData.getCount() );
-
-						closeResourceWriter( &writer );
+						writer.closeDataSection();
 
 						variantData.dispose();
 					}
 				} 
 			}
+
+			writer.closeResource();
+			closeResourceWriter( &writer );
 
 			preprocessor.dispose();
 		}

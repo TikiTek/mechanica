@@ -99,6 +99,26 @@ namespace tiki
 		m_pos		+= length;
 	}
 
+	void MemoryStream::writeAlignment( uint alignment )
+	{
+		uint bytesToWrite = alignment - ( m_length % alignment );
+
+		const uint zero = 0u;
+		while ( bytesToWrite > 0u )
+		{
+			if ( bytesToWrite >= 8u )
+			{
+				write( &zero, 8u );
+				bytesToWrite -= 8u;
+			}
+			else
+			{
+				write( &zero, bytesToWrite );
+				bytesToWrite -= bytesToWrite;
+			}
+		}
+	}
+
 	size_t MemoryStream::getLength() const
 	{
 		return m_length;

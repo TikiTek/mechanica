@@ -26,11 +26,9 @@
 #endif
 
 #if TIKI_ENABLED( TIKI_USE_BREAK )
-#	define TIKI_BREAK( message ) ::tiki::debug::traceError( message ); ::tiki::debug::breakPoint()
-#	define TIKI_BREAK2( message, ... ) ::tiki::debug::traceError( message, __VA_ARGS__ ); ::tiki::debug::breakPoint()
+#	define TIKI_BREAK( message, ... ) ::tiki::debug::traceError( message, __VA_ARGS__ ); ::tiki::debug::breakPoint()
 #else
-#	define TIKI_BREAK( message )
-#	define TIKI_BREAK2( message, ... )
+#	define TIKI_BREAK( message, ... ) for(;;)
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -51,8 +49,8 @@
 #	define TIKI_TRACE_DEBUG( format, ... )
 #endif
 
-#define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT2( x1, x2 )
-#define TIKI_CONCAT2( x1, x2 ) x1 ## x2
+#define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )
+#define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
 
 #define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __LINE__ )
 

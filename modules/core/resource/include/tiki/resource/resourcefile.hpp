@@ -2,8 +2,9 @@
 #ifndef __TIKI_RESOURCEFILE_HPP_INCLUDED__
 #define __TIKI_RESOURCEFILE_HPP_INCLUDED__
 
-#include "tiki/base/types.hpp"
 #include "tiki/base/endianness.hpp"
+#include "tiki/base/fourcc.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
@@ -13,13 +14,13 @@ namespace tiki
 	{
 		enum
 		{
-			CurrentFormatVersion = 1u
+			TikiFourCC				= TIKI_FOURCC( 'T', 'I', 'K', 'I' ),
+			CurrentFormatVersion	= 1u
 		};
 
 		fourcc	tikiFourcc;
-		uint8	version;
-		uint8	resourceCount;
-		// 2 bytes padding
+		uint16	version;
+		uint16	resourceCount;
 	};
 
 	struct ResourceHeader
@@ -27,17 +28,17 @@ namespace tiki
 		fourcc	type;
 		crc32	key;
 
-		uint8	version;
+		uint16	version;
 		
-		uint8	sectionCount;
+		uint16	sectionCount;
 		uint16	stringCount;
 		uint16	linkCount;
-		// 2 bytes padding
 		uint32	stringSizeInBytes;
 	};
 
 	enum AllocatorType
 	{
+		AllocatorType_InitializaionMemory,
 		AllocatorType_TemporaryMemory,
 		AllocatorType_MainMemory,
 		AllocatorType_GraphicsMemory
@@ -63,11 +64,12 @@ namespace tiki
 
 	struct ReferenceItem
 	{
-		uint32	type_offsetInSection; // 2 bits - type / 30 bits - offset
-
-		uint32	offsetInTargetSection;
+		uint8	type;
+		// 1 byte padding
 		uint16	targetId;
-		// 2 bytes padding
+
+		uint32	offsetInSection;
+		uint32	offsetInTargetSection;
 	};
 
 	enum StringType
@@ -95,9 +97,6 @@ namespace tiki
 		Endianness		getEndianness( const ResourceFileHeader& header );
 
 		const void*		getSectionData( const SectionHeader& header, const void* pBase );
-
-		ReferenceType	getReferenceType( const ReferenceItem& item );
-		uint			getReferenceOffsetInSection( const ReferenceItem& item );
 
 		StringType		getStringType( const StringItem& item );
 		uint			getStringLengthModifier( const StringItem& item );

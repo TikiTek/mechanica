@@ -15,16 +15,6 @@ namespace tiki
 		return addPtr( pBase, ( sizeof( ReferenceItem ) * header.referenceCount ) );
 	}
 
-	ReferenceType resource::getReferenceType( const ReferenceItem& item )
-	{
-		return (ReferenceType)( item.type_offsetInSection & 0xc0000000u );
-	}
-
-	uint resource::getReferenceOffsetInSection( const ReferenceItem& item )
-	{
-		return ( item.type_offsetInSection & 0x3fffffffu );
-	}
-
 	StringType resource::getStringType( const StringItem& item )
 	{
 		return ( StringType )( ( item.type_lengthModifier_textLength & 0xc0000000u ) >> 30u );

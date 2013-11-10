@@ -21,7 +21,9 @@ namespace tiki
 		const void*	getData() const;
 
 		size_t		read( void* pData, size_t length ) const;
+		
 		void		write( const void* pData, size_t length );
+		void		writeAlignment( uint alignment );
 
 		size_t		getLength() const;
 
