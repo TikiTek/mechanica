@@ -20,7 +20,10 @@ namespace tiki
 
 	struct ReferenceKey
 	{
+		ReferenceType	type;
 
+		uint			identifier;
+		uint			offsetInTargetSection;
 	};
 
 	class ResourceWriter
@@ -31,10 +34,10 @@ namespace tiki
 
 		~ResourceWriter();
 
-		void			openResource( const string& name, fourcc type, uint8 resourceFormatVersion );
+		void			openResource( const string& name, fourcc type, uint16 resourceFormatVersion );
 		void			closeResource();
 
-		void			openDataSection( uint8 AllocatorId, uint8 alignment = TIKI_DEFAULT_ALIGNMENT );
+		void			openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 		void			closeDataSection();
 
 		ReferenceKey	addString( StringType type, const string& text );
@@ -62,16 +65,16 @@ namespace tiki
 
 		struct ReferenceData
 		{
-			ReferenceType	type;
+			ReferenceKey	key;
 
 			uint32			position;
-
-			uint16			targetId;
-			uint32			targetOffset;
 		};
 
 		struct SectionData
 		{
+			uint					id;
+
+			uint					alignment;
 			AllocatorType			allocatorType;
 			uint8					allocatorId;
 
@@ -96,7 +99,7 @@ namespace tiki
 		{
 			fourcc						type;
 			string						name;
-			uint8						version;
+			uint16						version;
 
 			List< SectionData >			sections;
 			List< StringData >			strings;
