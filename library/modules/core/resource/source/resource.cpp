@@ -6,26 +6,26 @@ namespace tiki
 {
 	Resource::Resource()
 	{
-		m_id.crcName	= InvalidCrc32;
-		m_references	= 0u;
+		m_references = 1u;
 	}
 
 	Resource::~Resource()
-	{		
+	{
+		TIKI_ASSERT( m_references == 0u );
 	}
 
 	void Resource::initialize( ResourceId id )
 	{
-		m_id	= id;
+		m_id = id;
 	}
 
-	size_t Resource::addReference() const
+	void Resource::addReference() const
 	{
-		return ++m_references;
+		++m_references;
 	}
 
-	size_t Resource::releaseReference() const
+	bool Resource::releaseReference() const
 	{
-		return --m_references;
+		return --m_references == 0u;
 	}
 }

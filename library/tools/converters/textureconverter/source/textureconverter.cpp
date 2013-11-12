@@ -95,15 +95,19 @@ namespace tiki
 
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "ttx" );
-			//TIKI_FOURCC( 'T', 'E', 'X', 'R' )
+			openResourceWriter( &writer, params.outputName, "ttx", params.targetPlatform );
+			writer.openResource( params.outputName, TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
+
 			TextureWriter textureWriter;
 			textureWriter.create();
-
-			textureWriter.writeTexture( writer, image, PixelFormat_R8G8B8A8 );
-
+			const ReferenceKey textureDataKey = textureWriter.writeTexture( writer, image, PixelFormat_R8G8B8A8 );
 			textureWriter.dispose();
 
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writer.writeReference( textureDataKey );
+			writer.closeDataSection();
+
+			writer.closeResource();
 			closeResourceWriter( &writer );
 			image.dispose();
 		}

@@ -10,7 +10,7 @@ int tiki::mainEntryPoint()
 	//debug::breakOnAlloc( 169 );
 	{
 		TikiAssets context;
-		context.create( "../../../../../../content", "../../../../../../../gamebuild" );
+		context.create( "../../../../../../content", "../../../../../../gamebuild" );
 
 		retValue = context.run();
 

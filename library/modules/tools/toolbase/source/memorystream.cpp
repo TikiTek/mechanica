@@ -15,9 +15,29 @@ namespace tiki
 		m_capacity	= 0u;
 	}
 
+	MemoryStream::MemoryStream( const MemoryStream& copy )
+	{
+		*this = copy;
+	}
+
+	void MemoryStream::operator=( const MemoryStream& copy )
+	{
+		m_pos		= copy.m_pos;
+		m_length	= copy.m_length;
+		m_capacity	= copy.m_capacity;
+
+		if ( m_pData != nullptr )
+		{
+			memory::freeAlign( m_pData );
+		}
+
+		m_pData = (uint8*)memory::allocAlign( m_capacity );
+		memory::copy( m_pData, copy.m_pData, m_length );
+	}
+
 	MemoryStream::~MemoryStream()
 	{
-		TIKI_ASSERT( m_pData == nullptr );
+		dispose();
 	}
 
 	void MemoryStream::create( size_t capacity /*= 0u */ )
@@ -52,11 +72,12 @@ namespace tiki
 
 	void MemoryStream::dispose()
 	{
-		TIKI_ASSERT( m_pData );
+		if ( m_pData != nullptr )
+		{
+			memory::freeAlign( m_pData );
+			m_pData = nullptr;
+		}
 
-		memory::freeAlign( m_pData );
-
-		m_pData		= nullptr;
 		m_length	= 0u;
 		m_capacity	= 0u;
 		m_pos		= 0u;
@@ -81,10 +102,11 @@ namespace tiki
 
 	void MemoryStream::write( const void* pData, size_t length )
 	{
-		if ( m_pos + length >= m_capacity )
+		if ( m_length + length >= m_capacity )
 		{
-			const size_t tl	= m_pos + length;
+			const size_t tl	= m_length + length;
 			const size_t cl	= nextPowerOfTwo( tl );
+			TIKI_ASSERT( cl >= tl );
 
 			uint8* pNewData	= (uint8*)memory::allocAlign( cl );
 			memory::copy( pNewData, m_pData, m_length );
@@ -94,6 +116,7 @@ namespace tiki
 			m_capacity		= cl;
 		}
 
+		TIKI_ASSERT( m_pos + length <= m_capacity );
 		memory::copy( m_pData + m_pos, pData, length );
 		m_length	+= length;
 		m_pos		+= length;
@@ -102,6 +125,11 @@ namespace tiki
 	void MemoryStream::writeAlignment( uint alignment )
 	{
 		uint bytesToWrite = alignment - ( m_length % alignment );
+
+		if ( bytesToWrite == alignment )
+		{
+			return;
+		}
 
 		const uint zero = 0u;
 		while ( bytesToWrite > 0u )

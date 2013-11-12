@@ -1,26 +1,41 @@
 #pragma once
-#ifndef TIKI_FACTORYBASE_HPP
-#define TIKI_FACTORYBASE_HPP
+#ifndef __TIKI_RESOURCELOADER_HPP_INCLUDED__
+#define __TIKI_RESOURCELOADER_HPP_INCLUDED__
 
+#include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
+	class FactoryBase;
 	class Resource;
+	class Stream;
 
-	class FactoryBase
+	enum ResourceLoadResult
 	{
-		public:
+		ResourceLoadResult_Success,
+		ResourceLoadResult_FileNotFound,
+		ResourceLoadResult_CouldNotInitialize,
+		ResourceLoadResult_UnknownError
+	};
+
+	class ResourceLoader
+	{
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ResourceLoader );
+
+	public:
+
+			void				create();
+			void				dispose();
+
+			ResourceLoadResult	loadResource( Resource* pResource, FactoryBase* pFactory, Stream* pFileStream );
+			void				unloadResource( Resource* pResource );
 			
-			virtual				~FactoryBase();
+	private:
 
-			virtual fourcc		getType() const = 0;
+		Array< uint8 >			m_initDataBuffer;
 
-			virtual Resource*	createResource() const = 0;
-			virtual void		destroyResource( Resource* pResource ) const = 0;
-
-			virtual bool		initializeResource( Resource* pResource, const void* pInitData ) const = 0;
 	};
 }
 
-#endif // TIKI_FACTORYBASE_HPP
+#endif // __TIKI_RESOURCELOADER_HPP_INCLUDED__

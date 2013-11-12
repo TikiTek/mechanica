@@ -18,6 +18,9 @@ namespace tiki
 	{
 		m_fileName	= fileName;
 		m_platform	= platform;
+
+		m_pCurrentResource	= nullptr;
+		m_pCurrentSection	= nullptr;
 	}
 
 	void ResourceWriter::dispose()
@@ -145,11 +148,13 @@ namespace tiki
 		TIKI_ASSERT( isPowerOfTwo( alignment ) );
 
 		const uint id = m_pCurrentResource->sections.getCount();
-		SectionData& data = m_pCurrentResource->sections.add();
-		data.id				= id;
-		data.alignment		= alignment;
-		data.allocatorId	= allocatorId;
-		data.allocatorType	= allocatorType;
+		SectionData& section = m_pCurrentResource->sections.add();
+		section.id				= id;
+		section.alignment		= alignment;
+		section.allocatorId		= allocatorId;
+		section.allocatorType	= allocatorType;
+
+		m_pCurrentSection = &section;
 	}
 
 	void ResourceWriter::closeDataSection()

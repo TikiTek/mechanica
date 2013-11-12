@@ -1,9 +1,11 @@
 
 #include "tiki/base/endianness.hpp"
 
+#include "tiki/base/assert.hpp"
+
 namespace tiki
 {
-	Endianness getHostEndianness();
+	Endianness getHostEndianness()
 	{
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		return Endianness_Little;

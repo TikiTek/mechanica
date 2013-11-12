@@ -15,7 +15,7 @@ namespace tiki
 	{
 	}
 
-	void TextureWriter::writeTexture( ResourceWriter& writer, const HdrImage& image, const PixelFormat format )
+	ReferenceKey TextureWriter::writeTexture( ResourceWriter& writer, const HdrImage& image, const PixelFormat format )
 	{
 		TextureDescription description;
 		description.width		= image.getWidth();
@@ -30,11 +30,18 @@ namespace tiki
 		Array< uint8 > bitmap;
 		image.convertTo( bitmap, format );
 
+		writer.openDataSection( 0u, AllocatorType_MainMemory );
+		const ReferenceKey dataKey = writer.addDataPoint();
+
 		writer.writeUInt32( bitmap.getCount() + sizeof( TextureDescription ) );
 		writer.writeData( &description, sizeof( description ) );
 		writer.writeData( bitmap.getData(), bitmap.getCount() );
 
+		writer.closeDataSection();
+
 		bitmap.dispose();
+
+		return dataKey;
 	}
 
 }

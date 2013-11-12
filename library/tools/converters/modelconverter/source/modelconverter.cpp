@@ -60,15 +60,21 @@ namespace tiki
 			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
 			
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "model" );
-			//TIKI_FOURCC( 'M', 'O', 'D', 'L' )
-			//writer.writeString( model.getMaterial() );
+			openResourceWriter( &writer, params.outputName, "model", params.targetPlatform );
+			
+			writer.openResource( params.outputName, TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
 
-			writer.writeUInt32( model.getGeometyCount() );
-			writer.writeUInt32( model.getHierarchy().isCreated() );
+			// write hierarchy
+			writer.openDataSection( 0u, AllocatorType_MainMemory );
 
-			//write hierarchy
+			const ReferenceKey hierarchyKey = writer.addDataPoint();
 			writeHierarchy( writer, model.getHierarchy() );
+
+			writer.closeDataSection();
+
+			// write vertex data
+			writer.openDataSection( 0u, AllocatorType_MainMemory );
+			const ReferenceKey geometriesKey = writer.addDataPoint();
 
 			bool wrongSkinned = false;
 			for (size_t j = 0u; j < model.getGeometyCount(); ++j)
@@ -83,12 +89,21 @@ namespace tiki
 					}
 				}
 			}
+			writer.closeDataSection();
 
 			if ( wrongSkinned )
 			{
 				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
 			}
 
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writer.writeUInt32( model.getGeometyCount() );
+			writer.writeUInt32( model.getHierarchy().isCreated() );
+			writer.writeReference( hierarchyKey );
+			writer.writeReference( geometriesKey );
+			writer.closeDataSection();
+
+			writer.closeResource();
 			closeResourceWriter( &writer );
 
 			model.dispose();

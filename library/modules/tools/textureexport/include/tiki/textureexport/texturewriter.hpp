@@ -3,6 +3,7 @@
 #define TIKI_TEXTUREWRITER_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphicsbase/pixelformat.hpp"
 
 namespace tiki
@@ -16,10 +17,10 @@ namespace tiki
 
 	public:
 
-		void		create();
-		void		dispose();
+		void			create();
+		void			dispose();
 
-		void		writeTexture( ResourceWriter& writer, const HdrImage& image, const PixelFormat format );
+		ReferenceKey	writeTexture( ResourceWriter& writer, const HdrImage& image, const PixelFormat format );
 
 	};
 }
