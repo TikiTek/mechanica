@@ -2,6 +2,7 @@
 #ifndef TIKI_CONVERSIONPARAMETERS_HPP
 #define TIKI_CONVERSIONPARAMETERS_HPP
 
+#include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/list.hpp"
@@ -12,10 +13,10 @@ namespace tiki
 {
 	struct ConversionInputFile
 	{
-		string	fileName;
+		string			fileName;
 
-		string	typeString;
-		crc32	inputType;
+		string			typeString;
+		crc32			inputType;
 	};
 
 	class ConversionArguments
@@ -47,6 +48,8 @@ namespace tiki
 
 	struct ConversionParameters
 	{
+		PlatformType					targetPlatform;
+
 		string							sourceFile;
 		string							outputName;
 

@@ -2,9 +2,10 @@
 #ifndef TIKI_RESOURCE_HPP
 #define TIKI_RESOURCE_HPP
 
-#include "tiki/base/types.hpp"
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/base/types.hpp"
 
 #define TIKI_DEFINE_RESOURCE( factory, cc ) public: \
 	friend class factory; \
@@ -12,10 +13,16 @@
 
 namespace tiki
 {
+	class ResourceLoader;
 	class ResourceManager;
 
 	struct ResourceId
 	{
+		ResourceId()
+		{
+			crcName	= InvalidCrc32;
+		}
+
 		crc32	crcName;
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		string	fileName;
@@ -24,6 +31,7 @@ namespace tiki
 
 	class Resource
 	{
+		friend class ResourceLoader;
 		friend class ResourceManager;
 
 	public:
@@ -32,9 +40,6 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const string&	getFileName() const { return m_id.fileName; }
 #endif
-
-		size_t			addReference() const;
-		size_t			releaseReference() const;
 
 	protected:
 
@@ -45,9 +50,12 @@ namespace tiki
 
 		ResourceId		m_id;
 
-		mutable size_t	m_references;
+		mutable uint	m_references;
 
 		void			initialize( ResourceId id );
+
+		void			addReference() const;
+		bool			releaseReference() const;
 
 	};
 }

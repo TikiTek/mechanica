@@ -180,7 +180,7 @@ namespace tiki
 			preprocessor.create( sourceCode );
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, args.version.substring( 0u, 2u ) );
+			openResourceWriter( &writer, params.outputName, "shader", params.targetPlatform );
 			writer.openResource( params.outputName, TIKI_FOURCC( 'T', 'G', 'F', 'X' ), getConverterRevision() );
 
 			for (uint i = 1u; i < ShaderType_Count; ++i)

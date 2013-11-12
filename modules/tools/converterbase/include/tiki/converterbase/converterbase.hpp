@@ -31,7 +31,7 @@ namespace tiki
 
 	protected:
 
-		void					openResourceWriter( ResourceWriter* pWriter, const string& fileName, const string& extension, PlatformType platform = PlatformType_Win ) const;
+		void					openResourceWriter( ResourceWriter* pWriter, const string& fileName, const string& extension, PlatformType platform ) const;
 		void					closeResourceWriter( ResourceWriter* pWriter ) const;
 
 		virtual crc32			getInputType() const = 0;

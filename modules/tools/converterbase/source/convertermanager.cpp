@@ -288,7 +288,8 @@ namespace tiki
 		bool needBuild = checkBuildNeeded( sourceFile, pConverter->getConverterRevision() );
 
 		ConversionParameters params;
-		params.sourceFile	= sourceFile;
+		params.targetPlatform	= PlatformType_Win;
+		params.sourceFile		= sourceFile;
 
 		TikiXml xmlFile;
 		xmlFile.create( sourceFile );
@@ -352,7 +353,7 @@ namespace tiki
 				needBuild |= checkBuildNeeded( input.fileName, pConverter->getConverterRevision() );
 			}
 
-			pInput							= xmlFile.findNext( "input", pInput );
+			pInput = xmlFile.findNext( "input", pInput );
 		}
 
 		if ( params.inputFiles.getCount() == 0u )

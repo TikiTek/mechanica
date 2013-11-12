@@ -11,7 +11,10 @@ namespace tiki
 	public:
 
 		MemoryStream();
+		MemoryStream( const MemoryStream& copy );
 		~MemoryStream();
+
+		void		operator=( const MemoryStream& copy );
 
 		void		create( size_t capacity = 0u );
 		void		create( const void* pData, size_t length );

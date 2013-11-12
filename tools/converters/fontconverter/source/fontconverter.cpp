@@ -137,18 +137,25 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "font" );
-			//TIKI_FOURCC( 'F', 'O', 'N', 'T' )
+			openResourceWriter( &writer, params.outputName, "font", params.targetPlatform );
+			writer.openResource( params.outputName, TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision() );
+
 			TextureWriter textureWriter;
 			textureWriter.create();
-
-			textureWriter.writeTexture( writer, image, PixelFormat_R8 );
-
+			const ReferenceKey textureDataKey = textureWriter.writeTexture( writer, image, PixelFormat_R8 );
 			textureWriter.dispose();
 
 			// write chars
+			writer.openDataSection( 0u, AllocatorType_MainMemory );
+			const ReferenceKey charArrayKey = writer.addDataPoint();
 			writer.writeUInt32( chars.getCount() );
 			writer.writeData( chars.getData(), chars.getCount() * sizeof( FontChar ) );
+			writer.closeDataSection();
+
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writer.writeReference( textureDataKey );
+			writer.writeReference( charArrayKey );
+			writer.closeDataSection();
 
 			closeResourceWriter( &writer );
 			image.dispose();

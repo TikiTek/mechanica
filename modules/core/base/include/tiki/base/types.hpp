@@ -100,6 +100,14 @@ namespace tiki
 		class_name ( const class_name & );						\
 		void operator=( const class_name & )
 
+#define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name ) public:	\
+	private:													\
+	class_name ( const class_name & );							\
+	void operator=( const class_name & );						\
+	public:														\
+	class_name () {}											\
+	~ class_name() {}											\
+
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name
