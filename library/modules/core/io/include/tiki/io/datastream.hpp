@@ -2,13 +2,15 @@
 #ifndef __TIKI_STRAM_HPP_INCLUDED__
 #define __TIKI_STRAM_HPP_INCLUDED__
 
+#include "tiki/base/types.hpp"
+
 namespace tiki
 {
 	typedef uint64	FileSize;
 
-	class Stream
+	class DataStream
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Stream );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DataStream );
 
 	public:
 
