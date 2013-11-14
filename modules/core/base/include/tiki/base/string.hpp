@@ -109,10 +109,13 @@ namespace tiki
 	typedef BasicString<wchar_t>	wstring;
 	typedef BasicString<wchar_t>	WString;
 
-	string							formatString( cstring format, ... );
+	string					formatString( cstring format, ... );
 
-	wstring							convertString( const string& str );
-	string							convertString( const wstring& str );
+	wstring					convertString( const string& str );
+	string					convertString( const wstring& str );
+
+	TIKI_FORCE_INLINE uint	getStringLength( cstring pSource );
+	TIKI_FORCE_INLINE uint	copyString( char* pTargetBuffer, uint bufferSize, cstring pSource );
 }
 
 #include "../../../source/string.inl"
