@@ -8,6 +8,12 @@ namespace tiki
 {
 	typedef uint64	FileSize;
 
+	enum
+	{
+		MaxPathLength		= 256u,
+		MaxFileNameLength	= 64u
+	};
+
 	class DataStream
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DataStream );

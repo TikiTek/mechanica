@@ -756,6 +756,42 @@ namespace tiki
 	{
 		return BasicString< wchar_t >(str1) + str2;
 	}
+
+	TIKI_FORCE_INLINE uint getStringLength( cstring pSource )
+	{
+		uint length = 0u;		
+		while ( pSource[ length++ ] != 0u );
+
+		return length;
+	}
+
+	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, cstring pSourceBuffer )
+	{
+		const uint sourceLength = TIKI_MIN( bufferSize - 1u, getStringLength( pSourceBuffer ) );
+
+		uint64* pTarget64 = reinterpret_cast< uint64* >( pTargetBuffer );
+		const uint64* pSource64 = reinterpret_cast< const uint64* >( pSourceBuffer );
+
+		uint length = 0u;
+		while ( length > 0u )
+		{
+			if ( length >= sizeof( uint64 ) )
+			{
+				const uint lengthOver4 = length / 4u;
+				pTarget64[ lengthOver4 ] = pSource64[ lengthOver4 ];
+
+				length += sizeof( uint64 );
+			}
+			else
+			{
+				pTargetBuffer[ length ] = pSourceBuffer[ length ];
+
+				length++;
+			}
+		}
+
+		return length;
+	}
 }
 
 #endif // TIKI_STRING_INL

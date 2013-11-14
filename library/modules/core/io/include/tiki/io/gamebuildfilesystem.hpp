@@ -15,11 +15,15 @@ namespace tiki
 
 	public:
 
-		virtual bool exists( cstring pFileName ) const;
-		virtual DataStream* open( cstring pFileName, DataAccessMode accessMode );
+		void				create( cstring pGamebuildPath, uint maxStreamCount = 4u );
+		void				dispose();
+
+		virtual bool		exists( cstring pFileName ) const;
+		virtual DataStream*	open( cstring pFileName, DataAccessMode accessMode );
 
 	private:
 
+		char				m_gamebuildPath[ MaxPathLength ];
 		Array< FileStream >	m_fileStreams;
 
 	};
