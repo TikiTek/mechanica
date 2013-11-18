@@ -29,6 +29,18 @@ namespace tiki
 #endif
 	};
 
+	struct ResourceSectorData
+	{
+		ResourceSectorData()
+		{
+			ppSectorPointers	= nullptr;
+			sectorCount			= 0u;
+		}
+
+		void**	ppSectorPointers;
+		uint	sectorCount;
+	};
+
 	class Resource
 	{
 		friend class ResourceLoader;
@@ -48,14 +60,15 @@ namespace tiki
 
 	private:
 
-		ResourceId		m_id;
+		ResourceId			m_id;
+		ResourceSectorData	m_sectorData;
 
-		mutable uint	m_references;
+		mutable uint		m_referenceCount;
 
-		void			initialize( ResourceId id );
+		void				initialize( const ResourceId& id, const ResourceSectorData& sectorData );
 
-		void			addReference() const;
-		bool			releaseReference() const;
+		void				addReference() const;
+		bool				releaseReference() const;
 
 	};
 }

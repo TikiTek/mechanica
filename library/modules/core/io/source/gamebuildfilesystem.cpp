@@ -4,6 +4,8 @@
 #include "tiki/base/file.hpp"
 #include "tiki/base/string.hpp"
 
+#include <windows.h>
+
 namespace tiki
 {
 	void GamebuildFileSystem::create( cstring pGamebuildPath, uint maxStreamCount /*= 4u */ )
@@ -20,11 +22,25 @@ namespace tiki
 
 	bool GamebuildFileSystem::exists( cstring pFileName ) const
 	{
-		return false;
+		return GetFileAttributesA( pFileName ) != INVALID_FILE_ATTRIBUTES;
 	}
 
 	DataStream* GamebuildFileSystem::open( cstring pFileName, DataAccessMode accessMode )
 	{
+		for (uint i = 0u; i < m_fileStreams.getCount(); ++i)
+		{
+			FileStream& stream = m_fileStreams[ i ];
+
+			if ( stream.isOpen() == false )
+			{
+				if ( stream.open( pFileName, accessMode ) )
+				{
+					return &stream;
+				}
+				break;
+			}
+		} 
+
 		return nullptr;
 	}
 }

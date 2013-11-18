@@ -2,21 +2,28 @@
 #ifndef __TIKI_RESOURCELOADER_HPP_INCLUDED__
 #define __TIKI_RESOURCELOADER_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
+#include "tiki/base/zoneallocator.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
+	class DataStream;
 	class FactoryBase;
+	class FileSystem;
 	class Resource;
-	class Stream;
+	struct ResourceHeader;
 
-	enum ResourceLoadResult
+	enum ResourceLoaderResult
 	{
-		ResourceLoadResult_Success,
-		ResourceLoadResult_FileNotFound,
-		ResourceLoadResult_CouldNotInitialize,
-		ResourceLoadResult_UnknownError
+		ResourceLoaderResult_Success,
+
+		ResourceLoaderResult_CouldNotAccessFile,
+		ResourceLoaderResult_CouldNotCreateResource,
+		ResourceLoaderResult_CouldNotInitialize,
+		ResourceLoaderResult_FileNotFound,
+		ResourceLoaderResult_OutOfMemory,
+		ResourceLoaderResult_UnknownError,
+		ResourceLoaderResult_WrongFileFormat
 	};
 
 	class ResourceLoader
@@ -25,15 +32,36 @@ namespace tiki
 
 	public:
 
-			void				create();
-			void				dispose();
+			void					create( FileSystem* pFileSystem );
+			void					dispose();
 
-			ResourceLoadResult	loadResource( Resource* pResource, FactoryBase* pFactory, Stream* pFileStream );
-			void				unloadResource( Resource* pResource );
+			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, uint targetCapacity, const char* pFileName, crc32 resourceKey, const FactoryBase* pFactory );
+			void					unloadResource( const Resource* pResource, const FactoryBase* pFactory );
 			
 	private:
 
-		Array< uint8 >			m_initDataBuffer;
+		enum
+		{
+			InitializationDataBufferSize = 1u * 1024u * 1024u
+		};
+
+		struct Context
+		{
+			DataStream*		pStream;
+			FactoryBase*	pFactory;
+
+			Resource*		pResource;
+
+			uint			resourceCount;
+			ResourceHeader*	pResourceHeader;
+		};
+
+		FileSystem*				m_pFileSystem;
+
+		ZoneAllocator			m_bufferAllocator;
+		
+		void					cancelOperation( Context& context ) const;
+
 
 	};
 }

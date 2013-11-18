@@ -20,6 +20,8 @@ namespace tiki
 
 	public:
 
+		virtual void		close() = 0;
+
 		virtual FileSize	read( void* pTargetData, uint bytesToRead ) = 0;
 		virtual FileSize	write( const void* pSourceData, uint bytesToRead ) = 0;
 		
