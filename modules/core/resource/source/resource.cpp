@@ -6,26 +6,28 @@ namespace tiki
 {
 	Resource::Resource()
 	{
-		m_references = 1u;
+		m_referenceCount = 0u;
 	}
 
 	Resource::~Resource()
 	{
-		TIKI_ASSERT( m_references == 0u );
+		TIKI_ASSERT( m_referenceCount == 0u );
 	}
 
-	void Resource::initialize( ResourceId id )
+	void Resource::initialize( const ResourceId& id, const ResourceSectorData& sectorData )
 	{
-		m_id = id;
+		m_id				= id;
+		m_sectorData		= sectorData;
+		m_referenceCount	= 1u;
 	}
 
 	void Resource::addReference() const
 	{
-		++m_references;
+		++m_referenceCount;
 	}
 
 	bool Resource::releaseReference() const
 	{
-		return --m_references == 0u;
+		return --m_referenceCount == 0u;
 	}
 }

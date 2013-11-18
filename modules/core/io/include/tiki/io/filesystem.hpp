@@ -13,7 +13,9 @@ namespace tiki
 		DataAccessMode_Read,
 		DataAccessMode_Write,
 		DataAccessMode_WriteAppend,
-		DataAccessMode_ReadWrite
+		DataAccessMode_ReadWrite,
+
+		DataAccessMode_Count
 	};
 
 	class FileSystem

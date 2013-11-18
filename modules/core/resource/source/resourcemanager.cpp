@@ -117,7 +117,7 @@ namespace tiki
 		
 		if ( pResource )
 		{
-			pResource->initialize( resourceId );
+			//pResource->initialize( resourceId );
 
 			const void* pData = (const void*)(fileContent.getData() + 16u);
 

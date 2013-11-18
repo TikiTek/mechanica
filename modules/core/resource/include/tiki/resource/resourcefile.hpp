@@ -14,7 +14,8 @@ namespace tiki
 	{
 		enum
 		{
-			TikiFourCC				= TIKI_FOURCC( 'T', 'I', 'K', 'I' ),
+			TikiMagicHostEndian		= TIKI_FOURCC( 'T', 'I', 'K', 'I' ),
+			TikiMagicOtherEndian	= TIKI_FOURCC( 'I', 'K', 'I', 'T' ),
 			CurrentFormatVersion	= 1u
 		};
 

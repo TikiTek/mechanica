@@ -12,6 +12,7 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T alignValue( T value, T alignment )
 	{
+		TIKI_ASSERT( isPowerOfTwo( alignment ) );
 		return ( value + alignment - 1 ) & ( 0 - alignment );
 	}
 
