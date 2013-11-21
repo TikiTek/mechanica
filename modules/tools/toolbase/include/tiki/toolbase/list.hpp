@@ -33,6 +33,10 @@ namespace tiki
 		TIKI_FORCE_INLINE void		addRange( const T* src, uint length );
 		TIKI_FORCE_INLINE void		insert( uint index, const T& item );
 
+		TIKI_FORCE_INLINE T*		getData();
+		TIKI_FORCE_INLINE T*		getLast();
+		TIKI_FORCE_INLINE T*		getEnd();
+
 		TIKI_FORCE_INLINE const T*	getData() const;
 		TIKI_FORCE_INLINE const T*	getLast() const;
 		TIKI_FORCE_INLINE const T*	getEnd() const;

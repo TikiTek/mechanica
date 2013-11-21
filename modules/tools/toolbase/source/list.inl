@@ -55,7 +55,11 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List<T>::dispose()
 	{
-		memory::deleteArray( m_pData, m_capacity );
+		if ( m_pData != nullptr )
+		{
+			memory::deleteArray( m_pData, m_capacity );
+		}
+
 		m_pData		= nullptr;
 		m_count		= 0u;
 		m_capacity	= 0u;
@@ -170,6 +174,25 @@ namespace tiki
 	TIKI_FORCE_INLINE const T* List< T >::getEnd() const
 	{
 		return m_pData + m_count;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T* tiki::List<T>::getEnd()
+	{
+		return m_pData + m_count;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T* tiki::List<T>::getLast()
+	{
+		TIKI_ASSERT( m_count > 0u );
+		return m_pData + ( m_count - 1u );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T* tiki::List<T>::getData()
+	{
+		return m_pData;
 	}
 
 	template<typename T>

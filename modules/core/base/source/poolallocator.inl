@@ -33,20 +33,43 @@ namespace tiki
 	void PoolAllocator::dispose()
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
+
 		memory::freeAlign( m_pPool );
+		m_count = 0u;
 	}
 
 	template<typename T>
-	void* PoolAllocator::allocate()
+	T* PoolAllocator::allocate()
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
+
+		uint usageIndex = 0u;
+		while ( countLeadingZeros64( m_pUsageBitmask[ usageIndex ] ) == 63u )
+		{
+			usageIndex++;
+		}
+		const uint maskIndex = 63u - countLeadingZeros64( m_pUsageBitmask[ usageIndex ] );
+		const uint finalIndex = ( usageIndex * 64u ) + maskIndex;
+
+		if ( finalIndex >= m_count )
+		{
+			return nullptr;
+		}
 		
-		return nullptr;
+		return &m_pPool[ finalIndex ];
 	}
 
 	template<typename T>
 	void PoolAllocator::free( T* pObject )
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
+
+		const uint index = pObject - m_pPool;
+		TIKI_ASSERT( index < m_count );
+
+		const uint usageIndex = index / 64u;
+		const uint maskIndex = index - ( usageIndex * 64u );
+
+		m_pUsageBitmask[ usageIndex ] &= ~( 1u << maskIndex );
 	}
 }
