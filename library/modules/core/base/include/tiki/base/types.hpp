@@ -123,4 +123,8 @@ namespace tiki
 #	define TIKI_DELARR delete[]
 #endif
 
+#define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )
+#define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
+#define TIKI_STRING( text ) # text
+
 #endif // TIKI_TYPES_HPP
