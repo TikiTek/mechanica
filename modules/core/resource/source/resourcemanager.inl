@@ -11,7 +11,7 @@ namespace tiki
 	TIKI_INLINE const T* ResourceManager::loadResource( const string& fileName )
 	{
 		ResourceId id;
-		id.crcName		= crcString( fileName );
+		id.key			= crcString( fileName );
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		id.fileName		= fileName;
 #endif

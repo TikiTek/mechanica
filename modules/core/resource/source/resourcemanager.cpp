@@ -52,7 +52,7 @@ namespace tiki
 	{
 		for (size_t i = 0u; i < m_resources.getCount(); ++i)
 		{
-			if ( m_resources[ i ]->getCrcName() == resourceId.crcName )
+			if ( m_resources[ i ]->getKey() == resourceId.key )
 			{
 				m_resources[ i ]->addReference();
 				return m_resources[ i ];

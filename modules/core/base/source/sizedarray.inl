@@ -121,6 +121,22 @@ namespace tiki
 
 		return found;
 	}
+	
+	template<typename T>
+	TIKI_FORCE_INLINE bool tiki::SizedArray<T>::removeUnsorted( const T& value )
+	{
+		bool found = false;
+		for (size_t i = 0u; i < m_count; ++i)
+		{
+			while ( m_pData[ i ] == value )
+			{
+				m_pData[ i ] = m_pData[ --m_count ];
+				found = true;
+			}
+		}
+
+		return found;
+	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeAt( size_t index )
