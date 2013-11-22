@@ -2,8 +2,9 @@
 #ifndef __TIKI_RESOURCELOADER_HPP_INCLUDED__
 #define __TIKI_RESOURCELOADER_HPP_INCLUDED__
 
-#include "tiki/base/zoneallocator.hpp"
+#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/base/zoneallocator.hpp"
 
 namespace tiki
 {
@@ -11,7 +12,8 @@ namespace tiki
 	class FactoryBase;
 	class FileSystem;
 	class Resource;
-	struct ResourceHeader;
+	class ResourceStorage;
+	struct ResourceLoaderContext;
 
 	enum ResourceLoaderResult
 	{
@@ -32,35 +34,36 @@ namespace tiki
 
 	public:
 
-			void					create( FileSystem* pFileSystem );
+			void					create( FileSystem* pFileSystem, ResourceStorage* pStorage );
 			void					dispose();
 
-			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, uint targetCapacity, const char* pFileName, crc32 resourceKey, const FactoryBase* pFactory );
-			void					unloadResource( const Resource* pResource, const FactoryBase* pFactory );
+			void					registerFactory( FactoryBase& factory );
+			void					unregisterFactory( FactoryBase& factory );
+
+			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey );
+			void					unloadResource( const Resource* pResource );
 			
 	private:
 
 		enum
 		{
-			InitializationDataBufferSize = 1u * 1024u * 1024u
+			MaxFactoryCount					= 32u,
+			InitializationDataBufferSize	= 1u * 1024u * 1024u
 		};
 
-		struct Context
-		{
-			DataStream*		pStream;
-			FactoryBase*	pFactory;
 
-			Resource*		pResource;
+		typedef SortedSizedMap< fourcc, FactoryBase* > FactoryMap;
 
-			uint			resourceCount;
-			ResourceHeader*	pResourceHeader;
-		};
+		FileSystem*			m_pFileSystem;
+		ResourceStorage*	m_pStorage;
 
-		FileSystem*				m_pFileSystem;
-
-		ZoneAllocator			m_bufferAllocator;
+		FactoryMap			m_factories;
+		ZoneAllocator		m_bufferAllocator;
 		
-		void					cancelOperation( Context& context ) const;
+		FactoryBase*			findFactory( fourcc resourceType ) const;
+
+		ResourceLoaderResult	loadResource( ResourceLoaderContext& context, uint resourceIndex );
+		void					cancelOperation( ResourceLoaderContext& context );
 
 
 	};

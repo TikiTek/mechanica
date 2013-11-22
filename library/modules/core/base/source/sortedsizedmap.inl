@@ -2,6 +2,8 @@
 #ifndef __TIKI_SORTEDSIZEDMAP_INL_INCLUDED__
 #define __TIKI_SORTEDSIZEDMAP_INL_INCLUDED__
 
+#include "tiki/base/assert.hpp"
+
 namespace tiki
 {
 	template<typename TKey, typename TValue>
@@ -56,14 +58,14 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	void SortedSizedMap<TKey, TValue>::getValueAt( TValue* pTargetValue, uint index )
+	void SortedSizedMap<TKey, TValue>::getValueAt( TValue* pTargetValue, uint index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		*pTargetValue = m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	bool SortedSizedMap<TKey, TValue>::findValue( TValue* pTargetValue, TKey key )
+	bool SortedSizedMap<TKey, TValue>::findValue( TValue* pTargetValue, TKey key ) const
 	{
 		TIKI_ASSERT( pTargetValue != nullptr );
 

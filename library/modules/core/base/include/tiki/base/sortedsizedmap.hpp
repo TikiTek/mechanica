@@ -28,8 +28,8 @@ namespace tiki
 		uint		getCount();
 		uint		getCapacity();
 
-		void		getValueAt( TValue* pTargetValue, uint index );
-		bool		findValue( TValue* pTargetValue, TKey key );
+		void		getValueAt( TValue* pTargetValue, uint index ) const;
+		bool		findValue( TValue* pTargetValue, TKey key ) const;
 
 		void		set( const TKey& key, const TValue& value );
 

@@ -14,16 +14,16 @@
 namespace tiki
 {
 	class ResourceLoader;
-	class ResourceManager;
+	class ResourceStorage;
 
 	struct ResourceId
 	{
 		ResourceId()
 		{
-			crcName	= InvalidCrc32;
+			key = InvalidCrc32;
 		}
 
-		crc32	crcName;
+		crc32	key;
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		string	fileName;
 #endif
@@ -48,7 +48,7 @@ namespace tiki
 
 	public:
 
-		crc32			getCrcName() const { return m_id.crcName; }
+		crc32			getKey() const { return m_id.key; }
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const string&	getFileName() const { return m_id.fileName; }
 #endif
