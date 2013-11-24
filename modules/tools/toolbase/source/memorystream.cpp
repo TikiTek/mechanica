@@ -118,8 +118,8 @@ namespace tiki
 
 		TIKI_ASSERT( m_pos + length <= m_capacity );
 		memory::copy( m_pData + m_pos, pData, length );
-		m_length	+= length;
 		m_pos		+= length;
+		m_length	= TIKI_MAX( m_length, m_pos );
 	}
 
 	void MemoryStream::writeAlignment( uint alignment )

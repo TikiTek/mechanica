@@ -1,24 +1,24 @@
 
 #include "tiki/base/assert.hpp"
 
-#include "tiki/toolbase/filestream.hpp"
+#include "tiki/toolbase/toolfilestream.hpp"
 
 #pragma warning(disable: 4996)
 #include <stdio.h>
 
 namespace tiki
 {
-	FileStream::FileStream()
+	ToolFileStream::ToolFileStream()
 	{
 		m_pHandle = nullptr;
 	}
 
-	FileStream::~FileStream()
+	ToolFileStream::~ToolFileStream()
 	{
 		TIKI_ASSERT( m_pHandle == nullptr );
 	}
 
-	void FileStream::create( const string& fileName, FileOpenMode fileMode )
+	void ToolFileStream::create( const string& fileName, FileOpenMode fileMode )
 	{
 		cstring pMode = "wb+";
 
@@ -38,7 +38,7 @@ namespace tiki
 		m_pHandle = fopen( fileName.cStr(), pMode );
 	}
 
-	void FileStream::dispose()
+	void ToolFileStream::dispose()
 	{
 		if (m_pHandle)
 		{
@@ -47,24 +47,24 @@ namespace tiki
 		}
 	}
 
-	bool FileStream::isOpen() const
+	bool ToolFileStream::isOpen() const
 	{
 		return m_pHandle != nullptr;
 	}
 
-	size_t FileStream::read( void* pData, size_t length ) const
+	size_t ToolFileStream::read( void* pData, size_t length ) const
 	{
 		TIKI_ASSERT( m_pHandle );
 		return fread( pData, length, 1u, m_pHandle );
 	}
 
-	void FileStream::write( const void* pData, size_t length ) const
+	void ToolFileStream::write( const void* pData, size_t length ) const
 	{
 		TIKI_ASSERT( m_pHandle );
 		fwrite( pData, length, 1u, m_pHandle );
 	}
 
-	size_t FileStream::getLength()
+	size_t ToolFileStream::getLength()
 	{
 		size_t pos = getPosition();
 
@@ -76,7 +76,7 @@ namespace tiki
 		return size;
 	}
 
-	size_t FileStream::getPosition() const
+	size_t ToolFileStream::getPosition() const
 	{
 		fpos_t pos = 0;
 		fgetpos( m_pHandle, &pos );
@@ -84,7 +84,7 @@ namespace tiki
 
 	}
 
-	size_t FileStream::setPosition( size_t pos )
+	size_t ToolFileStream::setPosition( size_t pos )
 	{
 		fpos_t pos2 = (fpos_t)pos;
 		fsetpos( m_pHandle, &pos2 );

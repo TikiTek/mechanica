@@ -1,6 +1,8 @@
 
 #include "tiki/resource/resourcestorage.hpp"
 
+#include "tiki/resource/resource.hpp"
+
 namespace tiki
 {
 	ResourceStorage::ResourceStorage()
@@ -21,12 +23,12 @@ namespace tiki
 		m_resources.dispose();
 	}
 
-	bool ResourceStorage::findResource( const Resource** ppResource, crc32 resourceKey ) const
+	bool ResourceStorage::findResource( Resource** ppResource, crc32 resourceKey ) const
 	{
 		return m_resources.findValue( ppResource, resourceKey );
 	}
 
-	void ResourceStorage::allocateResource( const Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData )
+	void ResourceStorage::allocateResource( Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData )
 	{
 		TIKI_ASSERT( pResource != nullptr );
 
@@ -35,17 +37,23 @@ namespace tiki
 		m_resources.set( resourceId.key, pResource );
 	}
 	
-	void ResourceStorage::addReferenceToResource( const Resource* pResource )
+	void ResourceStorage::addReferenceToResource( Resource* pResource )
 	{
 		TIKI_ASSERT( pResource != nullptr );
 
 		pResource->addReference();
 	}
 
-	bool ResourceStorage::freeReferenceFromResource( const Resource* pResource )
+	bool ResourceStorage::freeReferenceFromResource( Resource* pResource )
 	{
 		TIKI_ASSERT( pResource != nullptr );
 
-		return pResource->releaseReference();
+		if ( pResource->releaseReference() )
+		{
+			return m_resources.remove( pResource->getKey() );
+
+		}
+
+		return false;
 	}
 }

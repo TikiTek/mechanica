@@ -7,6 +7,7 @@
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
 #include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resourcestorage.hpp"
 
 namespace tiki
 {
@@ -14,22 +15,27 @@ namespace tiki
 	{
 		ResourceLoaderContext()
 		{
+			streamOwner	= false;
 			pStream		= nullptr;
-			pFactory	= nullptr;
 
+			pFactory	= nullptr;
 			pResource	= nullptr;
 
 			resourceCount	= 0u;
 			pResourceHeader	= nullptr;
 		}
 
-		DataStream*		pStream;
-		FactoryBase*	pFactory;
+		bool				streamOwner;
+		DataStream*			pStream;
 
-		Resource*		pResource;
+		FactoryBase*		pFactory;
+		Resource*			pResource;
 
-		uint			resourceCount;
-		ResourceHeader*	pResourceHeader;
+		uint				resourceCount;
+		ResourceHeader*		pResourceHeader;
+
+		ResourceId			resourceId;
+		ResourceSectorData	sectionData;
 	};
 
 	struct ResourceLoaderInternalContext
@@ -63,7 +69,7 @@ namespace tiki
 		m_factories.remove( factory.getType() );
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey )
+	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
 		TIKI_ASSERT( pFileName != nullptr );
@@ -81,12 +87,6 @@ namespace tiki
 		{
 			return ResourceLoaderResult_CouldNotAccessFile;
 		}
-
-		//context.pResource = pFactory->createResource();
-		//if ( context.pResource == nullptr )
-		//{			
-		//	return ResourceLoaderResult_CouldNotCreateResource;
-		//}
 
 		ResourceFileHeader fileHeader;
 		if ( context.pStream->read( &fileHeader, sizeof( fileHeader ) ) != sizeof( fileHeader ) )
@@ -121,22 +121,28 @@ namespace tiki
 
 			if ( header.key == resourceKey )
 			{
-				return loadResource( context, i );
+				if ( header.type != resourceType )
+				{
+					return ResourceLoaderResult_WrongResourceType;
+				}
+
+				context.resourceId.key		= resourceKey;
+				context.resourceId.fileName	= pFileName;
+
+				ResourceLoaderResult result = createResource( context, header );
+				if ( result != ResourceLoaderResult_Success )
+				{
+					cancelOperation( context );
+				}
+
+				return result;
 			}
-		} 
+		}
 
-		return ResourceLoaderResult_FileNotFound;
-
-		ResourceSectorData sectionData;
-
-		ResourceId resourceId;
-		resourceId.key	= resourceKey;
-		resourceId.fileName	= pFileName;
-		
-		context.pResource->initialize( resourceId, sectionData );
+		return ResourceLoaderResult_ResourceNotFound;
 	}
 
-	void ResourceLoader::unloadResource( const Resource* pResource )
+	void ResourceLoader::unloadResource( const Resource* pResource, fourcc resourceType )
 	{
 		TIKI_ASSERT( m_pFileSystem != nullptr );
 
@@ -163,7 +169,102 @@ namespace tiki
 		return nullptr;
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( ResourceLoaderContext& context, uint resourceIndex )
+	ResourceLoaderResult ResourceLoader::createResource( ResourceLoaderContext& context, const ResourceHeader& header )
+	{
+		context.pFactory = findFactory( header.type );
+		if ( context.pFactory == nullptr )
+		{
+			uint64 type = (uint64)header.type << 32u;
+			TIKI_TRACE_ERROR( "No Factory found for Resource of type: %s\n", &type );
+			return ResourceLoaderResult_CouldNotCreateResource;
+		}
+
+		context.pResource = context.pFactory->createResource();
+		if ( context.pResource == nullptr )
+		{
+			return ResourceLoaderResult_CouldNotCreateResource;
+		}
+
+		const uint sectionHeaderSize = sizeof( SectionHeader ) * header.sectionCount;
+		SectionHeader* pSectionHeaders = static_cast< SectionHeader*>( m_bufferAllocator.allocate( sectionHeaderSize ) );
+		if ( pSectionHeaders == nullptr )
+		{
+			return ResourceLoaderResult_OutOfMemory;
+		}
+
+		context.pStream->setPosition( header.offsetInFile );
+		context.pStream->read( pSectionHeaders, sectionHeaderSize );
+
+		context.sectionData.sectorCount			= header.sectionCount;
+		context.sectionData.ppSectorPointers	= static_cast< void** >( memory::allocAlign( sizeof( void* ) * header.sectionCount ) );
+
+		void* pInitData = nullptr;
+		for (uint i = 0u; i < header.sectionCount; ++i)
+		{
+			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
+
+			void* pSectionData = memory::allocAlign( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
+
+			context.pStream->setPosition( sectionHeader.offsetInFile );
+			context.pStream->read( pSectionData, sectionHeader.sizeInBytes );
+
+			context.sectionData.ppSectorPointers[ i ] = pSectionData;
+
+			if ( resource::getSectionAllocatorType( sectionHeader.allocatorType_allocatorId ) == AllocatorType_InitializaionMemory )
+			{
+				TIKI_ASSERT( pInitData == nullptr );
+				pInitData = pSectionData;
+			}
+		}
+
+		for (uint i = 0u; i < header.sectionCount; ++i)
+		{
+			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
+			
+			const uint referenceItemSize = sizeof( ReferenceItem ) * sectionHeader.referenceCount;
+			ReferenceItem* pReferenceItems = static_cast< ReferenceItem* >( m_bufferAllocator.allocate( referenceItemSize ) );
+			if ( pReferenceItems == nullptr )
+			{
+				return ResourceLoaderResult_OutOfMemory;
+			}
+			context.pStream->read( pReferenceItems, referenceItemSize );
+
+			for (uint j = 0u; j < sectionHeader.referenceCount; ++j)
+			{
+				const ReferenceItem& item = pReferenceItems[ j ];
+
+				void* pPointer = nullptr;
+				switch ( item.type )
+				{
+				case ReferenceType_Pointer:
+					break;
+
+				case ReferenceType_String:
+					break;
+
+				case ReferenceType_ResourceLink:
+					break;
+
+				default:
+					return ResourceLoaderResult_WrongFileFormat;
+				}
+
+				uint64* pTargetSectionData = addPtrCast< uint64 >( context.sectionData.ppSectorPointers[ item.targetId ], item.offsetInSection );
+				*pTargetSectionData = (uint64)pPointer;
+			}
+
+			m_bufferAllocator.free( pReferenceItems );
+		}
+
+		m_bufferAllocator.free( pSectionHeaders );
+
+		m_pStorage->allocateResource( context.pResource, context.resourceId, context.sectionData );
+		context.pFactory->initializeResource( context.pResource, pInitData );
+
+		return ResourceLoaderResult_Success;
+	}
+	
+	ResourceLoaderResult ResourceLoader::initializeResource( ResourceLoaderContext& context )
 	{
 		return ResourceLoaderResult_Success;
 	}

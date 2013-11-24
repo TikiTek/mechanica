@@ -29,6 +29,8 @@ namespace tiki
 		fourcc	type;
 		crc32	key;
 
+		uint32	offsetInFile;
+
 		uint16	version;
 		
 		uint16	sectionCount;
@@ -65,7 +67,7 @@ namespace tiki
 
 	struct ReferenceItem
 	{
-		uint8	type;
+		uint8	type;			// see ReferenceType
 		// 1 byte padding
 		uint16	targetId;
 
@@ -95,14 +97,15 @@ namespace tiki
 
 	namespace resource
 	{
-		Endianness		getEndianness( const ResourceFileHeader& header );
+		Endianness			getEndianness( const ResourceFileHeader& header );
 
-		const void*		getSectionData( const SectionHeader& header, const void* pBase );
+		const AllocatorType	getSectionAllocatorType( uint8 allocatorType_allocatorId );
+		const uint8			getSectionAllocatorId( uint8 allocatorType_allocatorId );
 
-		StringType		getStringType( const StringItem& item );
-		uint			getStringLengthModifier( const StringItem& item );
-		uint			getStringTextLength( const StringItem& item );
-		uint			getStringLengthInBytes( const StringItem& item );
+		StringType			getStringType( const StringItem& item );
+		uint				getStringLengthModifier( const StringItem& item );
+		uint				getStringTextLength( const StringItem& item );
+		uint				getStringLengthInBytes( const StringItem& item );
 	}
 }
 

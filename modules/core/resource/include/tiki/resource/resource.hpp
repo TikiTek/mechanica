@@ -44,6 +44,7 @@ namespace tiki
 	class Resource
 	{
 		friend class ResourceLoader;
+		friend class ResourceStorage;
 		friend class ResourceManager;
 
 	public:

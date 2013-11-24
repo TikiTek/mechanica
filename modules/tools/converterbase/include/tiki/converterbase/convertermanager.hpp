@@ -5,8 +5,8 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/io/filestream.hpp"
 #include "tiki/threading/mutex.hpp"
-#include "tiki/toolbase/filestream.hpp"
 #include "tiki/toolbase/list.hpp"
 
 #include <map>
