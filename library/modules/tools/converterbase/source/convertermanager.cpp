@@ -50,7 +50,7 @@ namespace tiki
 		}
 
 		m_loggingMutex.create();
-		m_loggingStream.create( "converter.log", FOM_Write );
+		m_loggingStream.open( "converter.log", DataAccessMode_WriteAppend );
 
 		s_pInstance = this;
 		debug::setTraceCallback( globalTraceCallback );
@@ -64,7 +64,7 @@ namespace tiki
 
 		debug::setTraceCallback( nullptr );
 
-		m_loggingStream.dispose();
+		m_loggingStream.close();
 		m_loggingMutex.dispose();
 
 		if ( m_pDataBase != nullptr )

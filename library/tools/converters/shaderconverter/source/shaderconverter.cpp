@@ -11,8 +11,8 @@
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/io/filestream.hpp"
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
-#include "tiki/toolbase/filestream.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include <d3dcompiler.h>

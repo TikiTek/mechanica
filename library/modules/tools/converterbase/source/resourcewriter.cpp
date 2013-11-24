@@ -4,7 +4,7 @@
 #include "tiki/base/bits.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/toolbase/filestream.hpp"
+#include "tiki/io/filestream.hpp"
 
 namespace tiki
 {
@@ -32,13 +32,46 @@ namespace tiki
 
 		MemoryStream stream;
 		stream.write( &fileHeader, sizeof( ResourceFileHeader ) );
-				
+
+		List< ResourceHeader > resourceHeaders;
 		for (uint i = 0u; i < m_resources.getCount(); ++i)
 		{
 			const ResourceData& resource = m_resources[ i ];
 
-			MemoryStream headerData;
+			ResourceHeader& header = resourceHeaders.add();
+			header.type		= resource.type;
+			header.key		= crcString( resource.name );
+			header.version	= resource.version;
 
+			header.linkCount	= resource.links.getCount();
+			header.sectionCount	= resource.sections.getCount();
+			header.stringCount	= resource.strings.getCount();
+
+			header.offsetInFile			= 0u;
+			header.stringSizeInBytes	= 0u;
+		} 
+		stream.write( resourceHeaders.getData(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
+
+		for (uint i = 0u; i < m_resources.getCount(); ++i)
+		{
+			const ResourceData& resource = m_resources[ i ];
+			resourceHeaders[ i ].offsetInFile = stream.getPosition();
+
+			List< SectionHeader > sectionHeaders;
+			for (uint j = 0u; j < resource.sections.getCount(); ++j)
+			{
+				const SectionData& sectionData = resource.sections[ j ];
+
+				SectionHeader& header = sectionHeaders.add();
+				header.alignment					= 64u - countLeadingZeros64( sectionData.alignment );
+				header.allocatorType_allocatorId	= 0u;
+				header.referenceCount				= sectionData.references.getCount();
+				header.sizeInBytes					= sectionData.binaryData.getLength();
+
+				header.offsetInFile					= 0u;
+			} 
+			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
+						
 			for (uint j = 0u; j < resource.links.getCount(); ++j)
 			{
 				const ResourceLinkData& linkData = resource.links[ j ];
@@ -47,7 +80,7 @@ namespace tiki
 				item.fileKey		= crcString( linkData.fileName );
 				item.resourceKey	= linkData.resourceKey;
 
-				headerData.write( &item, sizeof( item ) );
+				stream.write( &item, sizeof( item ) );
 			}
 
 			for (uint j = 0u; j < resource.strings.getCount(); ++j)
@@ -58,37 +91,18 @@ namespace tiki
 				bitMask = setBitValue( bitMask, 2u, 2u, stringData.sizeInBytes / stringData.text.getLength() );
 				bitMask = setBitValue( bitMask, 4u, 28u, stringData.text.getLength() ) ;
 
-				headerData.write( &bitMask, sizeof( bitMask ) );
-				headerData.write( stringData.text.cStr(), stringData.sizeInBytes );
+				stream.write( &bitMask, sizeof( bitMask ) );
+				stream.write( stringData.text.cStr(), stringData.sizeInBytes );
 			}
 
-			const uint baseOffset = stream.getLength() + ( resource.sections.getCount() * sizeof( SectionHeader ) ) + headerData.getLength();
-			uint currentOffset = 0u;
-
 			for (uint j = 0u; j < resource.sections.getCount(); ++j)
 			{
 				const SectionData& sectionData = resource.sections[ j ];
 
-				currentOffset = alignValue( currentOffset, sectionData.alignment );
+				stream.writeAlignment( sectionData.alignment );
 
-				SectionHeader sectionHeader;
-				sectionHeader.alignment					= 64u - countLeadingZeros64( sectionData.alignment );
-				sectionHeader.allocatorType_allocatorId = 0u;
-				sectionHeader.referenceCount			= sectionData.references.getCount();
-				sectionHeader.offsetInFile				= currentOffset;
-				sectionHeader.sizeInBytes				= sectionData.binaryData.getLength();
-
-				stream.write( &sectionHeader, sizeof( sectionHeader ) );
-
-				currentOffset += sectionData.binaryData.getLength();
-			} 
-
-			stream.write( headerData.getData(), headerData.getLength() );
-			headerData.dispose();
-
-			for (uint j = 0u; j < resource.sections.getCount(); ++j)
-			{
-				const SectionData& sectionData = resource.sections[ j ];
+				sectionHeaders[ j ].offsetInFile = stream.getPosition();
+				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
 
 				for (uint k = 0u; k < sectionData.references.getCount(); ++k)
 				{
@@ -101,19 +115,23 @@ namespace tiki
 					item.offsetInSection		= referenceData.position;
 
 					stream.write( &item, sizeof( item ) );
-				} 
+				}
+			}
 
-				stream.writeAlignment( sectionData.alignment );
-				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
-			}			
+			stream.setPosition( resourceHeaders[ i ].offsetInFile );
+			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
+			stream.setPosition( stream.getLength() );
 		}
 
+		stream.setPosition( sizeof( ResourceFileHeader ) );
+		stream.write( resourceHeaders.getData(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
+
 		FileStream fileStream;
-		fileStream.create( m_fileName, FOM_Write );
+		fileStream.open( m_fileName.cStr(), DataAccessMode_Write );
 
 		fileStream.write( stream.getData(), stream.getLength() );
 
-		fileStream.dispose();
+		fileStream.close();
 		stream.dispose();
 
 		m_resources.dispose();

@@ -23,15 +23,15 @@ namespace tiki
 		void	create( uint maxResourceCount );
 		void	dispose();
 
-		bool	findResource( const Resource** ppResource, crc32 resourceKey ) const;
+		bool	findResource( Resource** ppResource, crc32 resourceKey ) const;
 
-		void	allocateResource( const Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData );
-		void	addReferenceToResource( const Resource* pResource );
-		bool	freeReferenceFromResource( const Resource* pResource );
+		void	allocateResource( Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData );
+		void	addReferenceToResource( Resource* pResource );
+		bool	freeReferenceFromResource( Resource* pResource );
 
 	private:
 
-		SortedSizedMap< crc32, const Resource* >	m_resources;
+		SortedSizedMap< crc32, Resource* >	m_resources;
 
 	};
 }

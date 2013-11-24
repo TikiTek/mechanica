@@ -235,13 +235,15 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE const T& List< T >::operator[]( uint index ) const
 	{
+		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}  
 
 	template<typename T>
 	TIKI_FORCE_INLINE T& List< T >::operator[]( uint index )
 	{
-		return m_pData[index];
+		TIKI_ASSERT( index < m_count );
+		return m_pData[ index ];
 	} 
 
 	template<typename T>

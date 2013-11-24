@@ -13,6 +13,7 @@ namespace tiki
 	class FileSystem;
 	class Resource;
 	class ResourceStorage;
+	struct ResourceHeader;
 	struct ResourceLoaderContext;
 
 	enum ResourceLoaderResult
@@ -24,8 +25,10 @@ namespace tiki
 		ResourceLoaderResult_CouldNotInitialize,
 		ResourceLoaderResult_FileNotFound,
 		ResourceLoaderResult_OutOfMemory,
+		ResourceLoaderResult_ResourceNotFound,
 		ResourceLoaderResult_UnknownError,
-		ResourceLoaderResult_WrongFileFormat
+		ResourceLoaderResult_WrongFileFormat,
+		ResourceLoaderResult_WrongResourceType
 	};
 
 	class ResourceLoader
@@ -40,8 +43,8 @@ namespace tiki
 			void					registerFactory( FactoryBase& factory );
 			void					unregisterFactory( FactoryBase& factory );
 
-			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey );
-			void					unloadResource( const Resource* pResource );
+			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType );
+			void					unloadResource( const Resource* pResource, fourcc resourceType );
 			
 	private:
 
@@ -54,15 +57,16 @@ namespace tiki
 
 		typedef SortedSizedMap< fourcc, FactoryBase* > FactoryMap;
 
-		FileSystem*			m_pFileSystem;
-		ResourceStorage*	m_pStorage;
+		FileSystem*				m_pFileSystem;
+		ResourceStorage*		m_pStorage;
 
-		FactoryMap			m_factories;
-		ZoneAllocator		m_bufferAllocator;
+		FactoryMap				m_factories;
+		ZoneAllocator			m_bufferAllocator;
 		
 		FactoryBase*			findFactory( fourcc resourceType ) const;
 
-		ResourceLoaderResult	loadResource( ResourceLoaderContext& context, uint resourceIndex );
+		ResourceLoaderResult	createResource( ResourceLoaderContext& context, const ResourceHeader& header );
+		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context );
 		void					cancelOperation( ResourceLoaderContext& context );
 
 

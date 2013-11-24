@@ -10,14 +10,19 @@ namespace tiki
 		return Endianness_Little;
 	}
 
-	const void* resource::getSectionData( const SectionHeader& header, const void* pBase )
+	const AllocatorType resource::getSectionAllocatorType( uint8 data )
 	{
-		return addPtr( pBase, ( sizeof( ReferenceItem ) * header.referenceCount ) );
+		return (AllocatorType)( data >> 6u );
+	}
+
+	const uint8 resource::getSectionAllocatorId( uint8 data )
+	{
+		return ( data & 0x3fu );
 	}
 
 	StringType resource::getStringType( const StringItem& item )
 	{
-		return ( StringType )( ( item.type_lengthModifier_textLength & 0xc0000000u ) >> 30u );
+		return (StringType)( ( item.type_lengthModifier_textLength & 0xc0000000u ) >> 30u );
 	}
 
 	uint resource::getStringLengthModifier( const StringItem& item )
