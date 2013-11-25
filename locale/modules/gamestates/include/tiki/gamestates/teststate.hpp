@@ -6,18 +6,13 @@
 
 namespace tiki
 {
-	class Animation;
-	class AnimationComponent;
 	class ApplicationState;
-	class Font;
 	class Model;
-	class SkinnedModelComponent;
+	class Shader;
 
 	enum TestStateTransitionSteps
 	{
 		TestStateTransitionSteps_LoadResources,
-		TestStateTransitionSteps_CreateConponents,
-		TestStateTransitionSteps_InitializeConponents,
 
 		TestStateTransitionSteps_Count
 	};
@@ -40,6 +35,7 @@ namespace tiki
 		
 		ApplicationState*		m_pParentState;
 
+		const Shader*			m_pShader;
 		const Model*			m_pModel;
 
 	};

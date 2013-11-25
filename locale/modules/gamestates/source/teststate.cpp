@@ -2,6 +2,7 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/framework/framework.hpp"
+#include "tiki/graphics/shader.hpp"
 #include "tiki/graphicsresources/model.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
@@ -26,44 +27,17 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModel = framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
+					m_pShader	= framework::getResourceManager().loadResource< Shader >( "fallback.shader" );
+					m_pModel	= framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
 
 					return TransitionState_Finish;
 				}
 				else
 				{
-					// todo: make resource manager async
+					// TODO: make resource manager async
 
 					return TransitionState_Error;
 				}
-			}
-			else
-			{
-				TIKI_ASSERT( isInital );
-
-				return TransitionState_Finish;
-			}
-			break;
-		case TestStateTransitionSteps_CreateConponents:
-			if ( isCreating )
-			{
-				TIKI_ASSERT( isInital );
-
-				return TransitionState_Finish;
-			}
-			else
-			{
-				TIKI_ASSERT( isInital );
-
-				return TransitionState_Finish;
-			}
-			break;
-		case TestStateTransitionSteps_InitializeConponents:
-			if ( isCreating )
-			{
-				TIKI_ASSERT( isInital );
-
-				return TransitionState_Finish;
 			}
 			else
 			{
