@@ -25,11 +25,13 @@ namespace tiki
 		m_materialFactory.create();
 		m_modelFactory.create( &graphicsSystem );
 		m_textureFactory.create( graphicsSystem );
+		m_shaderFactory.create( graphicsSystem );
 		
-		m_pResourceManager->registerFactory( &m_fontFactory );
-		m_pResourceManager->registerFactory( &m_materialFactory );
-		m_pResourceManager->registerFactory( &m_modelFactory );
-		m_pResourceManager->registerFactory( &m_textureFactory );
+		m_pResourceManager->registerFactory( m_fontFactory );
+		m_pResourceManager->registerFactory( m_materialFactory );
+		m_pResourceManager->registerFactory( m_modelFactory );
+		m_pResourceManager->registerFactory( m_textureFactory );
+		m_pResourceManager->registerFactory( m_shaderFactory );
 	}
 
 	void FrameworkFactories::dispose()
@@ -39,15 +41,17 @@ namespace tiki
 			return;
 		}
 
-		m_pResourceManager->unregisterFactory( &m_fontFactory );
-		m_pResourceManager->unregisterFactory( &m_materialFactory );
-		m_pResourceManager->unregisterFactory( &m_modelFactory );
-		m_pResourceManager->unregisterFactory( &m_textureFactory );
+		m_pResourceManager->unregisterFactory( m_fontFactory );
+		m_pResourceManager->unregisterFactory( m_materialFactory );
+		m_pResourceManager->unregisterFactory( m_modelFactory );
+		m_pResourceManager->unregisterFactory( m_textureFactory );
+		m_pResourceManager->unregisterFactory( m_shaderFactory );
 
 		m_fontFactory.dispose();
 		m_materialFactory.dispose();
 		m_modelFactory.dispose();
 		m_textureFactory.dispose();
+		m_shaderFactory.dispose();
 
 		m_pResourceManager = nullptr;
 	}

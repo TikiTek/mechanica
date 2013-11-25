@@ -23,7 +23,7 @@ namespace tiki
 
 			pTitle				= "TikiEngine 3.0";
 
-			pGamebuildPath		= "../gamebuild/";
+			pGamebuildPath		= "../../../../../gamebuild/";
 		}
 
 		uint		screenWidth;

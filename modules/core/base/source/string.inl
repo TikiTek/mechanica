@@ -773,12 +773,12 @@ namespace tiki
 		const uint64* pSource64 = reinterpret_cast< const uint64* >( pSourceBuffer );
 
 		uint length = 0u;
-		while ( length > 0u )
+		while ( length < sourceLength )
 		{
-			if ( length >= sizeof( uint64 ) )
+			if ( ( sourceLength -  length ) >= sizeof( uint64 ) )
 			{
-				const uint lengthOver4 = length / 4u;
-				pTarget64[ lengthOver4 ] = pSource64[ lengthOver4 ];
+				const uint lengthOver = length / sizeof( uint64 );
+				pTarget64[ lengthOver ] = pSource64[ lengthOver ];
 
 				length += sizeof( uint64 );
 			}
@@ -786,7 +786,7 @@ namespace tiki
 			{
 				pTargetBuffer[ length ] = pSourceBuffer[ length ];
 
-				length++;
+				++length;
 			}
 		}
 

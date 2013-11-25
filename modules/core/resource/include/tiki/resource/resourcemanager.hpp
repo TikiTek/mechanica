@@ -6,6 +6,8 @@
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/resource/resourceloader.hpp"
+#include "tiki/resource/resourcestorage.hpp"
 
 namespace tiki
 {
@@ -15,7 +17,16 @@ namespace tiki
 
 	struct ResourceManagerParameters
 	{
-		cstring		pGamebuildPath;
+		ResourceManagerParameters()
+		{
+			maxResourceCount	= 1000u;
+
+			pFileSystem			= nullptr;
+		}
+
+		uint			maxResourceCount;
+
+		FileSystem*		pFileSystem;
 	};
 
 	class ResourceManager
@@ -30,8 +41,8 @@ namespace tiki
 		bool						create( const ResourceManagerParameters& params );
 		void						dispose();
 
-		void						registerFactory( FactoryBase* pFactory );
-		void						unregisterFactory( FactoryBase* pFactory );
+		void						registerFactory( FactoryBase& factory );
+		void						unregisterFactory( FactoryBase& factory );
 
 		template<typename T>
 		TIKI_INLINE const T*		loadResource( const string& fileName );
@@ -41,12 +52,10 @@ namespace tiki
 
 	private:
 
-		SizedArray< FactoryBase* >	m_factories;
-		SizedArray< Resource* >		m_resources;
+		ResourceLoader				m_resoureLoader;
+		ResourceStorage				m_resourceStorage;
 
-		string						m_gamebuildPath;
-
-		const Resource*				loadGenericResource( fourcc type, const ResourceId& resourceId );
+		const Resource*				loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName );
 		void						unloadGenericResource( fourcc type, const Resource* pResource );
 
 	};

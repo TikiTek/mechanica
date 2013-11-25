@@ -25,14 +25,17 @@ namespace tiki
 
 	public:
 
-		void		create( const VertexFormatParameters& creationParameters );
-		void		dispose();
+		void					create( const VertexFormatParameters& creationParameters );
+		void					dispose();
 
-		uint		getVertexStride( uint streamIndex ) const { return m_vertexStride[ streamIndex ]; }
+		const VertexAttribute&	getAttributeByIndex( uint index ) const { return m_attributes[ index ]; }
+		uint					getAttributeCount() const { return m_attributes.getCount(); }
+
+		uint					getVertexStride( uint streamIndex ) const { return m_vertexStride[ streamIndex ]; }
 
 	private:
 
-		FixedSizedArray< VertexAttribute, GraphicsSystemLimits_MaxVertexAttributes >	m_attributes[ GraphicsSystemLimits_MaxInputStreams ];
+		FixedSizedArray< VertexAttribute, GraphicsSystemLimits_MaxVertexAttributes >	m_attributes;
 		FixedSizedArray< uint, GraphicsSystemLimits_MaxInputStreams >					m_vertexStride;
 
 	};

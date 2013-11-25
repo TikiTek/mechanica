@@ -41,7 +41,7 @@ namespace tiki
 		TIKI_DEL pModel;
 	}
 
-	bool ModelFactory::initializeResource( Resource* pResource, const void* pInitData ) const
+	bool ModelFactory::initializeResource( Resource* pResource, const void* pInitData, uint initDataSize ) const
 	{
 		TIKI_ASSERT( pResource != nullptr );
 		return static_cast< Model* >( pResource )->initialize( *m_pGraphicsSystem, pInitData );

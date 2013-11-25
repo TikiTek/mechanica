@@ -56,8 +56,8 @@ namespace tiki
 
 	protected:
 
-						Resource();
-		virtual			~Resource();
+							Resource();
+		virtual				~Resource();
 
 	private:
 

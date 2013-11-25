@@ -6,6 +6,9 @@
 
 namespace tiki
 {
+	struct ShaderPlatformData;
+	class VertexFormat;
+
 	struct ShaderPlatformData
 	{
 		union
@@ -25,7 +28,7 @@ namespace tiki
 
 	namespace graphics
 	{
-		TGInputLayout*	createVertexInputLayout( const ShaderPlatformData& shaderData );
+		TGInputLayout*	createVertexInputLayout( const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount );
 	}
 }
 

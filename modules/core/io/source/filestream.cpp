@@ -81,9 +81,9 @@ namespace tiki
 		return 0;
 	}
 
-	FileSize FileStream::setPosition( FileSize position )
+	void FileStream::setPosition( FileSize position )
 	{
-		return 0;
+		SetFilePointer( m_fileHandle, (DWORD)position, nullptr, FILE_BEGIN );
 	}
 
 	FileSize FileStream::seekPosition( FileSize seek )

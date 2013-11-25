@@ -6,6 +6,7 @@
 #include "tiki/framework/inputsystem.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -17,6 +18,8 @@ namespace tiki
 		ResourceManager		resourceManager;
 		InputSystem			inputSystem;
 		Timer				frameTimer;
+
+		GamebuildFileSystem	gamebuildFileSystem;
 
 		FrameworkFactories	factories;
 	};

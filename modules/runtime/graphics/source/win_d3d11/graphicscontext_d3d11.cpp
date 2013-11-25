@@ -12,7 +12,7 @@
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphics/vertexinputbining.hpp"
+#include "tiki/graphics/vertexinputbinding.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/math/rectangle.hpp"

@@ -32,20 +32,17 @@ namespace tiki
 
 	void MaterialFactory::destroyResource( Resource* pResource ) const
 	{
-		TIKI_ASSERT( pResource );
+		TIKI_ASSERT( pResource != nullptr );
 
-		Material* pMat = (Material*)pResource;
-		pMat->dispose();
-
-		TIKI_DEL pMat;
+		Material* pMaterial = (Material*)pResource;
+		pMaterial->dispose();
+		TIKI_DEL pMaterial;
 	}
 
-	bool MaterialFactory::initializeResource( Resource* pResource, const void* pInitData ) const
+	bool MaterialFactory::initializeResource( Resource* pResource, const void* pInitData, uint initDataSize ) const
 	{
-		TIKI_ASSERT( pResource );
-
-		Material* pMat = (Material*)pResource;
-		return pMat->initialize( pInitData );
+		TIKI_ASSERT( pResource != nullptr );
+		return static_cast< Material* >( pResource )->initialize( pInitData );
 	}
 
 }
