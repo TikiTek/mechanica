@@ -84,31 +84,14 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_count < m_capacity );
 
-		uint min = 0u;
-		uint max = m_count;
-		uint pos = TIKI_SIZE_T_MAX;
-		while ( max > min && pos == TIKI_SIZE_T_MAX )
+		uint pos = 0u;
+		for (; pos < m_count; ++pos)
 		{
-			const uint mid = ( max + min ) / 2u;
-
-			if ( m_pData[ mid ].key == key )
+			if ( m_pData[ pos ].key > key )
 			{
-				pos = mid;
+				break;
 			}
-			else if( m_pData[ mid ].key < key )
-			{
-				min = mid;
-			}
-			else if( m_pData[ mid ].key > key )
-			{
-				max = mid;
-			}
-		}
-		
-		if ( pos == TIKI_SIZE_T_MAX )
-		{
-			pos = max;
-		}
+		} 
 
 		for (uint i = m_count; i > pos; --i)
 		{

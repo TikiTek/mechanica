@@ -9,7 +9,7 @@ namespace tiki
 {
 	enum VertexAttributeFormat
 	{
-		VertexAttributeFormat_Invalid,
+		VertexAttributeFormat_Invalid = -1,
 
 		VertexAttributeFormat_x32y32z32w32_float,
 		VertexAttributeFormat_x32y32z32_float,

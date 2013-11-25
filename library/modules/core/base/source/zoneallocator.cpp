@@ -56,7 +56,7 @@ namespace tiki
 #endif
 
 		const uint currentSize = m_pCurrent - m_pMemory;
-		const uint alignedSize = alignValue( sizeInBytes, alignment );
+		const uint alignedSize = alignValue( currentSize, alignment );
 		if ( alignedSize + sizeInBytes > m_size )
 		{
 			TIKI_TRACE_ERROR( "[ZoneAllocator] Out of Memory(want to allocate: %u, free: %u, total size: %u).\n", sizeInBytes, ( m_size - ( m_pCurrent - m_pMemory ) ), m_size );

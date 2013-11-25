@@ -64,7 +64,7 @@ namespace tiki
 
 				SectionHeader& header = sectionHeaders.add();
 				header.alignment					= 64u - countLeadingZeros64( sectionData.alignment );
-				header.allocatorType_allocatorId	= 0u;
+				header.allocatorType_allocatorId	= (uint8)( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
 				header.referenceCount				= sectionData.references.getCount();
 				header.sizeInBytes					= sectionData.binaryData.getLength();
 

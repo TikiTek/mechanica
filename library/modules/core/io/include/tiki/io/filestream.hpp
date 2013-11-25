@@ -28,7 +28,7 @@ namespace tiki
 		virtual FileSize	write( const void* pSourceData, uint bytesToWrite );
 
 		virtual FileSize	getPosition();
-		virtual FileSize	setPosition( FileSize position );
+		virtual void		setPosition( FileSize position );
 		virtual FileSize	seekPosition( FileSize seek );
 
 		virtual FileSize	getLength();

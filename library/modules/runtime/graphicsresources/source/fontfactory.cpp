@@ -45,7 +45,7 @@ namespace tiki
 		TIKI_DEL pFont;
 	}
 
-	bool FontFactory::initializeResource( Resource* pResource, const void* pInitData ) const
+	bool FontFactory::initializeResource( Resource* pResource, const void* pInitData, uint initDataSize ) const
 	{
 		TIKI_ASSERT( pResource != nullptr );
 		TIKI_ASSERT( pInitData != nullptr );

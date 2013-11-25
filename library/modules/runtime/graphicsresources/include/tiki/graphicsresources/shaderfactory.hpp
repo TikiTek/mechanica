@@ -1,19 +1,19 @@
 #pragma once
-#ifndef TIKI_FONTFACTORY_HPP__INCLUDED
-#define TIKI_FONTFACTORY_HPP__INCLUDED
+#ifndef TIKI_SHADERFACTORY_HPP
+#define TIKI_SHADERFACTORY_HPP
 
 #include "tiki/resource/factorybase.hpp"
 
 namespace tiki
 {
 	class GraphicsSystem;
-
-	class FontFactory : public FactoryBase
+	
+	class ShaderFactory : public FactoryBase
 	{
 	public:
 
-							FontFactory();
-		virtual				~FontFactory();
+		ShaderFactory();
+		~ShaderFactory();
 
 		void				create( GraphicsSystem& graphicsSystem );
 		void				dispose();
@@ -32,4 +32,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_FONTFACTORY_HPP__INCLUDED
+#endif // TIKI_SHADERFACTORY_HPP

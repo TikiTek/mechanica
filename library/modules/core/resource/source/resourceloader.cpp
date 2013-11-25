@@ -198,7 +198,7 @@ namespace tiki
 		context.sectionData.sectorCount			= header.sectionCount;
 		context.sectionData.ppSectorPointers	= static_cast< void** >( memory::allocAlign( sizeof( void* ) * header.sectionCount ) );
 
-		void* pInitData = nullptr;
+		uint initDataSectionIndex = TIKI_SIZE_T_MAX;
 		for (uint i = 0u; i < header.sectionCount; ++i)
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
@@ -212,14 +212,24 @@ namespace tiki
 
 			if ( resource::getSectionAllocatorType( sectionHeader.allocatorType_allocatorId ) == AllocatorType_InitializaionMemory )
 			{
-				TIKI_ASSERT( pInitData == nullptr );
-				pInitData = pSectionData;
+				TIKI_ASSERT( initDataSectionIndex == TIKI_SIZE_T_MAX );
+				initDataSectionIndex = i;
 			}
 		}
 
+		if ( initDataSectionIndex == TIKI_SIZE_T_MAX )
+		{
+			return ResourceLoaderResult_CouldNotInitialize;
+		}
+		
 		for (uint i = 0u; i < header.sectionCount; ++i)
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
+
+			if ( sectionHeader.referenceCount == 0u )
+			{
+				continue;
+			}
 			
 			const uint referenceItemSize = sizeof( ReferenceItem ) * sectionHeader.referenceCount;
 			ReferenceItem* pReferenceItems = static_cast< ReferenceItem* >( m_bufferAllocator.allocate( referenceItemSize ) );
@@ -227,6 +237,7 @@ namespace tiki
 			{
 				return ResourceLoaderResult_OutOfMemory;
 			}
+			context.pStream->setPosition( sectionHeader.offsetInFile + sectionHeader.sizeInBytes );
 			context.pStream->read( pReferenceItems, referenceItemSize );
 
 			for (uint j = 0u; j < sectionHeader.referenceCount; ++j)
@@ -237,6 +248,7 @@ namespace tiki
 				switch ( item.type )
 				{
 				case ReferenceType_Pointer:
+					pPointer = addPtr( context.sectionData.ppSectorPointers[ item.targetId ], item.offsetInTargetSection );
 					break;
 
 				case ReferenceType_String:
@@ -249,17 +261,17 @@ namespace tiki
 					return ResourceLoaderResult_WrongFileFormat;
 				}
 
-				uint64* pTargetSectionData = addPtrCast< uint64 >( context.sectionData.ppSectorPointers[ item.targetId ], item.offsetInSection );
+				uint64* pTargetSectionData = addPtrCast< uint64 >( context.sectionData.ppSectorPointers[ i ], item.offsetInSection );
 				*pTargetSectionData = (uint64)pPointer;
 			}
 
 			m_bufferAllocator.free( pReferenceItems );
 		}
 
-		m_bufferAllocator.free( pSectionHeaders );
-
 		m_pStorage->allocateResource( context.pResource, context.resourceId, context.sectionData );
-		context.pFactory->initializeResource( context.pResource, pInitData );
+		context.pFactory->initializeResource( context.pResource, context.sectionData.ppSectorPointers[ initDataSectionIndex ], pSectionHeaders[ initDataSectionIndex ].sizeInBytes );
+
+		m_bufferAllocator.free( pSectionHeaders );
 
 		return ResourceLoaderResult_Success;
 	}

@@ -44,8 +44,10 @@ namespace tiki
 		windowParams.pWindowTitle	= m_parameters.pTitle;
 		windowParams.pClassName		= "TikiEngineMainWindow";
 		
-		if (!m_frameworkData.mainWindow.create( windowParams ))
+		if ( !m_frameworkData.mainWindow.create( windowParams ) )
+		{
 			return false;
+		}
 		
 		GraphicsSystemParameters graphicParams;
 		graphicParams.fullScreen		= m_parameters.fullScreen;
@@ -56,11 +58,15 @@ namespace tiki
 		graphicParams.backBufferWidth	= windowSize.x;
 		graphicParams.backBufferHeight	= windowSize.y;
 
-		if (!m_frameworkData.graphicSystem.create( graphicParams ))
+		if ( !m_frameworkData.graphicSystem.create( graphicParams ) )
+		{
 			return false;
+		}
+
+		m_frameworkData.gamebuildFileSystem.create( m_parameters.pGamebuildPath );
 
 		ResourceManagerParameters resourceParams;
-		resourceParams.pGamebuildPath	= m_parameters.pGamebuildPath;
+		resourceParams.pFileSystem = &m_frameworkData.gamebuildFileSystem;
 
 		if ( !m_frameworkData.resourceManager.create( resourceParams ) )
 			return false;
@@ -90,6 +96,8 @@ namespace tiki
 		m_frameworkData.graphicSystem.dispose();
 		m_frameworkData.resourceManager.dispose();
 		m_frameworkData.mainWindow.dispose();
+
+		m_frameworkData.gamebuildFileSystem.dispose();
 	}
 
 	bool GameFramework::frame()

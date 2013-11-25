@@ -19,7 +19,7 @@ namespace tiki
 			virtual Resource*	createResource() const = 0;
 			virtual void		destroyResource( Resource* pResource ) const = 0;
 
-			virtual bool		initializeResource( Resource* pResource, const void* pInitData ) const = 0;
+			virtual bool		initializeResource( Resource* pResource, const void* pInitData, uint initDataSize ) const = 0;
 	};
 }
 

@@ -10,13 +10,7 @@ namespace tiki
 	template<typename T>
 	TIKI_INLINE const T* ResourceManager::loadResource( const string& fileName )
 	{
-		ResourceId id;
-		id.key			= crcString( fileName );
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		id.fileName		= fileName;
-#endif
-
-		return (const T*)loadGenericResource( T::s_resourceType, id );
+		return (const T*)loadGenericResource( T::s_resourceType, crcString( fileName ), fileName.cStr() );
 	}
 
 	template<typename T>

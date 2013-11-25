@@ -21,7 +21,7 @@ namespace tiki
 
 	struct VertexInputBindingParameters
 	{
-		const VertexFormat*	pAttributes;
+		const VertexFormat*	pVertexFormat;
 		const Shader*		pShader;
 	};
 
