@@ -100,8 +100,8 @@ namespace tiki
 
 	private:
 
-		Type	m_data[ TCapacity ];
 		uint	m_count;
+		Type	m_data[ TCapacity ];
 
 	};
 }

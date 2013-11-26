@@ -75,6 +75,27 @@ namespace tiki
 		uint32	offsetInTargetSection;
 	};
 
+	template<typename T>
+	class ResourceRef
+	{
+	public:
+
+		ResourceRef( T* pRef ) : m_pRef( pRef ) {}
+		ResourceRef( const ResourceRef< T >& ref ) : m_pRef( ref ) {}
+		~ResourceRef() { m_pRef = nullptr; }
+
+		T*		getData() const { return m_pRef; }
+
+		//T*		operator() const { return m_pRef; }
+		T*		operator->() const { return m_pRef; }
+
+	private:
+		T*		m_pRef;
+#if TIKI_DISABLED( TIKI_BUILD_64BIT )
+		void*	m_pPadding;
+#endif
+	};
+
 	enum StringType
 	{
 		StringType_Char,

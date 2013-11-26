@@ -2,14 +2,24 @@
 #include "tiki/graphics/shader.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/resource/resourcefile.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki
 {
+	struct ShaderVariantInitializationData
+	{
+		uint16						shaderType;
+		uint16						codeLength;
+		crc32						variantKey;
+		ResourceRef< const void >	data;
+	};
+
 	Shader::Shader()
 	{
 		m_type = ShaderType_Invalid;
@@ -30,11 +40,17 @@ namespace tiki
 		TIKI_ASSERT( pInitData != nullptr );
 		TIKI_ASSERT( dataSize > 0u );
 
-		const uint32* pInfo		= (const uint32*)pInitData;
-		m_type					= (ShaderType)pInfo[ 0u ];
-		const uint32 dataLength	= pInfo[ 1u ];
-		
-		pInitData = addPtr( pInitData, sizeof( uint32 ) * 2u );
+		const FixedSizedArray< ShaderVariantInitializationData, 2048 >& initData = *reinterpret_cast< const FixedSizedArray< ShaderVariantInitializationData, 2048 >* >( pInitData );
+
+		uint32 dataLength = 0u;
+		for (uint i = 0u; i < initData.getCount(); ++i)
+		{
+			const ShaderVariantInitializationData& variant = initData[ i ];
+
+			m_type		= (ShaderType)variant.shaderType;
+			dataLength	= variant.codeLength;
+			pInitData	= variant.data.getData();
+		} 
 
 		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
 		switch ( m_type )
