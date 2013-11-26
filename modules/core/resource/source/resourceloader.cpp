@@ -134,11 +134,17 @@ namespace tiki
 				{
 					cancelOperation( context );
 				}
+				else
+				{
+					context.pStream->close();
+					context.pStream = nullptr;
+				}
 
 				return result;
 			}
 		}
 
+		cancelOperation( context );
 		return ResourceLoaderResult_ResourceNotFound;
 	}
 
@@ -283,10 +289,9 @@ namespace tiki
 
 	void ResourceLoader::cancelOperation( ResourceLoaderContext& context )
 	{
-		TIKI_ASSERT( context.pFactory != nullptr );
-
 		if ( context.pResource != nullptr )
 		{
+			TIKI_ASSERT( context.pFactory != nullptr );
 			context.pFactory->destroyResource( context.pResource );
 			context.pResource = nullptr;
 		}

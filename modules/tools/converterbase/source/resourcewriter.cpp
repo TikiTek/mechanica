@@ -247,7 +247,7 @@ namespace tiki
 
 		// reserve space for the pointer
 		const uint64 zero = 0u;
-		m_pCurrentSection->binaryData.write( &zero, sizeof( zero ) );
+		m_pCurrentSection->binaryData.write( &zero, 8u );
 	}
 
 	void ResourceWriter::writeData( const void* pData, uint length )

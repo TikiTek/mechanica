@@ -20,6 +20,14 @@
 
 namespace tiki
 {
+	struct ShaderVariantData
+	{
+		ShaderType		type;
+		crc32			variantKey;
+		uint			codeLength;
+		ReferenceKey	key;
+	};
+
 	class ShaderIncludeHandler : public ID3DInclude
 	{
 		TIKI_NONCOPYABLE_CLASS( ShaderIncludeHandler );
@@ -183,7 +191,7 @@ namespace tiki
 			openResourceWriter( &writer, params.outputName, "shader", params.targetPlatform );
 			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'F', 'X' ), getConverterRevision() );
 
-			List< ReferenceKey > shaderCodeKeys;
+			List< ShaderVariantData > shaderVariants;
 			for (uint i = 1u; i < ShaderType_Count; ++i)
 			{
 				const ShaderType type = (ShaderType)i;
@@ -218,11 +226,14 @@ namespace tiki
 
 					Array< uint8 > variantData;
 					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
-					{						
+					{
+						ShaderVariantData& variantVarName = shaderVariants.add();
+						variantVarName.type			= type;
+						variantVarName.codeLength	= variantData.getCount();
+						variantVarName.variantKey	= variant.bitMask;
+
 						writer.openDataSection( 0u, AllocatorType_MainMemory );
-						shaderCodeKeys.add( writer.addDataPoint() );
-						writer.writeUInt32( args.type );
-						writer.writeUInt32( variantData.getCount() );
+						variantVarName.key = writer.addDataPoint();
 						writer.writeData( variantData.getData(), variantData.getCount() );
 						writer.closeDataSection();
 
@@ -233,10 +244,14 @@ namespace tiki
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 
-			writer.writeSInt64( shaderCodeKeys.getCount() );
-			for (uint i = 0u; i < shaderCodeKeys.getCount(); ++i)
+			writer.writeSInt32( shaderVariants.getCount() );
+			for (uint i = 0u; i < shaderVariants.getCount(); ++i)
 			{
-				writer.writeReference( shaderCodeKeys[ i ] );
+				const ShaderVariantData& shaderVarName = shaderVariants[ i ];
+				writer.writeSInt16( shaderVarName.type );
+				writer.writeSInt16( (uint16)shaderVarName.codeLength );
+				writer.writeSInt32( shaderVarName.variantKey );
+				writer.writeReference( shaderVarName.key );
 			}
 
 			writer.closeDataSection();
