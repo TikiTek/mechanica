@@ -7,6 +7,7 @@
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
@@ -62,6 +63,10 @@ namespace tiki
 		const SamplerState*		createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void					disposeSamplerState( const SamplerState* samplerState );
 
+		const VertexFormat*		createVertexFormat( const VertexFormatParameters& creationParameters );
+		const VertexFormat*		createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
+		void					disposeVertexFormat( const VertexFormat* pVertexFormat );
+
 		GraphicsContext*		beginFrame();
 		void					endFrame();
 
@@ -78,6 +83,7 @@ namespace tiki
 		RenderTarget									m_backBufferTarget;
 
 		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
+		GraphicsStateObjectCollection< VertexFormat >	m_vertexFormats;
 
 	};
 }
