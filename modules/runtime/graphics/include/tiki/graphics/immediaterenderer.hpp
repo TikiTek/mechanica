@@ -19,6 +19,7 @@ namespace tiki
 	class ResourceManager;
 	class SamplerState;
 	class TextureData;
+	class VertexInputBinding;
 	class VertexFormat;
 	class WindowEventBuffer;
 	struct Rectangle; 
@@ -73,6 +74,7 @@ namespace tiki
 		const Material*						m_pMaterial;
 		const VertexFormat*					m_pVertexFormat;
 		const SamplerState*					m_pSamplerState;
+		const VertexInputBinding*			m_pVertexInputBinding;
 
 		SizedArray< Sprite >				m_sprites;
 		SizedArray< SpriteVertex >			m_vertices;

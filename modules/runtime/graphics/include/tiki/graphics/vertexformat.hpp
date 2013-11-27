@@ -22,16 +22,21 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( VertexFormat );
 		friend class GraphicsContext;
+		friend class GraphicsSystem;
 
 	public:
-
-		void					create( const VertexFormatParameters& creationParameters );
-		void					dispose();
 
 		const VertexAttribute&	getAttributeByIndex( uint index ) const { return m_attributes[ index ]; }
 		uint					getAttributeCount() const { return m_attributes.getCount(); }
 
 		uint					getVertexStride( uint streamIndex ) const { return m_vertexStride[ streamIndex ]; }
+
+	private: // friend
+
+		void					create( const VertexFormatParameters& creationParameters );
+		void					dispose();
+
+		bool					isCreated() const;
 
 	private:
 

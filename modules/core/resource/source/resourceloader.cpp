@@ -85,17 +85,20 @@ namespace tiki
 		context.pStream = m_pFileSystem->open( pFileName, DataAccessMode_Read );
 		if ( context.pStream == nullptr )
 		{
+			cancelOperation( context );
 			return ResourceLoaderResult_CouldNotAccessFile;
 		}
 
 		ResourceFileHeader fileHeader;
 		if ( context.pStream->read( &fileHeader, sizeof( fileHeader ) ) != sizeof( fileHeader ) )
 		{			
+			cancelOperation( context );
 			return ResourceLoaderResult_WrongFileFormat;
 		}
 
 		if ( fileHeader.tikiFourcc != ResourceFileHeader::TikiMagicHostEndian || fileHeader.version != ResourceFileHeader::CurrentFormatVersion )
 		{
+			cancelOperation( context );
 			return ResourceLoaderResult_WrongFileFormat;
 		}
 		
@@ -112,6 +115,7 @@ namespace tiki
 
 		if ( context.pStream->read( context.pResourceHeader, resourceHeaderSize ) != resourceHeaderSize )
 		{
+			cancelOperation( context );
 			return ResourceLoaderResult_WrongFileFormat;
 		}
 
@@ -123,6 +127,7 @@ namespace tiki
 			{
 				if ( header.type != resourceType )
 				{
+					cancelOperation( context );
 					return ResourceLoaderResult_WrongResourceType;
 				}
 
@@ -133,11 +138,15 @@ namespace tiki
 				if ( result != ResourceLoaderResult_Success )
 				{
 					cancelOperation( context );
+
+					*ppTargetResource = nullptr;
 				}
 				else
 				{
 					context.pStream->close();
 					context.pStream = nullptr;
+
+					*ppTargetResource = context.pResource;
 				}
 
 				return result;
