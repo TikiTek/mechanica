@@ -10,7 +10,6 @@
 namespace tiki
 {
 	TIKI_FORWARD_TEMPLATE( Array );
-	TIKI_FORWARD_TEMPLATE( FixedArray );
 	TIKI_FORWARD_TEMPLATE( SizedArray );
 	TIKI_FORWARD_TEMPLATE( StaticArray );
 

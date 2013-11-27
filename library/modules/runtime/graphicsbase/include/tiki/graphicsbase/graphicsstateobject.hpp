@@ -110,6 +110,11 @@ namespace tiki
 			
 			if ( pFirst == nullptr )
 			{
+				if ( m_data.isFull() )
+				{
+					return nullptr;
+				}
+
 				pFirst = &m_data.push();
 			}
 
