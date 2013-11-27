@@ -8,6 +8,7 @@ namespace tiki
 	void VertexFormat::create( const VertexFormatParameters& creationParameters )
 	{
 		TIKI_ASSERT( creationParameters.attributeCount < m_attributes.getCapacity() );
+		TIKI_ASSERT( creationParameters.attributeCount > 0u );
 
 		for (uint i = 0u; i < creationParameters.attributeCount; ++i)
 		{
@@ -25,5 +26,10 @@ namespace tiki
 
 	void VertexFormat::dispose()
 	{
+	}
+
+	bool VertexFormat::isCreated() const
+	{
+		return m_attributes.getCount() > 0u && m_vertexStride.getCount() > 0u;
 	}
 }

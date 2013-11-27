@@ -126,43 +126,6 @@ namespace tiki
 		m_platformData.pSwapChain->Present( 1, 0 );
 	}
 
-	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
-	{
-		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
-		TIKI_ASSERT( pSampler != nullptr );
-
-		if ( pSampler->icCreated() == false )
-		{
-			pSampler->create( *this, creationParameters );
-		}
-
-		return pSampler;
-	}
-
-	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy /*= 1*/, Color borderColor /*= TIKI_COLOR_BLACK */ )
-	{
-		SamplerStateParamters creationParameters;
-		creationParameters.addressU			= addressU;
-		creationParameters.addressV			= addressV;
-		creationParameters.addressW			= addressW;
-		creationParameters.magFilter		= magFilter;
-		creationParameters.mipFilter		= mipFilter;
-		creationParameters.maxAnisotropy	= maxAnisotropy;
-		creationParameters.borderColor		= borderColor;
-
-		return createSamplerState( creationParameters );
-	}
-
-	void GraphicsSystem::disposeSamplerState( const SamplerState* pSamplerState )
-	{
-		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
-
-		if ( pNonConstState->releaseRef() == true )
-		{
-			pNonConstState->dispose();
-		}
-	}
-
 	static bool graphics::initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize )
 	{
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );

@@ -189,7 +189,7 @@ namespace tiki
 
 			ResourceWriter writer;
 			openResourceWriter( &writer, params.outputName, "shader", params.targetPlatform );
-			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'F', 'X' ), getConverterRevision() );
+			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
 
 			List< ShaderVariantData > shaderVariants;
 			for (uint i = 1u; i < ShaderType_Count; ++i)

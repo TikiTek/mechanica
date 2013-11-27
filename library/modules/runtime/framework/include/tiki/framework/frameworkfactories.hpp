@@ -7,7 +7,7 @@
 #include "tiki/graphicsresources/fontfactory.hpp"
 #include "tiki/graphicsresources/materialfactory.hpp"
 #include "tiki/graphicsresources/modelfactory.hpp"
-#include "tiki/graphicsresources/shaderfactory.hpp"
+#include "tiki/graphicsresources/shadersetfactory.hpp"
 #include "tiki/graphicsresources/texturefactory.hpp"
 
 namespace tiki
@@ -37,7 +37,7 @@ namespace tiki
 		ModelFactory			m_modelFactory;
 		//NavMeshFactory		m_navmeshfactory;
 		TextureFactory			m_textureFactory;
-		ShaderFactory			m_shaderFactory;
+		ShaderSetFactory		m_shaderSetFactory;
 
 	};
 }

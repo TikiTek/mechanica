@@ -8,7 +8,7 @@ namespace tiki
 {
 	class ApplicationState;
 	class Model;
-	class Shader;
+	class ShaderSet;
 
 	enum TestStateTransitionSteps
 	{
@@ -35,7 +35,7 @@ namespace tiki
 		
 		ApplicationState*		m_pParentState;
 
-		const Shader*			m_pShader;
+		const ShaderSet*		m_pShaderSet;
 		const Model*			m_pModel;
 
 	};

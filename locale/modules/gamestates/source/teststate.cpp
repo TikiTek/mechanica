@@ -2,8 +2,8 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/framework/framework.hpp"
-#include "tiki/graphics/shader.hpp"
 #include "tiki/graphicsresources/model.hpp"
+#include "tiki/graphicsresources/shaderset.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -27,8 +27,8 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pShader	= framework::getResourceManager().loadResource< Shader >( "fallback.shader" );
-					m_pModel	= framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
+					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "fallback.shader" );
+					m_pModel		= framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
 
 					return TransitionState_Finish;
 				}

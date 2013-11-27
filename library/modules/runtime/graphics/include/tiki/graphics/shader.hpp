@@ -3,7 +3,7 @@
 #define TIKI_SHADER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/resource/resource.hpp"
+#include "tiki/graphicsbase/shadertype.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/shader_d3d11.hpp"
@@ -13,14 +13,11 @@
 
 namespace tiki
 {
-	class ShaderFactory;
 	class VertexFormat;
 	class VertexInputBinding;
-	enum ShaderType;
 
-	class Shader : public Resource
+	class Shader
 	{
-		TIKI_DEFINE_RESOURCE( ShaderFactory, TIKI_FOURCC( 'T', 'G', 'F', 'X' ) );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 
