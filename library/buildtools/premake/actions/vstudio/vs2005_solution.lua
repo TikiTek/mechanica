@@ -40,7 +40,8 @@
 		local version = {
 			vs2005 = 9,
 			vs2008 = 10,
-			vs2010 = 11
+			vs2010 = 11,
+			vs2012 = 12
 		}
 
 		_p('Microsoft Visual Studio Solution File, Format Version %d.00', version[_ACTION])

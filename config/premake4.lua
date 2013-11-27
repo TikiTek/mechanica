@@ -24,7 +24,7 @@ module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Master" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_ON", "Master" );
 module:set_flag( "Optimize", "Master" );
 
-if _ACTION == "vs2010" then
+if (_ACTION == "vs2010" or _ACTION == "vs2012") then
 	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_ON" );
 	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
 	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );

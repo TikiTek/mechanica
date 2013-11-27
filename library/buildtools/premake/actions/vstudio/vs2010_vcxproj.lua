@@ -66,7 +66,6 @@
 		return result
 	end
 
-
 --
 -- This property group describes a particular configuration: what
 -- kind of binary it produces, and some global settings.
@@ -78,7 +77,8 @@
 		_p(2,'<ConfigurationType>%s</ConfigurationType>',vc2010.config_type(cfg))
 		_p(2,'<UseDebugLibraries>%s</UseDebugLibraries>', iif(optimisation(cfg) == "Disabled","true","false"))
 		_p(2,'<CharacterSet>%s</CharacterSet>',iif(cfg.flags.Unicode,"Unicode","MultiByte"))
-
+		_p(2,'<PlatformToolset>%s</PlatformToolset>',iif(cfg.terms._action == "vs2010","v100","v110"))
+				
 		if cfg.flags.MFC then
 			_p(2,'<UseOfMfc>%s</UseOfMfc>', iif(cfg.flags.StaticRuntime, "Static", "Dynamic"))
 		end
