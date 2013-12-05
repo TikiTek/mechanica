@@ -69,16 +69,19 @@ namespace tiki
 
 		if( !graphics::initSwapChain( m_platformData, params, backBufferSize ) )
 		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create SwapChain.\n" );
 			return false;
 		}
 
 		if( !graphics::initBackBuffer( m_platformData, params ) )
 		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
 			return false;
 		}
 
 		if( !graphics::initDepthStencilBuffer( m_platformData, params, backBufferSize ) )
 		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
 			return false;
 		}
 
@@ -88,6 +91,7 @@ namespace tiki
 
 		if ( !m_commandBuffer.create( *this ) )
 		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create CommandBuffer.\n" );
 			return false;
 		}
 
@@ -97,7 +101,7 @@ namespace tiki
 	void GraphicsSystem::dispose()
 	{
 		m_commandBuffer.dispose();
-
+		
 		m_samplerStates.dispose();
 		
 		if( m_platformData.pSwapChain )
@@ -148,19 +152,23 @@ namespace tiki
 
 		D3D_DRIVER_TYPE rendererType;
 
-		switch (params.rendererMode)
+		switch ( params.rendererMode )
 		{
 		case GraphicsRendererMode_Hardware:
 			rendererType = D3D_DRIVER_TYPE_HARDWARE;
 			break;
+
 		case GraphicsRendererMode_Software:
 			rendererType = D3D_DRIVER_TYPE_SOFTWARE;
 			break;
+
 		case GraphicsRendererMode_Wrapper:
 			rendererType = D3D_DRIVER_TYPE_WARP;
 			break;
+
 		default:
 			rendererType = D3D_DRIVER_TYPE_HARDWARE;
+			break;
 		}
 
 		HRESULT r = D3D11CreateDeviceAndSwapChain(
@@ -176,7 +184,7 @@ namespace tiki
 			&data.pDevice,
 			&level,
 			&data.pContext
-			);
+		);
 
 		return SUCCEEDED( r );
 	}
