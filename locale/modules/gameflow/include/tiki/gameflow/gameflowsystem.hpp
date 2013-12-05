@@ -20,9 +20,11 @@ namespace tiki
 
 	class GameFlowSystem
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameFlowSystem );
+		TIKI_NONCOPYABLE_CLASS( GameFlowSystem );
 
 	public:
+
+		GameFlowSystem();
 
 		void				create( const GameStateDefinition* pDefinition, size_t definitionCount );
 		void				dispose();
@@ -32,14 +34,18 @@ namespace tiki
 
 		void				startTransition( const int stateIndex );
 
-		const StateTree&	getStateTree() const { return m_stateTree; }
+		const StateTree&	getStateTree() const	{ return m_stateTree; }
 
-		bool				isInTransition() const { return m_stateTree.isInTransition(); }
-		int					getCurrentState() const { return m_stateTree.getCurrentState(); }
+		bool				isInTransition() const	{ return m_stateTree.isInTransition(); }
+		int					getCurrentState() const	{ return m_stateTree.getCurrentState(); }
 
-		size_t				getStateCount() const { return m_stateCount; }
+		size_t				getStateCount() const	{ return m_stateCount; }
+
+		bool				isCreated() const		{ return m_isCreated; }
 
 	private:
+
+		bool				m_isCreated;
 
 		StateTree			m_stateTree;
 

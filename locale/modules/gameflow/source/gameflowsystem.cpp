@@ -5,6 +5,11 @@
 
 namespace tiki
 {
+	GameFlowSystem::GameFlowSystem()
+	{
+		m_isCreated = false;
+	}
+
 	void GameFlowSystem::create( const GameStateDefinition* pDefinition, size_t definitionCount )
 	{
 		StateDefinition stateTreeDefinitions[ StateTree_MaxStateCount ];
@@ -38,11 +43,15 @@ namespace tiki
 		}
 
 		m_stateTree.create( stateTreeDefinitions, definitionCount );
+
+		m_isCreated = true;
 	}
 
 	void GameFlowSystem::dispose()
 	{
 		m_stateTree.dispose();
+
+		m_isCreated = false;
 	}
 
 	void GameFlowSystem::update()
