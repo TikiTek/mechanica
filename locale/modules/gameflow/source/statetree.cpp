@@ -5,6 +5,13 @@
 
 namespace tiki
 {
+	StateTree::StateTree()
+	{
+		m_currentStep	= 0u;
+		m_isCreating	= false;
+		m_isInitial		= false;
+	}
+
 	void StateTree::create( StateDefinition* pStateDefinitions, const size_t stateCount )
 	{
 		m_stateDefinition.create( pStateDefinitions, stateCount );
@@ -120,6 +127,7 @@ namespace tiki
 				}
 			}
 			break;
+
 		case TransitionState_Error:
 			{
 				TIKI_BREAK( "[statetree] errors currently not supported.\n");
@@ -130,10 +138,10 @@ namespace tiki
 				//m_currentStep--;
 			}
 			break;
+
 		default:
 			TIKI_BREAK( "[statetree] wrong transition state.\n" );
 			break;
 		}
 	}
-
 }

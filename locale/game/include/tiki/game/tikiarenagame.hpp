@@ -29,7 +29,7 @@ namespace tiki
 
 	protected:
 
-		virtual void			fillParameters( GameFrameworkParamters* pParams );
+		virtual void			fillParameters( GameFrameworkParamters& parameters );
 		virtual void			initialize();
 		virtual void			shutdown();
 
