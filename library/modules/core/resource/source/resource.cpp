@@ -14,11 +14,18 @@ namespace tiki
 		TIKI_ASSERT( m_referenceCount == 0u );
 	}
 
-	void Resource::initialize( const ResourceId& id, const ResourceSectorData& sectorData )
+	bool Resource::create( const ResourceId& id, const ResourceSectorData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
 		m_id				= id;
 		m_sectorData		= sectorData;
 		m_referenceCount	= 1u;
+
+		return createInternal( initData, factoryContext );
+	}
+
+	void Resource::dispose( const FactoryContext& factoryContext )
+	{
+		disposeInternal( factoryContext );
 	}
 
 	void Resource::addReference() const

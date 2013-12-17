@@ -20,31 +20,21 @@ namespace tiki
 	bool ResourceManager::create( const ResourceManagerParameters& params )
 	{
 		m_resourceStorage.create( params.maxResourceCount );
-		m_resoureLoader.create( params.pFileSystem, &m_resourceStorage );
+		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
 
 		return true;
 	}
 
 	void ResourceManager::dispose()
 	{
-		m_resoureLoader.dispose();
+		m_resourceLoader.dispose();
 		m_resourceStorage.dispose();
-	}
-
-	void ResourceManager::registerFactory( FactoryBase& factory )
-	{
-		m_resoureLoader.registerFactory( factory );
-	}
-
-	void ResourceManager::unregisterFactory( FactoryBase& factory )
-	{
-		m_resoureLoader.unregisterFactory( factory );
 	}
 
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
 		const Resource* pResource = nullptr;
-		ResourceLoaderResult result = m_resoureLoader.loadResource( &pResource, pFileName, resourceKey, type );
+		ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, pFileName, resourceKey, type );
 		
 		switch ( result )
 		{
@@ -97,7 +87,6 @@ namespace tiki
 	void ResourceManager::unloadGenericResource( fourcc type, const Resource* pResource )
 	{
 		TIKI_ASSERT( pResource != nullptr );
-
-		m_resoureLoader.unloadResource( pResource, type );
+		m_resourceLoader.unloadResource( pResource, type );
 	}
 }

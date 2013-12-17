@@ -14,12 +14,9 @@ namespace tiki
 
 	class Model : public Resource
 	{
-		TIKI_DEFINE_RESOURCE( ModelFactory, TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
+		TIKI_DEFINE_RESOURCE( TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
 
 	public:
-
-											Model();
-		virtual								~Model();
 
 		const Material*						getMaterial() const { return m_pMaterial; }
 		const ModelHierarchy*				getHierarchy() const { return m_pHierarchy; }
@@ -29,16 +26,21 @@ namespace tiki
 		const ModelGeometry&				getGeometryByIndex( size_t index ) const { return m_geometries[ index ]; }
 		size_t								getGeometryCount() const { return m_geometries.getCount(); }
 
+	protected:
+
+		virtual bool						createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
+		virtual void						disposeInternal( const FactoryContext& factoryContext );
+
 	private:
+
+											Model();
+		virtual								~Model();
 
 		const Material*						m_pMaterial;
 		ModelHierarchy*						m_pHierarchy;
 
 		Array< ModelGeometry >				m_geometries;
-
-		bool								initialize( GraphicsSystem& graphicsSystem, const void* pData );
-		void								dispose();
-		
+	
 	};
 }
 

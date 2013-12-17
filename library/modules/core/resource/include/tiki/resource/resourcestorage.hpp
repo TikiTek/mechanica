@@ -25,7 +25,7 @@ namespace tiki
 
 		bool	findResource( Resource** ppResource, crc32 resourceKey ) const;
 
-		void	allocateResource( Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData );
+		void	allocateResource( Resource* pResource, const ResourceId& resourceId );
 		void	addReferenceToResource( Resource* pResource );
 		bool	freeReferenceFromResource( Resource* pResource );
 

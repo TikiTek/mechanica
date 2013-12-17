@@ -15,27 +15,29 @@ namespace tiki
 	{
 		ResourceLoaderContext()
 		{
-			streamOwner	= false;
-			pStream		= nullptr;
+			streamOwner			= false;
+			pStream				= nullptr;
 
-			pFactory	= nullptr;
-			pResource	= nullptr;
+			pFactory			= nullptr;
+			pResource			= nullptr;
 
-			resourceCount	= 0u;
-			pResourceHeader	= nullptr;
+			resourceCount		= 0u;
+			pResourceHeaders	= nullptr;
 		}
 
-		bool				streamOwner;
-		DataStream*			pStream;
+		fourcc					resourceType;
 
-		FactoryBase*		pFactory;
-		Resource*			pResource;
+		bool					streamOwner;
+		DataStream*				pStream;
+		
+		const FactoryContext*	pFactory;
+		Resource*				pResource;
 
-		uint				resourceCount;
-		ResourceHeader*		pResourceHeader;
+		uint					resourceCount;
+		ResourceHeader*			pResourceHeaders;
 
-		ResourceId			resourceId;
-		ResourceSectorData	sectionData;
+		ResourceId				resourceId;
+		ResourceSectorData		sectionData;
 	};
 
 	struct ResourceLoaderInternalContext
@@ -59,14 +61,14 @@ namespace tiki
 		m_bufferAllocator.dispose();
 	}
 
-	void ResourceLoader::registerFactory( FactoryBase& factory )
+	void ResourceLoader::registerResourceType( fourcc type, const FactoryContext& factoryContext )
 	{
-		m_factories.set( factory.getType(), &factory );
+		m_factories.set( type, &factoryContext );
 	}
 
-	void ResourceLoader::unregisterFactory( FactoryBase& factory )
+	void ResourceLoader::unregisterResourceType( fourcc type )
 	{
-		m_factories.remove( factory.getType() );
+		m_factories.remove( type );
 	}
 
 	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType )
@@ -81,6 +83,7 @@ namespace tiki
 		}
 
 		ResourceLoaderContext context;
+		context.resourceType = resourceType;
 
 		context.pStream = m_pFileSystem->open( pFileName, DataAccessMode_Read );
 		if ( context.pStream == nullptr )
@@ -105,15 +108,15 @@ namespace tiki
 		context.resourceCount = fileHeader.resourceCount;
 
 		const uint resourceHeaderSize = sizeof( ResourceHeader ) * context.resourceCount;
-		context.pResourceHeader = static_cast< ResourceHeader* >( m_bufferAllocator.allocate( resourceHeaderSize ) );
+		context.pResourceHeaders = static_cast< ResourceHeader* >( m_bufferAllocator.allocate( resourceHeaderSize ) );
 		
-		if ( context.pResourceHeader == nullptr )
+		if ( context.pResourceHeaders == nullptr )
 		{
 			cancelOperation( context );
 			return ResourceLoaderResult_OutOfMemory;
 		}
 
-		if ( context.pStream->read( context.pResourceHeader, resourceHeaderSize ) != resourceHeaderSize )
+		if ( context.pStream->read( context.pResourceHeaders, resourceHeaderSize ) != resourceHeaderSize )
 		{
 			cancelOperation( context );
 			return ResourceLoaderResult_WrongFileFormat;
@@ -121,7 +124,7 @@ namespace tiki
 
 		for (uint i = 0u; i < context.resourceCount; ++i)
 		{
-			const ResourceHeader& header = context.pResourceHeader[ i ];
+			const ResourceHeader& header = context.pResourceHeaders[ i ];
 
 			if ( header.key == resourceKey )
 			{
@@ -160,7 +163,6 @@ namespace tiki
 	void ResourceLoader::unloadResource( const Resource* pResource, fourcc resourceType )
 	{
 		TIKI_ASSERT( m_pFileSystem != nullptr );
-
 		TIKI_ASSERT( pResource != nullptr );
 
 		const ResourceSectorData& sectorData = pResource->m_sectorData;
@@ -170,17 +172,25 @@ namespace tiki
 		}
 		memory::freeAlign( sectorData.ppSectorPointers );
 
-		//pFactory->destroyResource( const_cast< Resource* >( pResource ) );
-	}
-
-	FactoryBase* ResourceLoader::findFactory( fourcc resourceType ) const
-	{
-		FactoryBase* pFactory;
-		if ( m_factories.findValue( &pFactory, resourceType ) )
+		const FactoryContext* pFactory = findFactory( resourceType );		
+		if ( pFactory == nullptr )
 		{
-			return pFactory;
+			return;
 		}
 
+		Resource* pNonConstResource = const_cast< Resource* >( pResource );
+		pNonConstResource->dispose( *pFactory );
+		pFactory->pDisposeResource( pNonConstResource );
+	}
+
+	const FactoryContext* ResourceLoader::findFactory( fourcc resourceType ) const
+	{
+		const FactoryContext* pFactoryContext;
+		if ( m_factories.findValue( &pFactoryContext, resourceType ) )
+		{
+			return pFactoryContext;
+		}
+		
 		return nullptr;
 	}
 
@@ -194,7 +204,7 @@ namespace tiki
 			return ResourceLoaderResult_CouldNotCreateResource;
 		}
 
-		context.pResource = context.pFactory->createResource();
+		context.pResource = context.pFactory->pCreateResource();
 		if ( context.pResource == nullptr )
 		{
 			return ResourceLoaderResult_CouldNotCreateResource;
@@ -283,16 +293,26 @@ namespace tiki
 			m_bufferAllocator.free( pReferenceItems );
 		}
 
-		m_pStorage->allocateResource( context.pResource, context.resourceId, context.sectionData );
-		context.pFactory->initializeResource( context.pResource, context.sectionData.ppSectorPointers[ initDataSectionIndex ], pSectionHeaders[ initDataSectionIndex ].sizeInBytes );
+		m_pStorage->allocateResource( context.pResource, context.resourceId );
+		
+		ResourceInitData initData;
+		initData.pData	= context.sectionData.ppSectorPointers[ initDataSectionIndex ];
+		initData.size	= pSectionHeaders[ initDataSectionIndex ].sizeInBytes;
+
+		const ResourceLoaderResult result = initializeResource( context, initData );
 
 		m_bufferAllocator.free( pSectionHeaders );
 
-		return ResourceLoaderResult_Success;
+		return result;
 	}
 	
-	ResourceLoaderResult ResourceLoader::initializeResource( ResourceLoaderContext& context )
-	{
+	ResourceLoaderResult ResourceLoader::initializeResource( ResourceLoaderContext& context, const ResourceInitData& initData )
+	{		
+		if ( context.pResource->create( context.resourceId, context.sectionData, initData, *context.pFactory ) == false )
+		{
+			return ResourceLoaderResult_CouldNotInitialize;
+		}
+
 		return ResourceLoaderResult_Success;
 	}
 
@@ -301,17 +321,18 @@ namespace tiki
 		if ( context.pResource != nullptr )
 		{
 			TIKI_ASSERT( context.pFactory != nullptr );
-			context.pFactory->destroyResource( context.pResource );
+			unloadResource( context.pResource, context.resourceType );
 			context.pResource = nullptr;
 		}
 
-		if ( context.pStream != nullptr )
+		if ( context.pStream != nullptr && context.streamOwner )
 		{
 			context.pStream->close();
 			context.pStream = nullptr;
+
+			m_bufferAllocator.clear();
 		}
 
 		context.pFactory = nullptr;
-		m_bufferAllocator.clear();
 	}
 }
