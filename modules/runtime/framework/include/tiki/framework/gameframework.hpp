@@ -19,21 +19,21 @@ namespace tiki
 			screenWidth			= 900;
 			screenHeight		= 600;
 			fullScreen			= false;
-			useHardwareRenderer	= true;
+			graphicsMode		= GraphicsRendererMode_Hardware;
 
-			pTitle				= "TikiEngine 3.0";
+			pWindowTitle		= "TikiEngine 3.0";
 
 			pGamebuildPath		= "../../../../../gamebuild/";
 		}
 
-		uint		screenWidth;
-		uint		screenHeight;
-		bool		fullScreen;
-		bool		useHardwareRenderer;
+		uint					screenWidth;
+		uint					screenHeight;
+		bool					fullScreen;
+		GraphicsRendererMode	graphicsMode;
 
-		cstring		pTitle;
+		cstring					pWindowTitle;
 
-		cstring		pGamebuildPath;
+		cstring					pGamebuildPath;
 	};
 
 	class GameFramework
@@ -48,7 +48,7 @@ namespace tiki
 
 		int							run();
 
-		virtual void				fillParameters( GameFrameworkParamters* pParams ) = 0;
+		virtual void				fillParameters( GameFrameworkParamters& parameters ) = 0;
 		virtual void				initialize() = 0;
 		virtual void				shutdown() = 0;
 
@@ -56,7 +56,9 @@ namespace tiki
 		virtual void				render( GraphicsContext* pGraphicsContext ) const = 0;
 
 	private:
-
+		
+		bool						m_isInitialized;
+		
 		GameFrameworkParamters		m_parameters;
 		FrameworkData				m_frameworkData;
 	

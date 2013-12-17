@@ -31,9 +31,10 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void SizedArray<T>::dispose()
 	{
-		TIKI_ASSERT( m_pData );
-
-		memory::deleteArray( m_pData, m_capacity );
+		if ( m_pData != nullptr )
+		{
+			memory::deleteArray( m_pData, m_capacity );
+		}
 
 		m_pData		= nullptr;
 		m_count		= 0u;
