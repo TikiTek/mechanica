@@ -83,7 +83,8 @@ namespace tiki
 		}
 
 		ResourceLoaderContext context;
-		context.resourceType = resourceType;
+		context.resourceType	= resourceType;
+		context.streamOwner		= true;
 
 		context.pStream = m_pFileSystem->open( pFileName, DataAccessMode_Read );
 		if ( context.pStream == nullptr )

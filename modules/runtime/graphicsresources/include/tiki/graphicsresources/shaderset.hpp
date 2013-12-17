@@ -14,19 +14,24 @@ namespace tiki
 
 	class ShaderSet : public Resource
 	{
-		TIKI_DEFINE_RESOURCE( ShaderSetFactory, TIKI_FOURCC( 'T', 'G', 'S', 'S' ) );
+		TIKI_DEFINE_RESOURCE( ShaderSet, TIKI_FOURCC( 'T', 'G', 'S', 'S' ) );
 
-		const Shader*	getShader( ShaderType type, crc32 variantKey ) const;
+	public:
+
+		static void								registerResourceType( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
+		static void								unregisterResourceType( ResourceManager& resourceManager );
+
+		const Shader*							getShader( ShaderType type, crc32 variantKey ) const;
+
+	protected:
+
+		virtual bool							createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
+		virtual void							disposeInternal( const FactoryContext& factoryContext );
 
 	private:
 
-		ShaderSet();
-		~ShaderSet();
-
-		bool	create( GraphicsSystem& graphicsSystem, const void* pInitData, uint initDataSize );
-		void	dispose();
-
-	private:
+												ShaderSet();
+		virtual									~ShaderSet();
 
 		SortedSizedMap<crc32, const Shader*>	m_shaders;
 

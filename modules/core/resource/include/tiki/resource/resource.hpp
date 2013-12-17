@@ -8,32 +8,31 @@
 #include "tiki/base/types.hpp"
 #include "tiki/resource/resourcebase.hpp"
 
-#define TIKI_DEFINE_RESOURCE( cc )						\
-	public:												\
-	friend class ResourceLoader;						\
-	static fourcc getType() { return s_resourceType; }	\
-	static const FactoryContext& getFactoryContext();	\
-	private:											\
-	static const fourcc s_resourceType = cc;			\
-	static Resource* createResource();					\
-	static void disposeResource( Resource* pRes )
+#define TIKI_DEFINE_RESOURCE( class_name, cc )				\
+	public:													\
+	friend class ResourceLoader;							\
+	static fourcc getType() { return s_resourceType; }		\
+	private:												\
+	static const fourcc s_resourceType = cc;				\
+	friend struct FactoryContextGenericBase< class_name >
 
-#define TIKI_DEFAULT_RESOURCE_CODE( class_name )					\
-	Resource* class_name :: createResource()						\
-	{																\
-		return TIKI_NEW class_name ;								\
-	}																\
-	void class_name :: disposeResource( Resource* pRes )			\
-	{																\
-		TIKI_DEL static_cast< class_name * >( pRes );				\
-	}																\
-	const FactoryContext& class_name :: getFactoryContext()			\
-	{																\
-		static TIKI_CONCAT( class_name, FactoryContext ) context;	\
-		context.pCreateResource		= &createResource;				\
-		context.pDisposeResource	= &disposeResource;				\
-		return context;												\
-	}
+//#define TIKI_DEFAULT_RESOURCE_CODE( class_name )					\
+//	Resource* class_name :: createResource()						\
+//	{																\
+//		return TIKI_NEW class_name ;								\
+//	}																\
+//	void class_name :: disposeResource( Resource* pRes )			\
+//	{																\
+//		TIKI_DEL static_cast< class_name * >( pRes );				\
+//	}																\
+//	const FactoryContext& class_name :: getFactoryContext()			\
+//	{																\
+//		static TIKI_CONCAT( class_name, FactoryContext ) context;	\
+//		context.pCreateResource		= &createResource;				\
+//		context.pDisposeResource	= &disposeResource;				\
+//		return context;												\
+//	}																\
+//	typedef class_name * TIKI_CONCAT( class_name, Handle )
 
 namespace tiki
 {

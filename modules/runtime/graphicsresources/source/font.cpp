@@ -1,8 +1,41 @@
 
 #include "tiki/graphicsresources/font.hpp"
 
+#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
 namespace tiki
 {
+	struct FontInitializationData
+	{
+		TextureDescription		textureDesc;
+		ResourceRef< void >		textureData;
+
+		uint					charCount;
+		ResourceRef< FontChar >	charArray;
+	};
+
+	struct FontFactoryContext : public FactoryContextGenericBase< Font >
+	{
+		FontFactoryContext( GraphicsSystem& _graphicsSystem )
+			: graphicsSystem( _graphicsSystem )
+		{
+		}
+
+		GraphicsSystem& graphicsSystem;
+	};
+
+	void Font::registerResourceType( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
+	{
+		static FontFactoryContext context( graphicsSystem );
+		resourceManager.registerResourceType( s_resourceType, context );
+	}
+
+	void Font::unregisterResourceType( ResourceManager& resourceManager )
+	{
+		resourceManager.unregisterResourceType( s_resourceType );
+	}
+
 	Font::Font()
 	{		
 	}
@@ -11,29 +44,26 @@ namespace tiki
 	{
 	}
 
-	bool Font::initialize( GraphicsSystem& graphicsSystem, const void* pInitData )
+	bool Font::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		TIKI_ASSERT( pInitData != nullptr );
+		const FontFactoryContext* pFactory		= static_cast< const FontFactoryContext* >( &factoryContext );
+		const FontInitializationData* pInitData	= static_cast< const FontInitializationData* >( initData.pData );
 				
-		const uint32* pData = (uint32*)pInitData;
-		const uint32 textureSize = *pData++;
-		
-		const TextureDescription* pDescription = (const TextureDescription*)pData;
+		if ( m_textureData.create( pFactory->graphicsSystem, pInitData->textureDesc, pInitData->textureData.getData() ) )
+		{
+			m_chars.create( pInitData->charArray.getData(), pInitData->charCount );
+			return true;
+		}
 
-		pData = addPtr( pData, sizeof( TextureDescription ) );
-		bool success = m_textureData.create( graphicsSystem, *pDescription, pData );
-
-		pData = addPtrCast< uint32 >( pInitData, textureSize + sizeof( uint32 ) );
-		uint32 charCount = *pData++;
-		m_chars.create( (const FontChar*)pData, charCount );
-
-		return success;
+		return false;
 	}
 
-	void Font::dispose()
+	void Font::disposeInternal( const FactoryContext& factoryContext )
 	{
+		const FontFactoryContext* pFactory = static_cast< const FontFactoryContext* >( &factoryContext );
+
 		m_chars.dispose();
-		m_textureData.dispose();
+		m_textureData.dispose( pFactory->graphicsSystem );
 	}
 
 	void Font::fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const

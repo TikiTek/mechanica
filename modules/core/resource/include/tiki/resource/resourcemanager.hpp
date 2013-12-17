@@ -41,12 +41,9 @@ namespace tiki
 		bool						create( const ResourceManagerParameters& params );
 		void						dispose();
 
-		template<class T>
-		TIKI_FORCE_INLINE void		registerResourceType();
-
-		template<class T>
-		TIKI_FORCE_INLINE void		unregisterResourceType();
-
+		void						registerResourceType( fourcc type, const FactoryContext& factoryContext );
+		void						unregisterResourceType( fourcc type );
+		
 		template<typename T>
 		TIKI_FORCE_INLINE const T*	loadResource( const string& fileName );
 

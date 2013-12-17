@@ -1,40 +1,41 @@
 
 #include "tiki/graphicsresources/material.hpp"
 
-#include "tiki/base/memory.hpp"
-#include "tiki/base/assert.hpp"
-#include "tiki/base/string.hpp"
-#include "tiki/base/types.hpp"
-
-#include "tiki/graphics/shader.hpp"
-#include "tiki/graphicsresources/texture.hpp"
-
-#include "tiki/framework/framework.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-
 
 namespace tiki
 {
-	//Material::Material() 
-	//	:m_pPixelShader( nullptr ), m_pVertexShader( nullptr )
-	//{
+	struct MaterialFactoryContext : public FactoryContextGenericBase< Material >
+	{
+	};
 
-	//}
+	void Material::registerResourceType( ResourceManager& resourceManager )
+	{
+		static MaterialFactoryContext context;
+		resourceManager.registerResourceType( s_resourceType, context );
+	}
 
-	//Material::~Material()
-	//{
-	//	TIKI_ASSERT( !m_pPixelShader );
-	//	TIKI_ASSERT( !m_pVertexShader );
-	//}
+	void Material::unregisterResourceType( ResourceManager& resourceManager )
+	{
+		resourceManager.unregisterResourceType( s_resourceType );
+	}
 
-	//bool Material::initialize( const void* pData )
-	//{
-	//	return true;
-	//}
+	Material::Material() 
+	{
+	}
 
-	//void Material::dispose()
-	//{
-	//}
+	Material::~Material()
+	{
+	}
+
+	bool Material::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
+	{
+		return false;
+	}
+
+	void Material::disposeInternal( const FactoryContext& factoryContext )
+	{
+	}
 }
 
 

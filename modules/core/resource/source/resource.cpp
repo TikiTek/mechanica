@@ -25,6 +25,7 @@ namespace tiki
 
 	void Resource::dispose( const FactoryContext& factoryContext )
 	{
+		m_referenceCount = 0u;
 		disposeInternal( factoryContext );
 	}
 

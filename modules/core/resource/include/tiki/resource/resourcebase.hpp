@@ -45,6 +45,29 @@ namespace tiki
 		CreateResourceFunction		pCreateResource;
 		DisposeResourceFunction		pDisposeResource;
 	};
+
+	template<class T>
+	struct FactoryContextGenericBase : public FactoryContext
+	{
+		FactoryContextGenericBase()
+		{
+			pCreateResource		= factoryContextGenericCreateResourceFunction;
+			pDisposeResource	= factoryContextGenericDisposeResourceFunction;
+		}
+
+	private:
+
+		static Resource* factoryContextGenericCreateResourceFunction()
+		{
+			return TIKI_NEW T();
+		}
+
+		static void factoryContextGenericDisposeResourceFunction( Resource* pResource )
+		{
+			TIKI_DEL static_cast< T* >( pResource );
+		}
+
+	};
 }
 
 #endif // __TIKI_RESOURCEBASE_HPP_INCLUDED__

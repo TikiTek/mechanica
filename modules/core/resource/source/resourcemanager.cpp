@@ -31,6 +31,16 @@ namespace tiki
 		m_resourceStorage.dispose();
 	}
 
+	void ResourceManager::registerResourceType( fourcc type, const FactoryContext& factoryContext )
+	{
+		m_resourceLoader.registerResourceType( type, factoryContext );
+	}
+
+	void ResourceManager::unregisterResourceType( fourcc type )
+	{
+		m_resourceLoader.unregisterResourceType( type );
+	}
+
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
 		const Resource* pResource = nullptr;

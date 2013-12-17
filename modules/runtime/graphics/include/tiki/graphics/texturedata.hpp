@@ -27,7 +27,7 @@ namespace tiki
 		~TextureData();
 
 		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData = nullptr );
-		void						dispose();
+		void						dispose( GraphicsSystem& graphicsSystem );
 
 		size_t						getWidth() const		{ return m_description.width; }
 		size_t						getHeight() const		{ return m_description.height; }
