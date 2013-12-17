@@ -41,18 +41,21 @@ namespace tiki
 		bool						create( const ResourceManagerParameters& params );
 		void						dispose();
 
-		void						registerFactory( FactoryBase& factory );
-		void						unregisterFactory( FactoryBase& factory );
+		template<class T>
+		TIKI_FORCE_INLINE void		registerResourceType();
+
+		template<class T>
+		TIKI_FORCE_INLINE void		unregisterResourceType();
 
 		template<typename T>
-		TIKI_INLINE const T*		loadResource( const string& fileName );
+		TIKI_FORCE_INLINE const T*	loadResource( const string& fileName );
 
 		template<typename T>
-		TIKI_INLINE void			unloadResource( const T* pResource );
+		TIKI_FORCE_INLINE void		unloadResource( const T* pResource );
 
 	private:
 
-		ResourceLoader				m_resoureLoader;
+		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
 
 		const Resource*				loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName );

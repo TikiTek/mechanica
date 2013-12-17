@@ -6,40 +6,39 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/resource/resourcebase.hpp"
 
-#define TIKI_DEFINE_RESOURCE( factory, cc ) public: \
-	friend class factory; \
-	static const fourcc s_resourceType = cc
+#define TIKI_DEFINE_RESOURCE( cc )						\
+	public:												\
+	friend class ResourceLoader;						\
+	static fourcc getType() { return s_resourceType; }	\
+	static const FactoryContext& getFactoryContext();	\
+	private:											\
+	static const fourcc s_resourceType = cc;			\
+	static Resource* createResource();					\
+	static void disposeResource( Resource* pRes )
+
+#define TIKI_DEFAULT_RESOURCE_CODE( class_name )					\
+	Resource* class_name :: createResource()						\
+	{																\
+		return TIKI_NEW class_name ;								\
+	}																\
+	void class_name :: disposeResource( Resource* pRes )			\
+	{																\
+		TIKI_DEL static_cast< class_name * >( pRes );				\
+	}																\
+	const FactoryContext& class_name :: getFactoryContext()			\
+	{																\
+		static TIKI_CONCAT( class_name, FactoryContext ) context;	\
+		context.pCreateResource		= &createResource;				\
+		context.pDisposeResource	= &disposeResource;				\
+		return context;												\
+	}
 
 namespace tiki
 {
 	class ResourceLoader;
 	class ResourceStorage;
-
-	struct ResourceId
-	{
-		ResourceId()
-		{
-			key = InvalidCrc32;
-		}
-
-		crc32	key;
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		string	fileName;
-#endif
-	};
-
-	struct ResourceSectorData
-	{
-		ResourceSectorData()
-		{
-			ppSectorPointers	= nullptr;
-			sectorCount			= 0u;
-		}
-
-		void**	ppSectorPointers;
-		uint	sectorCount;
-	};
 
 	class Resource
 	{
@@ -49,15 +48,20 @@ namespace tiki
 
 	public:
 
-		crc32			getKey() const { return m_id.key; }
+		crc32				getKey() const { return m_id.key; }
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		const string&	getFileName() const { return m_id.fileName; }
+		const char*			getFileName() const { return m_id.fileName.cStr(); }
+#else
+		const char*			getFileName() const { return ""; }
 #endif
 
 	protected:
 
 							Resource();
 		virtual				~Resource();
+
+		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) = 0u;
+		virtual void		disposeInternal( const FactoryContext& factoryContext ) = 0u;
 
 	private:
 
@@ -66,7 +70,8 @@ namespace tiki
 
 		mutable uint		m_referenceCount;
 
-		void				initialize( const ResourceId& id, const ResourceSectorData& sectorData );
+		bool				create( const ResourceId& id, const ResourceSectorData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext );
+		void				dispose( const FactoryContext& factoryContext );
 
 		void				addReference() const;
 		bool				releaseReference() const;

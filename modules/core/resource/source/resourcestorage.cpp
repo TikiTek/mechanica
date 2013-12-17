@@ -28,11 +28,9 @@ namespace tiki
 		return m_resources.findValue( ppResource, resourceKey );
 	}
 
-	void ResourceStorage::allocateResource( Resource* pResource, const ResourceId& resourceId, const ResourceSectorData& sectionData )
+	void ResourceStorage::allocateResource( Resource* pResource, const ResourceId& resourceId )
 	{
 		TIKI_ASSERT( pResource != nullptr );
-
-		pResource->initialize( resourceId, sectionData );
 
 		m_resources.set( resourceId.key, pResource );
 	}

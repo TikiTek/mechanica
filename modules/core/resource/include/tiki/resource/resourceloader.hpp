@@ -9,11 +9,12 @@
 namespace tiki
 {
 	class DataStream;
-	class FactoryBase;
 	class FileSystem;
 	class Resource;
 	class ResourceStorage;
+	struct FactoryContext;
 	struct ResourceHeader;
+	struct ResourceInitData;
 	struct ResourceLoaderContext;
 
 	enum ResourceLoaderResult
@@ -40,8 +41,8 @@ namespace tiki
 			void					create( FileSystem* pFileSystem, ResourceStorage* pStorage );
 			void					dispose();
 
-			void					registerFactory( FactoryBase& factory );
-			void					unregisterFactory( FactoryBase& factory );
+			void					registerResourceType( fourcc type, const FactoryContext& factoryContext );
+			void					unregisterResourceType( fourcc type );
 
 			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
@@ -55,7 +56,7 @@ namespace tiki
 		};
 
 
-		typedef SortedSizedMap< fourcc, FactoryBase* > FactoryMap;
+		typedef SortedSizedMap< fourcc, const FactoryContext* > FactoryMap;
 
 		FileSystem*				m_pFileSystem;
 		ResourceStorage*		m_pStorage;
@@ -63,10 +64,10 @@ namespace tiki
 		FactoryMap				m_factories;
 		ZoneAllocator			m_bufferAllocator;
 		
-		FactoryBase*			findFactory( fourcc resourceType ) const;
+		const FactoryContext*	findFactory( fourcc resourceType ) const;
 
 		ResourceLoaderResult	createResource( ResourceLoaderContext& context, const ResourceHeader& header );
-		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context );
+		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context, const ResourceInitData& initData );
 		void					cancelOperation( ResourceLoaderContext& context );
 
 

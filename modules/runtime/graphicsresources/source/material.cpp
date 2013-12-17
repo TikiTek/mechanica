@@ -15,26 +15,26 @@
 
 namespace tiki
 {
-	Material::Material() 
-		:m_pPixelShader( nullptr ), m_pVertexShader( nullptr )
-	{
+	//Material::Material() 
+	//	:m_pPixelShader( nullptr ), m_pVertexShader( nullptr )
+	//{
 
-	}
+	//}
 
-	Material::~Material()
-	{
-		TIKI_ASSERT( !m_pPixelShader );
-		TIKI_ASSERT( !m_pVertexShader );
-	}
+	//Material::~Material()
+	//{
+	//	TIKI_ASSERT( !m_pPixelShader );
+	//	TIKI_ASSERT( !m_pVertexShader );
+	//}
 
-	bool Material::initialize( const void* pData )
-	{
-		return true;
-	}
+	//bool Material::initialize( const void* pData )
+	//{
+	//	return true;
+	//}
 
-	void Material::dispose()
-	{
-	}
+	//void Material::dispose()
+	//{
+	//}
 }
 
 
