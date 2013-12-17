@@ -34,10 +34,12 @@ namespace tiki
 		return TikiArenaGameStates_Play;
 	}
 
-	void TikiArenaGame::fillParameters( GameFrameworkParamters* pParams )
+	void TikiArenaGame::fillParameters( GameFrameworkParamters& parameters )
 	{
-		pParams->screenWidth	= 1280;
-		pParams->screenHeight	= 720;
+		parameters.screenWidth	= 1280;
+		parameters.screenHeight	= 720;
+
+		parameters.graphicsMode = GraphicsRendererMode_Wrapper;
 	}
 
 	void TikiArenaGame::initialize()
@@ -66,25 +68,31 @@ namespace tiki
 
 	void TikiArenaGame::shutdown()
 	{
-		while ( m_gameFlow.isInTransition() )
+		if ( m_gameFlow.isCreated() )
 		{
-			m_gameFlow.update();
+			while ( m_gameFlow.isInTransition() )
+			{
+				m_gameFlow.update();
+			}
+
+			m_gameFlow.startTransition( TikiArenaGameStates_Root );
+
+			while ( m_gameFlow.isInTransition() )
+			{
+				m_gameFlow.update();
+			}
+
+			m_gameFlow.dispose();
 		}
 
-		m_gameFlow.startTransition( TikiArenaGameStates_Root );
-
-		while ( m_gameFlow.isInTransition() )
+		if ( m_pStates != nullptr )
 		{
-			m_gameFlow.update();
+			m_pStates->applicationState.dispose();
+			m_pStates->introState.dispose();
+			m_pStates->playState.dispose();
+			m_pStates->testState.dispose();
+			memory::deleteAlign( m_pStates );
 		}
-
-		m_gameFlow.dispose();
-
-		m_pStates->applicationState.dispose();
-		m_pStates->introState.dispose();
-		m_pStates->playState.dispose();
-		m_pStates->testState.dispose();
-		memory::deleteAlign( m_pStates );
 	}
 
 	void TikiArenaGame::update()

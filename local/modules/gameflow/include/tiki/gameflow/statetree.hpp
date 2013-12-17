@@ -34,9 +34,11 @@ namespace tiki
 
 	class StateTree
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( StateTree );
+		TIKI_NONCOPYABLE_CLASS( StateTree );
 
 	public:
+
+		StateTree();
 
 		void						create( StateDefinition* pStateDefinitions, const size_t stateCount );
 		void						dispose();
