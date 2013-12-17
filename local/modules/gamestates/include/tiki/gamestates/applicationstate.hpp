@@ -8,6 +8,8 @@ namespace tiki
 {
 	enum ApplicationStateTransitionSteps
 	{
+		ApplicationStateTransitionSteps_RegisterResourceTypes,
+
 		ApplicationStateTransitionSteps_Count
 	};
 

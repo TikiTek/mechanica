@@ -2,6 +2,7 @@
 #include "tiki/base/platform.hpp"
 
 #include "tiki/base/array.hpp"
+#include "tiki/base/debug.hpp"
 #include "tiki/base/iopath.hpp"
 #include "tiki/base/string.hpp"
 
@@ -32,9 +33,14 @@ int main( int argc, char** argv )
 	}
 #endif
 
-	int returnValue = tiki::mainEntryPoint();
-	
-	s_arguments.dispose();
+	int returnValue = 0;
+	{
+		returnValue = tiki::mainEntryPoint();
+
+		s_arguments.dispose();
+	}
+
+	tiki::debug::dumpMemoryStats();
 	
 	return returnValue;
 }

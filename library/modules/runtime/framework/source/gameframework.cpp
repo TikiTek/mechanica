@@ -86,8 +86,6 @@ namespace tiki
 			return false;
 		}
 
-		m_frameworkData.factories.create( m_frameworkData.resourceManager, m_frameworkData.graphicSystem );
-
 		m_frameworkData.frameTimer.create();
 
 		initialize();
@@ -103,8 +101,6 @@ namespace tiki
 			shutdown();
 		}
 		m_isInitialized = false;
-
-		m_frameworkData.factories.dispose();
 
 		m_frameworkData.inputSystem.dispose();
 		m_frameworkData.graphicSystem.dispose();

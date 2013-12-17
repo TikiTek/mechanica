@@ -80,19 +80,31 @@ namespace tiki
 	{
 	public:
 
-		ResourceRef( T* pRef ) : m_pRef( pRef ) {}
-		ResourceRef( const ResourceRef< T >& ref ) : m_pRef( ref ) {}
-		~ResourceRef() { m_pRef = nullptr; }
+		ResourceRef( const T* pRef )
+			: m_pRef( pRef )
+		{
+		}
 
-		T*		getData() const { return m_pRef; }
+		ResourceRef( const ResourceRef< T >& ref )
+			: m_pRef( ref.m_pRef )
+		{
+		}
+
+		~ResourceRef()
+		{
+			m_pRef = nullptr;
+		}
+
+		TIKI_FORCE_INLINE const T*	getData() const { return m_pRef; }
 
 		//T*		operator() const { return m_pRef; }
-		T*		operator->() const { return m_pRef; }
+		TIKI_FORCE_INLINE const T*	operator->() const { return m_pRef; }
 
 	private:
-		T*		m_pRef;
+
+		const T*	m_pRef;
 #if TIKI_DISABLED( TIKI_BUILD_64BIT )
-		void*	m_pPadding;
+		void*		m_pPadding;
 #endif
 	};
 

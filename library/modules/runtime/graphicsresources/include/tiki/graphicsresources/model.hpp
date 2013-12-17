@@ -14,9 +14,12 @@ namespace tiki
 
 	class Model : public Resource
 	{
-		TIKI_DEFINE_RESOURCE( TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
+		TIKI_DEFINE_RESOURCE( Model, TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
 
 	public:
+
+		static void							registerResourceType( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
+		static void							unregisterResourceType( ResourceManager& resourceManager );
 
 		const Material*						getMaterial() const { return m_pMaterial; }
 		const ModelHierarchy*				getHierarchy() const { return m_pHierarchy; }

@@ -7,33 +7,16 @@
 
 namespace tiki
 {
-	template<class T>
-	TIKI_FORCE_INLINE void ResourceManager::registerResourceType()
-	{
-		m_resourceLoader.registerResourceType(
-			T::getType(),
-			T::getFactoryContext()
-		);
-	}
-
-	template<class T>
-	TIKI_FORCE_INLINE void ResourceManager::unregisterResourceType()
-	{
-		m_resourceLoader.unregisterResourceType(
-			T::getType()
-		);
-	}
-
 	template<typename T>
 	TIKI_INLINE const T* ResourceManager::loadResource( const string& fileName )
 	{
-		return (const T*)loadGenericResource( T::s_resourceType, crcString( fileName ), fileName.cStr() );
+		return (const T*)loadGenericResource( T::getType(), crcString( fileName ), fileName.cStr() );
 	}
 
 	template<typename T>
 	TIKI_INLINE void ResourceManager::unloadResource( const T* pResource )
 	{
-		unloadGenericResource( T::s_resourceType, pResource );
+		unloadGenericResource( T::getType(), pResource );
 	}
 }
 

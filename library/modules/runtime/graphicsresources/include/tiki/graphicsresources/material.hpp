@@ -3,41 +3,32 @@
 
 #include "tiki/resource/resource.hpp"
 
-#include "tiki/base/array.hpp"
-
 namespace tiki
 {
-	class Shader;
-	class Texture;
+	class Material : public Resource
+	{
+		friend class GraphicsContext;
+		TIKI_DEFINE_RESOURCE( Material, TIKI_FOURCC( 'M', 'A', 'T', 'E' ) );
+		TIKI_NONCOPYABLE_CLASS( Material );
 
-	//class Material : public Resource
-	//{
-	//	TIKI_DEFINE_RESOURCE( MaterialFactory, TIKI_FOURCC( 'M', 'A', 'T', 'T' ) );
-	//	friend class GraphicsContext;
-	//public:
+	public:
 
-	//									Material();
-	//	virtual							~Material();
+		static void			registerResourceType( ResourceManager& resourceManager );
+		static void			unregisterResourceType( ResourceManager& resourceManager );
 
-	//	const Shader*					getVertexShader() const { return m_pVertexShader; }
+		//const Shader*		getVertexShader() const { return m_pVertexShader; }
 
-	//private:
+	protected:
 
-	//	bool							initialize( const void* pData );
-	//	void							dispose();
+		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
+		virtual void		disposeInternal( const FactoryContext& factoryContext );
 
-	//	struct IATextureResource
-	//	{
-	//		IATextureResource() : m_pTexture( nullptr ), m_slot( 0u ) { }
-	//		const Texture*				m_pTexture;
-	//		uint						m_slot;
-	//	};
+	private:
 
-	//	const Shader*					m_pVertexShader;
-	//	const Shader*					m_pPixelShader;
+							Material();
+		virtual				~Material();
 
-	//	Array< IATextureResource >		m_textures;
-	//};
+	};
 }
 
 #endif // TIKI_MATERIAL_HPP__

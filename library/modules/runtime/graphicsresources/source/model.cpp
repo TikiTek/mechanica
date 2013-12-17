@@ -2,17 +2,30 @@
 #include "tiki/graphicsresources/model.hpp"
 
 #include "tiki/base/memory.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-#include "tiki/graphicsresources/material.hpp"
 
 namespace tiki
 {
-	struct ModelFactoryContext : public FactoryContext
+	struct ModelFactoryContext : public FactoryContextGenericBase< Model >
 	{
-		GraphicsSystem* pGraphicsSystem;
+		ModelFactoryContext( GraphicsSystem& _graphicsSystem )
+			: graphicsSystem( _graphicsSystem )
+		{
+		}
+
+		GraphicsSystem& graphicsSystem;
 	};
-	TIKI_DEFAULT_RESOURCE_CODE( Model )
+
+	void Model::registerResourceType( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
+	{
+		static ModelFactoryContext context( graphicsSystem );
+		resourceManager.registerResourceType( s_resourceType, context );
+	}
+
+	void Model::unregisterResourceType( ResourceManager& resourceManager )
+	{
+		resourceManager.unregisterResourceType( s_resourceType );
+	}
 
 	struct ModelBinaryData
 	{

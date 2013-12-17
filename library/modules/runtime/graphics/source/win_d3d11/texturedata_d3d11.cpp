@@ -114,7 +114,7 @@ namespace tiki
 		return true;
 	}
 
-	void TextureData::dispose()
+	void TextureData::dispose( GraphicsSystem& graphicsSystem )
 	{
 		if ( m_platformData.pShaderView != nullptr )
 		{

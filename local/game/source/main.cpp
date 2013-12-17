@@ -6,13 +6,6 @@
 int tiki::mainEntryPoint()
 {
 	using namespace tiki;
-
-	//debug::breakOnAlloc( 143 );
-	{
-		framework::run();
-	}
-
-	debug::dumpMemoryStats();
-
+	framework::run();
 	return 0;
 }
