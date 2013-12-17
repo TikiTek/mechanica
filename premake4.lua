@@ -1,4 +1,4 @@
 
 include "config"
 include "library"
-include "locale"
+include "local"
