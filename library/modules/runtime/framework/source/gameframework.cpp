@@ -10,6 +10,7 @@ namespace tiki
 
 	GameFramework::GameFramework()
 	{
+		m_isInitialized = false;
 	}
 
 	GameFramework::~GameFramework()
@@ -36,23 +37,24 @@ namespace tiki
 
 	bool GameFramework::internInitialize()
 	{
-		this->fillParameters( &m_parameters );
+		fillParameters( m_parameters );
 
 		WindowParameters windowParams;
 		windowParams.width			= m_parameters.screenWidth;
 		windowParams.height			= m_parameters.screenHeight;
-		windowParams.pWindowTitle	= m_parameters.pTitle;
+		windowParams.pWindowTitle	= m_parameters.pWindowTitle;
 		windowParams.pClassName		= "TikiEngineMainWindow";
 		
 		if ( !m_frameworkData.mainWindow.create( windowParams ) )
 		{
+			TIKI_TRACE_ERROR( "[gameframework] Could not create MainWindow.\n" );
 			return false;
 		}
 		
 		GraphicsSystemParameters graphicParams;
 		graphicParams.fullScreen		= m_parameters.fullScreen;
 		graphicParams.pWindowHandle		= m_frameworkData.mainWindow.getHandle();
-		graphicParams.rendererMode		= (m_parameters.useHardwareRenderer ? GraphicsRendererMode_Hardware : GraphicsRendererMode_Software);
+		graphicParams.rendererMode		= m_parameters.graphicsMode;
 
 		const uint2 windowSize			= m_frameworkData.mainWindow.getClientSize();
 		graphicParams.backBufferWidth	= windowSize.x;
@@ -60,6 +62,7 @@ namespace tiki
 
 		if ( !m_frameworkData.graphicSystem.create( graphicParams ) )
 		{
+			TIKI_TRACE_ERROR( "[gameframework] Could not create GraphicsSystem.\n" );
 			return false;
 		}
 
@@ -69,26 +72,37 @@ namespace tiki
 		resourceParams.pFileSystem = &m_frameworkData.gamebuildFileSystem;
 
 		if ( !m_frameworkData.resourceManager.create( resourceParams ) )
+		{
+			TIKI_TRACE_ERROR( "[gameframework] Could not create ResourceManager.\n" );
 			return false;
+		}
 
 		InputSystemParameters inputParams;
 		inputParams.pWindow = &m_frameworkData.mainWindow;
 
 		if( !m_frameworkData.inputSystem.create( inputParams ) )
+		{
+			TIKI_TRACE_ERROR( "[gameframework] Could not create InputSystem.\n" );
 			return false;
+		}
 
 		m_frameworkData.factories.create( m_frameworkData.resourceManager, m_frameworkData.graphicSystem );
 
 		m_frameworkData.frameTimer.create();
 
 		initialize();
+		m_isInitialized = true;
 
 		return true;
 	}
 
 	void GameFramework::internShutdown()
 	{
-		shutdown();
+		if ( m_isInitialized )
+		{
+			shutdown();
+		}
+		m_isInitialized = false;
 
 		m_frameworkData.factories.dispose();
 
