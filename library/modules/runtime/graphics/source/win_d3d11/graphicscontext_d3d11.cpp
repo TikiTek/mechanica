@@ -51,16 +51,22 @@ namespace tiki
 		}
 		m_currentRenderPassDepth = 0u;
 
+		m_immediateVertexData.create( graphicsSystem, 10240u, true, GraphicsBufferType_VertexBuffer, nullptr );
+		m_immediateVertexCount	= 0u;
+		m_immediateVertexStride	= 0u;
+
 		invalidateState();
 
 		return true;
 	}
 
-	void GraphicsContext::dispose()
+	void GraphicsContext::dispose( GraphicsSystem& graphicsSystem )
 	{
 		m_pGraphicsSystem		= nullptr;
 		m_platformData.pDevice	= nullptr;
 		m_platformData.pContext	= nullptr;
+
+		m_immediateVertexData.dispose( graphicsSystem );
 	}
 
 	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
@@ -102,7 +108,7 @@ namespace tiki
 
 	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
 	{
-		// set render target
+		
 	}
 
 	void GraphicsContext::endRenderPass()
@@ -119,6 +125,7 @@ namespace tiki
 	{
 		static const D3D11_PRIMITIVE_TOPOLOGY topologies[] =
 		{
+			D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 			D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
 			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
 			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
@@ -254,9 +261,32 @@ namespace tiki
 		m_platformData.pContext->IASetVertexBuffers( slot, 1u, &buffer.m_pBuffer, &buffer.m_stride, &offset );
 	}
 	
-	void GraphicsContext::drawGeometry( const uint indexcount, const uint startIndex /*= 0u*/, const uint basevertex /*= 0u */ )
+	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
 	{
+		m_immediateVertexStride	= vertexStride;
+		m_immediateVertexCount	= vertexCount;
 
+		return mapBuffer( m_immediateVertexData );
+	}
+
+	void GraphicsContext::endImmediateGeometry()
+	{
+		unmapBuffer( m_immediateVertexData );
+
+		const uint offset = 0u;
+		m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &m_immediateVertexStride, &offset );
+
+		m_platformData.pContext->Draw( m_immediateVertexCount, 0u );
+	}
+
+	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
+	{
+		m_platformData.pContext->Draw( vertexCount, baseVertexOffset );
+	}
+
+	void GraphicsContext::drawIndexed( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
+	{
+		m_platformData.pContext->DrawIndexed( indexCount, baseIndexOffset, baseVertexOffset );
 	}
 
 	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )

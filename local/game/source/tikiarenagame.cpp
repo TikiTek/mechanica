@@ -115,9 +115,9 @@ namespace tiki
 		Sleep( 15 );
 	}
 
-	void TikiArenaGame::render( GraphicsContext* pGraphicsContext ) const
+	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const
 	{
-		m_gameFlow.render( pGraphicsContext );
+		m_gameFlow.render( graphicsContext );
 	}
 
 	GameFramework& getGameFramework()

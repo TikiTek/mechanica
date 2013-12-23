@@ -4,6 +4,7 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/basebuffer.hpp"
 #include "tiki/graphicsbase/color.hpp"
 #include "tiki/graphicsbase/graphissystemlimits.hpp"
 #include "tiki/graphicsbase/primitivetopologies.hpp"
@@ -60,9 +61,6 @@ namespace tiki
 
 	public:
 
-		bool				create( GraphicsSystem& graphicsSystem );
-		void				dispose();
-
 		void				clear( const RenderTarget& renderTarget, Color color = TIKI_COLOR_BLACK, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
 
 		void				beginRenderPass( const RenderTarget& renderTarget );
@@ -87,18 +85,24 @@ namespace tiki
 
 		void				setPrimitiveTopology( PrimitiveTopology topology );
 
-		void				drawGeometry( const uint indexcount, const uint startIndex = 0u, const uint basevertex = 0u );
-		void				drawIndexed( const Vector3& start, const Vector3& end, const Color& color );
+		void*				beginImmediateGeometry( uint vertexStride, uint vertexCount );
+		void				endImmediateGeometry();
+
+		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
+		void				drawIndexed( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );
 
 		void*				mapBuffer( BaseBuffer& buffer );
 		void				unmapBuffer( BaseBuffer& buffer );
 
 		const RenderTarget&	getBackBuffer() const;
 
-	protected:
+	private: // friend
 
 							GraphicsContext();
 							~GraphicsContext();
+
+		bool				create( GraphicsSystem& graphicsSystem );
+		void				dispose( GraphicsSystem& graphicsSystem );
 
 	private:
 
@@ -120,6 +124,10 @@ namespace tiki
 		const SamplerState*			m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
 		const TextureData*			m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
 		const ConstantBuffer*		m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
+
+		BaseBuffer					m_immediateVertexData;
+		uint						m_immediateVertexStride;
+		uint						m_immediateVertexCount;
 
 		void						invalidateState();
 		bool						validateDrawCall() const;

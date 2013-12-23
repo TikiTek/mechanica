@@ -2,11 +2,13 @@
 #ifndef TIKI_GRAPHICSYSTEM_HPP
 #define TIKI_GRAPHICSYSTEM_HPP
 
+#include "tiki/base/poolallocator.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
 
@@ -25,6 +27,15 @@ namespace tiki
 		GraphicsRendererMode_Hardware,
 		GraphicsRendererMode_Software,
 		GraphicsRendererMode_Wrapper,
+	};
+
+	enum StockVertexFormat
+	{
+		StockVertexFormat_Pos2,
+		StockVertexFormat_Pos2Tex2,
+		StockVertexFormat_Pos3,
+		StockVertexFormat_Pos3Tex2,
+		StockVertexFormat_Count
 	};
 
 	struct GraphicsSystemParameters
@@ -59,6 +70,9 @@ namespace tiki
 		bool					create( const GraphicsSystemParameters& params );
 		void					dispose();
 
+		const Shader*			createShader( ShaderType type, const void* pData, uint dataSize );
+		void					disposeShader( const Shader* pShader );
+
 		const SamplerState*		createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*		createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void					disposeSamplerState( const SamplerState* samplerState );
@@ -67,7 +81,9 @@ namespace tiki
 		const VertexFormat*		createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
 		void					disposeVertexFormat( const VertexFormat* pVertexFormat );
 
-		GraphicsContext*		beginFrame();
+		const VertexFormat*		getStockVertexFormat( StockVertexFormat format ) const;
+
+		GraphicsContext&		beginFrame();
 		void					endFrame();
 
 		const RenderTarget&		getBackBuffer() const { return m_backBufferTarget; }
@@ -80,10 +96,17 @@ namespace tiki
 		GraphicsSystemPlatformData						m_platformData;
 		GraphicsContext									m_commandBuffer;
 
+		const VertexFormat*								m_pStockVertexFormsts[ StockVertexFormat_Count ];
+
 		RenderTarget									m_backBufferTarget;
+
+		PoolAllocator< Shader >							m_shaders;
 
 		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
 		GraphicsStateObjectCollection< VertexFormat >	m_vertexFormats;
+
+		bool											createPlatform( const GraphicsSystemParameters& params );
+		void											disposePlatform();
 
 	};
 }

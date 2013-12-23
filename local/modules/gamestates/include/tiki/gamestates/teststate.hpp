@@ -29,14 +29,16 @@ namespace tiki
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
 		virtual void			update();
-		virtual void			render( GraphicsContext* pGraphicsContext ) const;
+		virtual void			render( GraphicsContext& graphicsContext ) const;
 
 	private:
 		
-		ApplicationState*		m_pParentState;
+		ApplicationState*			m_pParentState;
 
-		const ShaderSet*		m_pShaderSet;
-		const Model*			m_pModel;
+		const ShaderSet*			m_pShaderSet;
+		const Model*				m_pModel;
+
+		const VertexInputBinding*	m_pInputBinding;
 
 	};
 }

@@ -14,43 +14,15 @@ namespace tiki
 
 	public:
 
-		VertexBuffer()
-		{
-			m_stride	= 0u;
-			m_count		= 0u;
-		}
+		TIKI_FORCE_INLINE			VertexBuffer();
+		TIKI_FORCE_INLINE			~VertexBuffer();
 
-		~VertexBuffer()
-		{
-			TIKI_ASSERT( m_stride == 0u );
-			TIKI_ASSERT( m_count == 0u );
-		}
+		TIKI_FORCE_INLINE void		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr );
+		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
-		TIKI_FORCE_INLINE void		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr )
-		{
-			m_stride	= vertexStride;
-			m_count		= vertexCount;
-
-			BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, GraphicsBufferType_VertexBuffer, pInitData );
-		}
-
-		TIKI_FORCE_INLINE void		dispose()
-		{
-			m_stride	= 0u;
-			m_count		= 0u;
-
-			BaseBuffer::dispose();
-		}
-
-		TIKI_FORCE_INLINE size_t	getStride() const
-		{
-			return m_stride;
-		}
+		TIKI_FORCE_INLINE size_t	getStride() const	{ return m_stride; }
 		
-		TIKI_FORCE_INLINE size_t	getCount() const
-		{
-			return m_count;
-		}
+		TIKI_FORCE_INLINE size_t	getCount() const	{ return m_count; }
 			
 	private:
 
@@ -59,5 +31,7 @@ namespace tiki
 
 	};
 }
+
+#include "../../../source/global/vertexbuffer.inl"
 
 #endif // TIKI_VERTEXBUFFER_HPP

@@ -1,8 +1,13 @@
+#pragma once
+#ifndef __TIKI_POOLALLOCATOR_INL_INCLUDED__
+#define __TIKI_POOLALLOCATOR_INL_INCLUDED__
+
+#include "tiki/base/assert.hpp"
 
 namespace tiki
 {
 	template<typename T>
-	PoolAllocator::PoolAllocator()
+	PoolAllocator< T >::PoolAllocator()
 	{
 		m_pPool			= nullptr;
 		m_count			= 0u;
@@ -11,44 +16,61 @@ namespace tiki
 	}
 
 	template<typename T>
-	PoolAllocator::~PoolAllocator()
+	PoolAllocator< T >::~PoolAllocator()
 	{
 		TIKI_ASSERT( m_pPool == nullptr );
 	}
 
 	template<typename T>
-	void PoolAllocator::create( uint count, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool PoolAllocator< T >::create( uint count, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		m_pPool = static_cast< T* >( memory::allocAlign( count * sizeof( T ), alignment ) );
+		const uint usageCount = alignValue( count, 64u ) / 64u;
+
+		m_pPool			= static_cast< T* >( memory::allocAlign( count * sizeof( T ), alignment ) );
+		m_pUsageBitmask	= static_cast< uint64* >( memory::allocAlign( usageCount * sizeof( uint64 ), sizeof( uint64 ) ) );
 		m_count	= count;
 
-		if ( m_pMemory == nullptr )
+		if ( m_pPool == nullptr || m_pUsageBitmask == nullptr )
 		{
+			dispose();
 			TIKI_TRACE_ERROR( "[PoolAllocator] Could not allocator Memory.\n" );
 			return false;
 		}
+
+		memory::zero( m_pUsageBitmask, usageCount * sizeof( uint64 ) );
+
+		return true;
 	}
 
 	template<typename T>
-	void PoolAllocator::dispose()
+	void PoolAllocator< T >::dispose()
 	{
-		TIKI_ASSERT( m_pPool != nullptr );
+		if ( m_pPool != nullptr )
+		{
+			memory::freeAlign( m_pPool );
+			m_pPool = nullptr;
+		}
 
-		memory::freeAlign( m_pPool );
+		if ( m_pUsageBitmask != nullptr )
+		{
+			memory::freeAlign( m_pUsageBitmask );
+			m_pUsageBitmask = nullptr;
+		}
+
 		m_count = 0u;
 	}
 
 	template<typename T>
-	T* PoolAllocator::allocate()
+	T* PoolAllocator< T >::allocate()
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
 
 		uint usageIndex = 0u;
-		while ( countLeadingZeros64( m_pUsageBitmask[ usageIndex ] ) == 63u )
+		while ( countLeadingZeros64( m_pUsageBitmask[ usageIndex ] ) == 0u )
 		{
 			usageIndex++;
 		}
-		const uint maskIndex = 63u - countLeadingZeros64( m_pUsageBitmask[ usageIndex ] );
+		const uint maskIndex = 64u - countLeadingZeros64( m_pUsageBitmask[ usageIndex ] );
 		const uint finalIndex = ( usageIndex * 64u ) + maskIndex;
 
 		if ( finalIndex >= m_count )
@@ -56,11 +78,13 @@ namespace tiki
 			return nullptr;
 		}
 		
+		m_pUsageBitmask[ usageIndex ] |= 1ull << maskIndex;
+
 		return &m_pPool[ finalIndex ];
 	}
 
 	template<typename T>
-	void PoolAllocator::free( T* pObject )
+	void PoolAllocator< T >::free( T* pObject )
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
 
@@ -70,6 +94,8 @@ namespace tiki
 		const uint usageIndex = index / 64u;
 		const uint maskIndex = index - ( usageIndex * 64u );
 
-		m_pUsageBitmask[ usageIndex ] &= ~( 1u << maskIndex );
+		m_pUsageBitmask[ usageIndex ] &= ~( 1ull << maskIndex );
 	}
 }
+
+#endif // __TIKI_POOLALLOCATOR_INL_INCLUDED__

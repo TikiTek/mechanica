@@ -8,8 +8,8 @@ namespace tiki
 {
 	struct TextureInitializationData
 	{
-		TextureDescription		description;
-		ResourceRef< void >		data;
+		TextureDescription	description;
+		ResRef< void >		data;
 	};
 
 	struct TextureFactoryContext : public FactoryContextGenericBase< Texture >

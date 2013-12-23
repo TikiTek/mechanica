@@ -137,8 +137,8 @@ namespace tiki
 		
 		update();
 
-		GraphicsContext* pContext = m_frameworkData.graphicSystem.beginFrame();
-		render( pContext );
+		GraphicsContext& graphicsContext = m_frameworkData.graphicSystem.beginFrame();
+		render( graphicsContext );
 		m_frameworkData.graphicSystem.endFrame();
 
 		return true;

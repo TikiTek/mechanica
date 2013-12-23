@@ -65,8 +65,8 @@ namespace tiki
 		m_sprites.dispose();
 		m_vertices.dispose();
 
-		m_vertexBuffer.dispose();
-		m_constantBuffer.dispose();
+		m_vertexBuffer.dispose( graphicsSystem );
+		m_constantBuffer.dispose( graphicsSystem );
 	}
 
 	void tiki::ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& r )

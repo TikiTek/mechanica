@@ -55,7 +55,7 @@ namespace tiki
 		TIKI_ASSERT( SUCCEEDED( graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer ) ) );
 	}
 
-	void BaseBuffer::dispose()
+	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )
 	{
 		if ( m_pBuffer != nullptr )
 		{

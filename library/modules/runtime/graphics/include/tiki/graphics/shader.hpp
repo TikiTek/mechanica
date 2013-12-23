@@ -27,7 +27,7 @@ namespace tiki
 
 	protected:
 
-		bool					create( GraphicsSystem& graphicsSystem, const void* pData, uint dataSize );
+		bool					create( GraphicsSystem& graphicsSystem, ShaderType type, const void* pData, uint dataSize );
 		void					dispose();
 
 		bool					createInputBinding( VertexInputBinding& inputBinding, const VertexFormat* pVertexFormat ) const;

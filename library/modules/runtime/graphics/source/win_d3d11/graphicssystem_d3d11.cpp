@@ -34,7 +34,7 @@ namespace tiki
 	TGContext*	graphics::getContext( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pContext; }
 
 	template<class T>
-	void safeRelease( T** ppObject )
+	TIKI_FORCE_INLINE void safeRelease( T** ppObject )
 	{
 		if ( *ppObject != nullptr )
 		{
@@ -43,15 +43,7 @@ namespace tiki
 		}
 	}
 
-	GraphicsSystem::GraphicsSystem()
-	{
-	}
-
-	GraphicsSystem::~GraphicsSystem()
-	{
-	}
-
-	bool GraphicsSystem::create( const GraphicsSystemParameters& params )
+	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
 	{
 		uint2 backBufferSize;
 		backBufferSize.x = params.backBufferWidth;
@@ -87,8 +79,6 @@ namespace tiki
 
 		graphics::initViewPort( m_platformData, backBufferSize );
 
-		m_samplerStates.create( 32u );
-
 		if ( !m_commandBuffer.create( *this ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create CommandBuffer.\n" );
@@ -98,15 +88,13 @@ namespace tiki
 		return true;
 	}
 
-	void GraphicsSystem::dispose()
+	void GraphicsSystem::disposePlatform()
 	{
-		m_commandBuffer.dispose();
-		
-		m_samplerStates.dispose();
+		m_commandBuffer.dispose( *this );
 		
 		if( m_platformData.pSwapChain )
 		{
-			m_platformData.pSwapChain->SetFullscreenState( false, NULL );
+			m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
 		}
 
 		safeRelease( &m_platformData.pDepthStencilView );
@@ -118,11 +106,11 @@ namespace tiki
 		safeRelease( &m_platformData.pSwapChain );
 	}
 
-	GraphicsContext* GraphicsSystem::beginFrame()
+	GraphicsContext& GraphicsSystem::beginFrame()
 	{	
 		m_frameNumber++;
 
-		return &m_commandBuffer;
+		return m_commandBuffer;
 	}
 
 	void GraphicsSystem::endFrame()
@@ -140,7 +128,7 @@ namespace tiki
 		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;
 		swapDesc.BufferDesc.RefreshRate.Numerator	= 60;
 		swapDesc.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapDesc.OutputWindow						= (HWND)params.pWindowHandle;
+		swapDesc.OutputWindow						= static_cast< HWND >( params.pWindowHandle );
 		swapDesc.SampleDesc.Count					= 1;
 		swapDesc.SampleDesc.Quality					= 0;
 		swapDesc.Windowed							= !params.fullScreen;
@@ -172,9 +160,9 @@ namespace tiki
 		}
 
 		HRESULT r = D3D11CreateDeviceAndSwapChain(
-			NULL,
+			nullptr,
 			rendererType,
-			NULL,
+			nullptr,
 			0, // DEBUG FLAG
 			&levels,
 			1,
@@ -196,7 +184,7 @@ namespace tiki
 
 		if (FAILED(r)) { return false; }
 
-		r = data.pDevice->CreateRenderTargetView( pBackBufferPtr, NULL, &data.pBackBufferTargetView );
+		r = data.pDevice->CreateRenderTargetView( pBackBufferPtr, nullptr, &data.pBackBufferTargetView );
 		pBackBufferPtr->Release();
 
 		if (FAILED(r)) { return false; }
@@ -219,7 +207,7 @@ namespace tiki
 		depthDesc.CPUAccessFlags		= 0;
 		depthDesc.MiscFlags				= 0;
 
-		HRESULT r = data.pDevice->CreateTexture2D( &depthDesc, NULL, &data.pDepthStencilBuffer );
+		HRESULT r = data.pDevice->CreateTexture2D( &depthDesc, nullptr, &data.pDepthStencilBuffer );
 		if (FAILED(r)) { return false; }
 
 		TIKI_DECLARE_STACKANDZERO( D3D11_DEPTH_STENCIL_VIEW_DESC, depthStencilViewDesc );

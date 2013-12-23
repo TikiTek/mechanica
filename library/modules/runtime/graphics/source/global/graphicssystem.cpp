@@ -5,6 +5,103 @@
 
 namespace tiki
 {
+	GraphicsSystem::GraphicsSystem()
+	{
+		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormsts ); ++i)
+		{
+			m_pStockVertexFormsts[ i ] = nullptr;
+		}
+	}
+
+	GraphicsSystem::~GraphicsSystem()
+	{
+	}
+
+	bool GraphicsSystem::create( const GraphicsSystemParameters& params )
+	{
+		bool result = createPlatform( params );
+
+		if ( result )
+		{
+			m_shaders.create( 1024u );
+
+			m_samplerStates.create( 32u );
+			m_vertexFormats.create( 32u );
+
+			{
+				VertexAttribute attributes_pos2[] =
+				{
+					{ VertexSementic_Position, 0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex }
+				};
+
+				VertexAttribute attributes_pos2tex2[] =
+				{
+					{ VertexSementic_Position, 0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
+					{ VertexSementic_TexCoord, 0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex }
+				};
+
+				VertexAttribute attributes_pos3[] =
+				{
+					{ VertexSementic_Position, 0u, VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex }
+				};
+
+				VertexAttribute attributes_pos3tex2[] =
+				{
+					{ VertexSementic_Position, 0u, VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
+					{ VertexSementic_TexCoord, 0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex }
+				};
+
+				m_pStockVertexFormsts[ StockVertexFormat_Pos2 ]		= createVertexFormat( attributes_pos2,		TIKI_COUNT( attributes_pos2 ) );
+				m_pStockVertexFormsts[ StockVertexFormat_Pos2Tex2 ]	= createVertexFormat( attributes_pos2tex2,	TIKI_COUNT( attributes_pos2tex2 ) );
+				m_pStockVertexFormsts[ StockVertexFormat_Pos3 ]		= createVertexFormat( attributes_pos3,		TIKI_COUNT( attributes_pos3 ) );
+				m_pStockVertexFormsts[ StockVertexFormat_Pos3Tex2 ]	= createVertexFormat( attributes_pos3tex2,	TIKI_COUNT( attributes_pos3tex2 ) );
+			}
+		}
+
+		return result;
+	}
+
+	void GraphicsSystem::dispose()
+	{
+		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormsts ); ++i)
+		{
+			if ( m_pStockVertexFormsts[ i ] != nullptr )
+			{
+				disposeVertexFormat( m_pStockVertexFormsts[ i ] );
+				m_pStockVertexFormsts[ i ] = nullptr;
+			}
+		} 
+
+		m_samplerStates.dispose();
+		m_vertexFormats.dispose();
+
+		m_shaders.dispose();
+
+		disposePlatform();
+	}
+
+	const Shader* GraphicsSystem::createShader( ShaderType type, const void* pData, uint dataSize )
+	{
+		Shader* pShader = m_shaders.allocate();
+
+		if ( pShader != nullptr && pShader->create( *this, type, pData, dataSize ) == false )
+		{
+			m_shaders.free( pShader );
+			pShader = nullptr;
+		}
+
+		return pShader;
+	}
+
+	void GraphicsSystem::disposeShader( const Shader* pShader )
+	{
+		TIKI_ASSERT( pShader != nullptr );
+
+		Shader* pNonConstShader = const_cast< Shader* >( pShader );
+		pNonConstShader->dispose();		
+		m_shaders.free( pNonConstShader );
+	}
+
 	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
 	{
 		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
@@ -69,4 +166,11 @@ namespace tiki
 			pNonConst->dispose();
 		}
 	}
+
+	const VertexFormat* GraphicsSystem::getStockVertexFormat( StockVertexFormat format ) const
+	{
+		TIKI_ASSERT( format < StockVertexFormat_Count );
+		return m_pStockVertexFormsts[ format ];
+	}
+
 }

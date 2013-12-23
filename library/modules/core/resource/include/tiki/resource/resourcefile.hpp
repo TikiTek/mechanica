@@ -2,6 +2,7 @@
 #ifndef __TIKI_RESOURCEFILE_HPP_INCLUDED__
 #define __TIKI_RESOURCEFILE_HPP_INCLUDED__
 
+#include "tiki/base/alignment.hpp"
 #include "tiki/base/endianness.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"
@@ -76,21 +77,21 @@ namespace tiki
 	};
 
 	template<typename T>
-	class ResourceRef
+	class ResRef
 	{
 	public:
 
-		ResourceRef( const T* pRef )
+		ResRef( const T* pRef )
 			: m_pRef( pRef )
 		{
 		}
 
-		ResourceRef( const ResourceRef< T >& ref )
+		ResRef( const ResRef< T >& ref )
 			: m_pRef( ref.m_pRef )
 		{
 		}
 
-		~ResourceRef()
+		~ResRef()
 		{
 			m_pRef = nullptr;
 		}

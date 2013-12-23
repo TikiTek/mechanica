@@ -8,11 +8,11 @@ namespace tiki
 {
 	struct FontInitializationData
 	{
-		TextureDescription		textureDesc;
-		ResourceRef< void >		textureData;
+		TextureDescription	textureDesc;
+		ResRef< void >		textureData;
 
-		uint					charCount;
-		ResourceRef< FontChar >	charArray;
+		uint				charCount;
+		ResRef< FontChar >	charArray;
 	};
 
 	struct FontFactoryContext : public FactoryContextGenericBase< Font >

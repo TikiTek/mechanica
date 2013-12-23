@@ -60,7 +60,7 @@ namespace tiki
 		VertexBuffer			m_vertexBuffer;
 
 		const void*				initialize( GraphicsSystem& graphicsSystem, const void* pData, const Material* pMaterial );
-		void					dispose();
+		void					dispose( GraphicsSystem& graphicsSystem );
 
 	};
 }

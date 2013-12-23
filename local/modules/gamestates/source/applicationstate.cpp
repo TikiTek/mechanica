@@ -53,7 +53,7 @@ namespace tiki
 	{
 	}
 
-	void ApplicationState::render( GraphicsContext* pGraphicsContext ) const
+	void ApplicationState::render( GraphicsContext& graphicsContext ) const
 	{
 	}
 }
