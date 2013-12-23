@@ -14,34 +14,13 @@ namespace tiki
 
 	public:
 
-		ConstantBuffer()
-		{
-			m_size = 0u;
-		}
+		TIKI_FORCE_INLINE			ConstantBuffer();
+		TIKI_FORCE_INLINE			~ConstantBuffer();
 
-		~ConstantBuffer()
-		{
-			TIKI_ASSERT( m_size == 0u );
-		}
+		TIKI_FORCE_INLINE void		create( GraphicsSystem& graphicsSystem, size_t bufferSize );
+		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
-		TIKI_FORCE_INLINE void		create( GraphicsSystem& graphicsSystem, size_t bufferSize )
-		{
-			m_size = bufferSize;
-
-			BaseBuffer::create( graphicsSystem, bufferSize, true, GraphicsBufferType_ConstantBuffer );
-		}
-
-		TIKI_FORCE_INLINE void		dispose()
-		{
-			m_size = 0u;
-
-			BaseBuffer::dispose();
-		}
-
-		TIKI_FORCE_INLINE size_t	getSize() const
-		{
-			return m_size;
-		}
+		TIKI_FORCE_INLINE size_t	getSize() const { return m_size; }
 
 	private:
 
@@ -49,5 +28,7 @@ namespace tiki
 
 	};
 }
+
+#include "../../../source/global/constantbuffer.inl"
 
 #endif // TIKI_CONSTANTBUFFER_HPP

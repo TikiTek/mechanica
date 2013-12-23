@@ -96,7 +96,11 @@ namespace tiki
 
 	void ResourceManager::unloadGenericResource( fourcc type, const Resource* pResource )
 	{
-		TIKI_ASSERT( pResource != nullptr );
+		if ( pResource == nullptr )
+		{
+			return;
+		}
+
 		m_resourceLoader.unloadResource( pResource, type );
 	}
 }

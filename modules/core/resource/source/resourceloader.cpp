@@ -142,7 +142,6 @@ namespace tiki
 				if ( result != ResourceLoaderResult_Success )
 				{
 					cancelOperation( context );
-
 					*ppTargetResource = nullptr;
 				}
 				else

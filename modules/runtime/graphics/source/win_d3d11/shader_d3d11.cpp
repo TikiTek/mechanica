@@ -12,14 +12,6 @@
 
 namespace tiki
 {
-	struct ShaderVariantInitializationData
-	{
-		uint16						shaderType;
-		uint16						codeLength;
-		crc32						variantKey;
-		ResourceRef< const void >	data;
-	};
-
 	Shader::Shader()
 	{
 		m_type = ShaderType_Invalid;
@@ -35,56 +27,46 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pShaderObject = nullptr );
 	}
 
-	bool Shader::create( GraphicsSystem& graphicsSystem, const void* pInitData, uint dataSize )
+	bool Shader::create( GraphicsSystem& graphicsSystem, ShaderType type, const void* pInitData, uint dataSize )
 	{
 		TIKI_ASSERT( pInitData != nullptr );
 		TIKI_ASSERT( dataSize > 0u );
 
-		const FixedSizedArray< ShaderVariantInitializationData, 2048 >& initData = *reinterpret_cast< const FixedSizedArray< ShaderVariantInitializationData, 2048 >* >( pInitData );
-
-		uint32 dataLength = 0u;
-		for (uint i = 0u; i < initData.getCount(); ++i)
-		{
-			const ShaderVariantInitializationData& variant = initData[ i ];
-
-			m_type		= (ShaderType)variant.shaderType;
-			dataLength	= variant.codeLength;
-			pInitData	= variant.data.getData();
-		} 
+		m_type	= type;
 
 		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
 		switch ( m_type )
 		{
 		case ShaderType_ComputeShader:
-			TIKI_VERIFY0( pDevice->CreateComputeShader( pInitData, dataLength, nullptr, &m_platformData.pComputeShader ) );
+			TIKI_VERIFY0( pDevice->CreateComputeShader( pInitData, dataSize, nullptr, &m_platformData.pComputeShader ) );
 			break;
 		case ShaderType_DomainShader:
-			TIKI_VERIFY0( pDevice->CreateDomainShader( pInitData, dataLength, nullptr, &m_platformData.pDomainShader ) );
+			TIKI_VERIFY0( pDevice->CreateDomainShader( pInitData, dataSize, nullptr, &m_platformData.pDomainShader ) );
 			break;
 		case ShaderType_GeometrieShader:
-			TIKI_VERIFY0( pDevice->CreateGeometryShader( pInitData, dataLength, nullptr, &m_platformData.pGeometryShader ) );
+			TIKI_VERIFY0( pDevice->CreateGeometryShader( pInitData, dataSize, nullptr, &m_platformData.pGeometryShader ) );
 			break;
 		case ShaderType_HullShader:
-			TIKI_VERIFY0( pDevice->CreateHullShader( pInitData, dataLength, nullptr, &m_platformData.pHullShader ) );
+			TIKI_VERIFY0( pDevice->CreateHullShader( pInitData, dataSize, nullptr, &m_platformData.pHullShader ) );
 			break;
 		case ShaderType_PixelShader:
-			TIKI_VERIFY0( pDevice->CreatePixelShader( pInitData, dataLength, nullptr, &m_platformData.pPixelShader ) );
+			TIKI_VERIFY0( pDevice->CreatePixelShader( pInitData, dataSize, nullptr, &m_platformData.pPixelShader ) );
 			break;
 		case ShaderType_VertexShader:
-			TIKI_VERIFY0( pDevice->CreateVertexShader( pInitData, dataLength, nullptr, &m_platformData.pVertexShader ) );
+			TIKI_VERIFY0( pDevice->CreateVertexShader( pInitData, dataSize, nullptr, &m_platformData.pVertexShader ) );
 			break;
 		default:
 			TIKI_BREAK( "[graphics] ShaderType not supported.\n" );
 			break;
 		}
 
-		if ( FAILED( D3D10CreateBlob( dataLength, &m_platformData.pDataBlob ) || m_platformData.pDataBlob == nullptr ) )
+		if ( FAILED( D3D10CreateBlob( dataSize, &m_platformData.pDataBlob ) || m_platformData.pDataBlob == nullptr ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create Shader-Blob.\n" );
 			return false;
 		}
 
-		memory::copy( m_platformData.pDataBlob->GetBufferPointer(), pInitData, dataLength );
+		memory::copy( m_platformData.pDataBlob->GetBufferPointer(), pInitData, dataSize );
 		return true;
 	}
 

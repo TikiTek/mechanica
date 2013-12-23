@@ -5,6 +5,7 @@ namespace tiki
 {
 	enum PrimitiveTopology
 	{
+		PrimitiveTopology_PointList,
 		PrimitiveTopology_LineList,
 		PrimitiveTopology_TriangleList,
 		PrimitiveTopology_TriangleStrip,

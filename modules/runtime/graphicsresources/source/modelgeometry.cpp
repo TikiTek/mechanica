@@ -36,13 +36,13 @@ namespace tiki
 		return pBinary + m_desc.indexType * m_desc.indexCount;
 	}
 
-	void ModelGeometry::dispose()
+	void ModelGeometry::dispose( GraphicsSystem& graphicsSystem )
 	{
 		//VertexFormat::releaseVertexFormat( m_pVertexFormat );
 		m_pVertexFormat	= nullptr;
 
-		m_vertexBuffer.dispose();
-		m_indexBuffer.dispose();
+		m_vertexBuffer.dispose( graphicsSystem );
+		m_indexBuffer.dispose( graphicsSystem );
 
 		m_indexData.dispose();
 		m_vertexData.dispose();

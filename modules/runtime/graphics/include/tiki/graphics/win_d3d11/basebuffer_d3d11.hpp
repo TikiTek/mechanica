@@ -20,7 +20,7 @@ namespace tiki
 								~BaseBuffer();
 
 		void					create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
-		void					dispose();
+		void					dispose( GraphicsSystem& graphicsSystem );
 		
 	private:
 

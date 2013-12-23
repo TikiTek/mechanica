@@ -227,10 +227,12 @@ namespace tiki
 					Array< uint8 > variantData;
 					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
 					{
+						uint32 keyData[] = { type, variant.bitMask };
+
 						ShaderVariantData& variantVarName = shaderVariants.add();
 						variantVarName.type			= type;
 						variantVarName.codeLength	= variantData.getCount();
-						variantVarName.variantKey	= variant.bitMask;
+						variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
 
 						writer.openDataSection( 0u, AllocatorType_MainMemory );
 						variantVarName.key = writer.addDataPoint();
