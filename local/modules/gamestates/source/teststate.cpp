@@ -67,6 +67,6 @@ namespace tiki
 		graphicsContext.setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 
-		graphicsContext.beginImmediateGeometry( sizeof( verte))
+		//graphicsContext.beginImmediateGeometry( sizeof( verte))
 	}
 }

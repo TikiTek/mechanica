@@ -9,6 +9,7 @@ namespace tiki
 	class ApplicationState;
 	class Model;
 	class ShaderSet;
+	class VertexInputBinding;
 
 	enum TestStateTransitionSteps
 	{
