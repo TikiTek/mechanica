@@ -2,6 +2,7 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/framework/framework.hpp"
+#include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphicsresources/model.hpp"
 #include "tiki/graphicsresources/shaderset.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -43,6 +44,9 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
+				framework::getResourceManager().unloadResource< ShaderSet >( m_pShaderSet );
+				framework::getResourceManager().unloadResource< Model >( m_pModel );
+
 				return TransitionState_Finish;
 			}
 			break;
@@ -58,7 +62,11 @@ namespace tiki
 	{
 	}
 
-	void TestState::render( GraphicsContext* pGraphicsContext ) const
+	void TestState::render( GraphicsContext& graphicsContext ) const
 	{
+		graphicsContext.setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
+
+		graphicsContext.beginImmediateGeometry( sizeof( verte))
 	}
 }

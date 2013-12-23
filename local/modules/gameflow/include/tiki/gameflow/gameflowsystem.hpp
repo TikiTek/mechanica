@@ -30,7 +30,7 @@ namespace tiki
 		void				dispose();
 
 		void				update();
-		void				render( GraphicsContext* pGraphicsContext ) const;
+		void				render( GraphicsContext& graphicsContext ) const;
 
 		void				startTransition( const int stateIndex );
 

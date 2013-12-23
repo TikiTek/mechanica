@@ -96,7 +96,7 @@ namespace tiki
 		}
 	}
 
-	void GameFlowSystem::render( GraphicsContext* pGraphicsContext ) const
+	void GameFlowSystem::render( GraphicsContext& graphicsContext ) const
 	{
 		const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
 
@@ -109,7 +109,7 @@ namespace tiki
 				continue;
 			}
 
-			m_states[ index ].pState->render( pGraphicsContext );
+			m_states[ index ].pState->render( graphicsContext );
 		}
 	}
 

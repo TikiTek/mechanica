@@ -34,7 +34,7 @@ namespace tiki
 		virtual void			shutdown();
 
 		virtual void			update();
-		virtual void			render( GraphicsContext* pGraphicsContext ) const;
+		virtual void			render( GraphicsContext& graphicsContext ) const;
 
 	private:
 
