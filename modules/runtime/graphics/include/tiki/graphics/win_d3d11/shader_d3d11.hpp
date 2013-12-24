@@ -23,7 +23,8 @@ namespace tiki
 			TGVertexShader*		pVertexShader;
 		};
 
-		TGBlob*					pDataBlob;
+		const void*				pShaderCode;
+		uint					shaderCodeLength;
 	};
 
 	namespace graphics

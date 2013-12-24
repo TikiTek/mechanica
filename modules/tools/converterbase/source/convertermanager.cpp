@@ -96,6 +96,8 @@ namespace tiki
 		parseParams( xmlFile, pRoot, desc.arguments );
 
 		m_templates[ desc.name ] = desc;
+
+		xmlFile.dispose();
 	}
 
 	void ConverterManager::queueFile( const string& fileName )

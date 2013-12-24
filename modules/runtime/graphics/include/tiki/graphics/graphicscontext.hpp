@@ -69,7 +69,7 @@ namespace tiki
 		void				setVertexShader( const Shader* pVertexShader );
 		void				setPixelShader( const Shader* pPixelShader );
 
-		void				setInputLayout( const VertexInputBinding* pVertexInputBinding );
+		void				setVertexInputBinding( const VertexInputBinding* pVertexInputBinding );
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
 		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );

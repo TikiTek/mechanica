@@ -19,6 +19,7 @@ namespace tiki
 	public:
 
 							TikiXml();
+							~TikiXml();
 
 		void				create( const string& fileName );
 		void				dispose();

@@ -87,6 +87,7 @@ namespace tiki
 		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &samplerDesc, &m_platformData.pSamplerState );
 		if( FAILED( result ) )
 		{
+			dispose();
 			return false;
 		}
 
@@ -95,9 +96,11 @@ namespace tiki
 
 	void SamplerState::dispose()
 	{
-		TIKI_ASSERT( m_platformData.pSamplerState != nullptr );
-		m_platformData.pSamplerState->Release();
-		m_platformData.pSamplerState = nullptr;
+		if ( m_platformData.pSamplerState != nullptr )
+		{
+			m_platformData.pSamplerState->Release();
+			m_platformData.pSamplerState = nullptr;
+		}
 
 		GraphicsStateObject::dispose();
 	}

@@ -27,6 +27,7 @@ namespace tiki
 
 			m_samplerStates.create( 32u );
 			m_vertexFormats.create( 32u );
+			m_vertexInputBindings.create( 32u );
 
 			{
 				VertexAttribute attributes_pos2[] =
@@ -74,6 +75,7 @@ namespace tiki
 
 		m_samplerStates.dispose();
 		m_vertexFormats.dispose();
+		m_vertexInputBindings.dispose();
 
 		m_shaders.dispose();
 
@@ -107,7 +109,10 @@ namespace tiki
 		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
 		if ( pSampler != nullptr && pSampler->icCreated() == false )
 		{
-			pSampler->create( *this, creationParameters );
+			if ( pSampler->create( *this, creationParameters ) == false )
+			{
+				pSampler = nullptr;
+			}
 		}
 
 		return pSampler;
@@ -130,7 +135,7 @@ namespace tiki
 	void GraphicsSystem::disposeSamplerState( const SamplerState* pSamplerState )
 	{
 		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
-		if ( pNonConstState->releaseRef() == true )
+		if ( pNonConstState->releaseRef() == false )
 		{
 			pNonConstState->dispose();
 		}
@@ -161,7 +166,48 @@ namespace tiki
 	void GraphicsSystem::disposeVertexFormat( const VertexFormat* pVertexFormat )
 	{
 		VertexFormat* pNonConst = const_cast< VertexFormat* >( pVertexFormat );
-		if ( pNonConst->releaseRef() == true )
+		if ( pNonConst->releaseRef() == false )
+		{
+			pNonConst->dispose();
+		}
+	}
+
+	const VertexInputBinding* GraphicsSystem::createVertexInputBinding( const VertexInputBindingParameters& parameters )
+	{
+		TIKI_ASSERT( parameters.pShader != nullptr );
+		TIKI_ASSERT( parameters.pVertexFormat != nullptr );
+
+		const uint32 hashData[]	= { parameters.pShader->getShaderHash(), parameters.pVertexFormat->getHashValue() };
+		const crc32 hashValue	= crcBytes( hashData, sizeof( hashData ) );
+
+		VertexInputBinding* pVertexInputBinding = m_vertexInputBindings.findOrAllocate( hashValue );
+		if ( pVertexInputBinding != nullptr && pVertexInputBinding->isCreated() == false )
+		{
+			if ( pVertexInputBinding->create( parameters ) == false )
+			{
+				pVertexInputBinding = nullptr;
+			}
+		}
+
+		return pVertexInputBinding;
+	}
+
+	const VertexInputBinding* GraphicsSystem::createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat )
+	{
+		TIKI_ASSERT( pShader != nullptr );
+		TIKI_ASSERT( pVertexFormat != nullptr );
+
+		VertexInputBindingParameters parameters;
+		parameters.pShader			= pShader;
+		parameters.pVertexFormat	= pVertexFormat;
+
+		return createVertexInputBinding( parameters );
+	}
+
+	void GraphicsSystem::disposeVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
+	{
+		VertexInputBinding* pNonConst = const_cast< VertexInputBinding* >( pVertexInputBinding );
+		if ( pNonConst->releaseRef() == false )
 		{
 			pNonConst->dispose();
 		}
@@ -172,5 +218,4 @@ namespace tiki
 		TIKI_ASSERT( format < StockVertexFormat_Count );
 		return m_pStockVertexFormsts[ format ];
 	}
-
 }

@@ -27,6 +27,12 @@ namespace tiki
 		m_pNode			= nullptr;
 		m_pData			= nullptr;
 	}
+	
+	TikiXml::~TikiXml()
+	{
+		TIKI_ASSERT( m_pNode == nullptr );
+		TIKI_ASSERT( m_pData == nullptr );
+	}
 
 	void TikiXml::create( const string& fileName )
 	{
@@ -98,5 +104,4 @@ namespace tiki
 
 		return targetList.getCount();
 	}
-
 }

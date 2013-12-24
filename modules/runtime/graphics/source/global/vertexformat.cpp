@@ -26,6 +26,7 @@ namespace tiki
 
 	void VertexFormat::dispose()
 	{
+		GraphicsStateObject::dispose();
 	}
 
 	bool VertexFormat::isCreated() const

@@ -7,7 +7,7 @@
 namespace tiki
 {
 	template<typename T>
-	PoolAllocator< T >::PoolAllocator()
+	TIKI_FORCE_INLINE PoolAllocator< T >::PoolAllocator()
 	{
 		m_pPool			= nullptr;
 		m_count			= 0u;
@@ -16,13 +16,13 @@ namespace tiki
 	}
 
 	template<typename T>
-	PoolAllocator< T >::~PoolAllocator()
+	TIKI_FORCE_INLINE PoolAllocator< T >::~PoolAllocator()
 	{
 		TIKI_ASSERT( m_pPool == nullptr );
 	}
 
 	template<typename T>
-	bool PoolAllocator< T >::create( uint count, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	TIKI_FORCE_INLINE bool PoolAllocator< T >::create( uint count, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		const uint usageCount = alignValue( count, 64u ) / 64u;
 
@@ -43,7 +43,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	void PoolAllocator< T >::dispose()
+	TIKI_FORCE_INLINE void PoolAllocator< T >::dispose()
 	{
 		if ( m_pPool != nullptr )
 		{
@@ -61,7 +61,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	T* PoolAllocator< T >::allocate()
+	TIKI_FORCE_INLINE T* PoolAllocator< T >::allocate()
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
 
@@ -80,13 +80,15 @@ namespace tiki
 		
 		m_pUsageBitmask[ usageIndex ] |= 1ull << maskIndex;
 
-		return &m_pPool[ finalIndex ];
+		return ::new( &m_pPool[ finalIndex ] ) T();
 	}
 
 	template<typename T>
-	void PoolAllocator< T >::free( T* pObject )
+	TIKI_FORCE_INLINE void PoolAllocator< T >::free( T* pObject )
 	{
 		TIKI_ASSERT( m_pPool != nullptr );
+
+		pObject->~T();
 
 		const uint index = pObject - m_pPool;
 		TIKI_ASSERT( index < m_count );

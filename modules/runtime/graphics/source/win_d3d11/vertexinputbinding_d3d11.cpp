@@ -48,7 +48,21 @@ namespace tiki
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_d3dFormat ) == VertexAttributeFormat_Count );
 
-	void VertexInputBinding::create( const VertexInputBindingParameters& creationParameters )
+	VertexInputBinding::VertexInputBinding()
+	{
+		m_pShader					= nullptr;
+		m_pVertexFormat				= nullptr;
+		m_platformData.pInputLayout	= nullptr;
+	}
+
+	VertexInputBinding::~VertexInputBinding()
+	{
+		m_pShader					= nullptr;
+		m_pVertexFormat				= nullptr;
+		m_platformData.pInputLayout	= nullptr;
+	}
+
+	bool VertexInputBinding::create( const VertexInputBindingParameters& creationParameters )
 	{
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
@@ -67,9 +81,15 @@ namespace tiki
 			desc[ i ].InputSlotClass		= ( att.inputType == VertexInputType_PerVertex ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA );
 			desc[ i ].InstanceDataStepRate	= 0;
 		}
+		
+		m_platformData.pInputLayout = graphics::createVertexInputLayout( m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
+		if ( m_platformData.pInputLayout == nullptr )
+		{
+			dispose();
+			return false;
+		}
 
-		//m_platformData.pInputLayout = graphics::createVertexInputLayout( shader_platform_data, desc, m_pVertexFormat->getAttributeCount() );
-		m_platformData.pInputLayout = nullptr;
+		return true;
 	}
 
 	void VertexInputBinding::dispose()
@@ -82,5 +102,7 @@ namespace tiki
 			m_platformData.pInputLayout->Release();
 			m_platformData.pInputLayout = nullptr;
 		}
+
+		GraphicsStateObject::dispose();
 	}
 }

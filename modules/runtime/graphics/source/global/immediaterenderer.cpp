@@ -231,7 +231,7 @@ namespace tiki
 			memory::copy( sv, m_sprites.getData(), sizeof( SpriteVertex ) * vertexCount );
 			graphicsContext.unmapBuffer( m_vertexBuffer );
 
-			graphicsContext.setInputLayout( m_pVertexInputBinding );
+			graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 			//graphicsContext.setMaterial( m_pMaterial );
 
 			graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
