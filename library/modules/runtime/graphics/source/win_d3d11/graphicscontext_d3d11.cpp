@@ -116,8 +116,9 @@ namespace tiki
 
 	}
 
-	void GraphicsContext::setInputLayout( const VertexInputBinding* pVertexInputBinding )
+	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
 	{
+		TIKI_ASSERT( pVertexInputBinding != nullptr );
 		m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
 	}
 

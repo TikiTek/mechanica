@@ -10,6 +10,7 @@
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphics/vertexinputbinding.hpp"
 #include "tiki/graphicsbase/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
@@ -67,46 +68,51 @@ namespace tiki
 		GraphicsSystem();
 		~GraphicsSystem();
 
-		bool					create( const GraphicsSystemParameters& params );
-		void					dispose();
+		bool						create( const GraphicsSystemParameters& params );
+		void						dispose();
 
-		const Shader*			createShader( ShaderType type, const void* pData, uint dataSize );
-		void					disposeShader( const Shader* pShader );
+		const Shader*				createShader( ShaderType type, const void* pData, uint dataSize );
+		void						disposeShader( const Shader* pShader );
 
-		const SamplerState*		createSamplerState( const SamplerStateParamters& creationParameters );
-		const SamplerState*		createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
-		void					disposeSamplerState( const SamplerState* samplerState );
+		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
+		const SamplerState*			createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
+		void						disposeSamplerState( const SamplerState* samplerState );
 
-		const VertexFormat*		createVertexFormat( const VertexFormatParameters& creationParameters );
-		const VertexFormat*		createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
-		void					disposeVertexFormat( const VertexFormat* pVertexFormat );
+		const VertexFormat*			createVertexFormat( const VertexFormatParameters& creationParameters );
+		const VertexFormat*			createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
+		void						disposeVertexFormat( const VertexFormat* pVertexFormat );
 
-		const VertexFormat*		getStockVertexFormat( StockVertexFormat format ) const;
+		const VertexInputBinding*	createVertexInputBinding( const VertexInputBindingParameters& parameters );
+		const VertexInputBinding*	createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat );
+		void						disposeVertexInputBinding( const VertexInputBinding* pVertexInputBinding );
 
-		GraphicsContext&		beginFrame();
-		void					endFrame();
+		const VertexFormat*			getStockVertexFormat( StockVertexFormat format ) const;
 
-		const RenderTarget&		getBackBuffer() const { return m_backBufferTarget; }
+		GraphicsContext&			beginFrame();
+		void						endFrame();
+
+		const RenderTarget&			getBackBuffer() const { return m_backBufferTarget; }
 
 
 	private:
 		
-		size_t											m_frameNumber;
+		size_t												m_frameNumber;
 		
-		GraphicsSystemPlatformData						m_platformData;
-		GraphicsContext									m_commandBuffer;
+		GraphicsSystemPlatformData							m_platformData;
+		GraphicsContext										m_commandBuffer;
 
-		const VertexFormat*								m_pStockVertexFormsts[ StockVertexFormat_Count ];
+		const VertexFormat*									m_pStockVertexFormsts[ StockVertexFormat_Count ];
 
-		RenderTarget									m_backBufferTarget;
+		RenderTarget										m_backBufferTarget;
 
-		PoolAllocator< Shader >							m_shaders;
+		PoolAllocator< Shader >								m_shaders;
 
-		GraphicsStateObjectCollection< SamplerState >	m_samplerStates;
-		GraphicsStateObjectCollection< VertexFormat >	m_vertexFormats;
+		GraphicsStateObjectCollection< SamplerState >		m_samplerStates;
+		GraphicsStateObjectCollection< VertexFormat >		m_vertexFormats;
+		GraphicsStateObjectCollection< VertexInputBinding >	m_vertexInputBindings;
 
-		bool											createPlatform( const GraphicsSystemParameters& params );
-		void											disposePlatform();
+		bool												createPlatform( const GraphicsSystemParameters& params );
+		void												disposePlatform();
 
 	};
 }

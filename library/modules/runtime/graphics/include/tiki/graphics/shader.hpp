@@ -13,24 +13,23 @@
 
 namespace tiki
 {
-	class VertexFormat;
-	class VertexInputBinding;
-
 	class Shader
 	{
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
+		friend class VertexInputBinding;
+		template<typename T>
+		friend class PoolAllocator;
 
 	public:
 		
 		ShaderType				getShaderType() const { return m_type; }
+		crc32					getShaderHash() const;
 
-	protected:
+	private: // friend
 
 		bool					create( GraphicsSystem& graphicsSystem, ShaderType type, const void* pData, uint dataSize );
 		void					dispose();
-
-		bool					createInputBinding( VertexInputBinding& inputBinding, const VertexFormat* pVertexFormat ) const;
 
 	private:
 

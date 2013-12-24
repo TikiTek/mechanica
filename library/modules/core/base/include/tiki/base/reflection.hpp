@@ -9,34 +9,39 @@
 #	include "tiki/base/string.hpp"
 #	include "tiki/toolbase/list.hpp"
 
-#	define TIKI_REFLECTION_STRUCT( name, ... ) struct name\
-	{ \
-		__VA_ARGS__ \
-		\
-		const ::tiki::reflection::StructType* getType() const { return &s_typeDefinition; } \
-		static const ::tiki::reflection::StructType* getStaticType() { return &s_typeDefinition; } \
-		\
-	private:\
-		\
-		struct TypeDefinition : ::tiki::reflection::StructType\
-		{ \
-			TypeDefinition() \
-				: StructType( #name, TIKI_REFLECTION_STR( __VA_ARGS__ ) ) \
-			{ \
-			} \
-		}; \
-		static const TypeDefinition s_typeDefinition;\
+#	define TIKI_REFLECTION_STRUCT( name, ... ) struct name											\
+	{																								\
+		__VA_ARGS__																					\
+																									\
+		const ::tiki::reflection::StructType* getType() const { return &s_typeDefinition; }			\
+		static const ::tiki::reflection::StructType* getStaticType() { return &s_typeDefinition; }	\
+																									\
+	private:																						\
+																									\
+		struct TypeDefinition : ::tiki::reflection::StructType										\
+		{																							\
+			TypeDefinition()																		\
+				: StructType( #name, TIKI_REFLECTION_STR( __VA_ARGS__ ) )							\
+			{																						\
+			}																						\
+		};																							\
+		static const TypeDefinition s_typeDefinition;												\
 	}
+
 #	define TIKI_REFLECTION_STR( str ) #str
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
 #	define TIKI_REFLECTION_CPPDECLARE( type ) const type :: TypeDefinition type :: s_typeDefinition
+
 #else
-#	define TIKI_REFLECTION_STRUCT( name, ... ) struct name \
-	{ \
-		__VA_ARGS__ \
+
+#	define TIKI_REFLECTION_STRUCT( name, ... ) struct name	\
+	{														\
+		__VA_ARGS__											\
 	};
+
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
 #	define TIKI_REFLECTION_CPPDECLARE( type )
+
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )

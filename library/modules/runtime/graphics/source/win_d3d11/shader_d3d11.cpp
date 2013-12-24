@@ -2,6 +2,7 @@
 #include "tiki/graphics/shader.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
@@ -17,14 +18,15 @@ namespace tiki
 		m_type = ShaderType_Invalid;
 
 		m_platformData.pShaderObject	= nullptr;
-		m_platformData.pDataBlob		= nullptr;
+		m_platformData.pShaderCode		= nullptr;
+		m_platformData.shaderCodeLength	= 0u;
 	}
 
 	Shader::~Shader()
 	{
-		TIKI_ASSERT( m_type = ShaderType_Invalid );
-		TIKI_ASSERT( m_platformData.pDataBlob == nullptr );
-		TIKI_ASSERT( m_platformData.pShaderObject = nullptr );
+		TIKI_ASSERT( m_type == ShaderType_Invalid );
+		TIKI_ASSERT( m_platformData.pShaderCode == nullptr );
+		TIKI_ASSERT( m_platformData.pShaderObject == nullptr );
 	}
 
 	bool Shader::create( GraphicsSystem& graphicsSystem, ShaderType type, const void* pInitData, uint dataSize )
@@ -60,13 +62,9 @@ namespace tiki
 			break;
 		}
 
-		if ( FAILED( D3D10CreateBlob( dataSize, &m_platformData.pDataBlob ) || m_platformData.pDataBlob == nullptr ) )
-		{
-			TIKI_TRACE_ERROR( "[graphics] Could not create Shader-Blob.\n" );
-			return false;
-		}
-
-		memory::copy( m_platformData.pDataBlob->GetBufferPointer(), pInitData, dataSize );
+		m_platformData.pShaderCode		= pInitData;
+		m_platformData.shaderCodeLength	= dataSize;
+		
 		return true;
 	}
 
@@ -80,23 +78,28 @@ namespace tiki
 			m_platformData.pShaderObject = nullptr;
 		}
 
-		if ( m_platformData.pDataBlob != nullptr )
-		{
-			m_platformData.pDataBlob->Release();
-			m_platformData.pDataBlob = nullptr;
-		}
+		m_platformData.pShaderCode		= nullptr;
+		m_platformData.shaderCodeLength	= 0u;
+	}
+
+	crc32 Shader::getShaderHash() const
+	{
+		return crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
 	}
 
 	TGInputLayout* graphics::createVertexInputLayout( const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount )
 	{
-		TGInputLayout* pLayout = nullptr;
-
 		TGDevice* pDevice = graphics::getDevice( framework::getGraphicsSystem() );
 
-		const void* pData	= shaderData.pDataBlob->GetBufferPointer();
-		const size_t size	= shaderData.pDataBlob->GetBufferSize();
+		TGInputLayout* pLayout = nullptr;
+		const HRESULT result = pDevice->CreateInputLayout(
+			pElements,
+			elementCount,
+			shaderData.pShaderCode,
+			shaderData.shaderCodeLength,
+			&pLayout
+		);
 
-		const HRESULT result = pDevice->CreateInputLayout( pElements, elementCount, pData, size, &pLayout );		
 		if ( result == S_OK )
 		{
 			return pLayout;
@@ -104,5 +107,4 @@ namespace tiki
 
 		return nullptr;
 	}
-
 }

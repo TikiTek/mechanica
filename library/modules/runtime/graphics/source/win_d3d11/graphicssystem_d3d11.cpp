@@ -79,6 +79,21 @@ namespace tiki
 
 		graphics::initViewPort( m_platformData, backBufferSize );
 
+		// create back buffer
+		{
+			m_backBufferTarget.m_width	= params.backBufferWidth;
+			m_backBufferTarget.m_height	= params.backBufferHeight;
+
+			m_backBufferTarget.m_colorBuffers[ 0u ].format		= PixelFormat_R8G8B8A8_Gamma;
+			m_backBufferTarget.m_colorBuffers[ 0u ].pDataBuffer = nullptr;
+			m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
+			m_backBufferTarget.m_colorBufferCount = 1u;
+
+			m_backBufferTarget.m_depthBuffer.format			= PixelFormat_Depth24Stencil8;
+			m_backBufferTarget.m_depthBuffer.pDataBuffer	= nullptr;
+			m_backBufferTarget.m_platformData.pDepthView	= m_platformData.pDepthStencilView;
+		}
+
 		if ( !m_commandBuffer.create( *this ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create CommandBuffer.\n" );
@@ -163,7 +178,7 @@ namespace tiki
 			nullptr,
 			rendererType,
 			nullptr,
-			0, // DEBUG FLAG
+			D3D11_CREATE_DEVICE_DEBUG,
 			&levels,
 			1,
 			D3D11_SDK_VERSION,

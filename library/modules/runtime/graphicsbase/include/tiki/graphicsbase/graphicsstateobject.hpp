@@ -9,6 +9,8 @@ namespace tiki
 	class GraphicsStateObject
 	{
 		TIKI_NONCOPYABLE_CLASS( GraphicsStateObject );
+		template<typename T>
+		friend class GraphicsStateObjectCollection;
 
 	public:
 
@@ -21,6 +23,12 @@ namespace tiki
 		{
 			TIKI_ASSERT( m_refCount != 0u );
 			return m_hashValue == hashValue;
+		}
+
+		TIKI_FORCE_INLINE crc32	getHashValue() const
+		{
+			TIKI_ASSERT( m_refCount != 0u );
+			return m_hashValue;
 		}
 
 		TIKI_FORCE_INLINE void	addRef()
@@ -57,7 +65,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void	dispose()
 		{
-			TIKI_ASSERT( m_refCount == 0u );
+			m_refCount = 0u;
 			m_hashValue = 0u;
 		}
 
@@ -118,6 +126,7 @@ namespace tiki
 				pFirst = &m_data.push();
 			}
 
+			static_cast< GraphicsStateObject* >( pFirst )->create( hashValue );
 			return pFirst;
 		}
 

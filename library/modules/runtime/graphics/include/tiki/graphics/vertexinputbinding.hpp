@@ -27,16 +27,22 @@ namespace tiki
 
 	class VertexInputBinding : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( VertexInputBinding );
+		TIKI_NONCOPYABLE_CLASS( VertexInputBinding );
 		friend class GraphicsContext;
+		friend class GraphicsSystem;
 
 	public:
+
+		VertexInputBinding();
+		~VertexInputBinding();
+
+		bool							isCreated() const { return m_pShader != nullptr; }
 
 		const VertexFormat*				getVertexFormat() const { return m_pVertexFormat; }
 
 	private: // friends
 
-		void							create( const VertexInputBindingParameters& creationParameters );
+		bool							create( const VertexInputBindingParameters& creationParameters );
 		void							dispose();
 
 	private:
