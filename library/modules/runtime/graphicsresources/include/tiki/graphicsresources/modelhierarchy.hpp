@@ -2,14 +2,16 @@
 #ifndef TIKI_MODELHIERARCHY_HPP
 #define TIKI_MODELHIERARCHY_HPP
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/simd.hpp"
+#include "tiki/base/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 
 namespace tiki
 {
+	struct ModelHierarchyInitData;
+
 	struct ModelHierarchy
 	{
 		friend class Model;
@@ -35,17 +37,16 @@ namespace tiki
 		
 	private:
 		
-		uint16							m_jointCount;
-		uint16							m_alignedJointCount;
+		uint					m_jointCount;
+		uint					m_alignedJointCount;
 
-		Array< crc32>					m_jointNames;
-		Array< uint16 >					m_parentIndices;
-		Array< vf32 >					m_defaultPose;
+		StaticArray< crc32 >	m_jointNames;
+		StaticArray< uint16 >	m_parentIndices;
+		StaticArray< vf32 >		m_defaultPose;
+		StaticArray< Matrix >	m_skinToBoneMatrices;
 
-		Array< Matrix >					m_skinToBoneMatrices;
-
-		const void*						initialize( const void* pData );
-		void							dispose();
+		bool					initialize( const ModelHierarchyInitData& initData );
+		void					dispose();
 
 	};
 }

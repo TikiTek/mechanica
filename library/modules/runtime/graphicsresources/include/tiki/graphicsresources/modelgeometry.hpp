@@ -1,10 +1,12 @@
 #ifndef TIKI_MODELGEOMETRY_HPP__
 #define TIKI_MODELGEOMETRY_HPP__
 
-#include "tiki/base/array.hpp"
+#include "tiki/base/staticarray.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/graphicsbase/vertexattribute.hpp"
 #include "tiki/math/matrix.hpp"
+#include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
 {
@@ -20,6 +22,15 @@ namespace tiki
 		uint8	vertexStride; 
 		uint8	indexType;		// see IndexType
 		uint8	vertexAttributeCount;
+	};
+
+	struct ModelGeometryInitData
+	{
+		ModelGeometryDesc			description;
+		ResRef< VertexAttribute >	vertexAttributes;
+
+		ResRef< uint8 >				vertexData;
+		ResRef< uint16 >			indexData;
 	};
 
 	class ModelGeometry
@@ -38,10 +49,10 @@ namespace tiki
 		const VertexBuffer&			getVertexBuffer() const { return m_vertexBuffer; }
 
 		const uint8*				getVertexData() const { return m_vertexData.getData(); }
-		size_t						getVertexCount() const { return m_vertexData.getCount(); }
+		uint						getVertexCount() const { return m_vertexData.getCount(); }
 
-		const uint32*				getIndexData() const { return m_indexData.getData(); }
-		size_t						getIndexCount() const { return m_indexData.getCount(); }
+		const uint16*				getIndexData() const { return m_indexData.getData(); }
+		uint						getIndexCount() const { return m_indexData.getCount(); }
 
 		//void						getMinMax( Vector3& min, Vector3& max ) const;
 
@@ -53,13 +64,13 @@ namespace tiki
 
 		ModelGeometryDesc		m_desc;
 
-		Array< uint8 >			m_vertexData;
-		Array< uint32 >			m_indexData;
+		StaticArray< uint8 >	m_vertexData;
+		StaticArray< uint16 >	m_indexData;
 
 		IndexBuffer				m_indexBuffer;
 		VertexBuffer			m_vertexBuffer;
 
-		const void*				initialize( GraphicsSystem& graphicsSystem, const void* pData, const Material* pMaterial );
+		bool					initialize( GraphicsSystem& graphicsSystem, const ModelGeometryInitData& initData, const Material* pMaterial );
 		void					dispose( GraphicsSystem& graphicsSystem );
 
 	};

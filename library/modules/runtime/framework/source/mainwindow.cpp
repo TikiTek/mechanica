@@ -108,20 +108,17 @@ namespace tiki
 		TIKI_ASSERT( s_mainWindowCreated == false );
 		s_mainWindowCreated = true;
 
-		m_windowClass	= convertString( params.pClassName );
-		m_windowTitle	= convertString( params.pWindowTitle );
-
 		HINSTANCE hInst = GetModuleHandle( nullptr );
 
-		TIKI_DECLARE_STACKANDZERO( WNDCLASSEXW, win );
-		win.cbSize			= sizeof( WNDCLASSEXW );
+		TIKI_DECLARE_STACKANDZERO( WNDCLASSEXA, win );
+		win.cbSize			= sizeof( WNDCLASSEXA );
 		win.hInstance		= hInst;
 		win.lpfnWndProc		= &windowProc;
-		win.lpszClassName	= m_windowClass.cStr();
+		win.lpszClassName	= params.pClassName;
 		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
 		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
 
-		HRESULT r = RegisterClassExW( &win );
+		HRESULT r = RegisterClassExA( &win );
 		if (FAILED(r))
 		{
 			MessageBoxA(NULL, "Can't register Class.", params.pWindowTitle, MB_HELP);
@@ -131,9 +128,9 @@ namespace tiki
 		m_eventBuffer.create();
 		s_pEventBuffer = &m_eventBuffer;
 
-		HWND hWnd = CreateWindowW(
-			m_windowClass.cStr(),
-			m_windowTitle.cStr(),
+		HWND hWnd = CreateWindowA(
+			params.pClassName,
+			params.pWindowTitle,
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -145,15 +142,15 @@ namespace tiki
 			NULL
 		);
 
-		if (!hWnd)
+		if ( hWnd == nullptr )
 		{
-			MessageBoxA(NULL, "Can't create Window.", params.pWindowTitle, MB_HELP);
+			MessageBoxA( nullptr, "Can't create Window.", params.pWindowTitle, MB_ICONSTOP );
 			return false;
 		}
 		m_pHandle = (WindowHandle)hWnd;
 		
-		ShowWindow(hWnd, 1);
-		UpdateWindow(hWnd);
+		ShowWindow( hWnd, 1 );
+		UpdateWindow( hWnd );
 
 		return true;
 	}
@@ -163,9 +160,6 @@ namespace tiki
 		HWND hWnd = GET_HWND;
 		CloseWindow( hWnd );
 		m_pHandle			= nullptr;
-
-		m_windowClass		= L"";
-		m_windowTitle		= L"";
 
 		s_pEventBuffer		= nullptr;
 		s_mainWindowCreated	= false;

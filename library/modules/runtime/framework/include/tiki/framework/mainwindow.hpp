@@ -37,8 +37,6 @@ namespace tiki
 	private:
 
 		WindowHandle				m_pHandle;
-		wstring						m_windowClass;
-		wstring						m_windowTitle;
 
 		WindowEventBuffer			m_eventBuffer;
 

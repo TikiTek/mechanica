@@ -2,10 +2,14 @@
 #include "tiki/graphicsresources/model.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/resource/resourcefile.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
 {
+	struct ModelGeometryInitData;
+	struct ModelHierarchyInitData;
+
 	struct ModelFactoryContext : public FactoryContextGenericBase< Model >
 	{
 		ModelFactoryContext( GraphicsSystem& _graphicsSystem )
@@ -27,10 +31,13 @@ namespace tiki
 		resourceManager.unregisterResourceType( s_resourceType );
 	}
 
-	struct ModelBinaryData
+	struct ModelInitData
 	{
-		uint32		geometrieCount;
-		uint32		hierarchySize;
+		ResRef< Material >					material;
+		ResRef< ModelHierarchyInitData >	hierarchy;
+
+		uint32								geometrieCount;
+		ResRef< ModelGeometryInitData >		geometries;
 	};
 
 	Model::Model()
@@ -45,33 +52,24 @@ namespace tiki
 
 	bool Model::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		const void* pData = initData.pData;
 		const ModelFactoryContext& factory = *static_cast< const ModelFactoryContext* >( &factoryContext );
+		const ModelInitData& modelInitData = *static_cast< const ModelInitData* >( initData.pData );
 
-		//const uint materialLength = *(uint*)pData;
-		//pData = addPtr( pData, sizeof(uint) );
+		//m_pMaterial = modelInitData.material.getData();
+		////TIKI_ASSERT( m_pMaterial != nullptr );
 
-		//const char* materialName = (char*)pData;
-
-		//string material( materialName, materialLength );
-		//pData = addPtr( pData, materialLength );
-
-		//m_pMaterial = framework::getResourceManager().loadResource< Material >( material );
-		//TIKI_ASSERT( m_pMaterial );
-
-		//const ModelBinaryData* pInfo = (const ModelBinaryData*)pData;
-		//pData = addPtr( pData, sizeof( ModelBinaryData ) );
-
-		//if ( pInfo->hierarchySize > 0u )
+		//if ( modelInitData.hierarchy.getData() != nullptr )
 		//{
-		//	m_pHierarchy	= (ModelHierarchy*)memory::newAlign< ModelHierarchy >();
-		//	pData			= m_pHierarchy->initialize( pData );
+		//	m_pHierarchy = static_cast< ModelHierarchy* >( memory::newAlign< ModelHierarchy >() );
+		//	TIKI_VERIFY( m_pHierarchy->initialize( *modelInitData.hierarchy.getData() ) );
 		//}
 
-		//m_geometries.create( pInfo->geometrieCount );
+		//m_geometries.create( modelInitData.geometrieCount );
+
+		//const ModelGeometryInitData* pGeometryInitData = modelInitData.geometries.getData();
 		//for (size_t i = 0u; i < m_geometries.getCount(); ++i)
 		//{
-		//	pData = m_geometries[ i ].initialize( *factory.pGraphicsSystem, pData, m_pMaterial );
+		//	m_geometries[ i ].initialize( factory.graphicsSystem, pGeometryInitData[ i ], m_pMaterial );
 		//}
 
 		return true;
@@ -79,19 +77,20 @@ namespace tiki
 
 	void Model::disposeInternal( const FactoryContext& factoryContext )
 	{
-		//if ( m_pHierarchy )
-		//{
-		//	m_pHierarchy->dispose();
-		//	memory::deleteAlign( m_pHierarchy );
+		const ModelFactoryContext& factory = *static_cast< const ModelFactoryContext* >( &factoryContext );
 
-		//	m_pHierarchy = nullptr;
-		//}
+		if ( m_pHierarchy )
+		{
+			m_pHierarchy->dispose();
+			memory::deleteAlign( m_pHierarchy );
+			m_pHierarchy = nullptr;
+		}
 
-		//for (size_t i = 0u; i < m_geometries.getCount(); ++i)
-		//{
-		//	m_geometries[ i ].dispose();
-		//}
-		//m_geometries.dispose();
+		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+		{
+			m_geometries[ i ].dispose( factory.graphicsSystem );
+		}
+		m_geometries.dispose();
 
 		//framework::getResourceManager().unloadResource( m_pMaterial );
 	}

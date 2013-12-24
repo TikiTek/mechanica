@@ -2,6 +2,7 @@
 #include "tiki/graphicsresources/modelgeometry.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsresources/material.hpp"
 
@@ -13,33 +14,31 @@ namespace tiki
 		memory::zero( m_desc );
 	}
 
-	const void* ModelGeometry::initialize( GraphicsSystem& graphicsSystem, const void* pData, const Material* pMaterial )
+	bool ModelGeometry::initialize( GraphicsSystem& graphicsSystem, const ModelGeometryInitData& initData, const Material* pMaterial )
 	{
-		const uint8* pBinary = (const uint8*)alignPtr( pData, 4u );
-		memory::copy( &m_desc, pBinary, sizeof( m_desc ) );
+		m_desc = initData.description;
 
-		pBinary = alignPtr( pBinary + sizeof( m_desc ), 4u );
-		VertexFormatParameters vertexParams;
-		vertexParams.pAttributes	= (const VertexAttribute*)pBinary;
-		vertexParams.attributeCount	= m_desc.vertexAttributeCount;
+		m_pVertexFormat = graphicsSystem.createVertexFormat(
+			initData.vertexAttributes.getData(),
+			m_desc.vertexAttributeCount
+		);
 
-		//m_pVertexFormat				= VertexFormat::getVertexFormat( vertexParams );
+		m_vertexBuffer.create( graphicsSystem, m_desc.vertexCount, m_desc.vertexStride, false, initData.vertexData.getData() );
+		m_vertexData.create( initData.vertexData.getData(), m_desc.vertexCount * m_desc.vertexStride );
 
-		pBinary = alignPtr( pBinary + sizeof( VertexAttribute ) * m_desc.vertexAttributeCount, 16u );
-		m_vertexBuffer.create( graphicsSystem, m_desc.vertexCount, m_desc.vertexStride, false, pBinary );
-		m_vertexData.create( (const uint8*)pBinary, m_desc.vertexCount * m_desc.vertexStride );
+		m_indexBuffer.create( graphicsSystem, m_desc.indexCount, (IndexType)m_desc.indexType, false, initData.indexData.getData() );
+		m_indexData.create( initData.indexData.getData(), m_desc.indexCount );
 
-		pBinary = alignPtr( pBinary + m_desc.vertexStride * m_desc.vertexCount, 4u );
-		m_indexBuffer.create( graphicsSystem, m_desc.indexCount, (IndexType)m_desc.indexType, false, pBinary );
-		m_indexData.create( (const uint32*)pBinary, m_desc.indexCount );
-
-		return pBinary + m_desc.indexType * m_desc.indexCount;
+		return true;
 	}
 
 	void ModelGeometry::dispose( GraphicsSystem& graphicsSystem )
 	{
-		//VertexFormat::releaseVertexFormat( m_pVertexFormat );
-		m_pVertexFormat	= nullptr;
+		if ( m_pVertexFormat != nullptr )
+		{
+			graphicsSystem.disposeVertexFormat( m_pVertexFormat );
+			m_pVertexFormat	= nullptr;
+		}
 
 		m_vertexBuffer.dispose( graphicsSystem );
 		m_indexBuffer.dispose( graphicsSystem );

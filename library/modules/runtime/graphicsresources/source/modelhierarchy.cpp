@@ -1,37 +1,32 @@
 
 #include "tiki/graphicsresources/modelhierarchy.hpp"
 
+#include "tiki/resource/resourcefile.hpp"
+
 namespace tiki
 {
-	struct ModelHierarchyBinary
+	struct ModelHierarchyInitData
 	{
-		uint16	jointCount;
-		uint16	alignedJointCount;
+		uint16				jointCount;
+		uint16				alignedJointCount;
+
+		ResRef< crc32 >		jointNames;
+		ResRef< uint16 >	parentJoints;
+		ResRef< vf32 >		defaultPose;
+		ResRef< Matrix >	skinToJointMatrices;
 	};
 
-	const void* ModelHierarchy::initialize( const void* pData )
+	bool ModelHierarchy::initialize( const ModelHierarchyInitData& initData )
 	{
-		const ModelHierarchyBinary* pInfo = (const ModelHierarchyBinary*)pData;
-		pData = addPtr( pData, sizeof( ModelHierarchyBinary ) );
+		m_jointCount		= initData.jointCount;
+		m_alignedJointCount	= initData.alignedJointCount;
 
-		m_jointCount		= pInfo->jointCount;
-		m_alignedJointCount	= pInfo->alignedJointCount;
+		m_jointNames.create( initData.jointNames.getData(), m_jointCount );
+		m_parentIndices.create( initData.parentJoints.getData(), m_jointCount );
+		m_defaultPose.create( initData.defaultPose.getData(), m_alignedJointCount * 3u );
+		m_skinToBoneMatrices.create( initData.skinToJointMatrices.getData(), m_jointCount );
 
-		m_jointNames.create( (const crc32*)pData, m_jointCount );
-		pData = addPtr( pData, sizeof( crc32 ) * m_jointCount );
-
-		m_parentIndices.create( (const uint16*)pData, m_jointCount );
-		pData = addPtr( pData, sizeof( uint16 ) * m_jointCount );
-
-		pData = alignPtr( pData, TIKI_SIMD_ALIGNMENT );
-		m_defaultPose.create( (const vf32*)pData, m_alignedJointCount * 3u, TIKI_SIMD_ALIGNMENT );
-		pData = addPtr( pData, sizeof( vf32 ) * m_alignedJointCount * 3u );
-
-		pData = alignPtr( pData, TIKI_SIMD_ALIGNMENT );
-		m_skinToBoneMatrices.create( (const Matrix*)pData, m_jointCount, TIKI_SIMD_ALIGNMENT );
-		pData = addPtr( pData, sizeof( Matrix ) * m_jointCount );
-
-		return pData;
+		return true;
 	}
 
 	void ModelHierarchy::dispose()

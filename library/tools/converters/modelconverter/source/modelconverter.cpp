@@ -62,7 +62,7 @@ namespace tiki
 			ResourceWriter writer;
 			openResourceWriter( &writer, params.outputName, "model", params.targetPlatform );
 			
-			writer.openResource( params.outputName, TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
+			writer.openResource( params.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
 
 			// write hierarchy
 			writer.openDataSection( 0u, AllocatorType_MainMemory );
