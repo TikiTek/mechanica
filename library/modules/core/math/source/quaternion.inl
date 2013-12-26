@@ -192,38 +192,20 @@ namespace tiki
 		return quaternion::normalize( quat );
 	}
 
-	TIKI_FORCE_INLINE void quaternion::createLookAt( Quaternion& quat, const Vector3& target, const Vector3& up /*= Vector3::unitY*/ )
+	TIKI_FORCE_INLINE void quaternion::createLookAt( Quaternion& quat, const Vector3& position, const Vector3& target, const Vector3& up /*= Vector3::unitY*/ )
 	{
-		TIKI_ASSERT(false);
-		//Vector3 forward;
-		//Vector3 right;
-		//Vector3 up;
+		Vector3 forward = target;
+		vector::normalize( vector::sub( forward, position ) );
 
-		//forward.normalize( target );
-		//up.normalize( upVec );
+		Vector3 right;
+		vector::normalize( vector::cross( right, up, forward ) );
 
-		//right.cross( up, forward );
-		//up.cross( forward, right );
+		quat.w = math::sqrt( 1.0f + right.x + up.y + forward.z ) * 0.5f;
+		const float reciprocal = 1.0f / ( 4.0f * quat.w );
 
-		////Matrix mBasis = new Matrix(
-		////	vRight.X,		vRight.Y,		vRight.Z,		0.0f,
-		////	vUp.X,			vUp.Y,			vUp.Z,			0.0f,
-		////	vDirection.X,	vDirection.Y,	vDirection.Z,	0.0f,
-		////	0.0f,			0.0f,			0.0f,			1.0f);
-
-		////// Step 3. Build a quaternion from the matrix
-		////Quaternion qrot = new Quaternion();
-		////qrot.W = (float)Math.Sqrt(1.0f + mBasis.M11 + mBasis.M22 + mBasis.M33) / 2.0f;
-		////double dfWScale = qrot.W * 4.0;
-		////qrot.X = (float)((mBasis.M32 - mBasis.M23) / dfWScale);
-		////qrot.Y = (float)((mBasis.M13 - mBasis.M31) / dfWScale);
-		////qrot.Z = (float)((mBasis.M21 - mBasis.M12) / dfWScale);
-
-		//w = sqrtf( 1.0f - right.x + up.y + forward.z ) * 0.5f;
-		//const float tmp = 1.0f / ( 4.0f * w );
-		////x = ( forward.y - up.z ) * tmp;
-		////y = ( right.z - forward.x ) * tmp;
-		////z = ( up.x - right.y ) * tmp;
+		quat.x = ( up.z - forward.y ) * reciprocal;
+		quat.y = ( forward.x - right.z ) * reciprocal;
+		quat.z = ( right.y - up.x ) * reciprocal;
 	}
 
 	TIKI_FORCE_INLINE void quaternion::fromMatrix( Quaternion& result, const Matrix33& mtx )

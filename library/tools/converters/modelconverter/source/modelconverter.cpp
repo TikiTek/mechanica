@@ -139,7 +139,7 @@ namespace tiki
 		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( j );
-			joint.defaultPose.decompose( dpRotation[ j ], dpPosition[ j ], dpScale[ j ] );
+			matrix::decompose( dpRotation[ j ], dpPosition[ j ], dpScale[ j ], joint.defaultPose );
 		}
 
 		writer.writeAlignment( 16u );
@@ -175,7 +175,7 @@ namespace tiki
 		for (size_t i = 0u; i < hierarchy.getJointCount(); ++i)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( i );
-			writer.writeData( joint.skinToBone.n, sizeof( Matrix ) );
+			writer.writeData( &joint.skinToBone.x.x, sizeof( Matrix44 ) );
 		}
 	}
 

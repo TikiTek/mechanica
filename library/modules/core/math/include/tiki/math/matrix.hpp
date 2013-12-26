@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	struct Quaternion;
+
 	TIKI_PRE_ALIGN( 16 ) struct Matrix33
 	{
 		Vector3 x;
@@ -103,6 +105,9 @@ namespace tiki
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix43& mtx );
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix44& mtx );
 		TIKI_FORCE_INLINE void		transform( Vector4& vec, const Matrix44& mtx );
+
+		void						compose( Matrix44& target, const Quaternion& rotation, const Vector3& translation, const Vector3& scale );
+		bool						decompose( Quaternion& rotation, Vector3& translation, Vector3& scale, const Matrix44& source );
 	}
 }
 

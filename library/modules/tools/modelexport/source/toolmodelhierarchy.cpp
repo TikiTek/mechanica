@@ -75,7 +75,7 @@ namespace tiki
 		joint.used = true;
 	}
 
-	void ToolModelHierarchy::setBindMatrix( const ToolModelJoint& constJoint, const Matrix& matrix )
+	void ToolModelHierarchy::setBindMatrix( const ToolModelJoint& constJoint, const Matrix44& matrix )
 	{
 		const size_t index		= m_joints.getIndex( constJoint );
 		ToolModelJoint& joint	= m_joints[ index ];

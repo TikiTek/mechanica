@@ -61,10 +61,25 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2& vector::set( Vector2& vec, const float2& source )
+	{
+		vec.x = source.x;
+		vec.y = source.y;
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::set( Vector2& vec, float x, float y )
 	{
 		vec.x = x;
 		vec.y = y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::set( Vector3& vec, const float3& source )
+	{
+		vec.x = source.x;
+		vec.y = source.y;
+		vec.z = source.z;
 		return vec;
 	}
 
@@ -81,6 +96,15 @@ namespace tiki
 		vec.x = x;
 		vec.y = y;
 		vec.z = z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::set( Vector4& vec, const float4& source )
+	{
+		vec.x = source.x;
+		vec.y = source.y;
+		vec.z = source.z;
+		vec.w = source.w;
 		return vec;
 	}
 

@@ -16,7 +16,7 @@ namespace tiki
 	struct ToolModelKey
 	{
 		float		time;
-		Matrix		transform;
+		Matrix44	transform;
 	};
 
 	struct ToolModelAnimationJoint
@@ -26,7 +26,7 @@ namespace tiki
 		bool					used;
 
 		Array< ToolModelKey >	keys;
-		Array< Matrix >			samples;
+		Array< Matrix44 >		samples;
 	};
 
 	class ToolModelAnimation

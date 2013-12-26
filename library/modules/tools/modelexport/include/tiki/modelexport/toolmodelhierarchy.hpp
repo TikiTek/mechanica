@@ -30,8 +30,8 @@ namespace tiki
 		const _XmlElement*	pParentNode;
 		size_t				parentIndex;
 
-		Matrix				defaultPose;
-		Matrix				skinToBone;
+		Matrix44			defaultPose;
+		Matrix44			skinToBone;
 	};
 
 	class ToolModelHierarchy
@@ -51,7 +51,7 @@ namespace tiki
 		const ToolModelJoint*			getJointByName( const string& name ) const;
 
 		void							markJointAsUsed( const ToolModelJoint& joint );
-		void							setBindMatrix( const ToolModelJoint& joint, const Matrix& matrix );
+		void							setBindMatrix( const ToolModelJoint& joint, const Matrix44& matrix );
 
 		void							calculateFinalIndices();
 

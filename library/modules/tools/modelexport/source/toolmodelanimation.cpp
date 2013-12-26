@@ -60,7 +60,7 @@ namespace tiki
 		}
 
 		ToolModelSource< float > times;
-		ToolModelSource< Matrix > transforms;
+		ToolModelSource< Matrix44 > transforms;
 		ToolModelSource< string > interpolators;
 
 		const XmlElement* pSampler = pXml->findFirstChild( "sampler", pNode );
@@ -204,8 +204,8 @@ namespace tiki
 
 						const float koeff = (time - pLeftKey->time) / (pRightKey->time - pLeftKey->time);
 
-						Matrix mtx;
-						mtx.lerp( pLeftKey->transform, pRightKey->transform, koeff );
+						Matrix44 mtx;
+						matrix::lerp( mtx, pLeftKey->transform, pRightKey->transform, koeff );
 
 						joint.samples[ i ] = mtx;
 					}
