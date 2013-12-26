@@ -8,7 +8,9 @@ namespace tiki
 {
 	class ApplicationState;
 	class Model;
+	class SamplerState;
 	class ShaderSet;
+	class Texture;
 	class VertexInputBinding;
 
 	enum TestStateTransitionSteps
@@ -38,6 +40,9 @@ namespace tiki
 
 		const ShaderSet*			m_pShaderSet;
 		const Model*				m_pModel;
+
+		const Texture*				m_pTexture;
+		const SamplerState*			m_pSampler;
 
 		const VertexInputBinding*	m_pInputBinding;
 
