@@ -64,6 +64,10 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix33&	createIdentity( Matrix33& mtx );
 		TIKI_FORCE_INLINE Matrix43&	createIdentity( Matrix43& mtx );
 		TIKI_FORCE_INLINE Matrix44&	createIdentity( Matrix44& mtx );
+		TIKI_FORCE_INLINE Matrix33&	createScale( Matrix33& mtx, const Vector3& scale );
+		TIKI_FORCE_INLINE Matrix33&	createRotationX( Matrix33& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix33&	createRotationY( Matrix33& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix33&	createRotationZ( Matrix33& mtx, float angle );
 
 		TIKI_FORCE_INLINE Matrix33&	set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z );
 		TIKI_FORCE_INLINE Matrix43&	set( Matrix43& mtx, const Matrix33& rot, const Vector3& pos );
