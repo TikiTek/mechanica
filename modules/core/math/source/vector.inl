@@ -7,32 +7,32 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE bool vector::isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isEquals( lhs.x, rhs.x, epsilon ) && f32::isEquals( lhs.y, rhs.y, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool vector::isEquals( const Vector3& lhs, const Vector3& rhs, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isEquals( const Vector3& lhs, const Vector3& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isEquals( lhs.x, rhs.x, epsilon ) && f32::isEquals( lhs.y, rhs.y, epsilon ) && f32::isEquals( lhs.z, rhs.z, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool vector::isEquals( const Vector4& lhs, const Vector4& rhs, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isEquals( const Vector4& lhs, const Vector4& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isEquals( lhs.x, rhs.x, epsilon ) && f32::isEquals( lhs.y, rhs.y, epsilon ) && f32::isEquals( lhs.z, rhs.z, epsilon ) && f32::isEquals( lhs.w, rhs.w, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool vector::isZero( const Vector2& vec, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isZero( const Vector2& vec, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool vector::isZero( const Vector3& vec, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isZero( const Vector3& vec, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon ) && f32::isZero( vec.z, epsilon );
 	}
 
-	TIKI_FORCE_INLINE bool vector::isZero( const Vector4& vec, float epsilon /*= f32::s_epsilon*/ )
+	TIKI_FORCE_INLINE bool vector::isZero( const Vector4& vec, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon ) && f32::isZero( vec.z, epsilon ) && f32::isZero( vec.w, epsilon );
 	}
@@ -68,11 +68,28 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector3& vector::set( Vector3& vec, const Vector2& source, float z )
+	{
+		vec.x = source.x;
+		vec.y = source.y;
+		vec.z = z;
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector3& vector::set( Vector3& vec, float x, float y, float z )
 	{
 		vec.x = x;
 		vec.y = y;
 		vec.z = z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::set( Vector4& vec, const Vector3& source, float w )
+	{
+		vec.x = source.x;
+		vec.y = source.y;
+		vec.z = source.z;
+		vec.w = w;
 		return vec;
 	}
 
