@@ -241,6 +241,8 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pCurrentSection != nullptr );
 
+		writeAlignment( 8u );
+
 		ReferenceData& data = m_pCurrentSection->references.add();
 		data.key		= key;
 		data.position	= m_pCurrentSection->binaryData.getLength();

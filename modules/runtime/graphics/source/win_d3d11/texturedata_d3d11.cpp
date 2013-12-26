@@ -64,7 +64,7 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 	}
 
-	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pInitData /*= nullptr */ )
+	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
@@ -77,34 +77,51 @@ namespace tiki
 		desc.Width				= description.width;
 		desc.Height				= description.height;		
 		desc.Usage				= D3D11_USAGE_DEFAULT;
-		desc.MipLevels			= 1u;
+		desc.MipLevels			= description.mipCount + 1u;
 		desc.ArraySize			= description.arrayCount;
 		desc.SampleDesc.Count	= 1u;
-		desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );		
+		desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
 
-		if ( FAILED( graphics::getDevice( graphicsSystem )->CreateTexture2D( &desc, nullptr, &m_platformData.pTexture2d ) ) )
+		D3D11_SUBRESOURCE_DATA initData[ 32u ];
+		memory::zero( initData, sizeof( initData ) );
+		{
+			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
+
+			uint width	= description.width;
+			uint height	= description.height;
+			const uint8* pLevelData	= static_cast< const uint8* >( pTextureData );
+
+			for (uint mipLevel = 0u; mipLevel <= description.mipCount; ++mipLevel)
+			{
+				const uint rowPitch		= width * bytesPerPixel;
+				const uint depthPitch	= rowPitch * height;
+
+				initData[ mipLevel ].pSysMem			= pLevelData;
+				initData[ mipLevel ].SysMemPitch		= rowPitch;
+				initData[ mipLevel ].SysMemSlicePitch	= depthPitch;
+
+				width		/= 2u;
+				height		/= 2u;
+				pLevelData	+= depthPitch;
+			} 
+		}
+
+		ID3D11Device* pDevice = graphics::getDevice( graphicsSystem );
+		if ( FAILED( pDevice->CreateTexture2D( &desc, initData, &m_platformData.pTexture2d ) ) )
 		{
 			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
 			return false;
 		}
 
-		if ( pInitData != nullptr )
-		{
-			const size_t rowPitch	= description.width * ( getBitsPerPixel( (PixelFormat)description.format ) / 8u );
-			const size_t depthPitch	= rowPitch * description.height;
-
-			graphics::getContext( graphicsSystem )->UpdateSubresource( m_platformData.pResource, 0u, nullptr, pInitData, rowPitch, depthPitch );
-		}
-
 		if ( isBitSet( description.flags, TextureFlags_ShaderInput ) )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-			srvDesc.Format = desc.Format;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Texture2D.MipLevels = desc.MipLevels;
-			srvDesc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
+			srvDesc.Format						= desc.Format;
+			srvDesc.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MipLevels			= desc.MipLevels;
+			srvDesc.Texture2D.MostDetailedMip	= 0u;
 
-			if ( FAILED( graphics::getDevice( graphicsSystem )->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
+			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
 			{
 				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );
 				return false;

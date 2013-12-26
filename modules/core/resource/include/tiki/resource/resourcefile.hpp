@@ -77,7 +77,7 @@ namespace tiki
 	};
 
 	template<typename T>
-	class ResRef
+	struct ResRef
 	{
 	public:
 
@@ -103,12 +103,15 @@ namespace tiki
 
 	private:
 
-		const T*	m_pRef;
+		TIKI_PRE_ALIGN( 8 )	struct
+		{
+			const T*	m_pRef;
 #if TIKI_DISABLED( TIKI_BUILD_64BIT )
-		void*		m_pPadding;
+			void*		m_pPadding;
 #endif
+		} TIKI_POST_ALIGN( 8 );
 	};
-
+	
 	enum StringType
 	{
 		StringType_Char,

@@ -38,6 +38,7 @@ namespace tiki
 			height		= 0u;
 			depth		= 0u;
 			arrayCount	= 0u;
+			mipCount	= 0u;
 
 			flags		= TextureFlags_None;
 			format		= PixelFormat_Invalid;
@@ -48,10 +49,11 @@ namespace tiki
 		uint16	height;
 		uint16	depth;
 		uint16	arrayCount;
+		uint16	mipCount;
 
-		uint16	flags;		// see TextureFlags
-		uint8	format;		// see PixelFormat
-		uint8	type;		// see TextureType
+		uint16	flags;		// see TextureFlag
+		uint16	format;		// see PixelFormat
+		uint16	type;		// see TextureType
 	};
 }
 

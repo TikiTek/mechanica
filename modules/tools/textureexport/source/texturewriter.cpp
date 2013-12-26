@@ -7,41 +7,74 @@
 
 namespace tiki
 {
-	void TextureWriter::create()
+	TextureWriter::TextureWriter()
 	{
+		m_pImage = nullptr;
+	}
+
+	TextureWriter::~TextureWriter()
+	{
+		TIKI_ASSERT( m_pImage == nullptr );
+	}
+
+	bool TextureWriter::create( const HdrImage& image, PixelFormat targetFormat, uint mipMapCount )
+	{
+		m_pImage		= &image;
+
+		m_description.width			= m_pImage->getWidth();
+		m_description.height		= m_pImage->getHeight();
+		m_description.depth			= 1u;
+		m_description.arrayCount	= 1u;
+		m_description.mipCount		= mipMapCount;
+
+		m_description.format		= targetFormat;
+		m_description.type			= TextureType_2d;
+		m_description.flags			= TextureFlags_ShaderInput;
+
+		return true;
 	}
 
 	void TextureWriter::dispose()
 	{
+		m_pImage = nullptr;
 	}
 
-	ReferenceKey TextureWriter::writeTexture( ResourceWriter& writer, const HdrImage& image, const PixelFormat format )
+	ReferenceKey TextureWriter::writeTextureData( ResourceWriter& writer )
 	{
-		TextureDescription description;
-		description.width		= image.getWidth();
-		description.height		= image.getHeight();
-		description.depth		= 1u;
-		description.arrayCount	= 1u;
-
-		description.format		= format;
-		description.type		= TextureType_2d;
-		description.flags		= TextureFlags_ShaderInput;
-
-		Array< uint8 > bitmap;
-		image.convertTo( bitmap, format );
+		TIKI_ASSERT( m_pImage != nullptr );
+		
+		const PixelFormat format = (PixelFormat)m_description.format;
 
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
 		const ReferenceKey dataKey = writer.addDataPoint();
 
-		writer.writeUInt32( bitmap.getCount() + sizeof( TextureDescription ) );
-		writer.writeData( &description, sizeof( description ) );
-		writer.writeData( bitmap.getData(), bitmap.getCount() );
+		uint width	= m_description.width;
+		uint height	= m_description.height;
+
+		for (uint mipLevel = 0u; mipLevel <= m_description.mipCount; ++mipLevel)
+		{
+			HdrImage mipImage;
+			mipImage.createFromImage( *m_pImage );
+
+			if ( mipLevel != 0u )
+			{
+				mipImage.resizeImage( width, height );
+			}
+
+			Array< uint8 > bitmap;
+			mipImage.convertTo( bitmap, format );
+
+			writer.writeData( bitmap.getData(), bitmap.getCount() );
+
+			bitmap.dispose();
+			mipImage.dispose();
+
+			width	/= 2u;
+			height	/= 2u;
+		}
 
 		writer.closeDataSection();
 
-		bitmap.dispose();
-
 		return dataKey;
 	}
-
 }

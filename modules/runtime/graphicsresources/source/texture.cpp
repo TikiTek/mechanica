@@ -43,16 +43,17 @@ namespace tiki
 
 	bool Texture::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		const TextureFactoryContext* pFactory		= static_cast< const TextureFactoryContext* >( &factoryContext );
+		const TextureFactoryContext& factory		= *static_cast< const TextureFactoryContext* >( &factoryContext );
 		const TextureInitializationData* pInitData	= static_cast< const TextureInitializationData* >( initData.pData );
 
-		return m_textureData.create( pFactory->graphicsSystem, pInitData->description, pInitData->data.getData() );
+		return m_textureData.create( factory.graphicsSystem, pInitData->description, pInitData->data.getData() );
 	}
 
 	void Texture::disposeInternal( const FactoryContext& factoryContext )
 	{
-		const TextureFactoryContext* pFactory = static_cast< const TextureFactoryContext* >( &factoryContext );
-		m_textureData.dispose( pFactory->graphicsSystem );
+		const TextureFactoryContext& factory = *static_cast< const TextureFactoryContext* >( &factoryContext );
+
+		m_textureData.dispose( factory.graphicsSystem );
 	}
 
 }

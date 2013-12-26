@@ -26,6 +26,8 @@ namespace tiki
 
 	public:
 
+		bool					isCreated() const;
+
 		const VertexAttribute&	getAttributeByIndex( uint index ) const { return m_attributes[ index ]; }
 		uint					getAttributeCount() const { return m_attributes.getCount(); }
 
@@ -35,8 +37,6 @@ namespace tiki
 
 		void					create( const VertexFormatParameters& creationParameters );
 		void					dispose();
-
-		bool					isCreated() const;
 
 	private:
 

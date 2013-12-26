@@ -107,7 +107,7 @@ namespace tiki
 	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
 	{
 		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
-		if ( pSampler != nullptr && pSampler->icCreated() == false )
+		if ( pSampler != nullptr && pSampler->isCreated() == false )
 		{
 			if ( pSampler->create( *this, creationParameters ) == false )
 			{

@@ -246,13 +246,15 @@ namespace tiki
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 
-			writer.writeSInt32( shaderVariants.getCount() );
+			writer.writeUInt32( shaderVariants.getCount() );
+			writer.writeAlignment( 8u );
+
 			for (uint i = 0u; i < shaderVariants.getCount(); ++i)
 			{
 				const ShaderVariantData& shaderVarName = shaderVariants[ i ];
-				writer.writeSInt16( shaderVarName.type );
-				writer.writeSInt16( (uint16)shaderVarName.codeLength );
-				writer.writeSInt32( shaderVarName.variantKey );
+				writer.writeUInt16( shaderVarName.type );
+				writer.writeUInt16( (uint16)shaderVarName.codeLength );
+				writer.writeUInt32( shaderVarName.variantKey );
 				writer.writeReference( shaderVarName.key );
 			}
 
