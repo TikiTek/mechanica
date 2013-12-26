@@ -1,6 +1,7 @@
 
 #include "tiki/gamestates/teststate.hpp"
 
+#include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
@@ -98,22 +99,37 @@ namespace tiki
 
 		graphicsContext.setVertexInputBinding( m_pInputBinding );
 
+		Matrix43 mtx;
+		matrix::clear( mtx );
+		matrix::createRotationY( mtx.rot, framework::getFrameTimer().getTotalTime() );
+
+		Vector3 pos[] = {
+			{ -0.5f, -0.5f, 0.0f },
+			{  0.0f,  0.5f, 0.0f },
+			{  0.5f, -0.5f, 0.0f }
+		};
+
+		for (uint i = 0u; i < TIKI_COUNT( pos ); ++i)
+		{
+			matrix::transform( pos[ i ], mtx );
+		}
+
 		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( graphicsContext.beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 3u ) );
 		
-		pVertices[ 0u ].position.x = -0.5f;
-		pVertices[ 0u ].position.y = -0.5f;
-		pVertices[ 0u ].texCoord.x =  0.0f;
-		pVertices[ 0u ].texCoord.y =  1.0f;
+		pVertices[ 0u ].position.x = pos[ 0u ].x;
+		pVertices[ 0u ].position.y = pos[ 0u ].y;
+		pVertices[ 0u ].texCoord.x = 0.0f;
+		pVertices[ 0u ].texCoord.y = 1.0f;
 
-		pVertices[ 1u ].position.x =  0.0f;
-		pVertices[ 1u ].position.y =  0.5f;
-		pVertices[ 1u ].texCoord.x =  0.5f;
-		pVertices[ 1u ].texCoord.y =  0.0f;
+		pVertices[ 1u ].position.x = pos[ 1u ].x;
+		pVertices[ 1u ].position.y = pos[ 1u ].y;
+		pVertices[ 1u ].texCoord.x = 0.5f;
+		pVertices[ 1u ].texCoord.y = 0.0f;
 
-		pVertices[ 2u ].position.x =  0.5f;
-		pVertices[ 2u ].position.y = -0.5f;
-		pVertices[ 2u ].texCoord.x =  1.0f;
-		pVertices[ 2u ].texCoord.y =  1.0f;
+		pVertices[ 2u ].position.x = pos[ 2u ].x;
+		pVertices[ 2u ].position.y = pos[ 2u ].y;
+		pVertices[ 2u ].texCoord.x = 1.0f;
+		pVertices[ 2u ].texCoord.y = 1.0f;
 		
 		graphicsContext.endImmediateGeometry();
 	}
