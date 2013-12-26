@@ -103,6 +103,54 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix33& matrix::createScale( Matrix33& mtx, const Vector3& scale )
+	{
+		matrix::clear( mtx );
+		mtx.x.x = scale.x;
+		mtx.y.y = scale.y;
+		mtx.z.z = scale.z;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix33& matrix::createRotationX( Matrix33& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = 1.0f;
+		mtx.y.y = c;
+		mtx.y.z = -s;
+		mtx.z.y = s;
+		mtx.z.z = c;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix33& matrix::createRotationY( Matrix33& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = c;
+		mtx.x.z = s;
+		mtx.y.y = 1.0f;
+		mtx.z.x = -s;
+		mtx.z.z = c;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix33& matrix::createRotationZ( Matrix33& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = c;
+		mtx.x.y = -s;
+		mtx.y.x = s;
+		mtx.y.y = c;
+		mtx.z.z = 1.0f;
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z )
 	{
 		mtx.x = x;
