@@ -13,7 +13,7 @@ namespace tiki
 		ResRef< crc32 >		jointNames;
 		ResRef< uint16 >	parentJoints;
 		ResRef< vf32 >		defaultPose;
-		ResRef< Matrix >	skinToJointMatrices;
+		ResRef< Matrix43 >	skinToJointMatrices;
 	};
 
 	bool ModelHierarchy::initialize( const ModelHierarchyInitData& initData )
