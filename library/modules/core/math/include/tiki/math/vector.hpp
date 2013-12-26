@@ -13,6 +13,11 @@ namespace tiki
 	{
 		float x;
 		float y;
+
+		static const Vector2 zero;
+		static const Vector2 one;
+		static const Vector2 unitX;
+		static const Vector2 unitY;
 	};
 
 	TIKI_PRE_ALIGN( 16 ) struct Vector3
@@ -22,6 +27,12 @@ namespace tiki
 		float z;
 
 		float _pad;
+
+		static const Vector3 zero;
+		static const Vector3 one;
+		static const Vector3 unitX;
+		static const Vector3 unitY;
+		static const Vector3 unitZ;
 	}
 	TIKI_POST_ALIGN( 16);
 
@@ -30,26 +41,35 @@ namespace tiki
 		float x;
 		float y;
 		float z;
-		float w;		
+		float w;
+
+		static const Vector4 zero;
+		static const Vector4 one;
+		static const Vector4 unitX;
+		static const Vector4 unitY;
+		static const Vector4 unitZ;
+		static const Vector4 unitW;
 	}
 	TIKI_POST_ALIGN( 16);
 
 	namespace vector
 	{
-		TIKI_FORCE_INLINE bool		isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon = f32::s_epsilon );
-		TIKI_FORCE_INLINE bool		isEquals( const Vector3& lhs, const Vector3& rhs, float epsilon = f32::s_epsilon );
-		TIKI_FORCE_INLINE bool		isEquals( const Vector4& lhs, const Vector4& rhs, float epsilon = f32::s_epsilon );
+		TIKI_FORCE_INLINE bool		isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isEquals( const Vector3& lhs, const Vector3& rhs, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isEquals( const Vector4& lhs, const Vector4& rhs, float epsilon = f32::epsilon );
 
-		TIKI_FORCE_INLINE bool		isZero( const Vector2& vec, float epsilon = f32::s_epsilon );
-		TIKI_FORCE_INLINE bool		isZero( const Vector3& vec, float epsilon = f32::s_epsilon );
-		TIKI_FORCE_INLINE bool		isZero( const Vector4& vec, float epsilon = f32::s_epsilon );
+		TIKI_FORCE_INLINE bool		isZero( const Vector2& vec, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isZero( const Vector3& vec, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isZero( const Vector4& vec, float epsilon = f32::epsilon );
 
 		TIKI_FORCE_INLINE Vector2&	clear( Vector2& vec );
 		TIKI_FORCE_INLINE Vector3&	clear( Vector3& vec );
 		TIKI_FORCE_INLINE Vector4&	clear( Vector4& vec );
 
 		TIKI_FORCE_INLINE Vector2&	set( Vector2& vec, float x, float y );
+		TIKI_FORCE_INLINE Vector3&	set( Vector3& vec, const Vector2& source, float z );
 		TIKI_FORCE_INLINE Vector3&	set( Vector3& vec, float x, float y, float z );
+		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, const Vector3& source, float w );
 		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, float x, float y, float z, float w );
 
 		TIKI_FORCE_INLINE Vector2&	add( Vector2& vec, float x, float y );
@@ -123,6 +143,6 @@ namespace tiki
 	}
 }
 
-#include "vector.inl"
+#include "../../../source/vector.inl"
 
 #endif // __TIKI_VECTOR_HPP_INCLUDED__

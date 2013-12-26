@@ -11,26 +11,25 @@ namespace tiki
 {
 	namespace f32
 	{
-		static const float s_epsilon	= 4.37114e-05f;
-		static const float s_pi			= 3.141592653f;
-		static const float s_twoPi		= 6.283185307f;
-		static const float s_piOver2	= 1.570796326f;
-		static const float s_piOver4	= 0.785398163f;
+		static const float epsilon	= 4.37114e-05f;
+		static const float pi		= 3.141592653f;
+		static const float twoPi	= 6.283185307f;
+		static const float piOver2	= 1.570796326f;
+		static const float piOver4	= 0.785398163f;
 
 		TIKI_FORCE_INLINE float	abs( float a )
 		{
-			const sint32 val = ( *(sint32*)&a & 0x7fffffff );
-			return *(float*)&val;
+			return -a > a ? -a : a;
 		}
 
-		TIKI_FORCE_INLINE bool	isZero( float a, float epsilon2 = f32::s_epsilon )
+		TIKI_FORCE_INLINE bool	isZero( float a, float epsilon2 = f32::epsilon )
 		{
-			return abs( a ) < epsilon2;
+			return f32::abs( a ) < epsilon2;
 		}
 
-		TIKI_FORCE_INLINE bool	isEquals( float a, float b, float epsilon2 = f32::s_epsilon )
+		TIKI_FORCE_INLINE bool	isEquals( float a, float b, float epsilon2 = f32::epsilon )
 		{
-			return abs( a - b ) < epsilon2;
+			return f32::abs( a - b ) < epsilon2;
 		}
 
 		TIKI_FORCE_INLINE float pow( float value, float power )
@@ -41,6 +40,11 @@ namespace tiki
 		TIKI_FORCE_INLINE float lerp( float from, float to, float position )
 		{
 			return from + ( to - from ) * position;
+		}
+
+		TIKI_FORCE_INLINE float sign( float val )
+		{
+			return ( val < 0.0f ? -1.0f : ( val > 0.0f ? 1.0f : 0.0f ) );
 		}
 
 		TIKI_FORCE_INLINE float clamp( float value, float min, float max )
