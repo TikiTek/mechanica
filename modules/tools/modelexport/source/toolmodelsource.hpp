@@ -22,11 +22,12 @@ namespace tiki
 		target = source[ 0u ];
 	}
 
-	static void stringSourceToMatrix( Matrix& target, const Array< string >& source )
+	static void stringSourceToMatrix( Matrix44& target, const Array< string >& source )
 	{
+		float* pMatrix = &target.x.x;
 		for (size_t i = 0u; i < 16u; ++i)
 		{
-			target.n[ i ] = ParseString::parseSingle( source[ i ] );
+			pMatrix[ i ] = ParseString::parseSingle( source[ i ] );
 		}
 	}
 
@@ -219,12 +220,12 @@ namespace tiki
 		}
 	};
 
-	TIKI_FORCE_INLINE void parseMatrix( Matrix& mtx, cstring str, float scale )
+	TIKI_FORCE_INLINE void parseMatrix( Matrix44& mtx, cstring str, float scale )
 	{
 		Tokenizer token;
 		token.create( str, " \n\t\r", true );
 
-		float* pValues = mtx.n;
+		float* pValues = &mtx.x.x;
 
 		size_t j = 0u;
 		size_t stringIndex = 0; 
@@ -241,12 +242,10 @@ namespace tiki
 			TIKI_ASSERT( j <= 16u );
 		}
 
-		Vector3 tranlation;
-		mtx.getTranslation( tranlation );
-
-		tranlation.mul( scale );
-		mtx.setTranslation( tranlation );
-
+		// scale translation
+		mtx.x.w *= scale;
+		mtx.y.w *= scale;
+		mtx.z.w *= scale;
 	}
 
 }

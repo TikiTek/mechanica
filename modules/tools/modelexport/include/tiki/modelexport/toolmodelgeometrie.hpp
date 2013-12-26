@@ -6,8 +6,7 @@
 #include "tiki/base/structs.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
-#include "tiki/math/vector2.hpp"
-#include "tiki/math/vector3.hpp"
+#include "tiki/math/vector.hpp"
 #include "tiki/toolbase/tikixml.hpp"
 #include "tiki/modelexport/toolmodelvertexformat.hpp"
 
@@ -59,7 +58,7 @@ namespace tiki
 		bool		hasTexcoord;
 
 		bool		isSkinned;
-		Matrix		shapeMatrix;
+		Matrix44	shapeMatrix;
 	};
 
 	class ToolModelGeometrie

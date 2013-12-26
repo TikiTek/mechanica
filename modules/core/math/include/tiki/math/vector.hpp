@@ -5,6 +5,7 @@
 #include "tiki/base/alignment.hpp"
 #include "tiki/base/float32.hpp"
 #include "tiki/base/inline.hpp"
+#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
@@ -66,9 +67,12 @@ namespace tiki
 		TIKI_FORCE_INLINE Vector3&	clear( Vector3& vec );
 		TIKI_FORCE_INLINE Vector4&	clear( Vector4& vec );
 
+		TIKI_FORCE_INLINE Vector2&	set( Vector2& vec, const float2& source );
 		TIKI_FORCE_INLINE Vector2&	set( Vector2& vec, float x, float y );
+		TIKI_FORCE_INLINE Vector3&	set( Vector3& vec, const float3& source );
 		TIKI_FORCE_INLINE Vector3&	set( Vector3& vec, const Vector2& source, float z );
 		TIKI_FORCE_INLINE Vector3&	set( Vector3& vec, float x, float y, float z );
+		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, const float4& source );
 		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, const Vector3& source, float w );
 		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, float x, float y, float z, float w );
 

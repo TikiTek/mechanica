@@ -46,7 +46,7 @@ namespace tiki
 		TIKI_FORCE_INLINE Quaternion&	nlerp( Quaternion& quat, const Quaternion& start, const Quaternion& end, const float amount );
 		TIKI_FORCE_INLINE Quaternion&	slerp( Quaternion& quat, const Quaternion& start, const Quaternion& end, const float amount );
 
-		TIKI_FORCE_INLINE void			createLookAt( Quaternion& quat, const Vector3& target, const Vector3& up = Vector3::unitY );
+		TIKI_FORCE_INLINE void			createLookAt( Quaternion& quat, const Vector3& position, const Vector3& target, const Vector3& up = Vector3::unitY );
 
 		TIKI_FORCE_INLINE void			fromMatrix( Quaternion& quat, const Matrix33& matrix );
 		TIKI_FORCE_INLINE void			toMatrix( Matrix33& mtx, const Quaternion& quat );

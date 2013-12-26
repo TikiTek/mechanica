@@ -421,7 +421,7 @@ namespace tiki
 		m_desc.isSkinned = true;
 
 		ToolModelSource< string > boneNames;
-		ToolModelSource< Matrix > matrices;
+		ToolModelSource< Matrix44 > matrices;
 		ToolModelSource< float > weights;
 		Array< ToolModelSourceBase* > baseSources;
 
@@ -482,12 +482,12 @@ namespace tiki
 
 			jointIndices[ i ] = pJoint->index;
 
-			Matrix mtx = matrices.data[ i ];
+			Matrix44 mtx = matrices.data[ i ];
 
-			Vector3 translation;
-			mtx.getTranslation( translation );
-			translation.mul( m_desc.scale );
-			mtx.setTranslation( translation );
+			// scale translation
+			mtx.x.w *= m_desc.scale;
+			mtx.y.w *= m_desc.scale;
+			mtx.z.w *= m_desc.scale;
 			
 			hierarchy.markJointAsUsed( *pJoint );
 			hierarchy.setBindMatrix( *pJoint, mtx );
@@ -565,8 +565,9 @@ namespace tiki
 					const size_t vertexIndex = m_skinningIndicesOffset[ i ] + j;
 					ToolModelVertex& vertex = m_vertices[ m_skinningIndicesData[ vertexIndex ] ];
 
-					Vector3 pos = vertex.position;
-					m_desc.shapeMatrix.transform( pos );
+					Vector3 pos;
+					vector::set( pos, vertex.position );
+					matrix::transform( pos, m_desc.shapeMatrix );
 					vertex.position.x = pos.x;
 					vertex.position.y = pos.y;
 					vertex.position.z = pos.z;
@@ -640,13 +641,19 @@ namespace tiki
 			size_t i2 = m_indices[ i + 1u ];
 			size_t i3 = m_indices[ i + 2u ];
 
-			const Vector3& v1 = m_vertices[ i1 ].position;
-			const Vector3& v2 = m_vertices[ i2 ].position;
-			const Vector3& v3 = m_vertices[ i3 ].position;
+			Vector3 v1;
+			Vector3 v2;
+			Vector3 v3;
+			vector::set( v1, m_vertices[ i1 ].position );
+			vector::set( v2, m_vertices[ i2 ].position );
+			vector::set( v3, m_vertices[ i3 ].position );
 
-			const Vector2& w1 = m_vertices[ i1 ].texcoord;
-			const Vector2& w2 = m_vertices[ i2 ].texcoord;
-			const Vector2& w3 = m_vertices[ i3 ].texcoord;
+			Vector2 w1;
+			Vector2 w2;
+			Vector2 w3;
+			vector::set( w1, m_vertices[ i1 ].texcoord );
+			vector::set( w2, m_vertices[ i2 ].texcoord );
+			vector::set( w3, m_vertices[ i3 ].texcoord );
 
 			const float x1 = v2.x - v1.x;
 			const float x2 = v3.x - v1.x;
@@ -661,51 +668,52 @@ namespace tiki
 			const float t2 = w3.y - w1.y;
 
 			const float r = 1.0f / (s1 * t2 - s2 * t1);
-			const Vector3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-			const Vector3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+			const Vector3 sdir = { (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r };
+			const Vector3 tdir = { (s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r };
 
 			if ( !indices.contains( i1 ) )
 			{
-				tan1[ i1 ] += sdir;
-				tan2[ i1 ] += tdir;
+				vector::add( tan1[ i1 ], sdir );
+				vector::add( tan2[ i1 ], tdir );
 				indices.add( i1 );
 			}
 
 			if ( !indices.contains( i2 ) )
 			{
-				tan1[ i2 ] += sdir;
-				tan2[ i2 ] += tdir;
+				vector::add( tan1[ i2 ], sdir );
+				vector::add( tan2[ i2 ], tdir );
 				indices.add( i2 );
 			}
 
 			if ( !indices.contains( i3 ) )
 			{
-				tan1[ i3 ] += sdir;
-				tan2[ i3 ] += tdir;
+				vector::add( tan1[ i3 ], sdir );
+				vector::add( tan2[ i3 ], tdir );
 				indices.add( i3 );
 			}
 		}
 
 		for (size_t i = 0u; i < m_vertices.getCount(); ++i)
 		{
-			const Vector3& n = m_vertices[ i ].normal;
 			const Vector3& t = tan1[ i ];
 
-			// Gram-Schmidt orthogonalize
-			Vector3 mul;
-			mul.mul( n, Vector3::dot( n, t ) );
+			Vector3 n;
+			vector::set( n, m_vertices[ i ].normal );
 
-			Vector3 sub;
-			sub.sub( t, mul );
-			sub.normalize0();
+			// Gram-Schmidt orthogonalize
+			Vector3 mul = n;
+			vector::scale( mul, vector::dot( n, t ) );
+
+			Vector3 sub = t;
+			vector::normalizeZero( vector::sub( sub, mul ) );
 
 			createFloat4( m_vertices[ i ].tangent, sub.x, sub.y, sub.z, 0.0f );
 
 			// Calculate handedness
 			Vector3 cross;
-			cross.cross(n, t);
+			vector::cross( cross, n, t );
 
-			m_vertices[ i ].tangent.w = ( Vector3::dot( cross, tan2[ i ] ) < 0.0F ) ? -1.0F : 1.0F;
+			m_vertices[ i ].tangent.w = ( vector::dot( cross, tan2[ i ] ) < 0.0F ) ? -1.0f : 1.0f;
 		}
 
 		tan1.dispose();
