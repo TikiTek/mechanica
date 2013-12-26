@@ -33,8 +33,8 @@ namespace tiki
 
 	public:
 
-		VertexInputBinding();
-		~VertexInputBinding();
+										VertexInputBinding();
+		virtual							~VertexInputBinding();
 
 		bool							isCreated() const { return m_pShader != nullptr; }
 

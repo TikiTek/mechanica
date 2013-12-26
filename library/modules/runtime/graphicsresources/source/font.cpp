@@ -11,7 +11,7 @@ namespace tiki
 		TextureDescription	textureDesc;
 		ResRef< void >		textureData;
 
-		uint				charCount;
+		uint32				charCount;
 		ResRef< FontChar >	charArray;
 	};
 

@@ -40,7 +40,9 @@ int main( int argc, char** argv )
 		s_arguments.dispose();
 	}
 
+#ifndef TIKI_BUILD_TOOLS
 	tiki::debug::dumpMemoryStats();
+#endif
 	
 	return returnValue;
 }

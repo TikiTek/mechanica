@@ -22,6 +22,16 @@ namespace tiki
 		memory::zero( m_data.getData(), m_data.getCount() * sizeof( float ) );
 	}
 
+	void HdrImage::createFromImage( const HdrImage& imageToCopy )
+	{
+		m_gammaType	= imageToCopy.m_gammaType;
+
+		m_width		= imageToCopy.m_width;
+		m_height	= imageToCopy.m_height;
+
+		m_data.create( imageToCopy.m_data.getData(), imageToCopy.m_data.getCount() );
+	}
+
 	bool HdrImage::createFromFile( const string& fileName )
 	{
 		psd_context* pContext	= nullptr;
@@ -65,16 +75,21 @@ namespace tiki
 
 	void HdrImage::resizeImage( const uint2& scale )
 	{
+		resizeImage( scale.x, scale.y );
+	}
+
+	void HdrImage::resizeImage( uint width, uint height )
+	{
 		Array< float > tempImage;
-		tempImage.create( scale.x * scale.y * ChannelCount );
+		tempImage.create( width * height * ChannelCount );
 
 		IplImage* pSrcImage = cvCreateImageHeader( cvSize( m_width, m_height ), IPL_DEPTH_32F, 4 );
 		cvSetData( pSrcImage, m_data.getData(), m_width * sizeof( float ) * 4 );
 
-		IplImage* pDestImage = cvCreateImageHeader( cvSize( scale.x, scale.y ), IPL_DEPTH_32F, 4 );
-		cvSetData( pDestImage, tempImage.getData(), scale.x * sizeof( float ) * 4 );
+		IplImage* pDestImage = cvCreateImageHeader( cvSize( width, height ), IPL_DEPTH_32F, 4 );
+		cvSetData( pDestImage, tempImage.getData(), width * sizeof( float ) * 4 );
 
-		cvResize( pSrcImage, pDestImage, CV_INTER_CUBIC );
+		cvResize( pSrcImage, pDestImage, CV_INTER_AREA );
 
 		//cvNamedWindow( "Image", 1 );
 		//cvShowImage( "Image", pDestImage );
@@ -87,8 +102,8 @@ namespace tiki
 		m_data.dispose();
 		m_data.create( tempImage.getData(), tempImage.getCount() );
 
-		m_width		= scale.x;
-		m_height	= scale.y;
+		m_width		= width;
+		m_height	= height;
 
 		tempImage.dispose();
 	}

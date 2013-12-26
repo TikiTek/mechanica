@@ -81,11 +81,32 @@ namespace tiki
 			const string scaleX = params.arguments.getOptionalString( "width", "/1" );
 			const string scaleY = params.arguments.getOptionalString( "height", "/1" );
 
-			if ( scaleX[ 0u ] == '/' && scaleY[ 0u ] == '/')
+			if ( ( scaleX[ 0u ] == '/' || scaleX[ 0u ] == '*' ) && ( scaleY[ 0u ] == '/' || scaleY[ 0u ] == '*' ) )
 			{
 				uint2 scale;
-				scale.x = image.getWidth() / ParseString::parseUInt32( scaleX.substring( 1u ) );
-				scale.y = image.getHeight() / ParseString::parseUInt32( scaleY.substring( 1u ) );
+				scale.x = image.getWidth();
+				scale.y = image.getHeight();
+
+				const uint modX = ParseString::parseUInt32( scaleX.substring( 1u ) );
+				const uint modY = ParseString::parseUInt32( scaleY.substring( 1u ) );
+
+				if ( scaleX[ 0u ] == '/' )
+				{
+					scale.x /= modX;
+				}
+				else
+				{
+					scale.x *= modX;
+				}
+
+				if ( scaleY[ 0u ] == '/' )
+				{
+					scale.y /= modY;
+				}
+				else
+				{
+					scale.y *= modY;
+				}
 
 				if ( scale.x != image.getWidth() || scale.y != image.getHeight() )
 				{
@@ -93,22 +114,30 @@ namespace tiki
 				}
 			}
 
-
-			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "ttx", params.targetPlatform );
-			writer.openResource( params.outputName, TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
+			uint mipMapCount = 1u;
+			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )
+			{
+				mipMapCount = 63u - countLeadingZeros64( TIKI_MAX( image.getWidth(), image.getHeight() ) );
+			}
 
 			TextureWriter textureWriter;
-			textureWriter.create();
-			const ReferenceKey textureDataKey = textureWriter.writeTexture( writer, image, PixelFormat_R8G8B8A8 );
-			textureWriter.dispose();
+			textureWriter.create( image, PixelFormat_R8G8B8A8, mipMapCount );
+
+			ResourceWriter writer;
+			openResourceWriter( &writer, params.outputName, "texture", params.targetPlatform );
+			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
+
+			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
 			writer.writeReference( textureDataKey );
 			writer.closeDataSection();
 
 			writer.closeResource();
 			closeResourceWriter( &writer );
+
+			textureWriter.dispose();
 			image.dispose();
 		}
 

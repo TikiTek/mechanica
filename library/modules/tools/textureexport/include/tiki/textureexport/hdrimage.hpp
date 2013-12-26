@@ -32,20 +32,22 @@ namespace tiki
 
 		void			create( const size_t width, const size_t height, GammaType gamma = GammaType_Linear );
 		bool			createFromFile( const string& fileName );
+		void			createFromImage( const HdrImage& imageToCopy );
 
 		void			dispose();
 
-		size_t			getWidth() const { return m_width; }
-		size_t			getHeight() const { return m_height; }
+		size_t			getWidth() const		{ return m_width; }
+		size_t			getHeight() const		{ return m_height; }
 		size_t			getChannelCount() const { return ChannelCount; }
 
 		float*			getData() { return m_data.getData(); }
 
+		void			resizeImage( uint width, uint height );
 		void			resizeImage( const uint2& size );
 		void			cropImage( const uint4& rect );
-		void			covertGamma( const GammaType gammaType );
+		void			covertGamma( GammaType gammaType );
 
-		void			convertTo( Array< uint8 >& target, const PixelFormat targetFormat ) const;
+		void			convertTo( Array< uint8 >& target, PixelFormat targetFormat ) const;
 
 	private:
 

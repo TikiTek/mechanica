@@ -14,10 +14,7 @@ namespace tiki
 
 	public:
 
-		TIKI_FORCE_INLINE bool	icCreated() const
-		{
-			return m_refCount != 0u;
-		}
+		virtual bool			isCreated() const = 0;
 
 		TIKI_FORCE_INLINE bool	isCompatible( crc32 hashValue ) const
 		{
@@ -99,7 +96,7 @@ namespace tiki
 
 			for (size_t i = 0u; i < m_data.getCount(); ++i)
 			{
-				if ( m_data[ i ].icCreated() == false )
+				if ( m_data[ i ].isCreated() == false )
 				{
 					if ( pFirst == nullptr )
 					{

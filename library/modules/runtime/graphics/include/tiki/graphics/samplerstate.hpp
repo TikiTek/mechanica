@@ -66,6 +66,10 @@ namespace tiki
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 
+	public:
+
+		bool						isCreated() const;
+
 	private: // friends
 
 		bool						create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter );

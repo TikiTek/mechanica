@@ -67,8 +67,6 @@ namespace tiki
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
-		GraphicsStateObject::create( crcT( &creationParamter ) );
-
 		TIKI_DECLARE_STACKANDZERO( D3D11_SAMPLER_DESC, samplerDesc );
 		samplerDesc.Filter			= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
 		samplerDesc.AddressU		= getD3dAddressMode( creationParamter.addressU );
@@ -103,5 +101,10 @@ namespace tiki
 		}
 
 		GraphicsStateObject::dispose();
+	}
+
+	bool SamplerState::isCreated() const
+	{
+		return m_platformData.pSamplerState != nullptr;
 	}
 }

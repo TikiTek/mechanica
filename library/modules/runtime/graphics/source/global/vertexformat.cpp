@@ -15,7 +15,7 @@ namespace tiki
 			const VertexAttribute& attribute = creationParameters.pAttributes[ i ];
 
 			m_attributes.push( attribute );
-			while ( attribute.streamIndex < m_vertexStride.getCount() )
+			while ( m_vertexStride.getCount() <= attribute.streamIndex )
 			{
 				m_vertexStride.push( 0u );
 			}
@@ -31,6 +31,6 @@ namespace tiki
 
 	bool VertexFormat::isCreated() const
 	{
-		return m_attributes.getCount() > 0u && m_vertexStride.getCount() > 0u;
+		return m_attributes.getCount() > 0u;
 	}
 }
