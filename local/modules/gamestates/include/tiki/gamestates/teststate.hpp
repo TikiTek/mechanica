@@ -4,6 +4,8 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
+#include "tiki/graphics/constantbuffer.hpp"
+
 namespace tiki
 {
 	class ApplicationState;
@@ -11,6 +13,7 @@ namespace tiki
 	class SamplerState;
 	class ShaderSet;
 	class Texture;
+	class VertexFormat;
 	class VertexInputBinding;
 
 	enum TestStateTransitionSteps
@@ -44,6 +47,9 @@ namespace tiki
 		const Texture*				m_pTexture;
 		const SamplerState*			m_pSampler;
 
+		mutable ConstantBuffer		m_vertexConstantBuffer;
+
+		const VertexFormat*			m_pVertexFormat;
 		const VertexInputBinding*	m_pInputBinding;
 
 	};

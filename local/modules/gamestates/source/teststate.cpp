@@ -6,13 +6,31 @@
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/stockvertex.hpp"
+#include "tiki/graphicsbase/graphicstypes.hpp"
+#include "tiki/graphicsbase/vertexattribute.hpp"
 #include "tiki/graphicsresources/model.hpp"
 #include "tiki/graphicsresources/shaderset.hpp"
 #include "tiki/graphicsresources/texture.hpp"
+#include "tiki/math/camera.hpp"
+#include "tiki/math/projection.hpp"
+#include "tiki/math/quaternion.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
 {
+	struct FallbackVertex
+	{
+		float3	position;
+		float4	color;
+		float2	texCoord;
+	};
+	
+	struct FallbackVertexConstants
+	{
+		GraphicsMatrix44	mvpMatrix;
+		GraphicsMatrix44	modelViewMatrix;
+	};
+
 	void TestState::create( ApplicationState* pParentState )
 	{
 		m_pParentState	= pParentState;
@@ -32,22 +50,28 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "immediate.shader" );
+					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "fallback.shader" );
 					m_pTexture		= framework::getResourceManager().loadResource< Texture >( "checker.texture" );
 					m_pModel		= framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
 
-					m_pInputBinding	= framework::getGraphicsSystem().createVertexInputBinding(
-						m_pShaderSet->getShader( ShaderType_VertexShader, 0u ),
-						framework::getGraphicsSystem().getStockVertexFormat( StockVertexFormat_Pos2Tex2 )
-					);
+					VertexAttribute attributes[] =
+					{
+						{ VertexSementic_Position,	0u, VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
+						{ VertexSementic_Color,		0u, VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex },
+						{ VertexSementic_TexCoord,	0u, VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex }
+					};
+					m_pVertexFormat = framework::getGraphicsSystem().createVertexFormat( attributes, TIKI_COUNT( attributes ) );
+					m_pInputBinding	= framework::getGraphicsSystem().createVertexInputBinding( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 
 					m_pSampler = framework::getGraphicsSystem().createSamplerState(
 						AddressMode_Clamp,
 						AddressMode_Clamp,
 						AddressMode_Clamp,
 						FilterMode_Linear,
-						FilterMode_Neares
+						FilterMode_Linear
 					);
+
+					m_vertexConstantBuffer.create( framework::getGraphicsSystem(), sizeof( FallbackVertexConstants ) );
 
 					return TransitionState_Finish;
 				}
@@ -67,8 +91,11 @@ namespace tiki
 				framework::getResourceManager().unloadResource< Model >( m_pModel );
 
 				framework::getGraphicsSystem().disposeVertexInputBinding( m_pInputBinding );
-
+				framework::getGraphicsSystem().disposeVertexFormat( m_pVertexFormat );
+				
 				framework::getGraphicsSystem().disposeSamplerState( m_pSampler );
+
+				m_vertexConstantBuffer.dispose( framework::getGraphicsSystem() );
 
 				return TransitionState_Finish;
 			}
@@ -99,9 +126,15 @@ namespace tiki
 
 		graphicsContext.setVertexInputBinding( m_pInputBinding );
 
+		const Vector3 scale = { 0.5f, 1.5f, 0.5f };
+		Matrix33 scaleMtx;
+		matrix::createScale( scaleMtx, scale );
+
 		Matrix43 mtx;
 		matrix::clear( mtx );
-		matrix::createRotationY( mtx.rot, framework::getFrameTimer().getTotalTime() );
+		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
+		matrix::mul( mtx.rot, scaleMtx );
+		vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
 
 		Vector3 pos[] = {
 			{ -0.5f, -0.5f, 0.0f },
@@ -109,27 +142,56 @@ namespace tiki
 			{  0.5f, -0.5f, 0.0f }
 		};
 
-		for (uint i = 0u; i < TIKI_COUNT( pos ); ++i)
-		{
-			matrix::transform( pos[ i ], mtx );
-		}
+		FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 
-		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( graphicsContext.beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 3u ) );
+		Projection proj;
+		proj.createPerspective( 800.0f / 600.0f, f32::piOver4, 0.001f, 100.0f );
+		//proj.createOrthographic( 8.0f, 6.0f, 0.001f, 100.0f );
+
+		const Vector3 camPos = { 0.0f, 0.0f, 5.0f };
+
+		Camera cam;
+		cam.create( camPos, Quaternion::identity, proj );
+
+		Matrix44 mvp;
+		matrix::set( mvp, mtx );
+		matrix::mul( mvp, cam.getViewProjectionMatrix() );
+		matrix::transpose( mvp );
+
+		Matrix43 mv = mtx;
+		matrix::mul( mtx, cam.getViewMatrix() );
+
+		createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvp );
+		createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mv );
+
+		graphicsContext.unmapBuffer( m_vertexConstantBuffer );
+
+		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
+
+		FallbackVertex* pVertices = static_cast< FallbackVertex* >( graphicsContext.beginImmediateGeometry( sizeof( FallbackVertex ), 3u ) );
 		
 		pVertices[ 0u ].position.x = pos[ 0u ].x;
 		pVertices[ 0u ].position.y = pos[ 0u ].y;
+		pVertices[ 0u ].position.z = pos[ 0u ].z;
 		pVertices[ 0u ].texCoord.x = 0.0f;
 		pVertices[ 0u ].texCoord.y = 1.0f;
 
 		pVertices[ 1u ].position.x = pos[ 1u ].x;
 		pVertices[ 1u ].position.y = pos[ 1u ].y;
+		pVertices[ 1u ].position.z = pos[ 1u ].z;
 		pVertices[ 1u ].texCoord.x = 0.5f;
 		pVertices[ 1u ].texCoord.y = 0.0f;
 
 		pVertices[ 2u ].position.x = pos[ 2u ].x;
 		pVertices[ 2u ].position.y = pos[ 2u ].y;
+		pVertices[ 2u ].position.z = pos[ 2u ].z;
 		pVertices[ 2u ].texCoord.x = 1.0f;
 		pVertices[ 2u ].texCoord.y = 1.0f;
+
+		for (uint i = 0u; i < 3u; ++i)
+		{
+			createFloat4( pVertices[ i ].color, 1.0f, 1.0f, 1.0f, 1.0f );
+		} 
 		
 		graphicsContext.endImmediateGeometry();
 	}
