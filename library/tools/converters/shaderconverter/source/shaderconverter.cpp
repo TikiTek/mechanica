@@ -255,7 +255,7 @@ namespace tiki
 				writer.writeUInt16( shaderVarName.type );
 				writer.writeUInt16( (uint16)shaderVarName.codeLength );
 				writer.writeUInt32( shaderVarName.variantKey );
-				writer.writeReference( shaderVarName.key );
+				writer.writeReference( &shaderVarName.key );
 			}
 
 			writer.closeDataSection();

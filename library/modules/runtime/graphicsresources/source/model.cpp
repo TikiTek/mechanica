@@ -37,7 +37,7 @@ namespace tiki
 		ResRef< ModelHierarchyInitData >	hierarchy;
 
 		uint32								geometrieCount;
-		ResRef< ModelGeometryInitData >		geometries;
+		ResRef< ModelGeometryInitData >		geometries[ 1u ]; // count is geometrieCount
 	};
 
 	Model::Model()
@@ -55,22 +55,22 @@ namespace tiki
 		const ModelFactoryContext& factory = *static_cast< const ModelFactoryContext* >( &factoryContext );
 		const ModelInitData& modelInitData = *static_cast< const ModelInitData* >( initData.pData );
 
-		//m_pMaterial = modelInitData.material.getData();
-		////TIKI_ASSERT( m_pMaterial != nullptr );
+		m_pMaterial = modelInitData.material.getData();
+		//TIKI_ASSERT( m_pMaterial != nullptr );
 
-		//if ( modelInitData.hierarchy.getData() != nullptr )
-		//{
-		//	m_pHierarchy = static_cast< ModelHierarchy* >( memory::newAlign< ModelHierarchy >() );
-		//	TIKI_VERIFY( m_pHierarchy->initialize( *modelInitData.hierarchy.getData() ) );
-		//}
+		if ( modelInitData.hierarchy.getData() != nullptr )
+		{
+			m_pHierarchy = static_cast< ModelHierarchy* >( memory::newAlign< ModelHierarchy >() );
+			TIKI_VERIFY( m_pHierarchy->initialize( *modelInitData.hierarchy.getData() ) );
+		}
 
-		//m_geometries.create( modelInitData.geometrieCount );
+		m_geometries.create( modelInitData.geometrieCount );
 
-		//const ModelGeometryInitData* pGeometryInitData = modelInitData.geometries.getData();
-		//for (size_t i = 0u; i < m_geometries.getCount(); ++i)
-		//{
-		//	m_geometries[ i ].initialize( factory.graphicsSystem, pGeometryInitData[ i ], m_pMaterial );
-		//}
+		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+		{
+			const ModelGeometryInitData* pGeometryInitData = modelInitData.geometries[ i ].getData();
+			m_geometries[ i ].initialize( factory.graphicsSystem, *pGeometryInitData, m_pMaterial );
+		}
 
 		return true;
 	}
@@ -92,6 +92,6 @@ namespace tiki
 		}
 		m_geometries.dispose();
 
-		//framework::getResourceManager().unloadResource( m_pMaterial );
+		m_pMaterial = nullptr;
 	}
 }

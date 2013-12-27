@@ -237,15 +237,18 @@ namespace tiki
 		}
 	}
 	
-	void ResourceWriter::writeReference( const ReferenceKey& key )
+	void ResourceWriter::writeReference( const ReferenceKey* pKey )
 	{
 		TIKI_ASSERT( m_pCurrentSection != nullptr );
 
 		writeAlignment( 8u );
 
-		ReferenceData& data = m_pCurrentSection->references.add();
-		data.key		= key;
-		data.position	= m_pCurrentSection->binaryData.getLength();
+		if ( pKey != nullptr )
+		{
+			ReferenceData& data = m_pCurrentSection->references.add();
+			data.key		= *pKey;
+			data.position	= m_pCurrentSection->binaryData.getLength();
+		}
 
 		// reserve space for the pointer
 		const uint64 zero = 0u;

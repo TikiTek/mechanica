@@ -61,7 +61,10 @@ namespace tiki
 						{ VertexSementic_TexCoord,	0u, VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex }
 					};
 					m_pVertexFormat = framework::getGraphicsSystem().createVertexFormat( attributes, TIKI_COUNT( attributes ) );
-					m_pInputBinding	= framework::getGraphicsSystem().createVertexInputBinding( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
+					m_pInputBinding	= framework::getGraphicsSystem().createVertexInputBinding(
+						m_pShaderSet->getShader( ShaderType_VertexShader, 0u ),
+						m_pModel->getGeometryByIndex( 0u ).getVertexFormat()
+					);
 
 					m_pSampler = framework::getGraphicsSystem().createSamplerState(
 						AddressMode_Clamp,
@@ -168,31 +171,38 @@ namespace tiki
 
 		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 
-		FallbackVertex* pVertices = static_cast< FallbackVertex* >( graphicsContext.beginImmediateGeometry( sizeof( FallbackVertex ), 3u ) );
-		
-		pVertices[ 0u ].position.x = pos[ 0u ].x;
-		pVertices[ 0u ].position.y = pos[ 0u ].y;
-		pVertices[ 0u ].position.z = pos[ 0u ].z;
-		pVertices[ 0u ].texCoord.x = 0.0f;
-		pVertices[ 0u ].texCoord.y = 1.0f;
+		const ModelGeometry& geometry = m_pModel->getGeometryByIndex( 0u );
 
-		pVertices[ 1u ].position.x = pos[ 1u ].x;
-		pVertices[ 1u ].position.y = pos[ 1u ].y;
-		pVertices[ 1u ].position.z = pos[ 1u ].z;
-		pVertices[ 1u ].texCoord.x = 0.5f;
-		pVertices[ 1u ].texCoord.y = 0.0f;
+		graphicsContext.setVertexBuffer( 0u, geometry.getVertexBuffer() );
+		graphicsContext.setIndexBuffer( geometry.getIndexBuffer() );
 
-		pVertices[ 2u ].position.x = pos[ 2u ].x;
-		pVertices[ 2u ].position.y = pos[ 2u ].y;
-		pVertices[ 2u ].position.z = pos[ 2u ].z;
-		pVertices[ 2u ].texCoord.x = 1.0f;
-		pVertices[ 2u ].texCoord.y = 1.0f;
+		graphicsContext.drawIndexed( geometry.getIndexCount() );
 
-		for (uint i = 0u; i < 3u; ++i)
-		{
-			createFloat4( pVertices[ i ].color, 1.0f, 1.0f, 1.0f, 1.0f );
-		} 
-		
-		graphicsContext.endImmediateGeometry();
+		//FallbackVertex* pVertices = static_cast< FallbackVertex* >( graphicsContext.beginImmediateGeometry( sizeof( FallbackVertex ), 3u ) );
+		//
+		//pVertices[ 0u ].position.x = pos[ 0u ].x;
+		//pVertices[ 0u ].position.y = pos[ 0u ].y;
+		//pVertices[ 0u ].position.z = pos[ 0u ].z;
+		//pVertices[ 0u ].texCoord.x = 0.0f;
+		//pVertices[ 0u ].texCoord.y = 1.0f;
+
+		//pVertices[ 1u ].position.x = pos[ 1u ].x;
+		//pVertices[ 1u ].position.y = pos[ 1u ].y;
+		//pVertices[ 1u ].position.z = pos[ 1u ].z;
+		//pVertices[ 1u ].texCoord.x = 0.5f;
+		//pVertices[ 1u ].texCoord.y = 0.0f;
+
+		//pVertices[ 2u ].position.x = pos[ 2u ].x;
+		//pVertices[ 2u ].position.y = pos[ 2u ].y;
+		//pVertices[ 2u ].position.z = pos[ 2u ].z;
+		//pVertices[ 2u ].texCoord.x = 1.0f;
+		//pVertices[ 2u ].texCoord.y = 1.0f;
+
+		//for (uint i = 0u; i < 3u; ++i)
+		//{
+		//	createFloat4( pVertices[ i ].color, 1.0f, 1.0f, 1.0f, 1.0f );
+		//} 
+		//
+		//graphicsContext.endImmediateGeometry();
 	}
 }

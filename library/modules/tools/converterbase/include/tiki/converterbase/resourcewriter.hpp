@@ -46,7 +46,7 @@ namespace tiki
 
 		void			writeAlignment( uint alignment );
 		void			writeData( const void* pData, uint length );
-		void			writeReference( const ReferenceKey& key );
+		void			writeReference( const ReferenceKey* pKey );
 
 		void			writeUInt8( uint8 value );
 		void			writeUInt16( uint16 value );

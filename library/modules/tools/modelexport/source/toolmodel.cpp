@@ -29,17 +29,16 @@ namespace tiki
 			{
 				m_hierarchy.create( &m_xml, pHierarchy, m_scale );
 			}
-
-			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 	bool ToolModel::parseGeometies( bool calculateTangents )
 	{
 		//////////////////////////////////////////////////////////////////////////
 		// Geometries
+		bool isSkinned = false;
 		const XmlElement* pGeometries = m_xml.findNodeByName( "library_geometries" );
 
 		if ( !pGeometries )
@@ -103,6 +102,7 @@ namespace tiki
 
 					if ( pGeometry != nullptr )
 					{
+						isSkinned = true;
 						pGeometry->applySkinning( m_hierarchy, &m_xml, pSkinNode );
 					}
 					else
@@ -113,6 +113,11 @@ namespace tiki
 
 				pController = m_xml.findNext( pController );
 			}
+		}
+
+		if ( isSkinned == false && m_hierarchy.isCreated() )
+		{
+			m_hierarchy.dispose();
 		}
 
 		return true;

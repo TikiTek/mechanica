@@ -48,6 +48,7 @@ namespace tiki
 
 	void ToolModelHierarchy::dispose()
 	{
+		m_pXml = nullptr;
 		m_joints.dispose();
 	}
 

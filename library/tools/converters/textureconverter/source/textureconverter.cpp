@@ -131,7 +131,7 @@ namespace tiki
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
-			writer.writeReference( textureDataKey );
+			writer.writeReference( &textureDataKey );
 			writer.closeDataSection();
 
 			writer.closeResource();
