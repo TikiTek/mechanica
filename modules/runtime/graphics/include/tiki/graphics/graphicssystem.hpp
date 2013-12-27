@@ -101,7 +101,7 @@ namespace tiki
 		GraphicsSystemPlatformData							m_platformData;
 		GraphicsContext										m_commandBuffer;
 
-		const VertexFormat*									m_pStockVertexFormsts[ StockVertexFormat_Count ];
+		const VertexFormat*									m_pStockVertexFormats[ StockVertexFormat_Count ];
 
 		RenderTarget										m_backBufferTarget;
 

@@ -51,7 +51,7 @@ namespace tiki
 		}
 		m_currentRenderPassDepth = 0u;
 
-		m_immediateVertexData.create( graphicsSystem, 10240u, true, GraphicsBufferType_VertexBuffer, nullptr );
+		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize, true, GraphicsBufferType_VertexBuffer, nullptr );
 		m_immediateVertexCount	= 0u;
 		m_immediateVertexStride	= 0u;
 
@@ -261,9 +261,11 @@ namespace tiki
 		const size_t offset = 0u;
 		m_platformData.pContext->IASetVertexBuffers( slot, 1u, &buffer.m_pBuffer, &buffer.m_stride, &offset );
 	}
-	
+
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
 	{
+		TIKI_ASSERT( vertexStride * vertexCount <= MaxImmediateGeometrySize );
+
 		m_immediateVertexStride	= vertexStride;
 		m_immediateVertexCount	= vertexCount;
 
