@@ -27,7 +27,7 @@ namespace tiki
 		m_vertexData.create( initData.vertexData.getData(), m_desc.vertexCount * m_desc.vertexStride );
 
 		m_indexBuffer.create( graphicsSystem, m_desc.indexCount, (IndexType)m_desc.indexType, false, initData.indexData.getData() );
-		m_indexData.create( initData.indexData.getData(), m_desc.indexCount );
+		m_indexData.create( initData.indexData.getData(), ( m_desc.indexCount * m_desc.indexType ) / sizeof( uint16 ) );
 
 		return true;
 	}

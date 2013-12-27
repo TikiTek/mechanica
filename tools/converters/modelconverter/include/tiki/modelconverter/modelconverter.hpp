@@ -3,6 +3,8 @@
 
 #include "tiki/converterbase/converterbase.hpp"
 
+#include "tiki/converterbase/resourcewriter.hpp"
+
 namespace tiki
 {
 	class ToolModelGeometrie;
@@ -17,7 +19,7 @@ namespace tiki
 
 	protected:
 
-		virtual size_t			getConverterRevision() const { return 29u; }
+		virtual size_t			getConverterRevision() const { return 33u; }
 
 		virtual crc32			getInputType() const;
 		virtual crc32			getOutputType() const;
@@ -30,8 +32,8 @@ namespace tiki
 
 	private:
 
-		void					writeHierarchy( ResourceWriter& fileWriter, const ToolModelHierarchy& hierarchy ) const;
-		void					writeGeometry( ResourceWriter& fileWriter, const ToolModelGeometrie& geometry ) const;
+		ReferenceKey			writeHierarchy( ResourceWriter& fileWriter, const ToolModelHierarchy& hierarchy ) const;
+		ReferenceKey			writeGeometry( ResourceWriter& fileWriter, const ToolModelGeometrie& geometry ) const;
 
 	};
 }

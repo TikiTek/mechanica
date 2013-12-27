@@ -65,21 +65,22 @@ namespace tiki
 			writer.openResource( params.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
 
 			// write hierarchy
-			writer.openDataSection( 0u, AllocatorType_MainMemory );
-
-			const ReferenceKey hierarchyKey = writer.addDataPoint();
-			writeHierarchy( writer, model.getHierarchy() );
-
-			writer.closeDataSection();
+			const ReferenceKey* pHierarchyKey = nullptr;
+			ReferenceKey hierarchyKey;
+			if ( model.getHierarchy().isCreated() )
+			{
+				hierarchyKey = writeHierarchy( writer, model.getHierarchy() );
+				pHierarchyKey = &hierarchyKey;
+			}
 
 			// write vertex data
-			writer.openDataSection( 0u, AllocatorType_MainMemory );
-			const ReferenceKey geometriesKey = writer.addDataPoint();
+			List< ReferenceKey > geometryKeys;
 
 			bool wrongSkinned = false;
 			for (size_t j = 0u; j < model.getGeometyCount(); ++j)
 			{
-				writeGeometry( writer, model.getGeometryByIndex( j ) );
+				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( j ) );
+				geometryKeys.add( key );
 
 				for (size_t k = 0u; k < model.getGeometyCount(); ++k)
 				{
@@ -89,7 +90,6 @@ namespace tiki
 					}
 				}
 			}
-			writer.closeDataSection();
 
 			if ( wrongSkinned )
 			{
@@ -97,10 +97,13 @@ namespace tiki
 			}
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writer.writeReference( nullptr ); // material
+			writer.writeReference( pHierarchyKey );
 			writer.writeUInt32( model.getGeometyCount() );
-			writer.writeUInt32( model.getHierarchy().isCreated() );
-			writer.writeReference( hierarchyKey );
-			writer.writeReference( geometriesKey );
+			for (uint i = 0u; i < geometryKeys.getCount(); ++i)
+			{
+				writer.writeReference( &geometryKeys[ i ] );
+			}			
 			writer.closeDataSection();
 
 			writer.closeResource();
@@ -112,18 +115,19 @@ namespace tiki
 		return true;
 	}
 
-	void ModelConverter::writeHierarchy( ResourceWriter& writer, const ToolModelHierarchy& hierarchy ) const
+	ReferenceKey ModelConverter::writeHierarchy( ResourceWriter& writer, const ToolModelHierarchy& hierarchy ) const
 	{
+		writer.openDataSection( 0u, AllocatorType_MainMemory );
+
 		const uint16 alignedJointCount = alignValue( hierarchy.getJointCount(), 4u );
 
-		writer.writeUInt16( hierarchy.getJointCount() );
-		writer.writeUInt16( alignedJointCount );
-
+		const ReferenceKey jointNamesKey = writer.addDataPoint();
 		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			writer.writeUInt32( hierarchy.getJointByIndex( j ).crc );
 		}
 
+		const ReferenceKey parentIndicesKey = writer.addDataPoint();
 		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			writer.writeUInt16( hierarchy.getJointByIndex( j ).parentIndex );
@@ -143,6 +147,7 @@ namespace tiki
 		}
 
 		writer.writeAlignment( 16u );
+		const ReferenceKey defaultPoseKey = writer.addDataPoint();
 		for (size_t j = 0u; j < alignedJointCount; ++j)
 		{
 			writer.writeFloat( dpRotation[ j ].x );
@@ -172,11 +177,25 @@ namespace tiki
 		dpScale.dispose();
 
 		writer.writeAlignment( 16u );
+		const ReferenceKey skinToBoneKey = writer.addDataPoint();
 		for (size_t i = 0u; i < hierarchy.getJointCount(); ++i)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( i );
 			writer.writeData( &joint.skinToBone.x.x, sizeof( Matrix44 ) );
 		}
+
+		const ReferenceKey refKey = writer.addDataPoint();
+		writer.writeUInt16( hierarchy.getJointCount() );
+		writer.writeUInt16( alignedJointCount );
+
+		writer.writeReference( &jointNamesKey );
+		writer.writeReference( &parentIndicesKey );
+		writer.writeReference( &defaultPoseKey );
+		writer.writeReference( &skinToBoneKey );
+
+		writer.closeDataSection();
+
+		return refKey;
 	}
 
 	static void writeVertexAttribute( ResourceWriter& fileWriter, const uint8* pSource, VertexAttributeFormat targetFormat, bool isFloatFormat )
@@ -264,26 +283,21 @@ namespace tiki
 		}
 	}
 
-	void ModelConverter::writeGeometry( ResourceWriter& writer, const ToolModelGeometrie& geometry ) const
+	ReferenceKey ModelConverter::writeGeometry( ResourceWriter& writer, const ToolModelGeometrie& geometry ) const
 	{
-		writer.writeAlignment( 4u );
-		writer.writeUInt16( geometry.getVertexCount() );
-		writer.writeUInt16( geometry.getIndexCount() );
-
 		const ToolModelVertexFormat& vertexFormat	= geometry.getVertexFormat();
 
-		writer.writeUInt8( geometry.getDesc().isSkinned );
-		writer.writeUInt8( vertexFormat.getVertexStride( 0u ) );
-		writer.writeUInt8( 4u ); // index size
-		writer.writeUInt8( vertexFormat.getAttributeCount() );
+		writer.openDataSection( 0u, AllocatorType_MainMemory );
 
 		writer.writeAlignment( 4u );
+		const ReferenceKey vertexAttributesKey = writer.addDataPoint();
 		writer.writeData(
 			geometry.getVertexFormat().getAttributes(),
 			geometry.getVertexFormat().getAttributeCount() * sizeof( VertexAttribute )
 		);
 
 		writer.writeAlignment( 16u );
+		const ReferenceKey vertexDataKey = writer.addDataPoint();
 		const VertexAttribute* pAttributes = vertexFormat.getAttributes();
 		for (size_t k = 0u; k < geometry.getVertexCount(); ++k)
 		{
@@ -333,10 +347,29 @@ namespace tiki
 		}
 
 		writer.writeAlignment( 4u );
+		const ReferenceKey indexDataKey = writer.addDataPoint();
 		for (size_t k = 0u; k < geometry.getIndexCount(); ++k)
 		{
 			writer.writeUInt32( geometry.getIndexByIndex( k ) );
 		}
+
+		const ReferenceKey geometryKey = writer.addDataPoint();
+		writer.writeUInt16( geometry.getVertexCount() );
+		writer.writeUInt16( geometry.getIndexCount() );
+
+		writer.writeUInt8( geometry.getDesc().isSkinned );
+		writer.writeUInt8( vertexFormat.getVertexStride( 0u ) );
+		writer.writeUInt8( 4u ); // index size
+		writer.writeUInt8( vertexFormat.getAttributeCount() );
+
+		writer.writeReference( &vertexAttributesKey );		
+
+		writer.writeReference( &vertexDataKey );			
+		writer.writeReference( &indexDataKey );
+
+		writer.closeDataSection();
+
+		return geometryKey;
 	}
 
 }

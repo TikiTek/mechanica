@@ -42,7 +42,7 @@ namespace tiki
 
 		D3D11_BUFFER_DESC desc;
 		desc.Usage					= ( dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT );
-		desc.CPUAccessFlags			= D3D11_CPU_ACCESS_WRITE;
+		desc.CPUAccessFlags			= ( dynamic ? D3D11_CPU_ACCESS_WRITE : 0u );
 		desc.StructureByteStride	= 0;
 		desc.BindFlags				= getD3dBinding( binding );
 		desc.ByteWidth				= size;
