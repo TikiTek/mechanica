@@ -73,7 +73,6 @@ namespace tiki
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
 		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );
-		void				setConstantBuffer( size_t slot, const ConstantBuffer& buffer );
 
 		void				setVertexShaderSamplerState( size_t slot, const SamplerState* pSampler );
 		void				setVertexShaderTexture( size_t slot, const TextureData* pTextureData );
@@ -105,6 +104,11 @@ namespace tiki
 		void				dispose( GraphicsSystem& graphicsSystem );
 
 	private:
+
+		enum MyEnum
+		{
+			MaxImmediateGeometrySize = 10240u
+		};
 
 		GraphicsSystem*				m_pGraphicsSystem;
 		GraphicsContextPlatformData	m_platformData;

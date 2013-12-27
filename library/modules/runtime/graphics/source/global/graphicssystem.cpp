@@ -7,9 +7,9 @@ namespace tiki
 {
 	GraphicsSystem::GraphicsSystem()
 	{
-		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormsts ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
 		{
-			m_pStockVertexFormsts[ i ] = nullptr;
+			m_pStockVertexFormats[ i ] = nullptr;
 		}
 	}
 
@@ -52,10 +52,10 @@ namespace tiki
 					{ VertexSementic_TexCoord, 0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex }
 				};
 
-				m_pStockVertexFormsts[ StockVertexFormat_Pos2 ]		= createVertexFormat( attributes_pos2,		TIKI_COUNT( attributes_pos2 ) );
-				m_pStockVertexFormsts[ StockVertexFormat_Pos2Tex2 ]	= createVertexFormat( attributes_pos2tex2,	TIKI_COUNT( attributes_pos2tex2 ) );
-				m_pStockVertexFormsts[ StockVertexFormat_Pos3 ]		= createVertexFormat( attributes_pos3,		TIKI_COUNT( attributes_pos3 ) );
-				m_pStockVertexFormsts[ StockVertexFormat_Pos3Tex2 ]	= createVertexFormat( attributes_pos3tex2,	TIKI_COUNT( attributes_pos3tex2 ) );
+				m_pStockVertexFormats[ StockVertexFormat_Pos2 ]		= createVertexFormat( attributes_pos2,		TIKI_COUNT( attributes_pos2 ) );
+				m_pStockVertexFormats[ StockVertexFormat_Pos2Tex2 ]	= createVertexFormat( attributes_pos2tex2,	TIKI_COUNT( attributes_pos2tex2 ) );
+				m_pStockVertexFormats[ StockVertexFormat_Pos3 ]		= createVertexFormat( attributes_pos3,		TIKI_COUNT( attributes_pos3 ) );
+				m_pStockVertexFormats[ StockVertexFormat_Pos3Tex2 ]	= createVertexFormat( attributes_pos3tex2,	TIKI_COUNT( attributes_pos3tex2 ) );
 			}
 		}
 
@@ -64,12 +64,12 @@ namespace tiki
 
 	void GraphicsSystem::dispose()
 	{
-		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormsts ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
 		{
-			if ( m_pStockVertexFormsts[ i ] != nullptr )
+			if ( m_pStockVertexFormats[ i ] != nullptr )
 			{
-				disposeVertexFormat( m_pStockVertexFormsts[ i ] );
-				m_pStockVertexFormsts[ i ] = nullptr;
+				disposeVertexFormat( m_pStockVertexFormats[ i ] );
+				m_pStockVertexFormats[ i ] = nullptr;
 			}
 		} 
 
@@ -216,6 +216,6 @@ namespace tiki
 	const VertexFormat* GraphicsSystem::getStockVertexFormat( StockVertexFormat format ) const
 	{
 		TIKI_ASSERT( format < StockVertexFormat_Count );
-		return m_pStockVertexFormsts[ format ];
+		return m_pStockVertexFormats[ format ];
 	}
 }

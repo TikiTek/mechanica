@@ -4,7 +4,7 @@
 
 struct VertexToPixel
 {
-	float4	position	: TIKI_POSITION;
+	float4	position	: TIKI_OUTPUT_POSITION;
 	float4	color		: TIKI_COLOR;
 	float2	texcoord	: TIKI_TEXCOORD;
 };
@@ -14,16 +14,15 @@ struct VertexToPixel
 // types
 struct VertexInput
 {
-	float3	position	: TIKI_POSITION;
+	float3	position	: TIKI_INPUT_POSITION;
 	float4	color		: TIKI_COLOR;
 	float2	texcoord	: TIKI_TEXCOORD;
 };
 
 struct VertexConstants
 {
-	matrix	worldMatrix;
-	matrix	viewMatrix;
-	matrix	projectionMatrix;
+	matrix	mvpMatrix;
+	matrix	modelViewMatrix;
 };
 
 // constants
@@ -34,9 +33,7 @@ VertexToPixel main( VertexInput input )
 	VertexToPixel output = (VertexToPixel)0;
 
 	output.position = float4( input.position, 1.0f );
-	output.position = mul( output.position, c_instanceData.worldMatrix );
-	output.position = mul( output.position, c_instanceData.viewMatrix );
-	output.position = mul( output.position, c_instanceData.projectionMatrix );
+	output.position = mul( output.position, c_instanceData.mvpMatrix );
 
 	output.color	= input.color;
 	output.texcoord	= input.texcoord;
@@ -51,13 +48,13 @@ VertexToPixel main( VertexInput input )
 ////////////////////////////////////////////////////////////////////////////////
 
 // types
-struct PixelConstants
-{
-	float4 vertexColor;
-};
+//struct PixelConstants
+//{
+//	float4 vertexColor;
+//};
 
 // constants
-TIKI_DEFINE_CONSTANT( 0, PixelConstants, c_instanceData );
+//TIKI_DEFINE_CONSTANT( 0, PixelConstants, c_instanceData );
 TIKI_DEFINE_TEXTURE2D( 0, t_diffuseMap );
 TIKI_DEFINE_SAMPLER( 0, s_linear );
 
@@ -66,7 +63,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float4 output = input.color;
 
 	output *= TIKI_TEX2D( t_diffuseMap, s_linear, input.texcoord );
-	output *= c_instanceData.vertexColor;
+	//output *= c_instanceData.vertexColor;
 
 	return saturate( output );
 }
