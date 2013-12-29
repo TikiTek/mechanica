@@ -719,7 +719,7 @@ namespace tiki
 		tan1.dispose();
 		tan2.dispose();
 
-		m_vertexFormat.addSemantic( VertexSementic_TangentFlip );
+		m_vertexFormat.insertSemantic( VertexSementic_TangentFlip, VertexSementic_Normal );
 
 		return true;
 	}

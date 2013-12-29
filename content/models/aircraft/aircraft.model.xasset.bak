@@ -1,0 +1,5 @@
+<tikiasset>
+  <input file="aircraft.dae" type="model" />
+  <param key="material" value="aircraft.material.xasset" />
+  <param key="scale" value="0.1" />
+</tikiasset>

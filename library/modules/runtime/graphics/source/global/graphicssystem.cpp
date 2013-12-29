@@ -143,6 +143,7 @@ namespace tiki
 
 	const VertexFormat* GraphicsSystem::createVertexFormat( const VertexFormatParameters& creationParameters )
 	{
+		TIKI_ASSERT( creationParameters.pAttributes != 0u );
 		const crc32 vertexFormatCrc = crcBytes( creationParameters.pAttributes, sizeof( VertexAttribute ) * creationParameters.attributeCount );
 
 		VertexFormat* pVertexFormat = m_vertexFormats.findOrAllocate( vertexFormatCrc );
