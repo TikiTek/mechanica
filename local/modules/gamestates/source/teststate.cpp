@@ -52,13 +52,13 @@ namespace tiki
 				{
 					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "fallback.shader" );
 					m_pTexture		= framework::getResourceManager().loadResource< Texture >( "checker.texture" );
-					m_pModel		= framework::getResourceManager().loadResource< Model >( "replaceme_cube.model" );
+					m_pModel		= framework::getResourceManager().loadResource< Model >( "unit_cube.model" );
 
 					VertexAttribute attributes[] =
 					{
 						{ VertexSementic_Position,	0u, VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
-						{ VertexSementic_Color,		0u, VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex },
-						{ VertexSementic_TexCoord,	0u, VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex }
+						{ VertexSementic_TexCoord,	0u, VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
+						{ VertexSementic_Color,		0u, VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex }
 					};
 					m_pVertexFormat = framework::getGraphicsSystem().createVertexFormat( attributes, TIKI_COUNT( attributes ) );
 					m_pInputBinding	= framework::getGraphicsSystem().createVertexInputBinding(
@@ -136,8 +136,8 @@ namespace tiki
 		Matrix43 mtx;
 		matrix::clear( mtx );
 		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
-		matrix::mul( mtx.rot, scaleMtx );
-		vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
+		//matrix::mul( mtx.rot, scaleMtx );
+		//vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
 
 		Vector3 pos[] = {
 			{ -0.5f, -0.5f, 0.0f },
