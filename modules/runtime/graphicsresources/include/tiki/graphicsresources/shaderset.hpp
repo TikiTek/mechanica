@@ -33,7 +33,8 @@ namespace tiki
 												ShaderSet();
 		virtual									~ShaderSet();
 
-		SortedSizedMap<crc32, const Shader*>	m_shaders;
+		Array< Shader >							m_shaders;
+		SortedSizedMap< crc32, const Shader* >	m_shaderMap;
 
 	};
 }

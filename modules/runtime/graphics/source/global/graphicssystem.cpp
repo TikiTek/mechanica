@@ -23,8 +23,6 @@ namespace tiki
 
 		if ( result )
 		{
-			m_shaders.create( 1024u );
-
 			m_samplerStates.create( 32u );
 			m_vertexFormats.create( 32u );
 			m_vertexInputBindings.create( 32u );
@@ -77,31 +75,7 @@ namespace tiki
 		m_vertexFormats.dispose();
 		m_vertexInputBindings.dispose();
 
-		m_shaders.dispose();
-
 		disposePlatform();
-	}
-
-	const Shader* GraphicsSystem::createShader( ShaderType type, const void* pData, uint dataSize )
-	{
-		Shader* pShader = m_shaders.allocate();
-
-		if ( pShader != nullptr && pShader->create( *this, type, pData, dataSize ) == false )
-		{
-			m_shaders.free( pShader );
-			pShader = nullptr;
-		}
-
-		return pShader;
-	}
-
-	void GraphicsSystem::disposeShader( const Shader* pShader )
-	{
-		TIKI_ASSERT( pShader != nullptr );
-
-		Shader* pNonConstShader = const_cast< Shader* >( pShader );
-		pNonConstShader->dispose();		
-		m_shaders.free( pNonConstShader );
 	}
 
 	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )

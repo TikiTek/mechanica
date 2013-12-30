@@ -64,6 +64,10 @@ namespace tiki
 
 	bool VertexInputBinding::create( const VertexInputBindingParameters& creationParameters )
 	{
+		TIKI_ASSERT( creationParameters.pShader != nullptr );
+		TIKI_ASSERT( creationParameters.pShader->getShaderType() == ShaderType_VertexShader );
+		TIKI_ASSERT( creationParameters.pVertexFormat != nullptr );
+
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 

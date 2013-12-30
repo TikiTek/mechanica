@@ -49,7 +49,7 @@ namespace tiki
 		const crc32 shaderCrc = crcBytes( shaderData, sizeof( shaderData ) );
 
 		const Shader* pShader = nullptr;
-		m_shaders.findValue( &pShader, shaderCrc );
+		m_shaderMap.findValue( &pShader, shaderCrc );
 		TIKI_ASSERT( pShader == nullptr || pShader->getShaderType() == type );
 
 		return pShader;
@@ -65,18 +65,25 @@ namespace tiki
 
 	bool ShaderSet::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		const ShaderSetFactoryContext& context = *static_cast< const ShaderSetFactoryContext* >( &factoryContext );
+		const ShaderSetFactoryContext& factory = *static_cast< const ShaderSetFactoryContext* >( &factoryContext );
 		const ShaderSetInitializationData* pInitData = static_cast< const ShaderSetInitializationData* >( initData.pData );
 
 		m_shaders.create( pInitData->variantCount );
+		m_shaderMap.create( pInitData->variantCount );
 		for (uint i = 0u; i < pInitData->variantCount; ++i)
 		{
 			const ShaderSetVariantData& variant = pInitData->variants[ i ];
-			const Shader* pShader = context.graphicsSystem.createShader( (ShaderType)variant.shaderType, variant.data.getData(), variant.codeLength );
 
-			if ( pShader != nullptr )
+			const bool result = m_shaders[ i ].create(
+				factory.graphicsSystem,
+				(ShaderType)variant.shaderType,
+				variant.data.getData(),
+				variant.codeLength
+			);
+
+			if ( result )
 			{
-				m_shaders.set( variant.variantKey, pShader );
+				m_shaderMap.set( variant.variantKey, &m_shaders[ i ] );
 			}
 		} 
 
@@ -85,16 +92,15 @@ namespace tiki
 
 	void ShaderSet::disposeInternal( const FactoryContext& factoryContext )
 	{
-		const ShaderSetFactoryContext& context = *static_cast< const ShaderSetFactoryContext* >( &factoryContext );
+		const ShaderSetFactoryContext& factory = *static_cast< const ShaderSetFactoryContext* >( &factoryContext );
 
 		const Shader* pShader = nullptr;
 		for (uint i = 0u; i < m_shaders.getCount(); ++i)
 		{
-			m_shaders.getValueAt( &pShader, i );
-
-			context.graphicsSystem.disposeShader( pShader );
+			m_shaders[ i ].dispose( factory.graphicsSystem );
 		} 
 
+		m_shaderMap.dispose();
 		m_shaders.dispose();
 	}
 
