@@ -30,7 +30,7 @@ namespace tiki
 		ResRef< VertexAttribute >	vertexAttributes;
 
 		ResRef< uint8 >				vertexData;
-		ResRef< uint16 >			indexData;
+		ResRef< uint8 >				indexData;
 	};
 
 	class ModelGeometry
@@ -51,8 +51,8 @@ namespace tiki
 		const uint8*				getVertexData() const { return m_vertexData.getData(); }
 		uint						getVertexCount() const { return m_vertexData.getCount(); }
 
-		const uint16*				getIndexData() const { return m_indexData.getData(); }
-		uint						getIndexCount() const { return m_indexData.getCount(); }
+		const uint8*				getIndexData() const { return m_indexData.getData(); }
+		uint						getIndexCount() const { return m_indexBuffer.getCount(); }
 
 		//void						getMinMax( Vector3& min, Vector3& max ) const;
 
@@ -65,7 +65,7 @@ namespace tiki
 		ModelGeometryDesc		m_desc;
 
 		StaticArray< uint8 >	m_vertexData;
-		StaticArray< uint16 >	m_indexData;
+		StaticArray< uint8 >	m_indexData;
 
 		IndexBuffer				m_indexBuffer;
 		VertexBuffer			m_vertexBuffer;

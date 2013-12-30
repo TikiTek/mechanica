@@ -34,41 +34,50 @@ namespace tiki
 		TIKI_ASSERT( pInitData != nullptr );
 		TIKI_ASSERT( dataSize > 0u );
 
-		m_type	= type;
-
 		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
+
+		HRESULT result = S_FALSE;
 		switch ( m_type )
 		{
 		case ShaderType_ComputeShader:
-			TIKI_VERIFY0( pDevice->CreateComputeShader( pInitData, dataSize, nullptr, &m_platformData.pComputeShader ) );
+			result = pDevice->CreateComputeShader( pInitData, dataSize, nullptr, &m_platformData.pComputeShader );
 			break;
 		case ShaderType_DomainShader:
-			TIKI_VERIFY0( pDevice->CreateDomainShader( pInitData, dataSize, nullptr, &m_platformData.pDomainShader ) );
+			result = pDevice->CreateDomainShader( pInitData, dataSize, nullptr, &m_platformData.pDomainShader );
 			break;
 		case ShaderType_GeometrieShader:
-			TIKI_VERIFY0( pDevice->CreateGeometryShader( pInitData, dataSize, nullptr, &m_platformData.pGeometryShader ) );
+			result = pDevice->CreateGeometryShader( pInitData, dataSize, nullptr, &m_platformData.pGeometryShader );
 			break;
 		case ShaderType_HullShader:
-			TIKI_VERIFY0( pDevice->CreateHullShader( pInitData, dataSize, nullptr, &m_platformData.pHullShader ) );
+			result = pDevice->CreateHullShader( pInitData, dataSize, nullptr, &m_platformData.pHullShader );
 			break;
 		case ShaderType_PixelShader:
-			TIKI_VERIFY0( pDevice->CreatePixelShader( pInitData, dataSize, nullptr, &m_platformData.pPixelShader ) );
+			result = pDevice->CreatePixelShader( pInitData, dataSize, nullptr, &m_platformData.pPixelShader );
 			break;
 		case ShaderType_VertexShader:
-			TIKI_VERIFY0( pDevice->CreateVertexShader( pInitData, dataSize, nullptr, &m_platformData.pVertexShader ) );
+			result = pDevice->CreateVertexShader( pInitData, dataSize, nullptr, &m_platformData.pVertexShader );
 			break;
 		default:
 			TIKI_BREAK( "[graphics] ShaderType not supported.\n" );
 			break;
 		}
 
+		if ( FAILED( result ) || m_platformData.pShaderObject == nullptr )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
+
 		m_platformData.pShaderCode		= pInitData;
 		m_platformData.shaderCodeLength	= dataSize;
+
+		m_type	= type;
+		m_hash	= crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
 		
 		return true;
 	}
 
-	void Shader::dispose()
+	void Shader::dispose( GraphicsSystem& graphicsSystem )
 	{
 		m_type = ShaderType_Invalid;
 
@@ -80,11 +89,6 @@ namespace tiki
 
 		m_platformData.pShaderCode		= nullptr;
 		m_platformData.shaderCodeLength	= 0u;
-	}
-
-	crc32 Shader::getShaderHash() const
-	{
-		return crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
 	}
 
 	TGInputLayout* graphics::createVertexInputLayout( const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount )

@@ -15,6 +15,7 @@ namespace tiki
 {
 	class Shader
 	{
+		TIKI_NONCOPYABLE_CLASS( Shader );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 		friend class VertexInputBinding;
@@ -23,20 +24,20 @@ namespace tiki
 
 	public:
 		
-		ShaderType				getShaderType() const { return m_type; }
-		crc32					getShaderHash() const;
-
-	private: // friend
+								Shader();
+								~Shader();
 
 		bool					create( GraphicsSystem& graphicsSystem, ShaderType type, const void* pData, uint dataSize );
-		void					dispose();
+		void					dispose( GraphicsSystem& graphicsSystem );
+
+		ShaderType				getShaderType() const { return m_type; }
+		crc32					getShaderHash() const { return m_hash; }
 
 	private:
 
-								Shader();
-		virtual					~Shader();
-
 		ShaderType				m_type;
+		crc32					m_hash;
+
 		ShaderPlatformData		m_platformData;
 
 	};

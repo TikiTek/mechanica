@@ -71,9 +71,6 @@ namespace tiki
 		bool						create( const GraphicsSystemParameters& params );
 		void						dispose();
 
-		const Shader*				createShader( ShaderType type, const void* pData, uint dataSize );
-		void						disposeShader( const Shader* pShader );
-
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*			createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void						disposeSamplerState( const SamplerState* samplerState );
@@ -104,8 +101,6 @@ namespace tiki
 		const VertexFormat*									m_pStockVertexFormats[ StockVertexFormat_Count ];
 
 		RenderTarget										m_backBufferTarget;
-
-		PoolAllocator< Shader >								m_shaders;
 
 		GraphicsStateObjectCollection< SamplerState >		m_samplerStates;
 		GraphicsStateObjectCollection< VertexFormat >		m_vertexFormats;
