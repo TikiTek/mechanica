@@ -3,9 +3,12 @@
 #define __TIKI_RENDERCOMMAND_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/math/matrix.hpp"
 
 namespace tiki
 {
+	class ModelGeometry;
+
 	struct RenderCommand
 	{
 		const ModelGeometry*	pGeometry;
@@ -16,9 +19,11 @@ namespace tiki
 	struct RenderSequence
 	{
 		uint8					renderEffectId;
+		uint8					renderPassMask;
+		uint8					renderFlags;
 		uint8					commandCount;
 
-		uint16					sortValue;
+		uint32					sortValue;
 
 		const RenderCommand*	pCommands;
 	};

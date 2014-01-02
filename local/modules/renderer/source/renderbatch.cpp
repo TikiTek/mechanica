@@ -1,12 +1,14 @@
 
 #include "tiki/renderer/renderbatch.hpp"
 
+#include "tiki/base/functions.hpp"
+
 namespace tiki
 {
 	RenderBatch::RenderBatch()
 	{
 		m_pFirstSequence	= nullptr;
-		m_sequenceCount		= 0u;
+		m_pEndSequence		= nullptr;
 
 		m_currentSequenceFailed	= false;
 		m_pCurrentSequence		= nullptr;
@@ -52,7 +54,7 @@ namespace tiki
 	void RenderBatch::reset()
 	{
 		m_pFirstSequence	= nullptr;
-		m_sequenceCount		= 0u;
+		m_pEndSequence		= nullptr;
 
 		m_currentSequenceFailed	= false;
 		m_pCurrentSequence		= nullptr;
@@ -62,7 +64,7 @@ namespace tiki
 		m_commands.clear();
 	}
 
-	void RenderBatch::beginSequence( uint8 renderEffectId )
+	void RenderBatch::beginSequence( RenderPassMask passMask, RenderEffectId renderEffectId, uint8 renderFlags )
 	{
 		TIKI_ASSERT( m_pCurrentSequence == nullptr );
 
@@ -75,15 +77,18 @@ namespace tiki
 
 		if ( m_pFirstSequence == nullptr )
 		{
-			m_pFirstSequence = m_pCurrentSequence;
+			m_pFirstSequence	= m_pCurrentSequence;
+			m_pEndSequence		= m_pFirstSequence + 1u;
 		}
 
-		m_sequenceCount++;
+		m_pEndSequence++;
 		m_currentSequenceFailed = false;
 		m_pFirstSequenceCommand = nullptr;
 
 		m_pCurrentSequence->renderEffectId	= renderEffectId;
-		m_pCurrentSequence->commandCount	= 0u
+		m_pCurrentSequence->renderPassMask	= passMask;
+		m_pCurrentSequence->renderFlags		= renderFlags;
+		m_pCurrentSequence->commandCount	= 0u;
 		m_pCurrentSequence->sortValue		= 0u;
 		m_pCurrentSequence->pCommands		= nullptr;
 	}
@@ -132,4 +137,47 @@ namespace tiki
 
 		return true;
 	}
+
+	RenderSequenceEnumerator RenderBatch::createEnumerator( RenderPass pass ) const
+	{
+		return RenderSequenceEnumerator( m_pFirstSequence, m_pEndSequence, pass );
+	}
+
+	RenderSequenceEnumerator::RenderSequenceEnumerator( const RenderSequence* pBegin, const RenderSequence* pEnd, RenderPass pass )
+	{
+		TIKI_ASSERT( pBegin != nullptr );
+		TIKI_ASSERT( pEnd != nullptr );
+		TIKI_ASSERT( pass != RenderPass_Invalid );
+
+		m_renderPass = pass;
+
+		m_pBeginSequence	= pBegin;
+		m_pEndSequence		= pEnd;
+
+		m_pIterator			= pBegin;
+	}
+
+	const RenderSequence* RenderSequenceEnumerator::enumerate()
+	{
+		TIKI_ASSERT( m_renderPass != RenderPass_Invalid );
+		TIKI_ASSERT( m_pIterator != nullptr );
+
+		if ( m_pIterator == m_pEndSequence )
+		{
+			return nullptr;
+		}
+
+		while ( isBitSet( m_pIterator->renderPassMask, m_renderPass ) == false )
+		{
+			m_pIterator++;
+
+			if ( m_pIterator == m_pEndSequence )
+			{
+				return nullptr;
+			}
+		}
+
+		return m_pIterator++;
+	}
+
 }

@@ -44,6 +44,7 @@ namespace tiki
 			}
 		}
 
+		TIKI_FORCE_INLINE uint				getCount() const	{ return TCapacity; }
 		TIKI_FORCE_INLINE uint				getCapacity() const	{ return TCapacity; }
 
 		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_data; }

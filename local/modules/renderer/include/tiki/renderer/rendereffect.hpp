@@ -3,10 +3,10 @@
 #define __TIKI_RENDEREFFECT_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/renderer/rendererdefinition.hpp"
 
 namespace tiki
 {
-	enum RenderPass;
 	struct FrameData;
 	struct RenderSequence;
 	struct RendererContext;
@@ -17,10 +17,28 @@ namespace tiki
 
 	public:
 
-		virtual void	setFrameData( const FrameData& frameData ) = 0;
-		virtual void	setRendererContext( const RendererContext& rendererContext ) = 0;
+								RenderEffect();
+		virtual					~RenderEffect();
 
-		virtual void	executeRenderCommands( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount ) = 0;
+		bool					create( const RendererContext& rendererContext );
+		void					dispose();
+
+		virtual RenderEffectId	getRenderEffectId() const = 0;
+
+		void					setFrameData( const FrameData& frameData );
+		void					executeRenderSequences( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount );
+
+	protected:
+
+		virtual bool			createInternal() = 0;
+		virtual void			disposeInternal() = 0;
+
+		virtual void			executeRenderSequencesInternal( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount ) = 0;
+
+	private:
+
+		const FrameData*		m_pFrameData;
+		const RendererContext*	m_pRendererContext;
 
 	};
 }
