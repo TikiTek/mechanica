@@ -34,6 +34,12 @@ namespace tiki
 		TIKI_ASSERT( pInitData != nullptr );
 		TIKI_ASSERT( dataSize > 0u );
 
+		m_platformData.pShaderCode		= pInitData;
+		m_platformData.shaderCodeLength	= dataSize;
+
+		m_type	= type;
+		m_hash	= crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
+
 		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
 
 		HRESULT result = S_FALSE;
@@ -68,12 +74,6 @@ namespace tiki
 			return false;
 		}
 
-		m_platformData.pShaderCode		= pInitData;
-		m_platformData.shaderCodeLength	= dataSize;
-
-		m_type	= type;
-		m_hash	= crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
-		
 		return true;
 	}
 

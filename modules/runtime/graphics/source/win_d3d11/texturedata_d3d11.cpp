@@ -9,27 +9,29 @@
 
 namespace tiki
 {
-	TGFormat graphics::getD3dFormat( PixelFormat pixelFormat )
+	TGFormat graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
 	{
-		switch ( pixelFormat )
+		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
+
+		static TGFormat s_formatLookup[] =
 		{
-		case PixelFormat_R8:
-			return DXGI_FORMAT_R8_UNORM;
-		case PixelFormat_R8G8B8A8:
-			return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case PixelFormat_R8G8B8A8_Gamma:
-			return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		case PixelFormat_R32_Float:
-			return DXGI_FORMAT_R32_FLOAT;
-		case PixelFormat_R32G32B32_Float:
-			return DXGI_FORMAT_R32G32B32_FLOAT;
-		case PixelFormat_R32G32B32A32_Float:
-			return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case PixelFormat_Depth24Stencil8:
-			return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		default:
-			return DXGI_FORMAT_UNKNOWN;
+			DXGI_FORMAT_R8_UNORM,				// PixelFormat_R8,
+			DXGI_FORMAT_R8G8B8A8_UNORM,			// PixelFormat_R8G8B8A8
+			DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,	// PixelFormat_R8G8B8A8_Gamma
+			DXGI_FORMAT_R16G16B16A16_FLOAT,		// PixelFormat_R16G16B16A16_Float
+			DXGI_FORMAT_R32_FLOAT,				// PixelFormat_R32_Float
+			DXGI_FORMAT_R32G32B32_FLOAT,		// PixelFormat_R32G32B32_Float
+			DXGI_FORMAT_R32G32B32A32_FLOAT,		// PixelFormat_R32G32B32A32_Float
+			DXGI_FORMAT_D24_UNORM_S8_UINT		// PixelFormat_Depth24Stencil8
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_formatLookup ) == PixelFormat_Count );
+
+		if ( pixelFormat == PixelFormat_Depth24Stencil8 && isBitSet( flags, TextureFlags_ShaderInput ) )
+		{
+			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 		}
+
+		return s_formatLookup[ pixelFormat ];
 	}
 
 	static UINT getD3dFlags( TextureFlags flags )
@@ -73,7 +75,7 @@ namespace tiki
 		m_description = description;
 
 		TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
-		desc.Format				= graphics::getD3dFormat( (PixelFormat)description.format );
+		desc.Format				= graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags );
 		desc.Width				= description.width;
 		desc.Height				= description.height;		
 		desc.Usage				= D3D11_USAGE_DEFAULT;
@@ -84,6 +86,9 @@ namespace tiki
 
 		D3D11_SUBRESOURCE_DATA initData[ 32u ];
 		memory::zero( initData, sizeof( initData ) );
+
+		const D3D11_SUBRESOURCE_DATA* pD3dInitData = nullptr;
+		if ( pTextureData != nullptr )
 		{
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
@@ -104,10 +109,12 @@ namespace tiki
 				height		/= 2u;
 				pLevelData	+= depthPitch;
 			} 
+
+			pD3dInitData = initData;
 		}
 
 		ID3D11Device* pDevice = graphics::getDevice( graphicsSystem );
-		if ( FAILED( pDevice->CreateTexture2D( &desc, initData, &m_platformData.pTexture2d ) ) )
+		if ( FAILED( pDevice->CreateTexture2D( &desc, pD3dInitData, &m_platformData.pTexture2d ) ) )
 		{
 			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
 			return false;

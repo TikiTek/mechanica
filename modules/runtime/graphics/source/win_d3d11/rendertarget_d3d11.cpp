@@ -9,14 +9,14 @@ namespace tiki
 {
 	RenderTarget::RenderTarget()
 		: m_width( 0u ), m_height( 0u ), m_colorBufferCount( 0u )
-	{		
+	{
 	}
 
 	RenderTarget::~RenderTarget()
 	{
 	}
 
-	void RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
+	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
 		m_colorBufferCount = colorBufferCount;
 		TIKI_ASSERT( m_colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
@@ -26,12 +26,16 @@ namespace tiki
 			m_colorBuffers[ i ] = pColorBuffers[ i ];
 
 			TGRenderTargetDescription renderTargetDesc;
-			renderTargetDesc.Format				= graphics::getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDesription().format );
+			renderTargetDesc.Format				= graphics::getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDesription().format, TextureFlags_RenderTarget );
 			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
 			renderTargetDesc.Texture2D.MipSlice	= 0;
 
-			TIKI_VERIFY( SUCCEEDED( graphics::getDevice( graphicsSystem )->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &renderTargetDesc, &m_platformData.pColorViews[ i ] ) ) );
-			TIKI_ASSERT( m_platformData.pColorViews[ i ] != nullptr );
+			const HRESULT result = graphics::getDevice( graphicsSystem )->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &renderTargetDesc, &m_platformData.pColorViews[ i ] );
+			if ( FAILED( result ) || m_platformData.pColorViews[ i ] == nullptr )
+			{
+				dispose();
+				return false;
+			}
 		}
 
 		for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
@@ -47,12 +51,17 @@ namespace tiki
 			m_depthBuffer = *pDepthBuffer;
 
 			TGDepthStencilDescription depthDesc;
-			depthDesc.Format				= graphics::getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDesription().format );
+			depthDesc.Format				= graphics::getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDesription().format, TextureFlags_DepthStencil );
 			depthDesc.ViewDimension			= D3D11_DSV_DIMENSION_TEXTURE2D;
 			depthDesc.Texture2D.MipSlice	= 0u;
+			depthDesc.Flags					= 0u;
 
-			TIKI_VERIFY( SUCCEEDED( graphics::getDevice( graphicsSystem )->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &depthDesc, &m_platformData.pDepthView ) ) );
-			TIKI_ASSERT( m_platformData.pDepthView != nullptr );
+			const HRESULT result = graphics::getDevice( graphicsSystem )->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &depthDesc, &m_platformData.pDepthView );
+			if ( FAILED( result ) || m_platformData.pDepthView == nullptr )
+			{
+				dispose();
+				return false;
+			}
 		}
 		else
 		{
@@ -61,6 +70,8 @@ namespace tiki
 
 			m_platformData.pDepthView	= nullptr;
 		}
+
+		return true;
 	}
 
 	void RenderTarget::dispose()
