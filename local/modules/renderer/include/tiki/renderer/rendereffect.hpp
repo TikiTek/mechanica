@@ -34,7 +34,7 @@ namespace tiki
 		virtual bool			createInternal() = 0;
 		virtual void			disposeInternal() = 0;
 
-		virtual void			executeRenderSequencesInternal( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount ) = 0;
+		virtual void			executeRenderSequencesInternal( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext ) = 0;
 
 	private:
 

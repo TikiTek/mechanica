@@ -2,6 +2,7 @@
 #include "tiki/renderer/gamerenderer.hpp"
 
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphicsresources/model.hpp"
 
 namespace tiki
 {
@@ -54,14 +55,36 @@ namespace tiki
 		m_renderBatch.dispose();
 	}
 
+	void GameRenderer::registerRenderEffect( RenderEffect* pRenderEffect )
+	{
+		m_renderEffectSystem.registerRenderEffect( pRenderEffect );
+	}
+
+	void GameRenderer::unregisterRenderEffect( RenderEffect* pRenderEffect )
+	{
+		m_renderEffectSystem.unregisterRenderEffect( pRenderEffect );
+	}
+	
+	void GameRenderer::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/ )
+	{
+		m_renderBatch.beginSequence( RenderPassMask_Geometry, RenderEffectId_Fallback, 0u );
+		for (uint i = 0u; i < pModel->getGeometryCount(); ++i)
+		{
+			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pWorldTransform );
+		} 
+		m_renderBatch.endSequence();
+	}
+
 	void GameRenderer::update()
 	{
+		m_renderBatch.reset();
 		m_renderEffectSystem.setFrameData( m_frameData );
 	}
 
 	void GameRenderer::render( GraphicsContext& graphicsContext ) const
 	{
 		graphicsContext.beginRenderPass( m_geometryTarget );
+		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_GREEN );
 
 		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
 

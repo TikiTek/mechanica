@@ -11,8 +11,9 @@
 
 namespace tiki
 {
-	class GraphicsSystem;
 	class GraphicsContext;
+	class GraphicsSystem;
+	class Model;
 
 	struct  GameRendererParamaters
 	{
@@ -44,10 +45,15 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, const GameRendererParamaters& parameters );
 		void				dispose();
 
-		FrameData&			getFrameData()			{ return m_frameData; }
+		void				registerRenderEffect( RenderEffect* pRenderEffect );
+		void				unregisterRenderEffect( RenderEffect* pRenderEffect );
 
-		RenderBatch&		getRenderBatch()		{ return m_renderBatch; }
-		RenderEffectSystem&	getRenderEffectSystem()	{ return m_renderEffectSystem; }
+		FrameData&			getFrameData()			{ return m_frameData; }
+		RendererContext&	getRendererContext()	{ return m_context; }
+
+		const TextureData*	getGeometryBuffer() const { return m_geometryBufferData; }
+
+		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr );
 
 		void				update();
 		void				render( GraphicsContext& graphicsContext ) const;

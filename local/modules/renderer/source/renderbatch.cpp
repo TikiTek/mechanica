@@ -12,21 +12,18 @@ namespace tiki
 
 		m_currentSequenceFailed	= false;
 		m_pCurrentSequence		= nullptr;
-		m_pFirstSequenceCommand	= nullptr;
 	}
 
 	RenderBatch::~RenderBatch()
 	{
 		TIKI_ASSERT( m_currentSequenceFailed == false );
 		TIKI_ASSERT( m_pCurrentSequence == nullptr );
-		TIKI_ASSERT( m_pFirstSequenceCommand == nullptr );
 	}
 
 	bool RenderBatch::create( uint sequenceCount, uint commandCount )
 	{
 		TIKI_ASSERT( m_currentSequenceFailed == false );
 		TIKI_ASSERT( m_pCurrentSequence == nullptr );
-		TIKI_ASSERT( m_pFirstSequenceCommand == nullptr );
 
 		if ( m_sequences.create( sizeof( RenderSequence ) * sequenceCount ) == false )
 		{
@@ -45,7 +42,6 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_currentSequenceFailed == false );
 		TIKI_ASSERT( m_pCurrentSequence == nullptr );
-		TIKI_ASSERT( m_pFirstSequenceCommand == nullptr );
 
 		m_sequences.dispose();
 		m_commands.dispose();
@@ -58,7 +54,6 @@ namespace tiki
 
 		m_currentSequenceFailed	= false;
 		m_pCurrentSequence		= nullptr;
-		m_pFirstSequenceCommand	= nullptr;
 
 		m_sequences.clear();
 		m_commands.clear();
@@ -78,12 +73,11 @@ namespace tiki
 		if ( m_pFirstSequence == nullptr )
 		{
 			m_pFirstSequence	= m_pCurrentSequence;
-			m_pEndSequence		= m_pFirstSequence + 1u;
+			m_pEndSequence		= m_pCurrentSequence;
 		}
 
 		m_pEndSequence++;
 		m_currentSequenceFailed = false;
-		m_pFirstSequenceCommand = nullptr;
 
 		m_pCurrentSequence->renderEffectId	= renderEffectId;
 		m_pCurrentSequence->renderPassMask	= passMask;
@@ -93,7 +87,7 @@ namespace tiki
 		m_pCurrentSequence->pCommands		= nullptr;
 	}
 
-	void RenderBatch::queueGeometry( const ModelGeometry* pGeometry, const Matrix43* pWorldTransform /*= nullptr */ )
+	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Matrix43* pWorldTransform /*= nullptr */ )
 	{
 		if ( m_pCurrentSequence == nullptr )
 		{
@@ -106,7 +100,7 @@ namespace tiki
 			return;
 		}
 
-		pCommand->pGeometry	= pGeometry;
+		pCommand->pGeometry	= &geometry;
 		if ( pWorldTransform == nullptr )
 		{
 			matrix::createIdentity( pCommand->worldTransform );
@@ -133,7 +127,6 @@ namespace tiki
 
 		m_currentSequenceFailed	= false;
 		m_pCurrentSequence		= nullptr;
-		m_pFirstSequenceCommand	= nullptr;
 
 		return true;
 	}
