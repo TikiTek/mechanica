@@ -17,6 +17,7 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+#include "tiki/framework/inputsystem.hpp"
 
 namespace tiki
 {
@@ -108,9 +109,15 @@ namespace tiki
 				if ( isCreating )
 				{
 					FrameData& frameData = m_pGameRenderer->getFrameData();
+					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
 
 					Projection projection;
-					projection.createPerspective( 800.0f / 600.0f, f32::piOver4, 0.001f, 100.0f );
+					projection.createPerspective(
+						(float)rendererContext.rendererWidth / (float)rendererContext.rendererHeight,
+						f32::piOver4,
+						0.001f,
+						100.0f
+					);
 
 					const Vector3 cameraPosition = { 0.0f, 0.0f, 5.0f };
 					frameData.mainCamera.create( cameraPosition, Quaternion::identity, projection );
@@ -141,6 +148,43 @@ namespace tiki
 
 	void TestState::update()
 	{
+		FrameData& frameData = m_pGameRenderer->getFrameData();
+		InputSystem& inputSystem = framework::getInputSystem();
+
+		Vector3 cameraPosition		= frameData.mainCamera.getPosition();
+		Quaternion cameraRotation	= frameData.mainCamera.getRotation();
+
+		// move camera
+		{
+			Vector3 cameraForward;
+			Vector3 cameraRight;
+			quaternion::getForward( cameraForward, cameraRotation );
+			quaternion::getRight( cameraRight, cameraRotation );
+
+			Vector3 cameraBackward	= cameraForward;
+			Vector3 cameraLeft		= cameraRight;
+			vector::negate( cameraBackward );
+			vector::negate( cameraLeft );
+
+			const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
+			vector::scale( cameraForward,	( inputSystem.isKeyDown( KEY_W ) ? 1.0f : 0.0f ) * timeDelta );
+			vector::scale( cameraBackward,	( inputSystem.isKeyDown( KEY_S ) ? 1.0f : 0.0f ) * timeDelta );
+			vector::scale( cameraLeft,		( inputSystem.isKeyDown( KEY_A ) ? 1.0f : 0.0f ) * timeDelta );
+			vector::scale( cameraRight,		( inputSystem.isKeyDown( KEY_D ) ? 1.0f : 0.0f ) * timeDelta );
+
+			vector::add( cameraPosition, cameraForward );
+			vector::add( cameraPosition, cameraBackward );
+			vector::add( cameraPosition, cameraLeft );
+			vector::add( cameraPosition, cameraRight );
+		}
+
+		// rotate camera
+		{
+			inputSystem.getMouseDeltaNormalized();
+		}
+
+		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
+
 		Matrix43 mtx;
 		matrix::clear( mtx );
 		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
