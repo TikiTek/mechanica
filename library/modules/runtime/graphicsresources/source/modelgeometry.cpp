@@ -47,6 +47,14 @@ namespace tiki
 		m_vertexData.dispose();
 	}
 
+	void ModelGeometry::render( GraphicsContext& graphicsContext ) const
+	{
+		graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
+		graphicsContext.setIndexBuffer( m_indexBuffer );
+
+		graphicsContext.drawIndexed( m_desc.indexCount );
+	}
+
 	//void ModelGeometry::getMinMax( Vector3& min, Vector3& max ) const
 	//{
 	//	const void* pData = (uint8*)m_vertexData.getData();

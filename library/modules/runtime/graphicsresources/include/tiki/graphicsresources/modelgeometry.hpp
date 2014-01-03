@@ -35,28 +35,26 @@ namespace tiki
 
 	class ModelGeometry
 	{
+		TIKI_NONCOPYABLE_CLASS( ModelGeometry );
 		friend class Model;
 
 	public:
 
 		ModelGeometry();
 
-		bool						isSkinned() const { return m_desc.isSkinned; }
+		bool						isSkinned() const		{ return m_desc.isSkinned; }
+		const ModelGeometryDesc&	getDescription() const	{ return m_desc; }
+		//void						getBoundingBox( Vector3& min, Vector3& max ) const;
 		
-		const VertexFormat*			getVertexFormat() const { return m_pVertexFormat; }
+		const VertexFormat*			getVertexFormat() const	{ return m_pVertexFormat; }
 
-		const IndexBuffer&			getIndexBuffer() const { return m_indexBuffer; }
-		const VertexBuffer&			getVertexBuffer() const { return m_vertexBuffer; }
+		const uint8*				getVertexData() const	{ return m_vertexData.getData(); }
+		uint						getVertexCount() const	{ return m_vertexData.getCount(); }
 
-		const uint8*				getVertexData() const { return m_vertexData.getData(); }
-		uint						getVertexCount() const { return m_vertexData.getCount(); }
+		const uint8*				getIndexData() const	{ return m_indexData.getData(); }
+		uint						getIndexCount() const	{ return m_desc.indexCount; }
 
-		const uint8*				getIndexData() const { return m_indexData.getData(); }
-		uint						getIndexCount() const { return m_indexBuffer.getCount(); }
-
-		//void						getMinMax( Vector3& min, Vector3& max ) const;
-
-		const ModelGeometryDesc&	getDesc() const { return m_desc; }
+		void						render( GraphicsContext& graphicsContext ) const;
 
 	private:
 

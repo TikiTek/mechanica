@@ -60,7 +60,7 @@ namespace tiki
 		} 
 	}
 
-	void RenderEffectSystem::render( GraphicsContext& graphisContext, RenderPass pass, const RenderBatch& batch ) const
+	void RenderEffectSystem::render( GraphicsContext& graphicsContext, RenderPass pass, const RenderBatch& batch ) const
 	{
 		TIKI_ASSERT( m_pRendererContext != nullptr );
 
@@ -90,7 +90,7 @@ namespace tiki
 				continue;
 			}
 
-			pRenderEffect->executeRenderSequences( graphisContext, pass, pSequence, 1u );
+			pRenderEffect->executeRenderSequences( graphicsContext, pass, pSequence, 1u );
 		} 
 	}
 }

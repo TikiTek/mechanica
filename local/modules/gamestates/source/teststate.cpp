@@ -145,8 +145,6 @@ namespace tiki
 			{  0.5f, -0.5f, 0.0f }
 		};
 
-		FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
-
 		Projection proj;
 		proj.createPerspective( 800.0f / 600.0f, f32::piOver4, 0.001f, 100.0f );
 		//proj.createOrthographic( 8.0f, 6.0f, 0.001f, 100.0f );
@@ -164,19 +162,17 @@ namespace tiki
 		Matrix43 mv = mtx;
 		matrix::mul( mtx, cam.getViewMatrix() );
 
+		FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 		createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvp );
 		createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mv );
-
 		graphicsContext.unmapBuffer( m_vertexConstantBuffer );
 
 		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 
-		const ModelGeometry& geometry = m_pModel->getGeometryByIndex( 0u );
-
-		graphicsContext.setVertexBuffer( 0u, geometry.getVertexBuffer() );
-		graphicsContext.setIndexBuffer( geometry.getIndexBuffer() );
-
-		graphicsContext.drawIndexed( geometry.getIndexCount() );
+		for (uint i = 0u; i < m_pModel->getGeometryCount(); ++i)
+		{
+			m_pModel->getGeometryByIndex( i ).render( graphicsContext );
+		} 
 
 		//FallbackVertex* pVertices = static_cast< FallbackVertex* >( graphicsContext.beginImmediateGeometry( sizeof( FallbackVertex ), 3u ) );
 		//
