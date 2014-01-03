@@ -11,8 +11,6 @@ namespace tiki
 
 	class Camera
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Camera );
-
 	public:
 
 		void				create( const Vector3& position, const Quaternion& rotation, const Projection& projection, const Vector3& upVector = Vector3::unitY );
