@@ -14,7 +14,7 @@ namespace tiki
 	RenderEffect::~RenderEffect()
 	{
 		TIKI_ASSERT( m_pFrameData == nullptr );
-		TIKI_ASSERT( m_pRendererContext = nullptr );
+		TIKI_ASSERT( m_pRendererContext == nullptr );
 	}
 
 	bool RenderEffect::create( const RendererContext& rendererContext )
@@ -34,14 +34,15 @@ namespace tiki
 
 	void RenderEffect::setFrameData( const FrameData& frameData )
 	{
+		TIKI_ASSERT( m_pRendererContext != nullptr );
 		m_pFrameData = &frameData;
 	}
 
 	void RenderEffect::executeRenderSequences( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount )
 	{
 		TIKI_ASSERT( m_pFrameData != nullptr );
-		TIKI_ASSERT( m_pRendererContext = nullptr );
+		TIKI_ASSERT( m_pRendererContext != nullptr );
 
-		executeRenderSequencesInternal( graphisContext, pass, pSequences, sequenceCount );
+		executeRenderSequencesInternal( graphisContext, pass, pSequences, sequenceCount, *m_pFrameData, *m_pRendererContext );
 	}
 }

@@ -114,6 +114,17 @@ namespace tiki
 		m_currentRenderPassDepth++;
 
 		m_platformData.pContext->OMSetRenderTargets( renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+
+		D3D11_VIEWPORT viewPort;
+		viewPort.TopLeftX	= 0.0f;
+		viewPort.TopLeftY	= 0.0f;
+		viewPort.Width		= (float)renderTarget.getWidth();
+		viewPort.Height		= (float)renderTarget.getHeight();
+		viewPort.MinDepth	= 0.0f;
+		viewPort.MaxDepth	= 1.0f;
+		m_platformData.pContext->RSSetViewports( 1u, &viewPort );
+
+		invalidateState();
 	}
 
 	void GraphicsContext::endRenderPass()
@@ -128,6 +139,8 @@ namespace tiki
 			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
 			m_platformData.pContext->OMSetRenderTargets( renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 		}
+
+		invalidateState();
 	}
 
 	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
@@ -308,6 +321,8 @@ namespace tiki
 
 	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )
 	{
+		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
+
 		D3D11_MAPPED_SUBRESOURCE mapped;
 		m_platformData.pContext->Map( buffer.m_pBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped );
 

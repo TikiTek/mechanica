@@ -27,6 +27,7 @@ namespace tiki
 		void			dispose();
 
 		void			registerRenderEffect( RenderEffect* pRenderEffect );
+		void			unregisterRenderEffect( RenderEffect* pRenderEffect );
 
 		void			setFrameData( const FrameData& frameData );
 		void			render( GraphicsContext& graphicsContext, RenderPass pass, const RenderBatch& batch ) const;

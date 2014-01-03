@@ -17,7 +17,7 @@ struct VertexToPixel
 struct VertexInput
 {
 	float2 position	: TIKI_INPUT_POSITION0;
-	float4 texcoord	: TIKI_TEXCOORD;
+	float2 texcoord	: TIKI_TEXCOORD;
 
 #if 0
 	float4 vertexId	: TIKI_TEXCOORD0;

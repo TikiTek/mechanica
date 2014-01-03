@@ -48,6 +48,15 @@ namespace tiki
 		const RenderEffectId renderEffectId = pRenderEffect->getRenderEffectId();
 		m_effects[ renderEffectId ] = pRenderEffect;
 	}
+	
+	void RenderEffectSystem::unregisterRenderEffect( RenderEffect* pRenderEffect )
+	{
+		TIKI_ASSERT( m_pRendererContext != nullptr );
+		TIKI_ASSERT( pRenderEffect != nullptr );
+
+		const RenderEffectId renderEffectId = pRenderEffect->getRenderEffectId();
+		m_effects[ renderEffectId ] = nullptr;
+	}
 
 	void RenderEffectSystem::setFrameData( const FrameData& frameData )
 	{

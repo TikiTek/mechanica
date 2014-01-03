@@ -79,6 +79,6 @@ namespace tiki
 
 	void ApplicationState::render( GraphicsContext& graphicsContext ) const
 	{
-		m_renderer.render( graphicsContext );
+		//m_renderer.render( graphicsContext );
 	}
 }

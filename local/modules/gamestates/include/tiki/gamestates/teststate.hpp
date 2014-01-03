@@ -5,10 +5,12 @@
 #include "tiki/gameflow/gamestate.hpp"
 
 #include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/renderer/fallbackrendereffect.hpp"
 
 namespace tiki
 {
 	class ApplicationState;
+	class GameRenderer;
 	class Model;
 	class SamplerState;
 	class ShaderSet;
@@ -19,6 +21,7 @@ namespace tiki
 	enum TestStateTransitionSteps
 	{
 		TestStateTransitionSteps_LoadResources,
+		TestStateTransitionSteps_SetRendererValues,
 
 		TestStateTransitionSteps_Count
 	};
@@ -41,16 +44,16 @@ namespace tiki
 		
 		ApplicationState*			m_pParentState;
 
-		const ShaderSet*			m_pShaderSet;
 		const Model*				m_pModel;
-
+		const ShaderSet*			m_pShaderSet;
 		const Texture*				m_pTexture;
-		const SamplerState*			m_pSampler;
 
-		mutable ConstantBuffer		m_vertexConstantBuffer;
+		GameRenderer*				m_pGameRenderer;
+		FallbackRenderEffect		m_fallbackRenderEffect;
 
-		const VertexFormat*			m_pVertexFormat;
+		//const VertexFormat*			m_pVertexFormat;
 		const VertexInputBinding*	m_pInputBinding;
+		const SamplerState*			m_pSampler;
 
 	};
 }

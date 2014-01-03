@@ -48,7 +48,7 @@ namespace tiki
 		RenderSequenceEnumerator	createEnumerator( RenderPass pass ) const;
 
 		void						beginSequence( RenderPassMask passMask, RenderEffectId renderEffectId, uint8 renderFlags );
-		void						queueGeometry( const ModelGeometry* pGeometry, const Matrix43* pWorldTransform = nullptr );
+		void						queueGeometry( const ModelGeometry& geometry, const Matrix43* pWorldTransform = nullptr );
 		bool						endSequence();
 
 	private:
@@ -58,7 +58,6 @@ namespace tiki
 
 		bool					m_currentSequenceFailed;
 		RenderSequence*			m_pCurrentSequence;
-		RenderCommand*			m_pFirstSequenceCommand;
 
 		ZoneAllocator			m_sequences;
 		ZoneAllocator			m_commands;

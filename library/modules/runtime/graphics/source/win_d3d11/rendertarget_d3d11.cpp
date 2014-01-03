@@ -18,8 +18,11 @@ namespace tiki
 
 	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
-		m_colorBufferCount = colorBufferCount;
-		TIKI_ASSERT( m_colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
+		TIKI_ASSERT( colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
+
+		m_colorBufferCount	= colorBufferCount;
+		m_width				= width;
+		m_height			= height;
 
 		for (size_t i = 0u; i < m_colorBufferCount; ++i)
 		{

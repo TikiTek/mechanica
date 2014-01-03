@@ -56,10 +56,7 @@ namespace tiki
 				{ &m_pStates->introState,			0u,	IntroStateTransitionSteps_Count },			// F5
 				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count },	// F6
 					{ &m_pStates->playState,		2u,	PlayStateTransitionSteps_Count },			// F7
-					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count },			// F8
-				{ &m_pStates->testState,			0u,	TestStateTransitionSteps_Count },			// F...
-					{ &m_pStates->testState,		5u,	TestStateTransitionSteps_Count },
-					{ &m_pStates->testState,		5u,	TestStateTransitionSteps_Count }
+					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count }			// F8
 		};
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );

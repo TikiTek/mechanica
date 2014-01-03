@@ -1,8 +1,24 @@
 
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
+#include "tiki/framework/framework.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphicsbase/graphicstypes.hpp"
+#include "tiki/graphicsresources/modelgeometry.hpp"
+#include "tiki/graphicsresources/shaderset.hpp"
+#include "tiki/renderer/rendercommand.hpp"
+#include "tiki/renderer/renderercontext.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
 namespace tiki
 {
+	struct FallbackVertexConstants
+	{
+		GraphicsMatrix44	mvpMatrix;
+		GraphicsMatrix44	modelViewMatrix;
+	};
+
 	FallbackRenderEffect::FallbackRenderEffect()
 	{
 		m_pShaderSet	= nullptr;
@@ -26,20 +42,41 @@ namespace tiki
 			FilterMode_Linear,
 			FilterMode_Linear
 		);
+
+		m_vertexConstantBuffer.create( framework::getGraphicsSystem(), sizeof( FallbackVertexConstants ) );
+
+		m_vertexInputBindings.create( 32u );
+
+		return true;
 	}
 
 	void FallbackRenderEffect::disposeInternal()
 	{
 		framework::getGraphicsSystem().disposeSamplerState( m_pSampler );
+		m_pSampler = nullptr;
 
 		framework::getResourceManager().unloadResource< ShaderSet >( m_pShaderSet );
+		m_pShaderSet = nullptr;
+
+		m_vertexConstantBuffer.dispose( framework::getGraphicsSystem() );
+
+		for (uint i = 0u; i < m_vertexInputBindings.getCount(); ++i)
+		{
+			const VertexInputBinding* pVertexInputBinding = nullptr;
+			m_vertexInputBindings.getValueAt( &pVertexInputBinding, i );
+
+			framework::getGraphicsSystem().disposeVertexInputBinding( pVertexInputBinding );
+		}
+		m_vertexInputBindings.dispose();
 	}
 
-	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount )
+	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
 	{
+		const Shader* pVertexShader = m_pShaderSet->getShader( ShaderType_VertexShader, 0u );
+
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 
-		graphicsContext.setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setVertexShader( pVertexShader );
 		graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 
 		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
@@ -53,11 +90,34 @@ namespace tiki
 			{
 				const RenderCommand& command = sequence.pCommands[ commandIndex ];
 
+				Matrix43 mvMtx = command.worldTransform;
+				matrix::mul( mvMtx, frameData.mainCamera.getViewMatrix() );
+
+				Matrix44 mvpMtx;
+				matrix::set( mvpMtx, command.worldTransform );
+				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
+
 				FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
-				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvp );
-				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mv );
-				graphicsContext.unmapBuffer( m_vertexConstantBuffer );
-	
+				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
+				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mvMtx );
+				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
+
+				const ModelGeometry& geometry					= *command.pGeometry;
+				const VertexInputBinding* pVertexInputBinding	= nullptr;
+				const crc32 vertexFormatHash					= geometry.getVertexFormat()->getHashValue();
+
+				if ( m_vertexInputBindings.findValue( &pVertexInputBinding, vertexFormatHash ) == false )
+				{
+					pVertexInputBinding = framework::getGraphicsSystem().createVertexInputBinding(
+						pVertexShader,
+						geometry.getVertexFormat()
+					);
+					m_vertexInputBindings.set( vertexFormatHash, pVertexInputBinding );
+				}
+
+				graphicsContext.setVertexInputBinding( pVertexInputBinding );
+
+				geometry.render( graphicsContext );
 			}
 		} 
 	}

@@ -46,18 +46,21 @@ namespace tiki
 		RenderTarget();
 		~RenderTarget();
 
-		bool						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
+		bool						create( GraphicsSystem& graphicsSystem, uint width, uint height, const RenderTargetBuffer* pColorBuffers, uint colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
 		void						dispose();
 
-		const TextureData*			getColorTextureData( size_t index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
-		size_t						getColorBufferCount() const					{ return m_colorBufferCount; }
+		uint						getWidth() const	{ return m_width; }
+		uint						getHeight() const	{ return m_height; }
+
+		const TextureData*			getColorTextureData( uint index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
+		uint						getColorBufferCount() const					{ return m_colorBufferCount; }
 
 		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }
 		
 	private:
 
-		size_t						m_width;
-		size_t						m_height;
+		uint						m_width;
+		uint						m_height;
 
 		RenderTargetBuffer			m_colorBuffers[ GraphicsSystemLimits_RenderTargetSlots ];
 		size_t						m_colorBufferCount;
