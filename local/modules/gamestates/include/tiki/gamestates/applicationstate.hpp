@@ -25,6 +25,8 @@ namespace tiki
 		void					create();
 		void					dispose();
 
+		GameRenderer&			getGameRenderer() { return m_renderer; }
+
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
 		virtual void			update();

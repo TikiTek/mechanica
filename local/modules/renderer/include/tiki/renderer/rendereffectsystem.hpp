@@ -29,7 +29,7 @@ namespace tiki
 		void			registerRenderEffect( RenderEffect* pRenderEffect );
 
 		void			setFrameData( const FrameData& frameData );
-		void			render( GraphicsContext& graphisContext, RenderPass pass, const RenderBatch& batch ) const;
+		void			render( GraphicsContext& graphicsContext, RenderPass pass, const RenderBatch& batch ) const;
 
 	private:
 
