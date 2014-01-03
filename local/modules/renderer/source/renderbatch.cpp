@@ -145,8 +145,7 @@ namespace tiki
 
 	RenderSequenceEnumerator::RenderSequenceEnumerator( const RenderSequence* pBegin, const RenderSequence* pEnd, RenderPass pass )
 	{
-		TIKI_ASSERT( pBegin != nullptr );
-		TIKI_ASSERT( pEnd != nullptr );
+		TIKI_ASSERT( ( pBegin != nullptr && pEnd != nullptr ) || ( pBegin == nullptr && pEnd == nullptr ) );
 		TIKI_ASSERT( pass != RenderPass_Invalid );
 
 		m_renderPass = pass;
@@ -160,7 +159,7 @@ namespace tiki
 	const RenderSequence* RenderSequenceEnumerator::enumerate()
 	{
 		TIKI_ASSERT( m_renderPass != RenderPass_Invalid );
-		TIKI_ASSERT( m_pIterator != nullptr );
+		TIKI_ASSERT( m_pIterator != nullptr || m_pBeginSequence == nullptr );
 
 		if ( m_pIterator == m_pEndSequence )
 		{
