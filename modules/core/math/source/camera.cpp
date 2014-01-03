@@ -14,6 +14,9 @@ namespace tiki
 
 	void Camera::setTransform( const Vector3& position, const Quaternion& rotation )
 	{
+		m_position = position;
+		m_rotation = rotation;
+
 		quaternion::toMatrix( m_world.rot, rotation );
 		m_world.pos = position;
 

@@ -14,15 +14,15 @@ namespace tiki
 	TIKI_FORCE_INLINE void createGraphicsMatrix44( GraphicsMatrix44& mtx, const Matrix43& input )
 	{
 		mtx.data[  0u ] = input.rot.x.x;
-		mtx.data[  1u ] = input.rot.x.y;
-		mtx.data[  2u ] = input.rot.x.z;
+		mtx.data[  1u ] = input.rot.y.x;
+		mtx.data[  2u ] = input.rot.z.x;
 		mtx.data[  3u ] = input.pos.x;
-		mtx.data[  4u ] = input.rot.y.x;
+		mtx.data[  4u ] = input.rot.x.y;
 		mtx.data[  5u ] = input.rot.y.y;
-		mtx.data[  6u ] = input.rot.y.z;
+		mtx.data[  6u ] = input.rot.z.y;
 		mtx.data[  7u ] = input.pos.y;
-		mtx.data[  8u ] = input.rot.z.x;
-		mtx.data[  9u ] = input.rot.z.y;
+		mtx.data[  8u ] = input.rot.x.z;
+		mtx.data[  9u ] = input.rot.y.z;
 		mtx.data[ 10u ] = input.rot.z.z;
 		mtx.data[ 11u ] = input.pos.y;
 		mtx.data[ 12u ] = 0.0f;
@@ -34,20 +34,20 @@ namespace tiki
 	TIKI_FORCE_INLINE void createGraphicsMatrix44( GraphicsMatrix44& mtx, const Matrix44& input )
 	{
 		mtx.data[  0u ] = input.x.x;
-		mtx.data[  1u ] = input.x.y;
-		mtx.data[  2u ] = input.x.z;
-		mtx.data[  3u ] = input.x.w;
-		mtx.data[  4u ] = input.y.x;
+		mtx.data[  1u ] = input.y.x;
+		mtx.data[  2u ] = input.z.x;
+		mtx.data[  3u ] = input.w.x;
+		mtx.data[  4u ] = input.x.y;
 		mtx.data[  5u ] = input.y.y;
-		mtx.data[  6u ] = input.y.z;
-		mtx.data[  7u ] = input.y.w;
-		mtx.data[  8u ] = input.z.x;
-		mtx.data[  9u ] = input.z.y;
+		mtx.data[  6u ] = input.z.y;
+		mtx.data[  7u ] = input.w.y;
+		mtx.data[  8u ] = input.x.z;
+		mtx.data[  9u ] = input.y.z;
 		mtx.data[ 10u ] = input.z.z;
-		mtx.data[ 11u ] = input.z.w;
-		mtx.data[ 12u ] = input.w.x;
-		mtx.data[ 13u ] = input.w.y;
-		mtx.data[ 14u ] = input.w.z;
+		mtx.data[ 11u ] = input.w.z;
+		mtx.data[ 12u ] = input.x.w;
+		mtx.data[ 13u ] = input.y.w;
+		mtx.data[ 14u ] = input.z.w;
 		mtx.data[ 15u ] = input.w.w;
 	}
 }
