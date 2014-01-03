@@ -4,6 +4,7 @@
 
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/projection.hpp"
+#include "tiki/math/quaternion.hpp"
 
 namespace tiki
 {
@@ -14,6 +15,9 @@ namespace tiki
 	public:
 
 		void				create( const Vector3& position, const Quaternion& rotation, const Projection& projection, const Vector3& upVector = Vector3::unitY );
+
+		const Vector3&		getPosition() const	{ return m_position; }
+		const Quaternion&	getRotation() const	{ return m_rotation; }
 
 		void				setTransform( const Vector3& position, const Quaternion& rotation );
 
@@ -30,6 +34,9 @@ namespace tiki
 
 		Vector3		m_upVector;
 		Projection	m_projection;
+
+		Vector3		m_position;
+		Quaternion	m_rotation;
 
 		Matrix43	m_world;
 		Matrix43	m_view;

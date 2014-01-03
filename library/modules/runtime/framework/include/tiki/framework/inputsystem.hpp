@@ -5,6 +5,7 @@
 #include "tiki/base/mouse.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/math/vector.hpp"
 
 struct IDirectInputA;
 struct IDirectInputDeviceA;
@@ -49,9 +50,9 @@ namespace tiki
 		bool					isButtonPressed( MouseButtons button ) const;
 		bool					isButtonReleased( MouseButtons button ) const;
 
-		const Vector2&			getMousePosition() const;
-		const Vector2&			getMousePositionDisplay() const;
-		const Vector2&			getDistance() const;
+		const Vector2&			getMousePosition() const			{ return m_mousePosition; }
+		const Vector2&			getMousePositionNormalized() const	{ return m_mousePositionNormalized; }
+		const Vector2&			getMouseDeltaNormalized() const		{ return m_mouseDeltaNormalized; }
 
 	protected:
 
@@ -60,9 +61,16 @@ namespace tiki
 							
 	private:
 
+		uint					m_screenWidth;
+		uint					m_screenHeight;
+
 		IDirectInputA*			m_pInputDevice;
 		IDirectInputDeviceA*	m_pMouse;
 		IDirectInputDeviceA*	m_pKeyboard;
+
+		Vector2					m_mousePosition;
+		Vector2					m_mousePositionNormalized;
+		Vector2					m_mouseDeltaNormalized;
 
 		InputSystemState		m_currentState;
 		InputSystemState		m_previousState;

@@ -4,8 +4,6 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/framework/mainwindow.hpp"
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dinput8.lib")
 
@@ -34,6 +32,9 @@ namespace tiki
 	bool InputSystem::create( const InputSystemParameters& params )
 	{
 		HINSTANCE hinst = (HINSTANCE)getInstanceHandle();
+
+		m_screenWidth	= params.pWindow->getClientSize().x;
+		m_screenHeight	= params.pWindow->getClientSize().y;
 
 		HRESULT result = DirectInput8Create( hinst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pInputDevice, nullptr );
 		if( FAILED( result ) || m_pInputDevice == nullptr )
@@ -129,6 +130,21 @@ namespace tiki
 				m_pMouse->Acquire();
 			}
 		}
+
+		const DIMOUSESTATE* pMouseState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
+		Vector2 delta = { (float)pMouseState->lX, (float)pMouseState->lY };
+		const Vector2 screenDimention = { (float)m_screenWidth, (float)m_screenHeight };
+
+		vector::add( m_mousePosition, delta );
+		vector::clamp( m_mousePosition, Vector2::zero, screenDimention );
+
+		delta.x /= m_screenWidth;
+		delta.y /= m_screenHeight;
+		//vector::div( delta, screenDimention );
+		vector::add( m_mousePositionNormalized, delta );
+		vector::clamp( m_mousePositionNormalized, Vector2::zero, Vector2::one );
+
+		m_mouseDeltaNormalized = delta;
 	}
 
 	bool InputSystem::isButtonDown( const MouseButtons button ) const
@@ -159,21 +175,6 @@ namespace tiki
 		return ( pPreviousState->rgbButtons[ button ] != 0 ) && ( pCurrentState->rgbButtons[ button ] == 0 );
 	}
 
-	//const Vector2& InputSystem::getMousePosition() const
-	//{
-	//	return m_position;
-	//}
-
-	//const Vector2& InputSystem::getMousePositionDisplay() const
-	//{
-	//	return m_positionDisplay;
-	//}
-
-	//const Vector2& InputSystem::getDistance() const
-	//{
-	//	return m_distance;
-	//}
-
 	bool InputSystem::isKeyDown( Keys key ) const
 	{
 		return ( m_currentState.keyboardState[ key ] & 0x80 ) != 0;
@@ -194,71 +195,3 @@ namespace tiki
 		return (( m_previousState.keyboardState[ key ] & 0x80 ) && !( m_currentState.keyboardState[ key ] & 0x80 ) );
 	}
 }
-
-#else
-
-namespace tiki
-{
-	InputSystem::InputSystem()
-	{
-	}
-
-	InputSystem::~InputSystem()
-	{
-	}
-
-	bool InputSystem::create( const InputSystemParameters& params )
-	{
-		return true;
-	}
-
-	void InputSystem::dispose()
-	{
-	}
-
-	void InputSystem::update( const WindowEventBuffer& windowEvents )
-	{
-	}
-
-	bool InputSystem::isButtonDown( const MouseButtons button ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::isButtonUp( const MouseButtons button ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::isButtonPressed( const MouseButtons button ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::isButtonReleased( const MouseButtons button ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::isKeyDown( Keys key ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::isKeyUp( Keys key ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::hasKeyPressed( Keys key ) const
-	{
-		return false;
-	}
-
-	bool InputSystem::hasKeyReleased( Keys key ) const
-	{
-		return false;
-	}
-}
-
-#endif
