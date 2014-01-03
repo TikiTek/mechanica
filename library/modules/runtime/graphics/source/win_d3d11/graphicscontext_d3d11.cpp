@@ -108,12 +108,26 @@ namespace tiki
 
 	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
 	{
-		
+		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
+
+		m_pRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
+		m_currentRenderPassDepth++;
+
+		m_platformData.pContext->OMSetRenderTargets( renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 	}
 
 	void GraphicsContext::endRenderPass()
 	{
+		TIKI_ASSERT( m_currentRenderPassDepth != 0u );
 
+		m_currentRenderPassDepth--;
+		m_pRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
+
+		if ( m_currentRenderPassDepth != 0u )
+		{
+			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
+			m_platformData.pContext->OMSetRenderTargets( renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+		}
 	}
 
 	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )

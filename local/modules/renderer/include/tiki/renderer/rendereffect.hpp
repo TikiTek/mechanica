@@ -7,6 +7,7 @@
 
 namespace tiki
 {
+	class GraphicsContext;
 	struct FrameData;
 	struct RenderSequence;
 	struct RendererContext;
@@ -26,14 +27,14 @@ namespace tiki
 		virtual RenderEffectId	getRenderEffectId() const = 0;
 
 		void					setFrameData( const FrameData& frameData );
-		void					executeRenderSequences( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount );
+		void					executeRenderSequences( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount );
 
 	protected:
 
 		virtual bool			createInternal() = 0;
 		virtual void			disposeInternal() = 0;
 
-		virtual void			executeRenderSequencesInternal( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount ) = 0;
+		virtual void			executeRenderSequencesInternal( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount ) = 0;
 
 	private:
 

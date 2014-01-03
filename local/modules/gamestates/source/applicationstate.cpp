@@ -44,6 +44,29 @@ namespace tiki
 				return TransitionState_Finish;
 			}
 			//break;
+		case ApplicationStateTransitionSteps_CreateGameRenderer:
+			{
+				TIKI_ASSERT( isInital );
+
+				if ( isCreating )
+				{
+					GameRendererParamaters params;
+
+					if ( m_renderer.create( framework::getGraphicsSystem(), params ) == false )
+					{
+						TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
+						return TransitionState_Error;
+					}
+				}
+				else
+				{
+					m_renderer.dispose();
+				}
+
+				return TransitionState_Finish;
+			}
+			break;
+
 		}
 
 		return TransitionState_Error;
@@ -51,9 +74,11 @@ namespace tiki
 
 	void ApplicationState::update()
 	{
+		m_renderer.update();
 	}
 
 	void ApplicationState::render( GraphicsContext& graphicsContext ) const
 	{
+		m_renderer.render( graphicsContext );
 	}
 }

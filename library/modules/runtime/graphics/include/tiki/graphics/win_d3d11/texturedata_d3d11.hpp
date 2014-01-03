@@ -26,7 +26,7 @@ namespace tiki
 
 	namespace graphics
 	{
-		TGFormat getD3dFormat( PixelFormat pixelFormat );
+		TGFormat getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
 	}
 }
 

@@ -4,11 +4,14 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
+#include "tiki/renderer/gamerenderer.hpp"
+
 namespace tiki
 {
 	enum ApplicationStateTransitionSteps
 	{
 		ApplicationStateTransitionSteps_RegisterResourceTypes,
+		ApplicationStateTransitionSteps_CreateGameRenderer,
 
 		ApplicationStateTransitionSteps_Count
 	};
@@ -26,6 +29,10 @@ namespace tiki
 
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext ) const;
+
+	private:
+
+		GameRenderer			m_renderer;
 
 	};
 }

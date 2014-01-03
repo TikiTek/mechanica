@@ -8,6 +8,7 @@
 
 namespace tiki
 {
+	class GraphicsContext;
 	class RenderBatch;
 	class RenderEffect;
 	struct FrameData;
@@ -28,7 +29,7 @@ namespace tiki
 		void			registerRenderEffect( RenderEffect* pRenderEffect );
 
 		void			setFrameData( const FrameData& frameData );
-		void			render( RenderPass pass, const RenderBatch& batch );
+		void			render( GraphicsContext& graphisContext, RenderPass pass, const RenderBatch& batch ) const;
 
 	private:
 

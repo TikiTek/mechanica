@@ -19,6 +19,18 @@ namespace tiki
 
 	struct RenderTargetBuffer
 	{
+		RenderTargetBuffer()
+		{
+			format		= PixelFormat_Invalid;
+			pDataBuffer	= nullptr;
+		}
+
+		RenderTargetBuffer( const TextureData& dataBuffer, PixelFormat pixelFormat = PixelFormat_Invalid )
+		{
+			format		= pixelFormat;
+			pDataBuffer	= &dataBuffer;
+		}
+
 		PixelFormat			format;
 		const TextureData*	pDataBuffer;
 	};
@@ -34,7 +46,7 @@ namespace tiki
 		RenderTarget();
 		~RenderTarget();
 
-		void						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
+		bool						create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
 		void						dispose();
 
 		const TextureData*			getColorTextureData( size_t index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }

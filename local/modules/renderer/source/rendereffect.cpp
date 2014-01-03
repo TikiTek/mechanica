@@ -37,11 +37,11 @@ namespace tiki
 		m_pFrameData = &frameData;
 	}
 
-	void RenderEffect::executeRenderSequences( RenderPass pass, const RenderSequence* pSequences, uint sequenceCount )
+	void RenderEffect::executeRenderSequences( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount )
 	{
 		TIKI_ASSERT( m_pFrameData != nullptr );
 		TIKI_ASSERT( m_pRendererContext = nullptr );
 
-		executeRenderSequencesInternal( pass, pSequences, sequenceCount );
+		executeRenderSequencesInternal( graphisContext, pass, pSequences, sequenceCount );
 	}
 }

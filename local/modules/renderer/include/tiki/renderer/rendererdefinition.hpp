@@ -33,11 +33,6 @@ namespace tiki
 		RenderPassMask_Geometry		= 1u << RenderPass_Geometry,
 		RenderPassMask_ShadowVolume	= 1u << RenderPass_ShadowVolume
 	};
-
-	struct FrameData
-	{
-
-	};
 }
 
 #endif // __TIKI_RENDERERDEFINITION_HPP_INCLUDED__

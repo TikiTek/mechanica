@@ -3,11 +3,11 @@
 #define __TIKI_GAMERENDERER_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/renderer/renderbatch.hpp"
 #include "tiki/renderer/rendereffectsystem.hpp"
+#include "tiki/renderer/renderercontext.hpp"
 
 namespace tiki
 {
@@ -16,13 +16,20 @@ namespace tiki
 
 	struct  GameRendererParamaters
 	{
+		GameRendererParamaters()
+		{
+			rendererWidth	= 1280u;
+			rendererHeight	= 720u;
+
+			maxSeqeuenceCount		= 100u;
+			maxRenderCommandCount	= 500u;
+		}
+
 		uint	rendererWidth;
 		uint	rendererHeight;
-	};
 
-	struct RendererContext
-	{
-
+		uint	maxSeqeuenceCount;
+		uint	maxRenderCommandCount;
 	};
 
 	class GameRenderer
@@ -37,8 +44,10 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, const GameRendererParamaters& parameters );
 		void				dispose();
 
-		RenderBatch&		getRenderBatch();
-		RenderEffectSystem&	getRenderEffectSystem();
+		FrameData&			getFrameData()			{ return m_frameData; }
+
+		RenderBatch&		getRenderBatch()		{ return m_renderBatch; }
+		RenderEffectSystem&	getRenderEffectSystem()	{ return m_renderEffectSystem; }
 
 		void				update();
 		void				render( GraphicsContext& graphicsContext ) const;
@@ -55,6 +64,7 @@ namespace tiki
 		};
 
 		RendererContext		m_context;
+		FrameData			m_frameData;
 
 		RenderBatch			m_renderBatch;
 		RenderEffectSystem	m_renderEffectSystem;
@@ -69,6 +79,9 @@ namespace tiki
 
 		bool				createTextureData();
 		bool				createRenderTargets();
+
+		void				disposeTextureData();
+		void				disposeRenderTargets();
 
 	};
 }
