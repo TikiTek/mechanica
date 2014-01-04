@@ -1,0 +1,4 @@
+<tikimaterial>
+	<type>FallbackMaterialData</type>
+	<field name="texture" type="resource">checker.texture:1E9CFDA4</field>
+</tikimaterial>

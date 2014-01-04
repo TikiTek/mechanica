@@ -78,6 +78,10 @@ namespace tiki
 			return false;		
 		}
 
+		vector::clear( m_mousePosition );
+		vector::clear( m_mousePositionNormalized );
+		vector::clear( m_mouseDeltaNormalized );
+
 		return true;
 	}
 
@@ -140,7 +144,6 @@ namespace tiki
 
 		delta.x /= m_screenWidth;
 		delta.y /= m_screenHeight;
-		//vector::div( delta, screenDimention );
 		vector::add( m_mousePositionNormalized, delta );
 		vector::clamp( m_mousePositionNormalized, Vector2::zero, Vector2::one );
 

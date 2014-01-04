@@ -11,6 +11,7 @@ module:add_dependency( "fontconverter" );
 module:add_dependency( "shaderconverter" );
 module:add_dependency( "textureconverter" );
 module:add_dependency( "modelconverter" );
+module:add_dependency( "materialconverter" );
 
 local project = Project:new(
 	"autoconverter",

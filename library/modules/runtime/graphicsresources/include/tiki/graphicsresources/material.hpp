@@ -5,6 +5,14 @@
 
 namespace tiki
 {
+	struct MaterialBaseData
+	{
+		uint8	renderEffectId;
+		uint8	renderPassMask;
+		uint8	renderFlags;
+		uint8	defaultTextureOffset;
+	};
+
 	class Material : public Resource
 	{
 		friend class GraphicsContext;
@@ -13,20 +21,22 @@ namespace tiki
 
 	public:
 
-		static void			registerResourceType( ResourceManager& resourceManager );
-		static void			unregisterResourceType( ResourceManager& resourceManager );
+		static void				registerResourceType( ResourceManager& resourceManager );
+		static void				unregisterResourceType( ResourceManager& resourceManager );
 
-		//const Shader*		getVertexShader() const { return m_pVertexShader; }
+		const MaterialBaseData*	getData() const { return m_pData; }
 
 	protected:
 
-		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
-		virtual void		disposeInternal( const FactoryContext& factoryContext );
+		virtual bool			createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
+		virtual void			disposeInternal( const FactoryContext& factoryContext );
 
 	private:
 
-							Material();
-		virtual				~Material();
+								Material();
+		virtual					~Material();
+
+		const MaterialBaseData*	m_pData;
 
 	};
 }

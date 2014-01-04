@@ -325,19 +325,37 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void quaternion::getForward( Vector3& result, const Quaternion& quat )
 	{
+		quaternion::getBackward( result, quat );
+		vector::negate( result );
+	}
+
+	TIKI_FORCE_INLINE void quaternion::getBackward( Vector3& result, const Quaternion& quat )
+	{
 		result.x = 2.0f * ( quat.x * quat.z + quat.w * quat.y );
 		result.y = 2.0f * ( quat.y * quat.z - quat.w * quat.x );
 		result.z = 1.0f - 2.0f * ( quat.x * quat.x + quat.y * quat.y );
 	}
 
-	TIKI_FORCE_INLINE void quaternion::getRight( Vector3& result, const Quaternion& quat )
+	TIKI_FORCE_INLINE void quaternion::getLeft( Vector3& result, const Quaternion& quat )
 	{
 		result.x = 1.0f - 2.0f * ( quat.y * quat.y + quat.z * quat.z );
 		result.y = 2.0f * ( quat.x * quat.y + quat.w * quat.z );
 		result.z = 2.0f * ( quat.x * quat.z - quat.w * quat.y );
 	}
 
+	TIKI_FORCE_INLINE void quaternion::getRight( Vector3& result, const Quaternion& quat )
+	{
+		quaternion::getLeft( result, quat );
+		vector::negate( result );
+	}
+
 	TIKI_FORCE_INLINE void quaternion::getUp( Vector3& result, const Quaternion& quat )
+	{
+		quaternion::getDown( result, quat );
+		vector::negate( result );
+	}
+
+	TIKI_FORCE_INLINE void quaternion::getDown( Vector3& result, const Quaternion& quat )
 	{
 		result.x = 2.0f * ( quat.x * quat.y - quat.w * quat.z );
 		result.y = 1.0f - 2.0f * ( quat.x * quat.x + quat.z * quat.z );
