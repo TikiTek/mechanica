@@ -180,7 +180,12 @@ namespace tiki
 
 		// rotate camera
 		{
-			inputSystem.getMouseDeltaNormalized();
+			const Vector2& mouseDelta = inputSystem.getMouseDeltaNormalized();
+
+			Quaternion cameraRotationDelta;
+			quaternion::fromYawPitchRoll( cameraRotationDelta, mouseDelta.x, -mouseDelta.y, 0.0f );
+
+			quaternion::mul( cameraRotation, cameraRotationDelta );
 		}
 
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
