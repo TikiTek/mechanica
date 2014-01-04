@@ -57,8 +57,11 @@ namespace tiki
 		TIKI_FORCE_INLINE void			transform( Vector3& vec, const Quaternion& quat );
 
 		TIKI_FORCE_INLINE void			getForward( Vector3& result, const Quaternion& quat );
+		TIKI_FORCE_INLINE void			getBackward( Vector3& result, const Quaternion& quat );
+		TIKI_FORCE_INLINE void			getLeft( Vector3& result, const Quaternion& quat );
 		TIKI_FORCE_INLINE void			getRight( Vector3& result, const Quaternion& quat );
 		TIKI_FORCE_INLINE void			getUp( Vector3& result, const Quaternion& quat );
+		TIKI_FORCE_INLINE void			getDown( Vector3& result, const Quaternion& quat );
 	};
 }
 

@@ -226,6 +226,7 @@ namespace tiki
 	{
 		vec.x *= val;
 		vec.y *= val;
+		return vec;
 	}
 
 	TIKI_FORCE_INLINE Vector3& vector::scale( Vector3& vec, float val )

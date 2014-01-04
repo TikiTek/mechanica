@@ -9,24 +9,21 @@ namespace tiki
 	{
 	public:
 
-					MaterialConverter();
-		virtual		~MaterialConverter();
+						MaterialConverter();
+		virtual			~MaterialConverter();
 
 	protected:
 
-		virtual size_t			getConverterRevision() const { return 1u; }
+		virtual uint	getConverterRevision() const { return 1u; }
 
-		virtual crc32 getInputType() const;
+		virtual crc32	getInputType() const;
+		virtual crc32	getOutputType() const;
+		virtual void	getDependingType( List< crc32 >& types ) const;
 
-		virtual crc32 getOutputType() const;
+		virtual bool	initializeConverter();
+		virtual void	disposeConverter();
 
-		virtual void getDependingType( List< crc32 >& types ) const;
-
-		virtual bool initializeConverter();
-
-		virtual void disposeConverter();
-
-		virtual bool startConversionJob( const ConversionParameters& params ) const;
+		virtual bool	startConversionJob( const ConversionParameters& params ) const;
 	};
 }
 

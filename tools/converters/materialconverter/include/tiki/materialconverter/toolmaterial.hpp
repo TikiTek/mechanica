@@ -10,34 +10,22 @@
 
 namespace tiki
 {
-	struct  TextureAsset
-	{
-		string	fileName;
-		uint	slot;
-	};
-
 	class ToolMaterial
 	{
 	public:
-								ToolMaterial();
-								~ToolMaterial();
 
-		bool					create( const string& fileName );
-		void					dispose();
+					ToolMaterial();
+					~ToolMaterial();
 
-		List< TextureAsset >&	getAssets() { return m_assets; }
-
-		const string&			getVertexShader() const { return m_vertexShader; }
-		const string&			getPixelShader() const { return m_pixelShader; }
+		bool		create( const string& fileName );
+		void		dispose();
 
 	private:
 
-		TikiXml					m_xml;
+		TikiXml		m_xml;
 
-		string					m_vertexShader;
-		string					m_pixelShader;
 
-		List< TextureAsset >	m_assets;
+
 	};
 }
 

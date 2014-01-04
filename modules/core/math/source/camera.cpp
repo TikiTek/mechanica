@@ -30,7 +30,6 @@ namespace tiki
 
 		Vector3 forward;
 		quaternion::getForward( forward, rot );
-		vector::negate( forward );
 
 		Vector3 zaxis = forward;
 		vector::normalize( forward );

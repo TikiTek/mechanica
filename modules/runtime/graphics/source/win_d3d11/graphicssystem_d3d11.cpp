@@ -22,6 +22,8 @@ namespace tiki
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
 		static void initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
+		static void resetDeviceState( TGContext* pContext );
+
 		static GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 	}
 
@@ -131,6 +133,8 @@ namespace tiki
 	void GraphicsSystem::endFrame()
 	{
 		m_platformData.pSwapChain->Present( 1, 0 );
+
+		graphics::resetDeviceState( m_platformData.pContext );
 	}
 
 	static bool graphics::initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize )
@@ -248,5 +252,24 @@ namespace tiki
 		viewPort.Width		= (float)backBufferSize.x;
 		viewPort.Height		= (float)backBufferSize.y;
 		data.pContext->RSSetViewports( 1, &viewPort );
+	}
+
+	void graphics::resetDeviceState( TGContext* pContext )
+	{
+		void* pNullPointers[] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_VertexShaderConstantSlots );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_VertexShaderTextureSlots );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_PixelShaderConstantSlots );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_PixelShaderTextureSlots );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_MaxInputStreams );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_RenderTargetSlots );
+		TIKI_COMPILETIME_ASSERT( sizeof( void* ) >= sizeof( UINT ) );
+
+		pContext->VSSetConstantBuffers( 0u, GraphicsSystemLimits_VertexShaderConstantSlots, reinterpret_cast< ID3D11Buffer** >( pNullPointers ) );
+		pContext->VSSetShaderResources( 0u, GraphicsSystemLimits_VertexShaderTextureSlots, reinterpret_cast< ID3D11ShaderResourceView** >( pNullPointers ) );
+		pContext->PSSetConstantBuffers( 0u, GraphicsSystemLimits_PixelShaderConstantSlots, reinterpret_cast< ID3D11Buffer** >( pNullPointers ) );
+		pContext->PSSetShaderResources( 0u, GraphicsSystemLimits_PixelShaderTextureSlots, reinterpret_cast< ID3D11ShaderResourceView** >( pNullPointers ) );
+		pContext->IASetVertexBuffers( 0u, GraphicsSystemLimits_MaxInputStreams, reinterpret_cast< ID3D11Buffer** >( pNullPointers ), reinterpret_cast< UINT* >( pNullPointers ), reinterpret_cast< UINT* >( pNullPointers ) );
+		pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
 	}
 }
