@@ -72,15 +72,15 @@ namespace tiki
 		void				setVertexInputBinding( const VertexInputBinding* pVertexInputBinding );
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
-		void				setVertexBuffer( size_t slot, const VertexBuffer& buffer );
+		void				setVertexBuffer( uint slot, const VertexBuffer& buffer );
 
-		void				setVertexShaderSamplerState( size_t slot, const SamplerState* pSampler );
-		void				setVertexShaderTexture( size_t slot, const TextureData* pTextureData );
-		void				setVertexShaderConstant( size_t slot, const ConstantBuffer& buffer );
+		void				setVertexShaderSamplerState( uint slot, const SamplerState* pSampler );
+		void				setVertexShaderTexture( uint slot, const TextureData* pTextureData );
+		void				setVertexShaderConstant( uint slot, const ConstantBuffer& buffer );
 
-		void				setPixelShaderSamplerState( size_t slot, const SamplerState* pSampler );
-		void				setPixelShaderTexture( size_t slot, const TextureData* pTextureData );
-		void				setPixelShaderConstant( size_t slot, const ConstantBuffer& buffer );
+		void				setPixelShaderSamplerState( uint slot, const SamplerState* pSampler );
+		void				setPixelShaderTexture( uint slot, const TextureData* pTextureData );
+		void				setPixelShaderConstant( uint slot, const ConstantBuffer& buffer );
 
 		void				setPrimitiveTopology( PrimitiveTopology topology );
 
@@ -116,7 +116,7 @@ namespace tiki
 		const RenderTarget*			m_pRenderTarget;
 
 		const RenderTarget*			m_pRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
-		size_t						m_currentRenderPassDepth;
+		uint						m_currentRenderPassDepth;
 
 		const Shader*				m_pVertexShader;
 		const VertexInputBinding*	m_pVertexInputBinding;

@@ -11,8 +11,8 @@ namespace tiki
 	struct StringRefData
 	{
 		TChar* pData;
-		size_t dataLength;
-		size_t stringLength;
+		uint dataLength;
+		uint stringLength;
 
 		sint32 refCount;
 
@@ -21,7 +21,7 @@ namespace tiki
 		{
 		}
 
-		StringRefData( uint32 strLen, uint32 dataLen )
+		StringRefData( uint strLen, uint dataLen )
 			: refCount( 1 )
 		{
 			pData			= TIKI_NEW TChar[ dataLen ];
@@ -31,7 +31,7 @@ namespace tiki
 			pData[ strLen ] = 0;
 		}
 
-		StringRefData( uint32 strLen, uint32 dataLen, const TChar* pBaseData, sint32 baseDataLen = -1 )
+		StringRefData( uint strLen, uint dataLen, const TChar* pBaseData, sint32 baseDataLen = -1 )
 			: refCount( 1 )
 		{
 			pData			= TIKI_NEW TChar[dataLen];
@@ -102,7 +102,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	BasicString<TChar>::BasicString( size_t  len )
+	BasicString<TChar>::BasicString( uint  len )
 	{
 		data = TIKI_NEW StringRefData<TChar>(
 			len,
@@ -121,7 +121,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE void tiki::BasicString<TChar>::allocData( const TChar* string, sint32 length = -1 )
+	TIKI_FORCE_INLINE void tiki::BasicString<TChar>::allocData( const TChar* string, sint length = -1 )
 	{
 		if (string == 0)
 		{
@@ -129,7 +129,7 @@ namespace tiki
 		}
 		else
 		{
-			uint32 len = (length == -1 ? stringLength(string) : length);
+			uint len = (length == -1 ? stringLength(string) : length);
 
 			if ( len == 0)
 			{
@@ -146,7 +146,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE uint32 BasicString<TChar>::getLength() const
+	TIKI_FORCE_INLINE uint BasicString<TChar>::getLength() const
 	{
 		return data->stringLength;
 	}
@@ -166,16 +166,16 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE void BasicString<TChar>::split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const
 	{
-		const uint32 count = countSubstring( seperator );
+		const uint count = countSubstring( seperator );
 
 		SizedArray< BasicString< TChar > > list;
 		list.create( count + 1u );
 
-		uint32 i = 0;
-		uint32 lastIndex = 0;
+		uint i = 0;
+		uint lastIndex = 0;
 		while (i < count)
 		{
-			uint32 index = indexOf(seperator, lastIndex + seperator.data->stringLength);
+			const uint index = indexOf(seperator, lastIndex + seperator.data->stringLength);
 
 			list.push(
 				substring( lastIndex, index - lastIndex )
@@ -201,7 +201,7 @@ namespace tiki
 	{
 		BasicString str = *this;
 
-		uint32 i = 0;
+		uint i = 0;
 		while (i < data->stringLength)
 		{
 			if (str[i] == oldValue) str[i] = newValue;
@@ -214,8 +214,8 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::replace(const BasicString<TChar>& oldValue, const BasicString<TChar>& newValue) const
 	{
-		uint32 count = countSubstring(oldValue);
-		uint32 length = data->stringLength - (count * oldValue.data->stringLength) + (count * newValue.data->stringLength);
+		const uint count = countSubstring(oldValue);
+		const uint length = data->stringLength - (count * oldValue.data->stringLength) + (count * newValue.data->stringLength);
 
 		if ( count == 0 )
 		{
@@ -224,12 +224,12 @@ namespace tiki
 
 		BasicString<TChar> str = BasicString<TChar>(length);
 
-		uint32 i = 0;
-		uint32 offsetOld = 0;
-		uint32 offsetNew = 0;
+		uint i = 0;
+		uint offsetOld = 0;
+		uint offsetNew = 0;
 		while (i < count)
 		{
-			uint32 index = indexOf(oldValue, offsetOld);
+			const uint index = indexOf(oldValue, offsetOld);
 
 			memory::copy(str.data->pData + offsetNew, data->pData + offsetOld, sizeof(TChar) * (index - offsetOld));
 			offsetOld += index - offsetOld;
@@ -248,7 +248,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::substring(uint32 startIndex, sint32 length /*= -1*/ ) const
+	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::substring(uint startIndex, sint32 length /*= -1*/ ) const
 	{
 		if (length == -1 || startIndex + length > data->stringLength)
 		{
@@ -275,8 +275,8 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::trim() const
 	{
-		size_t start = 0u;
-		size_t length = data->stringLength;
+		uint start = 0u;
+		uint length = data->stringLength;
 
 		if (length == 0u)
 		{
@@ -288,7 +288,7 @@ namespace tiki
 		{
 			isWhiteSpace = false;
 
-			for (size_t i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
+			for (uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
 			{
 				if ( data->pData[ start ] == whiteSpaces[ i ] )
 				{
@@ -305,7 +305,7 @@ namespace tiki
 		{
 			isWhiteSpace = false;
 
-			for (size_t i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
+			for (uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
 			{
 				if ( data->pData[ start + length ] == whiteSpaces[ i ] )
 				{
@@ -321,16 +321,16 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE uint32 BasicString<TChar>::countSubstring(const BasicString<TChar>& str) const
+	TIKI_FORCE_INLINE uint BasicString<TChar>::countSubstring(const BasicString<TChar>& str) const
 	{
 		if (str.data->stringLength > data->stringLength)
 			return 0u;
 
-		uint32 i = 0;
-		uint32 c = 0;
+		uint i = 0;
+		uint c = 0;
 		while (i < data->stringLength)
 		{
-			uint32 b = 0;
+			uint b = 0;
 			bool found = true;
 			while (b < str.data->stringLength)
 			{
@@ -357,7 +357,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::insert(const BasicString<TChar>& str, uint32 index) const
+	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::insert( const BasicString<TChar>& str, uint index ) const
 	{
 		BasicString<TChar> oStr = BasicString<TChar>(data->stringLength + str.data->stringLength);
 
@@ -369,7 +369,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::remove(uint32 startIndex, uint32 len) const
+	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::remove( uint startIndex, uint len ) const
 	{
 		BasicString<TChar> oStr = BasicString<TChar>(data->stringLength - len);
 
@@ -384,7 +384,7 @@ namespace tiki
 	{
 		BasicString<TChar> str = *this;
 
-		uint32 i = 0;
+		uint i = 0;
 		while (i < data->stringLength)
 		{
 			if (str[i] >= letterBigA && str[i] <= letterBigZ)
@@ -401,7 +401,7 @@ namespace tiki
 	{
 		BasicString<TChar> str = *this;
 
-		uint32 i = 0;
+		uint i = 0;
 		while (i < data->stringLength)
 		{
 			if (str[i] >= letterLittleA && str[i] <= letterLittleZ)
@@ -420,9 +420,9 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(TChar c, uint32 index) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(TChar c, uint index) const
 	{
-		uint32 i = index;
+		uint i = index;
 		while (i < data->stringLength)
 		{
 			if (data->pData[i] == c) return i;
@@ -438,16 +438,16 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(const BasicString<TChar>& str, uint32 index) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::indexOf(const BasicString<TChar>& str, uint index) const
 	{
 		if (str.data->stringLength > data->stringLength) return -1;
 
-		uint32 i = index;
-		uint32 c = data->stringLength - str.data->stringLength;
+		uint i = index;
+		uint c = data->stringLength - str.data->stringLength;
 
 		do
 		{
-			uint32 b = 0;
+			uint b = 0;
 			bool found = true;
 			while (b < str.data->stringLength)
 			{
@@ -538,7 +538,7 @@ namespace tiki
 	{
 		if (data->stringLength < str.data->stringLength) return false;
 
-		uint32 i = 0;
+		uint i = 0;
 		while (i < str.data->stringLength)
 		{
 			if (data->pData[i] != str.data->pData[i]) return false;
@@ -561,8 +561,8 @@ namespace tiki
 	{
 		if (data->stringLength < str.data->stringLength) return false;
 
-		uint32 b = 0;
-		uint32 i = data->stringLength - str.data->stringLength;
+		uint b = 0;
+		uint i = data->stringLength - str.data->stringLength;
 		while (i < data->stringLength)
 		{
 			if (data->pData[i] != str.data->pData[b]) return false;
@@ -580,7 +580,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE TChar BasicString<TChar>::operator[](uint32 index) const
+	TIKI_FORCE_INLINE TChar BasicString<TChar>::operator[](uint index) const
 	{
 		if (index >= data->stringLength) 
 			throw "Index > Length";
@@ -589,7 +589,7 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE TChar& BasicString<TChar>::operator[](uint32 index)
+	TIKI_FORCE_INLINE TChar& BasicString<TChar>::operator[](uint index)
 	{
 		if (index >= data->stringLength)
 			throw "Index > Length";
@@ -616,7 +616,7 @@ namespace tiki
 		if (data == rhs.data) return true;
 		if (data->stringLength != rhs.data->stringLength) return false;
 
-		uint32 i = 0;
+		uint i = 0;
 		while (i < data->stringLength)
 		{
 			if (data->pData[i] != rhs.data->pData[i]) return false;
@@ -648,7 +648,7 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE BasicString<TChar> BasicString<TChar>::operator+(const BasicString<TChar>& rhs) const
 	{
-		uint32 len = data->stringLength + rhs.data->stringLength;
+		uint len = data->stringLength + rhs.data->stringLength;
 		BasicString<TChar> str = BasicString<TChar>(len);
 
 		memory::copy(str.data->pData, data->pData, sizeof(TChar) * data->stringLength);
@@ -661,8 +661,8 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE BasicString<TChar>& BasicString<TChar>::operator+=(const BasicString<TChar>& rhs)
 	{
-		uint32 sl = data->stringLength;
-		uint32 len = data->stringLength + rhs.data->stringLength;
+		uint sl = data->stringLength;
+		uint len = data->stringLength + rhs.data->stringLength;
 
 		if (data->refCount != 1 || data->dataLength <= len)
 		{
@@ -690,8 +690,8 @@ namespace tiki
 	{
 		if (data == rhs.data) return false;
 
-		uint32 i = 0;
-		uint32 c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
+		uint i = 0;
+		uint c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
 		while (i < c && data->pData[i] == rhs.data->pData[i])
 		{
 			i++;
@@ -711,8 +711,8 @@ namespace tiki
 	{
 		if (data == rhs.data) return false;
 
-		uint32 i = 0;
-		uint32 c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
+		uint i = 0;
+		uint c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
 		while (i < c && data->pData[i] == rhs.data->pData[i])
 		{
 			i++;
@@ -728,11 +728,11 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE uint32 BasicString<TChar>::stringLength(const TChar* string) const
+	TIKI_FORCE_INLINE uint BasicString<TChar>::stringLength(const TChar* string) const
 	{
 		if (string == 0) return 0;
 
-		uint32 c = 0;
+		uint c = 0;
 		const TChar* str = string;
 		while (*str != 0) { str++; c++; }
 
@@ -740,9 +740,9 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE uint32 BasicString<TChar>::calcLength( uint32 neededLen ) const
+	TIKI_FORCE_INLINE uint BasicString<TChar>::calcLength( uint neededLen ) const
 	{
-		uint32 len = 2;
+		uint len = 2;
 		while (len < neededLen) { len *= 2; }
 		return len;
 	}

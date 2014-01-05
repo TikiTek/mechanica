@@ -23,8 +23,8 @@ namespace tiki
 			InvalidBoneIndex = 0xffff
 		};
 
-		TIKI_FORCE_INLINE uint16			getJointCount() const						{ return m_jointCount; }
-		TIKI_FORCE_INLINE uint16			getAlignedJointCount() const				{ return m_alignedJointCount; }
+		TIKI_FORCE_INLINE uint				getJointCount() const						{ return m_jointCount; }
+		TIKI_FORCE_INLINE uint				getAlignedJointCount() const				{ return m_alignedJointCount; }
 
 		TIKI_FORCE_INLINE crc32				getJointNameByIndex( size_t index ) const	{ return m_jointNames[ index ]; }
 		TIKI_FORCE_INLINE uint16			getParentByIndex( size_t index ) const		{ return m_parentIndices[ index ]; }

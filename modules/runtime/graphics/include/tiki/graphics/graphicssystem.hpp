@@ -93,7 +93,7 @@ namespace tiki
 
 	private:
 		
-		size_t												m_frameNumber;
+		uint												m_frameNumber;
 		
 		GraphicsSystemPlatformData							m_platformData;
 		GraphicsContext										m_commandBuffer;

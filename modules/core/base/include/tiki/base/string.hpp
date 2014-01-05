@@ -22,13 +22,13 @@ namespace tiki
 
 														BasicString();
 														BasicString( TChar c );
-														BasicString( size_t len );
+														BasicString( uint len );
 														BasicString( const TChar* string );
 														BasicString( const TChar* string, sint32 length );
 														BasicString( const BasicString<TChar>& copy );
 														~BasicString();
 
-		TIKI_FORCE_INLINE uint32						getLength() const;
+		TIKI_FORCE_INLINE uint							getLength() const;
 		TIKI_FORCE_INLINE bool							isEmpty() const;
 
 		TIKI_FORCE_INLINE const TChar*					cStr() const;
@@ -36,20 +36,20 @@ namespace tiki
 		TIKI_FORCE_INLINE void							split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( TChar oldValue, TChar newValue ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( const BasicString<TChar>& oldValue, const BasicString<TChar>& newValue ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			substring( uint32 startIndex, sint32 length = -1 ) const;
+		TIKI_FORCE_INLINE BasicString<TChar>			substring( uint startIndex, sint32 length = -1 ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			trim() const;
 
-		TIKI_FORCE_INLINE BasicString<TChar>			insert( const BasicString<TChar>& str, uint32 index ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			remove( uint32 startIndex, uint32 len ) const;
+		TIKI_FORCE_INLINE BasicString<TChar>			insert( const BasicString<TChar>& str, uint index ) const;
+		TIKI_FORCE_INLINE BasicString<TChar>			remove( uint startIndex, uint len ) const;
 
 		TIKI_FORCE_INLINE BasicString<TChar>			toLower() const;
 		TIKI_FORCE_INLINE BasicString<TChar>			toUpper() const;
 
-		TIKI_FORCE_INLINE uint32						countSubstring( const BasicString<TChar>& str ) const;
+		TIKI_FORCE_INLINE uint							countSubstring( const BasicString<TChar>& str ) const;
 		TIKI_FORCE_INLINE int							indexOf( TChar c ) const;
-		TIKI_FORCE_INLINE int							indexOf( TChar c, uint32 index ) const;
+		TIKI_FORCE_INLINE int							indexOf( TChar c, uint index ) const;
 		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str, uint32 index ) const;
+		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str, uint index ) const;
 		TIKI_FORCE_INLINE int							lastIndexOf( TChar c ) const;
 		TIKI_FORCE_INLINE int							lastIndexOf( const BasicString<TChar>& str ) const;
 
@@ -62,8 +62,8 @@ namespace tiki
 		TIKI_FORCE_INLINE bool							endsWith(const BasicString<TChar>& str) const;
 
 		TIKI_FORCE_INLINE const TChar*					operator*() const;
-		TIKI_FORCE_INLINE TChar							operator[](uint32 index) const;
-		TIKI_FORCE_INLINE TChar&						operator[](uint32 index);
+		TIKI_FORCE_INLINE TChar							operator[](uint index) const;
+		TIKI_FORCE_INLINE TChar&						operator[](uint index);
 
 		TIKI_FORCE_INLINE bool							operator==(const BasicString<TChar>& rhs) const;
 		TIKI_FORCE_INLINE bool							operator!=(const BasicString<TChar>& rhs) const;
@@ -93,10 +93,10 @@ namespace tiki
 		static const TChar								whiteSpaces[ 4u ];
 		static StringRefData< TChar >					emptyData;
 
-		TIKI_FORCE_INLINE void							allocData( const TChar* string, sint32 length );
+		TIKI_FORCE_INLINE void							allocData( const TChar* string, sint length );
 
-		TIKI_FORCE_INLINE uint32						stringLength( const TChar* string ) const;
-		TIKI_FORCE_INLINE uint32						calcLength( uint32 neededLen ) const;
+		TIKI_FORCE_INLINE uint						stringLength( const TChar* string ) const;
+		TIKI_FORCE_INLINE uint						calcLength( uint neededLen ) const;
 
 	};
 

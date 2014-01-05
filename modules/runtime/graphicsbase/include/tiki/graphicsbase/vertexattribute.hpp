@@ -16,11 +16,11 @@ namespace tiki
 	struct VertexAttribute
 	{
 		VertexSementic			semantic;
-		size_t					semanticIndex;
+		uint32					semanticIndex;
 
 		VertexAttributeFormat	format;
 
-		size_t					streamIndex;
+		uint32					streamIndex;
 		VertexInputType			inputType;
 	};
 }
