@@ -100,7 +100,7 @@ namespace tiki
 		{
 			InputSystem& input = framework::getInputSystem();
 
-			for (int i = 0; i < m_gameFlow.getStateCount() - 1; ++i)
+			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
 			{
 				if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
 				{
@@ -117,7 +117,7 @@ namespace tiki
 		m_gameFlow.render( graphicsContext );
 	}
 
-	GameFramework& getGameFramework()
+	GameFramework& framework::getGame()
 	{
 		static TikiArenaGame game;
 		return game;
