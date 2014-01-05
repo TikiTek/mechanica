@@ -100,11 +100,11 @@ namespace tiki
 		{
 			InputSystem& input = framework::getInputSystem();
 
-			for (size_t i = 0u; i < m_gameFlow.getStateCount() - 1u; ++i)
+			for (int i = 0; i < m_gameFlow.getStateCount() - 1; ++i)
 			{
 				if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
 				{
-					m_gameFlow.startTransition( i + 1u );
+					m_gameFlow.startTransition( i + 1 );
 				}
 			}
 		}
