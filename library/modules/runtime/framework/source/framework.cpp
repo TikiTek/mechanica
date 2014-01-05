@@ -9,7 +9,7 @@ namespace tiki
 {
 	int framework::run()
 	{
-		return getGameFramework().run();
+		return framework::getGame().run();
 	}
 
 	MainWindow& framework::getMainWindow()

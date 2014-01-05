@@ -17,50 +17,39 @@ namespace tiki
 
 		m_scale		= scale;
 
-		//////////////////////////////////////////////////////////////////////////
-		// Hierarchy
-		const XmlElement* pHierarchies = m_xml.findNodeByName( "library_visual_scenes" );
+		const XmlElement* pGeometries = m_xml.findNodeByName( "library_geometries" );
+		if ( !pGeometries )
+		{
+			TIKI_TRACE_ERROR( "ToolModel: geometries node not found.\n" );
+			return false;
+		}
 
+		const XmlElement* pHierarchies = m_xml.findNodeByName( "library_visual_scenes" );
+		const XmlElement* pHierarchy = nullptr;
 		if ( pHierarchies != nullptr )
 		{
-			const XmlElement* pHierarchy = m_xml.findFirstChild( "visual_scene", pHierarchies );
-
-			if ( pHierarchy != nullptr )
-			{
-				m_hierarchy.create( &m_xml, pHierarchy, m_scale );
-			}
+			pHierarchy = m_xml.findFirstChild( "visual_scene", pHierarchies );
 		}
+
+		m_hierarchy.create( &m_xml, pHierarchy, pGeometries, m_scale );
 
 		return true;
 	}
 
 	bool ToolModel::parseGeometies( bool calculateTangents )
 	{
-		//////////////////////////////////////////////////////////////////////////
 		// Geometries
 		bool isSkinned = false;
-		const XmlElement* pGeometries = m_xml.findNodeByName( "library_geometries" );
-
-		if ( !pGeometries )
-		{
-			TIKI_TRACE_ERROR( "ToolModel: library_geometries node not found.\n" );
-			return false;
-		}
-
-		List< const XmlElement* > geometires;
-
-		const XmlElement* pGeometrieNode = m_xml.findFirstChild( "geometry", pGeometries );
-		while ( pGeometrieNode )
-		{
-			geometires.add( pGeometrieNode );
-			pGeometrieNode = m_xml.findNext( "geometry", pGeometrieNode );
-		}
-
-		m_geometries.create( geometires.getCount() );
+		
+		m_geometries.create( m_hierarchy.getGeometryInstanceCount() );
 
 		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
 		{
-			m_geometries[ i ].create( &m_xml, geometires[ i ], m_scale );
+			m_geometries[ i ].create(
+				&m_xml,
+				m_hierarchy.getGeometryInstanceByIndex( i ),
+				m_scale
+			);
 
 			if ( calculateTangents )
 			{
@@ -71,7 +60,6 @@ namespace tiki
 			}
 		}
 
-		//////////////////////////////////////////////////////////////////////////
 		// Skinning
 		const XmlElement* pControllers = m_xml.findNodeByName( "library_controllers" );
 
@@ -90,22 +78,18 @@ namespace tiki
 
 					const string id = string( pIdAtt->content ).substring( 1u );
 
-					ToolModelGeometrie* pGeometry = nullptr;
+					bool found = false;
 					for (size_t i = 0u; i < m_geometries.getCount(); ++i)
 					{
 						if ( m_geometries[ i ].getDesc().id == id )
 						{
-							pGeometry = &m_geometries[ i ];
-							break;
+							found = true;
+							isSkinned = true;
+							m_geometries[ i ].applySkinning( m_hierarchy, &m_xml, pSkinNode );
 						}
 					}
 
-					if ( pGeometry != nullptr )
-					{
-						isSkinned = true;
-						pGeometry->applySkinning( m_hierarchy, &m_xml, pSkinNode );
-					}
-					else
+					if ( found == false )
 					{
 						TIKI_TRACE_WARNING( "can't find geometry with name: %s\n", id.cStr() );
 					}
@@ -114,6 +98,12 @@ namespace tiki
 				pController = m_xml.findNext( pController );
 			}
 		}
+
+		// transform
+		for (uint i = 0u; i < m_geometries.getCount(); ++i)
+		{
+			m_geometries[ i ].transformToInstance();
+		} 
 
 		if ( isSkinned == false && m_hierarchy.isCreated() )
 		{

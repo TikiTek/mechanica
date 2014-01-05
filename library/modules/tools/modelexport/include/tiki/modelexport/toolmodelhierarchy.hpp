@@ -34,36 +34,49 @@ namespace tiki
 		Matrix44			skinToBone;
 	};
 
+	struct ToolModelGeometryInstance
+	{
+		const _XmlElement*	pNode;
+		string				geometryId;
+
+		Matrix44			worldTransform;
+	};
+
 	class ToolModelHierarchy
 	{
 	public:
 
 		ToolModelHierarchy();
 
-		void							create( const TikiXml* pXml, const _XmlElement* pNode, float scale );
-		void							dispose();
+		void								create( const TikiXml* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale );
+		void								dispose();
 
-		bool							isCreated() const { return m_pXml != nullptr; }
+		bool								isCreated() const { return m_pXml != nullptr; }
 
-		const Array< ToolModelJoint >&	getJointData() const { return m_joints; }
-		size_t							getJointCount() const { return m_joints.getCount(); }
-		const ToolModelJoint&			getJointByIndex( size_t index ) const { return m_joints[ index ]; }
-		const ToolModelJoint*			getJointByName( const string& name ) const;
+		const Array< ToolModelJoint >&		getJointData() const						{ return m_joints; }
+		size_t								getJointCount() const						{ return m_joints.getCount(); }
+		const ToolModelJoint&				getJointByIndex( size_t index ) const		{ return m_joints[ index ]; }
+		const ToolModelJoint*				getJointByName( const string& name ) const;
 
-		void							markJointAsUsed( const ToolModelJoint& joint );
-		void							setBindMatrix( const ToolModelJoint& joint, const Matrix44& matrix );
+		const ToolModelGeometryInstance&	getGeometryInstanceByIndex( uint index ) const	{ return m_instances[ index ]; }
+		uint								getGeometryInstanceCount() const				{ return m_instances.getCount(); }
 
-		void							calculateFinalIndices();
+		void								markJointAsUsed( const ToolModelJoint& joint );
+		void								setBindMatrix( const ToolModelJoint& joint, const Matrix44& matrix );
+
+		void								calculateFinalIndices();
 
 	private:
 
-		const TikiXml*					m_pXml;
-		Array< ToolModelJoint >			m_joints;
+		const TikiXml*						m_pXml;
 
-		size_t							m_finalJointCount;
-		bool							m_hasFinalIndices;
+		Array< ToolModelJoint >				m_joints;
+		Array< ToolModelGeometryInstance >	m_instances;
 
-		void							searchNodes( List< ToolModelJoint >& targetList, const _XmlElement* pNode );
+		size_t								m_finalJointCount;
+		bool								m_hasFinalIndices;
+
+		void								searchNodes( List< ToolModelJoint >& targetList, const _XmlElement* pNode );
 
 	};
 }

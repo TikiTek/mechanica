@@ -15,41 +15,92 @@ namespace tiki
 		m_hasFinalIndices	= false;
 	}
 
-	void ToolModelHierarchy::create( const TikiXml* pXml, const _XmlElement* pNode, float scale )
+	void ToolModelHierarchy::create( const TikiXml* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale )
 	{
 		TIKI_ASSERT( pXml );
 		m_pXml	= pXml;
 
-		List< ToolModelJoint > nodes;
-		searchNodes( nodes, pNode );
-
-		m_joints.create( nodes.getData(), nodes.getCount() );
-
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		List< ToolModelGeometryInstance > instances;
+		if ( pHierarchyNode != nullptr )
 		{
-			ToolModelJoint& joint = m_joints[ i ];
+			List< ToolModelJoint > nodes;
+			searchNodes( nodes, pHierarchyNode );
 
-			const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", joint.pNode );
-			TIKI_ASSERT( pIdAtt );
-
-			joint.name	= pIdAtt->content;
-			joint.crc	= crcString( joint.name );
-
-			const XmlElement* pMatrix = pXml->findFirstChild( "matrix", joint.pNode );
-			
-			if ( pMatrix == nullptr )
+			m_joints.create( nodes.getData(), nodes.getCount() );
+			for (size_t i = 0u; i < m_joints.getCount(); ++i)
 			{
-				continue;
-			}
+				ToolModelJoint& joint = m_joints[ i ];
 
-			parseMatrix( joint.defaultPose, pMatrix->content, scale );
+				const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", joint.pNode );
+				TIKI_ASSERT( pIdAtt );
+
+				joint.name	= pIdAtt->content;
+				joint.crc	= crcString( joint.name );
+
+				const XmlElement* pMatrix = pXml->findFirstChild( "matrix", joint.pNode );			
+				if ( pMatrix == nullptr )
+				{
+					continue;
+				}
+
+				parseMatrix( joint.defaultPose, pMatrix->content, scale );
+
+				const XmlElement* pInstanceNode = pXml->findFirstChild( "instance_geometry", joint.pNode );
+				if ( pInstanceNode != nullptr )
+				{
+					const XmlAttribute* pUrlAtt = pXml->findAttributeByName( "url", pInstanceNode );
+					if ( pUrlAtt == nullptr )
+					{
+						continue;
+					}
+					const string geometryId = string( pUrlAtt->content ).substring( 1u );
+
+					const XmlElement* pGeometrieNode = pXml->findFirstChild( "geometry", pGeometriesNode );
+					while ( pGeometrieNode != nullptr )
+					{
+						const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", pGeometrieNode );
+						if ( pIdAtt != nullptr && geometryId == pIdAtt->content )
+						{
+							ToolModelGeometryInstance& instance = instances.add();
+							instance.pNode			= pGeometrieNode;
+							instance.geometryId		= geometryId;
+							instance.worldTransform	= joint.defaultPose;
+						}
+
+						pGeometrieNode = pXml->findNext( "geometry", pGeometrieNode );
+					}
+				}
+			}
 		}
+
+		if ( instances.getCount() == 0u )
+		{
+			const XmlElement* pGeometrieNode = pXml->findFirstChild( "geometry", pGeometriesNode );
+			while ( pGeometrieNode != nullptr )
+			{
+				const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", pGeometrieNode );
+				if ( pIdAtt == nullptr )
+				{
+					continue;
+				}
+
+				ToolModelGeometryInstance& instance = instances.add();
+				instance.pNode			= pGeometrieNode;
+				instance.geometryId		= pIdAtt->content;
+				instance.worldTransform	= Matrix44::identity;
+
+				pGeometrieNode = pXml->findNext( "geometry", pGeometrieNode );
+			}
+		}
+
+		m_instances.create( instances.getData(), instances.getCount() );
 	}
 
 	void ToolModelHierarchy::dispose()
 	{
 		m_pXml = nullptr;
 		m_joints.dispose();
+		m_instances.dispose();
 	}
 
 	const ToolModelJoint* ToolModelHierarchy::getJointByName( const string& name ) const

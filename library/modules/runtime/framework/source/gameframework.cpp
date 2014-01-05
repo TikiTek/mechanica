@@ -5,7 +5,7 @@ namespace tiki
 {
 	FrameworkData& framework::getFrameworkData()
 	{
-		return getGameFramework().m_frameworkData;
+		return framework::getGame().m_frameworkData;
 	}
 
 	GameFramework::GameFramework()

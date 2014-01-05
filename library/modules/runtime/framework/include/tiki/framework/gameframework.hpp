@@ -10,7 +10,12 @@
 
 namespace tiki
 {
-	class	GpuContext;
+	class GameFramework;
+
+	namespace framework
+	{
+		GameFramework& getGame();
+	}
 
 	struct GameFrameworkParamters
 	{
@@ -68,8 +73,6 @@ namespace tiki
 		bool						frame();
 
 	};
-
-	GameFramework& getGameFramework();
 }
 
 #endif // TIKI_GAMEFRAMEWORK_HPP

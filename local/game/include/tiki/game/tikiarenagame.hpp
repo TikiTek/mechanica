@@ -42,11 +42,6 @@ namespace tiki
 		TikiArenaStates*		m_pStates;
 
 	};
-
-	namespace framework
-	{
-		TIKI_FORCE_INLINE GameFlowSystem& getGameFlowSystem() { return static_cast< TikiArenaGame* >( &getGameFramework() )->getGameFlowSystem(); }
-	}
 }
 
 #endif // TIKI_TIKIARENAGAME_HPP
