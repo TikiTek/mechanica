@@ -7,6 +7,11 @@ namespace tiki
 {
 	struct MaterialBaseData
 	{
+		enum
+		{
+			InvalidTextureOffset = 0xffu
+		};
+
 		uint8	renderEffectId;
 		uint8	renderPassMask;
 		uint8	renderFlags;

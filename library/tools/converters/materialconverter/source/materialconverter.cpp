@@ -53,8 +53,22 @@ namespace tiki
 				continue;
 			}
 
-			//ResourceWriter writer;
-			//openResourceWriter( &writer, TIKI_FOURCC( 'M', 'A', 'T', 'T' ), params.outputName, "material" );
+			ResourceWriter writer;
+			openResourceWriter( &writer, params.outputName, "material", PlatformType_Win );
+
+			writer.openResource( params.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
+
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+
+			const ReferenceKey& textureKey = writer.addResourceLink( "checker.texture", crcString( "checker.texture" ), TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
+
+			writer.writeUInt8( 0u );	// renderEffectId
+			writer.writeUInt8( 1u );	// renderPassMask
+			writer.writeUInt8( 0u );	// renderFlags
+			writer.writeUInt8( 4u );	// defaultTextureOffset
+			writer.writeReference( &textureKey );
+
+			writer.closeDataSection();
 
 			//const uint vertexLength = material.getVertexShader().length();
 			//writer.writeUInt32( vertexLength );
@@ -76,7 +90,9 @@ namespace tiki
 			//	writer.writeUInt32( asset.slot );
 			//}
 
-			//closeResourceWriter( &writer );
+			writer.closeResource();
+
+			closeResourceWriter( &writer );
 
 			material.dispose();
 		}

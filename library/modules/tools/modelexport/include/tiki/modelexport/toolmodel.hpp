@@ -18,7 +18,7 @@ namespace tiki
 	public:
 										ToolModel();
 
-		bool							create( const string& fileName, float scale, const string& material = "");
+		bool							create( const string& fileName, float scale );
 		void							dispose();
 
 		bool							parseGeometies( bool calculateTangents );
@@ -31,7 +31,6 @@ namespace tiki
 		size_t							getGeometyCount() const { return m_geometries.getCount(); }
 
 		TIKI_INLINE float				getScale() const { return m_scale; }
-		TIKI_INLINE string				getMaterial() const { return m_material; }
 
 	private:
 
@@ -42,7 +41,6 @@ namespace tiki
 		Array< ToolModelGeometrie >		m_geometries;
 		
 		float							m_scale;
-		string							m_material;
 
 	};
 

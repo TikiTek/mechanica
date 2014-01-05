@@ -124,6 +124,9 @@ namespace tiki
 
 			if ( currentType != file.fileType )
 			{
+				pConverter	= nullptr;
+				currentType	= InvalidCrc32;
+
 				for (size_t i = 0u; i < m_converters.getCount(); ++i)
 				{
 					if ( m_converters[ i ]->getInputType() == file.fileType )
@@ -139,7 +142,7 @@ namespace tiki
 					continue;
 				}
 
-				currentType = file.fileType;
+				currentType	= file.fileType;
 			}
 			
 			convertFile( pConverter, file.fullFileName );

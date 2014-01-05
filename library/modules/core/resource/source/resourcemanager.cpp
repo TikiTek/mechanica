@@ -43,7 +43,7 @@ namespace tiki
 
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
-		const Resource* pResource = nullptr;
+		Resource* pResource = nullptr;
 		ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, pFileName, resourceKey, type );
 		
 		switch ( result )

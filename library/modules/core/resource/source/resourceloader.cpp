@@ -71,7 +71,7 @@ namespace tiki
 		m_factories.remove( type );
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType )
+	ResourceLoaderResult ResourceLoader::loadResource( Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
 		TIKI_ASSERT( pFileName != nullptr );
@@ -170,7 +170,23 @@ namespace tiki
 		{
 			memory::freeAlign( sectorData.ppSectorPointers[ i ] );
 		}
-		memory::freeAlign( sectorData.ppSectorPointers );
+
+		if ( sectorData.stringCount != 0u )
+		{
+			memory::freeAlign( sectorData.ppStringPointers[ 0u ] );
+		}
+
+		for (uint i = 0u; i < sectorData.linkCount; ++i)
+		{
+			Resource* pResource = sectorData.ppLinkedResources[ i ];
+
+			if ( pResource != nullptr )
+			{
+				unloadResource( pResource, pResource->getType() );
+			}		
+		} 
+
+		memory::freeAlign( sectorData.ppLinkedResources );
 
 		const FactoryContext* pFactory = findFactory( resourceType );		
 		if ( pFactory == nullptr )
@@ -210,19 +226,42 @@ namespace tiki
 			return ResourceLoaderResult_CouldNotCreateResource;
 		}
 
+		const uint pointerCount	= header.sectionCount + header.stringCount + header.linkCount;
+		void** ppPointers		= static_cast< void** >( memory::allocAlign( sizeof( void* ) * pointerCount ) );
+		context.sectionData.sectorCount			= header.sectionCount;
+		context.sectionData.stringCount			= header.stringCount;
+		context.sectionData.linkCount			= header.linkCount;
+		context.sectionData.ppLinkedResources	= reinterpret_cast< Resource** >( ppPointers );
+		context.sectionData.ppStringPointers	= reinterpret_cast< char** >( ppPointers + header.linkCount );
+		context.sectionData.ppSectorPointers	= ppPointers + header.linkCount + header.stringCount;
+
+		context.pStream->setPosition( header.offsetInFile );
 		const uint sectionHeaderSize = sizeof( SectionHeader ) * header.sectionCount;
+		const uint stringItemSize = sizeof( StringItem ) * header.stringCount;
+		const uint resourceLinkSize = sizeof( ResourceLinkItem ) * header.linkCount;
+
 		SectionHeader* pSectionHeaders = static_cast< SectionHeader*>( m_bufferAllocator.allocate( sectionHeaderSize ) );
 		if ( pSectionHeaders == nullptr )
 		{
 			return ResourceLoaderResult_OutOfMemory;
 		}
-
-		context.pStream->setPosition( header.offsetInFile );
 		context.pStream->read( pSectionHeaders, sectionHeaderSize );
 
-		context.sectionData.sectorCount			= header.sectionCount;
-		context.sectionData.ppSectorPointers	= static_cast< void** >( memory::allocAlign( sizeof( void* ) * header.sectionCount ) );
+		StringItem* pStringItems = static_cast< StringItem* >( m_bufferAllocator.allocate( stringItemSize ) );
+		if ( pStringItems == nullptr )
+		{
+			return ResourceLoaderResult_OutOfMemory;
+		}
+		context.pStream->read( pStringItems, stringItemSize );
 
+		ResourceLinkItem* pResourceLinks = static_cast< ResourceLinkItem* >( m_bufferAllocator.allocate( resourceLinkSize ) );
+		if ( pResourceLinks == nullptr )
+		{
+			return ResourceLoaderResult_OutOfMemory;
+		}
+		context.pStream->read( pResourceLinks, resourceLinkSize );
+
+		// load section data
 		uint initDataSectionIndex = TIKI_SIZE_T_MAX;
 		for (uint i = 0u; i < header.sectionCount; ++i)
 		{
@@ -230,7 +269,7 @@ namespace tiki
 
 			void* pSectionData = memory::allocAlign( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
 
-			context.pStream->setPosition( sectionHeader.offsetInFile );
+			context.pStream->setPosition( header.offsetInFile + sectionHeader.offsetInResource );
 			context.pStream->read( pSectionData, sectionHeader.sizeInBytes );
 
 			context.sectionData.ppSectorPointers[ i ] = pSectionData;
@@ -241,12 +280,56 @@ namespace tiki
 				initDataSectionIndex = i;
 			}
 		}
-
+		
 		if ( initDataSectionIndex == TIKI_SIZE_T_MAX )
 		{
 			return ResourceLoaderResult_CouldNotInitialize;
 		}
-		
+
+		// load strings
+		if ( header.stringCount > 0u )
+		{
+			char* pBlock = static_cast< char* >( memory::allocAlign( header.stringSizeInBytes ) );
+			if ( pBlock == nullptr )
+			{
+				return ResourceLoaderResult_OutOfMemory;
+			}
+			context.pStream->setPosition( header.offsetInFile + header.stringOffsetInResource );
+			context.pStream->read( pBlock, header.stringSizeInBytes );
+
+			for (uint i = 0u; i < header.stringCount; ++i)
+			{
+				const StringItem& stringItem = pStringItems[ i ];
+				TIKI_ASSERT( i != 0u || stringItem.offsetInBlock == 0u );
+
+				context.sectionData.ppStringPointers[ i ] = pBlock + stringItem.offsetInBlock;
+			} 
+		}
+
+		// load resource links
+		for (uint i = 0u; i < header.linkCount; ++i)
+		{
+			const ResourceLinkItem& link = pResourceLinks[ i ];
+
+			// TODO: implement - resource in same file
+			//if ( link.fileKey == 0u )
+			//{
+			//	continue;
+			//}
+
+			ResourceLoaderResult result = loadResource(
+				&context.sectionData.ppLinkedResources[ i ],
+				context.sectionData.ppStringPointers[ link.fileKey ], //link.fileKey,
+				link.resourceKey,
+				link.resourceType
+			);
+
+			if ( result != ResourceLoaderResult_Success )
+			{
+				context.sectionData.ppLinkedResources[ i ] = nullptr;
+			}
+		} 
+
 		for (uint i = 0u; i < header.sectionCount; ++i)
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
@@ -262,7 +345,7 @@ namespace tiki
 			{
 				return ResourceLoaderResult_OutOfMemory;
 			}
-			context.pStream->setPosition( sectionHeader.offsetInFile + sectionHeader.sizeInBytes );
+			context.pStream->setPosition( header.offsetInFile + sectionHeader.offsetInResource + sectionHeader.sizeInBytes );
 			context.pStream->read( pReferenceItems, referenceItemSize );
 
 			for (uint j = 0u; j < sectionHeader.referenceCount; ++j)
@@ -277,9 +360,11 @@ namespace tiki
 					break;
 
 				case ReferenceType_String:
+					pPointer = context.sectionData.ppStringPointers[ item.targetId ];
 					break;
 
 				case ReferenceType_ResourceLink:
+					pPointer = context.sectionData.ppLinkedResources[ item.targetId ];
 					break;
 
 				default:
@@ -300,8 +385,6 @@ namespace tiki
 		initData.size	= pSectionHeaders[ initDataSectionIndex ].sizeInBytes;
 
 		const ResourceLoaderResult result = initializeResource( context, initData );
-
-		m_bufferAllocator.free( pSectionHeaders );
 
 		return result;
 	}

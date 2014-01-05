@@ -23,12 +23,20 @@ namespace tiki
 	{
 		ResourceSectorData()
 		{
+			ppLinkedResources	= nullptr;
+			ppStringPointers	= nullptr;
 			ppSectorPointers	= nullptr;
 			sectorCount			= 0u;
+			stringCount			= 0u;
+			linkCount			= 0u;
 		}
 
-		void**	ppSectorPointers;
-		uint	sectorCount;
+		Resource**	ppLinkedResources;
+		char**		ppStringPointers;
+		void**		ppSectorPointers;
+		uint		sectorCount;
+		uint		stringCount;
+		uint		linkCount;
 	};
 
 	struct ResourceInitData

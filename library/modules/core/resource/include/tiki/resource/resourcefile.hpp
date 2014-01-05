@@ -37,6 +37,8 @@ namespace tiki
 		uint16	sectionCount;
 		uint16	stringCount;
 		uint16	linkCount;
+
+		uint32	stringOffsetInResource;
 		uint32	stringSizeInBytes;
 	};
 
@@ -56,7 +58,7 @@ namespace tiki
 		uint16	referenceCount;
 
 		uint32	sizeInBytes;
-		uint32	offsetInFile;
+		uint32	offsetInResource;
 	};
 
 	enum ReferenceType
@@ -74,6 +76,26 @@ namespace tiki
 
 		uint32	offsetInSection;
 		uint32	offsetInTargetSection;
+	};
+
+	enum StringType
+	{
+		StringType_Char,
+		StringType_WideChar,
+		StringType_UTF8
+	};
+
+	struct StringItem
+	{
+		uint32	type_lengthModifier_textLength; // 2 bits - type / 2 bits - lengthModifier / 28 bits - textLength
+		uint32	offsetInBlock;
+	};
+
+	struct ResourceLinkItem
+	{
+		crc32	fileKey;
+		crc32	resourceKey;
+		fourcc	resourceType;
 	};
 
 	template<typename T>
@@ -110,26 +132,6 @@ namespace tiki
 			void*		m_pPadding;
 #endif
 		} TIKI_POST_ALIGN( 8 );
-	};
-	
-	enum StringType
-	{
-		StringType_Char,
-		StringType_WideChar,
-		StringType_UTF8
-	};
-
-	struct StringItem
-	{
-		uint32	type_lengthModifier_textLength; // 4 bits - type / 4 bits - lengthModifier / 24 bits - textLength
-
-		uint8	text[ 1u ];
-	};
-
-	struct ResourceLinkItem
-	{
-		crc32	fileKey;
-		crc32	resourceKey;
 	};
 
 	namespace resource

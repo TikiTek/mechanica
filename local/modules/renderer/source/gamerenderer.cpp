@@ -70,7 +70,7 @@ namespace tiki
 		m_renderBatch.beginSequence( RenderPassMask_Geometry, RenderEffectId_Fallback, 0u );
 		for (uint i = 0u; i < pModel->getGeometryCount(); ++i)
 		{
-			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pWorldTransform );
+			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pModel->getMaterial(), pWorldTransform );
 		} 
 		m_renderBatch.endSequence();
 	}

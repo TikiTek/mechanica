@@ -5,17 +5,17 @@
 
 namespace tiki
 {
-	ToolModel::ToolModel() : m_scale( 1.0f ), m_material( "" )
+	ToolModel::ToolModel()
+		: m_scale( 0.0f )
 	{
 
 	}
 
-	bool ToolModel::create( const string& fileName, float scale, const string& material /*= ""*/)
+	bool ToolModel::create( const string& fileName, float scale )
 	{
 		m_xml.create( fileName );
 
 		m_scale		= scale;
-		m_material	= material;
 
 		//////////////////////////////////////////////////////////////////////////
 		// Hierarchy
@@ -43,7 +43,7 @@ namespace tiki
 
 		if ( !pGeometries )
 		{
-			TIKI_TRACE_ERROR( "ToolModel: library_geometries node not found" );
+			TIKI_TRACE_ERROR( "ToolModel: library_geometries node not found.\n" );
 			return false;
 		}
 
