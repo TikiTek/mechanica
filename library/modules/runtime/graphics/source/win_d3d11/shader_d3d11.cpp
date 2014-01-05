@@ -98,9 +98,9 @@ namespace tiki
 		TGInputLayout* pLayout = nullptr;
 		const HRESULT result = pDevice->CreateInputLayout(
 			pElements,
-			elementCount,
+			(UINT)elementCount,
 			shaderData.pShaderCode,
-			shaderData.shaderCodeLength,
+			(UINT)shaderData.shaderCodeLength,
 			&pLayout
 		);
 

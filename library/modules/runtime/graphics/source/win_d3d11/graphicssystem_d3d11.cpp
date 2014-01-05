@@ -29,7 +29,7 @@ namespace tiki
 
 	static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
 	{
-		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, 4u );
+		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
 	}
 
 	TGDevice*	graphics::getDevice( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pDevice; }
@@ -48,8 +48,8 @@ namespace tiki
 	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
 	{
 		uint2 backBufferSize;
-		backBufferSize.x = params.backBufferWidth;
-		backBufferSize.y = params.backBufferHeight;
+		backBufferSize.x = (uint32)params.backBufferWidth;
+		backBufferSize.y = (uint32)params.backBufferHeight;
 
 		if ( params.fullScreen )
 		{
