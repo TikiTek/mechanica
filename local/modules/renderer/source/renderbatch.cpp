@@ -2,6 +2,7 @@
 #include "tiki/renderer/renderbatch.hpp"
 
 #include "tiki/base/functions.hpp"
+#include "tiki/graphicsresources/material.hpp"
 
 namespace tiki
 {
@@ -87,7 +88,7 @@ namespace tiki
 		m_pCurrentSequence->pCommands		= nullptr;
 	}
 
-	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Matrix43* pWorldTransform /*= nullptr */ )
+	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */ )
 	{
 		if ( m_pCurrentSequence == nullptr )
 		{
@@ -101,6 +102,17 @@ namespace tiki
 		}
 
 		pCommand->pGeometry	= &geometry;
+
+		if ( pMaterial == nullptr )
+		{
+			static MaterialBaseData fallbackMaterialData = { 0xffu, 0xffu, 0x00u, 0xffu };
+			pCommand->pMaterialData = &fallbackMaterialData;
+		}
+		else
+		{
+			pCommand->pMaterialData = pMaterial->getData();
+		}
+
 		if ( pWorldTransform == nullptr )
 		{
 			matrix::createIdentity( pCommand->worldTransform );

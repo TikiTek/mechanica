@@ -3,12 +3,14 @@
 
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
+#include "tiki/framework/inputsystem.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/stockvertex.hpp"
 #include "tiki/graphicsbase/graphicstypes.hpp"
 #include "tiki/graphicsbase/vertexattribute.hpp"
+#include "tiki/graphicsresources/material.hpp"
 #include "tiki/graphicsresources/model.hpp"
 #include "tiki/graphicsresources/shaderset.hpp"
 #include "tiki/graphicsresources/texture.hpp"
@@ -17,7 +19,6 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-#include "tiki/framework/inputsystem.hpp"
 
 namespace tiki
 {
@@ -47,7 +48,7 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModel		= framework::getResourceManager().loadResource< Model >( "unit_cube.model" );
+					m_pModel		= framework::getResourceManager().loadResource< Model >( "test.model" );
 					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "immediate.shader" );
 					m_pTexture		= framework::getResourceManager().loadResource< Texture >( "checker.texture" );
 					TIKI_ASSERT( m_pModel != nullptr );
