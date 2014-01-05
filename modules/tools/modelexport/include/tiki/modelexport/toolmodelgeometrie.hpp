@@ -13,6 +13,7 @@
 namespace tiki
 {
 	class ToolModelHierarchy;
+	struct ToolModelGeometryInstance;
 
 	TIKI_REFLECTION_STRUCT(
 		ToolModelVertex,
@@ -59,17 +60,19 @@ namespace tiki
 
 		bool		isSkinned;
 		Matrix44	shapeMatrix;
+		Matrix44	instanceMatrix;
 	};
 
 	class ToolModelGeometrie
 	{
 	public:
 
-		void							create( const TikiXml* pXml, const XmlElement* pNode, const float scaling = 1.0f );
+		void							create( const TikiXml* pXml, const ToolModelGeometryInstance& instance, const float scaling = 1.0f );
 		void							dispose();
 
-		void							applySkinning( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const XmlElement* pSkinNode );
 		bool							calculateTangents();
+		void							applySkinning( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const XmlElement* pSkinNode );
+		void							transformToInstance();
 
 		size_t							getIndexCount() const { return m_indices.getCount(); };
 		size_t							getIndexByIndex( size_t index ) const { return m_indices[ index ]; }
@@ -91,8 +94,6 @@ namespace tiki
 		Array< size_t >					m_skinningIndicesCount;
 		Array< size_t >					m_skinningIndicesOffset;
 		Array< size_t >					m_skinningIndicesData;
-
-		Array< string >					m_joints;
 
 		ToolModelGeometrieDesc			m_desc;
 		ToolModelVertexFormat			m_vertexFormat;

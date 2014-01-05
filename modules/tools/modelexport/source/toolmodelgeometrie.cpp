@@ -89,29 +89,36 @@ namespace tiki
 		return nullptr;
 	}
 
-	void ToolModelGeometrie::create( const TikiXml* pXml, const XmlElement* pNode, const float scaling /*= 1.0f*/ )
+	void ToolModelGeometrie::create( const TikiXml* pXml, const ToolModelGeometryInstance& instance, const float scaling /*= 1.0f*/ )
 	{
-		const XmlAttribute* pIdAtt		= pXml->findAttributeByName( "id", pNode );
-		const XmlAttribute* pNameAtt	= pXml->findAttributeByName( "name", pNode );
+		const XmlAttribute* pIdAtt		= pXml->findAttributeByName( "id", instance.pNode );
+		const XmlAttribute* pNameAtt	= pXml->findAttributeByName( "name", instance.pNode );
 
 		if ( pIdAtt == nullptr || pNameAtt == nullptr )
 		{
-			TIKI_TRACE_ERROR( "ToolModelGeometrie: Id or Name attribute not found." );
+			TIKI_TRACE_ERROR( "ToolModelGeometrie: Id or Name attribute not found.\n" );
 			return;
 		}
 
 		m_vertexFormat.create();
 
-		m_desc.id		= pIdAtt->content;
-		m_desc.name		= pNameAtt->content;
-		m_desc.scale	= scaling;
+		m_desc.id				= pIdAtt->content;
+		m_desc.name				= pNameAtt->content;
+		m_desc.scale			= scaling;
+		m_desc.instanceMatrix	= instance.worldTransform;
 
-		m_pGeometryNode	= pNode;
-		m_pMeshNode		= pXml->findFirstChild( "mesh", pNode );
+		m_pGeometryNode			= instance.pNode;
 
+		if ( m_desc.id != instance.geometryId )
+		{
+			TIKI_TRACE_ERROR( "ToolModelGeometrie: instance has a wrong id.\n" );
+			return;
+		}
+		
+		m_pMeshNode		= pXml->findFirstChild( "mesh", instance.pNode );
 		if ( m_pMeshNode == nullptr )
 		{
-			TIKI_TRACE_ERROR( "ToolModelGeometrie: mesh node not found." );
+			TIKI_TRACE_ERROR( "ToolModelGeometrie: mesh node not found.\n" );
 			return;
 		}		
 
@@ -331,9 +338,9 @@ namespace tiki
 					const uint32 index1 = indicesIndex[ i + 1u ];
 					const uint32 index2 = indicesIndex[ i + 2u ];
 
-					indicesIndex[ i + 0u ] = index2;
+					indicesIndex[ i + 0u ] = index0;
 					indicesIndex[ i + 1u ] = index1;
-					indicesIndex[ i + 2u ] = index0;
+					indicesIndex[ i + 2u ] = index2;
 				}
 
 				m_indices.create( indicesIndex.getData(), indicesIndex.getCount() );
@@ -724,4 +731,21 @@ namespace tiki
 		return true;
 	}
 
+	void ToolModelGeometrie::transformToInstance()
+	{
+		const Matrix44 worldTransform = m_desc.instanceMatrix;
+		if ( matrix::isIdentity( worldTransform ) )
+		{
+			return;
+		}
+
+		for (uint i = 0u; i < m_vertices.getCount(); ++i)
+		{
+			ToolModelVertex& vertex = m_vertices[ i ];
+
+			Vector3 pos = { vertex.position.x, vertex.position.y, vertex.position.z };
+			matrix::transform( pos, worldTransform );
+			createFloat3( vertex.position, pos.x, pos.y, pos.z );
+		} 
+	}
 }
