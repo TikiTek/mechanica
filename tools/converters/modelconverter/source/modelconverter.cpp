@@ -49,12 +49,12 @@ namespace tiki
 		{
 			const ConversionInputFile& file = params.inputFiles[ i ];
 
-			const string material	= params.arguments.getOptionalString( "material", "staticfallback.material" );
+			const string material	= params.arguments.getOptionalString( "material", "" );
 			const float scale		= params.arguments.getOptionalFloat( "scale", 1.0f );
 			const bool calcTangents	= params.arguments.getOptionalBool( "calculate_tangents", true );
 
 			ToolModel model;
-			model.create( file.fileName, scale, material );
+			model.create( file.fileName, scale );
 			model.parseGeometies( calcTangents );
 
 			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
@@ -96,8 +96,33 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
 			}
 
+			ReferenceKey materialKeyData;
+			const ReferenceKey* pMaterialKey = nullptr;
+			if ( material.isEmpty() == false )
+			{
+				crc32 resourceKey = InvalidCrc32;
+				string resourceName;
+
+				if ( material.contains( ':' ) )
+				{
+					const uint index = material.indexOf( ':' );
+					const string hexKey = material.substring( index + 1u ).toLower();
+
+					resourceKey = strtol( hexKey.cStr(), nullptr, 16 );
+					resourceName = material.substring( 0u, index );
+				}
+				else
+				{
+					resourceKey = crcString( material );
+					resourceName = material;
+				}
+
+				materialKeyData = writer.addResourceLink( resourceName, resourceKey, TIKI_FOURCC( 'M', 'A', 'T', 'E' ) );
+				pMaterialKey = &materialKeyData;
+			}
+
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeReference( nullptr ); // material
+			writer.writeReference( pMaterialKey );
 			writer.writeReference( pHierarchyKey );
 			writer.writeUInt32( model.getGeometyCount() );
 			for (uint i = 0u; i < geometryKeys.getCount(); ++i)

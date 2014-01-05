@@ -41,7 +41,7 @@ namespace tiki
 		void			closeDataSection();
 
 		ReferenceKey	addString( StringType type, const string& text );
-		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey );
+		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
 		ReferenceKey	addDataPoint();
 
 		void			writeAlignment( uint alignment );
@@ -92,7 +92,9 @@ namespace tiki
 		struct ResourceLinkData
 		{
 			string	fileName;
+			uint	stringIndex;
 			crc32	resourceKey;
+			fourcc	resourceType;
 		};
 
 		struct ResourceData

@@ -8,31 +8,14 @@
 #include "tiki/base/types.hpp"
 #include "tiki/resource/resourcebase.hpp"
 
-#define TIKI_DEFINE_RESOURCE( class_name, cc )				\
-	public:													\
-	friend class ResourceLoader;							\
-	static fourcc getType() { return s_resourceType; }		\
-	private:												\
-	static const fourcc s_resourceType = cc;				\
+#define TIKI_DEFINE_RESOURCE( class_name, cc )					\
+	public:														\
+	friend class ResourceLoader;								\
+	virtual fourcc getType() const { return s_resourceType; }	\
+	static fourcc getResourceType() { return s_resourceType; }	\
+	private:													\
+	static const fourcc s_resourceType = cc;					\
 	friend struct FactoryContextGenericBase< class_name >
-
-//#define TIKI_DEFAULT_RESOURCE_CODE( class_name )					\
-//	Resource* class_name :: createResource()						\
-//	{																\
-//		return TIKI_NEW class_name ;								\
-//	}																\
-//	void class_name :: disposeResource( Resource* pRes )			\
-//	{																\
-//		TIKI_DEL static_cast< class_name * >( pRes );				\
-//	}																\
-//	const FactoryContext& class_name :: getFactoryContext()			\
-//	{																\
-//		static TIKI_CONCAT( class_name, FactoryContext ) context;	\
-//		context.pCreateResource		= &createResource;				\
-//		context.pDisposeResource	= &disposeResource;				\
-//		return context;												\
-//	}																\
-//	typedef class_name * TIKI_CONCAT( class_name, Handle )
 
 namespace tiki
 {
@@ -59,8 +42,10 @@ namespace tiki
 							Resource();
 		virtual				~Resource();
 
-		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) = 0u;
-		virtual void		disposeInternal( const FactoryContext& factoryContext ) = 0u;
+		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) = 0;
+		virtual void		disposeInternal( const FactoryContext& factoryContext ) = 0;
+
+		virtual fourcc		getType() const = 0;
 
 	private:
 

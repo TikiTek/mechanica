@@ -30,7 +30,8 @@ namespace tiki
 
 	bool Material::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		return false;
+		m_pData = static_cast< const MaterialBaseData* >( initData.pData );
+		return m_pData != nullptr;
 	}
 
 	void Material::disposeInternal( const FactoryContext& factoryContext )

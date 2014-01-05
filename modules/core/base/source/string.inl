@@ -516,13 +516,13 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE bool BasicString<TChar>::contains( TChar c ) const
 	{
-		return this->IndexOf(c) != -1;
+		return indexOf( c ) != -1;
 	}
 
 	template<typename TChar>
 	TIKI_FORCE_INLINE bool BasicString<TChar>::contains( const BasicString<TChar>& str ) const
 	{
-		return this->IndexOf(str) != -1;
+		return indexOf( str ) != -1;
 	}
 
 	template<typename TChar>

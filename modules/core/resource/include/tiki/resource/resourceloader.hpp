@@ -44,7 +44,7 @@ namespace tiki
 			void					registerResourceType( fourcc type, const FactoryContext& factoryContext );
 			void					unregisterResourceType( fourcc type );
 
-			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType );
+			ResourceLoaderResult	loadResource( Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 			
 	private:

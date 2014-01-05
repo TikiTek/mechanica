@@ -47,15 +47,18 @@ namespace tiki
 			header.sectionCount	= resource.sections.getCount();
 			header.stringCount	= resource.strings.getCount();
 
-			header.offsetInFile			= 0u;
-			header.stringSizeInBytes	= 0u;
+			header.offsetInFile				= 0u;
+
+			header.stringOffsetInResource	= 0u;
+			header.stringSizeInBytes		= 0u;
 		} 
 		stream.write( resourceHeaders.getData(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
-		for (uint i = 0u; i < m_resources.getCount(); ++i)
+		for (uint resourceIndex = 0u; resourceIndex < m_resources.getCount(); ++resourceIndex)
 		{
-			const ResourceData& resource = m_resources[ i ];
-			resourceHeaders[ i ].offsetInFile = stream.getPosition();
+			const ResourceData& resource	= m_resources[ resourceIndex ];
+			ResourceHeader& header			= resourceHeaders[ resourceIndex ];
+			header.offsetInFile = stream.getPosition();
 
 			List< SectionHeader > sectionHeaders;
 			for (uint j = 0u; j < resource.sections.getCount(); ++j)
@@ -68,40 +71,52 @@ namespace tiki
 				header.referenceCount				= sectionData.references.getCount();
 				header.sizeInBytes					= sectionData.binaryData.getLength();
 
-				header.offsetInFile					= 0u;
+				header.offsetInResource				= 0u;
 			} 
 			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
-						
-			for (uint j = 0u; j < resource.links.getCount(); ++j)
+			
+			List< StringItem > stringItems;
+			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
 			{
-				const ResourceLinkData& linkData = resource.links[ j ];
+				const StringData& stringData = resource.strings[ stringIndex ];
+
+				uint32 bitMask = setBitValue( 0u, 0u, 2u, stringData.type );
+				bitMask = setBitValue( bitMask, 2u, 2u, stringData.sizeInBytes / stringData.text.getLength() );
+				bitMask = setBitValue( bitMask, 4u, 28u, stringData.text.getLength() );
+
+				StringItem& stringItem = stringItems.add();
+				stringItem.type_lengthModifier_textLength	= bitMask;
+				stringItem.offsetInBlock					= 0u;
+
+				header.stringSizeInBytes += stringData.text.getLength() + 1u;
+			}
+			stream.write( stringItems.getData(), sizeof( StringItem ) * stringItems.getCount() );
+
+			for (uint linkIndex = 0u; linkIndex < resource.links.getCount(); ++linkIndex)
+			{
+				const ResourceLinkData& linkData = resource.links[ linkIndex ];
+
+				crc32 fileKey = 0u;
+				if ( m_fileName != linkData.fileName )
+				{
+					fileKey = linkData.stringIndex; //crcString( linkData.fileName );
+				}
 
 				ResourceLinkItem item;
-				item.fileKey		= crcString( linkData.fileName );
+				item.fileKey		= fileKey;
 				item.resourceKey	= linkData.resourceKey;
+				item.resourceType	= linkData.resourceType;
 
 				stream.write( &item, sizeof( item ) );
 			}
 
-			for (uint j = 0u; j < resource.strings.getCount(); ++j)
+			for (uint sectionIndex = 0u; sectionIndex < resource.sections.getCount(); ++sectionIndex)
 			{
-				const StringData& stringData = resource.strings[ j ];
-
-				uint32 bitMask = setBitValue( 0u, 0u, 2u, stringData.type );
-				bitMask = setBitValue( bitMask, 2u, 2u, stringData.sizeInBytes / stringData.text.getLength() );
-				bitMask = setBitValue( bitMask, 4u, 28u, stringData.text.getLength() ) ;
-
-				stream.write( &bitMask, sizeof( bitMask ) );
-				stream.write( stringData.text.cStr(), stringData.sizeInBytes );
-			}
-
-			for (uint j = 0u; j < resource.sections.getCount(); ++j)
-			{
-				const SectionData& sectionData = resource.sections[ j ];
+				const SectionData& sectionData = resource.sections[ sectionIndex ];
 
 				stream.writeAlignment( sectionData.alignment );
 
-				sectionHeaders[ j ].offsetInFile = stream.getPosition();
+				sectionHeaders[ sectionIndex ].offsetInResource = stream.getPosition() - header.offsetInFile;
 				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
 
 				for (uint k = 0u; k < sectionData.references.getCount(); ++k)
@@ -118,8 +133,18 @@ namespace tiki
 				}
 			}
 
-			stream.setPosition( resourceHeaders[ i ].offsetInFile );
+			header.stringOffsetInResource = stream.getPosition() - header.offsetInFile;
+			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
+			{
+				stringItems[ stringIndex ].offsetInBlock = stream.getPosition() - header.offsetInFile - header.stringOffsetInResource;
+
+				const string& text = resource.strings[ stringIndex ].text;
+				stream.write( text.cStr(), text.getLength() + 1u );
+			} 
+
+			stream.setPosition( header.offsetInFile );
 			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
+			stream.write( stringItems.getData(), sizeof( StringItem ) * stringItems.getCount() );
 			stream.setPosition( stream.getLength() );
 		}
 
@@ -198,17 +223,20 @@ namespace tiki
 		return key;
 	}
 
-	ReferenceKey ResourceWriter::addResourceLink( const string& fileName, crc32 resourceKey )
+	ReferenceKey ResourceWriter::addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 
 		ReferenceKey key;
-		key.type		= ReferenceType_ResourceLink;
-		key.identifier	= m_pCurrentResource->links.getCount();
+		key.type					= ReferenceType_ResourceLink;
+		key.identifier				= m_pCurrentResource->links.getCount();
+		key.offsetInTargetSection	= 0u;
 
 		ResourceLinkData& data = m_pCurrentResource->links.add();
 		data.fileName		= fileName;
+		data.stringIndex	= addString( StringType_Char, fileName ).identifier;
 		data.resourceKey	= resourceKey;
+		data.resourceType	= resourceType;
 
 		return key;
 	}
