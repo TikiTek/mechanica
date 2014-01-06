@@ -9,6 +9,14 @@ namespace tiki
 {
 	typedef uint32 Color;
 
+	struct HdrColor
+	{
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+
 	namespace color
 	{
 		TIKI_FORCE_INLINE Color fromRgba( size_t r, size_t g, size_t b, size_t a = 255u )
@@ -72,6 +80,14 @@ namespace tiki
 				getFloatChannelB( c ),
 				getFloatChannelA( c )
 			);
+		}
+
+		TIKI_FORCE_INLINE void toHdrColor( HdrColor& target, Color c )
+		{
+			target.r = getFloatChannelR( c );
+			target.g = getFloatChannelG( c );
+			target.b = getFloatChannelB( c );
+			target.a = getFloatChannelA( c );
 		}
 	}
 }
