@@ -193,7 +193,7 @@ namespace tiki
 
 		Matrix43 mtx;
 		matrix::clear( mtx );
-		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
+		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 100.0f );
 
 		m_pGameRenderer->queueModel( m_pModel, &mtx );
 	}
@@ -207,8 +207,8 @@ namespace tiki
 		//matrix::createScale( scaleMtx, scale );
 
 		Matrix43 mtx;
-		matrix::clear( mtx );
-		matrix::createRotationZ( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
+		//matrix::clear( mtx );
+		matrix::createRotationZ( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 100.0f );
 		////matrix::mul( mtx.rot, scaleMtx );
 		////vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
 
