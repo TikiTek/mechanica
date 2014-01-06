@@ -58,10 +58,31 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	void SortedSizedMap<TKey, TValue>::getValueAt( TValue* pTargetValue, uint index ) const
+	TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index )
 	{
 		TIKI_ASSERT( index < m_count );
-		*pTargetValue = m_pData[ index ].value;
+		return m_pData[ index ].value;
+	}
+
+	template<typename TKey, typename TValue>
+	const TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index ) const
+	{
+		TIKI_ASSERT( index < m_count );
+		return m_pData[ index ].value;
+	}
+
+	template<typename TKey, typename TValue>
+	KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index )
+	{
+		TIKI_ASSERT( index < m_capacity );
+		return m_pData[ index ];
+	}
+
+	template<typename TKey, typename TValue>
+	const KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index ) const
+	{
+		TIKI_ASSERT( index < m_capacity );
+		return m_pData[ index ];
 	}
 
 	template<typename TKey, typename TValue>

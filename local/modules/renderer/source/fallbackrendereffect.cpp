@@ -70,10 +70,9 @@ namespace tiki
 
 		for (uint i = 0u; i < m_vertexInputBindings.getCount(); ++i)
 		{
-			const VertexInputBinding* pVertexInputBinding = nullptr;
-			m_vertexInputBindings.getValueAt( &pVertexInputBinding, i );
-
-			framework::getGraphicsSystem().disposeVertexInputBinding( pVertexInputBinding );
+			framework::getGraphicsSystem().disposeVertexInputBinding(
+				m_vertexInputBindings.getValueAt( i )
+			);
 		}
 		m_vertexInputBindings.dispose();
 	}
