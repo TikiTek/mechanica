@@ -5,9 +5,9 @@
 #include "tiki/base/float32.hpp"
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/structs.hpp"
+#include "tiki/graphicsbase/color.hpp"
 
 #include "libpsd.h"
-#include "opencv2/opencv.hpp"
 
 namespace tiki
 {
@@ -78,32 +78,184 @@ namespace tiki
 		resizeImage( scale.x, scale.y );
 	}
 
-	void HdrImage::resizeImage( uint width, uint height )
+	void HdrImage::resizeImage( uint targetWidth, uint targetHeight )
 	{
-		Array< float > tempImage;
-		tempImage.create( width * height * ChannelCount );
+		Array< HdrColor > tempImage;
+		tempImage.create( targetWidth * targetHeight );
 
-		IplImage* pSrcImage = cvCreateImageHeader( cvSize( m_width, m_height ), IPL_DEPTH_32F, 4 );
-		cvSetData( pSrcImage, m_data.getData(), m_width * sizeof( float ) * 4 );
+		// source: http://paint-mono.googlecode.com/svn/trunk/src/PdnLib/Surface.cs
+		HdrColor* pSourceData = static_cast< HdrColor* >( static_cast< void* >( m_data.getData() ) );
 
-		IplImage* pDestImage = cvCreateImageHeader( cvSize( width, height ), IPL_DEPTH_32F, 4 );
-		cvSetData( pDestImage, tempImage.getData(), width * sizeof( float ) * 4 );
+		for (uint dstY = 0u; dstY < targetHeight; ++dstY)
+		{
+			double srcTop = (double)( dstY * m_height ) / (double)targetHeight;
+			double srcTopFloor = floor( srcTop );
+			double srcTopWeight = 1 - (srcTop - srcTopFloor);
+			int srcTopInt = (int)srcTopFloor;
 
-		cvResize( pSrcImage, pDestImage, CV_INTER_AREA );
+			double srcBottom = (double)((dstY + 1) * m_height) / (double)targetHeight;
+			double srcBottomFloor = floor( srcBottom - 0.00001 );
+			double srcBottomWeight = srcBottom - srcBottomFloor;
+			int srcBottomInt = (int)srcBottomFloor;
 
-		//cvNamedWindow( "Image", 1 );
-		//cvShowImage( "Image", pDestImage );
-		//cvWaitKey( 0 );
-		//cvDestroyAllWindows();
+			const uint destRowIndex = ( dstY * targetWidth );
+			HdrColor* pDest = &tempImage[ destRowIndex ];
 
-		cvReleaseImageHeader( &pSrcImage );
-		cvReleaseImageHeader( &pDestImage );
+			for (uint dstX = 0u; dstX < targetWidth; ++dstX)
+			{
+				double srcLeft = (double)(dstX * m_width) / (double)targetWidth;
+				double srcLeftFloor = floor( srcLeft );
+				double srcLeftWeight = 1.0 - ( srcLeft - srcLeftFloor );
+				int srcLeftInt = (int)srcLeftFloor;
+
+				double srcRight = (double)((dstX + 1) * m_width) / (double)targetWidth;
+				double srcRightFloor = floor( srcRight - 0.00001 );
+				double srcRightWeight = srcRight - srcRightFloor;
+				int srcRightInt = (int)srcRightFloor;
+
+				double blueSum = 0;
+				double greenSum = 0;
+				double redSum = 0;
+				double alphaSum = 0;
+
+				// left fractional edge
+				const uint sourceLeftIndex = ( ( srcTopInt + 1u ) * m_width ) + srcLeftInt;
+				HdrColor* pSourceLeft = &pSourceData[ sourceLeftIndex ];
+
+				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
+				{
+					double a	 = pSourceLeft->a;
+					blueSum		+= pSourceLeft->b * srcLeftWeight * a;
+					greenSum	+= pSourceLeft->g * srcLeftWeight * a;
+					redSum		+= pSourceLeft->r * srcLeftWeight * a;
+					alphaSum	+= pSourceLeft->a * srcLeftWeight;
+					pSourceLeft  += m_width;
+				}
+
+				// right fractional edge
+				const uint sourceRightIndex = ( ( srcTopInt + 1u ) * m_width ) + srcRightInt;
+				HdrColor* pSourceRight = &pSourceData[ sourceRightIndex ];
+				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
+				{
+					double a		 = pSourceRight->a;
+					blueSum			+= pSourceRight->b * srcRightWeight * a;
+					greenSum		+= pSourceRight->g * srcRightWeight * a;
+					redSum			+= pSourceRight->r * srcRightWeight * a;
+					alphaSum		+= pSourceRight->a * srcRightWeight;
+					pSourceRight	+= m_width;
+				}
+
+				// top fractional edge
+				const uint sourceTopIndex = ( srcTopInt * m_width ) + ( srcLeftInt + 1u );
+				HdrColor* pSourceTop = &pSourceData[ sourceTopIndex ];
+				for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
+				{
+					double a	 = pSourceTop->a;
+					blueSum		+= pSourceTop->b * srcTopWeight * a;
+					greenSum	+= pSourceTop->g * srcTopWeight * a;
+					redSum		+= pSourceTop->r * srcTopWeight * a;
+					alphaSum	+= pSourceTop->a * srcTopWeight;
+					++pSourceTop;
+				}
+
+				// bottom fractional edge
+				const uint sourceBottomIndex = ( srcBottomInt * m_width ) + ( srcLeftInt + 1u );
+				HdrColor* pSourceBottom = &pSourceData[ sourceBottomIndex ];
+				for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
+				{
+					double a	 = pSourceBottom->a;
+					blueSum		+= pSourceBottom->b * srcBottomWeight * a;
+					greenSum	+= pSourceBottom->g * srcBottomWeight * a;
+					redSum		+= pSourceBottom->r * srcBottomWeight * a;
+					alphaSum	+= pSourceBottom->a * srcBottomWeight;
+					++pSourceBottom;
+				}
+
+				// center area
+				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
+				{
+					const uint sourceIndex = ( srcY * m_width ) + ( srcLeftInt + 1u );
+					HdrColor* pSource = &pSourceData[ sourceIndex ];
+
+					for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
+					{
+						double a	 = pSource->a;
+						blueSum		+= (double)pSource->b * a;
+						greenSum	+= (double)pSource->g * a;
+						redSum		+= (double)pSource->r * a;
+						alphaSum	+= (double)pSource->a;
+						++pSource;
+					}
+				}
+
+				// four corner pixels
+				HdrColor srcTL = pSourceData[ (srcTopInt * m_width ) + srcLeftInt ];
+				double srcTLA	 = srcTL.a;
+				blueSum			+= srcTL.b * (srcTopWeight * srcLeftWeight) * srcTLA;
+				greenSum		+= srcTL.g * (srcTopWeight * srcLeftWeight) * srcTLA;
+				redSum			+= srcTL.r * (srcTopWeight * srcLeftWeight) * srcTLA;
+				alphaSum		+= srcTL.a * (srcTopWeight * srcLeftWeight);
+
+				HdrColor srcTR = pSourceData[ (srcTopInt * m_width ) + srcRightInt ];
+				double srcTRA	 = srcTR.a;
+				blueSum			+= srcTR.b * (srcTopWeight * srcRightWeight) * srcTRA;
+				greenSum		+= srcTR.g * (srcTopWeight * srcRightWeight) * srcTRA;
+				redSum			+= srcTR.r * (srcTopWeight * srcRightWeight) * srcTRA;
+				alphaSum		+= srcTR.a * (srcTopWeight * srcRightWeight);
+
+				HdrColor srcBL = pSourceData[ (srcBottomInt * m_width ) + srcLeftInt ];
+				double srcBLA	 = srcBL.a;
+				blueSum			+= srcBL.b * (srcBottomWeight * srcLeftWeight) * srcBLA;
+				greenSum		+= srcBL.g * (srcBottomWeight * srcLeftWeight) * srcBLA;
+				redSum			+= srcBL.r * (srcBottomWeight * srcLeftWeight) * srcBLA;
+				alphaSum		+= srcBL.a * (srcBottomWeight * srcLeftWeight);
+
+				HdrColor srcBR = pSourceData[ (srcBottomInt * m_width ) + srcRightInt ];
+				double srcBRA	 = srcBR.a;
+				blueSum			+= srcBR.b * (srcBottomWeight * srcRightWeight) * srcBRA;
+				greenSum		+= srcBR.g * (srcBottomWeight * srcRightWeight) * srcBRA;
+				redSum			+= srcBR.r * (srcBottomWeight * srcRightWeight) * srcBRA;
+				alphaSum		+= srcBR.a * (srcBottomWeight * srcRightWeight);
+
+				double area = (srcRight - srcLeft) * (srcBottom - srcTop);
+
+				double alpha = alphaSum / area;
+				double blue;
+				double green;
+				double red;
+
+				if (alpha == 0)
+				{
+					blue = 0;
+					green = 0;
+					red = 0;
+				}
+				else
+				{
+					blue = blueSum / alphaSum;
+					green = greenSum / alphaSum;
+					red = redSum / alphaSum;
+				}
+
+				// add 0.5 so that rounding goes in the direction we want it to
+				blue	+= ( 0.5 / 255.0 );
+				green	+= ( 0.5 / 255.0 );
+				red		+= ( 0.5 / 255.0 );
+				alpha	+= ( 0.5 / 255.0 );
+
+				pDest->r = (float)red; 
+				pDest->g = (float)green; 
+				pDest->b = (float)blue; 
+				pDest->a = (float)alpha; 
+				++pDest;
+			}
+		}
 
 		m_data.dispose();
-		m_data.create( tempImage.getData(), tempImage.getCount() );
+		m_data.create( (float*)tempImage.getData(), tempImage.getCount() * ChannelCount );
 
-		m_width		= width;
-		m_height	= height;
+		m_width		= targetWidth;
+		m_height	= targetHeight;
 
 		tempImage.dispose();
 	}
