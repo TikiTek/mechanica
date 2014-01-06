@@ -7,32 +7,39 @@
 namespace tiki
 {
 	template<typename TKey, typename TValue>
+	struct KeyValuePair
+	{
+		TKey	key;
+		TValue	value;
+	};
+
+	template<typename TKey, typename TValue>
 	class SortedSizedMap
 	{
 		TIKI_NONCOPYABLE_CLASS( SortedSizedMap );
 
 	public:
 
-		struct Pair
-		{
-			TKey	key;
-			TValue	value;
-		};
+		typedef KeyValuePair<TKey, TValue> Pair;
+
 
 		SortedSizedMap();
 		~SortedSizedMap();
 
-		void		create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-		void		dispose();
+		void			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void			dispose();
 
-		uint		getCount();
-		uint		getCapacity();
+		uint			getCount();
+		uint			getCapacity();
 
-		void		getValueAt( TValue* pTargetValue, uint index ) const;
+		TValue&			getValueAt( uint index );
+		const TValue&	getValueAt( uint index ) const;
+		Pair&			getPairAt( uint index );
+		const Pair&		getPairAt( uint index ) const;
+
 		bool		findValue( TValue* pTargetValue, TKey key ) const;
 
 		void		set( const TKey& key, const TValue& value );
-
 		bool		remove( const TKey& key );
 
 	private:
