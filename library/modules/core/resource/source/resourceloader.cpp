@@ -61,6 +61,8 @@ namespace tiki
 				pStream->close();
 
 				m_nameMapper.create( binaryData.getData() );
+
+				binaryData.dispose();
 			}
 		}
 
