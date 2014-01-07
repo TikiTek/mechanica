@@ -96,14 +96,8 @@ namespace tiki
 			{
 				const ResourceLinkData& linkData = resource.links[ linkIndex ];
 
-				crc32 fileKey = 0u;
-				if ( m_fileName != linkData.fileName )
-				{
-					fileKey = linkData.stringIndex; //crcString( linkData.fileName );
-				}
-
 				ResourceLinkItem item;
-				item.fileKey		= fileKey;
+				item.fileKey		= crcString( linkData.fileName );
 				item.resourceKey	= linkData.resourceKey;
 				item.resourceType	= linkData.resourceType;
 
@@ -234,7 +228,6 @@ namespace tiki
 
 		ResourceLinkData& data = m_pCurrentResource->links.add();
 		data.fileName		= fileName;
-		data.stringIndex	= addString( StringType_Char, fileName ).identifier;
 		data.resourceKey	= resourceKey;
 		data.resourceType	= resourceType;
 

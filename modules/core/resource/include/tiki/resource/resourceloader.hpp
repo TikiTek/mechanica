@@ -5,6 +5,7 @@
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
+#include "tiki/resource/resourcenamemapper.hpp"
 
 namespace tiki
 {
@@ -44,7 +45,7 @@ namespace tiki
 			void					registerResourceType( fourcc type, const FactoryContext& factoryContext );
 			void					unregisterResourceType( fourcc type );
 
-			ResourceLoaderResult	loadResource( Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType );
+			ResourceLoaderResult	loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 			
 	private:
@@ -60,8 +61,9 @@ namespace tiki
 
 		FileSystem*				m_pFileSystem;
 		ResourceStorage*		m_pStorage;
-
+		ResourceNameMapper		m_nameMapper;
 		FactoryMap				m_factories;
+
 		ZoneAllocator			m_bufferAllocator;
 		
 		const FactoryContext*	findFactory( fourcc resourceType ) const;

@@ -140,7 +140,7 @@ namespace tiki
 			textureWriter.create( image, PixelFormat_R8, 0u );
 			
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "font", params.targetPlatform );
+			openResourceWriter( writer, params.outputName, "font", params.targetPlatform );
 			writer.openResource( params.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision() );
 
 			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
@@ -158,7 +158,7 @@ namespace tiki
 			writer.writeReference( &charArrayKey );
 			writer.closeDataSection();
 
-			closeResourceWriter( &writer );
+			closeResourceWriter( writer );
 
 			textureWriter.dispose();
 			image.dispose();

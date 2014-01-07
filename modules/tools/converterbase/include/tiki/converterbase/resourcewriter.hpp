@@ -92,7 +92,6 @@ namespace tiki
 		struct ResourceLinkData
 		{
 			string	fileName;
-			uint	stringIndex;
 			crc32	resourceKey;
 			fourcc	resourceType;
 		};

@@ -17,6 +17,12 @@ namespace tiki
 
 	public:
 
+		typedef T			Type;
+		typedef T&			Reference;
+		typedef const T&	ConstReference;
+		typedef T*			Iterator;
+		typedef const T*	ConstIterator;
+
 		Array()
 			: m_pData( nullptr ), m_dataCount( 0u )
 		{

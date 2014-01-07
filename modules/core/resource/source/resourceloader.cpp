@@ -26,6 +26,7 @@ namespace tiki
 		}
 
 		fourcc					resourceType;
+		crc32					crcFileName;
 
 		bool					streamOwner;
 		DataStream*				pStream;
@@ -49,6 +50,20 @@ namespace tiki
 		m_pFileSystem	= pFileSystem;
 		m_pStorage		= pStorage;
 
+		if ( pFileSystem->exists( "resourcenamemap.rnm" ) )
+		{
+			DataStream* pStream = pFileSystem->open( "resourcenamemap.rnm", DataAccessMode_Read );
+			if ( pStream != nullptr )
+			{
+				Array< uint8 > binaryData;
+				binaryData.create( (uint)pStream->getLength() );
+				pStream->read( binaryData.getData(), binaryData.getCount() );
+				pStream->close();
+
+				m_nameMapper.create( binaryData.getData() );
+			}
+		}
+
 		m_factories.create( MaxFactoryCount );
 		m_bufferAllocator.create( InitializationDataBufferSize, 128u );
 	}
@@ -57,6 +72,7 @@ namespace tiki
 	{
 		m_pFileSystem = nullptr;
 
+		m_nameMapper.dispose();
 		m_factories.dispose();
 		m_bufferAllocator.dispose();
 	}
@@ -71,13 +87,13 @@ namespace tiki
 		m_factories.remove( type );
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( Resource** ppTargetResource, const char* pFileName, crc32 resourceKey, fourcc resourceType )
+	ResourceLoaderResult ResourceLoader::loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
-		TIKI_ASSERT( pFileName != nullptr );
 		TIKI_ASSERT( resourceKey != InvalidCrc32 );
 
-		if ( m_pFileSystem->exists( pFileName ) == false )
+		const char* pFileName = m_nameMapper.getResourceName( crcFileName );
+		if ( pFileName == nullptr || m_pFileSystem->exists( pFileName ) == false )
 		{
 			return ResourceLoaderResult_FileNotFound;
 		}
@@ -85,6 +101,7 @@ namespace tiki
 		ResourceLoaderContext context;
 		context.resourceType	= resourceType;
 		context.streamOwner		= true;
+		context.crcFileName		= crcFileName;
 
 		context.pStream = m_pFileSystem->open( pFileName, DataAccessMode_Read );
 		if ( context.pStream == nullptr )
@@ -311,18 +328,20 @@ namespace tiki
 		{
 			const ResourceLinkItem& link = pResourceLinks[ i ];
 
-			// TODO: implement - resource in same file
-			//if ( link.fileKey == 0u )
-			//{
-			//	continue;
-			//}
-
-			ResourceLoaderResult result = loadResource(
-				&context.sectionData.ppLinkedResources[ i ],
-				context.sectionData.ppStringPointers[ link.fileKey ], //link.fileKey,
-				link.resourceKey,
-				link.resourceType
-			);
+			ResourceLoaderResult result = ResourceLoaderResult_UnknownError;
+			if ( link.fileKey == context.crcFileName )
+			{
+				// todo
+			}
+			else
+			{
+				result = loadResource(
+					&context.sectionData.ppLinkedResources[ i ],
+					link.fileKey,
+					link.resourceKey,
+					link.resourceType
+				);
+			}
 
 			if ( result != ResourceLoaderResult_Success )
 			{

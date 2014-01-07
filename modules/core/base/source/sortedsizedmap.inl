@@ -46,13 +46,13 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	uint SortedSizedMap<TKey, TValue>::getCount()
+	uint SortedSizedMap<TKey, TValue>::getCount() const
 	{
 		return m_count;
 	}
 
 	template<typename TKey, typename TValue>
-	uint SortedSizedMap<TKey, TValue>::getCapacity()
+	uint SortedSizedMap<TKey, TValue>::getCapacity() const
 	{
 		return m_capacity;
 	}
@@ -75,6 +75,10 @@ namespace tiki
 	KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index )
 	{
 		TIKI_ASSERT( index < m_capacity );
+		if ( index >= m_count )
+		{
+			m_count = index + 1u;
+		}
 		return m_pData[ index ];
 	}
 
