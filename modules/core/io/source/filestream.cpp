@@ -93,9 +93,7 @@ namespace tiki
 
 	FileSize FileStream::getLength()
 	{
-		FileSize position = 0u;
-		SetFilePointer( m_fileHandle, (DWORD)position, nullptr, FILE_END );
-		return 0;
+		return GetFileSize( m_fileHandle, nullptr );
 	}
 
 	void FileStream::setLength( FileSize length )
