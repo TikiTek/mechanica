@@ -51,15 +51,18 @@ namespace tiki
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter* pWriter, const string& fileName, const string& extension, PlatformType platform ) const
+	void ConverterBase::openResourceWriter( ResourceWriter& writer, const string& fileName, const string& extension, PlatformType platform ) const
 	{
-		string realName = path::combine( m_pManager->getOutputPath(), fileName + "." + extension );
-		pWriter->create( realName, platform );
+		const string realName = fileName + "." + extension;
+		const string fullPath = path::combine( m_pManager->getOutputPath(), realName );
+
+		m_pManager->getResourceMap().registerResource( realName );
+		writer.create( fullPath, platform );
 	}
 
-	void ConverterBase::closeResourceWriter( ResourceWriter* pWriter ) const
-	{
-		pWriter->dispose();
+	void ConverterBase::closeResourceWriter( ResourceWriter& writer ) const
+	{		
+		writer.dispose();
 	}
 
 }

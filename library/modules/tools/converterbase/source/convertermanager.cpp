@@ -30,6 +30,7 @@ namespace tiki
 		m_outputPath	= outputPath;
 		m_returnValue	= 0;
 		m_rebuildForced	= hasArgument( "--rebuild" );
+		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
 		bool newDatabase = !file::exists( "build.sqlite" );
 		if ( sqlite3_open( "build.sqlite", &m_pDataBase ) != SQLITE_OK )
@@ -63,6 +64,8 @@ namespace tiki
 		TIKI_TRACE( "ConverterManager: shutdown\n" );
 
 		debug::setTraceCallback( nullptr );
+
+		m_resourceMap.dispose();
 
 		m_loggingStream.close();
 		m_loggingMutex.dispose();

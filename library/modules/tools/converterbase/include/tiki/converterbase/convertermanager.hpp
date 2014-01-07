@@ -5,6 +5,7 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/converterresourcemap.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/list.hpp"
@@ -27,20 +28,21 @@ namespace tiki
 
 		~ConverterManager();
 
-		void				create( const string& outputPath );
-		void				dispose();
+		void					create( const string& outputPath );
+		void					dispose();
 
 		// conversion
-		void				addTemplate( const string& fileName );
-		void				queueFile( const string& fileName );
-		int					startConversion();
+		void					addTemplate( const string& fileName );
+		void					queueFile( const string& fileName );
+		int						startConversion();
 
 		// converter
-		void				registerConverter( const ConverterBase* pConverter );
-		void				unregisterConverter( const ConverterBase* pConverter );
+		void					registerConverter( const ConverterBase* pConverter );
+		void					unregisterConverter( const ConverterBase* pConverter );
 
 		// misc
-		const string&		getOutputPath() const { return m_outputPath; }
+		const string&			getOutputPath() const { return m_outputPath; }
+		ConverterResourceMap&	getResourceMap() { return m_resourceMap; }
 
 	private:
 
@@ -76,6 +78,8 @@ namespace tiki
 		FileList					m_files;
 		TemplateMap					m_templates;
 		ConverterList				m_converters;
+
+		ConverterResourceMap		m_resourceMap;
 
 		static ConverterManager*	s_pInstance;
 

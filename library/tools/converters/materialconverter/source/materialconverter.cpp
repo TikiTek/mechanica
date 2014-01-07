@@ -54,7 +54,7 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "material", PlatformType_Win );
+			openResourceWriter( writer, params.outputName, "material", PlatformType_Win );
 
 			writer.openResource( params.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
 
@@ -92,7 +92,7 @@ namespace tiki
 
 			writer.closeResource();
 
-			closeResourceWriter( &writer );
+			closeResourceWriter( writer );
 
 			material.dispose();
 		}

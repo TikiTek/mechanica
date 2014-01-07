@@ -124,7 +124,7 @@ namespace tiki
 			textureWriter.create( image, PixelFormat_R8G8B8A8, mipMapCount );
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "texture", params.targetPlatform );
+			openResourceWriter( writer, params.outputName, "texture", params.targetPlatform );
 			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
 
 			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
@@ -135,7 +135,7 @@ namespace tiki
 			writer.closeDataSection();
 
 			writer.closeResource();
-			closeResourceWriter( &writer );
+			closeResourceWriter( writer );
 
 			textureWriter.dispose();
 			image.dispose();

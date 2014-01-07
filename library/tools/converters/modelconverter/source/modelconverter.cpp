@@ -60,7 +60,7 @@ namespace tiki
 			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
 			
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "model", params.targetPlatform );
+			openResourceWriter( writer, params.outputName, "model", params.targetPlatform );
 			
 			writer.openResource( params.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
 
@@ -132,7 +132,7 @@ namespace tiki
 			writer.closeDataSection();
 
 			writer.closeResource();
-			closeResourceWriter( &writer );
+			closeResourceWriter( writer );
 
 			model.dispose();
 		}

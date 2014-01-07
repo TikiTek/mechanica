@@ -29,26 +29,26 @@ namespace tiki
 		void			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 		void			dispose();
 
-		uint			getCount();
-		uint			getCapacity();
+		uint			getCount() const;
+		uint			getCapacity() const;
 
 		TValue&			getValueAt( uint index );
 		const TValue&	getValueAt( uint index ) const;
 		Pair&			getPairAt( uint index );
 		const Pair&		getPairAt( uint index ) const;
 
-		bool		findValue( TValue* pTargetValue, TKey key ) const;
+		bool			findValue( TValue* pTargetValue, TKey key ) const;
 
-		void		set( const TKey& key, const TValue& value );
-		bool		remove( const TKey& key );
+		void			set( const TKey& key, const TValue& value );
+		bool			remove( const TKey& key );
 
 	private:
 
-		Pair*		m_pData;
-		uint		m_count;
-		uint		m_capacity;
+		Pair*	m_pData;
+		uint	m_count;
+		uint	m_capacity;
 
-		uint		findIndex( const TKey& key ) const;
+		uint	findIndex( const TKey& key ) const;
 
 	};
 }

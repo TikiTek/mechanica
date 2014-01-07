@@ -188,7 +188,7 @@ namespace tiki
 			preprocessor.create( sourceCode );
 
 			ResourceWriter writer;
-			openResourceWriter( &writer, params.outputName, "shader", params.targetPlatform );
+			openResourceWriter( writer, params.outputName, "shader", params.targetPlatform );
 			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
 
 			List< ShaderVariantData > shaderVariants;
@@ -261,7 +261,7 @@ namespace tiki
 			writer.closeDataSection();
 
 			writer.closeResource();
-			closeResourceWriter( &writer );
+			closeResourceWriter( writer );
 
 			preprocessor.dispose();
 		}
