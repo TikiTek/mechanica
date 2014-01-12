@@ -8,6 +8,8 @@
 namespace tiki
 {
 	class GraphicsContext;
+	class GraphicsSystem;
+	class ResourceManager;
 	struct FrameData;
 	struct RenderSequence;
 	struct RendererContext;
@@ -21,8 +23,8 @@ namespace tiki
 								RenderEffect();
 		virtual					~RenderEffect();
 
-		bool					create( const RendererContext& rendererContext );
-		void					dispose();
+		bool					create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		void					dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		virtual RenderEffectId	getRenderEffectId() const = 0;
 
@@ -31,8 +33,8 @@ namespace tiki
 
 	protected:
 
-		virtual bool			createInternal() = 0;
-		virtual void			disposeInternal() = 0;
+		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager ) = 0;
+		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager ) = 0;
 
 		virtual void			executeRenderSequencesInternal( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext ) = 0;
 

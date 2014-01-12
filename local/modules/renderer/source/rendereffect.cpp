@@ -17,16 +17,16 @@ namespace tiki
 		TIKI_ASSERT( m_pRendererContext == nullptr );
 	}
 
-	bool RenderEffect::create( const RendererContext& rendererContext )
+	bool RenderEffect::create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		m_pRendererContext = &rendererContext;
 
-		return createInternal();
+		return createInternal( graphicsSystem, resourceManager );
 	}
 
-	void RenderEffect::dispose()
+	void RenderEffect::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		disposeInternal();
+		disposeInternal( graphicsSystem, resourceManager );
 
 		m_pFrameData		= nullptr;
 		m_pRendererContext	= nullptr;

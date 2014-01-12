@@ -28,14 +28,16 @@ namespace tiki
 
 	protected:
 
-		virtual bool			createInternal();
-		virtual void			disposeInternal();
+		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		virtual void			executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext );
 
 	private:
 
 		typedef SortedSizedMap< crc32, const VertexInputBinding* > VertexInputBindingMap;
+
+		GraphicsSystem*			m_pGraphicsSystem;
 
 		const ShaderSet*		m_pShaderSet;
 		const SamplerState*		m_pSampler;
