@@ -4,7 +4,6 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsbase/vertexsemantic.hpp"
@@ -62,7 +61,7 @@ namespace tiki
 		m_platformData.pInputLayout	= nullptr;
 	}
 
-	bool VertexInputBinding::create( const VertexInputBindingParameters& creationParameters )
+	bool VertexInputBinding::create( GraphicsSystem& graphicsSystem, const VertexInputBindingParameters& creationParameters )
 	{
 		TIKI_ASSERT( creationParameters.pShader != nullptr );
 		TIKI_ASSERT( creationParameters.pShader->getShaderType() == ShaderType_VertexShader );
@@ -86,7 +85,7 @@ namespace tiki
 			desc[ i ].InstanceDataStepRate	= 0;
 		}
 		
-		m_platformData.pInputLayout = graphics::createVertexInputLayout( m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
+		m_platformData.pInputLayout = graphics::createVertexInputLayout( graphicsSystem, m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
 		if ( m_platformData.pInputLayout == nullptr )
 		{
 			dispose();

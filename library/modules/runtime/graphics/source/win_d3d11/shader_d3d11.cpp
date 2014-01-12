@@ -4,7 +4,6 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fixedsizedarray.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
 #include "tiki/resource/resourcefile.hpp"
@@ -91,9 +90,9 @@ namespace tiki
 		m_platformData.shaderCodeLength	= 0u;
 	}
 
-	TGInputLayout* graphics::createVertexInputLayout( const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount )
+	TGInputLayout* graphics::createVertexInputLayout( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount )
 	{
-		TGDevice* pDevice = graphics::getDevice( framework::getGraphicsSystem() );
+		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
 
 		TGInputLayout* pLayout = nullptr;
 		const HRESULT result = pDevice->CreateInputLayout(

@@ -4,113 +4,53 @@
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
+	reflection::TypeSystem& reflection::getTypeSystem()
+	{
+		static reflection::TypeSystem s_typeSystem;
+		return s_typeSystem;
+	}
+
+	const reflection::TypeBase* reflection::getTypeOf( const string& typeName )
+	{
+		return getTypeSystem().getTypeByName( typeName );
+	}
+
 	namespace reflection
 	{
 		//////////////////////////////////////////////////////////////////////////
 		// TypeBase
-		List< const TypeBase* > TypeBase::m_types;
-
 		TypeBase::TypeBase( const string& name, const TypeBase* pBaseType )
+			: m_name( name ), m_pBaseType( pBaseType )
 		{
-			m_name		= name;
-			m_pBaseType	= pBaseType;
 		}
-
-		void TypeBase::addType( const TypeBase* pType )
-		{
-			m_types.add( pType );
-		}
-
-		size_t TypeBase::getTypeCount()
-		{
-			return m_types.getCount();
-		}
-
-		const TypeBase* TypeBase::getTypeByName( const string& name )
-		{
-			for (size_t i = 0u; i < m_types.getCount(); ++i)
-			{
-				if ( m_types[ i ]->m_name == name )
-				{
-					return m_types[ i ];
-				}
-			}
-
-			return nullptr;
-		}
-
 
 		//////////////////////////////////////////////////////////////////////////
 		// ValueType
-		ValueType::ValueType( const string& name, size_t size, ValueTypeVariants variant )
-			: TypeBase( name, nullptr )
-		{
-			m_size		= size;
-			m_variant	= variant;
+		ValueType::ValueType( const string& name, uint size, ValueTypeVariant variant )
+			: TypeBase( name, nullptr ), m_size( size ), m_variant( variant )
+		{			
 		}
 
-		void ValueType::initializeTypes()
+		//////////////////////////////////////////////////////////////////////////
+		// MemberBase
+		MemberBase::MemberBase( const string& name, const TypeBase* pContainingType )
+			: m_name( name ), m_pContainingType( pContainingType )
 		{
-			static ValueType valueTypes[] =
-			{
-				ValueType( "void",   0u, ValueTypeVariants_Void ),
-				ValueType( "bool",   1u, ValueTypeVariants_Bool ),
-				ValueType( "uint8",  1u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "uint16", 2u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "uint32", 4u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "uint64", 8u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "sint8",	 1u, ValueTypeVariants_SignedInteger ),
-				ValueType( "sint16", 2u, ValueTypeVariants_SignedInteger ),
-				ValueType( "sint32", 4u, ValueTypeVariants_SignedInteger ),
-				ValueType( "sint64", 8u, ValueTypeVariants_SignedInteger ),
-				ValueType( "float",  4u, ValueTypeVariants_FloatingPoint ),
-				ValueType( "double", 8u, ValueTypeVariants_FloatingPoint ),
-#if TIKI_ENABLED( TIKI_BUILD_32BIT )
-				ValueType( "size_t", 4u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "int",	 4u, ValueTypeVariants_SignedInteger ),
-				ValueType( "uint",	 4u, ValueTypeVariants_UnsignedInteger ),
-#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
-				ValueType( "size_t", 8u, ValueTypeVariants_UnsignedInteger ),
-				ValueType( "int",	 8u, ValueTypeVariants_SignedInteger ),
-				ValueType( "uint",	 8u, ValueTypeVariants_UnsignedInteger ),
-#else
-#	error Not implemented
-#endif
-			};
-
-			if ( TypeBase::getTypeCount() != 0u )
-			{
-				return;
-			}
-
-			for (size_t i = 0u; i < TIKI_COUNT( valueTypes ); ++i)
-			{
-				TypeBase::addType( &valueTypes[ i ] );
-			}
 		}
-
 
 		//////////////////////////////////////////////////////////////////////////
 		// FieldType
-		FieldType::FieldType()
-			: TypeBase( "", nullptr )
+		FieldMember::FieldMember( const string& name, const TypeBase* pContainingType, const TypeMemberInfo& type, uint offset )
+			: MemberBase( name, pContainingType ), m_type( type ), m_offset( offset )
 		{
 		}
 
-		FieldType::FieldType( const string& name, const TypeBase* pType, size_t offset, FieldFlags flags )
-			: TypeBase( name, pType )
-		{
-			m_flags		= flags;
-			m_offset	= offset;
-		}
-
-		void FieldType::setValue( void* pObject, const void* pValue ) const
+		void FieldMember::setValue( void* pObject, const void* pValue ) const
 		{
 			void* pTarget = getValue( pObject );
 
-			size_t size = getSize();
-
-			if ( isBitSet( m_flags, FieldFlags_Pointer ) || isBitSet( m_flags, FieldFlags_Reference ) )
+			uint size = m_type.getType()->getSize();
+			if ( m_type.isPointer() || m_type.isReference() )
 			{
 				size = sizeof( void* );
 			}
@@ -121,11 +61,9 @@ namespace tiki
 
 		//////////////////////////////////////////////////////////////////////////
 		// StructType
-		StructType::StructType( cstring name, cstring structString )
-			: TypeBase( name, nullptr )
+		StructType::StructType( const string& name, const string& structString, const StructType* pBaseType )
+			: TypeBase( name, pBaseType )
 		{
-			ValueType::initializeTypes();
-
 			m_size			= 0u;
 			m_alignment		= 0u;
 			m_structString	= structString;
@@ -133,7 +71,7 @@ namespace tiki
 			Array< string > fields;
 			m_structString.split( fields, ";" );
 
-			for (size_t i = 0u; i < fields.getCount(); ++i)
+			for (uint i = 0u; i < fields.getCount(); ++i)
 			{
 				string field = fields[ i ].replace( '\t', ' ' ).trim();
 
@@ -150,24 +88,23 @@ namespace tiki
 					firstSpaceIndex = 0u;
 				}
 
-				size_t fieldSize		= 0u;
-				size_t fieldAlign		= 0u;
+				uint fieldSize		= 0u;
+				uint fieldAlign		= 0u;
 
-				uint32 flags			= FieldFlags_Public;
+				uint32 flags			= TypeMemberFlag_Public;
 				string fieldName		= field.substring( lastSpaceIndex + 1u );
 				string typeName			= field.substring( firstSpaceIndex, lastSpaceIndex - firstSpaceIndex ).replace( " ", "" );
 
 				if ( typeName.endsWith( '*' ) )
 				{
-					flags |= FieldFlags_Pointer;
+					flags |= TypeMemberFlag_Pointer;
 				}
-
-				if ( typeName.endsWith( '&' ) )
+				else if ( typeName.endsWith( '&' ) )
 				{
-					flags |= FieldFlags_Reference;
+					flags |= TypeMemberFlag_Reference;
 				}
 
-				if ( isBitSet( flags, FieldFlags_Pointer ) || isBitSet( flags, FieldFlags_Reference ) )
+				if ( isBitSet( flags, TypeMemberFlag_Pointer ) || isBitSet( flags, TypeMemberFlag_Reference ) )
 				{
 					typeName = typeName.substring( 0u, typeName.getLength() - 1u );
 
@@ -175,10 +112,10 @@ namespace tiki
 					fieldAlign	= sizeof( void* );
 				}
 
-				const TypeBase* pType	= TypeBase::getTypeByName( typeName );
+				const TypeBase* pType	= getTypeSystem().getTypeByName( typeName );
 				TIKI_ASSERT( pType != nullptr );
 
-				if ( !( isBitSet( flags, FieldFlags_Pointer ) || isBitSet( flags, FieldFlags_Reference ) ) )
+				if ( !( isBitSet( flags, TypeMemberFlag_Pointer ) || isBitSet( flags, TypeMemberFlag_Reference ) ) )
 				{
 					fieldSize	= pType->getSize();
 					fieldAlign	= pType->getAlignment();
@@ -190,7 +127,7 @@ namespace tiki
 
 					if ( typeModifier == "const" )
 					{
-						flags |= FieldFlags_Const;
+						flags |= TypeMemberFlag_Const;
 					}
 					else
 					{
@@ -200,34 +137,32 @@ namespace tiki
 
 				m_size		 = alignValue( m_size, fieldAlign );
 
-				m_fields.add( FieldType( fieldName, pType, m_size, (FieldFlags)flags ) );
+				m_fields.add( TIKI_NEW FieldMember( fieldName, this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), m_size ) );
 
 				m_size		+= fieldSize;
 				m_alignment	 = TIKI_MAX( m_alignment, fieldAlign );
 			}
 
 			fields.dispose();
-
-			TypeBase::addType( this );
 		}
 
-		const FieldType* StructType::getFieldByName( const string& name ) const
+		const FieldMember* StructType::getFieldByName( const string& name ) const
 		{
-			for (size_t i = 0u; i < m_fields.getCount(); ++i)
+			for (uint i = 0u; i < m_fields.getCount(); ++i)
 			{
-				if ( m_fields[ i ].getName() == name )
+				if ( m_fields[ i ]->getName() == name )
 				{
-					return &m_fields[ i ];
+					return m_fields[ i ];
 				}
 			}
 
 			return nullptr;
 		}
 
-		void StructType::findFieldRecursve( List< const FieldType* >& wayToField, const string& name ) const
+		void StructType::findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const
 		{
 			bool lastField	= false;
-			size_t index	= TIKI_MIN( (size_t)name.indexOf( '.' ), (size_t)name.indexOf( "->" ) );
+			uint index	= TIKI_MIN( (uint)name.indexOf( '.' ), (uint)name.indexOf( "->" ) );
 
 			if ( index == -1 )
 			{
@@ -237,9 +172,9 @@ namespace tiki
 
 			string localField = name.substring( 0u, index );
 
-			const FieldType* pLocalField = getFieldByName( localField );
+			const FieldMember* pLocalField = getFieldByName( localField );
 			TIKI_ASSERT( pLocalField );
-			TIKI_ASSERT( lastField || pLocalField->getType()->getLeaf() == TypeBaseLeaf_StructType );
+			TIKI_ASSERT( lastField || pLocalField->getTypeInfo().getType()->getLeaf() == TypeBaseLeaf_StructType );
 
 			wayToField.add( pLocalField );
 
@@ -248,8 +183,101 @@ namespace tiki
 				return;
 			}
 
-			const StructType* pStructType = (const StructType*)pLocalField->getType();
+			const StructType* pStructType = static_cast< const StructType* >( pLocalField->getTypeInfo().getType() );
 			pStructType->findFieldRecursve( wayToField, name.substring( index + 1u ) );
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		// TypeSystem
+		void TypeSystem::initialize()
+		{
+			initializeValueTypes();
+		}
+
+		void TypeSystem::shutdown()
+		{
+			for (uint i = 0u; i < m_valueTypes.getCount(); ++i)
+			{
+				TIKI_DEL( m_valueTypes[ i ] );
+			} 
+
+			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
+			{
+				TIKI_DEL( m_structTypes[ i ] );
+			} 
+
+			m_types.dispose();
+			m_valueTypes.dispose();
+			m_structTypes.dispose();
+		}
+
+		const TypeBase* TypeSystem::getTypeByName( const string& name ) const
+		{
+			for (uint i = 0u; i < m_types.getCount(); ++i)
+			{
+				if ( m_types[ i ]->getName() == name )
+				{
+					return m_types[ i ];
+				}
+			}
+
+			return nullptr;
+		}
+
+		const ValueType* TypeSystem::registerValueType( const string& name, uint size, ValueTypeVariant variant )
+		{
+			const ValueType* pType = TIKI_NEW ValueType( name, size, variant );
+
+			m_types.add( pType );
+			m_valueTypes.add( pType );
+
+			return pType;
+		}
+
+		const StructType* TypeSystem::registerStructType( const string& name, const string& baseName, const string& code )
+		{
+			//const StructType* pType = TIKI_NEW StructType( name, code );
+
+			return nullptr;
+		}
+
+		void TypeSystem::initializeValueTypes()
+		{
+			const ValueType valueTypes[] =
+			{
+				ValueType( "void",		0u, ValueTypeVariant_Void ),
+				ValueType( "bool",		1u, ValueTypeVariant_Bool ),
+				ValueType( "uint8",		1u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "uint16",	2u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "uint32",	4u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "uint64",	8u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "sint8",		1u, ValueTypeVariant_SignedInteger ),
+				ValueType( "sint16",	2u, ValueTypeVariant_SignedInteger ),
+				ValueType( "sint32",	4u, ValueTypeVariant_SignedInteger ),
+				ValueType( "sint64",	8u, ValueTypeVariant_SignedInteger ),
+				ValueType( "float16",	2u, ValueTypeVariant_FloatingPoint ),
+				ValueType( "float32",	4u, ValueTypeVariant_FloatingPoint ),
+				ValueType( "float64",	8u, ValueTypeVariant_FloatingPoint ),
+				ValueType( "float",		4u, ValueTypeVariant_FloatingPoint ),
+				ValueType( "double",	8u, ValueTypeVariant_FloatingPoint ),
+#if TIKI_ENABLED( TIKI_BUILD_32BIT )
+				ValueType( "size_t",	4u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "int",		4u, ValueTypeVariant_SignedInteger ),
+				ValueType( "uint",		4u, ValueTypeVariant_UnsignedInteger ),
+#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
+				ValueType( "size_t",	8u, ValueTypeVariant_UnsignedInteger ),
+				ValueType( "int",		8u, ValueTypeVariant_SignedInteger ),
+				ValueType( "uint",		8u, ValueTypeVariant_UnsignedInteger ),
+#else
+#	error Not implemented
+#endif
+			};
+
+			for (uint i = 0u; i < TIKI_COUNT( valueTypes ); ++i)
+			{
+				const ValueType& type = valueTypes[ i ];
+				registerValueType( type.getName(), type.getSize(), type.getTypeVariant() );
+			} 
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace tiki
 
 	private: // friends
 
-		bool							create( const VertexInputBindingParameters& creationParameters );
+		bool							create( GraphicsSystem& graphicsSystem, const VertexInputBindingParameters& creationParameters );
 		void							dispose();
 
 	private:

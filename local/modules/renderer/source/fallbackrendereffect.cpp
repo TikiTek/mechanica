@@ -1,7 +1,6 @@
 
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphicsbase/graphicstypes.hpp"
@@ -29,21 +28,26 @@ namespace tiki
 
 	FallbackRenderEffect::FallbackRenderEffect()
 	{
-		m_pShaderSet	= nullptr;
-		m_pSampler		= nullptr;
+		m_pGraphicsSystem	= nullptr;
+
+		m_pShaderSet		= nullptr;
+		m_pSampler			= nullptr;
 	}
 
 	FallbackRenderEffect::~FallbackRenderEffect()
 	{
+		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
+
 		TIKI_ASSERT( m_pShaderSet == nullptr );
 		TIKI_ASSERT( m_pSampler == nullptr );
 	}
 
-	bool FallbackRenderEffect::createInternal()
+	bool FallbackRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		m_pShaderSet = framework::getResourceManager().loadResource< ShaderSet >( "fallback.shader" );
+		m_pGraphicsSystem	= &graphicsSystem;
+		m_pShaderSet		= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
 
-		m_pSampler = framework::getGraphicsSystem().createSamplerState(
+		m_pSampler = graphicsSystem.createSamplerState(
 			AddressMode_Clamp,
 			AddressMode_Clamp,
 			AddressMode_Clamp,
@@ -51,30 +55,32 @@ namespace tiki
 			FilterMode_Linear
 		);
 
-		m_vertexConstantBuffer.create( framework::getGraphicsSystem(), sizeof( FallbackVertexConstants ) );
+		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ) );
 
 		m_vertexInputBindings.create( 32u );
 
 		return true;
 	}
 
-	void FallbackRenderEffect::disposeInternal()
+	void FallbackRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		framework::getGraphicsSystem().disposeSamplerState( m_pSampler );
+		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
-		framework::getResourceManager().unloadResource< ShaderSet >( m_pShaderSet );
+		resourceManager.unloadResource< ShaderSet >( m_pShaderSet );
 		m_pShaderSet = nullptr;
 
-		m_vertexConstantBuffer.dispose( framework::getGraphicsSystem() );
+		m_vertexConstantBuffer.dispose( graphicsSystem );
 
 		for (uint i = 0u; i < m_vertexInputBindings.getCount(); ++i)
 		{
-			framework::getGraphicsSystem().disposeVertexInputBinding(
+			graphicsSystem.disposeVertexInputBinding(
 				m_vertexInputBindings.getValueAt( i )
 			);
 		}
 		m_vertexInputBindings.dispose();
+
+		m_pGraphicsSystem = nullptr;
 	}
 
 	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
@@ -115,7 +121,7 @@ namespace tiki
 
 				if ( m_vertexInputBindings.findValue( &pVertexInputBinding, vertexFormatHash ) == false )
 				{
-					pVertexInputBinding = framework::getGraphicsSystem().createVertexInputBinding(
+					pVertexInputBinding = m_pGraphicsSystem->createVertexInputBinding(
 						pVertexShader,
 						geometry.getVertexFormat()
 					);
