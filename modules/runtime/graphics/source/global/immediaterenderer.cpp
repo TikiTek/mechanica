@@ -2,7 +2,6 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 
 #include "tiki/base/numbers.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/graphics/texturedata.hpp"

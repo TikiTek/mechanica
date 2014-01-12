@@ -158,7 +158,7 @@ namespace tiki
 		VertexInputBinding* pVertexInputBinding = m_vertexInputBindings.findOrAllocate( hashValue );
 		if ( pVertexInputBinding != nullptr && pVertexInputBinding->isCreated() == false )
 		{
-			if ( pVertexInputBinding->create( parameters ) == false )
+			if ( pVertexInputBinding->create( *this, parameters ) == false )
 			{
 				pVertexInputBinding = nullptr;
 			}

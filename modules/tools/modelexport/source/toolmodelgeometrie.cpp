@@ -384,7 +384,7 @@ namespace tiki
 				for (size_t j = 0u; j < source.stride; ++j)
 				{
 					string fieldPath = source.target + "." + source.techniques[ j ].name;
-					List< const reflection::FieldType* > wayToField;
+					List< const reflection::FieldMember* > wayToField;
 					pBaseType->findFieldRecursve( wayToField, fieldPath );
 
 					size_t offset = 0u;

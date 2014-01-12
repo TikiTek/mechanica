@@ -6,8 +6,9 @@
 
 namespace tiki
 {
-	struct ShaderPlatformData;
+	class GraphicsSystem;
 	class VertexFormat;
+	struct ShaderPlatformData;
 
 	struct ShaderPlatformData
 	{
@@ -29,7 +30,7 @@ namespace tiki
 
 	namespace graphics
 	{
-		TGInputLayout*	createVertexInputLayout( const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount );
+		TGInputLayout*	createVertexInputLayout( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount );
 	}
 }
 
