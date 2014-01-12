@@ -4,10 +4,61 @@
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
+	namespace reflection
+	{
+		class TypeSystem
+		{
+			TIKI_NONCOPYABLE_WITHCTOR_CLASS( TypeSystem );
+
+		public:
+
+			void				initialize();
+			void				shutdown();
+
+			const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
+			const StructType*	registerStructType( const string& name, const string& baseName, const string& code );
+
+			const TypeBase*		getTypeByName( const string& name ) const;
+			const ValueType*	getValueTypeByName( const string& name ) const;
+			const StructType*	getStructTypeByName( const string& name ) const;
+
+		private:
+
+			List< const TypeBase* >	m_types;
+			List< ValueType* >		m_valueTypes;
+			List< StructType* >		m_structTypes;
+
+			void					initializeValueTypes();
+
+		};
+
+		TypeSystem& getTypeSystem();
+	}
+
 	reflection::TypeSystem& reflection::getTypeSystem()
 	{
 		static reflection::TypeSystem s_typeSystem;
 		return s_typeSystem;
+	}
+
+	void reflection::initialize()
+	{
+		reflection::getTypeSystem().initialize();		
+	}
+
+	void reflection::shutdown()
+	{
+		reflection::getTypeSystem().shutdown();
+	}
+
+	const reflection::ValueType* reflection::registerValueType( const string& name, uint size, ValueTypeVariant variant )
+	{
+		return reflection::getTypeSystem().registerValueType( name, size, variant );
+	}
+
+	const reflection::StructType* reflection::registerStructType( const string& name, const string& baseName, const string& code )
+	{
+		return reflection::getTypeSystem().registerStructType( name, baseName, code );
 	}
 
 	const reflection::TypeBase* reflection::getTypeOf( const string& typeName )
@@ -24,6 +75,10 @@ namespace tiki
 		{
 		}
 
+		TypeBase::~TypeBase()
+		{
+		}
+
 		//////////////////////////////////////////////////////////////////////////
 		// ValueType
 		ValueType::ValueType( const string& name, uint size, ValueTypeVariant variant )
@@ -35,6 +90,10 @@ namespace tiki
 		// MemberBase
 		MemberBase::MemberBase( const string& name, const TypeBase* pContainingType )
 			: m_name( name ), m_pContainingType( pContainingType )
+		{
+		}
+
+		MemberBase::~MemberBase()
 		{
 		}
 
@@ -61,15 +120,23 @@ namespace tiki
 
 		//////////////////////////////////////////////////////////////////////////
 		// StructType
-		StructType::StructType( const string& name, const string& structString, const StructType* pBaseType )
-			: TypeBase( name, pBaseType )
+		StructType::StructType( const string& name, const string& baseName, const string& code )
+			: TypeBase( name, nullptr )
 		{
 			m_size			= 0u;
 			m_alignment		= 0u;
-			m_structString	= structString;
+			m_baseName		= baseName;
+			m_code			= code;
+		}
+		
+		void StructType::initialize()
+		{
+			TypeSystem& typeSystem = reflection::getTypeSystem();
+
+			setBaseType( typeSystem.getTypeByName( m_baseName ) );
 
 			Array< string > fields;
-			m_structString.split( fields, ";" );
+			m_code.split( fields, ";" );
 
 			for (uint i = 0u; i < fields.getCount(); ++i)
 			{
@@ -192,6 +259,11 @@ namespace tiki
 		void TypeSystem::initialize()
 		{
 			initializeValueTypes();
+
+			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
+			{
+				m_structTypes[ i ]->initialize();
+			} 
 		}
 
 		void TypeSystem::shutdown()
@@ -226,7 +298,7 @@ namespace tiki
 
 		const ValueType* TypeSystem::registerValueType( const string& name, uint size, ValueTypeVariant variant )
 		{
-			const ValueType* pType = TIKI_NEW ValueType( name, size, variant );
+			ValueType* pType = TIKI_NEW ValueType( name, size, variant );
 
 			m_types.add( pType );
 			m_valueTypes.add( pType );

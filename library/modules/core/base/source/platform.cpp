@@ -6,6 +6,10 @@
 #include "tiki/base/iopath.hpp"
 #include "tiki/base/string.hpp"
 
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+#	include "tiki/base/reflection.hpp"
+#endif
+
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 
 #include <windows.h>
@@ -24,6 +28,8 @@ int main( int argc, char** argv )
 	} 
 	
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+	tiki::reflection::initialize();
+
 	{
 		const tiki::string currentPath = tiki::path::getCurrentDir();
 		const tiki::string exePath = tiki::path::getExecutablePath();
@@ -40,19 +46,14 @@ int main( int argc, char** argv )
 		s_arguments.dispose();
 	}
 
-#if TIKI_DISABLED( TIKI_BUILD_TOOLS )
-	tiki::debug::dumpMemoryStats();
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+	tiki::reflection::shutdown();
 #endif
-	
+
+	tiki::debug::dumpMemoryStats();
+
 	return returnValue;
 }
-
-//int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow )
-//{
-//	s_instanceHandle	= (tiki::InstanceHandle)hInstance;
-//
-
-//}
 
 namespace tiki
 {

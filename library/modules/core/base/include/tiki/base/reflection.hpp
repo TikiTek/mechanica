@@ -19,7 +19,7 @@
 		{																									\
 			Definition() 																					\
 			{																								\
-				pType = ::tiki::reflection::getTypeSystem().registerStructType(								\
+				pType = ::tiki::reflection::registerStructType(												\
 					#name,																					\
 					nullptr,																				\
 					TIKI_STRING( __VA_ARGS__ )																\
@@ -102,18 +102,22 @@ namespace tiki
 										TypeBase( const string& name, const TypeBase* pBaseType );
 			virtual						~TypeBase();
 
-			const string&				getName() const { return m_name; }
-			const TypeBase*				getBaseType() const { return m_pBaseType; }
+			const string&				getName() const		{ return m_name; }
+			const TypeBase*				getBaseType() const	{ return m_pBaseType; }
 
 			virtual TypeBaseLeaf		getLeaf() const = 0;
 
 			virtual uint				getAlignment() const = 0;
 			virtual uint				getSize() const = 0;
 
+		protected:
+
+			void						setBaseType( const TypeBase* pBaseType ) { m_pBaseType = pBaseType; }
+
 		private:
 
-			string							m_name;
-			const TypeBase*					m_pBaseType;
+			string				m_name;
+			const TypeBase*		m_pBaseType;
 
 		};
 
@@ -218,7 +222,7 @@ namespace tiki
 		{
 		public:
 
-			StructType( const string& name, const string& structString, const StructType* pBaseType );
+			StructType( const string& name, const string& baseName, const string& code );
 
 			void						initialize();
 
@@ -231,7 +235,8 @@ namespace tiki
 
 		private:
 
-			string						m_structString;
+			string						m_baseName;
+			string						m_code;
 
 			uint						m_size;
 			uint						m_alignment;
@@ -240,34 +245,13 @@ namespace tiki
 
 		};
 
-		class TypeSystem
-		{
-			TIKI_NONCOPYABLE_WITHCTOR_CLASS( TypeSystem );
+		void				initialize();
+		void				shutdown();
 
-		public:
+		const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
+		const StructType*	registerStructType( const string& name, const string& baseName, const string& code );
 
-			void				initialize();
-			void				shutdown();
-
-			const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
-			const StructType*	registerStructType( const string& name, const string& baseName, const string& code );
-
-			const TypeBase*		getTypeByName( const string& name ) const;
-			const ValueType*	getValueTypeByName( const string& name ) const;
-			const StructType*	getStructTypeByName( const string& name ) const;
-			
-		private:
-
-			List< const TypeBase* >		m_types;
-			List< const ValueType* >	m_valueTypes;
-			List< const StructType* >	m_structTypes;
-
-			void						initializeValueTypes();
-
-		};
-
-		TypeSystem&		getTypeSystem();
-		const TypeBase*	getTypeOf( const string& typeName );
+		const TypeBase*		getTypeOf( const string& typeName );
 	}
 }
 #endif
