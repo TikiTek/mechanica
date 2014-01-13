@@ -128,12 +128,20 @@ namespace tiki
 			m_baseName		= baseName;
 			m_code			= code;
 		}
-		
+
+		StructType::~StructType()
+		{
+			for (uint i = 0u; i < m_fields.getCount(); ++i)
+			{
+				TIKI_DEL m_fields[ i ];
+			}
+		}
+	
 		void StructType::initialize()
 		{
-			TypeSystem& typeSystem = reflection::getTypeSystem();
-
-			setBaseType( typeSystem.getTypeByName( m_baseName ) );
+			setBaseType(
+				reflection::getTypeSystem().getTypeByName( m_baseName )
+			);
 
 			Array< string > fields;
 			m_code.split( fields, ";" );
@@ -308,9 +316,12 @@ namespace tiki
 
 		const StructType* TypeSystem::registerStructType( const string& name, const string& baseName, const string& code )
 		{
-			//const StructType* pType = TIKI_NEW StructType( name, code );
+			StructType* pType = TIKI_NEW StructType( name, baseName, code );
 
-			return nullptr;
+			m_types.add( pType );
+			m_structTypes.add( pType );
+
+			return pType;
 		}
 
 		void TypeSystem::initializeValueTypes()

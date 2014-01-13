@@ -223,6 +223,7 @@ namespace tiki
 		public:
 
 			StructType( const string& name, const string& baseName, const string& code );
+			~StructType();
 
 			void						initialize();
 
