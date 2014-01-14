@@ -1,62 +1,92 @@
 #include "tiki/materialconverter/toolmaterial.hpp"
 
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/reflection.hpp"
+#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/toolbase/tikixml.hpp"
 
 namespace tiki
 {
 	ToolMaterial::ToolMaterial()
 	{
-
+		m_pDataType		= nullptr;
 	}
 
 	ToolMaterial::~ToolMaterial()
 	{
-
+		TIKI_ASSERT( m_pDataType == nullptr );
 	}
 
 	bool ToolMaterial::create( const string& fileName )
 	{
-		m_xml.create( fileName );
+		TikiXml xml;
+		xml.create( fileName );
 
-		//const XmlElement* pAsset = m_xml.findNodeByName( "tikiasset" );
-		//if( !pAsset ) { TIKI_ASSERT( false ); return false; }
-		//	
-		//const XmlElement* pShader = m_xml.findFirstChild( "vertex", pAsset );
-		//if( !pShader ) { TIKI_ASSERT( false ); return false; }
+		const XmlElement* pRootNode = xml.findNodeByName( "tikimaterial" );
+		if ( pRootNode == nullptr )
+		{
+			xml.dispose();
+			return false;
+		}
+		const XmlElement* pTypeNode = xml.findFirstChild( "type", pRootNode );
+		if ( pTypeNode == nullptr )
+		{
+			xml.dispose();
+			return false;
+		}
 
-		//const XmlAttribute* pContent = m_xml.findAttributeByName( "shader", pShader );
-		//if( !pContent ) { TIKI_ASSERT( false ); return false; }
-		//m_vertexShader = pContent->content;
+		const reflection::TypeBase* pTypeBase = reflection::getTypeOf( pTypeNode->content );
+		if ( pTypeBase == nullptr || pTypeBase->getLeaf() != reflection::TypeBaseLeaf_StructType )
+		{
+			xml.dispose();
+			return false;
+		}
+		m_pDataType = static_cast< const reflection::StructType* >( pTypeBase );
 
-		//pShader = m_xml.findFirstChild( "pixel", pAsset );
-		//if( !pShader ) { TIKI_ASSERT( false ); return false; }
+		const XmlElement* pValueNode = xml.findFirstChild( "field", pRootNode );
+		while ( pValueNode )
+		{
+			const XmlAttribute* pNameAtt = xml.findAttributeByName( "name", pValueNode );
+			if ( pNameAtt == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[materialconverter] Could not find 'name' attribute of field.\n" );
+				continue;
+			}
 
-		//pContent = m_xml.findAttributeByName( "shader", pShader );
-		//if( !pContent ) { TIKI_ASSERT( false ); return false; }
-		//m_pixelShader = pContent->content;
+			const XmlAttribute* pTypeAtt = xml.findAttributeByName( "type", pValueNode );
+			if ( pTypeAtt == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[materialconverter] Field with name '%s' has no 'type' attribute.\n", pNameAtt->content );
+				continue;
+			}
 
-		//const XmlElement* pTexture = m_xml.findFirstChild( "texture", pAsset );
-		//while( pTexture )
-		//{
-		//	const XmlAttribute* pFile = m_xml.findAttributeByName( "file", pTexture );
-		//	const XmlAttribute* pSlot = m_xml.findAttributeByName( "slot", pTexture );
+			const reflection::FieldMember* pField = m_pDataType->getFieldByName( pNameAtt->content );
+			if ( pField == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[materialconverter] Field with name '%s' is not a member of Type: '%s'.\n", pNameAtt->content, m_pDataType->getName().cStr() );
+				continue;
+			}
 
-		//	TIKI_ASSERT( pFile );
-		//	TIKI_ASSERT( pSlot );
+			const string typeString = pTypeAtt->content;
+			if ( typeString == "resource" )
+			{
 
-		//	TextureAsset asset;
-		//	asset.fileName = pFile->content;
-		//	asset.slot = ParseString::parseUInt32( pSlot->content );
-		//	m_assets.add( asset );
+			}
 
-		//	pTexture = m_xml.findNext( "texture", pTexture );
-		//}
+			pValueNode = xml.findNext( "field", pValueNode );
+		}
 
+		xml.dispose();
 		return true;
 	}
 
 	void ToolMaterial::dispose()
 	{
-		m_xml.dispose();
+		m_effectData.dispose();
 	}
+
+	bool ToolMaterial::writeResource( ResourceWriter& writer ) const
+	{
+		return false;
+	}
+
 }

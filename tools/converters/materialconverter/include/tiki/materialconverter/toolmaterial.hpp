@@ -1,15 +1,20 @@
 #ifndef TIKI_TOOLMATERIAL_HPP__
 #define TIKI_TOOLMATERIAL_HPP__
 
-#include "tiki/base/assert.hpp"
+#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/tikixml.hpp"
 
 namespace tiki
 {
+	class ResourceWriter;
+
+	namespace reflection
+	{
+		class FieldMember;
+		class StructType;
+	}
+
 	class ToolMaterial
 	{
 	public:
@@ -20,11 +25,12 @@ namespace tiki
 		bool		create( const string& fileName );
 		void		dispose();
 
+		bool		writeResource( ResourceWriter& writer ) const;
+
 	private:
 
-		TikiXml		m_xml;
-
-
+		const reflection::StructType*							m_pDataType;
+		SortedSizedMap< const reflection::FieldMember*, int >	m_effectData;
 
 	};
 }
