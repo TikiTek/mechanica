@@ -19,18 +19,26 @@ namespace tiki
 	{
 	public:
 
-					ToolMaterial();
-					~ToolMaterial();
+						ToolMaterial();
+						~ToolMaterial();
 
-		bool		create( const string& fileName );
-		void		dispose();
+		bool			create( const string& fileName );
+		void			dispose();
 
-		bool		writeResource( ResourceWriter& writer ) const;
+		ReferenceKey	writeResource( ResourceWriter& writer ) const;
 
 	private:
 
-		const reflection::StructType*							m_pDataType;
-		SortedSizedMap< const reflection::FieldMember*, int >	m_effectData;
+		struct MaterialField
+		{
+			string	name;
+			string	type;
+			string	value;
+		};
+		typedef SortedSizedMap< const reflection::FieldMember*, MaterialField > MaterialFieldMap;
+
+		const reflection::StructType*	m_pDataType;
+		MaterialFieldMap				m_effectData;
 
 	};
 }
