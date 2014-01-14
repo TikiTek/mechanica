@@ -1,5 +1,5 @@
 <tikiasset>
   <input file="test.dae" type="model" />
-  <param key="material" value="test.material:0E05A955" />
+  <param key="material" value="MATE:test.material:0E05A955" />
   <param key="scale" value="0.1" />
 </tikiasset>

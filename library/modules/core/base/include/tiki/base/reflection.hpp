@@ -11,6 +11,7 @@
 
 #	define TIKI_REFLECTION_STRUCT( name, ... ) struct name													\
 	{																										\
+	public:																									\
 		__VA_ARGS__																							\
 		const ::tiki::reflection::StructType*			getType() const { return s_typeDefinition.pType; }	\
 		static const ::tiki::reflection::StructType*	getStaticType()	{ return s_typeDefinition.pType; }	\
@@ -25,6 +26,29 @@
 					TIKI_STRING( __VA_ARGS__ )																\
 				);																							\
 			}																								\
+			const ::tiki::reflection::StructType* pType;													\
+		} s_typeDefinition;																					\
+	}
+
+#	define TIKI_REFLECTION_INHERITANCE_STRUCT( name, base_name, ... ) struct name : public base_name		\
+	{																										\
+	public:																									\
+		__VA_ARGS__																							\
+		const ::tiki::reflection::StructType*			getType() const { return s_typeDefinition.pType; }	\
+		static const ::tiki::reflection::StructType*	getStaticType()	{ return s_typeDefinition.pType; }	\
+	private:																								\
+		static struct Definition																			\
+		{																									\
+			Definition() 																					\
+			{																								\
+				pType = ::tiki::reflection::registerStructType(												\
+					#name,																					\
+					#base_name,																				\
+					TIKI_STRING( __VA_ARGS__ )																\
+				);																							\
+			}																								\
+			void constructor( void* pObject )	{ ::new( pObject ) name(); }								\
+			void destructor( void* pObject )	{ ((name*)pObject)->~name(); }								\
 			const ::tiki::reflection::StructType* pType;													\
 		} s_typeDefinition;																					\
 	}
@@ -49,6 +73,9 @@ namespace tiki
 {
 	namespace reflection
 	{
+		typedef void(*TypeConstructor)(void*);
+		typedef void(*TypeDestructor)(void*);
+
 		enum TypeMemberFlag
 		{
 			TypeMemberFlag_None			= 0u,
@@ -99,43 +126,19 @@ namespace tiki
 		{
 		public:
 
-										TypeBase( const string& name, const TypeBase* pBaseType );
+										TypeBase( const string& name );
 			virtual						~TypeBase();
 
 			const string&				getName() const		{ return m_name; }
-			const TypeBase*				getBaseType() const	{ return m_pBaseType; }
 
 			virtual TypeBaseLeaf		getLeaf() const = 0;
 
 			virtual uint				getAlignment() const = 0;
 			virtual uint				getSize() const = 0;
 
-		protected:
-
-			void						setBaseType( const TypeBase* pBaseType ) { m_pBaseType = pBaseType; }
-
 		private:
 
 			string				m_name;
-			const TypeBase*		m_pBaseType;
-
-		};
-
-		class ValueType : public TypeBase
-		{
-		public:
-
-			ValueType( const string& name, uint size, ValueTypeVariant variant );
-
-			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_ValueType; }
-			virtual uint				getAlignment() const	{ return m_size; }
-			virtual uint				getSize() const			{ return m_size; }
-			ValueTypeVariant			getTypeVariant() const	{ return m_variant; }
-			
-		private:
-
-			uint				m_size;
-			ValueTypeVariant	m_variant;
 
 		};
 
@@ -218,16 +221,40 @@ namespace tiki
 
 		};
 
+		class ValueType : public TypeBase
+		{
+		public:
+
+			ValueType( const string& name, uint size, ValueTypeVariant variant );
+
+			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_ValueType; }
+			virtual uint				getAlignment() const	{ return m_size; }
+			virtual uint				getSize() const			{ return m_size; }
+			ValueTypeVariant			getTypeVariant() const	{ return m_variant; }
+
+		private:
+
+			uint				m_size;
+			ValueTypeVariant	m_variant;
+
+		};
+
 		class StructType : public TypeBase
 		{
 		public:
 
-			StructType( const string& name, const string& baseName, const string& code );
+			StructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor );
 			~StructType();
 
 			void						initialize();
 
+			void*						createInstance() const;
+			void						disposeInstance( void* pObject ) const;
+
 			const FieldMember*			getFieldByName( const string& name ) const;
+			const FieldMember*			getFieldByIndex( uint index ) const;
+			uint						getFieldCount() const;
+
 			void						findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const;
 
 			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_StructType; }
@@ -242,7 +269,11 @@ namespace tiki
 			uint						m_size;
 			uint						m_alignment;
 
+			const StructType*			m_pBaseType;
 			List< FieldMember* >		m_fields;
+
+			TypeConstructor				m_pFuncConstructor;
+			TypeDestructor				m_pFuncDestructor;
 
 		};
 
@@ -250,7 +281,7 @@ namespace tiki
 		void				shutdown();
 
 		const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
-		const StructType*	registerStructType( const string& name, const string& baseName, const string& code );
+		const StructType*	registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor = nullptr, TypeDestructor pFuncDestructor = nullptr );
 
 		const TypeBase*		getTypeOf( const string& typeName );
 	}

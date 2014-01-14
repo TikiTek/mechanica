@@ -6,6 +6,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
 
@@ -96,33 +97,8 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
 			}
 
-			ReferenceKey materialKeyData;
-			const ReferenceKey* pMaterialKey = nullptr;
-			if ( material.isEmpty() == false )
-			{
-				crc32 resourceKey = InvalidCrc32;
-				string resourceName;
-
-				if ( material.contains( ':' ) )
-				{
-					const uint index = material.indexOf( ':' );
-					const string hexKey = material.substring( index + 1u ).toLower();
-
-					resourceKey = strtol( hexKey.cStr(), nullptr, 16 );
-					resourceName = material.substring( 0u, index );
-				}
-				else
-				{
-					resourceKey = crcString( material );
-					resourceName = material;
-				}
-
-				materialKeyData = writer.addResourceLink( resourceName, resourceKey, TIKI_FOURCC( 'M', 'A', 'T', 'E' ) );
-				pMaterialKey = &materialKeyData;
-			}
-
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeReference( pMaterialKey );
+			writeResourceReference( writer, material );
 			writer.writeReference( pHierarchyKey );
 			writer.writeUInt32( model.getGeometyCount() );
 			for (uint i = 0u; i < geometryKeys.getCount(); ++i)

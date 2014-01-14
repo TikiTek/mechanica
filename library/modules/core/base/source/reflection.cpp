@@ -16,7 +16,7 @@ namespace tiki
 			void				shutdown();
 
 			const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
-			const StructType*	registerStructType( const string& name, const string& baseName, const string& code );
+			const StructType*	registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor );
 
 			const TypeBase*		getTypeByName( const string& name ) const;
 			const ValueType*	getValueTypeByName( const string& name ) const;
@@ -56,9 +56,9 @@ namespace tiki
 		return reflection::getTypeSystem().registerValueType( name, size, variant );
 	}
 
-	const reflection::StructType* reflection::registerStructType( const string& name, const string& baseName, const string& code )
+	const reflection::StructType* reflection::registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor /*= nullptr*/, TypeDestructor pFuncDestructor /*= nullptr*/ )
 	{
-		return reflection::getTypeSystem().registerStructType( name, baseName, code );
+		return reflection::getTypeSystem().registerStructType( name, baseName, code, pFuncConstructor, pFuncDestructor );
 	}
 
 	const reflection::TypeBase* reflection::getTypeOf( const string& typeName )
@@ -70,20 +70,13 @@ namespace tiki
 	{
 		//////////////////////////////////////////////////////////////////////////
 		// TypeBase
-		TypeBase::TypeBase( const string& name, const TypeBase* pBaseType )
-			: m_name( name ), m_pBaseType( pBaseType )
+		TypeBase::TypeBase( const string& name )
+			: m_name( name )
 		{
 		}
 
 		TypeBase::~TypeBase()
 		{
-		}
-
-		//////////////////////////////////////////////////////////////////////////
-		// ValueType
-		ValueType::ValueType( const string& name, uint size, ValueTypeVariant variant )
-			: TypeBase( name, nullptr ), m_size( size ), m_variant( variant )
-		{			
 		}
 
 		//////////////////////////////////////////////////////////////////////////
@@ -117,16 +110,23 @@ namespace tiki
 			memory::copy( pTarget, pValue, size );
 		}
 
+		//////////////////////////////////////////////////////////////////////////
+		// ValueType
+		ValueType::ValueType( const string& name, uint size, ValueTypeVariant variant )
+			: TypeBase( name ), m_size( size ), m_variant( variant )
+		{			
+		}
 
 		//////////////////////////////////////////////////////////////////////////
 		// StructType
-		StructType::StructType( const string& name, const string& baseName, const string& code )
-			: TypeBase( name, nullptr )
+		StructType::StructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor )
+			: TypeBase( name ), m_pFuncConstructor( pFuncConstructor ), m_pFuncDestructor( pFuncDestructor )
 		{
 			m_size			= 0u;
 			m_alignment		= 0u;
 			m_baseName		= baseName;
 			m_code			= code;
+			m_pBaseType		= nullptr;
 		}
 
 		StructType::~StructType()
@@ -139,9 +139,7 @@ namespace tiki
 	
 		void StructType::initialize()
 		{
-			setBaseType(
-				reflection::getTypeSystem().getTypeByName( m_baseName )
-			);
+			m_pBaseType = reflection::getTypeSystem().getStructTypeByName( m_baseName );
 
 			Array< string > fields;
 			m_code.split( fields, ";" );
@@ -221,6 +219,31 @@ namespace tiki
 			fields.dispose();
 		}
 
+		void* StructType::createInstance() const
+		{
+			void* pData = memory::allocAlign( m_size );
+
+			if ( m_pFuncConstructor != nullptr )
+			{
+				m_pFuncConstructor( pData );
+			}
+
+			return pData;
+		}
+		
+		void StructType::disposeInstance( void* pObject ) const
+		{
+			if ( pObject != nullptr )
+			{
+				if ( m_pFuncDestructor != nullptr )
+				{
+					m_pFuncDestructor( pObject );
+				}
+
+				memory::freeAlign( pObject );
+			}
+		}
+
 		const FieldMember* StructType::getFieldByName( const string& name ) const
 		{
 			for (uint i = 0u; i < m_fields.getCount(); ++i)
@@ -231,7 +254,41 @@ namespace tiki
 				}
 			}
 
+			if ( m_pBaseType != nullptr )
+			{
+				return m_pBaseType->getFieldByName( name );
+			}
+
 			return nullptr;
+		}
+
+		const FieldMember* StructType::getFieldByIndex( uint index ) const
+		{			
+			if ( m_pBaseType != nullptr )
+			{
+				const uint localIndex = index - m_pBaseType->getFieldCount();
+
+				if ( localIndex < m_fields.getCount() )
+				{
+					return m_fields[ localIndex ];
+				}
+				else
+				{
+					return m_pBaseType->getFieldByIndex( index );
+				}
+			}
+
+			return m_fields[ index ];
+		}
+
+		uint StructType::getFieldCount() const
+		{
+			uint count = m_fields.getCount();
+			if ( m_pBaseType != nullptr )
+			{
+				count += m_pBaseType->getFieldCount();
+			}
+			return count;
 		}
 
 		void StructType::findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const
@@ -304,6 +361,32 @@ namespace tiki
 			return nullptr;
 		}
 
+		const ValueType* TypeSystem::getValueTypeByName( const string& name ) const
+		{
+			for (uint i = 0u; i < m_valueTypes.getCount(); ++i)
+			{
+				if ( m_valueTypes[ i ]->getName() == name )
+				{
+					return m_valueTypes[ i ];
+				}
+			}
+
+			return nullptr;
+		}
+
+		const StructType* TypeSystem::getStructTypeByName( const string& name ) const
+		{
+			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
+			{
+				if ( m_structTypes[ i ]->getName() == name )
+				{
+					return m_structTypes[ i ];
+				}
+			}
+
+			return nullptr;
+		}
+
 		const ValueType* TypeSystem::registerValueType( const string& name, uint size, ValueTypeVariant variant )
 		{
 			ValueType* pType = TIKI_NEW ValueType( name, size, variant );
@@ -314,9 +397,9 @@ namespace tiki
 			return pType;
 		}
 
-		const StructType* TypeSystem::registerStructType( const string& name, const string& baseName, const string& code )
+		const StructType* TypeSystem::registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor )
 		{
-			StructType* pType = TIKI_NEW StructType( name, baseName, code );
+			StructType* pType = TIKI_NEW StructType( name, baseName, code, pFuncConstructor, pFuncDestructor );
 
 			m_types.add( pType );
 			m_structTypes.add( pType );

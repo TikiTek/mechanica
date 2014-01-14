@@ -3,21 +3,10 @@
 
 #include "tiki/resource/resource.hpp"
 
+#include "tiki/renderer/rendereffectdata.hpp"
+
 namespace tiki
 {
-	struct MaterialBaseData
-	{
-		enum
-		{
-			InvalidTextureOffset = 0xffu
-		};
-
-		uint8	renderEffectId;
-		uint8	renderPassMask;
-		uint8	renderFlags;
-		uint8	defaultTextureOffset;
-	};
-
 	class Material : public Resource
 	{
 		friend class GraphicsContext;
@@ -29,7 +18,7 @@ namespace tiki
 		static void				registerResourceType( ResourceManager& resourceManager );
 		static void				unregisterResourceType( ResourceManager& resourceManager );
 
-		const MaterialBaseData*	getData() const { return m_pData; }
+		const RenderEffectData*	getData() const { return m_pData; }
 
 	protected:
 
@@ -41,7 +30,7 @@ namespace tiki
 								Material();
 		virtual					~Material();
 
-		const MaterialBaseData*	m_pData;
+		const RenderEffectData*	m_pData;
 
 	};
 }
