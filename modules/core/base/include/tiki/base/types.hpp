@@ -73,9 +73,9 @@ namespace tiki
 	typedef const wchar_t*		wcstring;
 }
 
-#define TIKI_COUNT( var ) ( sizeof( var ) / sizeof( *var ) )
-#define TIKI_OFFSETOF( s, m )   (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
-#define TIKI_CONTAINEROF( type, ptr, atr ) (type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
+#define TIKI_COUNT( var )					(sizeof(var) / sizeof(*var))
+#define TIKI_OFFSETOF( type, member )		((uint)&reinterpret_cast<const volatile char&>((((type*)0)->member)))
+//#define TIKI_CONTAINEROF( type, ptr, atr )	(type*)((size_t)ptr - TIKI_OFFSETOF( type, atr ))
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 #	define TIKI_SIZE_T_MAX	0xffffffff
