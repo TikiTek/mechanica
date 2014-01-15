@@ -1,6 +1,8 @@
 
 #include "tiki/base/reflection.hpp"
 
+#include "trexpp.h"
+
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
@@ -139,34 +141,86 @@ namespace tiki
 	
 		void StructType::initialize()
 		{
-			m_pBaseType = reflection::getTypeSystem().getStructTypeByName( m_baseName );
+			string code = m_code;
+			code = code.replace( '\n', ' ' );
+			code = code.replace( '\t', ' ' );
+			code = code.replace( '\r', ' ' );
+
+			while ( code.countSubstring( "  " ) > 0u )
+			{
+				code = code.replace( "  ", " " );
+			}
+
+			if ( m_baseName.isEmpty() )
+			{
+				m_pBaseType = nullptr;
+			}
+			else
+			{
+				m_pBaseType = reflection::getTypeSystem().getStructTypeByName( m_baseName );
+			}
+
+			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,&<>*)]+\\}", getName().cStr() );
+
+			TRexpp regex;
+			regex.Compile( regexString.cStr() );
+
+			const char* pSearchBegin;
+			const char* pSearchEnd;
+			if ( regex.Search( code.cStr(), &pSearchBegin, &pSearchEnd ) )
+			{
+				//remove constructor
+				code = code.replace( string( pSearchBegin, pSearchEnd - pSearchBegin ), "" );
+			}
 
 			Array< string > fields;
-			m_code.split( fields, ";" );
+			code.split( fields, ";" );
 
 			for (uint i = 0u; i < fields.getCount(); ++i)
 			{
-				string field = fields[ i ].replace( '\t', ' ' ).trim();
+				string field = fields[ i ].trim();
 
 				if ( field.isEmpty() )
 				{
 					continue;
 				}
 
-				int firstSpaceIndex		= field.indexOf( ' ' );
 				int lastSpaceIndex		= field.lastIndexOf( ' ' );
-
-				if ( firstSpaceIndex == lastSpaceIndex )
-				{
-					firstSpaceIndex = 0u;
-				}
 
 				uint fieldSize		= 0u;
 				uint fieldAlign		= 0u;
 
 				uint32 flags			= TypeMemberFlag_Public;
 				string fieldName		= field.substring( lastSpaceIndex + 1u );
-				string typeName			= field.substring( firstSpaceIndex, lastSpaceIndex - firstSpaceIndex ).replace( " ", "" );
+				string typeName			= field.substring( 0u, lastSpaceIndex );
+
+				bool found = true;
+				while ( found )
+				{
+					if ( typeName.startsWith( "const " ) )
+					{
+						flags |= TypeMemberFlag_Const;
+					}
+					else if ( typeName.startsWith( "volatile " ) )
+					{
+						flags |= TypeMemberFlag_Volatile;
+					}
+					else if ( typeName.startsWith( "mutable " ) )
+					{
+						flags |= TypeMemberFlag_Mutable;
+					}
+					else
+					{
+						found = false;
+					}
+
+					if ( found == true )
+					{
+						int firstSpaceIndex = typeName.indexOf( ' ' );
+						typeName = typeName.substring( firstSpaceIndex );
+					}
+				}
+				typeName = typeName.replace( " ", "" );
 
 				if ( typeName.endsWith( '*' ) )
 				{
@@ -194,20 +248,6 @@ namespace tiki
 					fieldAlign	= pType->getAlignment();
 				}
 
-				if ( firstSpaceIndex != 0u )
-				{
-					string typeModifier	= field.substring( 0u, firstSpaceIndex ).replace( " ", "" );
-
-					if ( typeModifier == "const" )
-					{
-						flags |= TypeMemberFlag_Const;
-					}
-					else
-					{
-						TIKI_BREAK( "only const supported." );
-					}
-				}
-
 				m_size		 = alignValue( m_size, fieldAlign );
 
 				m_fields.add( TIKI_NEW FieldMember( fieldName, this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), m_size ) );
@@ -221,7 +261,7 @@ namespace tiki
 
 		void* StructType::createInstance() const
 		{
-			void* pData = memory::allocAlign( m_size );
+			void* pData = memory::allocAlign( getSize() );
 
 			if ( m_pFuncConstructor != nullptr )
 			{
@@ -291,6 +331,24 @@ namespace tiki
 			return count;
 		}
 
+		uint StructType::getAlignment() const
+		{
+			if ( m_pBaseType != nullptr )
+			{
+				return TIKI_MAX( m_alignment, m_pBaseType->getAlignment() );
+			}
+			return m_alignment;
+		}
+
+		uint StructType::getSize() const
+		{
+			if ( m_pBaseType != nullptr )
+			{
+				return TIKI_MAX( m_size, m_pBaseType->getSize() );
+			}
+			return m_size;
+		}
+		
 		void StructType::findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const
 		{
 			bool lastField	= false;

@@ -58,16 +58,17 @@ namespace tiki
 
 			writer.openResource( params.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
 
+			const ReferenceKey materialDataKey = material.writeResource( writer );
+			//writer.addResourceLink( "checker.texture", crcString( "checker.texture" ), TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
+
+			//writer.writeUInt8( 0u );	// renderEffectId
+			//writer.writeUInt8( 1u );	// renderPassMask
+			//writer.writeUInt8( 0u );	// renderFlags
+			//writer.writeUInt8( 4u );	// defaultTextureOffset
+			//writer.writeReference( &textureKey );
+
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-
-			const ReferenceKey& textureKey = writer.addResourceLink( "checker.texture", crcString( "checker.texture" ), TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
-
-			writer.writeUInt8( 0u );	// renderEffectId
-			writer.writeUInt8( 1u );	// renderPassMask
-			writer.writeUInt8( 0u );	// renderFlags
-			writer.writeUInt8( 4u );	// defaultTextureOffset
-			writer.writeReference( &textureKey );
-
+			writer.writeReference( &materialDataKey );
 			writer.closeDataSection();
 
 			//const uint vertexLength = material.getVertexShader().length();

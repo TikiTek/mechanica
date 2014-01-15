@@ -4,11 +4,10 @@
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/resourcewriter.hpp"
 
 namespace tiki
 {
-	class ResourceWriter;
-
 	namespace reflection
 	{
 		class FieldMember;

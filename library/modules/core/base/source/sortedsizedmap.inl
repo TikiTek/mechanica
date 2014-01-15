@@ -27,7 +27,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData		= static_cast< Pair* >( memory::allocAlign( sizeof( Pair ) * size ) );
+		m_pData		= static_cast< Pair* >( memory::newArray< Pair >( size ) );
 		m_count		= 0u;
 		m_capacity	= size;
 	}
@@ -37,7 +37,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::freeAlign( m_pData );
+			memory::deleteArray( m_pData, m_capacity );
 		}
 
 		m_pData		= nullptr;

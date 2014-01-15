@@ -229,11 +229,12 @@ namespace tiki
 		uint offsetNew = 0;
 		while (i < count)
 		{
-			const uint index = indexOf(oldValue, offsetOld);
+			const uint index		= indexOf(oldValue, offsetOld);
+			const uint oldDifferent	= index - offsetOld;
 
 			memory::copy(str.data->pData + offsetNew, data->pData + offsetOld, sizeof(TChar) * (index - offsetOld));
-			offsetOld += index - offsetOld;
-			offsetNew += index - offsetNew;
+			offsetOld += oldDifferent;
+			offsetNew += oldDifferent;
 
 			memory::copy(str.data->pData + offsetNew, newValue.data->pData, sizeof(TChar) * newValue.data->stringLength);
 			offsetOld += oldValue.data->stringLength;
@@ -242,7 +243,7 @@ namespace tiki
 			i++;
 		}
 
-		memory::copy( str.data->pData + offsetNew, data->pData + offsetOld, sizeof(TChar) * (str.data->stringLength - offsetNew));
+		memory::copy( str.data->pData + offsetNew, data->pData + offsetOld, sizeof(TChar) * (data->stringLength - offsetOld));
 
 		return str;
 	}

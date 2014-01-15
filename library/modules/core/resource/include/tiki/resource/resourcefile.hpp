@@ -103,6 +103,11 @@ namespace tiki
 	{
 	public:
 
+		ResRef()
+			: m_pRef( nullptr )
+		{
+		}
+
 		ResRef( const T* pRef )
 			: m_pRef( pRef )
 		{
@@ -119,19 +124,19 @@ namespace tiki
 		}
 
 		TIKI_FORCE_INLINE const T*	getData() const { return m_pRef; }
-
-		//T*		operator() const { return m_pRef; }
 		TIKI_FORCE_INLINE const T*	operator->() const { return m_pRef; }
 
 	private:
 
+#if TIKI_ENABLED( TIKI_BUILD_64BIT )
+		const T*		m_pRef;
+#else
 		TIKI_PRE_ALIGN( 8 )	struct
 		{
 			const T*	m_pRef;
-#if TIKI_DISABLED( TIKI_BUILD_64BIT )
 			void*		m_pPadding;
-#endif
 		} TIKI_POST_ALIGN( 8 );
+#endif
 	};
 
 	namespace resource

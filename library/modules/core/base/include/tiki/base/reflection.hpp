@@ -44,11 +44,13 @@
 				pType = ::tiki::reflection::registerStructType(												\
 					#name,																					\
 					#base_name,																				\
-					TIKI_STRING( __VA_ARGS__ )																\
+					TIKI_STRING( __VA_ARGS__ ),																\
+					&constructor,																			\
+					&destructor																				\
 				);																							\
 			}																								\
-			void constructor( void* pObject )	{ ::new( pObject ) name(); }								\
-			void destructor( void* pObject )	{ ((name*)pObject)->~name(); }								\
+			static void constructor( void* pObject )	{ ::new( pObject ) name(); }						\
+			static void destructor( void* pObject )		{ ((name*)pObject)->~name(); }						\
 			const ::tiki::reflection::StructType* pType;													\
 		} s_typeDefinition;																					\
 	}
@@ -82,10 +84,12 @@ namespace tiki
 
 			TypeMemberFlag_Public		= 1u << 0u,
 			TypeMemberFlag_Const		= 1u << 1u,
-			TypeMemberFlag_Pointer		= 1u << 2u,
-			TypeMemberFlag_Reference	= 1u << 3u
+			TypeMemberFlag_Volatile		= 1u << 2u,
+			TypeMemberFlag_Mutable		= 1u << 3u,			
+			TypeMemberFlag_Pointer		= 1u << 4u,
+			TypeMemberFlag_Reference	= 1u << 5u
 		};
-
+		
 		enum ValueTypeVariant
 		{
 			ValueTypeVariant_Void,
@@ -258,8 +262,8 @@ namespace tiki
 			void						findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const;
 
 			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_StructType; }
-			virtual uint				getAlignment() const	{ return m_alignment; }
-			virtual uint				getSize() const			{ return m_size; }
+			virtual uint				getAlignment() const;
+			virtual uint				getSize() const;
 
 		private:
 
