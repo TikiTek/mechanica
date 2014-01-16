@@ -8,13 +8,13 @@
 namespace tiki
 {
 	class ModelGeometry;
-	struct MaterialBaseData;
+	struct RenderEffectData;
 
 	struct RenderCommand
 	{
 		const ModelGeometry*	pGeometry;
-		const MaterialBaseData*	pMaterialData;
-		//const SkinningData*		pSkinningData;
+		const RenderEffectData*	pRenderEffectData;
+		//const SkinningData*	pSkinningData;
 		Matrix43				worldTransform;
 	};
 

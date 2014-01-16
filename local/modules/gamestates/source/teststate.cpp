@@ -123,7 +123,7 @@ namespace tiki
 					const Vector3 cameraPosition = { 0.0f, 0.0f, 5.0f };
 					frameData.mainCamera.create( cameraPosition, Quaternion::identity, projection );
 
-					m_fallbackRenderEffect.create( m_pGameRenderer->getRendererContext() );
+					m_fallbackRenderEffect.create( m_pGameRenderer->getRendererContext(), framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
 
@@ -132,7 +132,7 @@ namespace tiki
 				else
 				{
 					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
-					m_fallbackRenderEffect.dispose();
+					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					return TransitionState_Finish;
 				}

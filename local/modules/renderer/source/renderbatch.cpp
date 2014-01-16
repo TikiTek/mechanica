@@ -105,12 +105,12 @@ namespace tiki
 
 		if ( pMaterial == nullptr )
 		{
-			static MaterialBaseData fallbackMaterialData = { 0xffu, 0xffu, 0x00u, 0xffu };
-			pCommand->pMaterialData = &fallbackMaterialData;
+			static RenderEffectData fallbackRenderEffectData = { 0xffu, 0xffu, 0x00u, 0xffu };
+			pCommand->pRenderEffectData = &fallbackRenderEffectData;
 		}
 		else
 		{
-			pCommand->pMaterialData = pMaterial->getData();
+			pCommand->pRenderEffectData = pMaterial->getData();
 		}
 
 		if ( pWorldTransform == nullptr )

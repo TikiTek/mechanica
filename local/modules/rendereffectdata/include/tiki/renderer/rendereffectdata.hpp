@@ -2,16 +2,20 @@
 #ifndef __TIKI_RENDEREFFECTDATA_HPP_INCLUDED__
 #define __TIKI_RENDEREFFECTDATA_HPP_INCLUDED__
 
-#include "tiki/base/types.hpp"
 #include "tiki/base/reflection.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/renderer/rendererdefinition.hpp"
+#include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
 {
-	//enum
-	//{
-	//	InvalidTextureOffset = 0xffu
-	//};
+	class Texture;
+	typedef ResRef< Texture > TextureReference;
+
+	enum
+	{
+		RenderEffectDataInvalidTextureOffset = 0xffffu
+	};
 
 	TIKI_REFLECTION_STRUCT(
 		RenderEffectData,
