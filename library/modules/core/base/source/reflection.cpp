@@ -1,9 +1,9 @@
 
 #include "tiki/base/reflection.hpp"
 
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 #include "trexpp.h"
 
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 namespace tiki
 {
 	namespace reflection
@@ -21,8 +21,8 @@ namespace tiki
 			const StructType*	registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor );
 
 			const TypeBase*		getTypeByName( const string& name ) const;
-			const ValueType*	getValueTypeByName( const string& name ) const;
-			const StructType*	getStructTypeByName( const string& name ) const;
+			ValueType*			getValueTypeByName( const string& name ) const;
+			StructType*			getStructTypeByName( const string& name ) const;
 
 		private:
 
@@ -124,6 +124,8 @@ namespace tiki
 		StructType::StructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor )
 			: TypeBase( name ), m_pFuncConstructor( pFuncConstructor ), m_pFuncDestructor( pFuncDestructor )
 		{
+			m_isInitialized	= false;
+
 			m_size			= 0u;
 			m_alignment		= 0u;
 			m_baseName		= baseName;
@@ -137,10 +139,15 @@ namespace tiki
 			{
 				TIKI_DEL m_fields[ i ];
 			}
+
+			m_isInitialized = false;
 		}
 	
 		void StructType::initialize()
 		{
+			TIKI_ASSERT( m_isInitialized == false );
+			m_isInitialized = true;
+
 			string code = m_code;
 			code = code.replace( '\n', ' ' );
 			code = code.replace( '\t', ' ' );
@@ -151,14 +158,12 @@ namespace tiki
 				code = code.replace( "  ", " " );
 			}
 
-			if ( m_baseName.isEmpty() )
+			StructType* pBaseType = reflection::getTypeSystem().getStructTypeByName( m_baseName );
+			if ( pBaseType != nullptr && pBaseType->isInitialized() == false )
 			{
-				m_pBaseType = nullptr;
+				pBaseType->initialize();
 			}
-			else
-			{
-				m_pBaseType = reflection::getTypeSystem().getStructTypeByName( m_baseName );
-			}
+			m_pBaseType = pBaseType;
 
 			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,&<>*)]+\\}", getName().cStr() );
 
@@ -250,7 +255,7 @@ namespace tiki
 
 				m_size		 = alignValue( m_size, fieldAlign );
 
-				m_fields.add( TIKI_NEW FieldMember( fieldName, this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), m_size ) );
+				m_fields.add( TIKI_NEW FieldMember( fieldName, this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), getSize() ) );
 
 				m_size		+= fieldSize;
 				m_alignment	 = TIKI_MAX( m_alignment, fieldAlign );
@@ -344,7 +349,7 @@ namespace tiki
 		{
 			if ( m_pBaseType != nullptr )
 			{
-				return TIKI_MAX( m_size, m_pBaseType->getSize() );
+				return m_size + m_pBaseType->getSize();
 			}
 			return m_size;
 		}
@@ -385,7 +390,10 @@ namespace tiki
 
 			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
 			{
-				m_structTypes[ i ]->initialize();
+				if ( m_structTypes[ i ]->isInitialized() == false )
+				{
+					m_structTypes[ i ]->initialize();
+				}
 			} 
 		}
 
@@ -419,7 +427,7 @@ namespace tiki
 			return nullptr;
 		}
 
-		const ValueType* TypeSystem::getValueTypeByName( const string& name ) const
+		ValueType* TypeSystem::getValueTypeByName( const string& name ) const
 		{
 			for (uint i = 0u; i < m_valueTypes.getCount(); ++i)
 			{
@@ -432,7 +440,7 @@ namespace tiki
 			return nullptr;
 		}
 
-		const StructType* TypeSystem::getStructTypeByName( const string& name ) const
+		StructType* TypeSystem::getStructTypeByName( const string& name ) const
 		{
 			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
 			{

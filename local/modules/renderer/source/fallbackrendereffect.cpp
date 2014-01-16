@@ -8,6 +8,7 @@
 #include "tiki/graphicsresources/modelgeometry.hpp"
 #include "tiki/graphicsresources/shaderset.hpp"
 #include "tiki/graphicsresources/texture.hpp"
+#include "tiki/renderer/fallbackrendereffectdata.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -19,12 +20,6 @@ namespace tiki
 		GraphicsMatrix44	mvpMatrix;
 		GraphicsMatrix44	modelViewMatrix;
 	};
-
-	struct FallbackMaterialData : public MaterialBaseData
-	{
-		ResRef< Texture >	defaultTexture;
-	};
-
 
 	FallbackRenderEffect::FallbackRenderEffect()
 	{
@@ -130,21 +125,21 @@ namespace tiki
 
 				graphicsContext.setVertexInputBinding( pVertexInputBinding );
 
-				if ( command.pMaterialData != nullptr )
+				if ( command.pRenderEffectData != nullptr )
 				{
-					if ( command.pMaterialData->renderEffectId == RenderEffectId_Fallback )
+					if ( command.pRenderEffectData->renderEffectId == RenderEffectId_Fallback )
 					{
-						const FallbackMaterialData* pMaterialData = static_cast< const FallbackMaterialData* >( command.pMaterialData );
-						const Texture* pTexture = pMaterialData->defaultTexture.getData();
+						const FallbackRenderEffectData* pRenderEffectData = static_cast< const FallbackRenderEffectData* >( command.pRenderEffectData );
+						const Texture* pTexture = pRenderEffectData->defaultTexture.getData();
 
 						if ( pTexture != nullptr )
 						{
 							graphicsContext.setPixelShaderTexture( 0u, &pTexture->getTextureData() );
 						}
 					}
-					else if ( command.pMaterialData->defaultTextureOffset != MaterialBaseData::InvalidTextureOffset )
+					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectDataInvalidTextureOffset )
 					{
-						const Texture* pDefaultTexture = addPtrCast< const Texture >( command.pMaterialData, command.pMaterialData->defaultTextureOffset );
+						const Texture* pDefaultTexture = addPtrCast< const Texture >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
 
 						if ( pDefaultTexture != nullptr )
 						{

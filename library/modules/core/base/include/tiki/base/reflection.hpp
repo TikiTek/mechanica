@@ -55,6 +55,14 @@
 		} s_typeDefinition;																					\
 	}
 
+#	define TIKI_REFLECTION_VALUE_TYPE( type, size, variant ) static const struct type ## Definition			\
+	{																							\
+		type ## Definition()																	\
+		{																						\
+			::tiki::reflection::registerValueType( #type, size, ::tiki::reflection::variant );	\
+		}																						\
+	} s_ ## type ## Definition
+
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
 #	define TIKI_REFLECTION_CPPDECLARE( type_name ) type_name ::Definition type_name :: s_typeDefinition
 
@@ -64,6 +72,13 @@
 	{														\
 		__VA_ARGS__											\
 	};
+
+#	define TIKI_REFLECTION_INHERITANCE_STRUCT( name, base_name, ... ) struct name : public base_name	\
+	{																									\
+		__VA_ARGS__																						\
+	};
+
+#	define TIKI_REFLECTION_VALUE_TYPE( type, size, variant )
 
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
 #	define TIKI_REFLECTION_CPPDECLARE( type )
@@ -133,7 +148,7 @@ namespace tiki
 										TypeBase( const string& name );
 			virtual						~TypeBase();
 
-			const string&				getName() const		{ return m_name; }
+			const string&				getName() const { return m_name; }
 
 			virtual TypeBaseLeaf		getLeaf() const = 0;
 
@@ -255,17 +270,21 @@ namespace tiki
 			void*						createInstance() const;
 			void						disposeInstance( void* pObject ) const;
 
+			bool						isInitialized() const { return m_isInitialized; }
+
 			const FieldMember*			getFieldByName( const string& name ) const;
 			const FieldMember*			getFieldByIndex( uint index ) const;
 			uint						getFieldCount() const;
 
 			void						findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const;
 
-			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_StructType; }
+			virtual TypeBaseLeaf		getLeaf() const { return TypeBaseLeaf_StructType; }
 			virtual uint				getAlignment() const;
 			virtual uint				getSize() const;
 
 		private:
+
+			bool						m_isInitialized;
 
 			string						m_baseName;
 			string						m_code;

@@ -30,7 +30,7 @@ namespace tiki
 
 	bool Material::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		m_pData = static_cast< const MaterialBaseData* >( initData.pData );
+		m_pData = *(const RenderEffectData**)initData.pData;
 		return m_pData != nullptr;
 	}
 

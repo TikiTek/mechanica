@@ -4,12 +4,8 @@
 
 #include "tiki/renderer/rendereffectdata.hpp"
 
-#include "tiki/resource/resourcefile.hpp"
-
 namespace tiki
 {
-	class Texture;
-
 	TIKI_REFLECTION_INHERITANCE_STRUCT(
 		FallbackRenderEffectData,
 		RenderEffectData,
@@ -18,10 +14,9 @@ namespace tiki
 			renderEffectId			= RenderEffectId_Fallback;
 			renderPassMask			= 0u;
 			renderFlags				= 0u;
-			defaultTextureOffset	= (uint16)TIKI_OFFSETOF( FallbackRenderEffectData, pDiffuseTexture );
+			defaultTextureOffset	= (uint16)TIKI_OFFSETOF( FallbackRenderEffectData, defaultTexture );
 		}
-		ResRef< Texture >	pDiffuseTexture;
-		//TIKI_REFLECTION_FIELD( const Texture*, pDiffuseTexture )
+		TextureReference	defaultTexture;
 	);
 }
 
