@@ -90,6 +90,7 @@ namespace tiki
 
 	void ToolMaterial::dispose()
 	{
+		m_pDataType = nullptr;
 		m_effectData.dispose();
 	}
 
@@ -97,13 +98,15 @@ namespace tiki
 	{
 		void* pData = m_pDataType->createInstance();
 
+		uint8 workingMemory[ 16u ];
 		List< MaterialDataReference > references;
 		for (uint i = 0u; i < m_effectData.getCount(); ++i)
 		{
 			const MaterialFieldMap::Pair& kvp = m_effectData.getPairAt( i );
+			
+			TIKI_ASSERT( sizeof( workingMemory ) >= kvp.key->getTypeInfo().getType()->getSize() );
+			memory::zero( workingMemory, sizeof( workingMemory ) );
 
-			uint8 workingMemory[ 16u ];
-			TIKI_ASSERT( TIKI_COUNT( workingMemory ) >= kvp.key->getTypeInfo().getType()->getSize() );
 			if ( kvp.value.type == "resource" )
 			{
 				MaterialDataReference reference;
@@ -132,8 +135,22 @@ namespace tiki
 
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
 		const ReferenceKey key = writer.addDataPoint();
-		writer.writeData( pData, m_pDataType->getSize() );
+
+		uint currentOffset = 0u;
+		for (uint i = 0u; i < references.getCount(); ++i)
+		{
+			const MaterialDataReference& reference = references[ i ];
+
+			writer.writeData( addPtr( pData, currentOffset ), reference.dataOffset - currentOffset );
+			writer.writeReference( &reference.referenceKey );
+
+			currentOffset += reference.dataOffset + 8u;
+		}
+		writer.writeData( addPtr( pData, currentOffset ), m_pDataType->getSize() - currentOffset );
+		
 		writer.closeDataSection();
+
+		m_pDataType->disposeInstance( pData );
 
 		return key;
 	}
