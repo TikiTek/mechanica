@@ -109,18 +109,24 @@ namespace tiki
 	{
 		m_commandBuffer.dispose( *this );
 		
-		if( m_platformData.pSwapChain )
+		if( m_platformData.pSwapChain != nullptr )
 		{
 			m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
 		}
 
+		if ( m_platformData.pContext != nullptr )
+		{
+			m_platformData.pContext->ClearState();
+			m_platformData.pContext->Flush();
+		}
+
 		safeRelease( &m_platformData.pDepthStencilView );
 		safeRelease( &m_platformData.pDepthStencilBuffer );
-
 		safeRelease( &m_platformData.pBackBufferTargetView);
+
 		safeRelease( &m_platformData.pContext );
-		safeRelease( &m_platformData.pDevice );
 		safeRelease( &m_platformData.pSwapChain );
+		safeRelease( &m_platformData.pDevice );
 	}
 
 	GraphicsContext& GraphicsSystem::beginFrame()

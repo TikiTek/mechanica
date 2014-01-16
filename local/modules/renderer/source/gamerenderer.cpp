@@ -182,5 +182,7 @@ namespace tiki
 	{
 		GraphicsSystem& graphicsSystem = *m_context.pGraphicsSystem;
 
+		m_geometryTarget.dispose();
+		m_accumulationTarget.dispose();
 	}
 }
