@@ -110,6 +110,9 @@ namespace tiki
 				if ( isCreating )
 				{
 					FrameData& frameData = m_pGameRenderer->getFrameData();
+					frameData.nearPlane		= 0.001f;
+					frameData.farPlane		= 100.0f;
+
 					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
 
 					Projection projection;
@@ -120,7 +123,7 @@ namespace tiki
 						100.0f
 					);
 
-					const Vector3 cameraPosition = { 0.0f, 0.0f, 5.0f };
+					const Vector3 cameraPosition = { 0.0f, 0.0f, 1.0f };
 					frameData.mainCamera.create( cameraPosition, Quaternion::identity, projection );
 
 					m_fallbackRenderEffect.create( m_pGameRenderer->getRendererContext(), framework::getGraphicsSystem(), framework::getResourceManager() );
@@ -193,24 +196,22 @@ namespace tiki
 
 		Matrix43 mtx;
 		matrix::clear( mtx );
-		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 100.0f );
+		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 10.0f );
 
 		m_pGameRenderer->queueModel( m_pModel, &mtx );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext ) const
 	{
-		m_pGameRenderer->render( graphicsContext );
-
 		//const Vector3 scale = { 0.5f, 1.5f, 0.5f };
 		//Matrix33 scaleMtx;
 		//matrix::createScale( scaleMtx, scale );
 
-		Matrix43 mtx;
-		//matrix::clear( mtx );
-		matrix::createRotationZ( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 100.0f );
-		////matrix::mul( mtx.rot, scaleMtx );
-		////vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
+		//Matrix43 mtx;
+		////matrix::clear( mtx );
+		//matrix::createRotationZ( mtx.rot, (float)framework::getFrameTimer().getTotalTime() );
+		//////matrix::mul( mtx.rot, scaleMtx );
+		//////vector::set( mtx.pos, 0.0f, 0.0f, 2.5f );
 
 		Vector3 pos[] = {
 			{ -1.0f, -3.0f, 0.0f }, // left bottom

@@ -20,6 +20,9 @@ namespace tiki
 
 	struct FrameData
 	{
+		float		nearPlane;
+		float		farPlane;
+		float		aspectRatio;
 		Camera		mainCamera;
 	};
 }

@@ -5,10 +5,15 @@
 
 namespace tiki
 {
-	void Camera::create( const Vector3& position, const Quaternion& rotation, const Projection& projection, const Vector3& upVector /*= Vector3::unitY*/ )
+	void Camera::create( const Vector3& position, const Quaternion& rotation, const Projection* pProjection /*= nullptr*/, const Vector3& upVector /*= Vector3::unitY*/ )
 	{
 		m_upVector		= upVector;
-		m_projection	= projection;
+
+		if ( pProjection != nullptr )
+		{
+			m_projection = *pProjection;
+		}
+
 		setTransform( position, rotation );
 	}
 
