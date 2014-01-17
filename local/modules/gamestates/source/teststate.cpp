@@ -115,16 +115,8 @@ namespace tiki
 
 					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
 
-					Projection projection;
-					projection.createPerspective(
-						(float)rendererContext.rendererWidth / (float)rendererContext.rendererHeight,
-						f32::piOver4,
-						0.001f,
-						100.0f
-					);
-
 					const Vector3 cameraPosition = { 0.0f, 0.0f, 1.0f };
-					frameData.mainCamera.create( cameraPosition, Quaternion::identity, projection );
+					frameData.mainCamera.create( cameraPosition, Quaternion::identity );
 
 					m_fallbackRenderEffect.create( m_pGameRenderer->getRendererContext(), framework::getGraphicsSystem(), framework::getResourceManager() );
 
