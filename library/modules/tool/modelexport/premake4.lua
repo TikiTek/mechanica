@@ -1,4 +1,4 @@
--- library/modules/tools/modelexport
+-- library/modules/tool/modelexport
 
 local module = Module:new( "modelexport" );
 

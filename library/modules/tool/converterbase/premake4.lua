@@ -1,4 +1,4 @@
--- library/modules/tools/converterbase
+-- library/modules/tool/converterbase
 
 local module = Module:new( "converterbase" );
 

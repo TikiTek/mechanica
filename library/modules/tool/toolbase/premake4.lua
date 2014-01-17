@@ -1,4 +1,4 @@
--- library/modules/tools/toolbase
+-- library/modules/tool/toolbase
 
 local module = Module:new( "toolbase" );
 

@@ -1,4 +1,4 @@
--- library/modules/tools/textureexport
+-- library/modules/tool/textureexport
 
 local module = Module:new( "textureexport" );
 

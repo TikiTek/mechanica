@@ -1,4 +1,4 @@
--- library/modules/tools/unittest
+-- library/modules/tool/unittest
 
 local module = Module:new( "unittest" );
 
