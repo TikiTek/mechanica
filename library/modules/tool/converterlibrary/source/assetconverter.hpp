@@ -1,6 +1,8 @@
 #pragma once
-#ifndef TIKI_TIKIASSETS_HPP
-#define TIKI_TIKIASSETS_HPP
+#ifndef TIKI_ASSETCONVERTER_HPP
+#define TIKI_ASSETCONVERTER_HPP
+
+#include "tiki/toollibrarys/iassetconverter.hpp"
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
@@ -17,13 +19,13 @@
 
 namespace tiki
 {
-	class TikiAssets
+	class AssetConverter : public IAssetConverter
 	{
 	public:
 
-		TikiAssets();
+		AssetConverter();
 
-		void				create( const string& sourcePath, const string& outputPath );
+		void				create( const AssetConverterParamter& parameters );
 		void				dispose();
 
 		int					run();
@@ -35,10 +37,10 @@ namespace tiki
 		ConverterManager	m_manager;
 
 		//AnimationConverter	m_animationConverter;
+		//NavMeshConverter	m_navmeshConverter;
 		FontConverter		m_fontConverter;
 		MaterialConverter	m_materialConverter;
 		ModelConverter		m_modelConverter;
-		//NavMeshConverter	m_navmeshConverter;
 		ShaderConverter		m_shaderConverter;
 		TextureConverter	m_textureConverter;
 
@@ -48,4 +50,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_TIKIASSETS_HPP
+#endif // TIKI_ASSETCONVERTER_HPP

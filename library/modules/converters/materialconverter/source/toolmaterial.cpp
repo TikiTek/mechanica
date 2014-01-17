@@ -54,32 +54,35 @@ namespace tiki
 		while ( pValueNode )
 		{
 			const XmlAttribute* pNameAtt = xml.findAttributeByName( "name", pValueNode );
-			if ( pNameAtt == nullptr )
+			if ( pNameAtt != nullptr )
+			{
+				const XmlAttribute* pTypeAtt = xml.findAttributeByName( "type", pValueNode );
+				if ( pTypeAtt != nullptr )
+				{
+					const reflection::FieldMember* pField = m_pDataType->getFieldByName( pNameAtt->content );
+					if ( pField != nullptr )
+					{
+						MaterialField fieldInfo;
+						fieldInfo.name	= pNameAtt->content;
+						fieldInfo.type	= pTypeAtt->content;
+						fieldInfo.value	= pValueNode->content;
+
+						m_effectData.set( pField, fieldInfo );
+					}
+					else
+					{
+						TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' is not a member of Type: '%s'.\n", pNameAtt->content, m_pDataType->getName().cStr() );
+					}
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' has no 'type' attribute.\n", pNameAtt->content );
+				}
+			}
+			else
 			{
 				TIKI_TRACE_ERROR( "[toolmaterial] Could not find 'name' attribute of field.\n" );
-				continue;
 			}
-
-			const XmlAttribute* pTypeAtt = xml.findAttributeByName( "type", pValueNode );
-			if ( pTypeAtt == nullptr )
-			{
-				TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' has no 'type' attribute.\n", pNameAtt->content );
-				continue;
-			}
-
-			const reflection::FieldMember* pField = m_pDataType->getFieldByName( pNameAtt->content );
-			if ( pField == nullptr )
-			{
-				TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' is not a member of Type: '%s'.\n", pNameAtt->content, m_pDataType->getName().cStr() );
-				continue;
-			}
-
-			MaterialField field;
-			field.name	= pNameAtt->content;
-			field.type	= pTypeAtt->content;
-			field.value	= pValueNode->content;
-
-			m_effectData.set( pField, field );
 
 			pValueNode = xml.findNext( "field", pValueNode );
 		}

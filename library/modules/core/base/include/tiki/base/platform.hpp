@@ -30,11 +30,14 @@ namespace tiki
 	};
 
 	PlatformType			getHostPlatform();
+
+#if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 	InstanceHandle			getInstanceHandle();
 	const Array< string >&	getArguments();
 	bool					hasArgument( const string& name );
 
 	int						mainEntryPoint();
+#endif
 }
 
 #endif // TIKI_PLATFORM_HPP

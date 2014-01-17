@@ -1,20 +1,36 @@
 
-#include "tiki/tikiassets/tikiassets.hpp"
+#include "assetconverter.hpp"
 
 #include "tiki/base/iopath.hpp"
+#include "tiki/base/reflection.hpp"
 #include "tiki/toolbase/tooldirectory.hpp"
 
 namespace tiki
 {
-	TikiAssets::TikiAssets()
+	IAssetConverter* createAssetConverter()
+	{
+		reflection::initialize();
+		return TIKI_NEW AssetConverter();
+	}
+
+	void disposeAssetConverter( IAssetConverter* pObject )
+	{
+		TIKI_DEL pObject;
+		reflection::shutdown();
+	}
+
+	AssetConverter::AssetConverter()
 	{
 	}
 
-	void TikiAssets::create( const string& sourcePath, const string& outputPath )
+	void AssetConverter::create( const AssetConverterParamter& parameters )
 	{
-		m_sourcePath	= sourcePath;
+		m_sourcePath	= parameters.sourcePath;
 
-		m_manager.create( outputPath );
+		ConverterManagerParameter managerParameters;
+		managerParameters.outputPath	= parameters.outputPath;
+		managerParameters.forceRebuild	= parameters.forceRebuild;
+		m_manager.create( managerParameters );
 
 		//m_animationConverter.create( &m_manager );
 		//m_navmeshConverter.create( &m_manager );
@@ -24,10 +40,10 @@ namespace tiki
 		m_shaderConverter.create( &m_manager );
 		m_textureConverter.create( &m_manager );
 
-		TIKI_TRACE( "TikiAssets: started\n" );
+		TIKI_TRACE( "AssetConverter: started\n" );
 	}
 
-	void TikiAssets::dispose()
+	void AssetConverter::dispose()
 	{
 		//m_animationConverter.dispose();
 		//m_navmeshConverter.dispose();
@@ -39,10 +55,10 @@ namespace tiki
 
 		m_manager.dispose();
 
-		TIKI_TRACE( "TikiAssets: finish\n" );
+		TIKI_TRACE( "AssetConverter: finish\n" );
 	}
 
-	int TikiAssets::run()
+	int AssetConverter::run()
 	{
 		List< string > assetFiles;
 		List< string > templateFiles;
@@ -62,12 +78,12 @@ namespace tiki
 		return m_manager.startConversion();
 	}
 
-	void TikiAssets::resolveDependencies()
+	void AssetConverter::resolveDependencies()
 	{
 
 	}
 
-	void TikiAssets::findFiles( const string& path,  List< string >& files, const string& ext ) const
+	void AssetConverter::findFiles( const string& path,  List< string >& files, const string& ext ) const
 	{
 		List< string > dirFiles;
 		directory::getFiles( path, dirFiles );

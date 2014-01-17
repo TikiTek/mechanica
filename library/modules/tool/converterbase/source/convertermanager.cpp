@@ -25,11 +25,11 @@ namespace tiki
 		TIKI_ASSERT( m_converters.getCount() == 0u );
 	}
 
-	void ConverterManager::create( const string& outputPath )
+	void ConverterManager::create( const ConverterManagerParameter& parameters )
 	{
-		m_outputPath	= outputPath;
+		m_outputPath	= parameters.outputPath;
 		m_returnValue	= 0;
-		m_rebuildForced	= hasArgument( "--rebuild" );
+		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
 		bool newDatabase = !file::exists( "build.sqlite" );

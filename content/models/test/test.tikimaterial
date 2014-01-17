@@ -1,4 +1,4 @@
 <tikimaterial>
 	<type>FallbackRenderEffectData</type>
-	<field name="pDiffuseTexture" type="resource">TEXR:checker.texture:1E9CFDA4</field>
+	<field name="defaultTexture" type="resource">TEXR:checker.texture:1E9CFDA4</field>
 </tikimaterial>
