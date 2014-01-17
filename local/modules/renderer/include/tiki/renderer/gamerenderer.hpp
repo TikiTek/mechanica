@@ -22,12 +22,18 @@ namespace tiki
 			rendererWidth	= 1280u;
 			rendererHeight	= 720u;
 
+			nearPlane	= 0.001f;
+			farPlane	= 100.0f;
+
 			maxSeqeuenceCount		= 100u;
 			maxRenderCommandCount	= 500u;
 		}
 
 		uint	rendererWidth;
 		uint	rendererHeight;
+
+		float	nearPlane;
+		float	farPlane;
 
 		uint	maxSeqeuenceCount;
 		uint	maxRenderCommandCount;
@@ -44,6 +50,8 @@ namespace tiki
 
 		bool				create( GraphicsSystem& graphicsSystem, const GameRendererParamaters& parameters );
 		void				dispose();
+
+		bool				resize( uint width, uint height );
 
 		void				registerRenderEffect( RenderEffect* pRenderEffect );
 		void				unregisterRenderEffect( RenderEffect* pRenderEffect );

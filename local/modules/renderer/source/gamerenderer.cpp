@@ -20,6 +20,10 @@ namespace tiki
 		m_context.rendererWidth		= parameters.rendererWidth;
 		m_context.rendererHeight	= parameters.rendererHeight;
 
+		m_frameData.nearPlane		= parameters.nearPlane;
+		m_frameData.farPlane		= parameters.farPlane;
+		m_frameData.aspectRatio		= (float)parameters.rendererWidth / (float)parameters.rendererHeight;
+
 		if ( m_renderBatch.create( parameters.maxSeqeuenceCount, parameters.maxRenderCommandCount ) == false )
 		{
 			return false;
@@ -55,6 +59,26 @@ namespace tiki
 		m_renderBatch.dispose();
 	}
 
+
+	bool GameRenderer::resize( uint width, uint height )
+	{
+		disposeRenderTargets();
+		disposeTextureData();
+
+		m_context.rendererWidth		= width;
+		m_context.rendererHeight	= height;
+
+		m_frameData.aspectRatio		= (float)width / (float)height;
+
+		if ( createTextureData() == false || createRenderTargets() == false )
+		{
+			dispose();
+			return false;
+		}
+
+		return true;
+	}
+
 	void GameRenderer::registerRenderEffect( RenderEffect* pRenderEffect )
 	{
 		m_renderEffectSystem.registerRenderEffect( pRenderEffect );
@@ -77,14 +101,22 @@ namespace tiki
 
 	void GameRenderer::update()
 	{
+		m_frameData.mainCamera.getProjection().createPerspective(
+			m_frameData.aspectRatio,
+			f32::piOver4,
+			m_frameData.nearPlane,
+			m_frameData.farPlane
+		);
+
 		m_renderBatch.reset();
 		m_renderEffectSystem.setFrameData( m_frameData );
+
 	}
 
 	void GameRenderer::render( GraphicsContext& graphicsContext ) const
 	{
 		graphicsContext.beginRenderPass( m_geometryTarget );
-		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_GREEN );
+		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_GRAY );
 
 		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
 

@@ -2,6 +2,8 @@
 #include "tiki/gamestates/applicationstate.hpp"
 
 #include "tiki/framework/framework.hpp"
+#include "tiki/framework/mainwindow.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsresources/material.hpp"
 #include "tiki/graphicsresources/model.hpp"
 #include "tiki/graphicsresources/shaderset.hpp"
@@ -74,11 +76,18 @@ namespace tiki
 
 	void ApplicationState::update()
 	{
+		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
+		if ( pEvent != nullptr )
+		{
+			framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
+			m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
+		}
+
 		m_renderer.update();
 	}
 
 	void ApplicationState::render( GraphicsContext& graphicsContext ) const
 	{
-		//m_renderer.render( graphicsContext );
+		m_renderer.render( graphicsContext );
 	}
 }
