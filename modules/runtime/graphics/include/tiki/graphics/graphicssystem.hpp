@@ -71,6 +71,8 @@ namespace tiki
 		bool						create( const GraphicsSystemParameters& params );
 		void						dispose();
 
+		bool						resize( uint width, uint height );
+
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*			createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void						disposeSamplerState( const SamplerState* samplerState );
@@ -89,7 +91,6 @@ namespace tiki
 		void						endFrame();
 
 		const RenderTarget&			getBackBuffer() const { return m_backBufferTarget; }
-
 
 	private:
 		

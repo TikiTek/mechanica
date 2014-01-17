@@ -5,12 +5,10 @@ namespace tiki
 {
 	void WindowEventBuffer::create()
 	{
-		m_events.create( TIKI_WINDOWEVENTBUFFER_SIZE );
 	}
 
 	void WindowEventBuffer::dispose()
 	{
-		m_events.dispose();
 	}
 
 	void WindowEventBuffer::clear()
@@ -20,9 +18,9 @@ namespace tiki
 
 	WindowEvent& WindowEventBuffer::pushEvent( WindowEventType type )
 	{
-		if ( m_events.getCount() > 0u && ( m_events.getTop().type == type || m_events.getCount() == m_events.getCapacity() ) )
+		if ( m_events.getCount() > 0u && ( m_events.getLast().type == type || m_events.getCount() == m_events.getCapacity() ) )
 		{
-			WindowEvent& event	= m_events.push();
+			WindowEvent& event	= m_events.getLast();
 			event.type			= type;
 
 			return event;
@@ -43,4 +41,20 @@ namespace tiki
 	{
 		return m_events[ index ];
 	}
+
+	const WindowEvent* WindowEventBuffer::getEventByType( WindowEventType type ) const
+	{
+		for (uint i = 0u; i < m_events.getCount(); ++i)
+		{
+			const WindowEvent& event = m_events[ i ];
+
+			if ( event.type == type )
+			{
+				return &event;
+			}
+		} 
+
+		return nullptr;
+	}
+
 }

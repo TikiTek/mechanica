@@ -18,8 +18,8 @@ namespace tiki
 	namespace graphics
 	{
 		static bool initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
-		static bool initBackBuffer( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
-		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
+		static bool initBackBuffer( GraphicsSystemPlatformData& data );
+		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 		static void initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
 		static void resetDeviceState( TGContext* pContext );
@@ -67,13 +67,13 @@ namespace tiki
 			return false;
 		}
 
-		if( !graphics::initBackBuffer( m_platformData, params ) )
+		if( !graphics::initBackBuffer( m_platformData ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
 			return false;
 		}
 
-		if( !graphics::initDepthStencilBuffer( m_platformData, params, backBufferSize ) )
+		if( !graphics::initDepthStencilBuffer( m_platformData, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
 			return false;
@@ -81,7 +81,7 @@ namespace tiki
 
 		graphics::initViewPort( m_platformData, backBufferSize );
 
-		// create back buffer
+		// create back buffer target
 		{
 			m_backBufferTarget.m_width	= params.backBufferWidth;
 			m_backBufferTarget.m_height	= params.backBufferHeight;
@@ -129,6 +129,33 @@ namespace tiki
 		safeRelease( &m_platformData.pDevice );
 	}
 
+	bool GraphicsSystem::resize( uint width, uint height )
+	{
+		m_platformData.pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
+
+		safeRelease( &m_platformData.pDepthStencilView );
+		safeRelease( &m_platformData.pDepthStencilBuffer );
+		safeRelease( &m_platformData.pBackBufferTargetView);
+
+		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, 0 );
+		if ( FAILED( result ) )
+		{
+			dispose();
+			return false;
+		}
+
+		uint2 backBufferSize = { width, height };
+		graphics::initBackBuffer( m_platformData );
+		graphics::initDepthStencilBuffer( m_platformData, backBufferSize );
+
+		m_backBufferTarget.m_width	= width;
+		m_backBufferTarget.m_height	= height;
+		m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
+		m_backBufferTarget.m_platformData.pDepthView		= m_platformData.pDepthStencilView;
+
+		return true;
+	}
+
 	GraphicsContext& GraphicsSystem::beginFrame()
 	{	
 		m_frameNumber++;
@@ -164,7 +191,6 @@ namespace tiki
 		D3D_FEATURE_LEVEL levels = D3D_FEATURE_LEVEL_11_0;
 
 		D3D_DRIVER_TYPE rendererType;
-
 		switch ( params.rendererMode )
 		{
 		case GraphicsRendererMode_Hardware:
@@ -180,7 +206,7 @@ namespace tiki
 			break;
 
 		default:
-			rendererType = D3D_DRIVER_TYPE_HARDWARE;
+			TIKI_BREAK( "[graphics] renderer type not supported.\n" );
 			break;
 		}
 
@@ -198,11 +224,12 @@ namespace tiki
 			&level,
 			&data.pContext
 		);
+		TIKI_ASSERT( level == levels );
 
 		return SUCCEEDED( r );
 	}
 
-	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
+	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data )
 	{
 		ID3D11Texture2D* pBackBufferPtr;
 		HRESULT r = data.pSwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferPtr );
@@ -217,7 +244,7 @@ namespace tiki
 		return true;
 	}
 
-	static bool graphics::initDepthStencilBuffer( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize )
+	static bool graphics::initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, depthDesc );
 		depthDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;

@@ -3,7 +3,7 @@
 #define TIKI_WINDOWEVENTBUFFER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/framework/windowevent.hpp"
 
 namespace tiki
@@ -20,10 +20,13 @@ namespace tiki
 
 		size_t						getEventCount() const;
 		const WindowEvent&			getEventByIndex( size_t index ) const;
+		const WindowEvent*			getEventByType( WindowEventType type ) const;
 
 	private:
 		
-		SizedArray< WindowEvent >	m_events;
+		typedef FixedSizedArray< WindowEvent, TIKI_WINDOWEVENTBUFFER_SIZE > WindowEventArray;
+
+		WindowEventArray			m_events;
 
 	};
 }
