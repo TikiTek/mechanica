@@ -1,6 +1,20 @@
 
 #include "tiki/base/platform.hpp"
 
+namespace tiki
+{
+	PlatformType getHostPlatform()
+	{
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		return PlatformType_Win;
+#else
+#	error not supported
+#endif
+	}
+}
+
+#if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
+
 #include "tiki/base/array.hpp"
 #include "tiki/base/debug.hpp"
 #include "tiki/base/iopath.hpp"
@@ -57,11 +71,6 @@ int main( int argc, char** argv )
 
 namespace tiki
 {
-	PlatformType getHostPlatform()
-	{
-		return PlatformType_Win;
-	}
-
 	InstanceHandle getInstanceHandle()
 	{
 		return s_instanceHandle;
@@ -109,5 +118,7 @@ namespace tiki
 #else
 
 #	error Platform not implemented
+
+#endif
 
 #endif

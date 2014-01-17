@@ -107,6 +107,12 @@ function Project:finalize()
 	project( self.name )
 	kind( self.type );
 	language "C++"
+	
+	if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
+		defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );
+	else
+		defines( { "TIKI_BUILD_LIBRARY=TIKI_OFF" } );
+	end
 
 	local modules = {};
 	local shader_global_dirs = {};

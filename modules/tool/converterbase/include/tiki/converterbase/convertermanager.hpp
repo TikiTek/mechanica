@@ -19,6 +19,18 @@ namespace tiki
 {
 	class ConverterBase;
 	class TikiXml;
+
+	struct ConverterManagerParameter
+	{
+		ConverterManagerParameter()
+		{
+			forceRebuild	= false;
+		}
+
+		string	outputPath;
+
+		bool	forceRebuild;
+	};
 	
 	class ConverterManager
 	{
@@ -28,7 +40,7 @@ namespace tiki
 
 		~ConverterManager();
 
-		void					create( const string& outputPath );
+		void					create( const ConverterManagerParameter& parameters );
 		void					dispose();
 
 		// conversion

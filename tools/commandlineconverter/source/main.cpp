@@ -1,7 +1,7 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/tikiassets/tikiassets.hpp"
+#include "tiki/toollibrarys/iassetconverter.hpp"
 
 int tiki::mainEntryPoint()
 {
@@ -9,12 +9,18 @@ int tiki::mainEntryPoint()
 
 	//debug::breakOnAlloc( 1449 );
 	{
-		TikiAssets context;
-		context.create( "../../../../../../content", "../../../../../../gamebuild" );
+		AssetConverterParamter parameters;
+		parameters.sourcePath	= "../../../../../../content";
+		parameters.outputPath	= "../../../../../../gamebuild";
+		parameters.forceRebuild	= hasArgument( "--rebuild" );
 
-		retValue = context.run();
+		IAssetConverter* pConverter = createAssetConverter();
+		pConverter->create( parameters );
 
-		context.dispose();
+		retValue = pConverter->run();
+
+		pConverter->dispose();
+		disposeAssetConverter( pConverter );
 	}		
 	//debug::dumpMemoryStats();
 

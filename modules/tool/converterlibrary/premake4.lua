@@ -3,11 +3,9 @@
 local module = Module:new( "converterlibrary" );
 
 module:add_files( "source/*.*" );
-module:add_files( "include/**/*.hpp" );
-module:add_include_dir( "include" );
 
 module:add_dependency( "config" );
-module:add_dependency( "resource" );
+module:add_dependency( "toollibrarys" );
 module:add_dependency( "fontconverter" );
 module:add_dependency( "shaderconverter" );
 module:add_dependency( "textureconverter" );
