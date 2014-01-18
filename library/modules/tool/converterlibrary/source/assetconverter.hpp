@@ -7,6 +7,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/threading/thread.hpp"
 #include "tiki/toolbase/list.hpp"
 
 #include "tiki/fontconverter/fontconverter.hpp"
@@ -25,16 +26,28 @@ namespace tiki
 
 		AssetConverter();
 
-		void				create( const AssetConverterParamter& parameters );
-		void				dispose();
+		virtual void	create( const AssetConverterParamter& parameters );
+		virtual void	dispose();
 
-		int					run();
+		virtual int		convertAll();
+
+		virtual void	startWatch();
+		virtual void	stopWatch();
+		virtual void	getChangedFiles( Array< string >& changedFiles );
+
+		virtual void	lockAsset( const string& fileName );
+		virtual void	unlockAsset();
 
 	private:
 
 		string				m_sourcePath;
 
 		ConverterManager	m_manager;
+		
+		Thread				m_watchThread;
+		Mutex				m_converterMutex;
+		string				m_currentFileName;
+		List< string >		m_changedFiles;
 
 		//AnimationConverter	m_animationConverter;
 		//NavMeshConverter	m_navmeshConverter;
@@ -44,8 +57,10 @@ namespace tiki
 		ShaderConverter		m_shaderConverter;
 		TextureConverter	m_textureConverter;
 
-		void				resolveDependencies();
 		void				findFiles( const string& path, List< string >& files, const string& ext ) const;
+
+		void				watchThreadEntryPoint( const Thread& thread );
+		static int			watchThreadStaticEntryPoint( const Thread& thread );
 
 	};
 }

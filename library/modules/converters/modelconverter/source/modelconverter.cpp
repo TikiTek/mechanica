@@ -46,7 +46,7 @@ namespace tiki
 
 	bool ModelConverter::startConversionJob( const ConversionParameters& params ) const
 	{
-		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
+		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const ConversionInputFile& file = params.inputFiles[ i ];
 
@@ -78,12 +78,12 @@ namespace tiki
 			List< ReferenceKey > geometryKeys;
 
 			bool wrongSkinned = false;
-			for (size_t j = 0u; j < model.getGeometyCount(); ++j)
+			for (uint j = 0u; j < model.getGeometyCount(); ++j)
 			{
 				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( j ) );
 				geometryKeys.add( key );
 
-				for (size_t k = 0u; k < model.getGeometyCount(); ++k)
+				for (uint k = 0u; k < model.getGeometyCount(); ++k)
 				{
 					if ( model.getGeometryByIndex( j ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
 					{
@@ -120,16 +120,16 @@ namespace tiki
 	{
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
 
-		const uint16 alignedJointCount = alignValue( hierarchy.getJointCount(), 4u );
+		const uint16 alignedJointCount = alignValue( (uint16)hierarchy.getJointCount(), (uint16)4u );
 
 		const ReferenceKey jointNamesKey = writer.addDataPoint();
-		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
+		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			writer.writeUInt32( hierarchy.getJointByIndex( j ).crc );
 		}
 
 		const ReferenceKey parentIndicesKey = writer.addDataPoint();
-		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
+		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			writer.writeUInt16( hierarchy.getJointByIndex( j ).parentIndex );
 		}
@@ -141,7 +141,7 @@ namespace tiki
 		dpPosition.create( alignedJointCount );
 		dpScale.create( alignedJointCount );
 
-		for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
+		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( j );
 			matrix::decompose( dpRotation[ j ], dpPosition[ j ], dpScale[ j ], joint.defaultPose );
@@ -149,7 +149,7 @@ namespace tiki
 
 		writer.writeAlignment( 16u );
 		const ReferenceKey defaultPoseKey = writer.addDataPoint();
-		for (size_t j = 0u; j < alignedJointCount; ++j)
+		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
 			writer.writeFloat( dpRotation[ j ].x );
 			writer.writeFloat( dpRotation[ j ].y );
@@ -157,7 +157,7 @@ namespace tiki
 			writer.writeFloat( dpRotation[ j ].w );
 		}
 
-		for (size_t j = 0u; j < alignedJointCount; ++j)
+		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
 			writer.writeFloat( dpPosition[ j ].x );
 			writer.writeFloat( dpPosition[ j ].y );
@@ -165,7 +165,7 @@ namespace tiki
 			writer.writeFloat( 0.0f );
 		}
 
-		for (size_t j = 0u; j < alignedJointCount; ++j)
+		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
 			writer.writeFloat( dpScale[ j ].x );
 			writer.writeFloat( dpScale[ j ].y );
@@ -179,7 +179,7 @@ namespace tiki
 
 		writer.writeAlignment( 16u );
 		const ReferenceKey skinToBoneKey = writer.addDataPoint();
-		for (size_t i = 0u; i < hierarchy.getJointCount(); ++i)
+		for (uint i = 0u; i < hierarchy.getJointCount(); ++i)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( i );
 			writer.writeData( &joint.skinToBone.x.x, sizeof( Matrix44 ) );
@@ -201,7 +201,7 @@ namespace tiki
 
 	static void writeVertexAttribute( ResourceWriter& fileWriter, const uint8* pSource, VertexAttributeFormat targetFormat, bool isFloatFormat )
 	{
-		const size_t elementCount = getVertexAttributeFormatElementCount( targetFormat );
+		const uint elementCount = getVertexAttributeFormatElementCount( targetFormat );
 
 		if ( isFloatFormat )
 		{
@@ -214,7 +214,7 @@ namespace tiki
 			case VertexAttributeFormat_x32y32_float:
 			case VertexAttributeFormat_x32_float:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						fileWriter.writeFloat( pSourceData[ i ] );
 					}
@@ -224,7 +224,7 @@ namespace tiki
 			case VertexAttributeFormat_x16y16_float:
 			case VertexAttributeFormat_x16_float:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						fileWriter.writeUInt16( f16::convertFloat32to16( pSourceData[ i ] ) );
 					}
@@ -234,7 +234,7 @@ namespace tiki
 			case VertexAttributeFormat_x16y16_snorm:
 			case VertexAttributeFormat_x16_snorm:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= -1.0f && pSourceData[ i ] <= 1.0f );
 						fileWriter.writeSInt16( (sint16)( pSourceData[ i ] * 32667.0f ) );
@@ -245,7 +245,7 @@ namespace tiki
 			case VertexAttributeFormat_x16y16_unorm:
 			case VertexAttributeFormat_x16_unorm:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= 0.0f && pSourceData[ i ] <= 1.0f );
 						fileWriter.writeUInt16( (uint16)( pSourceData[ i ] * 65535.0f ) );
@@ -254,7 +254,7 @@ namespace tiki
 				break;
 			case VertexAttributeFormat_x8y8z8w8_snorm:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= -1.0f && pSourceData[ i ] <= 1.0f );
 						fileWriter.writeUInt8( (sint8)( pSourceData[ i ] * 127.0f ) );
@@ -263,7 +263,7 @@ namespace tiki
 				break;
 			case VertexAttributeFormat_x8y8z8w8_unorm:
 				{
-					for (size_t i = 0u; i < elementCount; ++i)
+					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= 0.0f && pSourceData[ i ] <= 1.0f );
 						fileWriter.writeUInt8( (uint8)( pSourceData[ i ] * 255.0f ) );
@@ -276,7 +276,7 @@ namespace tiki
 		{
 			const uint* pSourceData = (const uint*)pSource;
 
-			for (size_t i = 0u; i < elementCount; ++i)
+			for (uint i = 0u; i < elementCount; ++i)
 			{
 				TIKI_ASSERT( pSourceData[ i ] < 256u );
 				fileWriter.writeUInt8( (uint8)pSourceData[ i ] );
@@ -300,11 +300,11 @@ namespace tiki
 		writer.writeAlignment( 16u );
 		const ReferenceKey vertexDataKey = writer.addDataPoint();
 		const VertexAttribute* pAttributes = vertexFormat.getAttributes();
-		for (size_t k = 0u; k < geometry.getVertexCount(); ++k)
+		for (uint k = 0u; k < geometry.getVertexCount(); ++k)
 		{
 			const ToolModelVertex& vertex = geometry.getVertexByIndex( k );
 
-			for (size_t j = 0u; j < vertexFormat.getAttributeCount(); ++j)
+			for (uint j = 0u; j < vertexFormat.getAttributeCount(); ++j)
 			{
 				const VertexAttribute& att = pAttributes[ j ];
 
@@ -349,7 +349,7 @@ namespace tiki
 
 		writer.writeAlignment( 4u );
 		const ReferenceKey indexDataKey = writer.addDataPoint();
-		for (size_t k = 0u; k < geometry.getIndexCount(); ++k)
+		for (uint k = 0u; k < geometry.getIndexCount(); ++k)
 		{
 			writer.writeUInt32( geometry.getIndexByIndex( k ) );
 		}

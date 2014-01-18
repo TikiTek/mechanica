@@ -21,7 +21,6 @@ namespace tiki
 //	};
 //#endif
 
-
 	class Mutex
 	{
 		TIKI_NONCOPYABLE_CLASS( Mutex );
@@ -43,6 +42,28 @@ namespace tiki
 
 		MutexPlatformData	m_platformData;
 
+	};
+
+	class MutexStackLock
+	{
+		TIKI_NONCOPYABLE_CLASS( MutexStackLock );
+
+	public:
+
+		MutexStackLock( Mutex& mutex )
+			: m_mutex( mutex )
+		{
+			m_mutex.lock();
+		}
+
+		~MutexStackLock()
+		{
+			m_mutex.unlock();
+		}
+
+	private:
+
+		Mutex& m_mutex;
 	};
 }
 

@@ -30,17 +30,25 @@ namespace tiki
 		bool				create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName = nullptr );
 		void				dispose();
 
-		void				start( const void* pArgument );
+		void				start( void* pArgument );
+		void				requestExit();
 
-		const void*			getArgument() const			{ return m_pArgument; }
+		bool				waitForExit( uint timeOut = TimeOutInfinity );
+
+		void*				getArgument() const			{ return m_pArgument; }
 		ThreadEntryFunction	getEntryFunction() const	{ return m_pEntryFunction; }
+		bool				isExitRequested() const		{ return m_isExitRequested; }
+
+		bool				isCreated() const;
 
 	private:
 
 		ThreadPlatformData	m_platformData;
 
 		ThreadEntryFunction	m_pEntryFunction;
-		const void*			m_pArgument;
+		void*				m_pArgument;
+
+		volatile bool		m_isExitRequested;
 
 	};
 }
