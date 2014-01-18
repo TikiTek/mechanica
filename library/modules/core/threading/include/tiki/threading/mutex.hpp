@@ -5,38 +5,38 @@
 #include "tiki/base/types.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#	include <windows.h>
+#	include "../../../source/win/platformdata_win.hpp"
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-#	include <pthread.h>
+#	include "../../../source/posix/platformdata_posix.hpp"
 #else
-#	error Platform not suported
+#	error not supported
 #endif
 
 namespace tiki
 {
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-	struct MutexPlatformData
-	{
-		CRITICAL_SECTION mutex;
-	};
-#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-	struct MutexPlatformData
-	{
-		pthread_mutex_t mutex;
-	};
-#else
-#	error Platform not suported
-#endif
+//#if TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+//	struct MutexPlatformData
+//	{
+//		pthread_mutex_t mutex;
+//	};
+//#endif
+
 
 	class Mutex
 	{
+		TIKI_NONCOPYABLE_CLASS( Mutex );
+
 	public:
+
+		Mutex();
+		~Mutex();
 
 		void				create();
 		void				dispose();
 
 		void				lock();
-		bool				tryLock( size_t timeOut );
+		bool				tryLock( uint timeOut = TimeOutInfinity );
+
 		void				unlock();
 
 	private:
