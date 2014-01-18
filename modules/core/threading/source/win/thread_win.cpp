@@ -46,8 +46,8 @@ namespace tiki
 			CREATE_SUSPENDED,
 			&m_platformData.threadId
 		);
-
-		return false;
+		
+		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
 	}
 
 	void Thread::dispose()
@@ -63,11 +63,32 @@ namespace tiki
 		m_pArgument			= nullptr;
 	}
 
-	void Thread::start( const void* pArgument )
+	void Thread::start( void* pArgument )
 	{
 		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
 
 		m_pArgument = pArgument;
 		ResumeThread( m_platformData.threadHandle );
+	}
+
+	void Thread::requestExit()
+	{
+		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
+		m_isExitRequested = true;
+	}
+
+	bool Thread::waitForExit( uint timeOut /*= TimeOutInfinity */ )
+	{
+		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
+		if ( WaitForSingleObject( m_platformData.threadHandle, timeOut ) == WAIT_TIMEOUT )
+		{
+			return false;
+		}
+		return true;
+	}
+
+	bool Thread::isCreated() const
+	{
+		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
 	}
 }

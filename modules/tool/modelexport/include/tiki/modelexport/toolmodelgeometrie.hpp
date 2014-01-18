@@ -74,12 +74,12 @@ namespace tiki
 		void							applySkinning( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const XmlElement* pSkinNode );
 		void							transformToInstance();
 
-		size_t							getIndexCount() const { return m_indices.getCount(); };
-		size_t							getIndexByIndex( size_t index ) const { return m_indices[ index ]; }
-		const size_t*					getIndexData() const { return m_indices.getData(); }
+		uint							getIndexCount() const { return m_indices.getCount(); };
+		uint							getIndexByIndex( uint index ) const { return m_indices[ index ]; }
+		const uint32*					getIndexData() const { return m_indices.getData(); }
 
-		size_t							getVertexCount() const { return m_vertices.getCount(); };
-		const ToolModelVertex&			getVertexByIndex( size_t index ) const { return m_vertices[ index ]; }
+		uint							getVertexCount() const { return m_vertices.getCount(); };
+		const ToolModelVertex&			getVertexByIndex( uint index ) const { return m_vertices[ index ]; }
 
 		const ToolModelGeometrieDesc&	getDesc() const { return m_desc; }
 		const ToolModelVertexFormat&	getVertexFormat() const { return m_vertexFormat; }
@@ -91,9 +91,9 @@ namespace tiki
 
 		Array< uint32 >					m_indices;
 		Array< ToolModelVertex >		m_vertices;
-		Array< size_t >					m_skinningIndicesCount;
-		Array< size_t >					m_skinningIndicesOffset;
-		Array< size_t >					m_skinningIndicesData;
+		Array< uint >					m_skinningIndicesCount;
+		Array< uint >					m_skinningIndicesOffset;
+		Array< uint >					m_skinningIndicesData;
 
 		ToolModelGeometrieDesc			m_desc;
 		ToolModelVertexFormat			m_vertexFormat;

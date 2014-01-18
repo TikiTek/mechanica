@@ -60,7 +60,7 @@ namespace tiki
 		}
 
 		ToolModelSourceBase* pSource = nullptr;
-		for (size_t i = 0u; i < sources.getCount(); ++i)
+		for (uint i = 0u; i < sources.getCount(); ++i)
 		{
 			if ( sources[ i ]->id == sourceId )
 			{
@@ -78,7 +78,7 @@ namespace tiki
 
 	ToolModelSourceBase* getSourceSemantic( Array< ToolModelSourceBase* >& sources, VertexSementic semantic )
 	{
-		for (size_t i = 0u; i < sources.getCount(); ++i)
+		for (uint i = 0u; i < sources.getCount(); ++i)
 		{
 			if ( sources[ i ]->semantic == semantic )
 			{
@@ -132,7 +132,7 @@ namespace tiki
 			ToolModelSourceBase* pSources[ 32u ];
 
 			TIKI_ASSERT( sources.getCount() < TIKI_COUNT( pSources ) );
-			for (size_t i = 0u; i < sources.getCount(); ++i)
+			for (uint i = 0u; i < sources.getCount(); ++i)
 			{
 				pSources[ i ] = &sources[ i ];
 			}
@@ -140,14 +140,14 @@ namespace tiki
 			baseSources.create( pSources, sources.getCount() );
 		}
 
-		for (size_t i = 0u; i < sources.getCount(); ++i)
+		for (uint i = 0u; i < sources.getCount(); ++i)
 		{
 			sources[ i ].create( pXml, sourcesNodes[ i ], stringSourceToFloat, 1u );
 			sources[ i ].userData = TIKI_SIZE_T_MAX;
 		}
 
 		// parse vertex layout
-		size_t inputCount = 0u;
+		uint inputCount = 0u;
 		{
 			const XmlElement* pVertices = pXml->findFirstChild( "vertices", m_pMeshNode );
 
@@ -203,14 +203,14 @@ namespace tiki
 				Tokenizer token;
 				token.create( pVertexCount->content, " " );
 
-				size_t index = 0u;
+				uint index = 0u;
 				while ( index != -1 )
 				{
 					const string value = token.findNext( &index ).trim();
 
 					if ( !value.isEmpty() )
 					{
-						size_t i = ParseString::parseUInt32( value );
+						uint i = ParseString::parseUInt32( value );
 
 						if ( i != 3u )
 						{
@@ -228,7 +228,7 @@ namespace tiki
 			//	return;
 			//}
 
-			//size_t vertexCount = ParseString::parseUInt32( pCountAtt->content );
+			//uint vertexCount = ParseString::parseUInt32( pCountAtt->content );
 			
 			const XmlElement* pInput = pXml->findFirstChild( "input", pTriangles );
 			while ( pInput )
@@ -252,23 +252,23 @@ namespace tiki
 			}
 
 			// read indices			
-			List< size_t > indicesIndex;
-			List< size_t > indicesData;
+			List< uint32 > indicesIndex;
+			List< uint > indicesData;
 			{
-				List< size_t > indices;
+				List< uint > indices;
 				const XmlElement* pNode = pXml->findFirstChild( "p", pTriangles );
 
 				Tokenizer token;
 				token.create( pNode->content, " " );
 
-				size_t index = 0u;
+				uint index = 0u;
 				while ( index != -1 )
 				{
 					string value = token.findNext( &index ).trim();
 					
 					if ( !value.isEmpty() )
 					{
-						size_t i = ParseString::parseUInt32( value );
+						uint i = ParseString::parseUInt32( value );
 
 						indices.add( i );
 					}
@@ -278,9 +278,9 @@ namespace tiki
 				TIKI_ASSERT( pPosSource != nullptr );
 
 				List< crc32 > indicesCrc;
-				List< size_t > indicesCrcIndex;
+				List< uint > indicesCrcIndex;
 				List< crc32 > indicesSkinningCrc;
-				for (size_t i = 0u; i < indices.getCount(); i += inputCount)
+				for (uint i = 0u; i < indices.getCount(); i += inputCount)
 				{
 					const crc32 indexCrc = crcBytes( &indices[ i ], 3u * sizeof( indices[ i ] ) );
 					indicesCrc.add( indexCrc );
@@ -292,7 +292,7 @@ namespace tiki
 					{
 						indicesCrcIndex.add( indexCrc );
 
-						for (size_t j = 0u; j < inputCount; ++j)
+						for (uint j = 0u; j < inputCount; ++j)
 						{
 							indicesData.add( indices[ i + j ] );
 						}
@@ -300,13 +300,13 @@ namespace tiki
 
 					const sint index = indicesCrcIndex.indexOf( indexCrc );
 					TIKI_ASSERT( index >= 0 );
-					indicesIndex.add( (size_t)index );
+					indicesIndex.add( (uint)index );
 				}
 
-				List< size_t > indicesSkinningData;
-				List< size_t > indicesSkinningCount;
-				List< size_t > indicesSkinningOffset;
-				for (size_t i = 0u; i < indicesSkinningCrc.getCount(); ++i)
+				List< uint > indicesSkinningData;
+				List< uint > indicesSkinningCount;
+				List< uint > indicesSkinningOffset;
+				for (uint i = 0u; i < indicesSkinningCrc.getCount(); ++i)
 				{
 					const crc32 crc = indicesSkinningCrc[ i ];
 
@@ -315,11 +315,11 @@ namespace tiki
 						continue;
 					}
 
-					size_t count = 0u;
+					uint count = 0u;
 
 					indicesSkinningOffset.add( indicesSkinningData.getCount() );
 
-					for (size_t j = i; j < indicesSkinningCrc.getCount(); ++j )
+					for (uint j = i; j < indicesSkinningCrc.getCount(); ++j )
 					{
 						if ( crc == indicesSkinningCrc[ j ] )
 						{
@@ -332,7 +332,7 @@ namespace tiki
 					indicesSkinningCount.add( count );
 				}
 
-				for (size_t i = 0u; i < indicesIndex.getCount(); i += 3u)
+				for (uint i = 0u; i < indicesIndex.getCount(); i += 3u)
 				{
 					const uint32 index0 = indicesIndex[ i + 0u ];
 					const uint32 index1 = indicesIndex[ i + 1u ];
@@ -352,13 +352,13 @@ namespace tiki
 			}
 
 			// fill vertices
-			size_t fullStride = 0u; 
-			for (size_t j= 0u; j < sources.getCount(); ++j)
+			uint fullStride = 0u; 
+			for (uint j= 0u; j < sources.getCount(); ++j)
 			{
 				fullStride += sources[ j ].stride;
 			}
 
-			for (size_t i = 0u; i < sources.getCount(); ++i)
+			for (uint i = 0u; i < sources.getCount(); ++i)
 			{
 				const ToolModelSource< float >& source = sources[ i ];
 
@@ -375,20 +375,20 @@ namespace tiki
 
 				const reflection::StructType* pBaseType = ToolModelVertex::getStaticType();
 
-				size_t indexOffset = 0u;
-				for (size_t j= 0u; j < i; ++j)
+				uint indexOffset = 0u;
+				for (uint j= 0u; j < i; ++j)
 				{
 					indexOffset += sources[ i ].stride;
 				}
 
-				for (size_t j = 0u; j < source.stride; ++j)
+				for (uint j = 0u; j < source.stride; ++j)
 				{
 					string fieldPath = source.target + "." + source.techniques[ j ].name;
 					List< const reflection::FieldMember* > wayToField;
 					pBaseType->findFieldRecursve( wayToField, fieldPath );
 
-					size_t offset = 0u;
-					for (size_t k = 0u; k < wayToField.getCount(); ++k)
+					uint offset = 0u;
+					for (uint k = 0u; k < wayToField.getCount(); ++k)
 					{
 						offset += wayToField[ k ]->getOffset();
 					}
@@ -396,14 +396,14 @@ namespace tiki
 
 					float scale = ( source.semantic == VertexSementic_Position ? scaling : 1.0f );
 
-					for (size_t k = 0u; k < m_vertices.getCount(); ++k)
+					for (uint k = 0u; k < m_vertices.getCount(); ++k)
 					{
 						ToolModelVertex& vertex = m_vertices[ k ];
 						float* pTarget = addPtrCast< float >( &vertex, offset );
 
-						const size_t dataIndex1 = (k * inputCount) + source.userData;
+						const uint dataIndex1 = (k * inputCount) + source.userData;
 						TIKI_ASSERT( dataIndex1 != indicesData.getCount() );
-						const size_t dataIndex2 = (indicesData[ dataIndex1 ] * source.stride) + j;
+						const uint dataIndex2 = (indicesData[ dataIndex1 ] * source.stride) + j;
 
 						const float value = source.data[ dataIndex2 ] * scale;
 						*pTarget = value;
@@ -412,7 +412,7 @@ namespace tiki
 			}
 		}
 
-		for (size_t i = 0u; i < sources.getCount(); ++i)
+		for (uint i = 0u; i < sources.getCount(); ++i)
 		{
 			sources[ i ].dispose();
 		}
@@ -473,10 +473,10 @@ namespace tiki
 		}
 
 		// calculate joint ids
-		Array< size_t > jointIndices;
+		Array< uint > jointIndices;
 		jointIndices.create( boneNames.data.getCount() );
 
-		for (size_t i = 0u; i < boneNames.data.getCount(); ++i)
+		for (uint i = 0u; i < boneNames.data.getCount(); ++i)
 		{
 			const string& name				= boneNames.data[ i ];
 			const ToolModelJoint* pJoint	= hierarchy.getJointByName( name );
@@ -504,7 +504,7 @@ namespace tiki
 		const XmlElement* pVertexWeights = pXml->findFirstChild( "vertex_weights", pSkinNode );
 		TIKI_ASSERT( pVertexWeights );
 
-		size_t inputCount = 0u;
+		uint inputCount = 0u;
 		{
 			const XmlElement* pInput = pXml->findFirstChild( "input", pVertexWeights );
 
@@ -521,7 +521,7 @@ namespace tiki
 		}
 
 		//prepare vertices
-		for (size_t i = 0u; i < m_vertices.getCount(); ++i)
+		for (uint i = 0u; i < m_vertices.getCount(); ++i)
 		{
 			ToolModelVertex& vertex = m_vertices[ i ];
 
@@ -544,11 +544,11 @@ namespace tiki
 			Tokenizer tokenCount;
 			tokenCount.create( pCount->content, " \t\n\r", true );
 
-			size_t i = 0u;
-			size_t c = 0u;
-			size_t count = TIKI_SIZE_T_MAX;
-			size_t index = 0u;
-			size_t sourceIndex = 0u;
+			uint i = 0u;
+			uint c = 0u;
+			uint count = TIKI_SIZE_T_MAX;
+			uint index = 0u;
+			uint sourceIndex = 0u;
 			while ( index != TIKI_SIZE_T_MAX )
 			{
 				if ( c == count || count == TIKI_SIZE_T_MAX )
@@ -565,11 +565,11 @@ namespace tiki
 				}
 
 				const string part	= token.findNext( &index );
-				const size_t value	= ParseString::parseUInt32( part );
+				const uint value	= ParseString::parseUInt32( part );
 
-				for (size_t j = 0u; j < m_skinningIndicesCount[ i ]; ++j)
+				for (uint j = 0u; j < m_skinningIndicesCount[ i ]; ++j)
 				{
-					const size_t vertexIndex = m_skinningIndicesOffset[ i ] + j;
+					const uint vertexIndex = m_skinningIndicesOffset[ i ] + j;
 					ToolModelVertex& vertex = m_vertices[ m_skinningIndicesData[ vertexIndex ] ];
 
 					Vector3 pos;
@@ -581,7 +581,7 @@ namespace tiki
 
 					if ( sourceIndex == 0u )
 					{
-						uint* pIndices = &vertex.jointIndices.x;
+						uint32* pIndices = &vertex.jointIndices.x;
 
 						const uint index = jointIndices[ value ];
 						TIKI_ASSERT( index < hierarchy.getJointCount() );
@@ -638,15 +638,15 @@ namespace tiki
 
 		Array< Vector3 > tan1;
 		Array< Vector3 > tan2;
-		List< size_t > indices;
+		List< uint > indices;
 		tan1.create( m_vertices.getCount() );
 		tan2.create( m_vertices.getCount() );
 
-		for (size_t i = 0u; i < m_indices.getCount(); i += 3u)
+		for (uint i = 0u; i < m_indices.getCount(); i += 3u)
 		{
-			size_t i1 = m_indices[ i + 0u ];
-			size_t i2 = m_indices[ i + 1u ];
-			size_t i3 = m_indices[ i + 2u ];
+			uint i1 = m_indices[ i + 0u ];
+			uint i2 = m_indices[ i + 1u ];
+			uint i3 = m_indices[ i + 2u ];
 
 			Vector3 v1;
 			Vector3 v2;
@@ -700,7 +700,7 @@ namespace tiki
 			}
 		}
 
-		for (size_t i = 0u; i < m_vertices.getCount(); ++i)
+		for (uint i = 0u; i < m_vertices.getCount(); ++i)
 		{
 			const Vector3& t = tan1[ i ];
 

@@ -58,7 +58,7 @@ namespace tiki
 		TIKI_TRACE( "AssetConverter: finish\n" );
 	}
 
-	int AssetConverter::run()
+	int AssetConverter::convertAll()
 	{
 		List< string > assetFiles;
 		List< string > templateFiles;
@@ -78,9 +78,44 @@ namespace tiki
 		return m_manager.startConversion();
 	}
 
-	void AssetConverter::resolveDependencies()
+	void AssetConverter::startWatch()
+	{
+		//m_watchThread.create( )
+	}
+
+	void AssetConverter::stopWatch()
 	{
 
+	}
+
+	void AssetConverter::getChangedFiles( Array< string >& changedFiles )
+	{
+
+	}
+
+	void AssetConverter::lockAsset( const string& fileName )
+	{
+
+	}
+
+	void AssetConverter::unlockAsset()
+	{
+
+	}
+
+	void AssetConverter::watchThreadEntryPoint( const Thread& thread )
+	{
+		while ( thread.isExitRequested() == false )
+		{
+
+		}
+	}
+
+	int AssetConverter::watchThreadStaticEntryPoint( const Thread& thread )
+	{
+		AssetConverter* pConverter = static_cast< AssetConverter* >( thread.getArgument() );
+		pConverter->watchThreadEntryPoint( thread );
+		return 0u;
 	}
 
 	void AssetConverter::findFiles( const string& path,  List< string >& files, const string& ext ) const

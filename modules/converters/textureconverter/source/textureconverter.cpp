@@ -66,7 +66,7 @@ namespace tiki
 				else
 				{
 					uint4 rect = { 0, 0, image.getWidth(), image.getHeight() };
-					uint* pRect = &rect.x;
+					uint32* pRect = &rect.x;
 					for (size_t k = 0u; k < 4u; ++k)
 					{
 						pRect[ k ] = ParseString::parseUInt32( values[ k ] );
