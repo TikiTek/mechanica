@@ -13,6 +13,11 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 	void* memory::allocAlign( size_t size, size_t alignment )
 	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = 4u;
+		}
+
 		return _aligned_malloc( size, alignment );
 	}
 

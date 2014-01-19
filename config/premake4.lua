@@ -11,18 +11,25 @@ module:set_define( "TIKI_BUILD_DEBUG", "TIKI_ON", "Debug" );
 module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Debug" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Debug" );
 module:set_flag( "Symbols", "Debug" );
+--module:set_flag( "FatalWarnings", "Debug" );
 
 module:set_define( "NDEBUG", nil, "Release" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_OFF", "Release" );
 module:set_define( "TIKI_BUILD_RELEASE", "TIKI_ON", "Release" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Release" );
 module:set_flag( "Optimize", "Release" );
+module:set_flag( "NoRTTI", "Release" );
+module:set_flag( "OptimizeSpeed", "Release" );
+--module:set_flag( "FatalWarnings", "Release" );
 
 module:set_define( "NDEBUG", nil, "Master" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_OFF", "Master" );
 module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Master" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_ON", "Master" );
 module:set_flag( "Optimize", "Master" );
+module:set_flag( "NoRTTI", "Master" );
+module:set_flag( "OptimizeSpeed", "Master" );
+--module:set_flag( "FatalWarnings", "Master" );
 
 if (_ACTION == "vs2010" or _ACTION == "vs2012") then
 	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_ON" );

@@ -2,7 +2,6 @@
 #ifndef __TIKI_RESOURCEFILE_HPP_INCLUDED__
 #define __TIKI_RESOURCEFILE_HPP_INCLUDED__
 
-#include "tiki/base/alignment.hpp"
 #include "tiki/base/endianness.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"

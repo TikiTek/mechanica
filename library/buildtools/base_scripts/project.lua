@@ -187,7 +187,7 @@ function Project:finalize()
 			debugdir( path );
 			objdir( path .. "/obj" );
 
-			print( "Configuration: " .. var_platform .. "/" .. var_configuration );
+			--print( "Configuration: " .. var_platform .. "/" .. var_configuration );
 
 			binary_pc_dirs[ var_platform ][ var_configuration ] = {};
 			binary_pc_files[ var_platform ][ var_configuration ] = {};

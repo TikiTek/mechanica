@@ -49,6 +49,11 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T* memory::newArray( size_t count, size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = TIKI_ALIGNOF( T );
+		}
+
 		void* pNew = allocAlign( sizeof( T ) * count, alignment );
 		TIKI_ASSERT( (size_t)pNew % alignment == 0u );
 

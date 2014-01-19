@@ -415,6 +415,9 @@
 		end,
 		
 		onproject = function(prj)
+			if file_actions ~= nil then
+				prj.file_actions = file_actions
+			end
 			if premake.isdotnetproject(prj) then
 				premake.generate(prj, "%%.csproj", vstudio.cs2005.generate)
 				premake.generate(prj, "%%.csproj.user", vstudio.cs2005.generate_user)

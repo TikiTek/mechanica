@@ -471,13 +471,28 @@
 				None = {},
 				ResourceCompile = {},
 			}
+			
+			--vardump(prj);
 
 			for file in premake.project.eachfile(prj) do
-				if path.iscppfile(file.name) then
+				local action = prj.file_actions[ file.name ];				
+				if action == nil then
+					if path.iscppfile(file.name) then
+						action = "Source"
+					elseif path.iscppheader(file.name) then
+						action = "Header"
+					elseif path.isresourcefile(file.name) then
+						action = "Resource"
+					else
+						action = "None"
+					end
+				end
+				
+				if action == "Source" then
 					table.insert(sortedfiles.ClCompile, file)
-				elseif path.iscppheader(file.name) then
+				elseif action == "Header" then
 					table.insert(sortedfiles.ClInclude, file)
-				elseif path.isresourcefile(file.name) then
+				elseif action == "Resource" then
 					table.insert(sortedfiles.ResourceCompile, file)
 				else
 					table.insert(sortedfiles.None, file)
