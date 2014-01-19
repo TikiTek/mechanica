@@ -127,4 +127,20 @@ namespace tiki
 #define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
 #define TIKI_STRING( text ) # text
 
+#define TIKI_DEFAULT_ALIGNMENT 0xffffffffu
+
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+
+#	define TIKI_PRE_ALIGN( var )	__declspec( align( var ) )
+#	define TIKI_POST_ALIGN( var )
+#	define TIKI_ALIGNOF( type )		( __alignof( type ) )
+
+#else
+
+#	error not supported
+
+#endif
+
+
+
 #endif // TIKI_TYPES_HPP

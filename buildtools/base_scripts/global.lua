@@ -1,4 +1,7 @@
 newoption { trigger = "outpath", description = "Location for generated project files" }
+newoption { trigger = "unity_dir", description = "" }
+
+file_actions = {};
 
 if not _OPTIONS["outpath"] then
 	error("No outpath specified.")
@@ -129,6 +132,10 @@ function get_config_dir( platform, configuration )
 	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
 end
 
+function file_action( file_name, action )
+	file_actions[ file_name ] = action;
+end
+
 function finalize( output_name, projects )
 	if type( output_name ) ~= "string" then
 		throw "finalize: output_name is not a string.";
@@ -153,6 +160,11 @@ function finalize( output_name, projects )
 			end
 		end		
 	end
+	
+	_OPTIONS[ "unity_dir" ] = path.join( _OPTIONS[ "outpath" ], "unity_files" )
+	if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
+		os.mkdir( _OPTIONS[ "unity_dir" ] )
+	end
 
 	solution( output_name );
 	configurations( var_configurations );
@@ -160,6 +172,7 @@ function finalize( output_name, projects )
 	location( _OPTIONS[ "outpath" ] )
 
 	for i,project in pairs( projects ) do
+		print( "Project: " .. project.name );
 		project:finalize();
 	end
 end

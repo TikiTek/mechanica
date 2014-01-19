@@ -6,7 +6,7 @@
 namespace tiki
 {
 	template<typename T>
-	tiki::Queue<T>::Queue()
+	Queue<T>::Queue()
 	{
 		m_pData		= nullptr;
 
@@ -16,13 +16,13 @@ namespace tiki
 	}
 
 	template<typename T>
-	tiki::Queue<T>::~Queue()
+	Queue<T>::~Queue()
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 	}
 
 	template<typename T>
-	bool tiki::Queue<T>::create( uint capacity, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
+	bool Queue<T>::create( uint capacity, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		m_pData = memory::newArray< T >( capacity, alignment );
 		if ( m_pData == nullptr )
@@ -38,24 +38,24 @@ namespace tiki
 	}
 
 	template<typename T>
-	void tiki::Queue<T>::dispose()
+	void Queue<T>::dispose()
 	{
 	}
 
 	template<typename T>
-	bool tiki::Queue<T>::isEmpty() const
+	bool Queue<T>::isEmpty() const
 	{
 		return m_top == m_bottom;
 	}
 
 	template<typename T>
-	bool tiki::Queue<T>::isFull() const
+	bool Queue<T>::isFull() const
 	{
 		return m_top != ( ( m_bottom + 1u ) % m_capacity );
 	}
 
 	template<typename T>
-	T& tiki::Queue<T>::push()
+	T& Queue<T>::push()
 	{
 		TIKI_ASSERT( isFull() == false );
 
@@ -65,7 +65,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	T& tiki::Queue<T>::push( ConstReference value )
+	T& Queue<T>::push( ConstReference value )
 	{
 		TIKI_ASSERT( isFull() == false );
 
@@ -76,7 +76,7 @@ namespace tiki
 	}
 	
 	template<typename T>
-	bool tiki::Queue<T>::pop( Reference target )
+	bool Queue<T>::pop( Reference target )
 	{
 		if ( isEmpty() == true )
 		{
@@ -90,7 +90,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	uint tiki::Queue<T>::getCount() const
+	uint Queue<T>::getCount() const
 	{
 		const uint bottom = m_bottom + ( m_bottom < m_top : m_capacity : 0u );
 		return bottom - m_top;

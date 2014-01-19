@@ -1,7 +1,13 @@
 
-Module = class{ name = nil, config = nil, module_dependencies = {}, source_files = {} };
+Module = class{ name = nil, module_type = 0, config = nil, module_dependencies = {}, source_files = {} };
 
 global_module_storage = {};
+
+ModuleTypes = {
+	UnityCppModule	= 0,
+	UnityCModule	= 1,
+	FilesModule		= 2
+};
 
 function find_module( module_name )
 	for i,module in pairs( global_module_storage ) do
@@ -16,8 +22,9 @@ end
 
 function Module:new( name, initFunc )
 	local module_new = class_instance( self );
-	module_new.name		= name;
-	module_new.config	= PlatformConfiguration:new();
+	module_new.name			= name;
+	module_new.config		= PlatformConfiguration:new();
+	module_new.module_type	= ModuleTypes.UnityCppModule;
 	
 	table.insert( global_module_storage, module_new );
 
@@ -83,14 +90,68 @@ function Module:resolve_dependency( target_list )
 	end
 end
 
-function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration, platform )
-	if ( configuration == nil and platform == nil ) then
-		files( self.source_files );
+function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform )
+	if ( configuration_obj == nil and platform == nil ) then
+		if self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule then
+			local all_files = {};
+		
+			for i,pattern in pairs( self.source_files ) do
+				local matches = os.matchfiles( pattern )
+				
+				for j,file_name in pairs( matches ) do
+					if not table.contains( all_files, file_name ) then
+						all_files[#all_files+1] = file_name;
+					end					
+				end
+			end
+			
+			local ext = "cpp"
+			if self.module_type == ModuleTypes.UnityCModule then
+				ext = "c"
+			end
+			
+			local unity_file_name = path.join( _OPTIONS[ "unity_dir" ], self.name .. "_unity." .. ext );			
+			local c = {};
+			c[#c+1] = "// Unity file created by Premake";
+			c[#c+1] = "";			
+			for i,file_name in pairs( all_files ) do
+				if path.iscppfile( file_name ) then
+					file_action( path.getrelative( _OPTIONS[ "outpath" ], file_name ), "Header" );
+					
+					local relative_file_name = path.getrelative( _OPTIONS[ "unity_dir" ], file_name );
+					c[#c+1] = string.format( "#include \"%s\"", relative_file_name );
+				end
+			end
+			local unity_content = table.concat( c, "\n" );
 
-		--[[for i,file in pairs( self.source_files ) do
-			print( "File: "..file );
-		end]]--
+			files( all_files );
+			
+			local create_unity = true
+			if os.isfile( unity_file_name ) then
+				local unity_file = io.open( unity_file_name, "r" );
+				if unity_file ~= nil then
+					local unity_current_content = unity_file:read("*all");
+					if unity_current_content == unity_content then
+						create_unity = false;
+					end					
+					unity_file:close();
+				end
+			end
+			
+			if create_unity then
+				print( "Create Unity file: " .. path.getbasename( unity_file_name ) .. "." .. ext );
+				local unity_file = io.open( unity_file_name, "w" );
+				if unity_file ~= nil then
+					unity_file:write( unity_content );
+					unity_file:close();
+				end
+			end
+			
+			files( { unity_file_name } );
+		else
+			files( self.source_files );
+		end
 	end
 
-	self.config:get_config( configuration, platform ):apply( shader_dirs, binary_dirs, binary_files );
+	self.config:get_config( configuration_obj, platform ):apply( shader_dirs, binary_dirs, binary_files );
 end

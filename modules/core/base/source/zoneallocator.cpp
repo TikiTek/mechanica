@@ -52,6 +52,11 @@ namespace tiki
 	void* ZoneAllocator::allocate( uint sizeInBytes, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		TIKI_ASSERT( m_pCurrent != nullptr );
+
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = m_baseAlignment;
+		}
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		TIKI_ASSERT( m_baseAlignment >= alignment );
 #endif

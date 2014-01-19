@@ -2,7 +2,6 @@
 #ifndef __TIKI_VECTOR_HPP_INCLUDED__
 #define __TIKI_VECTOR_HPP_INCLUDED__
 
-#include "tiki/base/alignment.hpp"
 #include "tiki/base/float32.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/structs.hpp"
