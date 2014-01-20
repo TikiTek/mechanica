@@ -80,34 +80,58 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		//m_watchThread.create( )
+		m_fileWatcher.create( m_sourcePath.cStr(), 32u, true );
+		m_converterMutex.create();
+		
+		if ( m_watchThread.create( watchThreadStaticEntryPoint, 8192u, "AssetConverter" ) == true )
+		{
+			m_watchThread.start( this );
+		}
 	}
 
 	void AssetConverter::stopWatch()
 	{
+		m_watchThread.requestExit();
+		m_watchThread.waitForExit();
 
+		m_converterMutex.dispose();
+		m_fileWatcher.dispose();
 	}
 
-	void AssetConverter::getChangedFiles( Array< string >& changedFiles )
+	bool AssetConverter::getChangedFiles( Array< string >& changedFiles )
 	{
-
+		MutexStackLock lock( m_converterMutex );
+		if ( m_changedFiles.getCount() != 0u )
+		{
+			changedFiles.create( m_changedFiles.getData(), m_changedFiles.getCount() );
+			return true;
+		}
+		return false;
 	}
 
-	void AssetConverter::lockAsset( const string& fileName )
+	void AssetConverter::lockConversion()
 	{
-
+		m_converterMutex.lock();
 	}
 
-	void AssetConverter::unlockAsset()
+	void AssetConverter::unlockConversion()
 	{
-
+		m_converterMutex.unlock();
 	}
 
 	void AssetConverter::watchThreadEntryPoint( const Thread& thread )
 	{
 		while ( thread.isExitRequested() == false )
 		{
-
+			FileWatcherEvent fileEvent;
+			if ( m_fileWatcher.popEvent( fileEvent ) == true && fileEvent.eventType == FileWatcherEventType_Modified )
+			{
+				MutexStackLock lock( m_converterMutex );
+				if ( m_manager.startConvertFile( fileEvent.fileName ) )
+				{
+					m_changedFiles.add( fileEvent.fileName );
+				}
+			}
 		}
 	}
 

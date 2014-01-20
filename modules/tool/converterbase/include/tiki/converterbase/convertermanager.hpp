@@ -34,7 +34,7 @@ namespace tiki
 	
 	class ConverterManager
 	{
-		friend void globalTraceCallback( cstring message, debug::TraceLevel level );
+		friend void globalTraceCallback( cstring message, TraceLevel level );
 
 	public:
 
@@ -47,6 +47,7 @@ namespace tiki
 		void					addTemplate( const string& fileName );
 		void					queueFile( const string& fileName );
 		int						startConversion();
+		bool					startConvertFile( const string& fileName );
 
 		// converter
 		void					registerConverter( const ConverterBase* pConverter );
@@ -93,13 +94,11 @@ namespace tiki
 
 		ConverterResourceMap		m_resourceMap;
 
-		static ConverterManager*	s_pInstance;
-
-		void						traceCallback( cstring message, debug::TraceLevel level ) const;
+		void						traceCallback( cstring message, TraceLevel level ) const;
 		bool						checkBuildNeeded( const string& fileName, const size_t converterRevision );
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
 
-		void						convertFile( const ConverterBase* pConverter, const string& fileName );
+		bool						convertFile( const ConverterBase* pConverter, const string& fileName );
 
 	};
 }

@@ -3,6 +3,7 @@
 #define __TIKI_FILESYSTEMWATCHER_HPP_INCLUDED__
 
 #include "tiki/base/queue.hpp"
+#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/threading/thread.hpp"
@@ -29,7 +30,7 @@ namespace tiki
 
 	struct FileWatcherEvent
 	{
-		const char*				pFileName;
+		string					fileName;
 		FileWatcherEventType	eventType;
 	};
 
@@ -42,21 +43,23 @@ namespace tiki
 		FileWatcher();
 		~FileWatcher();
 
-		bool	create( const char* pPath, uint maxEventCount );
+		bool	create( const char* pPath, uint maxEventCount, bool blockingMode );
 		void	dispose();
 
 		bool	popEvent( FileWatcherEvent& fileEvent );
-
+		
 	private:
 
-		Queue< FileWatcherEvent >		m_events;
-		Thread							m_watcherThread;
-		Mutex							m_watcherMutex;
+		bool						m_blockingMode;
 
-		FileSystemWatcherPlatformData	m_platformData;
+		Queue< FileWatcherEvent >	m_events;
+		Thread						m_watcherThread;
+		Mutex						m_watcherMutex;
 
-		void							threadEntryPoint( const Thread& thread );
-		static int						threadStaticEntryPoint( const Thread& thread );
+		FileWatcherPlatformData		m_platformData;
+
+		void						threadEntryPoint( const Thread& thread );
+		static int					threadStaticEntryPoint( const Thread& thread );
 
 	};
 }

@@ -3,70 +3,12 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/file.hpp"
+#include "tiki/base/iopath.hpp"
 
 namespace tiki
 {
-
-
-	FileWatcher::FileWatcher()
+	static void createEvent( FileWatcherEvent& fileEvent, const string& basePath, const FILE_NOTIFY_INFORMATION* pNotifyInfo )
 	{
-		m_platformData.watchHandle = INVALID_HANDLE_VALUE;
-	}
-
-	FileWatcher::~FileWatcher()
-	{
-		TIKI_ASSERT( m_platformData.watchHandle == INVALID_HANDLE_VALUE );
-	}
-
-	bool FileWatcher::create( const char* pPath, uint maxEventCount )
-	{
-		m_platformData.watchHandle = CreateFile(
-			pPath,
-			FILE_LIST_DIRECTORY,                
-			FILE_SHARE_READ | FILE_SHARE_DELETE,
-			NULL,                               
-			OPEN_EXISTING,                      
-			FILE_FLAG_BACKUP_SEMANTICS,         
-			NULL                                
-		);
-
-		if ( m_platformData.watchHandle == INVALID_HANDLE_VALUE )
-		{
-			return false;
-		}
-
-		if ( m_watcherThread.create( threadStaticEntryPoint, 8192u, "FileWatcher" ) == false )
-		{
-			return false;
-		}
-
-		m_watcherMutex.create();
-		m_events.create( maxEventCount );
-
-		m_watcherThread.start( this );
-
-		return true;
-	}
-
-	void FileWatcher::dispose()
-	{
-		if ( m_platformData.watchHandle != INVALID_HANDLE_VALUE )
-		{
-			CloseHandle( m_platformData.watchHandle );
-			m_platformData.watchHandle = INVALID_HANDLE_VALUE;
-		}
-	}
-
-	bool FileWatcher::popEvent( FileWatcherEvent& fileEvent )
-	{
-		MutexStackLock lock( m_watcherMutex );
-		return m_events.pop( fileEvent );
-	}
-
-	void FileWatcher::threadEntryPoint( const Thread& thread )
-	{
-		TIKI_ASSERT( m_platformData.watchHandle != INVALID_HANDLE_VALUE );
-
 		static FileWatcherEventType eventTypeMapping[] =
 		{
 			FileWatcherEventType_Invalid,
@@ -82,54 +24,147 @@ namespace tiki
 		TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_OLD_NAME	== 4 );
 		TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_NEW_NAME	== 5 );
 
-		HANDLE watchHandle = m_platformData.watchHandle;
-
-		DWORD requiredSize;
-		uint8 infos[ 2048u ];
-
-		while ( ReadDirectoryChangesW( watchHandle, &infos, sizeof(infos), TRUE, FILE_NOTIFY_CHANGE_LAST_WRITE, &requiredSize, 0, 0 ) )
+		const string fileName = path::combine( basePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
+		if ( file::exists( fileName ) )
 		{
-			const uint8* pBinaryData = infos;
+			uint32 counter = 0;
+
+			HANDLE handle = INVALID_HANDLE_VALUE;
+			while( handle == INVALID_HANDLE_VALUE && counter < 1000u )
+			{
+				Sleep( 1 );
+				handle = CreateFile( fileName.cStr(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+				counter++;
+			}
+
+			if ( handle != INVALID_HANDLE_VALUE )
+			{
+				CloseHandle( handle );
+			}
+
+			fileEvent.eventType	= eventTypeMapping[ pNotifyInfo->Action ];
+			fileEvent.fileName	= fileName;
+		}
+	}
+
+	static bool readEvents( FileWatcherPlatformData& platformData, Mutex* pMutex, Queue< FileWatcherEvent >& events )
+	{
+		if ( ReadDirectoryChangesW( platformData.watchHandle, &platformData.dataBuffer, sizeof( platformData.dataBuffer ), TRUE, FILE_NOTIFY_CHANGE_LAST_WRITE, &platformData.requiredSize, 0, 0 ) )
+		{
+			const uint8* pBinaryData = platformData.dataBuffer;
 			const FILE_NOTIFY_INFORMATION* pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
 
 			do 
 			{
-				string fileName = convertString( pNotifyInfo->FileName );
-				//path::combine(
-				//	filePath,
-				//	wstring(dataInfo->FileName, dataInfo->FileNameLength / sizeof(wchar_t))
-				//);
-
-				if ( file::exists( fileName ) )
+				if ( pMutex != nullptr )
 				{
-					uint32 counter = 0;
-
-					HANDLE handle = INVALID_HANDLE_VALUE;
-					while( handle == INVALID_HANDLE_VALUE && counter < 1000 )
-					{
-						handle = CreateFile( fileName.cStr(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-						counter++;
-						Sleep( 1 );
-					}
-
-					if ( handle != INVALID_HANDLE_VALUE )
-					{
-						CloseHandle( handle );
-					}
-
-					{
-						MutexStackLock lock( m_watcherMutex );
-
-						FileWatcherEvent& fileEvent = m_events.push();
-						fileEvent.eventType	= eventTypeMapping[ pNotifyInfo->Action ];
-						fileEvent.pFileName = nullptr;
-					}
+					MutexStackLock lock( *pMutex );
+					createEvent( events.push(), platformData.basePath, pNotifyInfo );
+				}
+				else
+				{
+					createEvent( events.push(), platformData.basePath, pNotifyInfo );
 				}
 
 				pBinaryData += pNotifyInfo->NextEntryOffset;
 				pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
 			} 
-			while ( pNotifyInfo->NextEntryOffset);
+			while ( pNotifyInfo->NextEntryOffset );
+
+			return true;
+		}
+
+		return false;
+	}
+
+	FileWatcher::FileWatcher()
+	{
+		m_platformData.watchHandle = INVALID_HANDLE_VALUE;
+	}
+
+	FileWatcher::~FileWatcher()
+	{
+		TIKI_ASSERT( m_platformData.watchHandle == INVALID_HANDLE_VALUE );
+	}
+
+	bool FileWatcher::create( const char* pPath, uint maxEventCount, bool blockingMode )
+	{
+		m_blockingMode = blockingMode;
+
+		m_platformData.basePath = pPath;
+
+		m_platformData.watchHandle = CreateFile(
+			pPath,
+			FILE_LIST_DIRECTORY,                
+			FILE_SHARE_READ | FILE_SHARE_DELETE,
+			NULL,                               
+			OPEN_EXISTING,                      
+			FILE_FLAG_BACKUP_SEMANTICS,         
+			NULL                                
+		);
+
+		if ( m_platformData.watchHandle == INVALID_HANDLE_VALUE )
+		{
+			return false;
+		}
+
+		m_events.create( maxEventCount );
+
+		if ( m_blockingMode == false )
+		{
+			if ( m_watcherThread.create( threadStaticEntryPoint, 8192u, "FileWatcher" ) == false )
+			{
+				return false;
+			}
+
+			m_watcherMutex.create();
+			m_watcherThread.start( this );
+		}
+
+		return true;
+	}
+
+	void FileWatcher::dispose()
+	{
+		if ( m_platformData.watchHandle != INVALID_HANDLE_VALUE )
+		{
+			CloseHandle( m_platformData.watchHandle );
+			m_platformData.watchHandle = INVALID_HANDLE_VALUE;
+		}
+
+		if ( m_blockingMode == false )
+		{
+			m_watcherThread.requestExit();
+			m_watcherThread.waitForExit();
+			m_watcherThread.dispose();
+
+			m_watcherMutex.dispose();
+		}
+
+		m_events.dispose();
+	}
+
+	bool FileWatcher::popEvent( FileWatcherEvent& fileEvent )
+	{
+		if ( m_blockingMode == false )
+		{
+			MutexStackLock lock( m_watcherMutex );
+			return m_events.pop( fileEvent );
+		}
+		else if ( m_events.isEmpty() == false || readEvents( m_platformData, nullptr, m_events ) )
+		{
+			return m_events.pop( fileEvent );
+		}
+
+		return false;
+	}
+
+	void FileWatcher::threadEntryPoint( const Thread& thread )
+	{
+		TIKI_ASSERT( m_platformData.watchHandle != INVALID_HANDLE_VALUE );
+		
+		while ( thread.isExitRequested() == false && readEvents( m_platformData, &m_watcherMutex, m_events ) )
+		{
 		}
 	}
 

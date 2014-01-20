@@ -24,6 +24,7 @@ namespace tiki
 		
 		m_pEntryFunction	= nullptr;
 		m_pArgument			= nullptr;
+		m_isExitRequested	= false;
 	}
 
 	Thread::~Thread()
@@ -36,7 +37,8 @@ namespace tiki
 		TIKI_ASSERT( pEntryFunc != nullptr );
 		TIKI_ASSERT( m_platformData.threadHandle == INVALID_HANDLE_VALUE );
 
-		m_pEntryFunction = pEntryFunc;
+		m_pEntryFunction	= pEntryFunc;
+		m_isExitRequested	= false;
 
 		m_platformData.threadHandle = CreateThread(
 			nullptr,

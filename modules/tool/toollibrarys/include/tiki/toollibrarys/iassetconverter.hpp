@@ -33,10 +33,10 @@ namespace tiki
 
 		virtual void	startWatch() = 0;
 		virtual void	stopWatch() = 0;
-		virtual void	getChangedFiles( Array< string >& changedFiles ) = 0;
+		virtual bool	getChangedFiles( Array< string >& changedFiles ) = 0;
 
-		virtual void	lockAsset( const string& fileName ) = 0;
-		virtual void	unlockAsset() = 0;
+		virtual void	lockConversion() = 0;
+		virtual void	unlockConversion() = 0;
 		
 	};
 

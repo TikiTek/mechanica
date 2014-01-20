@@ -5,17 +5,17 @@
 
 namespace tiki
 {
+	enum TraceLevel
+	{
+		TraceLevel_None		= 0u,
+		TraceLevel_Debug,
+		TraceLevel_Info,
+		TraceLevel_Warning,
+		TraceLevel_Error
+	};
+
 	namespace debug
 	{
-		enum TraceLevel
-		{
-			TraceLevel_None		= 0u,
-			TraceLevel_Debug,
-			TraceLevel_Info,
-			TraceLevel_Warning,
-			TraceLevel_Error
-		};
-
 		typedef void(*TraceCallback)(cstring, TraceLevel);
 
 		bool	isDebuggerActive();

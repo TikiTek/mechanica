@@ -12,6 +12,7 @@ namespace tiki
 	class ConverterManager;
 	class ResourceWriter;
 	struct ConversionParameters;
+	struct ConversionResult;
 
 	class ConverterBase
 	{
@@ -25,7 +26,7 @@ namespace tiki
 		void					create( ConverterManager* pManager );
 		void					dispose();
 
-		void					convert( const ConversionParameters& params ) const;
+		void					convert( ConversionResult& result, const ConversionParameters& params ) const;
 
 		const ConverterManager*	getManager() const { return m_pManager; }
 

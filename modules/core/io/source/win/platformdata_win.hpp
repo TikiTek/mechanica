@@ -9,9 +9,15 @@ namespace tiki
 		HANDLE	fileHandle;
 	};
 
-	struct FileSystemWatcherPlatformData
+	struct FileWatcherPlatformData
 	{
+		string	basePath;
+
 		HANDLE	watchHandle;
+
+		DWORD	requiredSize;
+		uint8	dataBuffer[ 2048u ];
+
 	};
 }
 

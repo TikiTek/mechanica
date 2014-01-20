@@ -51,7 +51,7 @@ namespace tiki
 	template<typename T>
 	bool Queue<T>::isFull() const
 	{
-		return m_top != ( ( m_bottom + 1u ) % m_capacity );
+		return m_top == ( ( m_bottom + 1u ) % m_capacity );
 	}
 
 	template<typename T>

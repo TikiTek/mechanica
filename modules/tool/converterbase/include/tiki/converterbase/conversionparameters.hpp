@@ -56,6 +56,30 @@ namespace tiki
 		List< ConversionInputFile >		inputFiles;
 		ConversionArguments				arguments;
 	};
+
+	struct ConversionResult
+	{
+		struct TraceInfo
+		{
+			TraceLevel	level;
+			string		message;
+		};
+
+		struct OutputFile
+		{
+			fourcc	type;
+			string	fileName;
+		};
+
+		struct Dependency
+		{
+			string	fileName;
+		};
+
+		List< TraceInfo >	traceInfos;
+		List< OutputFile >	outputFiles;
+		List< Dependency >	dependencies;
+	};
 }
 
 #endif // TIKI_CONVERSIONPARAMETERS_HPP

@@ -13,11 +13,19 @@
 
 namespace tiki
 {	
-	ConverterManager* ConverterManager::s_pInstance = nullptr;
+	static ConverterManager*	s_pInstance			= nullptr;
+	static ConversionResult*	s_pCurrentResult	= nullptr;
 
-	void globalTraceCallback( cstring message, debug::TraceLevel level )
+	void globalTraceCallback( cstring message, TraceLevel level )
 	{
-		ConverterManager::s_pInstance->traceCallback( message, level );
+		s_pInstance->traceCallback( message, level );
+
+		if ( s_pCurrentResult != nullptr )
+		{
+			ConversionResult::TraceInfo& traceInfo = s_pCurrentResult->traceInfos.add();
+			traceInfo.level		= level;
+			traceInfo.message	= message;
+		}
 	}
 
 	ConverterManager::~ConverterManager()
@@ -116,6 +124,8 @@ namespace tiki
 	
 	int ConverterManager::startConversion()
 	{
+		m_returnValue = 0;
+
 		crc32 currentType				= 0u;
 		const ConverterBase* pConverter	= nullptr;
 		
@@ -153,6 +163,37 @@ namespace tiki
 
 		return m_returnValue;
 	}
+	
+	bool ConverterManager::startConvertFile( const string& fileName )
+	{
+		string assetFileName = fileName;
+		const string extension		= path::getExtension( assetFileName );
+		if ( extension != ".xasset" )
+		{
+			// todo
+			return false;
+		}
+
+		const string fileTypeString = path::getFilenameWithoutExtension( fileName );
+		const crc32 fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
+		
+		const ConverterBase* pConverter = nullptr;
+		for (size_t i = 0u; i < m_converters.getCount(); ++i)
+		{
+			if ( m_converters[ i ]->getInputType() == fileType )
+			{
+				pConverter = m_converters[ i ];
+				break;
+			}
+		}
+
+		if ( pConverter == nullptr )
+		{
+			return false;
+		}
+
+		return convertFile( pConverter, fileName );
+	}
 
 	void ConverterManager::registerConverter( const ConverterBase* pConverter )
 	{
@@ -164,11 +205,10 @@ namespace tiki
 		m_converters.remove( pConverter );
 	}
 
-	void ConverterManager::traceCallback( cstring message, debug::TraceLevel level ) const
+	void ConverterManager::traceCallback( cstring message, TraceLevel level ) const
 	{
 		string line = message;
-
-		if ( !line.endsWith('\n') )
+		if ( line.endsWith('\n') == false )
 		{
 			line += "\n";
 		}
@@ -176,7 +216,7 @@ namespace tiki
 		m_loggingMutex.lock();
 		m_loggingStream.write( line.cStr(), line.getLength() );
 
-		if ( level >= debug::TraceLevel_Warning )
+		if ( level >= TraceLevel_Warning )
 		{
 			m_returnValue = 1;
 		}
@@ -285,12 +325,12 @@ namespace tiki
 		}
 	}
 
-	void ConverterManager::convertFile( const ConverterBase* pConverter, const string& sourceFile )
+	bool ConverterManager::convertFile( const ConverterBase* pConverter, const string& sourceFile )
 	{
 		if (!file::exists( sourceFile ))
 		{
 			TIKI_TRACE_ERROR( "source file not found: %s\n", sourceFile.cStr() );
-			return;
+			return false;
 		}
 
 		bool needBuild = checkBuildNeeded( sourceFile, pConverter->getConverterRevision() );
@@ -307,7 +347,7 @@ namespace tiki
 		if ( pRoot == nullptr )
 		{
 			TIKI_TRACE_ERROR( "no asset definition found.\n" );
-			return;
+			return false;
 		}
 
 		const XmlAttribute* pOutput = xmlFile.findAttributeByName( "output-name", pRoot );
@@ -368,7 +408,7 @@ namespace tiki
 		{
 			TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted.\n" );
 			xmlFile.dispose();
-			return;
+			return false;
 		}
 
 		// read params
@@ -395,13 +435,39 @@ namespace tiki
 		if ( needBuild == false )
 		{
 			//TIKI_TRACE( "File skipped.\n" );
-			return;
+			return true;
 		}
 		else
 		{
 			TIKI_TRACE( "Building asset: %s\n", sourceFile.cStr() );
 		}
 
-		pConverter->convert( params );
+		ConversionResult result;
+		s_pCurrentResult = &result;
+
+		ConversionResult::Dependency& dep = result.dependencies.add();
+		dep.fileName = params.sourceFile;
+
+		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
+		{
+			ConversionResult::Dependency& dep = result.dependencies.add();
+			dep.fileName = params.inputFiles[ i ].fileName;
+		}
+
+		pConverter->convert( result, params );
+
+		s_pCurrentResult = nullptr;
+
+		bool hasError = false;
+		for (uint i = 0u; i < result.traceInfos.getCount(); ++i)
+		{
+			if ( result.traceInfos[ i ].level >= TraceLevel_Warning )
+			{
+				hasError = true;
+				break;
+			}
+		} 
+
+		return hasError;
 	}
 }

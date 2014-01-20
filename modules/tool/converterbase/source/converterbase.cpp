@@ -41,7 +41,7 @@ namespace tiki
 		m_pManager = nullptr;
 	}
 
-	void ConverterBase::convert( const ConversionParameters& params ) const
+	void ConverterBase::convert( ConversionResult& result, const ConversionParameters& params ) const
 	{
 		TIKI_ASSERT( m_pManager );
 		
