@@ -7,6 +7,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/io/filewatcher.hpp"
 #include "tiki/threading/thread.hpp"
 #include "tiki/toolbase/list.hpp"
 
@@ -33,10 +34,10 @@ namespace tiki
 
 		virtual void	startWatch();
 		virtual void	stopWatch();
-		virtual void	getChangedFiles( Array< string >& changedFiles );
+		virtual bool	getChangedFiles( Array< string >& changedFiles );
 
-		virtual void	lockAsset( const string& fileName );
-		virtual void	unlockAsset();
+		virtual void	lockConversion();
+		virtual void	unlockConversion();
 
 	private:
 
@@ -45,6 +46,7 @@ namespace tiki
 		ConverterManager	m_manager;
 		
 		Thread				m_watchThread;
+		FileWatcher			m_fileWatcher;
 		Mutex				m_converterMutex;
 		string				m_currentFileName;
 		List< string >		m_changedFiles;

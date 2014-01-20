@@ -17,7 +17,7 @@ namespace tiki
 {
 	namespace debug
 	{
-		static void internalTrace( const string& format, debug::TraceLevel level, va_list pArgs );
+		static void internalTrace( const string& format, TraceLevel level, va_list pArgs );
 	}
 
 	debug::TraceCallback s_pGlobalTraceCallback = nullptr;
@@ -87,7 +87,7 @@ namespace tiki
 
 #pragma warning(disable: 4996)
 
-	static void debug::internalTrace( const string& format, debug::TraceLevel level, va_list pArgs )
+	static void debug::internalTrace( const string& format, TraceLevel level, va_list pArgs )
 	{
 		static cstring traceBegins[] =
 		{

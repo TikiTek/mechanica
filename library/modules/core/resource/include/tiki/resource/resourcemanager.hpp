@@ -11,8 +11,9 @@
 
 namespace tiki
 {
-	class Resource;
 	class FactoryBase;
+	class IAssetConverter;
+	class Resource;
 	struct ResourceId;
 
 	struct ResourceManagerParameters
@@ -41,6 +42,8 @@ namespace tiki
 		bool						create( const ResourceManagerParameters& params );
 		void						dispose();
 
+		void						update();
+
 		void						registerResourceType( fourcc type, const FactoryContext& factoryContext );
 		void						unregisterResourceType( fourcc type );
 		
@@ -54,6 +57,8 @@ namespace tiki
 
 		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
+
+		IAssetConverter*			m_pAssetConverter;
 
 		const Resource*				loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName );
 		void						unloadGenericResource( fourcc type, const Resource* pResource );

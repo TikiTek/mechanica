@@ -114,6 +114,7 @@ namespace tiki
 	{
 		m_frameworkData.frameTimer.update();
 		m_frameworkData.mainWindow.update();
+		m_frameworkData.resourceManager.update();
 
 		for (size_t i = 0u; i < m_frameworkData.mainWindow.getEventBuffer().getEventCount(); ++i)
 		{
