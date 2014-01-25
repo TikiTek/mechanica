@@ -31,7 +31,7 @@ module:set_flag( "NoRTTI", "Master" );
 module:set_flag( "OptimizeSpeed", "Master" );
 --module:set_flag( "FatalWarnings", "Master" );
 
-if (_ACTION == "vs2010" or _ACTION == "vs2012") then
+if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "gmake" then
 	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_ON" );
 	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
 	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
