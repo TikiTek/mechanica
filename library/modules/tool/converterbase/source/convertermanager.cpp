@@ -7,6 +7,7 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
+#include "tiki/toolbase/autodispose.hpp"
 #include "tiki/toolbase/tikixml.hpp"
 
 #include "sqlite/sqlite3.h"
@@ -40,22 +41,31 @@ namespace tiki
 		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
-		bool newDatabase = !file::exists( "build.sqlite" );
-		if ( sqlite3_open( "build.sqlite", &m_pDataBase ) != SQLITE_OK )
+		const string databaseFileName = path::combine( m_outputPath, "build.sqlite" );
+		const bool newDatabase = !file::exists( databaseFileName );
+		if ( m_dataBase.create( databaseFileName ) == false )
 		{
-			m_pDataBase = nullptr;
 			TIKI_TRACE_ERROR( "[convertermanager] database intialization failed.\n" );
 		}
 
 		if ( newDatabase )
 		{
-			char* errorMsg;
-			cstring sql = "CREATE TABLE \"files\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , \"filename\" TEXT NOT NULL , \"time_id\" INTEGER NOT NULL , \"content_id\" INTEGER NOT NULL , \"converter_revision\" INTEGER NOT NULL );";
-
-			if ( sqlite3_exec( m_pDataBase, sql, nullptr, nullptr, &errorMsg ) != SQLITE_OK )
+			cstring pCreateTableSql[] =
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] can't create database. Error: %s\n", errorMsg );
-			}
+				"CREATE TABLE assets (id INTEGER PRIMARY KEYAUTOINCREMENTNOT NULLUNIQUE, filename TEXT, path TEXT, type TEXT)",
+				"CREATE TABLE dependencies (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULLUNIQUE, asset_id INTEGER NOT NULL, type TEXT, identifier TEXT, value_text TEXT, value_int INTEGER)",
+				"CREATE TABLE input_files (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULLUNIQUE, asset_id INTEGER, filename TEXT, type TEXT)",
+				"CREATE TABLE output_files (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULLUNIQUE, asset_id INTEGER, filename TEXT, type INTEGER)",
+				"CREATE TABLE traces (id INTEGER PRIMARY KEY AUTOINCREMENTNOT NULLUNIQUE, asset_id INTEGER, level INTEGER, message TEXT)"
+			};
+
+			for (uint i = 0u; i < TIKI_COUNT( pCreateTableSql ); ++i)
+			{
+				if ( m_dataBase.executeCommand( pCreateTableSql[ i ]) == false )
+				{
+					TIKI_TRACE_ERROR( "[convertermanager] can't create database. Error: %s\n", m_dataBase.getLastError().cStr() );
+				}
+			} 
 		}
 
 		m_loggingMutex.create();
@@ -78,11 +88,7 @@ namespace tiki
 		m_loggingStream.close();
 		m_loggingMutex.dispose();
 
-		if ( m_pDataBase != nullptr )
-		{
-			sqlite3_close( m_pDataBase );
-			m_pDataBase = nullptr;
-		}
+		m_dataBase.dispose();
 	}
 
 	void ConverterManager::addTemplate( const string& fileName )
@@ -166,8 +172,8 @@ namespace tiki
 	
 	bool ConverterManager::startConvertFile( const string& fileName )
 	{
-		string assetFileName = fileName;
-		const string extension		= path::getExtension( assetFileName );
+		string assetFileName	= fileName;
+		const string extension	= path::getExtension( assetFileName );
 		if ( extension != ".xasset" )
 		{
 			// todo
@@ -222,82 +228,6 @@ namespace tiki
 		}
 
 		m_loggingMutex.unlock();			
-	}
-
-	bool ConverterManager::checkBuildNeeded( const string& fileName, const size_t converterRevision )
-	{
-		if ( m_pDataBase == nullptr )
-		{
-			return true;
-		}
-
-		const crc32 fileHash = 0u;
-		const crc32 fileTime = file::getLastChangeCrc( fileName );
-
-		if ( m_rebuildForced )
-		{
-			char* pErrorMsg;
-			const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
-
-			if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-			{
-				TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
-			}
-
-			return true;
-		}
-
-		const string sql = formatString( "SELECT * FROM files WHERE filename='%s';", fileName.cStr() );
-
-		cstring pTail;
-		sqlite3_stmt* pState;
-		
-		if ( sqlite3_prepare( m_pDataBase, sql.cStr(), sql.getLength(), &pState, &pTail ) != SQLITE_OK )
-		{
-			TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", pTail );
-			return true;
-		}
-
-		bool returnValue = true;
-		
-		//Array< uint8 > fileContent;
-		//file::readAllBytes( fileName, fileContent );		
-		//const crc32 fileHash = crcBytes( fileContent.getData(), fileContent.getCount() );
-		//fileContent.dispose();
-
-		if ( sqlite3_step( pState ) == SQLITE_ROW )
-		{
-			crc32 sqlTime	= (crc32)sqlite3_column_int( pState, 2 );
-			crc32 sqlHash	= (crc32)sqlite3_column_int( pState, 3 );
-			crc32 sqlRev	= (crc32)sqlite3_column_int( pState, 4 );
-
-			returnValue = !( (fileTime == sqlTime) && (fileHash == sqlHash) && (converterRevision == sqlRev) );
-
-			if ( returnValue )
-			{
-				char* pErrorMsg;
-				const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
-
-				if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-				{
-					TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
-				}
-			}
-		}
-		else
-		{
-			char* pErrorMsg;
-			const string sql2 = formatString( "INSERT INTO files (filename,time_id,content_id,converter_revision) VALUES ('%s',%i,%i,%i)", fileName.cStr(), fileTime, fileHash, converterRevision );
-			
-			if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-			{
-				TIKI_TRACE_ERROR( "[convertermanager] can't intsert file into database. error: %s\n", pErrorMsg );
-			}
-		}
-
-		sqlite3_finalize( pState );
-
-		return returnValue;
 	}
 
 	void ConverterManager::parseParams( const TikiXml& xmlFile, const XmlElement* pRoot, std::map< string, string >& arguments ) const
@@ -446,12 +376,14 @@ namespace tiki
 		s_pCurrentResult = &result;
 
 		ConversionResult::Dependency& dep = result.dependencies.add();
-		dep.fileName = params.sourceFile;
+		dep.type		= ConversionResult::DependencyType_File;
+		dep.identifier	= params.sourceFile;
 
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			ConversionResult::Dependency& dep = result.dependencies.add();
-			dep.fileName = params.inputFiles[ i ].fileName;
+			dep.type		= ConversionResult::DependencyType_File;
+			dep.identifier	= params.inputFiles[ i ].fileName;
 		}
 
 		pConverter->convert( result, params );
@@ -470,4 +402,238 @@ namespace tiki
 
 		return hasError;
 	}
+
+	bool ConverterManager::checkBuildNeeded( const string& fileName, const size_t converterRevision )
+	{
+		return false;
+		//if ( m_dataBase.isCreated() == false )
+		//{
+		//	return true;
+		//}
+
+		//const crc32 fileHash = 0u;
+		//const crc32 fileTime = file::getLastChangeCrc( fileName );
+
+		//if ( m_rebuildForced )
+		//{
+		//	char* pErrorMsg;
+		//	const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
+
+		//	if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
+		//	{
+		//		TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
+		//	}
+
+		//	return true;
+		//}
+
+		//const string sql = formatString( "SELECT * FROM files WHERE filename='%s';", fileName.cStr() );
+
+		//cstring pTail;
+		//sqlite3_stmt* pState;
+
+		//if ( sqlite3_prepare( m_pDataBase, sql.cStr(), sql.getLength(), &pState, &pTail ) != SQLITE_OK )
+		//{
+		//	TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", pTail );
+		//	return true;
+		//}
+
+		//bool returnValue = true;
+
+		////Array< uint8 > fileContent;
+		////file::readAllBytes( fileName, fileContent );		
+		////const crc32 fileHash = crcBytes( fileContent.getData(), fileContent.getCount() );
+		////fileContent.dispose();
+
+		//if ( sqlite3_step( pState ) == SQLITE_ROW )
+		//{
+		//	crc32 sqlTime	= (crc32)sqlite3_column_int( pState, 2 );
+		//	crc32 sqlHash	= (crc32)sqlite3_column_int( pState, 3 );
+		//	crc32 sqlRev	= (crc32)sqlite3_column_int( pState, 4 );
+
+		//	returnValue = !( (fileTime == sqlTime) && (fileHash == sqlHash) && (converterRevision == sqlRev) );
+
+		//	if ( returnValue )
+		//	{
+		//		char* pErrorMsg;
+		//		const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
+
+		//		if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
+		//		{
+		//			TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
+		//		}
+		//	}
+		//}
+		//else
+		//{
+		//	char* pErrorMsg;
+		//	const string sql2 = formatString( "INSERT INTO files (filename,time_id,content_id,converter_revision) VALUES ('%s',%i,%i,%i)", fileName.cStr(), fileTime, fileHash, converterRevision );
+
+		//	if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
+		//	{
+		//		TIKI_TRACE_ERROR( "[convertermanager] can't intsert file into database. error: %s\n", pErrorMsg );
+		//	}
+		//}
+
+		//sqlite3_finalize( pState );
+
+		//return returnValue;
+	}
+	
+	uint ConverterManager::findAssetIdByName( const string& name )
+	{
+		if ( m_dataBase.isCreated() == false )
+		{
+			return TIKI_SIZE_T_MAX;
+		}
+
+		const string sql = formatString( "SELECT * FROM assets WHERE filename = '%s'", name.cStr() );
+
+		AutoDispose< SqliteQuery > query;
+		if ( query->create( m_dataBase, sql ) == false || query->nextRow() == false )
+		{
+			return TIKI_SIZE_T_MAX;
+		}
+
+		return (uint)query->getIntegerField( "id" );
+	}
+
+	bool ConverterManager::checkDependencies( uint assetId, uint converterRevision )
+	{
+		if ( m_dataBase.isCreated() == false || m_rebuildForced || assetId == TIKI_SIZE_T_MAX )
+		{
+			return true;
+		}
+
+		const string sql = formatString( "SELECT * FROM dependencies WHERE assee_id='%u';", assetId );
+				
+		AutoDispose< SqliteQuery > query;
+		if ( query->create( m_dataBase, sql ) )
+		{
+			TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
+			return true;
+		}
+
+		while ( query->nextRow() )
+		{
+			const string type = query->getTextField( "type" );
+
+			const string identifier	= query->getTextField( "identifier" );
+
+			const int value_int		= query->getIntegerField( "value_int" );
+			const string value_text	= query->getTextField( "value_text" );
+
+			if ( type == "file" )
+			{
+
+			}
+			else if ( type == "type" )
+			{
+
+			}
+			else if ( type == "converter" )
+			{
+
+			}
+			//crc32 sqlHash	= (crc32)sqlite3_column_int( pState, 3 );
+			//crc32 sqlRev	= (crc32)sqlite3_column_int( pState, 4 );
+
+			//returnValue = !( (fileTime == sqlTime) && (fileHash == sqlHash) && (converterRevision == sqlRev) );
+
+			//if ( returnValue )
+			//{
+			//	char* pErrorMsg;
+			//	const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
+
+			//	if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
+			//	{
+			//		TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
+			//	}
+			//}
+		}
+
+	}
+
+	bool ConverterManager::writeConvertInput( uint assetId, const ConversionParameters& parametes )
+	{
+		return false;
+	}
+
+	bool ConverterManager::writeConvertResult( uint assetId, const ConversionResult& result )
+	{
+		// delete old stuff
+		{
+			const string deleteCommands[] =
+			{
+				formatString( "DELETE FROM dependencies WHERE asset_id = '%u'", assetId ),
+				formatString( "DELETE FROM output_file WHERE asset_id = '%u'", assetId ),
+				formatString( "DELETE FROM traces WHERE asset_id = '%u'", assetId )
+			};
+
+			for (uint i = 0u; i < TIKI_COUNT( deleteCommands ); ++i)
+			{
+				m_dataBase.executeCommand( deleteCommands[ i ] );
+			}
+		}
+
+		// dependencies
+		{
+			const cstring dependencyType[] =
+			{
+				"file",
+				"type",
+				"converter"
+			};
+			TIKI_COMPILETIME_ASSERT( TIKI_COUNT( dependencyType ) == ConversionResult::DependencyType_Count );
+
+			for (uint i = 0u; i < result.dependencies.getCount(); ++i)
+			{
+				const ConversionResult::Dependency& dependency = result.dependencies[ i ];
+
+				m_dataBase.executeCommand(
+					formatString(
+						"INSERT INTO dependencies (asset_id,type,identifier,value_int,value_text) VALUES (%u,'%s','%s',%u,'%u')",
+						assetId,
+						dependencyType[ dependency.type ],
+						dependency.identifier.cStr(),
+						dependency.valueInt,
+						dependency.valueText.cStr()
+					)
+				);
+			} 
+		}
+
+		// traces
+		for (uint i = 0u; i < result.traceInfos.getCount(); ++i)
+		{
+			const ConversionResult::TraceInfo& traceInfo = result.traceInfos[ i ];
+
+			m_dataBase.executeCommand(
+				formatString(
+					"INSERT INTO traces (asset_id,level,message) VALUES (%u,%u'%s')",
+					assetId,
+					traceInfo.level,
+					traceInfo.message.cStr()
+				)
+			);
+		}
+
+		// output files
+		for (uint i = 0u; i < result.traceInfos.getCount(); ++i)
+		{
+			const ConversionResult::OutputFile& outputFile = result.outputFiles[ i ];
+
+			m_dataBase.executeCommand(
+				formatString(
+					"INSERT INTO output_files (asset_id,filename,type) VALUES (%u,'%s',%u)",
+					assetId,
+					outputFile.fileName.cStr(),
+					outputFile.type
+				)
+			);
+		}
+
+		return true;
+	}
+
 }

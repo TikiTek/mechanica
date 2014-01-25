@@ -9,16 +9,18 @@
 #include "tiki/io/filestream.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/list.hpp"
+#include "tiki/toolbase/sqlite.hpp"
 
 #include <map>
 
-struct sqlite3;
 struct _XmlElement;
 
 namespace tiki
 {
 	class ConverterBase;
 	class TikiXml;
+	struct ConversionParameters;
+	struct ConversionResult;
 
 	struct ConverterManagerParameter
 	{
@@ -81,7 +83,7 @@ namespace tiki
 
 		string						m_outputPath;
 
-		sqlite3*					m_pDataBase;
+		SqliteDatabase				m_dataBase;
 		bool						m_rebuildForced;
 
 		mutable Mutex				m_loggingMutex;
@@ -99,6 +101,11 @@ namespace tiki
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
 
 		bool						convertFile( const ConverterBase* pConverter, const string& fileName );
+
+		uint						findAssetIdByName( const string& name );
+		bool						checkDependencies( uint assetId, uint converterRevision );
+		bool						writeConvertInput( uint assetId, const ConversionParameters& parametes );
+		bool						writeConvertResult( uint assetId, const ConversionResult& result );
 
 	};
 }

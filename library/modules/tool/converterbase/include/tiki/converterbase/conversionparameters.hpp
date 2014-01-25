@@ -59,6 +59,15 @@ namespace tiki
 
 	struct ConversionResult
 	{
+		enum DependencyType
+		{
+			DependencyType_File,
+			DependencyType_Type,
+			DependencyType_Converter,
+
+			DependencyType_Count
+		};
+
 		struct TraceInfo
 		{
 			TraceLevel	level;
@@ -73,7 +82,11 @@ namespace tiki
 
 		struct Dependency
 		{
-			string	fileName;
+			DependencyType	type;
+			string			identifier;
+			
+			int				valueInt;
+			string			valueText;
 		};
 
 		List< TraceInfo >	traceInfos;
