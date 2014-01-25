@@ -12,7 +12,7 @@ namespace tiki
 	void* xmlAlloc(size_t _bytes)
 	{
 		TikiXml* pXml	= TikiXml::s_pAllocInst;
-		pXml->m_pData	= memory::allocAlign( _bytes, 0u );
+		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
 
 		return pXml->m_pData;
 	}

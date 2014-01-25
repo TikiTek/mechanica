@@ -99,13 +99,14 @@ namespace tiki
 		void						traceCallback( cstring message, TraceLevel level ) const;
 		bool						checkBuildNeeded( const string& fileName, const size_t converterRevision );
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
+		//void						getDependencyData( ConversionResult::DependencyType type, const string& identifier );
 
-		bool						convertFile( const ConverterBase* pConverter, const string& fileName );
+		bool						convertFile( const FileDescription& file );
 
 		uint						findAssetIdByName( const string& name );
-		bool						checkDependencies( uint assetId, uint converterRevision );
-		bool						writeConvertInput( uint assetId, const ConversionParameters& parametes );
-		bool						writeConvertResult( uint assetId, const ConversionResult& result );
+		bool						writeConvertInput( uint& assetId, const ConversionParameters& parametes );
+		bool						checkDependencies( uint assetId, const ConverterBase* pConverter );
+		bool						writeConvertResult( uint assetId, const ConversionResult& result, bool hasError );
 
 	};
 }

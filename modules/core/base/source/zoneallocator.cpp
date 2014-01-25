@@ -23,7 +23,7 @@ namespace tiki
 
 	bool ZoneAllocator::create( uint sizeInBytes, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		m_pMemory = static_cast< uint8* >( memory::allocAlign( sizeInBytes, alignment ) );
+		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOCALIGN( sizeInBytes, alignment ) );
 
 		if ( m_pMemory == nullptr )
 		{

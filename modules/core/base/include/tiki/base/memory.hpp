@@ -9,11 +9,25 @@
 #define TIKI_DECLARE_STACKANDZERO( type, name ) type name; \
 	memory::zero( &name, sizeof( type ) )
 
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+#	define TIKI_MEMORY_ALLOC( size ) ::tiki::memory::allocAlign( size, __FILE__, __LINE__, TIKI_DEFAULT_ALIGNMENT )
+#	define TIKI_MEMORY_ALLOCALIGN( size, alignment ) ::tiki::memory::allocAlign( size, __FILE__, __LINE__, alignment )
+#else
+#	define TIKI_MEMORY_ALLOC( size ) ::tiki::memory::allocAlign( size, TIKI_DEFAULT_ALIGNMENT )
+#	define TIKI_MEMORY_ALLOCALIGN( size, alignment ) ::tiki::memory::allocAlign( size, alignment )
+#endif
+
 namespace tiki
 {
 	namespace memory
 	{
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		void*					allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+#else
 		void*					allocAlign( size_t size, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+#endif
+
+		//void*					allocAlign( size_t size, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
 		void					freeAlign( void* pPtr );
 
 		int						cmp ( void* ptr1, void* ptr2, size_t bytes );

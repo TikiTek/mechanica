@@ -48,7 +48,7 @@ namespace tiki
 	{
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
-			const ConversionInputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			const string material	= params.arguments.getOptionalString( "material", "" );
 			const float scale		= params.arguments.getOptionalFloat( "scale", 1.0f );

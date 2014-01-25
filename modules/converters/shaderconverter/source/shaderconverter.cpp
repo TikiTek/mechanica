@@ -173,7 +173,7 @@ namespace tiki
 
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
-			const ConversionInputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			string sourceCode;
 			if ( file::readAllText( file.fileName, sourceCode ) == false )

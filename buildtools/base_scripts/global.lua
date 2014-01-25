@@ -161,11 +161,6 @@ function finalize( output_name, projects )
 		end		
 	end
 	
-	_OPTIONS[ "unity_dir" ] = path.join( _OPTIONS[ "outpath" ], "unity_files" )
-	if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
-		os.mkdir( _OPTIONS[ "unity_dir" ] )
-	end
-
 	solution( output_name );
 	configurations( var_configurations );
 	platforms( var_platforms );
@@ -173,6 +168,12 @@ function finalize( output_name, projects )
 
 	for i,project in pairs( projects ) do
 		print( "Project: " .. project.name );
+
+		_OPTIONS[ "unity_dir" ] = path.join( _OPTIONS[ "outpath" ], "unity_files", project.name )
+		if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
+			os.mkdir( _OPTIONS[ "unity_dir" ] )
+		end
+
 		project:finalize();
 	end
 end

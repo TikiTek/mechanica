@@ -31,6 +31,7 @@ namespace tiki
 
 		bool			executeCommand( const string& sql );
 
+		uint			getLastInsertId() const;
 		const string&	getLastError() const { return m_lastError; }
 
 	private:
@@ -68,7 +69,9 @@ namespace tiki
 		sqlite3_stmt*			m_pQuery;
 		string					m_lastError;
 
-		std::map< string, int >	m_colunmNameMapping;
+		Array< string >			m_colunmNames;
+
+		int						findColunmIndexByName( const string& fieldName ) const;
 
 	};
 }

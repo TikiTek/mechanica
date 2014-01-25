@@ -5,36 +5,10 @@
 
 namespace tiki
 {
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 	template<typename T>
 	TIKI_FORCE_INLINE T* memory::newAlign( size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
-		return TIKI_NEW T();
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE void memory::deleteAlign( T* p )
-	{
-		TIKI_ASSERT( p );
-		TIKI_DEL p;
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE T* memory::newArray( size_t count, size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
-	{
-		return TIKI_NEW T[ count ];
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE void memory::deleteArray( T* pArray, size_t arraySize )
-	{
-		TIKI_DELARR pArray;
-	}
-#else
-	template<typename T>
-	TIKI_FORCE_INLINE T* memory::newAlign( size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
-	{
-		void* pNew = allocAlign( sizeof( T ), alignment );
+		void* pNew = TIKI_MEMORY_ALLOCALIGN( sizeof( T ), alignment );
 		return ::new( pNew ) T();
 	}
 
@@ -54,7 +28,7 @@ namespace tiki
 			alignment = TIKI_ALIGNOF( T );
 		}
 
-		void* pNew = allocAlign( sizeof( T ) * count, alignment );
+		void* pNew = TIKI_MEMORY_ALLOCALIGN( sizeof( T ) * count, alignment );
 		TIKI_ASSERT( (size_t)pNew % alignment == 0u );
 
 		T* pArray = (T*)pNew;
@@ -77,7 +51,6 @@ namespace tiki
 		}
 		freeAlign( pArray );
 	}
-#endif
 
 	template<typename T>
 	TIKI_FORCE_INLINE void memory::set( T* p, uint8 value )

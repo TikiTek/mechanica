@@ -35,16 +35,26 @@ namespace tiki
 	}
 
 	bool SqliteDatabase::executeCommand( const string& sql )
-	{
+	{ 
+		TIKI_ASSERT( m_pDatabase != nullptr );
+
 		char* pErrorMessage = nullptr;
+		TIKI_ASSERT( _heapchk() == _HEAPOK );
 		if ( sqlite3_exec( m_pDatabase, sql.cStr(), nullptr, nullptr, &pErrorMessage ) != SQLITE_OK )
 		{
 			m_lastError = pErrorMessage;
 			return false;
 		}
+		TIKI_ASSERT( _heapchk() == _HEAPOK );
+
 		return true;
 	}
 
+	uint SqliteDatabase::getLastInsertId() const
+	{
+		TIKI_ASSERT( m_pDatabase != nullptr );
+		return (uint)sqlite3_last_insert_rowid( m_pDatabase );
+	}
 
 	SqliteQuery::SqliteQuery()
 	{
@@ -68,10 +78,12 @@ namespace tiki
 		}
 
 		const int fieldCount = sqlite3_column_count( m_pQuery );
+		m_colunmNames.create( fieldCount );
+
 		for (int i = 0u; i < fieldCount; ++i)
 		{
 			const string fieldName = sqlite3_column_name( m_pQuery, i );
-			m_colunmNameMapping[ fieldName ] = i;
+			m_colunmNames[ i ] = fieldName;
 		} 
 
 		return true;
@@ -81,9 +93,11 @@ namespace tiki
 	{
 		if ( m_pQuery != nullptr )
 		{
-			sqlite3_free( m_pQuery );
+			sqlite3_finalize( m_pQuery );
 			m_pQuery = nullptr;
 		}
+
+		m_colunmNames.dispose();
 	}
 
 	bool SqliteQuery::nextRow()
@@ -101,7 +115,7 @@ namespace tiki
 	int SqliteQuery::getIntegerField( const string& fieldName ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
-		return sqlite3_column_int( m_pQuery, m_colunmNameMapping[ fieldName ] );
+		return sqlite3_column_int( m_pQuery, findColunmIndexByName( fieldName ) );
 	}
 
 	string SqliteQuery::getTextField( uint fieldIndex ) const
@@ -113,6 +127,21 @@ namespace tiki
 	string SqliteQuery::getTextField( const string& fieldName ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
-		return (const char*)sqlite3_column_text( m_pQuery, m_colunmNameMapping[ fieldName ] );
+		return (const char*)sqlite3_column_text( m_pQuery, findColunmIndexByName( fieldName ) );
 	}
+
+	int SqliteQuery::findColunmIndexByName( const string& fieldName ) const
+	{
+		for (uint i = 0u; i < m_colunmNames.getCount(); ++i)
+		{
+			if ( m_colunmNames[ i ] == fieldName )
+			{
+				return i;
+			}
+		}
+
+		TIKI_ASSERT( false );
+		return TIKI_SIZE_T_MAX;
+	}
+
 }

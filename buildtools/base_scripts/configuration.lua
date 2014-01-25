@@ -8,6 +8,9 @@ function Configuration:new()
 end
 
 function Configuration:set_define( name, value )
+	if value == nil then
+		value = {};
+	end
 	self.defines[ name ] = value;
 end
 
@@ -43,14 +46,14 @@ function Configuration:apply( shader_dirs, binary_dirs, binary_files )
 	if ( binary_dirs == nil or  binary_files == nil ) then
 		throw "[Configuration:apply] too few arguments.";
 	end
-
+	
 	for k, v in pairs( self.defines ) do
-		if v ~= nil then
-			defines( { k.."="..v } );
-			--print( k.."="..v );
-		else
+		if type( v ) == "table" then
 			defines( { k } );
 			--print( k );
+		else
+			defines( { k.."="..v } );
+			--print( k.."="..v );
 		end
 	end
 

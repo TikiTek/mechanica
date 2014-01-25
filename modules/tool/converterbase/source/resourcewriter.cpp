@@ -180,6 +180,11 @@ namespace tiki
 
 	void ResourceWriter::openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = 16u;
+		}
+
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 		TIKI_ASSERT( m_pCurrentSection == nullptr );
 		TIKI_ASSERT( isPowerOfTwo( alignment ) );

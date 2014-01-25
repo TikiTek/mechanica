@@ -17,7 +17,7 @@ int tiki::mainEntryPoint()
 		IAssetConverter* pConverter = createAssetConverter();
 		pConverter->create( parameters );
 
-		retValue = pConverter->run();
+		retValue = pConverter->convertAll();
 
 		pConverter->dispose();
 		disposeAssetConverter( pConverter );
