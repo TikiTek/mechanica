@@ -11,14 +11,6 @@
 
 namespace tiki
 {
-	struct ConversionInputFile
-	{
-		string			fileName;
-
-		string			typeString;
-		crc32			inputType;
-	};
-
 	class ConversionArguments
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ConversionArguments );
@@ -48,17 +40,28 @@ namespace tiki
 
 	struct ConversionParameters
 	{
-		PlatformType					targetPlatform;
+		struct InputFile
+		{
+			string	fileName;
+			crc32	typeCrc;
+		};
 
-		string							sourceFile;
-		string							outputName;
+		PlatformType			targetPlatform;
+		crc32					typeCrc;
 
-		List< ConversionInputFile >		inputFiles;
-		ConversionArguments				arguments;
+		string					sourceFile;
+		string					outputName;
+
+		List< InputFile >		inputFiles;
+		ConversionArguments		arguments;
 	};
 
 	struct ConversionResult
 	{
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ConversionResult );
+
+	public:
+
 		enum DependencyType
 		{
 			DependencyType_File,
@@ -88,6 +91,73 @@ namespace tiki
 			int				valueInt;
 			string			valueText;
 		};
+
+		const List< TraceInfo >& getTraceInfos() const
+		{
+			return traceInfos;
+		}
+
+		const List< OutputFile >& getOutputFiles() const
+		{
+			return outputFiles;
+		}
+
+		const List< Dependency >& getDependencies() const
+		{
+			return dependencies;
+		}
+
+		void addTraceInfo( TraceLevel level, const string& message )
+		{
+			TraceInfo& traceInfo = traceInfos.add();
+			traceInfo.level		= level;
+			traceInfo.message	= message;
+		}
+
+		void addOutputFile( const string& fileName, fourcc fileType )
+		{
+			for (uint i = 0u; i < outputFiles.getCount(); ++i)
+			{
+				OutputFile& file = outputFiles[ i ];
+
+				if ( file.fileName == fileName )
+				{
+					TIKI_ASSERT( file.type == fileType );
+					return;
+				}
+			}
+
+			OutputFile& file = outputFiles.add();
+			file.fileName	= fileName;
+			file.type		= fileType;
+		}
+
+		void addDependency( DependencyType type, const string& identifier, const string& valueText, int valueInt )
+		{
+			Dependency* pDependency = nullptr;
+			for (uint i = 0u; i < dependencies.getCount(); ++i)
+			{
+				Dependency& dep = dependencies[ i ];
+
+				if ( dep.type == type && dep.identifier == identifier )
+				{
+					pDependency = &dep;
+					break;
+				}
+			}
+
+			if ( pDependency == nullptr )
+			{
+				pDependency = &dependencies.add();
+				pDependency->type		= type;
+				pDependency->identifier	= identifier;
+			}
+
+			pDependency->valueText	= valueText;
+			pDependency->valueInt	= valueInt;
+		}
+
+	private:
 
 		List< TraceInfo >	traceInfos;
 		List< OutputFile >	outputFiles;

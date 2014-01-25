@@ -31,7 +31,7 @@ namespace tiki
 			memory::freeAlign( m_pData );
 		}
 
-		m_pData = (uint8*)memory::allocAlign( m_capacity );
+		m_pData = (uint8*)TIKI_MEMORY_ALLOC( m_capacity );
 		memory::copy( m_pData, copy.m_pData, m_length );
 	}
 
@@ -46,7 +46,7 @@ namespace tiki
 
 		if (capacity > 0u )
 		{
-			m_pData		= (uint8*)memory::allocAlign( capacity, 0u );
+			m_pData		= (uint8*)TIKI_MEMORY_ALLOC( capacity );
 		}
 		else
 		{
@@ -62,7 +62,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData			= (uint8*)memory::allocAlign( length );
+		m_pData			= (uint8*)TIKI_MEMORY_ALLOC( length );
 		m_pos			= 0u;
 		m_length		= length;
 		m_capacity		= length;
@@ -108,7 +108,7 @@ namespace tiki
 			const size_t cl	= nextPowerOfTwo( tl );
 			TIKI_ASSERT( cl >= tl );
 
-			uint8* pNewData	= (uint8*)memory::allocAlign( cl );
+			uint8* pNewData	= (uint8*)TIKI_MEMORY_ALLOC( cl );
 			memory::copy( pNewData, m_pData, m_length );
 			memory::freeAlign( m_pData );
 			

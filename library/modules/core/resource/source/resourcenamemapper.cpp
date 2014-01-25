@@ -36,7 +36,7 @@ namespace tiki
 		const uint32* pOffsets	= static_cast< const uint32* >( pKeys + pHeader->elementCount );
 		const char* pStringBase	= static_cast< const char* >( static_cast< const void* >( pOffsets + pHeader->elementCount ) );
 
-		m_pStringData = static_cast< char* >( memory::allocAlign( pHeader->stringDataSize ) );
+		m_pStringData = static_cast< char* >( TIKI_MEMORY_ALLOC( pHeader->stringDataSize ) );
 		memory::copy( m_pStringData, pStringBase, pHeader->stringDataSize );
 
 		m_map.create( pHeader->elementCount );

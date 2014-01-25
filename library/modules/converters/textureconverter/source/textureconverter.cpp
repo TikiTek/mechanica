@@ -42,8 +42,8 @@ namespace tiki
 	bool TextureConverter::startConversionJob( const ConversionParameters& params ) const
 	{
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
-		{
-			const ConversionInputFile& file = params.inputFiles[ i ];
+		{			
+			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			HdrImage image;
 			

@@ -249,11 +249,11 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::operator=( const List<T>& copy )
 	{
-		delete[] m_pData;
+		memory::deleteArray( m_pData, m_capacity );
 
 		m_isReadOnly	= copy.m_isReadOnly;
 		m_capacity		= copy.m_capacity;
-		m_count		= copy.m_count;
+		m_count			= copy.m_count;
 		m_pData			= memory::newArray< T >( m_capacity );
 
 		for (uint i = 0u; i < m_count; ++i)

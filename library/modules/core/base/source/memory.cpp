@@ -11,19 +11,31 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
+#else
 	void* memory::allocAlign( size_t size, size_t alignment )
+#endif
 	{
 		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
 		{
 			alignment = 4u;
 		}
 
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		return _aligned_malloc_dbg( size, alignment, pFileName, lineNumber );
+#else
 		return _aligned_malloc( size, alignment );
+#endif
 	}
 
 	void memory::freeAlign( void* pPtr )
 	{
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		_aligned_free( pPtr );
+#else
+		_aligned_free_dbg( pPtr );
+#endif
 	}
 #else
 #	warning "TODO: findout how align malloc works on linux"

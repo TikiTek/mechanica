@@ -46,6 +46,7 @@ module:add_files( "src/type1/type1.c" );
 module:add_files( "src/type42/type42.c" );
 module:add_files( "src/winfonts/winfnt.c" );
 module:add_files( "builds/win32/ftdebug.c" );
+module:add_files( "src/zerror.c" );
 
 module:set_define( "FT2_BUILD_LIBRARY", "1" );
 module:set_define( "FT_DEBUG_LEVEL_ERROR", "1" );

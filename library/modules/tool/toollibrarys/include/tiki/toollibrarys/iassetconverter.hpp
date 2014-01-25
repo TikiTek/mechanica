@@ -26,6 +26,9 @@ namespace tiki
 	{
 	public:
 
+						IAssetConverter() {}
+		virtual			~IAssetConverter() {}
+
 		virtual void	create( const AssetConverterParamter& parameters ) = 0;
 		virtual void	dispose() = 0;
 

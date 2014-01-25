@@ -3,7 +3,6 @@
 #define TIKI_ASSERT_HPP
 
 #include "tiki/base/debug.hpp"
-#include "tiki/base/types.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 #	define TIKI_USE_ASSERT TIKI_ON

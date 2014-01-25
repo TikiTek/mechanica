@@ -54,8 +54,8 @@ namespace tiki
 		const int fontSize = params.arguments.getOptionalInt( "font_size", 16 ) ;
 
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
-		{
-			const ConversionInputFile& file = params.inputFiles[ i ];
+		{			
+			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			FT_Face face;
 			error = FT_New_Face( library, file.fileName.cStr(), 0u, &face );;

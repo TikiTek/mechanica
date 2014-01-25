@@ -266,7 +266,7 @@ namespace tiki
 
 		void* StructType::createInstance() const
 		{
-			void* pData = memory::allocAlign( getSize() );
+			void* pData = TIKI_MEMORY_ALLOC( getSize() );
 
 			if ( m_pFuncConstructor != nullptr )
 			{
