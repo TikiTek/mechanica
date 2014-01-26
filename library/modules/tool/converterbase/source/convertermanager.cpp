@@ -111,7 +111,7 @@ namespace tiki
 		}
 
 		TemplateDescription desc;
-		desc.fullFileName	= fileName;
+		desc.fullFileName	= path::getAbsolutePath( fileName );
 		desc.name			= pAttName->content;
 		
 		// parse arguments
@@ -124,13 +124,11 @@ namespace tiki
 
 	void ConverterManager::queueFile( const string& fileName )
 	{
-		string nameData = path::getFilenameWithoutExtension( fileName );
+		const string nameData = path::getFilenameWithoutExtension( fileName );
 
 		FileDescription& file = m_files.add();
-
-		file.fullFileName	= fileName;
+		file.fullFileName	= path::getAbsolutePath( fileName );
 		file.fileType		= crcString( path::getExtension( nameData ).substring( 1u ) );
-		file.lastChange		= 0u;
 	}
 	
 	int ConverterManager::startConversion()
@@ -150,21 +148,41 @@ namespace tiki
 	
 	bool ConverterManager::startConvertFile( const string& fileName )
 	{
-		string assetFileName	= fileName;
-		const string extension	= path::getExtension( assetFileName );
-		if ( extension != ".xasset" )
+		string absoluteFileName	= path::getAbsolutePath( fileName );
+		const string extension	= path::getExtension( absoluteFileName );
+		if ( extension == ".xasset" )
 		{
-			// todo
-			return false;
+			const string fileTypeString = path::getFilenameWithoutExtension( fileName );
+
+			FileDescription file;
+			file.fullFileName	= absoluteFileName;
+			file.fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
+
+			return convertFile( file );
 		}
+		else
+		{
+			const string sql = formatString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND dep.identifier = '%s' AND asset.id = dep.asset_id", ConversionResult::DependencyType_File, absoluteFileName.cStr() );
 
-		const string fileTypeString = path::getFilenameWithoutExtension( fileName );
+			AutoDispose< SqliteQuery > query;
+			if ( query->create( m_dataBase, sql ) == false )
+			{
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", query->getLastError().cStr() );
+				return false;
+			}
 
-		FileDescription file;
-		file.fullFileName	= assetFileName;
-		file.fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
+			bool conversionResult = true;
+			while ( query->nextRow() )
+			{
+				FileDescription file;
+				file.fullFileName	= path::combine( query->getTextField( "path" ), query->getTextField( "filename" ) );
+				file.fileType		= (crc32)query->getIntegerField( "type" );
 
-		return convertFile( file );
+				conversionResult &= convertFile( file );
+			}
+
+			return conversionResult;
+		}
 	}
 
 	void ConverterManager::registerConverter( const ConverterBase* pConverter )
@@ -175,6 +193,18 @@ namespace tiki
 	void ConverterManager::unregisterConverter( const ConverterBase* pConverter )
 	{
 		m_converters.remove( pConverter );
+	}
+	
+	void ConverterManager::registerResource( const string& resourceName )
+	{
+		if ( s_pCurrentResult != nullptr )
+		{
+			s_pCurrentResult->addOutputFile( resourceName, 0u );
+		}
+
+		m_resourceMap.registerResource(
+			path::getFilename( resourceName )
+		);
 	}
 
 	void ConverterManager::traceCallback( cstring message, TraceLevel level ) const
@@ -223,8 +253,6 @@ namespace tiki
 
 	bool ConverterManager::convertFile( const FileDescription& file )
 	{
-		//TIKI_TRACE( "Building asset: %s\n", file.fullFileName.cStr() );
-
 		const ConverterBase* pConverter = nullptr;
 		for (size_t i = 0u; i < m_converters.getCount(); ++i)
 		{
@@ -307,6 +335,7 @@ namespace tiki
 				}
 				else
 				{
+					input.fileName = path::getAbsolutePath( input.fileName );
 					params.inputFiles.add( input );
 				}
 			}
@@ -383,83 +412,6 @@ namespace tiki
 		return hasError;
 	}
 
-	bool ConverterManager::checkBuildNeeded( const string& fileName, const size_t converterRevision )
-	{
-		return false;
-		//if ( m_dataBase.isCreated() == false )
-		//{
-		//	return true;
-		//}
-
-		//const crc32 fileHash = 0u;
-		//const crc32 fileTime = file::getLastChangeCrc( fileName );
-
-		//if ( m_rebuildForced )
-		//{
-		//	char* pErrorMsg;
-		//	const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
-
-		//	if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-		//	{
-		//		TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
-		//	}
-
-		//	return true;
-		//}
-
-		//const string sql = formatString( "SELECT * FROM files WHERE filename='%s';", fileName.cStr() );
-
-		//cstring pTail;
-		//sqlite3_stmt* pState;
-
-		//if ( sqlite3_prepare( m_pDataBase, sql.cStr(), sql.getLength(), &pState, &pTail ) != SQLITE_OK )
-		//{
-		//	TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", pTail );
-		//	return true;
-		//}
-
-		//bool returnValue = true;
-
-		////Array< uint8 > fileContent;
-		////file::readAllBytes( fileName, fileContent );		
-		////const crc32 fileHash = crcBytes( fileContent.getData(), fileContent.getCount() );
-		////fileContent.dispose();
-
-		//if ( sqlite3_step( pState ) == SQLITE_ROW )
-		//{
-		//	crc32 sqlTime	= (crc32)sqlite3_column_int( pState, 2 );
-		//	crc32 sqlHash	= (crc32)sqlite3_column_int( pState, 3 );
-		//	crc32 sqlRev	= (crc32)sqlite3_column_int( pState, 4 );
-
-		//	returnValue = !( (fileTime == sqlTime) && (fileHash == sqlHash) && (converterRevision == sqlRev) );
-
-		//	if ( returnValue )
-		//	{
-		//		char* pErrorMsg;
-		//		const string sql2 = formatString( "UPDATE files SET time_id=%i, content_id=%i, converter_revision=%i WHERE filename='%s'", fileTime, fileHash, converterRevision, fileName.cStr() );
-
-		//		if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-		//		{
-		//			TIKI_TRACE_ERROR( "[convertermanager] can't update file in database. error: %s\n", pErrorMsg );
-		//		}
-		//	}
-		//}
-		//else
-		//{
-		//	char* pErrorMsg;
-		//	const string sql2 = formatString( "INSERT INTO files (filename,time_id,content_id,converter_revision) VALUES ('%s',%i,%i,%i)", fileName.cStr(), fileTime, fileHash, converterRevision );
-
-		//	if ( sqlite3_exec( m_pDataBase, sql2.cStr(), nullptr, nullptr, &pErrorMsg ) != SQLITE_OK )
-		//	{
-		//		TIKI_TRACE_ERROR( "[convertermanager] can't intsert file into database. error: %s\n", pErrorMsg );
-		//	}
-		//}
-
-		//sqlite3_finalize( pState );
-
-		//return returnValue;
-	}
-	
 	uint ConverterManager::findAssetIdByName( const string& name )
 	{
 		if ( m_dataBase.isCreated() == false )
@@ -524,31 +476,40 @@ namespace tiki
 
 			while ( query->nextRow() )
 			{
-				const string type = query->getTextField( "type" );
+				const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query->getIntegerField( "type" );
 
 				const string identifier	= query->getTextField( "identifier" );
 
 				const int valueInt		= query->getIntegerField( "value_int" );
 				const string valueText	= query->getTextField( "value_text" );
 
-				if ( type == "file" )
+				switch ( type )
 				{
-					const crc32 fileChangeCrc = file::getLastChangeCrc( identifier );
-					if ( fileChangeCrc != (crc32)valueInt )
+				case ConversionResult::DependencyType_Converter:
+					{
+						if ( (uint)valueInt != pConverter->getConverterRevision() )
+						{
+							return true;
+						}
+					}
+					break;
+
+				case ConversionResult::DependencyType_File:
+					{
+						const crc32 fileChangeCrc = file::getLastChangeCrc( identifier );
+						if ( fileChangeCrc != (crc32)valueInt )
+						{
+							return true;
+						}
+					}
+					break;
+
+				case ConversionResult::DependencyType_Type:
 					{
 						return true;
 					}
-				}
-				else if ( type == "type" )
-				{
-					return true;
-				}
-				else if ( type == "converter" )
-				{
-					if ( (uint)valueInt != pConverter->getConverterRevision() )
-					{
-						return true;
-					}
+					break;
+
 				}
 
 				buildNeeded = false;
@@ -584,7 +545,7 @@ namespace tiki
 		else
 		{
 			const bool sqlResult = m_dataBase.executeCommand(
-				formatString( "DELETE FROM [input_files] WHERE `asset_id` = '%u';", assetId )
+				formatString( "DELETE FROM input_files WHERE asset_id = '%u';", assetId )
 			);
 			if ( sqlResult == false )
 			{
@@ -596,7 +557,7 @@ namespace tiki
 		for (uint i = 0u; i < parametes.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& inputFile = parametes.inputFiles[ i ];
-			const string inputFileName = path::getFilename( inputFile.fileName ) ;
+			const string inputFileName = inputFile.fileName;
 
 			const bool sqlResult = m_dataBase.executeCommand(
 				formatString(
@@ -724,5 +685,4 @@ namespace tiki
 
 		return true;
 	}
-
 }

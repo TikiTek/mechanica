@@ -64,39 +64,56 @@ namespace tiki
 
 		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
 		{
-			for (uint i = 0u; i < m_includeDirs.getCount(); ++i)
+			const string inputFilename = pFileName;
+
+			bool found = false;
+			string fullName = inputFilename;
+
+			if ( file::exists( fullName ) )
 			{
-				const string fullName = path::combine( m_includeDirs[ i ], pFileName );
+				found = true;
+			}
+			else
+			{
+				for (uint i = 0u; i < m_includeDirs.getCount(); ++i)
+				{
+					fullName = path::combine( m_includeDirs[ i ], inputFilename );
 
-				if ( file::exists( fullName ) )
-				{			
-					size_t freeStreamIndex = TIKI_SIZE_T_MAX;
-					for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
+					if ( file::exists( fullName ) )
 					{
-						if ( m_fileData[ j ].getCount() == 0u )
-						{
-							freeStreamIndex = j;
-							break;
-						}
-					} 
-
-					if ( freeStreamIndex == TIKI_SIZE_T_MAX )
-					{
-						TIKI_TRACE_ERROR( "No free Filestream.\n" );
-						return S_FALSE;
+						found = true;
 					}
-
-					if ( file::readAllBytes( fullName, m_fileData[ freeStreamIndex ] ) == false )
+				} 
+			}
+			
+			if ( found )
+			{			
+				size_t freeStreamIndex = TIKI_SIZE_T_MAX;
+				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
+				{
+					if ( m_fileData[ j ].getCount() == 0u )
 					{
-						TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
-						return S_FALSE;
+						freeStreamIndex = j;
+						break;
 					}
+				} 
 
-					*ppData = m_fileData[ freeStreamIndex ].getData();
-					*pBytes	= m_fileData[ freeStreamIndex ].getCount();
-					return S_OK;
+				if ( freeStreamIndex == TIKI_SIZE_T_MAX )
+				{
+					TIKI_TRACE_ERROR( "No free Filestream.\n" );
+					return S_FALSE;
 				}
-			} 
+
+				if ( file::readAllBytes( fullName, m_fileData[ freeStreamIndex ] ) == false )
+				{
+					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
+					return S_FALSE;
+				}
+
+				*ppData = m_fileData[ freeStreamIndex ].getData();
+				*pBytes	= m_fileData[ freeStreamIndex ].getCount();
+				return S_OK;
+			}
 
 			TIKI_TRACE_ERROR( "Could find File: %s.\n", pFileName );
 			return S_FALSE;

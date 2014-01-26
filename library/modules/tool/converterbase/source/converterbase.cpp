@@ -54,9 +54,9 @@ namespace tiki
 	void ConverterBase::openResourceWriter( ResourceWriter& writer, const string& fileName, const string& extension, PlatformType platform ) const
 	{
 		const string realName = fileName + "." + extension;
-		const string fullPath = path::combine( m_pManager->getOutputPath(), realName );
+		const string fullPath = path::getAbsolutePath( path::combine( m_pManager->getOutputPath(), realName ) );
 
-		m_pManager->getResourceMap().registerResource( realName );
+		m_pManager->registerResource( fullPath );
 		writer.create( fullPath, platform );
 	}
 

@@ -104,6 +104,7 @@ namespace tiki
 		if ( m_changedFiles.getCount() != 0u )
 		{
 			changedFiles.create( m_changedFiles.getData(), m_changedFiles.getCount() );
+			m_changedFiles.clear();
 			return true;
 		}
 		return false;
