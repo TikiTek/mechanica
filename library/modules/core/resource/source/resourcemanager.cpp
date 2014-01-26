@@ -12,12 +12,10 @@ namespace tiki
 {
 	ResourceManager::ResourceManager()
 	{
-		m_pAssetConverter = nullptr;
 	}
 
 	ResourceManager::~ResourceManager()
 	{
-		TIKI_ASSERT( m_pAssetConverter == nullptr );
 	}
 
 	bool ResourceManager::create( const ResourceManagerParameters& params )
@@ -25,19 +23,24 @@ namespace tiki
 		m_resourceStorage.create( params.maxResourceCount );
 		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		AssetConverterParamter converterParameters;
 		converterParameters.sourcePath	= "../../../../../content";
 		converterParameters.outputPath	= "../../../../../gamebuild";
 
 		m_pAssetConverter = createAssetConverter();
 		m_pAssetConverter->create( converterParameters );
+		m_pAssetConverter->convertAll();
+
 		m_pAssetConverter->startWatch();
+#endif
 
 		return true;
 	}
 
 	void ResourceManager::dispose()
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_pAssetConverter != nullptr )
 		{
 			m_pAssetConverter->stopWatch();
@@ -45,6 +48,7 @@ namespace tiki
 			disposeAssetConverter( m_pAssetConverter );
 			m_pAssetConverter = nullptr;
 		}
+#endif
 
 		m_resourceLoader.dispose();
 		m_resourceStorage.dispose();
@@ -52,6 +56,7 @@ namespace tiki
 
 	void ResourceManager::update()
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_pAssetConverter != nullptr )
 		{
 			Array< string > files;
@@ -62,13 +67,26 @@ namespace tiki
 				for (uint i = 0u; i < files.getCount(); ++i)
 				{
 					const string& file = files[ i ];
-					TIKI_TRACE_ERROR( "TODO: reload file - %s\n", file.cStr() );
+					const string fileName = path::getFilename( file );
+					const crc32 resourceKey = crcString( fileName );
+					
+					Resource* pResource = nullptr;
+					m_resourceStorage.findResource( &pResource, resourceKey );
+
+					if ( pResource != nullptr )
+					{
+						const fourcc resourceType = pResource->getType();
+
+						const ResourceLoaderResult result = m_resourceLoader.reloadResource( pResource, resourceKey, resourceKey, resourceType );
+						traceResourceLoadResult( result, fileName.cStr(), resourceKey, resourceType );
+					}
 				} 
 
 				m_pAssetConverter->unlockConversion();
 				files.dispose();
 			}
 		}
+#endif
 	}
 
 	void ResourceManager::registerResourceType( fourcc type, const FactoryContext& factoryContext )
@@ -87,52 +105,8 @@ namespace tiki
 		const crc32 crcFileName = crcString( pFileName );
 
 		Resource* pResource = nullptr;
-		ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
-		
-		switch ( result )
-		{
-		case ResourceLoaderResult_Success:
-			break;
-
-		case ResourceLoaderResult_CouldNotAccessFile:
-			TIKI_TRACE_ERROR( "Could not access File: %s\n", pFileName );
-			break;
-
-		case ResourceLoaderResult_CouldNotCreateResource:
-			TIKI_TRACE_ERROR( "Could not create Resource.\n" );
-			break;
-
-		case ResourceLoaderResult_CouldNotInitialize:
-			TIKI_TRACE_ERROR( "Could not initialize Resource.\n" );
-			break;
-
-		case ResourceLoaderResult_FileNotFound:
-			TIKI_TRACE_ERROR( "File not found: %s\n", pFileName );
-			break;
-
-		case ResourceLoaderResult_OutOfMemory:
-			TIKI_TRACE_ERROR( "Out of Memory.\n" );
-			break;
-
-		case ResourceLoaderResult_ResourceNotFound:
-			TIKI_TRACE_ERROR( "Resource not found: %u\n", resourceKey );
-			break;
-
-		case ResourceLoaderResult_UnknownError:
-			TIKI_TRACE_ERROR( "Unknown error.\n" );
-			break;
-
-		case ResourceLoaderResult_WrongFileFormat:
-			TIKI_TRACE_ERROR( "Wrong File format.\n" );
-			break;
-
-		case ResourceLoaderResult_WrongResourceType:
-			TIKI_TRACE_ERROR( "Wrong Resource type: %u\n", type );
-			break;
-
-		default:
-			TIKI_BREAK( "Case not handle.\n" );
-		}
+		const ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
+		traceResourceLoadResult( result, pFileName, crcFileName, type );
 
 		return pResource;	
 	}
@@ -146,4 +120,53 @@ namespace tiki
 
 		m_resourceLoader.unloadResource( pResource, type );
 	}
+
+	void ResourceManager::traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType )
+	{
+		switch ( result )
+		{
+		case ResourceLoaderResult_Success:
+			break;
+
+		case ResourceLoaderResult_CouldNotAccessFile:
+			TIKI_TRACE_ERROR( "[resourcemanager] Could not access File: %s\n", pFileName );
+			break;
+
+		case ResourceLoaderResult_CouldNotCreateResource:
+			TIKI_TRACE_ERROR( "[resourcemanager] Could not create Resource.\n" );
+			break;
+
+		case ResourceLoaderResult_CouldNotInitialize:
+			TIKI_TRACE_ERROR( "[resourcemanager] Could not initialize Resource.\n" );
+			break;
+
+		case ResourceLoaderResult_FileNotFound:
+			TIKI_TRACE_ERROR( "[resourcemanager] File not found: %s\n", pFileName );
+			break;
+
+		case ResourceLoaderResult_OutOfMemory:
+			TIKI_TRACE_ERROR( "[resourcemanager] Out of Memory.\n" );
+			break;
+
+		case ResourceLoaderResult_ResourceNotFound:
+			TIKI_TRACE_ERROR( "[resourcemanager] Resource not found: %u\n", resourceKey );
+			break;
+
+		case ResourceLoaderResult_UnknownError:
+			TIKI_TRACE_ERROR( "[resourcemanager] Unknown error.\n" );
+			break;
+
+		case ResourceLoaderResult_WrongFileFormat:
+			TIKI_TRACE_ERROR( "[resourcemanager] Wrong File format.\n" );
+			break;
+
+		case ResourceLoaderResult_WrongResourceType:
+			TIKI_TRACE_ERROR( "[resourcemanager] Wrong Resource type: %u\n", resourceType );
+			break;
+
+		default:
+			TIKI_BREAK( "Case not handle.\n" );
+		}
+	}
+
 }

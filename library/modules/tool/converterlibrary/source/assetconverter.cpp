@@ -128,9 +128,11 @@ namespace tiki
 			if ( m_fileWatcher.popEvent( fileEvent ) == true && fileEvent.eventType == FileWatcherEventType_Modified )
 			{
 				MutexStackLock lock( m_converterMutex );
-				if ( m_manager.startConvertFile( fileEvent.fileName ) )
+
+				List< string > outputFiles;
+				if ( m_manager.startConvertFile( fileEvent.fileName, outputFiles ) )
 				{
-					m_changedFiles.add( fileEvent.fileName );
+					m_changedFiles.addRange( outputFiles.getData(), outputFiles.getCount() );
 				}
 			}
 		}

@@ -138,15 +138,16 @@ namespace tiki
 		crc32 currentType				= 0u;
 		const ConverterBase* pConverter	= nullptr;
 		
+		List< string > outputFiles;
 		for (size_t i = 0u; i < m_files.getCount(); ++i)
 		{
-			convertFile( m_files[ i ] );
+			convertFile( m_files[ i ], outputFiles );
 		}
 
 		return m_returnValue;
 	}
 	
-	bool ConverterManager::startConvertFile( const string& fileName )
+	bool ConverterManager::startConvertFile( const string& fileName, List< string >& outputFiles )
 	{
 		string absoluteFileName	= path::getAbsolutePath( fileName );
 		const string extension	= path::getExtension( absoluteFileName );
@@ -158,27 +159,33 @@ namespace tiki
 			file.fullFileName	= absoluteFileName;
 			file.fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
 
-			return convertFile( file );
+			return convertFile( file, outputFiles );
 		}
 		else
 		{
 			const string sql = formatString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND dep.identifier = '%s' AND asset.id = dep.asset_id", ConversionResult::DependencyType_File, absoluteFileName.cStr() );
 
-			AutoDispose< SqliteQuery > query;
-			if ( query->create( m_dataBase, sql ) == false )
+			List< FileDescription > filesToBuild;
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", query->getLastError().cStr() );
-				return false;
+				AutoDispose< SqliteQuery > query;
+				if ( query->create( m_dataBase, sql ) == false )
+				{
+					TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", query->getLastError().cStr() );
+					return false;
+				}
+
+				while ( query->nextRow() )
+				{
+					FileDescription& file = filesToBuild.add();
+					file.fullFileName	= path::combine( query->getTextField( "path" ), query->getTextField( "filename" ) );
+					file.fileType		= (crc32)query->getIntegerField( "type" );
+				}
 			}
 
 			bool conversionResult = true;
-			while ( query->nextRow() )
+			for (uint i = 0u; i < filesToBuild.getCount(); ++i)
 			{
-				FileDescription file;
-				file.fullFileName	= path::combine( query->getTextField( "path" ), query->getTextField( "filename" ) );
-				file.fileType		= (crc32)query->getIntegerField( "type" );
-
-				conversionResult &= convertFile( file );
+				conversionResult &= convertFile( filesToBuild[ i ], outputFiles );
 			}
 
 			return conversionResult;
@@ -251,7 +258,7 @@ namespace tiki
 		}
 	}
 
-	bool ConverterManager::convertFile( const FileDescription& file )
+	bool ConverterManager::convertFile( const FileDescription& file, List< string >& outputFiles )
 	{
 		const ConverterBase* pConverter = nullptr;
 		for (size_t i = 0u; i < m_converters.getCount(); ++i)
@@ -396,6 +403,12 @@ namespace tiki
 		s_pCurrentResult = &result;
 		pConverter->convert( result, params );
 		s_pCurrentResult = nullptr;
+
+		List< ConversionResult::OutputFile > resultOutputFiles = result.getOutputFiles();
+		for (uint i = 0u; i < resultOutputFiles.getCount(); ++i)
+		{
+			outputFiles.add( resultOutputFiles[ i ].fileName );
+		} 
 		
 		bool hasError = false;
 		const List< ConversionResult::TraceInfo >& traceInfos = result.getTraceInfos();

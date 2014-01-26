@@ -27,29 +27,34 @@ namespace tiki
 
 	FileStream::FileStream()
 	{
-		m_fileHandle = nullptr;
+		m_fileHandle = INVALID_HANDLE_VALUE;
 	}
 
 	FileStream::~FileStream()
 	{
-		TIKI_ASSERT( m_fileHandle == nullptr );
+		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
 	}
 
 	bool FileStream::open( cstring pFileName, DataAccessMode accessMode )
 	{
-		TIKI_ASSERT( m_fileHandle == nullptr );
+		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
 		m_fileHandle = CreateFileA( pFileName, s_accessMapping[ accessMode ], 0u, nullptr, s_creationMapping[ accessMode ], FILE_ATTRIBUTE_NORMAL, nullptr );
 
-		return m_fileHandle != nullptr;
+		return m_fileHandle != INVALID_HANDLE_VALUE;
 	}
 
 	void FileStream::close()
 	{
-		if ( m_fileHandle != nullptr )
+		if ( m_fileHandle != INVALID_HANDLE_VALUE )
 		{
 			CloseHandle( m_fileHandle );
-			m_fileHandle = nullptr;
+			m_fileHandle = INVALID_HANDLE_VALUE;
 		}
+	}
+
+	bool FileStream::isOpen() const
+	{
+		return m_fileHandle != INVALID_HANDLE_VALUE;
 	}
 
 	FileSize FileStream::read( void* pTargetData, uint bytesToRead )
