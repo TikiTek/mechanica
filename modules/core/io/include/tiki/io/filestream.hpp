@@ -22,7 +22,7 @@ namespace tiki
 		bool				open( cstring pFileName, DataAccessMode accessMode );
 		virtual void		close();
 
-		bool				isOpen() const { return m_fileHandle != nullptr; }
+		bool				isOpen() const;
 
 		virtual FileSize	read( void* pTargetData, uint bytesToRead );
 		virtual FileSize	write( const void* pSourceData, uint bytesToWrite );

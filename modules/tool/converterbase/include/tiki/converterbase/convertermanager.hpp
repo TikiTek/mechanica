@@ -49,7 +49,7 @@ namespace tiki
 		void					addTemplate( const string& fileName );
 		void					queueFile( const string& fileName );
 		int						startConversion();
-		bool					startConvertFile( const string& fileName );
+		bool					startConvertFile( const string& fileName, List< string >& outputFiles );
 
 		// converter
 		void					registerConverter( const ConverterBase* pConverter );
@@ -97,7 +97,7 @@ namespace tiki
 		void						traceCallback( cstring message, TraceLevel level ) const;
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
 
-		bool						convertFile( const FileDescription& file );
+		bool						convertFile( const FileDescription& file, List< string >& outputFiles );
 
 		uint						findAssetIdByName( const string& name );
 		bool						writeConvertInput( uint& assetId, const ConversionParameters& parametes );

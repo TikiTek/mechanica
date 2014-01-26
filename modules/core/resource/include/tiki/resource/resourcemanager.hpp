@@ -58,10 +58,14 @@ namespace tiki
 		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		IAssetConverter*			m_pAssetConverter;
+#endif
 
 		const Resource*				loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName );
 		void						unloadGenericResource( fourcc type, const Resource* pResource );
+
+		void						traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 
 	};
 }

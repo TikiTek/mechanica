@@ -17,6 +17,7 @@ namespace tiki
 	struct ResourceHeader;
 	struct ResourceInitData;
 	struct ResourceLoaderContext;
+	struct ResourceSectionData;
 
 	enum ResourceLoaderResult
 	{
@@ -47,6 +48,8 @@ namespace tiki
 
 			ResourceLoaderResult	loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
+
+			ResourceLoaderResult	reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
 			
 	private:
 
@@ -68,10 +71,13 @@ namespace tiki
 		
 		const FactoryContext*	findFactory( fourcc resourceType ) const;
 
-		ResourceLoaderResult	createResource( ResourceLoaderContext& context, const ResourceHeader& header );
-		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context, const ResourceInitData& initData );
+		ResourceLoaderResult	initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
+		ResourceLoaderResult	createResource( ResourceLoaderContext& context );
+		ResourceLoaderResult	loadResourceData( ResourceLoaderContext& context );
+		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context );
 		void					cancelOperation( ResourceLoaderContext& context );
 
+		void					disposeResource( Resource* pResource, fourcc resourceType, bool freeResourceObject );
 
 	};
 }

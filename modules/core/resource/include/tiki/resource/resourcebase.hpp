@@ -19,9 +19,9 @@ namespace tiki
 #endif
 	};
 
-	struct ResourceSectorData
+	struct ResourceSectionData
 	{
-		ResourceSectorData()
+		ResourceSectionData()
 		{
 			ppLinkedResources	= nullptr;
 			ppStringPointers	= nullptr;

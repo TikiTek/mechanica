@@ -50,11 +50,11 @@ namespace tiki
 	private:
 
 		ResourceId			m_id;
-		ResourceSectorData	m_sectorData;
+		ResourceSectionData	m_sectionData;
 
 		mutable uint		m_referenceCount;
 
-		bool				create( const ResourceId& id, const ResourceSectorData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext );
+		bool				create( const ResourceId& id, const ResourceSectionData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext );
 		void				dispose( const FactoryContext& factoryContext );
 
 		void				addReference() const;
