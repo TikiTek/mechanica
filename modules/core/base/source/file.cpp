@@ -9,29 +9,34 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+	static string  getWindowsFilename( const string& fileName )
+	{
+		return fileName.replace( '/', '\\' );
+	}
+
 	bool file::exists( const string& fileName )
 	{
-		return (GetFileAttributesA( fileName.cStr() ) != INVALID_FILE_ATTRIBUTES);
+		return (GetFileAttributesA( getWindowsFilename( fileName ).cStr() ) != INVALID_FILE_ATTRIBUTES);
 	}
 
 	bool file::copy( const string& from, const string& to, bool overwrite /*= true*/ )
 	{
-		return CopyFileA( from.cStr(), to.cStr(), !overwrite ) != 0;
+		return CopyFileA( getWindowsFilename( from ).cStr(), getWindowsFilename( to ).cStr(), !overwrite ) != 0;
 	}
 
 	bool file::move( const string& from, const string& to, bool overwrite /*= true*/ )
 	{
-		if ( file::exists( to ) && !overwrite )
+		if ( file::exists( getWindowsFilename( to ) ) && !overwrite )
 		{
 			return false;
 		}
 
-		return MoveFileA( from.cStr(), to.cStr() ) != 0;
+		return MoveFileA( getWindowsFilename( from ).cStr(), getWindowsFilename( to ).cStr() ) != 0;
 	}
 
 	bool file::remove( const string& fileName )
 	{
-		return DeleteFileA( fileName.cStr() ) != 0; 
+		return DeleteFileA( getWindowsFilename( fileName ).cStr() ) != 0; 
 	}
 
 	bool file::readAllText( const string& fileName, string& contentTarget )
@@ -39,7 +44,7 @@ namespace tiki
 		FILE* pFile;
 		fpos_t len;
 
-		if ( fopen_s( &pFile, fileName.cStr(), "rb" ) )
+		if ( fopen_s( &pFile, getWindowsFilename( fileName ).cStr(), "rb" ) )
 		{
 			return false;
 		}
@@ -60,7 +65,7 @@ namespace tiki
 		FILE* pFile;
 		fpos_t len;
 
-		if ( fopen_s( &pFile, fileName.cStr(), "rb" ) )
+		if ( fopen_s( &pFile, getWindowsFilename( fileName ).cStr(), "rb" ) )
 		{
 			return false;
 		}
@@ -80,7 +85,7 @@ namespace tiki
 	{
 		FILE* pFile;
 
-		if ( fopen_s( &pFile, fileName.cStr(), "wb" ) )
+		if ( fopen_s( &pFile, getWindowsFilename( fileName ).cStr(), "wb" ) )
 		{
 			return false;
 		}
@@ -93,7 +98,7 @@ namespace tiki
 
 	crc32 file::getLastChangeCrc( const string& fileName )
 	{
-		HANDLE handle = CreateFileA( fileName.cStr(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr );
+		HANDLE handle = CreateFileA( getWindowsFilename( fileName ).cStr(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr );
 
 		if ( handle != INVALID_HANDLE_VALUE )
 		{

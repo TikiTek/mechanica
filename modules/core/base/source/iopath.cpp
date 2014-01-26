@@ -60,11 +60,33 @@ namespace tiki
 	{
 		return combine( path1, combine( path2, path3 ) );
 	}
-
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-	string path::getProjectDir()
+	
+	string path::getAbsolutePath( const string& path )
 	{
-		return nullptr;
+		const string slashPath = checkSlashes( path );
+		if ( slashPath.substring( 1u, 2u) == ":/" )
+		{
+			// is already absolute
+			return slashPath;
+		}
+		string fullPath = path::combine( getCurrentDir(), slashPath );
+			
+		for (;;)
+		{
+			const int index = fullPath.indexOf( "/.." );
+			if ( index <= 0 )
+			{
+				break;
+			}
+
+			const uint lastIndex = (uint)index + 3u;
+			const uint prevIndex = (uint)fullPath.lastIndexOf( '/', (uint)index - 1u );
+			TIKI_ASSERT( prevIndex < fullPath.getLength() );
+			
+			fullPath = fullPath.remove( prevIndex, lastIndex - prevIndex );
+		}
+
+		return fullPath.replace( "/.", "" );
 	}
 
 	string path::getCurrentDir()
@@ -84,5 +106,4 @@ namespace tiki
 
 		return path::getDirectoryName( buffer );
 	}
-#endif
 }

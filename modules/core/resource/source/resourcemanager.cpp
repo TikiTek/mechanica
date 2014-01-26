@@ -62,6 +62,7 @@ namespace tiki
 				for (uint i = 0u; i < files.getCount(); ++i)
 				{
 					const string& file = files[ i ];
+					TIKI_TRACE_ERROR( "TODO: reload file - %s\n", file.cStr() );
 				} 
 
 				m_pAssetConverter->unlockConversion();

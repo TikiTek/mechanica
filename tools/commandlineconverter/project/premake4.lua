@@ -2,4 +2,4 @@
 
 include "../../../buildtools/base_scripts"
 
-finalize( "tiki3commandlineconverter", { find_project( "converterlibrary" ), find_project( "commandlineconverter" ) } );
+finalize( "tiki3commandlineconverter", { find_project( "commandlineconverter" ), find_project( "converterlibrary" ) } );

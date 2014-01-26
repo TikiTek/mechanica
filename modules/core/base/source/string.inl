@@ -475,7 +475,13 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf( TChar c ) const
 	{
-		int i = data->stringLength - 1;
+		return lastIndexOf( c, data->stringLength - 1u );
+	}
+
+	template<typename TChar>
+	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf( TChar c, uint index ) const
+	{
+		int i = index;
 		while (i >= 0)
 		{
 			if ( data->pData[i] == c ) return i;
@@ -486,9 +492,15 @@ namespace tiki
 	}
 
 	template<typename TChar>
-	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf(const BasicString<TChar>& str) const
+	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf( const BasicString<TChar>& str ) const
 	{
-		int i = (data->stringLength - str.data->stringLength);
+		return lastIndexOf( str, data->stringLength - str.data->stringLength );
+	}
+
+	template<typename TChar>
+	TIKI_FORCE_INLINE int BasicString<TChar>::lastIndexOf( const BasicString<TChar>& str, uint index ) const
+	{
+		int i = index;
 		while (i >= 0)
 		{
 			int b = 0;

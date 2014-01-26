@@ -57,7 +57,7 @@ namespace tiki
 
 		// misc
 		const string&			getOutputPath() const { return m_outputPath; }
-		ConverterResourceMap&	getResourceMap() { return m_resourceMap; }
+		void					registerResource( const string& resourceName );
 
 	private:
 
@@ -67,8 +67,6 @@ namespace tiki
 		{
 			string		fullFileName;
 			crc32		fileType;
-
-			uint32		lastChange;
 		};
 		typedef List< FileDescription > FileList;
 
@@ -97,9 +95,7 @@ namespace tiki
 		ConverterResourceMap		m_resourceMap;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
-		bool						checkBuildNeeded( const string& fileName, const size_t converterRevision );
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
-		//void						getDependencyData( ConversionResult::DependencyType type, const string& identifier );
 
 		bool						convertFile( const FileDescription& file );
 
