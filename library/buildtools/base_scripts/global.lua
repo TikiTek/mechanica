@@ -92,6 +92,24 @@ function table.join_array( table, array )
 	return table;
 end
 
+function table.index_of( table, object )
+	local result = -1;
+ 
+	if type( table ) ~= "table" then
+		throw( "not a table" );
+	end
+	
+	local count = #table;
+	for i = 0,count do
+		if table[ i ] == object then
+			result = i
+			break
+		end
+	end
+	
+	return result;	
+end
+
 function copy_instance( target, source )
 	for name,value in pairs( source ) do		
 		if ( type( value ) == "table" and name ~= "__index" ) then

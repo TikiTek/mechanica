@@ -1,95 +1,101 @@
 
-#include "tiki/graphics/staticmodelcomponent.hpp"
+#include "tiki/components/staticmodelcomponent.hpp"
 
-#include "tiki/gamecore/transform.hpp"
-#include "tiki/graphics/gpucontext.hpp"
-#include "tiki/graphics/model.hpp"
-#include "tiki/graphicsbase/primitivetopologies.hpp"
+#include "tiki/components/componentstate.hpp"
 
-#include "tiki/gamecore/meshrenderer.hpp"
-
-#include "tiki/game/gamedata.hpp"
+//#include "tiki/gamecore/transform.hpp"
+//#include "tiki/graphics/gpucontext.hpp"
+//#include "tiki/graphics/model.hpp"
+//#include "tiki/graphicsbase/primitivetopologies.hpp"
+//
+//#include "tiki/gamecore/meshrenderer.hpp"
+//
+//#include "tiki/game/gamedata.hpp"
 
 namespace tiki
 {
-	ComponentPool< StaticModelComponent > StaticModelComponent::s_pool;
+	struct TransformComponentState;
 
-	void StaticModelComponent::initializeSystem()
+	struct StaticModelComponentState : public ComponentState< StaticModelComponentState >
 	{
-		s_sampler.create();
-	}
+		const TransformComponentState*	pTransform;
+		const Model*					pModel;
+	};
 
-	void StaticModelComponent::disposeSystem()
-	{
-		s_sampler.dispose();
-	}
+	//void StaticModelComponent::initializeSystem()
+	//{
+	//	s_sampler.create();
+	//}
 
-	StaticModelComponent::StaticModelComponent()
-	{
-		m_pModel		= nullptr;
-		m_pTransform	= nullptr;
-	}
+	//void StaticModelComponent::disposeSystem()
+	//{
+	//	s_sampler.dispose();
+	//}
 
-	void StaticModelComponent::initialize( const Transform* pTransform, const Model* pModel )
-	{
-		TIKI_ASSERT( pTransform );
-		TIKI_ASSERT( pModel );
+	//StaticModelComponent::StaticModelComponent()
+	//{
+	//	m_pModel		= nullptr;
+	//	m_pTransform	= nullptr;
+	//}
 
-		m_pTransform	= pTransform;
-		m_pModel		= pModel;
-		m_color			= Color::white;
-		m_visibile		= true;
-	}
+	//void StaticModelComponent::initialize( const Transform* pTransform, const Model* pModel )
+	//{
+	//	TIKI_ASSERT( pTransform );
+	//	TIKI_ASSERT( pModel );
 
-	void StaticModelComponent::dispose()
-	{
-		m_pTransform	= nullptr;
-		m_pModel		= nullptr;
+	//	m_pTransform	= pTransform;
+	//	m_pModel		= pModel;
+	//	m_color			= Color::white;
+	//	m_visibile		= true;
+	//}
 
-		StaticModelComponent::dispose( this );
-	}
+	//void StaticModelComponent::dispose()
+	//{
+	//	m_pTransform	= nullptr;
+	//	m_pModel		= nullptr;
 
-	void StaticModelComponent::render( GpuContext* pContext )
-	{
-		const size_t componentCount			= s_pool.getCount();
+	//	StaticModelComponent::dispose( this );
+	//}
 
-		for (size_t i = 0u; i < componentCount; ++i)
-		{
-			const StaticModelComponent* pCurrentComp = s_pool[ i ];
+	//void StaticModelComponent::render( GpuContext* pContext )
+	//{
+	//	const size_t componentCount			= s_pool.getCount();
 
-			if( !pCurrentComp->m_visibile )
-				continue;
+	//	for (size_t i = 0u; i < componentCount; ++i)
+	//	{
+	//		const StaticModelComponent* pCurrentComp = s_pool[ i ];
 
-			pContext->setMaterial( pCurrentComp->m_pModel->getMaterial() );
+	//		if( !pCurrentComp->m_visibile )
+	//			continue;
 
-			const size_t geoCount = pCurrentComp->m_pModel->getGeometryCount();
-			for (size_t i = 0u; i < geoCount; ++i)
-			{
-				const ModelGeometry& geometry = pCurrentComp->m_pModel->getGeometryByIndex( i );
+	//		pContext->setMaterial( pCurrentComp->m_pModel->getMaterial() );
 
-				pContext->setInputLayout( geometry.getVertexFormat() );
+	//		const size_t geoCount = pCurrentComp->m_pModel->getGeometryCount();
+	//		for (size_t i = 0u; i < geoCount; ++i)
+	//		{
+	//			const ModelGeometry& geometry = pCurrentComp->m_pModel->getGeometryByIndex( i );
 
-				WorldBuffer* world = MeshRenderer::s_worldBuffer.map( 1 );
-				world->m_world = pCurrentComp->m_pTransform->getWorld();
-				world->m_color = pCurrentComp->m_color;
-				MeshRenderer::s_worldBuffer.unmap( );
+	//			pContext->setInputLayout( geometry.getVertexFormat() );
 
-				pContext->setConstantBuffer( MeshRenderer::s_worldBuffer, 1 );
-				pContext->setVertexBuffer( geometry.getVertexBuffer() );
-				pContext->setIndexBuffer( geometry.getIndexBuffer() );
+	//			WorldBuffer* world = MeshRenderer::s_worldBuffer.map( 1 );
+	//			world->m_world = pCurrentComp->m_pTransform->getWorld();
+	//			world->m_color = pCurrentComp->m_color;
+	//			MeshRenderer::s_worldBuffer.unmap( );
 
-				pContext->setSampler( s_sampler );
+	//			pContext->setConstantBuffer( MeshRenderer::s_worldBuffer, 1 );
+	//			pContext->setVertexBuffer( geometry.getVertexBuffer() );
+	//			pContext->setIndexBuffer( geometry.getIndexBuffer() );
 
-				pContext->setPrimitiveTopology( PrimitiveTopology_TriangleList );
-				pContext->drawIndexed( geometry.getIndexCount() );
-			}
-		}
-	}
+	//			pContext->setSampler( s_sampler );
 
-	StaticModelComponent::~StaticModelComponent()
-	{
+	//			pContext->setPrimitiveTopology( PrimitiveTopology_TriangleList );
+	//			pContext->drawIndexed( geometry.getIndexCount() );
+	//		}
+	//	}
+	//}
 
-	}
+	//StaticModelComponent::~StaticModelComponent()
+	//{
 
-	Sampler StaticModelComponent::s_sampler;
+	//}
 }

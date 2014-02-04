@@ -1,4 +1,4 @@
--- locale/modules/gamestates
+-- local/modules/gamestates
 
 local module = Module:new( "gamestates" );
 
@@ -10,3 +10,5 @@ module:add_dependency( "framework" );
 module:add_dependency( "graphics" );
 module:add_dependency( "resource" );
 module:add_dependency( "renderer" );
+module:add_dependency( "gameflowsystem" );
+module:add_dependency( "graphicscomponents" );
