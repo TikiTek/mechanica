@@ -6,7 +6,6 @@
 #include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphicsbase/shadertype.hpp"
-#include "tiki/resource/resourcefile.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"
 

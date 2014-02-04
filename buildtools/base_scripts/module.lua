@@ -1,5 +1,5 @@
 
-Module = class{ name = nil, module_type = 0, config = nil, module_dependencies = {}, source_files = {} };
+Module = class{ name = nil, module_type = 0, config = nil, module_dependencies = {}, source_files = {}, exclude_files = {} };
 
 global_module_storage = {};
 
@@ -35,8 +35,16 @@ function Module:new( name, initFunc )
 	return module_new;
 end
 
-function Module:add_files( file_name )
-	table.insert( self.source_files, path.getabsolute( file_name ) );
+function Module:add_files( file_name, flags )
+	local target_list = self.source_files;
+
+	if type( flags ) == "table" then
+		if flags.exclude then
+			target_list = self.exclude_files;
+		end
+	end
+
+	table.insert( target_list, path.getabsolute( file_name ) );
 end
 
 function Module:set_define( name, value, configuration, platform )
@@ -105,6 +113,20 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 				end
 			end
 			
+			for i,pattern in pairs( self.exclude_files ) do
+				local matches = os.matchfiles( pattern )
+				
+				for j,file_name in pairs( matches ) do
+					local index = table.index_of( all_files, file_name );
+					
+					while index >= 0 do
+						table.remove( all_files, index );
+					
+						index = table.index_of( all_files, file_name );
+					end
+				end
+			end			
+			
 			local ext = "cpp"
 			if self.module_type == ModuleTypes.UnityCModule then
 				ext = "c"
@@ -150,6 +172,7 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			files( { unity_file_name } );
 		else
 			files( self.source_files );
+			excludes( self.exclude_files );
 		end
 	end
 

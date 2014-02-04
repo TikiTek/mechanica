@@ -6,6 +6,9 @@ module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );
 
+module:add_dependency( "base" );
 module:add_dependency( "dbalsterxml" );
+module:add_dependency( "sqlite" );
+module:add_dependency( "trex" );
 
-	module:set_define( "TIKI_BUILD_TOOLS", "TIKI_ON" );
+module:set_define( "TIKI_BUILD_TOOLS", "TIKI_ON" );

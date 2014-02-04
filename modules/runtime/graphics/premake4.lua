@@ -10,7 +10,7 @@ module:add_include_dir( "include" );
 module:add_dependency( "math" );
 module:add_dependency( "graphicsbase" );
 --module:add_dependency( "graphicscomponents" );
-module:add_dependency( "graphicsresources" );
+--module:add_dependency( "graphicsresources" );
 
 if is_windows then
 	module:set_define( "TIKI_GRAPHICS_D3D11", "TIKI_ON" );
