@@ -1,4 +1,4 @@
--- locale/modules/rendereffectdata
+-- local/modules/rendereffectdata
 
 local module = Module:new( "rendereffectdata" );
 

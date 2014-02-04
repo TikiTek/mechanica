@@ -1,4 +1,4 @@
--- locale/modules/renderer
+-- local/modules/renderer
 
 local module = Module:new( "renderer" );
 

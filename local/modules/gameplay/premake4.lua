@@ -1,4 +1,4 @@
--- locale/modules/gameplay
+-- local/modules/gameplay
 
 local module = Module:new( "gameplay" );
 

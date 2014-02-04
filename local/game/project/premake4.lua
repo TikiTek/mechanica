@@ -1,4 +1,4 @@
--- locale/game/project
+-- local/game/project
 
 include "../../../library/buildtools/base_scripts"
 

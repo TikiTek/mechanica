@@ -1,5 +1,6 @@
 /gamebuild
 /library/tests/tikiunittest/build
 /library/tools/commandlineconverter/build
+/library/tools/guitest/build
 /local/mastering/output
 /local/game/build
