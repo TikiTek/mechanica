@@ -2,25 +2,50 @@
 #include "tiki/components/staticmodelcomponent.hpp"
 
 #include "tiki/components/componentstate.hpp"
-
-//#include "tiki/gamecore/transform.hpp"
-//#include "tiki/graphics/gpucontext.hpp"
-//#include "tiki/graphics/model.hpp"
-//#include "tiki/graphicsbase/primitivetopologies.hpp"
-//
-//#include "tiki/gamecore/meshrenderer.hpp"
-//
-//#include "tiki/game/gamedata.hpp"
+#include "tiki/components/staticmodelcomponent_initdata.hpp"
+#include "tiki/renderer/gamerenderer.hpp"
 
 namespace tiki
 {
 	struct TransformComponentState;
 
-	struct StaticModelComponentState : public ComponentState< StaticModelComponentState >
+	struct StaticModelComponentState : public ComponentState //< StaticModelComponentState >
 	{
 		const TransformComponentState*	pTransform;
 		const Model*					pModel;
 	};
+
+	StaticModelComponent::StaticModelComponent()
+	{
+	}
+
+	StaticModelComponent::~StaticModelComponent()
+	{
+	}
+
+	void StaticModelComponent::render( GameRenderer& gameRenderer )
+	{
+		ConstIterator componentStates = getConstIterator();
+
+		while ( componentStates.next() )
+		{
+			const State* pState = componentStates.getCurrent();
+
+			gameRenderer.queueModel( pState->pModel, nullptr );
+		}
+	}
+
+	bool StaticModelComponent::internalInitializeState( StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
+	{
+		pState->pModel	= pInitData->pModel;
+
+		return true;
+	}
+
+	void StaticModelComponent::internalDisposeState( StaticModelComponentState* pState )
+	{
+
+	}
 
 	//void StaticModelComponent::initializeSystem()
 	//{
@@ -98,4 +123,5 @@ namespace tiki
 	//{
 
 	//}
+
 }

@@ -13,29 +13,37 @@ namespace tiki
 
 	public:
 
-								ComponentBase() {}
-		virtual					~ComponentBase() {}
+								ComponentBase();
+		virtual					~ComponentBase();
+
+		virtual bool			initializeState( ComponentState* pComponentState, const void* pComponentInitData );
+		virtual void			disposeState( ComponentState* pComponentState );
 
 		virtual uint			getStateSize() const = 0;
 		virtual ComponentType	getTypeId() const = 0;
 
+	protected:
+
+		ComponentState*			m_pFirstComponentState;
+		ComponentState*			m_pLastComponentState;
+
 	};
 
-	template<typename TState, typename TInitData>
+	template< typename TState, typename TInitData >
 	class Component : public ComponentBase
 	{
 		TIKI_NONCOPYABLE_CLASS( Component );
 
 	public:
+		
+		typedef TState								State;
+		typedef TInitData							InitData;
 
 		typedef ComponentIterator< TState >			Iterator;
-		typedef ConstComponentIterator< TState >	ConstIterator;
+		typedef ComponentIterator< const TState >	ConstIterator;
 
 						Component() {}
 		virtual			~Component() {}
-
-		bool			initializeState( TState* pComponentState, const TInitData* pComponentInitData );
-		void			disposeState( TState* pComponentState );
 
 		Iterator		getIterator() const;
 		ConstIterator	getConstIterator() const;
@@ -45,11 +53,9 @@ namespace tiki
 		virtual bool	internalInitializeState( TState* pComponentState, const TInitData* pComponentInitData ) = 0;
 		virtual void	internalDisposeState( TState* pComponentState ) = 0;
 
-	private:
-
-		TState*			m_pFirstComponentState;
-		
 	};
 }
+
+#include "../../../source/component.inl"
 
 #endif // __TIKI_COMPONENTBASE_HPP_INCLUDED__

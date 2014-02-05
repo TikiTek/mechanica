@@ -2,7 +2,7 @@
 #ifndef TIKI_SKINNEDMODELCOMPONENT_HPP
 #define TIKI_SKINNEDMODELCOMPONENT_HPP
 
-#include "tiki/components/componentbase.hpp"
+#include "tiki/components/component.hpp"
 #include "tiki/components/componentstate.hpp"
 
 //#include "tiki/base/array.hpp"

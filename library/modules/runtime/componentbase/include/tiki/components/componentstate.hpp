@@ -6,18 +6,23 @@
 
 namespace tiki
 {
-	struct ComponentStateBase
+	struct ComponentState
 	{
 		EntityId		entityId;
 		ComponentType	componentType;
+
+		ComponentState*	pPrevComponentOfSameType;
+		ComponentState*	pNextComponentOfSameType;
+		ComponentState*	pNextComponentOfSameEntity;
 	};
 	
-	template<typename T>
-	struct ComponentState : public ComponentStateBase
-	{
-		T*		pNextComponentOfSameType;
-		T*		pNextComponentOfSameEntity;
-	};
+	//template<typename TState>
+	//struct ComponentState : public ComponentStateBase
+	//{
+	//	TState*		pPrevComponentOfSameType;
+	//	TState*		pNextComponentOfSameType;
+	//	void*		pNextComponentOfSameEntity;
+	//};
 }
 
 #endif // __TIKI_COMPONENTSTATE_HPP_INCLUDED__

@@ -1,49 +1,29 @@
 #ifndef TIKI_STATICMODELCOMPONENT_HPP
 #define TIKI_STATICMODELCOMPONENT_HPP
 
-#include "tiki/components/componentbase.hpp"
-
-//#include "tiki/graphics/sampler.hpp"
-//#include "tiki/graphicsbase/color.hpp"
+#include "tiki/components/component.hpp"
 
 namespace tiki
 {
-	struct StaticModelComponentState;
+	class GameRenderer;
 	struct StaticModelComponentInitData;
+	struct StaticModelComponentState;
 
 	class StaticModelComponent : public Component< StaticModelComponentState, StaticModelComponentInitData >
 	{
 		TIKI_NONCOPYABLE_CLASS( StaticModelComponent );
 
-	//public:
+	public:
 
-	//										~StaticModelComponent();
+		explicit			StaticModelComponent();
+		virtual				~StaticModelComponent();
 
-	//	void								initialize( const Transform* pTransform, const Model* pModel );
-	//	void								dispose();
+		void				render( GameRenderer& gameRenderer );
 
-	//	void								setColor( const Color& color ) { m_color = color; }
+	protected:
 
-	//	void								show() { m_visibile = true; }
-	//	void								hide() { m_visibile = false; }
-
-	//	static void							initializeSystem();
-	//	static void							disposeSystem();
-
-	//	static void							render( GpuContext* pContext );
-
-	//	const Transform*					getTransform() const { return m_pTransform; }
-
-	//private:
-	//										StaticModelComponent();
-
-	//	const Transform*					m_pTransform;
-	//	const Model*						m_pModel;
-
-	//	Color								m_color;
-	//	bool								m_visibile;
-
-	//	static Sampler						s_sampler;
+		virtual bool		internalInitializeState( StaticModelComponentState* pComponentState, const StaticModelComponentInitData* pComponentInitData );
+		virtual void		internalDisposeState( StaticModelComponentState* pComponentState );
 
 	};
 }
