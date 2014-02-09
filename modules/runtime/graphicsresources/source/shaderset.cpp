@@ -1,5 +1,5 @@
 
-#include "tiki/graphicsresources/shaderset.hpp"
+#include "tiki/graphics/shaderset.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shader.hpp"

@@ -1,5 +1,5 @@
 
-#include "tiki/graphicsresources/material.hpp"
+#include "tiki/graphics/material.hpp"
 
 #include "tiki/resource/resourcemanager.hpp"
 
