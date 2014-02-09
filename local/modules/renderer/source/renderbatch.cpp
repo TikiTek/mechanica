@@ -2,7 +2,7 @@
 #include "tiki/renderer/renderbatch.hpp"
 
 #include "tiki/base/functions.hpp"
-#include "tiki/graphicsresources/material.hpp"
+#include "tiki/graphics/material.hpp"
 
 namespace tiki
 {
