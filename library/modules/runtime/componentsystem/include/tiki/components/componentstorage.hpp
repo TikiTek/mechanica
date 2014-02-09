@@ -1,34 +1,41 @@
 #pragma once
-#ifndef TIKI_WINDOWEVENTBUFFER_HPP
-#define TIKI_WINDOWEVENTBUFFER_HPP
+#ifndef __TIKI_COMPONENTSTORAGE_HPP_INCLUDED__
+#define __TIKI_COMPONENTSTORAGE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
-#include "tiki/framework/windowevent.hpp"
 
 namespace tiki
 {
-	class WindowEventBuffer
+	struct ComponentState;
+	struct ComponentChunkDefinition;
+
+	class ComponentStorage
 	{
+		TIKI_NONCOPYABLE_CLASS( ComponentStorage );
+
 	public:
 
-		void						create();
-		void						dispose();
+		ComponentStorage();
+		~ComponentStorage();
 
-		void						clear();
-		WindowEvent&				pushEvent( WindowEventType type );
+		bool				create( uint chunkSize, uint chunkCount );
+		void				dispose();
 
-		size_t						getEventCount() const;
-		const WindowEvent&			getEventByIndex( size_t index ) const;
-		const WindowEvent*			getEventByType( WindowEventType type ) const;
+		void				registerComponentType( uint typeId, uint stateSize );
+		void				unregiserComponentType( uint typeId );
+
+		ComponentState*		allocateState( uint typeId );
+		void				freeState( ComponentState* pState );
 
 	private:
-		
-		typedef FixedSizedArray< WindowEvent, TIKI_WINDOWEVENTBUFFER_SIZE > WindowEventArray;
 
-		WindowEventArray			m_events;
+		uint						m_chunkSize;
+		uint						m_chunkCount;
+
+		uint8*						m_pMemory;
+		ComponentChunkDefinition*	m_pChunks;
 
 	};
 }
 
-#endif // TIKI_WINDOWEVENTBUFFER_HPP
+#endif // __TIKI_COMPONENTSTORAGE_HPP_INCLUDED__

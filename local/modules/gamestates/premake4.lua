@@ -12,3 +12,4 @@ module:add_dependency( "resource" );
 module:add_dependency( "renderer" );
 module:add_dependency( "gameflowsystem" );
 module:add_dependency( "graphicscomponents" );
+module:add_dependency( "componentsystem" );

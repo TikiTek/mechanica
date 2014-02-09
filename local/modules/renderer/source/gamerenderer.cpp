@@ -2,7 +2,7 @@
 #include "tiki/renderer/gamerenderer.hpp"
 
 #include "tiki/graphics/graphicscontext.hpp"
-#include "tiki/graphicsresources/model.hpp"
+#include "tiki/graphics/model.hpp"
 
 namespace tiki
 {

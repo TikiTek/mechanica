@@ -4,10 +4,10 @@
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphicsresources/material.hpp"
-#include "tiki/graphicsresources/model.hpp"
-#include "tiki/graphicsresources/shaderset.hpp"
-#include "tiki/graphicsresources/texture.hpp"
+#include "tiki/graphics/material.hpp"
+#include "tiki/graphics/model.hpp"
+#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/texture.hpp"
 
 namespace tiki
 {
