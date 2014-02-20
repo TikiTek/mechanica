@@ -11,13 +11,15 @@ namespace tiki
 
 	struct FileWatcherPlatformData
 	{
-		string	basePath;
+		string		basePath;
 
-		HANDLE	watchHandle;
+		bool		running;
+		HANDLE		dirHandle;
+		HANDLE		portHandle;
+		OVERLAPPED	overlapped;
 
-		DWORD	requiredSize;
-		uint8	dataBuffer[ 2048u ];
-
+		DWORD		requiredSize;
+		uint8		dataBuffer[ 2048u ];
 	};
 }
 

@@ -88,6 +88,7 @@ namespace tiki
 
 		debug::setTraceCallback( nullptr );
 
+		m_resourceMap.writeToFile();
 		m_resourceMap.dispose();
 
 		m_loggingStream.close();
@@ -212,6 +213,11 @@ namespace tiki
 		m_resourceMap.registerResource(
 			path::getFilename( resourceName )
 		);
+	}
+	
+	void ConverterManager::writeResourceMap()
+	{
+		m_resourceMap.writeToFile();
 	}
 
 	void ConverterManager::traceCallback( cstring message, TraceLevel level ) const
