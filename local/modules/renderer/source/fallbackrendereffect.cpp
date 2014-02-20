@@ -120,6 +120,8 @@ namespace tiki
 						pVertexShader,
 						geometry.getVertexFormat()
 					);
+					TIKI_ASSERT( pVertexInputBinding != nullptr );
+
 					m_vertexInputBindings.set( vertexFormatHash, pVertexInputBinding );
 				}
 
@@ -145,6 +147,10 @@ namespace tiki
 						{
 							graphicsContext.setPixelShaderTexture( 0u, &pDefaultTexture->getTextureData() );
 						}
+					}
+					else
+					{
+						graphicsContext.setPixelShaderTexture( 0u, nullptr );
 					}
 				}
 

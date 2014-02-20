@@ -105,7 +105,7 @@ namespace tiki
 
 		if ( pMaterial == nullptr )
 		{
-			static RenderEffectData fallbackRenderEffectData = { 0xffu, 0xffu, 0x00u, 0xffu };
+			static RenderEffectData fallbackRenderEffectData = { RenderEffectId_Invalid, 0xffffu, 0x0000u, RenderEffectDataInvalidTextureOffset };
 			pCommand->pRenderEffectData = &fallbackRenderEffectData;
 		}
 		else

@@ -48,7 +48,7 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModel		= framework::getResourceManager().loadResource< Model >( "aircraft.model" );
+					m_pModel		= framework::getResourceManager().loadResource< Model >( "test.model" );
 					m_pShaderSet	= framework::getResourceManager().loadResource< ShaderSet >( "immediate.shader" );
 					m_pTexture		= framework::getResourceManager().loadResource< Texture >( "checker.texture" );
 					TIKI_ASSERT( m_pModel != nullptr );
