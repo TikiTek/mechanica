@@ -20,6 +20,8 @@ namespace tiki
 
 		void			registerResource( const string& fileName );
 
+		void			writeToFile();
+
 	private:
 
 		typedef std::map< crc32, string > ResourceMap;

@@ -37,6 +37,18 @@ namespace tiki
 
 	void ConverterResourceMap::dispose()
 	{
+		m_fileName = nullptr;
+		m_map.clear();
+	}
+
+	void ConverterResourceMap::registerResource( const string& fileName )
+	{
+		const crc32 crcName = crcString( fileName );
+		m_map[ crcName ] = fileName;
+	}
+
+	void ConverterResourceMap::writeToFile()
+	{
 		Array< uint32 > crcData;
 		Array< uint32 > offsetData;
 		List< char > stringData;
@@ -58,7 +70,7 @@ namespace tiki
 
 		MemoryStream stream;
 		stream.create();
-		
+
 		const fourcc header = TIKI_FOURCC( 'T', 'R', 'N', 'M' );
 		const uint32 elementCount = m_map.size();
 		const uint32 stringDataSize = stringData.getCount();
@@ -75,17 +87,11 @@ namespace tiki
 			m_fileName,
 			static_cast< const uint8* >( stream.getData() ),
 			stream.getLength()
-		);
+			);
 
 		stream.dispose();
 		crcData.dispose();
 		offsetData.dispose();
 		stringData.dispose();
-	}
-
-	void ConverterResourceMap::registerResource( const string& fileName )
-	{
-		const crc32 crcName = crcString( fileName );
-		m_map[ crcName ] = fileName;
 	}
 }

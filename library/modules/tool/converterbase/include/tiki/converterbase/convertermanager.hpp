@@ -55,9 +55,12 @@ namespace tiki
 		void					registerConverter( const ConverterBase* pConverter );
 		void					unregisterConverter( const ConverterBase* pConverter );
 
+		// resource map
+		void					registerResource( const string& resourceName );
+		void					writeResourceMap();
+
 		// misc
 		const string&			getOutputPath() const { return m_outputPath; }
-		void					registerResource( const string& resourceName );
 
 	private:
 

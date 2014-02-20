@@ -75,12 +75,18 @@ namespace tiki
 			m_manager.queueFile( assetFiles[ i ] );
 		}
 
-		return m_manager.startConversion();
+		const int result = m_manager.startConversion();
+		if ( result == 0 )
+		{
+			m_manager.writeResourceMap();
+		}
+
+		return result;
 	}
 
 	void AssetConverter::startWatch()
 	{
-		m_fileWatcher.create( m_sourcePath.cStr(), 32u, true );
+		m_fileWatcher.create( m_sourcePath.cStr(), 32u );
 		m_converterMutex.create();
 		
 		if ( m_watchThread.create( watchThreadStaticEntryPoint, 8192u, "AssetConverter" ) == true )
@@ -93,6 +99,7 @@ namespace tiki
 	{
 		m_watchThread.requestExit();
 		m_watchThread.waitForExit();
+		m_watchThread.dispose();
 
 		m_converterMutex.dispose();
 		m_fileWatcher.dispose();

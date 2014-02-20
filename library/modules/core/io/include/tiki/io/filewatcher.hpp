@@ -43,23 +43,17 @@ namespace tiki
 		FileWatcher();
 		~FileWatcher();
 
-		bool	create( const char* pPath, uint maxEventCount, bool blockingMode );
+		bool	create( const char* pPath, uint maxEventCount );
 		void	dispose();
 
 		bool	popEvent( FileWatcherEvent& fileEvent );
+		bool	waitForEvent( uint timeOut = TimeOutInfinity );
 		
 	private:
 
-		bool						m_blockingMode;
-
 		Queue< FileWatcherEvent >	m_events;
-		Thread						m_watcherThread;
-		Mutex						m_watcherMutex;
 
 		FileWatcherPlatformData		m_platformData;
-
-		void						threadEntryPoint( const Thread& thread );
-		static int					threadStaticEntryPoint( const Thread& thread );
 
 	};
 }

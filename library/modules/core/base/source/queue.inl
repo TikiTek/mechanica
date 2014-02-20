@@ -40,6 +40,15 @@ namespace tiki
 	template<typename T>
 	void Queue<T>::dispose()
 	{
+		if ( m_pData != nullptr )
+		{
+			memory::deleteArray( m_pData, m_capacity );
+			m_pData = nullptr;
+		}
+
+		m_top		= 0u;
+		m_bottom	= 0u;
+		m_capacity	= 0u;
 	}
 
 	template<typename T>
