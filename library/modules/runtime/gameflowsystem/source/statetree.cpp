@@ -86,8 +86,10 @@ namespace tiki
 		m_transitionPathDirection		= 1;
 		m_transitionCurrentPathIndex	= 0u;
 		
-		m_currentStep	= ( m_currentState < m_transitionNextState ? 0u : curDef.transitionStepCount - 1u );
-		m_isCreating	= ( m_currentState < m_transitionNextState ? true : false );
+		TIKI_ASSERT( m_transitionPathSize > 1u );
+		const bool forward = ( m_currentState < m_transitionPath[ 1u ] );
+		m_currentStep	= ( forward ? 0u : curDef.transitionStepCount - 1u );
+		m_isCreating	= forward;
 		m_isInitial		= true;
 	}
 
@@ -109,11 +111,20 @@ namespace tiki
 				if ( ( m_currentStep >= m_stateDefinition[ m_transitionNextState ].transitionStepCount && m_isCreating ) ||
 					 ( m_currentStep < 0 && !m_isCreating ) )
 				{
-					m_transitionCurrentPathIndex	+= m_transitionPathDirection;
-					m_currentState					= m_transitionNextState;
+					m_transitionCurrentPathIndex += m_transitionPathDirection;
+
+					if ( m_isCreating )
+					{
+						m_currentState = m_transitionNextState;
+					}
+					else
+					{
+						m_currentState = m_transitionPath[ m_transitionCurrentPathIndex ];
+					}
 
 					if ( m_transitionCurrentPathIndex == m_transitionPathSize )
 					{
+						// transition finish
 						m_transitionCurrentPathIndex = -1;
 					}
 					else

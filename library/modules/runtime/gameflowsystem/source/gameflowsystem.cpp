@@ -30,6 +30,7 @@ namespace tiki
 				index = pDefinition[ index ].parentStateIndex;
 				count++;
 			}
+			TIKI_ASSERT( count <= StateTree_MaxHierarchyDepth );
 
 			index = i;
 			for (size_t j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
@@ -40,6 +41,7 @@ namespace tiki
 
 			targetDef.transitionStepCount	= def.transitionStepCount;
 			targetDef.hierarchyLength		= count;
+			targetDef.pName					= def.pName;
 		}
 
 		m_stateTree.create( stateTreeDefinitions, definitionCount );

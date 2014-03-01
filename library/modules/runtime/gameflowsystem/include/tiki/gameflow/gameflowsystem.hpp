@@ -16,6 +16,8 @@ namespace tiki
 		GameState*		pState;
 		size_t			parentStateIndex;
 		size_t			transitionStepCount;
+
+		const char*		pName;
 	};
 
 	class GameFlowSystem

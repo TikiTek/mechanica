@@ -10,6 +10,7 @@ namespace tiki
 	enum
 	{
 		StateTree_MaxStateCount			= 16u,
+		StateTree_MaxHierarchyDepth		= 8u,
 		StateTree_MaxTransitionPathSize	= 16u * 2u,
 		StateTree_InvalidTransitionStep	= TIKI_SIZE_T_MAX
 	};
@@ -26,10 +27,12 @@ namespace tiki
 
 	struct StateDefinition
 	{
-		int		stateHierarchy[ StateTree_MaxStateCount ];
-		size_t	hierarchyLength;
+		int			stateHierarchy[ StateTree_MaxHierarchyDepth ];
+		size_t		hierarchyLength;
 
-		int		transitionStepCount;
+		int			transitionStepCount;
+
+		const char*	pName;
 	};
 
 	class StateTree

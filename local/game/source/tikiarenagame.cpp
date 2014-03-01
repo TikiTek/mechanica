@@ -52,11 +52,11 @@ namespace tiki
 
 		GameStateDefinition gameDefinition[] =
 		{
-			{ nullptr,								0u,	0u },
-				{ &m_pStates->introState,			0u,	IntroStateTransitionSteps_Count },			// F5
-				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count },	// F6
-					{ &m_pStates->playState,		2u,	PlayStateTransitionSteps_Count },			// F7
-					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count }			// F8
+			{ nullptr,								0u,	0u,										"Root" },
+				{ &m_pStates->introState,			0u,	IntroStateTransitionSteps_Count,		"IntroState" },			// F5
+				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },	// F6
+					{ &m_pStates->playState,		2u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F7
+					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count,			"TestState" }			// F8
 		};
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
