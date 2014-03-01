@@ -38,11 +38,11 @@ namespace tiki
 				do
 				{
 					handle = CreateFile( fileName.cStr(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-					counter++;
 
 					if ( handle == INVALID_HANDLE_VALUE )
 					{
 						Sleep( 1 );
+						counter++;
 					}
 				}
 				while( handle == INVALID_HANDLE_VALUE && counter < 1000u );
@@ -50,6 +50,7 @@ namespace tiki
 				if ( handle != INVALID_HANDLE_VALUE )
 				{
 					CloseHandle( handle );
+					handle = INVALID_HANDLE_VALUE;
 				}
 
 				FileWatcherEvent& fileEvent = events.push();
@@ -61,10 +62,6 @@ namespace tiki
 			pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
 		} 
 		while ( pNotifyInfo->NextEntryOffset );
-	}
-
-	VOID CALLBACK FileIOCompletionRoutine( DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped )
-	{
 	}
 
 	FileWatcher::FileWatcher()

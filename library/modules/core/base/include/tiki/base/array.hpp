@@ -23,99 +23,25 @@ namespace tiki
 		typedef T*			Iterator;
 		typedef const T*	ConstIterator;
 
-		Array()
-			: m_pData( nullptr ), m_dataCount( 0u )
-		{
-		}
+		TIKI_FORCE_INLINE			Array();
+		TIKI_FORCE_INLINE			~Array();
 
-		~Array()
-		{
-			TIKI_ASSERT( m_pData == nullptr );
-		}
+		TIKI_FORCE_INLINE bool		create( uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE bool		create( const T* pInitData, uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE void		dispose();
 
-		TIKI_INLINE void create( uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT )
-		{
-			TIKI_ASSERT( m_pData == nullptr );
+		TIKI_FORCE_INLINE size_t	getCount() const;
 
-			m_pData		 = memory::newArray< T >( count, aligment );
-			m_dataCount  = count;
-		}
+		TIKI_FORCE_INLINE T*		getData();
+		TIKI_FORCE_INLINE const T*	getData() const;
+		TIKI_FORCE_INLINE T*		getLast();
+		TIKI_FORCE_INLINE const T*	getLast() const;
+		TIKI_FORCE_INLINE T*		getEnd();
+		TIKI_FORCE_INLINE const T*	getEnd() const;
 
-		TIKI_INLINE void create( const T* pInitData, uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT )
-		{
-			create( count, aligment );
-
-			for (size_t i = 0u; i < count; ++i)
-			{
-				m_pData[ i ] = pInitData[ i ];
-			}
-		}
-
-		TIKI_INLINE void dispose()
-		{
-			if ( m_pData != nullptr )
-			{
-				memory::deleteArray( m_pData, m_dataCount );
-			}
-
-			m_pData		= nullptr;
-			m_dataCount	= 0u;
-		}
-
-		TIKI_INLINE size_t getCount() const
-		{
-			return m_dataCount;
-		}
-
-		TIKI_INLINE T* getData()
-		{
-			return m_pData;
-		}
-
-		TIKI_INLINE const T* getData() const
-		{
-			return m_pData;
-		}
-
-		TIKI_INLINE T* getLast() 
-		{
-			return m_pData + ( m_dataCount - 1u );
-		}
-
-		TIKI_INLINE const T* getLast() const
-		{
-			return m_pData + ( m_dataCount - 1u );
-		}
-
-		TIKI_INLINE T* getEnd() 
-		{
-			return m_pData + m_dataCount;
-		}
-
-		TIKI_INLINE const T* getEnd() const
-		{
-			return m_pData + m_dataCount;
-		}
-
-		TIKI_INLINE size_t getIndex( const T& value ) const
-		{
-			TIKI_ASSERT( &value >= m_pData );
-			TIKI_ASSERT( &value < getEnd() );
-
-			return ( (size_t)&value - (size_t)m_pData ) / sizeof( T );
-		}
-
-		TIKI_INLINE const T& operator[]( uint index ) const
-		{
-			TIKI_ASSERT( index < m_dataCount );
-			return m_pData[ index ];
-		}
-
-		TIKI_INLINE T& operator[]( uint index )
-		{
-			TIKI_ASSERT( index < m_dataCount );
-			return m_pData[ index ];
-		}
+		TIKI_FORCE_INLINE size_t	getIndex( const T& value ) const;
+		TIKI_FORCE_INLINE T&		operator[]( uint index );
+		TIKI_FORCE_INLINE const T&	operator[]( uint index ) const;
 
 	private:
 
@@ -124,5 +50,7 @@ namespace tiki
 
 	};
 }
+
+#include "../../../source/array.inl"
 
 #endif // __TIKI_ARRAY_HPP_INCLUDED__
