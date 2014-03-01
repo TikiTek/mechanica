@@ -17,6 +17,12 @@ namespace tiki
 	}
 
 	template<typename T>
+	TIKI_FORCE_INLINE bool isValueAligned( T value, T alignment )
+	{
+		return alignValue( value, alignment ) == value;
+	}
+
+	template<typename T>
 	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
 	{
 		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
