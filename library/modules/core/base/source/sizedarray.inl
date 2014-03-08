@@ -18,14 +18,22 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void SizedArray<T>::create( size_t capacity )
+	TIKI_FORCE_INLINE bool SizedArray<T>::create( size_t capacity )
 	{
-		TIKI_ASSERT( capacity );
-		TIKI_ASSERT( m_pData == 0u );
-		TIKI_ASSERT( m_count == 0u && m_capacity == 0u );
+		TIKI_ASSERT( capacity > 0u );
+		TIKI_ASSERT( m_pData == nullptr );
+		TIKI_ASSERT( m_count == 0u );
+		TIKI_ASSERT( m_capacity == 0u );
 
 		m_capacity	= capacity;
 		m_pData		= memory::newArray< T >( capacity );
+		if ( m_pData == nullptr )
+		{
+			dispose();
+			return false;				 
+		}
+
+		return true;
 	}
 
 	template<typename T>

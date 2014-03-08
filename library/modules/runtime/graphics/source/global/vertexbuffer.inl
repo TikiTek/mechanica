@@ -16,12 +16,17 @@ namespace tiki
 		TIKI_ASSERT( m_count == 0u );
 	}
 
-	TIKI_FORCE_INLINE void VertexBuffer::create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/ )
+	TIKI_FORCE_INLINE bool VertexBuffer::create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/ )
 	{
-		m_stride	= vertexStride;
-		m_count		= vertexCount;
+		if ( BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, GraphicsBufferType_VertexBuffer, pInitData ) )
+		{
+			m_stride	= vertexStride;
+			m_count		= vertexCount;
 
-		BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, GraphicsBufferType_VertexBuffer, pInitData );
+			return true;
+		}
+
+		return false;
 	}
 
 	TIKI_FORCE_INLINE void VertexBuffer::dispose( GraphicsSystem& graphicsSystem )

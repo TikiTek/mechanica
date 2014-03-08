@@ -18,7 +18,7 @@ namespace tiki
 		SizedArray();
 		~SizedArray();
 
-		TIKI_FORCE_INLINE void		create( size_t capacity );
+		TIKI_FORCE_INLINE bool		create( size_t capacity );
 		TIKI_FORCE_INLINE void		dispose();
 
 		TIKI_FORCE_INLINE void		clear();

@@ -6,6 +6,38 @@
 
 namespace tiki
 {
+	struct BlendStatePlatformData
+	{
+		BlendStatePlatformData()
+		{
+			pBlendState = nullptr;
+		}
+
+		TGBlendState*	pBlendState;
+	};
+
+	struct DepthStencilStatePlatformData
+	{
+		DepthStencilStatePlatformData()
+		{
+			stencilRef = 0u;
+			pDepthStencilState = nullptr;
+		}
+
+		uint					stencilRef;
+		TGDepthStencilState*	pDepthStencilState;
+	};
+
+	struct RasterizerStatePlatformData
+	{
+		RasterizerStatePlatformData()
+		{
+			pRasterizerState = nullptr;
+		}
+
+		TGRasterizerState*	pRasterizerState;
+	};
+
 	struct SamplerStatePlatformData
 	{
 		SamplerStatePlatformData()

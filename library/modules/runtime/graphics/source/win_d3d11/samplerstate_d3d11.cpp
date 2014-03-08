@@ -10,23 +10,13 @@
 
 namespace tiki
 {
-	static D3D11_TEXTURE_ADDRESS_MODE getD3dAddressMode( AddressMode mode )
+	static const D3D11_TEXTURE_ADDRESS_MODE s_aAddressModeMapping[ AddressMode_Count ] =
 	{
-		switch ( mode )
-		{
-		case AddressMode_Border:
-			return D3D11_TEXTURE_ADDRESS_BORDER;
-		case AddressMode_Clamp:
-			return D3D11_TEXTURE_ADDRESS_CLAMP;
-		case AddressMode_Mirror:
-			return D3D11_TEXTURE_ADDRESS_MIRROR;
-		case AddressMode_Wrap:
-			return D3D11_TEXTURE_ADDRESS_WRAP;
-		}
-
-		TIKI_BREAK( "[graphics] wrong AddressMode.\n" );
-		return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
-	}
+		D3D11_TEXTURE_ADDRESS_WRAP,		// AddressMode_Wrap
+		D3D11_TEXTURE_ADDRESS_MIRROR,	// AddressMode_Mirror
+		D3D11_TEXTURE_ADDRESS_CLAMP,	// AddressMode_Clamp
+		D3D11_TEXTURE_ADDRESS_BORDER,	// AddressMode_Border
+	};
 
 	static D3D11_FILTER getFilter( FilterMode mag, FilterMode mip )
 	{
@@ -65,24 +55,29 @@ namespace tiki
 		return D3D11_FILTER_COMPARISON_ANISOTROPIC;
 	}
 
+	bool SamplerState::isCreated() const
+	{
+		return m_platformData.pSamplerState != nullptr;
+	}
+
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
-		TIKI_DECLARE_STACKANDZERO( D3D11_SAMPLER_DESC, samplerDesc );
-		samplerDesc.Filter			= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
-		samplerDesc.AddressU		= getD3dAddressMode( creationParamter.addressU );
-		samplerDesc.AddressV		= getD3dAddressMode( creationParamter.addressV );
-		samplerDesc.AddressW		= getD3dAddressMode( creationParamter.addressW );
-		samplerDesc.MipLODBias		= 0.0f;
-		samplerDesc.MaxAnisotropy	= creationParamter.maxAnisotropy;
-		samplerDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
-		samplerDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
-		samplerDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );
-		samplerDesc.BorderColor[2]	= color::getFloatChannelB( creationParamter.borderColor );
-		samplerDesc.BorderColor[3]	= color::getFloatChannelA( creationParamter.borderColor );
-		samplerDesc.MinLOD			= 0;
-		samplerDesc.MaxLOD			= D3D11_FLOAT32_MAX;
+		TIKI_DECLARE_STACKANDZERO( D3D11_SAMPLER_DESC, stateDesc );
+		stateDesc.Filter			= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
+		stateDesc.AddressU			= s_aAddressModeMapping[ creationParamter.addressU ];
+		stateDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
+		stateDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
+		stateDesc.MipLODBias		= 0.0f;
+		stateDesc.MaxAnisotropy		= creationParamter.maxAnisotropy;
+		stateDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
+		stateDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
+		stateDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );
+		stateDesc.BorderColor[2]	= color::getFloatChannelB( creationParamter.borderColor );
+		stateDesc.BorderColor[3]	= color::getFloatChannelA( creationParamter.borderColor );
+		stateDesc.MinLOD			= 0;
+		stateDesc.MaxLOD			= D3D11_FLOAT32_MAX;
 
-		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &samplerDesc, &m_platformData.pSamplerState );
+		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &stateDesc, &m_platformData.pSamplerState );
 		if( FAILED( result ) )
 		{
 			dispose();
@@ -101,10 +96,5 @@ namespace tiki
 		}
 
 		GraphicsStateObject::dispose();
-	}
-
-	bool SamplerState::isCreated() const
-	{
-		return m_platformData.pSamplerState != nullptr;
 	}
 }

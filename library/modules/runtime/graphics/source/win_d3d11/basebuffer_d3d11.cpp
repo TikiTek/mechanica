@@ -34,7 +34,7 @@ namespace tiki
 		TIKI_ASSERT( m_pBuffer == nullptr );
 	}
 
-	void BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
 
@@ -52,7 +52,14 @@ namespace tiki
 		initData.pSysMem = pInitData;
 		const D3D11_SUBRESOURCE_DATA* pD3dInitData = ( pInitData != nullptr ? &initData : nullptr );
 
-		TIKI_ASSERT( SUCCEEDED( graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer ) ) );
+		const HRESULT result = graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer );
+		if ( FAILED( result ) )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
+
+		return true;
 	}
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )

@@ -3,9 +3,12 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
+#include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
+#include "tiki/graphics/rasterizerstate.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
@@ -22,7 +25,7 @@ namespace tiki
 {
 	GraphicsContext::GraphicsContext()
 	{
-		m_pGraphicsSystem	= nullptr;
+		m_pGraphicsSystem = nullptr;
 	}
 
 	GraphicsContext::~GraphicsContext()
@@ -142,10 +145,40 @@ namespace tiki
 		invalidateState();
 	}
 
-	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
+
+	void GraphicsContext::setBlendState( const BlendState* pBlendState )
 	{
-		TIKI_ASSERT( pVertexInputBinding != nullptr );
-		m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
+		TIKI_ASSERT( pBlendState != nullptr );
+
+		if ( m_pBlendState != pBlendState )
+		{
+			static const float s_aBlendFactor[ 4u ] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+			m_platformData.pContext->OMSetBlendState( pBlendState->m_platformData.pBlendState, s_aBlendFactor, 0xffffffffu );
+			m_pBlendState = pBlendState;
+		}		
+	}
+
+	void GraphicsContext::setDepthStencilState( const DepthStencilState* pDepthStencilState )
+	{
+		TIKI_ASSERT( pDepthStencilState != nullptr );
+
+		if ( m_pDepthStencilState != pDepthStencilState )
+		{
+			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, pDepthStencilState->m_platformData.stencilRef );
+			pDepthStencilState = pDepthStencilState;
+		}		
+	}
+
+	void GraphicsContext::setRasterizerState( const RasterizerState* pRasterizerState )
+	{
+		TIKI_ASSERT( pRasterizerState != nullptr );
+
+		if ( m_pRasterizerState != pRasterizerState )
+		{
+			m_platformData.pContext->RSSetState( pRasterizerState->m_platformData.pRasterizerState );
+			m_pRasterizerState = pRasterizerState;
+		}
 	}
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
@@ -172,6 +205,12 @@ namespace tiki
 			m_platformData.pContext->VSSetShader( pShader->m_platformData.pVertexShader, nullptr, 0 );
 			m_pVertexShader = pShader;
 		}
+	}
+
+	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
+	{
+		TIKI_ASSERT( pVertexInputBinding != nullptr );
+		m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
 	}
 
 	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
@@ -323,7 +362,7 @@ namespace tiki
 		m_platformData.pContext->Draw( (UINT)vertexCount, (UINT)baseVertexOffset );
 	}
 
-	void GraphicsContext::drawIndexed( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
+	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
