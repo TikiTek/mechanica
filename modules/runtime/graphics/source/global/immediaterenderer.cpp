@@ -2,17 +2,20 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 
 #include "tiki/base/numbers.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer_shader.hpp"
+#include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphicsbase/primitivetopologies.hpp"
 #include "tiki/math/rectangle.hpp"
-//#include "tiki/graphicsresources/font.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
 //#include "tiki/graphicsresources/material.hpp"
 //#include "tiki/graphicsresources/shaderset.hpp"
 //#include "tiki/math/rectangle.hpp"
-//#include "tiki/resource/resourcemanager.hpp"
+
 
 namespace tiki
 {
@@ -20,12 +23,13 @@ namespace tiki
 	{
 	}
 
-	bool ImmediateRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const WindowEventBuffer& eventBuffer )
+	bool ImmediateRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		m_pEventBuffer	= &eventBuffer;
-
-		//m_pMaterial = resourceManager.loadResource< Material >( "immediate.material" );
-		TIKI_ASSERT( m_pMaterial );
+		m_pShaderSet = resourceManager.loadResource< ShaderSet >( "immediate.shader" );
+		if ( m_pShaderSet == nullptr )
+		{
+			return false;
+		}
 
 		{
 			const VertexAttribute attributes[] =
@@ -36,25 +40,41 @@ namespace tiki
 			};		
 
 			m_pVertexFormat = graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
-			TIKI_ASSERT( m_pVertexFormat != nullptr );
+			if ( m_pVertexFormat == nullptr )
+			{
+				dispose( graphicsSystem, resourceManager );
+				return false;
+			}
 		}
 
 		SamplerStateParamters samplerParams;
 		m_pSamplerState = graphicsSystem.createSamplerState( samplerParams );
 
-		m_sprites.create( MaxSprites );
-		m_vertices.create( MaxVertices );
+		if ( m_sprites.create( MaxSprites ) == false || m_vertices.create( MaxVertices ) == false )
+		{
+			dispose( graphicsSystem, resourceManager );
+			return false;
+		}
 
-		m_vertexBuffer.create( graphicsSystem, MaxVertices, sizeof( SpriteVertex ), true );
-		m_constantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) );
+		if ( m_vertexBuffer.create( graphicsSystem, MaxVertices, sizeof( SpriteVertex ), true ) == false )
+		{
+			dispose( graphicsSystem, resourceManager );
+			return false;
+		}
+
+		if ( m_constantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) ) == false )
+		{
+			dispose( graphicsSystem, resourceManager );
+			return false;
+		}
 		
 		return true;
 	}
 
 	void ImmediateRenderer::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		//resourceManager.unloadResource( m_pMaterial );
-		m_pMaterial = nullptr;
+		resourceManager.unloadResource( m_pShaderSet );
+		m_pShaderSet = nullptr;
 
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
 		m_pVertexFormat = nullptr;
@@ -69,12 +89,78 @@ namespace tiki
 		m_constantBuffer.dispose( graphicsSystem );
 	}
 
+	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
+	{
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
+
+		//m_pGpuContext->disableDepth();
+		//m_pGpuContext->enableAlpha();
+				
+		if( m_sprites.getCount() > 0u )
+		{
+			const uint vertexCount	= m_vertices.getCount();
+			const uint count		= m_sprites.getCount();
+
+			SpriteVertex* pTargetVertexData = static_cast< SpriteVertex* >( graphicsContext.mapBuffer( m_vertexBuffer ) );
+			memory::copy( pTargetVertexData, m_sprites.getData(), sizeof( SpriteVertex ) * vertexCount );
+			graphicsContext.unmapBuffer( m_vertexBuffer );
+
+			graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
+
+			graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
+			graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+
+			for( uint i = 0u; i < count; ++i )
+			{
+				const Sprite& sprite = m_sprites[ i ];
+
+				graphicsContext.setPixelShaderTexture( 0u, sprite.pTexture );				
+				graphicsContext.drawGeometry( sprite.vertexCount, sprite.vertexOffset );
+			}
+		}
+
+		//// render text
+		//if ( m_textChars.getCount() )
+		//{
+		//	FontVertex* pTextVertices = m_textVertexBuffer.map( m_textChars.getCount() );
+		//	memory::copy( pTextVertices, m_textChars.getData(), m_textChars.getCount() * sizeof( FontVertex ) );
+		//	m_textVertexBuffer.unmap();
+
+		//	m_pGpuContext->setInputLayout( m_pTextVertexFormat );
+		//	m_pGpuContext->setMaterial( m_pTextMaterial );
+
+		//	m_pGpuContext->setVertexBuffer( m_textVertexBuffer );
+		//	m_pGpuContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+
+		//	size_t offset = 0u;
+		//	while ( m_textTextures.getCount() )
+		//	{
+		//		const TextureData* pTextureData = m_textTextures.pop();
+		//		const size_t vertexCount = m_textLength.pop() * 4u;
+		//		
+		//		m_pGpuContext->setPixelShaderTexture( pTextureData );
+		//		m_pGpuContext->draw( vertexCount, offset );
+		//		offset += vertexCount;
+		//	}
+
+		//	m_textChars.clear();
+		//	TIKI_ASSERT( m_textLength.getCount() == 0u );
+		//	TIKI_ASSERT( m_textTextures.getCount() == 0u );
+		//}
+
+		//m_pGpuContext->enableDepth();
+		//m_pGpuContext->disableAlpha();
+
+		m_sprites.clear();
+		m_vertices.clear();
+	}
+
 	void tiki::ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& r )
 	{
 		Sprite& sprite	= m_sprites.push();
-		sprite.offset	= m_vertices.getCount();
-		sprite.count	= 4u;
-		sprite.pTexture = &texture;
+		sprite.vertexOffset	= m_vertices.getCount();
+		sprite.vertexCount	= 4u;
+		sprite.pTexture		= &texture;
 
 		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
 
@@ -114,9 +200,9 @@ namespace tiki
 	void ImmediateRenderer::drawTexture( const TextureData& texture, const Rectangle& d, const Rectangle& s )
 	{
 		Sprite& sprite = m_sprites.push();
-		sprite.offset	= m_vertices.getCount();
-		sprite.count	= 4u;
-		sprite.pTexture = &texture;
+		sprite.vertexOffset	= m_vertices.getCount();
+		sprite.vertexCount	= 4u;
+		sprite.pTexture		= &texture;
 
 		const float uScale = 1.0f / (float)texture.getWidth();
 		const float vScale = 1.0f / (float)texture.getHeight();
@@ -154,132 +240,64 @@ namespace tiki
 		pVertices[ 3u ].color		= TIKI_COLOR_WHITE;
 	}
 
-	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const string& text, Color color )
+	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const char* pText, Color color )
 	{
-		//if ( text.isEmpty() )
-		//{
-		//	return;
-		//}
-
-		//TIKI_ASSERT( text.getLength() <= 128u );
-		//const size_t charCount = text.getLength();
-		//const size_t vertexCount = charCount * 4u;
-
-		//Sprite& sprite = m_sprites.push();
-		//sprite.offset	= m_vertices.getCount();
-		//sprite.count	= vertexCount;
-		//sprite.pTexture = &font.getTextureData();
-
-		//FontChar chars[ 128u ];
-		//font.fillVertices( chars, TIKI_COUNT( chars ), text.cStr(), text.getLength() );
-
-		//SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
-
-		//float x = 0.0f;
-		//for (size_t i = 0u; i < vertexCount; i += 4u)
-		//{
-		//	const size_t vertexIndex = i * 4u;
-		//	const FontChar& character = chars[ i ];
-
-		//	const float left = position.x + x;
-
-		//	const float right = x + character.width;
-		//	const float bottom = position.y + character.height;
-
-		//	// bottom left
-		//	createFloat3( pVertices[ vertexIndex + 0u ].position, left, bottom, 0.0f );
-		//	pVertices[ vertexIndex + 0u ].u		= character.x1; 
-		//	pVertices[ vertexIndex + 0u ].v		= character.y2; 
-		//	pVertices[ vertexIndex + 0u ].color	= TIKI_COLOR_WHITE;
-
-		//	// top left
-		//	createFloat3( pVertices[ vertexIndex + 1u ].position, left, position.y, 0.0f );
-		//	pVertices[ vertexIndex + 1u ].u		= character.x1; 
-		//	pVertices[ vertexIndex + 1u ].v		= character.y1; 
-		//	pVertices[ vertexIndex + 1u ].color	= TIKI_COLOR_WHITE;
-
-		//	// bottom right
-		//	createFloat3( pVertices[ vertexIndex + 2u ].position, right, bottom, 0.0f );
-		//	pVertices[ vertexIndex + 2u ].u		= character.x2; 
-		//	pVertices[ vertexIndex + 2u ].v		= character.y2; 
-		//	pVertices[ vertexIndex + 2u ].color	= TIKI_COLOR_WHITE;
-
-		//	// top right
-		//	createFloat3( pVertices[ vertexIndex + 3u ].position, right, position.y, 0.0f );
-		//	pVertices[ vertexIndex + 3u ].u		= character.x2; 
-		//	pVertices[ vertexIndex + 3u ].v		= character.y1; 
-		//	pVertices[ vertexIndex + 3u ].color	= TIKI_COLOR_WHITE;
-		//
-		//	x += character.width;
-		//}
-	}
-
-	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
-	{
-		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
-
-		//m_pGpuContext->disableDepth();
-		//m_pGpuContext->enableAlpha();
-
-		// render sprites
-		if( m_sprites.getCount() )
+		const uint textLength = getStringLength( pText );
+		if ( textLength == 0u )
 		{
-			const uint vertexCount	= m_vertices.getCount();
-			const uint count		= m_sprites.getCount();
-
-			SpriteVertex* sv = (SpriteVertex*)graphicsContext.mapBuffer( m_vertexBuffer );
-			memory::copy( sv, m_sprites.getData(), sizeof( SpriteVertex ) * vertexCount );
-			graphicsContext.unmapBuffer( m_vertexBuffer );
-
-			graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
-			//graphicsContext.setMaterial( m_pMaterial );
-
-			graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
-			graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-
-			for( uint i = 0u; i < count; ++i )
-			{
-				const Sprite& sprite = m_sprites[ i ];
-
-				graphicsContext.setPixelShaderTexture( 0u, sprite.pTexture );
-				//graphicsContext.draw( 4u, i * 4u );
-			}
+			return;
 		}
 
-		//// render text
-		//if ( m_textChars.getCount() )
-		//{
-		//	FontVertex* pTextVertices = m_textVertexBuffer.map( m_textChars.getCount() );
-		//	memory::copy( pTextVertices, m_textChars.getData(), m_textChars.getCount() * sizeof( FontVertex ) );
-		//	m_textVertexBuffer.unmap();
+		TIKI_ASSERT( textLength <= 128u );
+		const size_t vertexCount = textLength * 4u;
 
-		//	m_pGpuContext->setInputLayout( m_pTextVertexFormat );
-		//	m_pGpuContext->setMaterial( m_pTextMaterial );
+		Sprite& sprite = m_sprites.push();
+		sprite.vertexCount	= m_vertices.getCount();
+		sprite.vertexCount	= vertexCount;
+		sprite.pTexture		= &font.getTextureData();
 
-		//	m_pGpuContext->setVertexBuffer( m_textVertexBuffer );
-		//	m_pGpuContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+		FontChar chars[ 128u ];
+		font.fillVertices( chars, TIKI_COUNT( chars ), pText, textLength );
 
-		//	size_t offset = 0u;
-		//	while ( m_textTextures.getCount() )
-		//	{
-		//		const TextureData* pTextureData = m_textTextures.pop();
-		//		const size_t vertexCount = m_textLength.pop() * 4u;
-		//		
-		//		m_pGpuContext->setPixelShaderTexture( pTextureData );
-		//		m_pGpuContext->draw( vertexCount, offset );
-		//		offset += vertexCount;
-		//	}
+		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
 
-		//	m_textChars.clear();
-		//	TIKI_ASSERT( m_textLength.getCount() == 0u );
-		//	TIKI_ASSERT( m_textTextures.getCount() == 0u );
-		//}
+		float x = 0.0f;
+		for (size_t i = 0u; i < vertexCount; i += 4u)
+		{
+			const size_t vertexIndex = i * 4u;
+			const FontChar& character = chars[ i ];
 
-		//m_pGpuContext->enableDepth();
-		//m_pGpuContext->disableAlpha();
+			const float left = position.x + x;
 
-		m_sprites.clear();
-		m_vertices.clear();
+			const float right = x + character.width;
+			const float bottom = position.y + character.height;
+
+			// bottom left
+			createFloat3( pVertices[ vertexIndex + 0u ].position, left, bottom, 0.0f );
+			pVertices[ vertexIndex + 0u ].u		= character.x1; 
+			pVertices[ vertexIndex + 0u ].v		= character.y2; 
+			pVertices[ vertexIndex + 0u ].color	= color;
+
+			// top left
+			createFloat3( pVertices[ vertexIndex + 1u ].position, left, position.y, 0.0f );
+			pVertices[ vertexIndex + 1u ].u		= character.x1; 
+			pVertices[ vertexIndex + 1u ].v		= character.y1; 
+			pVertices[ vertexIndex + 1u ].color	= color;
+
+			// bottom right
+			createFloat3( pVertices[ vertexIndex + 2u ].position, right, bottom, 0.0f );
+			pVertices[ vertexIndex + 2u ].u		= character.x2; 
+			pVertices[ vertexIndex + 2u ].v		= character.y2; 
+			pVertices[ vertexIndex + 2u ].color	= color;
+
+			// top right
+			createFloat3( pVertices[ vertexIndex + 3u ].position, right, position.y, 0.0f );
+			pVertices[ vertexIndex + 3u ].u		= character.x2; 
+			pVertices[ vertexIndex + 3u ].v		= character.y1; 
+			pVertices[ vertexIndex + 3u ].color	= color;
+		
+			x += character.width;
+		}
 	}
 }
 

@@ -15,13 +15,12 @@ namespace tiki
 	class Font;
 	class GraphicsContext;
 	class GraphicsSystem;
-	class Material;
 	class ResourceManager;
 	class SamplerState;
+	class ShaderSet;
 	class TextureData;
-	class VertexInputBinding;
 	class VertexFormat;
-	class WindowEventBuffer;
+	class VertexInputBinding;
 	struct Rectangle; 
 	struct Vector2;
 
@@ -34,30 +33,27 @@ namespace tiki
 							ImmediateRenderer();
 							~ImmediateRenderer();
 		
-		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const WindowEventBuffer& eventBuffer );
+		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
-
-		void				update();
 
 		void				flush( GraphicsContext& graphicsContext );
 
-		void				drawText( const Vector2& position, const Font& font, const string& text, Color color );
-
 		void				drawTexture( const TextureData& texture, const Rectangle& dest );
 		void				drawTexture( const TextureData& texture, const Rectangle& dest, const Rectangle& src );
+		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color );
 
 	private:
 
 		enum
 		{
-			MaxSprites		= 100,
-			MaxVertices		= 1000
+			MaxSprites		= 100u,
+			MaxVertices		= 1000u
 		};
 
 		struct Sprite
 		{
-			size_t				offset;
-			size_t				count;
+			size_t				vertexOffset;
+			size_t				vertexCount;
 			const TextureData*	pTexture;
 		};
 
@@ -69,9 +65,7 @@ namespace tiki
 			Color	color;
 		};
 
-		const WindowEventBuffer*			m_pEventBuffer;
-
-		const Material*						m_pMaterial;
+		const ShaderSet*					m_pShaderSet;
 		const VertexFormat*					m_pVertexFormat;
 		const SamplerState*					m_pSamplerState;
 		const VertexInputBinding*			m_pVertexInputBinding;

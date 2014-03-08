@@ -20,10 +20,12 @@
 namespace tiki
 {
 	class BaseBuffer;
+	class BlendState;
 	class ConstantBuffer;
+	class DepthStencilState;
 	class GraphicsSystem;
 	class IndexBuffer;
-	class Material;
+	class RasterizerState;
 	class RenderTarget;
 	class SamplerState;
 	class Shader;
@@ -46,6 +48,7 @@ namespace tiki
 		ClearMask_Color5		= 1u << 5u,
 		ClearMask_Color6		= 1u << 6u,
 		ClearMask_Color7		= 1u << 7u,
+
 		ClearMask_Depth			= 1u << 8u,
 		ClearMask_Stencil		= 1u << 9u,
 
@@ -68,8 +71,11 @@ namespace tiki
 
 		void				setVertexShader( const Shader* pVertexShader );
 		void				setPixelShader( const Shader* pPixelShader );
-
 		void				setVertexInputBinding( const VertexInputBinding* pVertexInputBinding );
+
+		void				setBlendState( const BlendState* pBlendState );
+		void				setDepthStencilState( const DepthStencilState* pDepthStencilState );
+		void				setRasterizerState( const RasterizerState* pRasterizerState );
 
 		void				setIndexBuffer( const IndexBuffer& buffer );
 		void				setVertexBuffer( uint slot, const VertexBuffer& buffer );
@@ -88,7 +94,7 @@ namespace tiki
 		void				endImmediateGeometry();
 
 		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
-		void				drawIndexed( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );
+		void				drawIndexedGeometry( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );
 
 		void*				mapBuffer( BaseBuffer& buffer );
 		void				unmapBuffer( BaseBuffer& buffer );
@@ -117,6 +123,10 @@ namespace tiki
 
 		const RenderTarget*			m_pRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
 		uint						m_currentRenderPassDepth;
+
+		const BlendState*			m_pBlendState;
+		const DepthStencilState*	m_pDepthStencilState;
+		const RasterizerState*		m_pRasterizerState;
 
 		const Shader*				m_pVertexShader;
 		const VertexInputBinding*	m_pVertexInputBinding;

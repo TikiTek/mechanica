@@ -52,7 +52,7 @@ namespace tiki
 		graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
 		graphicsContext.setIndexBuffer( m_indexBuffer );
 
-		graphicsContext.drawIndexed( m_desc.indexCount );
+		graphicsContext.drawIndexedGeometry( m_desc.indexCount );
 	}
 
 	//void ModelGeometry::getMinMax( Vector3& min, Vector3& max ) const

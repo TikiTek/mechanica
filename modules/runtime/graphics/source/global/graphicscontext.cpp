@@ -5,6 +5,10 @@ namespace tiki
 {
 	void GraphicsContext::invalidateState()
 	{
+		m_pBlendState			= nullptr;
+		m_pDepthStencilState	= nullptr;
+		m_pRasterizerState		= nullptr;
+
 		m_pVertexShader			= nullptr;
 		m_pVertexInputBinding	= nullptr;
 
