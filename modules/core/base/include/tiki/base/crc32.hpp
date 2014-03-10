@@ -10,12 +10,13 @@ namespace tiki
 {
 	enum
 	{
-		InvalidCrc32	= 0xFFFFFFFF
+		InvalidCrc32	= 0xffffffffu
 	};
 
-	 TIKI_FORCE_INLINE crc32 crcBytes( const void* pBytes, size_t len )
+	 TIKI_FORCE_INLINE crc32 crcAddBytes( crc32 currentValue, const void* pBytes, size_t len )
 	 {
-		 static const uint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
+		 /* CRC polynomial 0xedb88320 */
+		 static const uint32 crc_32_tab[] = {
 			 0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
 			 0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
 			 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -61,15 +62,20 @@ namespace tiki
 			 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 		 };
 
-		 register const uint8* pData	= (const uint8*)pBytes;
-		 register uint32 oldcrc32		= 0xFFFFFFFF;
+		 register const uint8* pData	= static_cast< const uint8* >( pBytes );
+		 register uint32 oldcrc32		= ~currentValue;
 
 		 for ( ; len; --len, ++pData )
 		 {
-			 oldcrc32 = crc_32_tab[(oldcrc32 ^ *pData) & 0xff] ^ (oldcrc32 >> 8);
+			 oldcrc32 = crc_32_tab[ (oldcrc32 ^ *pData) & 0xffu ] ^ (oldcrc32 >> 8u);
 		 }
 
 		 return ~oldcrc32;
+	 }
+
+	 TIKI_FORCE_INLINE crc32 crcBytes( const void* pBytes, size_t lenght )
+	 {
+		 return crcAddBytes( 0u, pBytes, lenght );
 	 }
 
 	 TIKI_FORCE_INLINE crc32 crcString( const char* pString )
