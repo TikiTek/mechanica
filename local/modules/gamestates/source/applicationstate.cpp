@@ -3,6 +3,7 @@
 
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
@@ -30,6 +31,7 @@ namespace tiki
 
 				if ( isInital )
 				{
+					Font::registerResourceType( resourceManager, graphicsSystem );
 					Material::registerResourceType( resourceManager );
 					Model::registerResourceType( resourceManager, graphicsSystem );
 					ShaderSet::registerResourceType( resourceManager, graphicsSystem );
@@ -37,6 +39,7 @@ namespace tiki
 				}
 				else
 				{
+					Font::unregisterResourceType( resourceManager );
 					Material::unregisterResourceType( resourceManager );
 					Model::unregisterResourceType( resourceManager );
 					ShaderSet::unregisterResourceType( resourceManager );
@@ -86,7 +89,7 @@ namespace tiki
 		m_renderer.update();
 	}
 
-	void ApplicationState::render( GraphicsContext& graphicsContext ) const
+	void ApplicationState::render( GraphicsContext& graphicsContext )
 	{
 		m_renderer.render( graphicsContext );
 	}

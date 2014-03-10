@@ -30,7 +30,7 @@ namespace tiki
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
 		virtual void			update();
-		virtual void			render( GraphicsContext& graphicsContext ) const;
+		virtual void			render( GraphicsContext& graphicsContext );
 
 	private:
 

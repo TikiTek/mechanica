@@ -110,7 +110,6 @@ namespace tiki
 
 		m_renderBatch.reset();
 		m_renderEffectSystem.setFrameData( m_frameData );
-
 	}
 
 	void GameRenderer::render( GraphicsContext& graphicsContext ) const

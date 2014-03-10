@@ -109,7 +109,7 @@ namespace tiki
 			}
 		}
 
-		Sleep( 15 );
+		//Sleep( 10 );
 	}
 
 	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const

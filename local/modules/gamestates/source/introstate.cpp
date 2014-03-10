@@ -20,7 +20,7 @@ namespace tiki
 	{
 	}
 
-	void IntroState::render( GraphicsContext& graphicsContext ) const
+	void IntroState::render( GraphicsContext& graphicsContext )
 	{
 	}
 }
