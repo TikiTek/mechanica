@@ -5,7 +5,10 @@
 #include "tiki/base/poolallocator.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/blendstate.hpp"
+#include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/rasterizerstate.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
@@ -73,9 +76,21 @@ namespace tiki
 
 		bool						resize( uint width, uint height );
 
+		const BlendState*			createBlendState( const BlendStateParamters& creationParameters );
+		const BlendState*			createBlendState( bool blendEnabled, Blend sourceBlend, Blend destinationBlend, BlendOperation operation, ColorWriteMask colorWriteMask );
+		void						disposeBlendState( const BlendState* pBlendState );
+
+		const DepthStencilState*	createDepthStencilState( const DepthStencilStateParamters& creationParameters );
+		const DepthStencilState*	createDepthStencilState( bool depthEnbaled, bool depthWriteEnabled );
+		void						disposeDepthStencilState( const DepthStencilState* pDepthStencilState );
+
+		const RasterizerState*		createRasterizerState( const RasterizerStateParamters& creationParameters );
+		const RasterizerState*		createRasterizerState( FillMode fillMode, CullMode cullMode, WindingOrder windingOrder );
+		void						disposeRasterizerState( const RasterizerState* pRasterizerState );
+
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*			createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
-		void						disposeSamplerState( const SamplerState* samplerState );
+		void						disposeSamplerState( const SamplerState* pSamplerState );
 
 		const VertexFormat*			createVertexFormat( const VertexFormatParameters& creationParameters );
 		const VertexFormat*			createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
@@ -93,6 +108,16 @@ namespace tiki
 		const RenderTarget&			getBackBuffer() const { return m_backBufferTarget; }
 
 	private:
+
+		enum
+		{
+			MaxBlendStateCount			= 32u,
+			MaxDepthStencilStateCount	= 32u,
+			MaxRasterizerStateCount		= 32u,
+			MaxSamplerStateCount		= 32u,
+			MaxVertexFormatCount		= 32u,
+			MaxVertexInputBindingCount	= 32u
+		};
 		
 		uint												m_frameNumber;
 		
@@ -103,6 +128,9 @@ namespace tiki
 
 		RenderTarget										m_backBufferTarget;
 
+		GraphicsStateObjectCollection< BlendState >			m_blendStates;
+		GraphicsStateObjectCollection< DepthStencilState >	m_depthStencilStates;
+		GraphicsStateObjectCollection< RasterizerState >	m_rasterizerStates;
 		GraphicsStateObjectCollection< SamplerState >		m_samplerStates;
 		GraphicsStateObjectCollection< VertexFormat >		m_vertexFormats;
 		GraphicsStateObjectCollection< VertexInputBinding >	m_vertexInputBindings;

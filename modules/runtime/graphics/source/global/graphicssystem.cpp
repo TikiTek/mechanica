@@ -23,9 +23,12 @@ namespace tiki
 
 		if ( result )
 		{
-			m_samplerStates.create( 32u );
-			m_vertexFormats.create( 32u );
-			m_vertexInputBindings.create( 32u );
+			m_blendStates.create( MaxBlendStateCount );
+			m_depthStencilStates.create( MaxDepthStencilStateCount );
+			m_rasterizerStates.create( MaxRasterizerStateCount );
+			m_samplerStates.create( MaxSamplerStateCount );
+			m_vertexFormats.create( MaxVertexFormatCount );
+			m_vertexInputBindings.create( MaxVertexInputBindingCount );
 
 			{
 				VertexAttribute attributes_pos2[] =
@@ -71,6 +74,9 @@ namespace tiki
 			}
 		} 
 
+		m_blendStates.dispose();
+		m_depthStencilStates.dispose();
+		m_rasterizerStates.dispose();
 		m_samplerStates.dispose();
 		m_vertexFormats.dispose();
 		m_vertexInputBindings.dispose();
@@ -78,18 +84,118 @@ namespace tiki
 		disposePlatform();
 	}
 
-	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
+	const BlendState* GraphicsSystem::createBlendState( const BlendStateParamters& creationParameters )
 	{
-		SamplerState* pSampler = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
-		if ( pSampler != nullptr && pSampler->isCreated() == false )
+		BlendState* pState = m_blendStates.findOrAllocate( crcT( &creationParameters ) );
+		if ( pState != nullptr && pState->isCreated() == false )
 		{
-			if ( pSampler->create( *this, creationParameters ) == false )
+			if ( pState->create( *this, creationParameters ) == false )
 			{
-				pSampler = nullptr;
+				pState = nullptr;
 			}
 		}
 
-		return pSampler;
+		return pState;
+	}
+
+	const BlendState* GraphicsSystem::createBlendState( bool blendEnabled, Blend sourceBlend, Blend destinationBlend, BlendOperation operation, ColorWriteMask colorWriteMask )
+	{
+		BlendStateParamters creationParameters;
+		creationParameters.blendEnabled		= blendEnabled;
+		creationParameters.sourceBlend		= sourceBlend;
+		creationParameters.destinationBlend	= destinationBlend;
+		creationParameters.operation		= operation;
+		creationParameters.colorWriteMask	= colorWriteMask;
+
+		return createBlendState( creationParameters );
+	}
+
+	void GraphicsSystem::disposeBlendState( const BlendState* pBlendState )
+	{
+		BlendState* pNonConstState = const_cast< BlendState* >( pBlendState );
+		if ( pNonConstState->releaseRef() == false )
+		{
+			pNonConstState->dispose();
+		}
+	}
+
+	const DepthStencilState* GraphicsSystem::createDepthStencilState( const DepthStencilStateParamters& creationParameters )
+	{
+		DepthStencilState* pState = m_depthStencilStates.findOrAllocate( crcT( &creationParameters ) );
+		if ( pState != nullptr && pState->isCreated() == false )
+		{
+			if ( pState->create( *this, creationParameters ) == false )
+			{
+				pState = nullptr;
+			}
+		}
+
+		return pState;
+	}
+
+	const DepthStencilState* GraphicsSystem::createDepthStencilState( bool depthEnbaled, bool depthWriteEnabled )
+	{
+		DepthStencilStateParamters creationParameters;
+		creationParameters.depthEnabled			= depthEnbaled;
+		creationParameters.depthWriteEnabled	= depthWriteEnabled;
+
+		return createDepthStencilState( creationParameters );
+	}
+
+	void GraphicsSystem::disposeDepthStencilState( const DepthStencilState* pDepthStencilState )
+	{
+		DepthStencilState* pNonConstState = const_cast< DepthStencilState* >( pDepthStencilState );
+		if ( pNonConstState->releaseRef() == false )
+		{
+			pNonConstState->dispose();
+		}
+	}
+
+	const RasterizerState* GraphicsSystem::createRasterizerState( const RasterizerStateParamters& creationParameters )
+	{
+		RasterizerState* pState = m_rasterizerStates.findOrAllocate( crcT( &creationParameters ) );
+		if ( pState != nullptr && pState->isCreated() == false )
+		{
+			if ( pState->create( *this, creationParameters ) == false )
+			{
+				pState = nullptr;
+			}
+		}
+
+		return pState;
+	}
+
+	const RasterizerState* GraphicsSystem::createRasterizerState( FillMode fillMode, CullMode cullMode, WindingOrder windingOrder )
+	{
+		RasterizerStateParamters creationParameters;
+		creationParameters.fillMode		= fillMode;
+		creationParameters.cullMode		= cullMode;
+		creationParameters.windingOrder	= windingOrder;
+
+		return createRasterizerState( creationParameters );
+	}
+
+	void GraphicsSystem::disposeRasterizerState( const RasterizerState* pRasterizerState )
+	{
+		RasterizerState* pNonConstState = const_cast< RasterizerState* >( pRasterizerState );
+		if ( pNonConstState->releaseRef() == false )
+		{
+			pNonConstState->dispose();
+		}
+	}
+
+	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
+	{
+		SamplerState* pState = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
+		if ( pState != nullptr && pState->isCreated() == false )
+		{
+			if ( pState->create( *this, creationParameters ) == false )
+			{
+				pState = nullptr;
+			}
+		}
+
+		return pState;
 	}
 
 	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy /*= 1*/, Color borderColor /*= TIKI_COLOR_BLACK */ )

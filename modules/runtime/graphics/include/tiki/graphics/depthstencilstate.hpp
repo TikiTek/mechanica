@@ -62,7 +62,8 @@ namespace tiki
 		DepthStencilStateParamters()
 		{
 			depthEnabled		= false;
-			depthFunction		= ComparsionFunction_Never;
+			depthWriteEnabled	= false;
+			depthFunction		= ComparsionFunction_LessOrEqual;
 
 			stencilEnabled		= false;
 			stencilReadMask		= 0u;
@@ -71,6 +72,7 @@ namespace tiki
 		}
 
 		bool				depthEnabled;
+		bool				depthWriteEnabled;
 		ComparsionFunction	depthFunction;
 
 		bool				stencilEnabled;
@@ -84,7 +86,7 @@ namespace tiki
 
 	class DepthStencilState : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_CLASS( DepthStencilState );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DepthStencilState );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 

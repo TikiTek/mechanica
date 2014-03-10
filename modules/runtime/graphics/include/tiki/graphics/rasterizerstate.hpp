@@ -55,7 +55,7 @@ namespace tiki
 
 	class RasterizerState : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_CLASS( RasterizerState );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( RasterizerState );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 

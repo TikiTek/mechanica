@@ -124,6 +124,8 @@ namespace tiki
 		const RenderTarget*			m_pRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
 		uint						m_currentRenderPassDepth;
 
+		PrimitiveTopology			m_primitiveTopology;
+
 		const BlendState*			m_pBlendState;
 		const DepthStencilState*	m_pDepthStencilState;
 		const RasterizerState*		m_pRasterizerState;

@@ -279,7 +279,7 @@ namespace tiki
 		uint start = 0u;
 		uint length = data->stringLength;
 
-		if (length == 0u)
+		if ( length == 0u )
 		{
 			return *this;
 		}
@@ -308,7 +308,7 @@ namespace tiki
 
 			for (uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
 			{
-				if ( data->pData[ start + length ] == whiteSpaces[ i ] )
+				if ( data->pData[ start + length - 1u ] == whiteSpaces[ i ] )
 				{
 					isWhiteSpace = true;
 					length--;
@@ -772,8 +772,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint getStringLength( cstring pSource )
 	{
-		uint length = 0u;		
-		while ( pSource[ length++ ] != 0u );
+		uint length = (uint)-1;		
+		while ( pSource[ ++length ] != 0u );
 
 		return length;
 	}

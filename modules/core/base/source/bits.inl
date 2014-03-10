@@ -12,6 +12,14 @@ namespace tiki
 		return sourceValue & andMask;
 	}
 
+	TIKI_FORCE_INLINE uint32 getBitValue( uint32 sourceValue, uint32 startBit, uint32 bitCount )
+	{
+		const uint32 maxValue = ( 1u << bitCount ) - 1u;
+		const uint32 andMask = ( maxValue << startBit );
+
+		return ( sourceValue & andMask ) >> startBit;
+	}
+
 	TIKI_FORCE_INLINE uint32 setBitValue( uint32 sourceValue, uint32 startBit, uint32 bitCount, uint32 value )
 	{
 		TIKI_ASSERT( value < ( 1u << bitCount ) );

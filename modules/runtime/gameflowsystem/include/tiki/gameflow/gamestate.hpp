@@ -19,7 +19,7 @@ namespace tiki
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) = 0;
 
 		virtual void			update() = 0;
-		virtual void			render( GraphicsContext& graphicsContext ) const = 0;
+		virtual void			render( GraphicsContext& graphicsContext ) = 0;
 
 	};
 }

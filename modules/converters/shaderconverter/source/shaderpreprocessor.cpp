@@ -1,6 +1,7 @@
 
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
+#include "tiki/base/bits.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/iopath.hpp"
 #include "tiki/base/stringparse.hpp"
@@ -14,13 +15,13 @@ namespace tiki
 	{
 		string	name;
 
-		size_t	startBit;
-		size_t	bitCount;
+		uint	startBit;
+		uint	bitCount;
 
-		size_t	maxValue;			
+		uint	maxValue;			
 	};
 
-	static void addFeature( List< ShaderFeature >& features, const string& name, size_t maxValue )
+	static void addFeature( List< ShaderFeature >& features, const string& name, uint maxValue )
 	{
 		const ShaderFeature* pLastFeature = nullptr;
 		if ( features.getCount() > 0u )
@@ -43,9 +44,9 @@ namespace tiki
 		}
 	}
 
-	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, size_t typeCount, const string& featuresLine )
+	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, uint typeCount, const string& featuresLine )
 	{
-		for (size_t i = 0u; i < typeCount; ++i)
+		for (uint i = 0u; i < typeCount; ++i)
 		{
 			const string search = formatString( "%s-features=", pShaderTypes[ i ] );
 
@@ -61,10 +62,10 @@ namespace tiki
 				Array< string > featuresList;
 				featuresString.trim().split( featuresList, "," );
 
-				for (size_t j = 0u; j < featuresList.getCount(); ++j)
+				for (uint j = 0u; j < featuresList.getCount(); ++j)
 				{
 					string name = featuresList[ j ];
-					size_t maxValue = 1u;
+					uint maxValue = 1u;
 
 					const int arrayIndex = name.indexOf( '[' );
 					if ( arrayIndex != -1 )
@@ -83,7 +84,7 @@ namespace tiki
 
 					if ( i == 0u ) // fx feature will be applied to all shaders in file
 					{
-						for (size_t k = 1u; k < typeCount; ++k)
+						for (uint k = 1u; k < typeCount; ++k)
 						{
 							addFeature( pShaderFeatures[ i ], name, maxValue );
 						}
@@ -110,7 +111,7 @@ namespace tiki
 		{
 			string path = string( beginPath, endPath - beginPath );
 			
-			for (size_t i = 0u; i < includeDirs.getCount(); ++i)
+			for (uint i = 0u; i < includeDirs.getCount(); ++i)
 			{
 				const string fullPath = path::combine( includeDirs[ i ], path );
 
@@ -141,6 +142,21 @@ namespace tiki
 		return resultCode;
 	}
 
+	static string createDefineString( List< ShaderFeature >& features, uint bitMask )
+	{
+		string defineString = "";
+
+		for (uint i = 0u; i < features.getCount(); ++i)
+		{
+			const ShaderFeature& feature = features[ i ];
+			const uint value = getBitValue( bitMask, feature.startBit, feature.bitCount );
+			
+			defineString += formatString( "#define %s %u\n", feature.name.cStr(), value );
+		}
+
+		return defineString;
+	}
+
 	void ShaderPreprocessor::create( const string& shaderText )
 	{
 		// resolve includes
@@ -166,48 +182,63 @@ namespace tiki
 
 		parseShaderFeatures( shaderEnabled, shaderFeatures, shaderStart, TIKI_COUNT( shaderStart ), featuresLine );
 
-		for (size_t i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
+		for (uint typeIndex = 0u; typeIndex < TIKI_COUNT( shaderStart ); ++typeIndex)
 		{
-			if ( shaderEnabled[ i ] && shaderFeatures[ i ].getCount() > 0u )
+			if ( shaderEnabled[ typeIndex ] && shaderFeatures[ typeIndex ].getCount() > 0u )
 			{
 				List< ShaderVariant > variants;
 
-				for (size_t j = 0u; j < shaderFeatures[ i ].getCount(); ++j)
+				for (uint featureIndex = 0u; featureIndex< shaderFeatures[ typeIndex ].getCount(); ++featureIndex)
 				{
-					const ShaderFeature& feature = shaderFeatures[ i ][ j ];
+					const ShaderFeature& feature = shaderFeatures[ typeIndex ][ featureIndex ];
 					List< ShaderVariant > featureVariants;
 
-					for (size_t l = 0u; l < feature.maxValue; ++l)
+					if ( variants.getCount() == 0u )
 					{
-						const size_t bitMask = l << feature.startBit;
-
-						for (size_t k = 0u; k < variants.getCount(); ++k)
+						for (uint featureValue = 0u; featureValue <= feature.maxValue; ++featureValue)
 						{
-							ShaderVariant variant = variants[ k ];
-							variant.bitMask |= bitMask;
-							
+							const uint bitMask = featureValue << feature.startBit;
+
+							ShaderVariant variant;
+							variant.bitMask		= bitMask;
+							variant.defineCode	= createDefineString( shaderFeatures[ typeIndex ], variant.bitMask );
 							featureVariants.add( variant );
+						}
+					}
+					else
+					{
+						for (uint featureValue = 1u; featureValue <= feature.maxValue; ++featureValue)
+						{
+							const uint bitMask = featureValue << feature.startBit;
+
+							for (uint k = 0u; k < variants.getCount(); ++k)
+							{
+								ShaderVariant variant;
+								variant.bitMask		= variants[ k ].bitMask | bitMask;
+								variant.defineCode	= createDefineString( shaderFeatures[ typeIndex ], variant.bitMask );							
+								featureVariants.add( variant );
+							}
 						}
 					}
 
 					variants.addRange( featureVariants );
 				}
 
-				m_variants[ i ].create( variants.getData(), variants.getCount() );
+				m_variants[ typeIndex ].create( variants.getData(), variants.getCount() );
 			}
-			else if ( shaderEnabled[ i ] )
+			else if ( shaderEnabled[ typeIndex ] )
 			{
 				ShaderVariant variant;
 				variant.bitMask = 0u;
 
-				m_variants[ i ].create( &variant, 1u );
+				m_variants[ typeIndex ].create( &variant, 1u );
 			}
 		}
 	}
 
 	void ShaderPreprocessor::dispose()
 	{
-		for (size_t i = 0u; i < TIKI_COUNT( m_variants ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( m_variants ); ++i)
 		{
 			m_variants[ i ].dispose();
 		}
