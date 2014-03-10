@@ -39,7 +39,7 @@ namespace tiki
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
 
-		parameters.graphicsMode = GraphicsRendererMode_Wrapper;
+		parameters.graphicsMode = GraphicsRendererMode_Hardware;
 	}
 
 	void TikiArenaGame::initialize()
