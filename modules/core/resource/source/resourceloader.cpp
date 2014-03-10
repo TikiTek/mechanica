@@ -186,7 +186,9 @@ namespace tiki
 		context.streamOwner			= true;
 		context.crcFileName			= crcFileName;
 		context.resourceId.key		= resourceKey;
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		context.resourceId.fileName	= pFileName;
+#endif
 
 		context.pFactory = findFactory( resourceType );
 		if ( context.pFactory == nullptr )

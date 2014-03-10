@@ -114,13 +114,13 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	include <crtdbg.h>
-#	define TIKI_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#	define TIKI_DEL delete
-#	define TIKI_DELARR delete[]
+#	define TIKI_NEW		new (_NORMAL_BLOCK, __FILE__, __LINE__)
+#	define TIKI_DEL		delete
+#	define TIKI_DELARR	delete[]
 #else
-#	define TIKI_NEW new
-#	define TIKI_DEL delete
-#	define TIKI_DELARR delete[]
+#	define TIKI_NEW		new
+#	define TIKI_DEL		delete
+#	define TIKI_DELARR	delete[]
 #endif
 
 #define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )

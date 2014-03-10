@@ -21,14 +21,14 @@ namespace tiki
 
 	private:
 
-		struct TimeStemp
+		struct TimeStamp
 		{
 			uint64 time;
 		};
 
-		TimeStemp	m_freq;
-		TimeStemp	m_last;
-		TimeStemp	m_current;
+		TimeStamp	m_freq;
+		TimeStamp	m_last;
+		TimeStamp	m_current;
 
 		double		m_elapsedTime;
 		double		m_totalTime;
