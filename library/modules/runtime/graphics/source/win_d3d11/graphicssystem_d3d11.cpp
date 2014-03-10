@@ -165,7 +165,7 @@ namespace tiki
 	void GraphicsSystem::endFrame()
 	{
 		m_platformData.pSwapChain->Present( 1, 0 );
-
+		
 		graphics::resetDeviceState( m_platformData.pContext );
 	}
 
@@ -183,7 +183,7 @@ namespace tiki
 		swapDesc.SampleDesc.Count					= 1;
 		swapDesc.SampleDesc.Quality					= 0;
 		swapDesc.Windowed							= !params.fullScreen;
-		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
+		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 		swapDesc.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		D3D_FEATURE_LEVEL level;
@@ -213,7 +213,11 @@ namespace tiki
 			nullptr,
 			rendererType,
 			nullptr,
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 			D3D11_CREATE_DEVICE_DEBUG,
+#else
+			0u,
+#endif
 			&levels,
 			1,
 			D3D11_SDK_VERSION,

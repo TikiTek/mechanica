@@ -34,9 +34,7 @@ namespace tiki
 		m_pCurrent = m_pMemory;
 
 		m_size			= sizeInBytes;
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_baseAlignment	= alignment;
-#endif
 
 		return true;
 	}
@@ -57,9 +55,7 @@ namespace tiki
 		{
 			alignment = m_baseAlignment;
 		}
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		TIKI_ASSERT( m_baseAlignment >= alignment );
-#endif
 
 		const uint currentSize = m_pCurrent - m_pMemory;
 		const uint alignedSize = alignValue( currentSize, alignment );

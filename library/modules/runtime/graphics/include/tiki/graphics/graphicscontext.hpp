@@ -146,7 +146,9 @@ namespace tiki
 		uint						m_immediateVertexCount;
 
 		void						invalidateState();
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		bool						validateDrawCall() const;
+#endif
 
 	};
 }

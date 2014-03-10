@@ -29,9 +29,7 @@ namespace tiki
 
 		uint8*		m_pMemory;
 		uint		m_size;
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		uint		m_baseAlignment;
-#endif
 
 		void*		m_pPrev;
 		void*		m_pPrevBase;

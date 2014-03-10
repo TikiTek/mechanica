@@ -47,6 +47,7 @@ namespace tiki
 		}
 	}
 	
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	bool GraphicsContext::validateDrawCall() const
 	{
 #define TIKI_VALIDATE_EXPR( expr, message ) if ( !( result &= ( expr ) ) ) TIKI_TRACE_ERROR( "[grpahics] validateDrawCall failed: %s\n", message )
@@ -62,4 +63,5 @@ namespace tiki
 		return result;
 #undef TIKI_VALIDATE_EXPR
 	}
+#endif
 }

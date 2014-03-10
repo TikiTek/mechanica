@@ -12,6 +12,9 @@ namespace tiki
 {
 	ResourceManager::ResourceManager()
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_pAssetConverter = nullptr;
+#endif
 	}
 
 	ResourceManager::~ResourceManager()
@@ -23,7 +26,7 @@ namespace tiki
 		m_resourceStorage.create( params.maxResourceCount );
 		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && 0
 		AssetConverterParamter converterParameters;
 		converterParameters.sourcePath	= "../../../../../content";
 		converterParameters.outputPath	= "../../../../../gamebuild";
@@ -40,7 +43,7 @@ namespace tiki
 
 	void ResourceManager::dispose()
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && 0
 		if ( m_pAssetConverter != nullptr )
 		{
 			m_pAssetConverter->stopWatch();

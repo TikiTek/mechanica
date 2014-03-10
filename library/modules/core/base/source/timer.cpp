@@ -14,7 +14,7 @@ namespace tiki
 {
 	void Timer::create()
 	{
-		TIKI_COMPILETIME_ASSERT( sizeof( LARGE_INTEGER ) == sizeof( ::tiki::Timer::TimeStemp ) );
+		TIKI_COMPILETIME_ASSERT( sizeof( LARGE_INTEGER ) == sizeof( ::tiki::Timer::TimeStamp ) );
 
 		QueryPerformanceFrequency( (LARGE_INTEGER*)&m_freq );
 		QueryPerformanceCounter( (LARGE_INTEGER*)&m_last );
