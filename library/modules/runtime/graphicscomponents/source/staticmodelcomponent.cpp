@@ -1,6 +1,7 @@
 
 #include "tiki/components/staticmodelcomponent.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
@@ -9,7 +10,7 @@ namespace tiki
 {
 	struct TransformComponentState;
 
-	struct StaticModelComponentState : public ComponentState //< StaticModelComponentState >
+	struct StaticModelComponentState : public ComponentState
 	{
 		const TransformComponentState*	pTransform;
 		const Model*					pModel;
@@ -23,16 +24,30 @@ namespace tiki
 	{
 	}
 
-	void StaticModelComponent::render( GameRenderer& gameRenderer )
+	void StaticModelComponent::render( GameRenderer& gameRenderer ) const
 	{
 		ConstIterator componentStates = getConstIterator();
 
-		while ( componentStates.next() )
+		const State* pState = nullptr;
+		while ( pState = componentStates.getNext() )
 		{
-			const State* pState = componentStates.getCurrent();
-
 			gameRenderer.queueModel( pState->pModel, nullptr );
 		}
+	}
+
+	uint StaticModelComponent::getStateSize() const
+	{
+		return sizeof( StaticModelComponentState );
+	}
+
+	crc32 StaticModelComponent::getTypeCrc() const
+	{
+		return crcString( "StaticModelComponent" );
+	}
+
+	const char* StaticModelComponent::getTypeName() const
+	{
+		return "StaticModelComponent";
 	}
 
 	bool StaticModelComponent::internalInitializeState( StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )

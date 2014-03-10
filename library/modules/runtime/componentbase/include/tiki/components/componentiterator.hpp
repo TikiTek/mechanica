@@ -14,10 +14,9 @@ namespace tiki
 					ComponentIterator( TState* pFirstState );
 					~ComponentIterator();
 
-		bool		next();
-		void		reset();
+		TState*		getNext();
 
-		TState*		getCurrent() const;
+		void		reset();
 
 	private:
 

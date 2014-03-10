@@ -9,7 +9,7 @@ namespace tiki
 	struct ComponentState
 	{
 		EntityId		entityId;
-		ComponentType	componentType;
+		ComponentTypeId	typeId;
 
 		ComponentState*	pPrevComponentOfSameType;
 		ComponentState*	pNextComponentOfSameType;

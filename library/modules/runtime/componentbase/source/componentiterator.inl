@@ -19,22 +19,22 @@ namespace tiki
 	}
 
 	template<typename TState>
-	bool ComponentIterator<TState>::next()
+	TState* ComponentIterator<TState>::getNext()
 	{
-		m_pCurrent = static_cast< TState* >( m_pCurrent->pNextComponentOfSameType );
-		return ( m_pCurrent != nullptr );
+		TState* pState = m_pCurrent;
+
+		if ( m_pCurrent != nullptr )
+		{
+			m_pCurrent = static_cast< TState* >( m_pCurrent->pNextComponentOfSameType );
+		}
+
+		return pState;
 	}
 
 	template<typename TState>
 	void ComponentIterator<TState>::reset()
 	{
 		m_pCurrent = m_pFirst;
-	}
-
-	template<typename TState>
-	TState* ComponentIterator<TState>::getCurrent() const
-	{
-		return m_pCurrent;
 	}
 }
 

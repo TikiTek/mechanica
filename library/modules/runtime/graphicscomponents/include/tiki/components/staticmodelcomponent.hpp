@@ -18,7 +18,11 @@ namespace tiki
 		explicit			StaticModelComponent();
 		virtual				~StaticModelComponent();
 
-		void				render( GameRenderer& gameRenderer );
+		void				render( GameRenderer& gameRenderer ) const;
+
+		virtual uint		getStateSize() const;
+		virtual crc32		getTypeCrc() const;
+		virtual const char*	getTypeName() const;
 
 	protected:
 

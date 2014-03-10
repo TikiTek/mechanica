@@ -16,11 +16,12 @@ namespace tiki
 								ComponentBase();
 		virtual					~ComponentBase();
 
-		virtual bool			initializeState( ComponentState* pComponentState, const void* pComponentInitData );
-		virtual void			disposeState( ComponentState* pComponentState );
+		virtual bool			initializeState( ComponentState* pComponentState, const void* pComponentInitData ) = 0;
+		virtual void			disposeState( ComponentState* pComponentState ) = 0;
 
+		virtual crc32			getTypeCrc() const = 0;
 		virtual uint			getStateSize() const = 0;
-		virtual ComponentType	getTypeId() const = 0;
+		virtual const char*		getTypeName() const = 0;
 
 	protected:
 
@@ -44,6 +45,10 @@ namespace tiki
 
 						Component() {}
 		virtual			~Component() {}
+
+		virtual bool	initializeState( ComponentState* pComponentState, const void* pComponentInitData );
+		virtual void	disposeState( ComponentState* pComponentState );
+
 
 		Iterator		getIterator() const;
 		ConstIterator	getConstIterator() const;

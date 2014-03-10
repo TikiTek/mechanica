@@ -2,12 +2,15 @@
 #ifndef __TIKI_COMPONENTSTORAGE_HPP_INCLUDED__
 #define __TIKI_COMPONENTSTORAGE_HPP_INCLUDED__
 
+#include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/components/component_types.hpp"
 
 namespace tiki
 {
+	class ComponentTypeRegister;
+	struct ComponentChunk;
 	struct ComponentState;
-	struct ComponentChunkDefinition;
 
 	class ComponentStorage
 	{
@@ -18,22 +21,31 @@ namespace tiki
 		ComponentStorage();
 		~ComponentStorage();
 
-		bool				create( uint chunkSize, uint chunkCount );
+		bool				create( uint chunkSize, uint chunkCount, const ComponentTypeRegister* pTypeRegister );
 		void				dispose();
 
-		void				registerComponentType( uint typeId, uint stateSize );
-		void				unregiserComponentType( uint typeId );
-
-		ComponentState*		allocateState( uint typeId );
+		ComponentState*		allocateState( ComponentTypeId typeId );
 		void				freeState( ComponentState* pState );
 
 	private:
 
-		uint						m_chunkSize;
-		uint						m_chunkCount;
+		enum
+		{
+			ChunkAlignment	= 128u,
+			MinChunkSize	= 1024u,
+			MaxChunkSize	= 8192u
+		};
 
-		uint8*						m_pMemory;
-		ComponentChunkDefinition*	m_pChunks;
+		const ComponentTypeRegister*	m_pTypeRegister;
+
+		uint							m_chunkSize;
+		uint							m_chunkCount;
+
+		uint8*							m_pMemory;
+
+		Array< ComponentChunk >			m_chunks;
+		Array< ComponentChunk* >		m_firstChunk;
+		Array< ComponentState* >		m_lastState;
 
 	};
 }

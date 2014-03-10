@@ -3,20 +3,8 @@
 
 namespace tiki
 {
-	ComponentBase::ComponentBase()
-	{
-		m_pFirstComponentState	= nullptr;
-		m_pLastComponentState	= nullptr;
-	}
-
-	ComponentBase::~ComponentBase()
-	{
-		m_pFirstComponentState	= nullptr;
-		m_pLastComponentState	= nullptr;
-	}
-
-
-	bool ComponentBase::initializeState( ComponentState* pComponentState, const void* pComponentInitData )
+	template< typename TState, typename TInitData >
+	bool Component<TState, TInitData>::initializeState( ComponentState* pComponentState, const void* pComponentInitData )
 	{
 		TIKI_ASSERT( pComponentState != nullptr );
 
@@ -30,12 +18,12 @@ namespace tiki
 			m_pLastComponentState->pNextComponentOfSameType = pComponentState;
 			m_pLastComponentState = pComponentState;
 		}
-
-		//internalInitializeState( pComponentState, pComponentInitData );
-		return false;
+				
+		return internalInitializeState( (TState*)pComponentState, (TInitData*)pComponentInitData );
 	}
 		
-	void ComponentBase::disposeState( ComponentState* pComponentState )
+	template< typename TState, typename TInitData >
+	void Component<TState, TInitData>::disposeState( ComponentState* pComponentState )
 	{
 		TIKI_ASSERT( pComponentState == nullptr );
 
@@ -54,7 +42,7 @@ namespace tiki
 			}
 		}
 
-		//internalDisposeState( pComponentState );
+		internalDisposeState( (TState*)pComponentState );
 	}
 
 	template< typename TState, typename TInitData >
