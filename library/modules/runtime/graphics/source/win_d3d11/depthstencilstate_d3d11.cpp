@@ -36,7 +36,7 @@ namespace tiki
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D11_DEPTH_STENCIL_DESC, stateDesc );
 		stateDesc.DepthEnable		= creationParamter.depthEnabled;
-		stateDesc.DepthWriteMask	= creationParamter.depthEnabled ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+		stateDesc.DepthWriteMask	= creationParamter.depthWriteEnabled ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 		stateDesc.DepthFunc			= s_aComparsionFunctionMapping[ creationParamter.depthFunction ];
 
 		stateDesc.StencilEnable		= creationParamter.stencilEnabled;

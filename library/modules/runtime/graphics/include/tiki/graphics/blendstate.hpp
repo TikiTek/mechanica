@@ -78,7 +78,7 @@ namespace tiki
 
 	class BlendState : public GraphicsStateObject
 	{
-		TIKI_NONCOPYABLE_CLASS( BlendState );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( BlendState );
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 

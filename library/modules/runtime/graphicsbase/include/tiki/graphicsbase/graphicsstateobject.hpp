@@ -82,11 +82,19 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void	create( size_t count )
 		{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			m_maxCount = 0u;
+#endif
+
 			m_data.create( count );
 		}
 
 		TIKI_FORCE_INLINE void	dispose()
 		{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			TIKI_TRACE_INFO( "[GraphicsStateObjectCollection] Max usage (%u / %u)\n", m_maxCount, m_data.getCapacity() );
+#endif
+
 			m_data.dispose();
 		}
 
@@ -123,11 +131,20 @@ namespace tiki
 				pFirst = &m_data.push();
 			}
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			m_maxCount = TIKI_MAX( m_maxCount, m_data.getCount() );
+#endif
+
 			static_cast< GraphicsStateObject* >( pFirst )->create( hashValue );
 			return pFirst;
 		}
 
 	private:
+
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		uint					m_maxCount;
+#endif
 
 		SizedArray< T >			m_data;
 		

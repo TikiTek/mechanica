@@ -1,5 +1,0 @@
-<tikiasset output-name="font">
-	 <input file="font.material.xasset" type="material" />
-	 <vertex shader="font.vs_5_0" />
-	 <pixel shader="font.ps_5_0" />
-</tikiasset>

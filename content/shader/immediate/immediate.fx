@@ -1,4 +1,4 @@
-// vs-features= ps-features=
+// vs-features= ps-features=TIKI_FONT_MODE,TIKI_COLOR_MODE
 
 #include "shader/platform.fxh"
 
@@ -6,6 +6,7 @@ struct VertexToPixel
 {
 	float4 position	: TIKI_OUTPUT_POSITION0;
 	float2 texcoord	: TIKI_TEXCOORD;
+	float4 color	: TIKI_COLOR;
 };
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
@@ -18,28 +19,17 @@ struct VertexInput
 {
 	float2 position	: TIKI_INPUT_POSITION0;
 	float2 texcoord	: TIKI_TEXCOORD;
-
-#if 0
-	float4 vertexId	: TIKI_TEXCOORD0;
-	float2 size		: TIKI_TEXCOORD1;
-#endif
+	float4 color	: TIKI_COLOR;
 };
 
 VertexToPixel main( VertexInput input )
 {
     VertexToPixel output;
 
-	//float2 clipPosition = input.position * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );
-	
-    output.position = float4( input.position, 0.0f, 1.0f );
+	float2 clipPosition = input.position.xy * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );	
+    output.position = float4( clipPosition, 0.0f, 1.0f );	
 	output.texcoord = input.texcoord;
-    
-#if 0
-    output.texcoord = float2(
-		( input.texcoord.x * input.vertexId.x ) + ( input.texcoord.z * input.vertexId.z ),
-		( input.texcoord.y * input.vertexId.y ) + ( input.texcoord.w * input.vertexId.w )
-	);
-#endif
+	output.color	= input.color;
     
     return output;
 }
@@ -55,10 +45,20 @@ TIKI_DEFINE_SAMPLER( 0, s_sampler );
 
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
-#if 0
-	return float4( 1.0f, 0.0f, 0.0f, 1.0f );
+#if TIKI_COLOR_MODE == 0
+	float4 color = t_texture.Sample( s_sampler, input.texcoord );
+#else
+	float4 color = input.color;
 #endif
-	return t_texture.Sample( s_sampler, input.texcoord );
+	
+#if TIKI_FONT_MODE
+	color.a		= color.r * input.color.a;
+	color.rgb	= input.color.rgb;
+#elif TIKI_COLOR_MODE == 0
+	color *= input.color;
+#endif
+
+	return color;
 }
 
 #else

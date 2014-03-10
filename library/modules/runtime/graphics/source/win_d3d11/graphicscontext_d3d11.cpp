@@ -166,7 +166,7 @@ namespace tiki
 		if ( m_pDepthStencilState != pDepthStencilState )
 		{
 			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, pDepthStencilState->m_platformData.stencilRef );
-			pDepthStencilState = pDepthStencilState;
+			m_pDepthStencilState = pDepthStencilState;
 		}		
 	}
 
@@ -183,16 +183,19 @@ namespace tiki
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
 	{
-		static const D3D11_PRIMITIVE_TOPOLOGY topologies[] =
+		static const D3D11_PRIMITIVE_TOPOLOGY s_aTopologies[ PrimitiveTopology_Count ] =
 		{
 			D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 			D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
 			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
 			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( topologies ) == PrimitiveTopology_Count );
 
-		m_platformData.pContext->IASetPrimitiveTopology( topologies[ topology ] );
+		if ( m_primitiveTopology != topology )
+		{
+			m_platformData.pContext->IASetPrimitiveTopology( s_aTopologies[ topology ] );
+			m_primitiveTopology = topology;
+		}
 	}
 
 	void GraphicsContext::setVertexShader( const Shader* pShader )
@@ -210,7 +213,11 @@ namespace tiki
 	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
 	{
 		TIKI_ASSERT( pVertexInputBinding != nullptr );
-		m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
+		if ( m_pVertexInputBinding != pVertexInputBinding )
+		{
+			m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
+			m_pVertexInputBinding = pVertexInputBinding;
+		}
 	}
 
 	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
@@ -349,6 +356,7 @@ namespace tiki
 	void GraphicsContext::endImmediateGeometry()
 	{
 		unmapBuffer( m_immediateVertexData );
+		TIKI_ASSERT( validateDrawCall() );
 
 		const UINT offset = 0u;
 		const UINT vertexStride = static_cast< UINT >( m_immediateVertexStride );
@@ -359,11 +367,13 @@ namespace tiki
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
+		TIKI_ASSERT( validateDrawCall() );
 		m_platformData.pContext->Draw( (UINT)vertexCount, (UINT)baseVertexOffset );
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
+		TIKI_ASSERT( validateDrawCall() );
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
 

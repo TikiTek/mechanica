@@ -69,8 +69,7 @@ namespace tiki
 	void Font::fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const
 	{
 		TIKI_ASSERT( capacity >= textLength );
-
-		for (size_t i = 0u; i < capacity; ++i)
+		for (size_t i = 0u; i < textLength; ++i)
 		{
 			TIKI_ASSERT( text[ i ] != '\0' );
 			pChars[ i ]	= m_chars[ text[ i ] ];

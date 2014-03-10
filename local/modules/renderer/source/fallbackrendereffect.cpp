@@ -42,13 +42,10 @@ namespace tiki
 		m_pGraphicsSystem	= &graphicsSystem;
 		m_pShaderSet		= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
 
-		m_pSampler = graphicsSystem.createSamplerState(
-			AddressMode_Clamp,
-			AddressMode_Clamp,
-			AddressMode_Clamp,
-			FilterMode_Linear,
-			FilterMode_Linear
-		);
+		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
+		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
+		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
+		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 
 		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ) );
 
@@ -59,6 +56,15 @@ namespace tiki
 
 	void FallbackRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		graphicsSystem.disposeBlendState( m_pBlendState );
+		m_pBlendState = nullptr;
+
+		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState );
+		m_pDepthStencilState = nullptr;
+
+		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
+		m_pRasterizerState = nullptr;
+
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
@@ -83,6 +89,9 @@ namespace tiki
 		const Shader* pVertexShader = m_pShaderSet->getShader( ShaderType_VertexShader, 0u );
 
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
+		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setDepthStencilState( m_pDepthStencilState );
+		graphicsContext.setRasterizerState( m_pRasterizerState );
 
 		graphicsContext.setVertexShader( pVertexShader );
 		graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );

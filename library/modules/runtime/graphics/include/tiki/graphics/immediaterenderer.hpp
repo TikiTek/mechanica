@@ -38,9 +38,9 @@ namespace tiki
 
 		void				flush( GraphicsContext& graphicsContext );
 
-		void				drawTexture( const TextureData& texture, const Rectangle& dest );
-		void				drawTexture( const TextureData& texture, const Rectangle& dest, const Rectangle& src );
-		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color );
+		void				drawTexture( const TextureData* pTexture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
+		void				drawTexture( const TextureData* pTexture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE );
+		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE );
 
 	private:
 
@@ -52,8 +52,10 @@ namespace tiki
 
 		struct Sprite
 		{
-			size_t				vertexOffset;
-			size_t				vertexCount;
+			uint				vertexOffset;
+			uint				vertexCount;
+			uint				shaderBitMask;
+
 			const TextureData*	pTexture;
 		};
 
@@ -66,8 +68,12 @@ namespace tiki
 		};
 
 		const ShaderSet*					m_pShaderSet;
-		const VertexFormat*					m_pVertexFormat;
+		
+		const BlendState*					m_pBlendState;
+		const DepthStencilState*			m_pDepthStencilState;
+		const RasterizerState*				m_pRasterizerState;
 		const SamplerState*					m_pSamplerState;
+		const VertexFormat*					m_pVertexFormat;
 		const VertexInputBinding*			m_pVertexInputBinding;
 
 		SizedArray< Sprite >				m_sprites;

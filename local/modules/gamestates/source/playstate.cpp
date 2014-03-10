@@ -96,7 +96,7 @@ namespace tiki
 	{
 	}
 
-	void PlayState::render( GraphicsContext& graphicsContext ) const
+	void PlayState::render( GraphicsContext& graphicsContext )
 	{
 	}
 }

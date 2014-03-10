@@ -4,22 +4,23 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
-#include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/components/componentstorage.hpp"
+#include "tiki/components/staticmodelcomponent.hpp"
+#include "tiki/components/typeregister.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
 namespace tiki
 {
 	class ApplicationState;
+	class Font;
 	class GameRenderer;
 	class Model;
-	class SamplerState;
-	class ShaderSet;
 	class Texture;
-	class VertexFormat;
-	class VertexInputBinding;
 
 	enum TestStateTransitionSteps
 	{
+		TestStateTransitionSteps_Initialize,
 		TestStateTransitionSteps_LoadResources,
 		TestStateTransitionSteps_SetRendererValues,
 
@@ -38,22 +39,26 @@ namespace tiki
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
 		virtual void			update();
-		virtual void			render( GraphicsContext& graphicsContext ) const;
+		virtual void			render( GraphicsContext& graphicsContext );
 
 	private:
 		
 		ApplicationState*			m_pParentState;
 
+		const Font*					m_pFont;
 		const Model*				m_pModel;
-		const ShaderSet*			m_pShaderSet;
 		const Texture*				m_pTexture;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
 
-		//const VertexFormat*			m_pVertexFormat;
-		const VertexInputBinding*	m_pInputBinding;
-		const SamplerState*			m_pSampler;
+		ComponentStorage			m_storage;
+		ComponentTypeRegister		m_typeRegister;
+
+		ComponentTypeId				m_staticModelComponentTypeId;
+		StaticModelComponent		m_staticModelComponent;
+
+		ImmediateRenderer			m_immediateRenderer;
 
 	};
 }

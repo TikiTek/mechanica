@@ -5,6 +5,8 @@ namespace tiki
 {
 	void GraphicsContext::invalidateState()
 	{
+		m_primitiveTopology		= PrimitiveTopology_Count;
+
 		m_pBlendState			= nullptr;
 		m_pDepthStencilState	= nullptr;
 		m_pRasterizerState		= nullptr;
@@ -44,9 +46,20 @@ namespace tiki
 			m_pPixelConstants[ i ] = nullptr;
 		}
 	}
-
+	
 	bool GraphicsContext::validateDrawCall() const
 	{
-		return true;
+#define TIKI_VALIDATE_EXPR( expr, message ) if ( !( result &= ( expr ) ) ) TIKI_TRACE_ERROR( "[grpahics] validateDrawCall failed: %s\n", message )
+		bool result = true;
+
+		TIKI_VALIDATE_EXPR( m_primitiveTopology != PrimitiveTopology_Count,	"PrimitiveTopology must be set" );
+
+		TIKI_VALIDATE_EXPR( m_pBlendState != nullptr,						"BlendState must be set" );
+		TIKI_VALIDATE_EXPR( m_pDepthStencilState != nullptr,				"DepthStencilState must be set" );
+		TIKI_VALIDATE_EXPR( m_pRasterizerState != nullptr,					"RasterizerState must be set" );
+		TIKI_VALIDATE_EXPR( m_pVertexInputBinding != nullptr,				"VertexInputBinding must be set" );
+
+		return result;
+#undef TIKI_VALIDATE_EXPR
 	}
 }

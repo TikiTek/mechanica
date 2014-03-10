@@ -11,6 +11,9 @@
 
 namespace tiki
 {
+	class BlendState;
+	class DepthStencilState;
+	class RasterizerState;
 	class SamplerState;
 	class ShaderSet;
 	class VertexInputBinding;
@@ -37,14 +40,18 @@ namespace tiki
 
 		typedef SortedSizedMap< crc32, const VertexInputBinding* > VertexInputBindingMap;
 
-		GraphicsSystem*			m_pGraphicsSystem;
+		GraphicsSystem*				m_pGraphicsSystem;
 
-		const ShaderSet*		m_pShaderSet;
-		const SamplerState*		m_pSampler;
+		const ShaderSet*			m_pShaderSet;
 
-		VertexInputBindingMap	m_vertexInputBindings;
+		const BlendState*			m_pBlendState;
+		const DepthStencilState*	m_pDepthStencilState;
+		const RasterizerState*		m_pRasterizerState;
+		const SamplerState*			m_pSampler;
 
-		ConstantBuffer			m_vertexConstantBuffer;
+		VertexInputBindingMap		m_vertexInputBindings;
+
+		ConstantBuffer				m_vertexConstantBuffer;
 
 	};
 }

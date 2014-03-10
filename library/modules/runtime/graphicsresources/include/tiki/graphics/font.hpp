@@ -5,14 +5,11 @@
 #include "tiki/resource/resource.hpp"
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphicsbase/fontchar.hpp"
 
 namespace tiki
 {
-	class FontFactory;
-
 	class Font : public Resource
 	{
 		TIKI_DEFINE_RESOURCE( Font, TIKI_FOURCC( 'F', 'O', 'N', 'T' ) );
