@@ -2,10 +2,10 @@
 #ifndef TIKI_WINDOWEVENT_HPP
 #define TIKI_WINDOWEVENT_HPP
 
-#include "tiki/base/types.hpp"
-#include "tiki/base/keys.hpp"
-#include "tiki/base/mouse.hpp"
 #include "tiki/base/structs.hpp"
+#include "tiki/base/types.hpp"
+#include "tiki/input/keyboardkey.hpp"
+#include "tiki/input/mousebutton.hpp"
 
 namespace tiki
 {
@@ -23,12 +23,12 @@ namespace tiki
 
 	struct WindowKeyEvent
 	{
-		Keys			key;		
+		KeyboardKey		key;		
 	};
 
 	struct WindowMouseButtonEvent
 	{
-		MouseButtons	button;
+		MouseButton		button;
 	};
 
 	struct WindowMouseMoveEvent

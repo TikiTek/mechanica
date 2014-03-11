@@ -34,6 +34,9 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			push();
 		TIKI_FORCE_INLINE Reference			push( ConstReference value );
 
+		TIKI_FORCE_INLINE void				removeUnsortedByIndex( uint index );
+		TIKI_FORCE_INLINE bool				removeUnsortedByValue( ConstReference value );
+
 		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
 		TIKI_FORCE_INLINE uint				getCapacity() const	{ return TCapacity; }
 

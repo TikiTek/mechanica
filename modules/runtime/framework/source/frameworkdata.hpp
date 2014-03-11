@@ -2,9 +2,9 @@
 #define TIKI_FRAMEWORKDATA_HPP__
 
 #include "tiki/base/timer.hpp"
-#include "tiki/framework/inputsystem.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/input/inputsystem.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 

@@ -63,6 +63,28 @@ namespace tiki
 	}
 
 	template<typename T, uint TCapacity>
+	TIKI_FORCE_INLINE void tiki::FixedSizedArray<T, TCapacity>::removeUnsortedByIndex( uint index )
+	{
+		TIKI_ASSERT( index < m_count );
+		m_data[ index ] = m_data[ --m_count ];
+	}
+	
+	template<typename T, uint TCapacity>
+	TIKI_FORCE_INLINE bool tiki::FixedSizedArray<T, TCapacity>::removeUnsortedByValue( ConstReference value )
+	{
+		for (uint i = 0u; i < m_count; ++i)
+		{
+			if ( m_data[ i ] == value )
+			{
+				removeUnsortedByIndex( i );
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	template<typename T, uint TCapacity>
 	TIKI_FORCE_INLINE uint FixedSizedArray<T, TCapacity>::getIndex( ConstIterator pValue ) const
 	{
 		return getIndex( *pValue );
