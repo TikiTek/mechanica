@@ -78,7 +78,7 @@ namespace tiki
 		}
 
 		InputSystemParameters inputParams;
-		inputParams.pWindow = &m_frameworkData.mainWindow;
+		inputParams.windowHandle = m_frameworkData.mainWindow.getHandle();
 
 		if( !m_frameworkData.inputSystem.create( inputParams ) )
 		{
@@ -129,12 +129,12 @@ namespace tiki
 			}
 		}
 
-		m_frameworkData.inputSystem.update( m_frameworkData.mainWindow.getEventBuffer() );
+		m_frameworkData.inputSystem.update();
 
-		if( m_frameworkData.inputSystem.hasKeyReleased( KEY_ESCAPE ) )
-		{
-			return false;
-		}
+		//if( m_frameworkData.inputSystem.hasKeyReleased( KEY_ESCAPE ) )
+		//{
+		//	return false;
+		//}
 		
 		update();
 

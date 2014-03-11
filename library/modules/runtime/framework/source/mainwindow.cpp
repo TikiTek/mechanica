@@ -37,13 +37,13 @@ namespace tiki
 		case WM_KEYDOWN:
 			{
 				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
-				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_KEYUP:
 			{
 				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
-				event.data.keyEvent.key	= (Keys)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_MOUSEMOVE:

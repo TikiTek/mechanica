@@ -98,18 +98,16 @@ namespace tiki
 
 		if ( !m_gameFlow.isInTransition() )
 		{
-			InputSystem& input = framework::getInputSystem();
+			const InputSystem& input = framework::getInputSystem();
 
 			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
 			{
-				if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
-				{
-					m_gameFlow.startTransition( i + 1 );
-				}
+				//if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
+				//{
+				//	m_gameFlow.startTransition( i + 1 );
+				//}
 			}
 		}
-
-		//Sleep( 10 );
 	}
 
 	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const

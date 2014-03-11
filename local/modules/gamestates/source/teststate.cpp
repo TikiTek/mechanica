@@ -4,7 +4,6 @@
 #include "tiki/base/timer.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/framework/framework.hpp"
-#include "tiki/framework/inputsystem.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
@@ -12,6 +11,7 @@
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/graphicsbase/graphicstypes.hpp"
+#include "tiki/input/inputsystem.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
@@ -166,25 +166,25 @@ namespace tiki
 			vector::negate( cameraLeft );
 
 			const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
-			vector::scale( cameraForward,	( inputSystem.isKeyDown( KEY_W ) ? 1.0f : 0.0f ) * timeDelta );
-			vector::scale( cameraBackward,	( inputSystem.isKeyDown( KEY_S ) ? 1.0f : 0.0f ) * timeDelta );
-			vector::scale( cameraLeft,		( inputSystem.isKeyDown( KEY_A ) ? 1.0f : 0.0f ) * timeDelta );
-			vector::scale( cameraRight,		( inputSystem.isKeyDown( KEY_D ) ? 1.0f : 0.0f ) * timeDelta );
+			//vector::scale( cameraForward,	( inputSystem.isKeyDown( KEY_W ) ? 1.0f : 0.0f ) * timeDelta );
+			//vector::scale( cameraBackward,	( inputSystem.isKeyDown( KEY_S ) ? 1.0f : 0.0f ) * timeDelta );
+			//vector::scale( cameraLeft,		( inputSystem.isKeyDown( KEY_A ) ? 1.0f : 0.0f ) * timeDelta );
+			//vector::scale( cameraRight,		( inputSystem.isKeyDown( KEY_D ) ? 1.0f : 0.0f ) * timeDelta );
 
-			vector::add( cameraPosition, cameraForward );
-			vector::add( cameraPosition, cameraBackward );
-			vector::add( cameraPosition, cameraLeft );
-			vector::add( cameraPosition, cameraRight );
+			//vector::add( cameraPosition, cameraForward );
+			//vector::add( cameraPosition, cameraBackward );
+			//vector::add( cameraPosition, cameraLeft );
+			//vector::add( cameraPosition, cameraRight );
 		}
 
 		// rotate camera
 		{
-			const Vector2& mouseDelta = inputSystem.getMouseDeltaNormalized();
+			//const Vector2& mouseDelta = inputSystem.getMouseDeltaNormalized();
 
-			Quaternion cameraRotationDelta;
-			quaternion::fromYawPitchRoll( cameraRotationDelta, mouseDelta.x, -mouseDelta.y, 0.0f );
+			//Quaternion cameraRotationDelta;
+			//quaternion::fromYawPitchRoll( cameraRotationDelta, mouseDelta.x, -mouseDelta.y, 0.0f );
 
-			quaternion::mul( cameraRotation, cameraRotationDelta );
+			//quaternion::mul( cameraRotation, cameraRotationDelta );
 		}
 
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
