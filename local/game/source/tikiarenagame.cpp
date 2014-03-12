@@ -98,7 +98,17 @@ namespace tiki
 
 		if ( !m_gameFlow.isInTransition() )
 		{
-			const InputSystem& input = framework::getInputSystem();
+			InputSystem& input = framework::getInputSystem();
+
+			InputEvent inputEvent;
+			while ( input.popEvent( inputEvent ) )
+			{
+				if ( inputEvent.deviceType == InputDeviceType_Keyboard )
+				{
+					const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
+					TIKI_TRACE_INFO( "[game] keyboard input event '%s' has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
+				}
+			} 
 
 			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
 			{
