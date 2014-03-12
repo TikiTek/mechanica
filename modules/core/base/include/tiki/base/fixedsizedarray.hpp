@@ -31,8 +31,13 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void				clear();
 
+		TIKI_FORCE_INLINE bool				isEmpty() const	{ return m_count == 0u; }
+		TIKI_FORCE_INLINE bool				isFull() const	{ return m_count == m_capacity; }
+
 		TIKI_FORCE_INLINE Reference			push();
 		TIKI_FORCE_INLINE Reference			push( ConstReference value );
+
+		TIKI_FORCE_INLINE bool				pop( Reference value );
 
 		TIKI_FORCE_INLINE void				removeUnsortedByIndex( uint index );
 		TIKI_FORCE_INLINE bool				removeUnsortedByValue( ConstReference value );

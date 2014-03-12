@@ -63,6 +63,18 @@ namespace tiki
 	}
 
 	template<typename T, uint TCapacity>
+	TIKI_FORCE_INLINE bool tiki::FixedSizedArray<T, TCapacity>::pop( Reference value )
+	{
+		if ( isEmpty() )
+		{
+			return false;
+		}
+
+		value = m_data[ --m_count ];
+		return true;
+	}
+
+	template<typename T, uint TCapacity>
 	TIKI_FORCE_INLINE void tiki::FixedSizedArray<T, TCapacity>::removeUnsortedByIndex( uint index )
 	{
 		TIKI_ASSERT( index < m_count );

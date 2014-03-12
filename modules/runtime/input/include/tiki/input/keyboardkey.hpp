@@ -6,151 +6,120 @@ namespace tiki
 {
 	enum KeyboardKey
 	{
-		Key_Escape         = 0x01,
-		Key_Alpha1         = 0x02,
-		Key_Alpha2         = 0x03,
-		Key_Alpha3         = 0x04,
-		Key_Alpha4         = 0x05,
-		Key_Alpha5         = 0x06,
-		Key_Alpha6         = 0x07,
-		Key_Alpha7         = 0x08,
-		Key_Alpha8         = 0x09,
-		Key_Alpha9         = 0x0A,
-		Key_Alpha0         = 0x0B,
-		Key_Minus          = 0x0C,    /* - on main keyboard */
-		Key_Equals         = 0x0D,
-		Key_Back           = 0x0E,    /* backspace */
-		Key_Tab            = 0x0F,
-		Key_Q              = 0x10,
-		Key_W              = 0x11,
-		Key_E              = 0x12,
-		Key_R              = 0x13,
-		Key_T              = 0x14,
-		Key_Y              = 0x15,
-		Key_U              = 0x16,
-		Key_I              = 0x17,
-		Key_O              = 0x18,
-		Key_P              = 0x19,
-		Key_Lbracket       = 0x1A,
-		Key_Rbracket       = 0x1B,
-		Key_Return         = 0x1C,    /* Enter on main keyboard */
-		Key_LControl       = 0x1D,
-		Key_A              = 0x1E,
-		Key_S              = 0x1F,
-		Key_D              = 0x20,
-		Key_F              = 0x21,
-		Key_G              = 0x22,
-		Key_H              = 0x23,
-		Key_J              = 0x24,
-		Key_K              = 0x25,
-		Key_L              = 0x26,
-		Key_Semicolon      = 0x27,
-		Key_Apostrophe     = 0x28,
-		Key_Grave          = 0x29,    /* accent grave */
-		Key_Lshift         = 0x2A,
-		Key_Backslash      = 0x2B,
-		Key_Z              = 0x2C,
-		Key_X              = 0x2D,
-		Key_C              = 0x2E,
-		Key_V              = 0x2F,
-		Key_B              = 0x30,
-		Key_N              = 0x31,
-		Key_M              = 0x32,
-		Key_Comma          = 0x33,
-		Key_Period         = 0x34,    /* . on main keyboard */
-		Key_Slash          = 0x35,    /* / on main keyboard */
-		Key_Rshift         = 0x36,
-		Key_Multiply       = 0x37,    /* * on numeric keypad */
-		Key_LMenu          = 0x38,    /* left Alt */
-		Key_Space          = 0x39,
-		Key_Capital        = 0x3A,
-		Key_F1             = 0x3B,
-		Key_F2             = 0x3C,
-		Key_F3             = 0x3D,
-		Key_F4             = 0x3E,
-		Key_F5             = 0x3F,
-		Key_F6             = 0x40,
-		Key_F7             = 0x41,
-		Key_F8             = 0x42,
-		Key_F9             = 0x43,
-		Key_F10            = 0x44,
-		Key_Numlock        = 0x45,
-		Key_Scroll         = 0x46,    /* Scroll Lock */
-		Key_Numpad7        = 0x47,
-		Key_Numpad8        = 0x48,
-		Key_Numpad9        = 0x49,
-		Key_Subtract       = 0x4A,    /* - on numeric keypad */
-		Key_Numpad4        = 0x4B,
-		Key_Numpad5        = 0x4C,
-		Key_Numpad6        = 0x4D,
-		Key_Add            = 0x4E,    /* + on numeric keypad */
-		Key_Numpad1        = 0x4F,
-		Key_Numpad2        = 0x50,
-		Key_Numpad3        = 0x51,
-		Key_Numpad0        = 0x52,
-		Key_Decimal        = 0x53,    /* . on numeric keypad */
-		Key_Oem_102        = 0x56,    /* <> or \| on RT 102-key keyboard (Non-U.S.) */
-		Key_F11            = 0x57,
-		Key_F12            = 0x58,
-		Key_F13            = 0x64,    /*                     (NEC PC98) */
-		Key_F14            = 0x65,    /*                     (NEC PC98) */
-		Key_F15            = 0x66,    /*                     (NEC PC98) */
-		Key_Kana           = 0x70,    /* (Japanese keyboard)            */
-		Key_Abnt_c1        = 0x73,    /* /? on Brazilian keyboard */
-		Key_Convert        = 0x79,    /* (Japanese keyboard)            */
-		Key_NoConvert      = 0x7B,    /* (Japanese keyboard)            */
-		Key_Yen            = 0x7D,    /* (Japanese keyboard)            */
-		Key_Abnt_c2        = 0x7E,    /* Numpad . on Brazilian keyboard */
-		Key_NumpadEquals   = 0x8D,    /* = on numeric keypad (NEC PC98) */
-		Key_Prevtrack      = 0x90,    /* Previous Track (DIK_CIRCUMFLEX on Japanese keyboard) */
-		Key_At             = 0x91,    /*                     (NEC PC98) */
-		Key_Colon          = 0x92,    /*                     (NEC PC98) */
-		Key_Underline      = 0x93,    /*                     (NEC PC98) */
-		Key_Kanji          = 0x94,    /* (Japanese keyboard)            */
-		Key_Stop           = 0x95,    /*                     (NEC PC98) */
-		Key_Ax             = 0x96,    /*                     (Japan AX) */
-		Key_Unlabeled      = 0x97,    /*                        (J3100) */
-		Key_Nexttrack      = 0x99,    /* Next Track */
-		Key_NumpadEnter    = 0x9C,    /* Enter on numeric keypad */
-		Key_RControl       = 0x9D,
-		Key_Mute           = 0xA0,    /* Mute */
-		Key_Calculator     = 0xA1,    /* Calculator */
-		Key_PlayPause      = 0xA2,    /* Play / Pause */
-		Key_MediaStop      = 0xA4,    /* Media Stop */
-		Key_VolumeDown     = 0xAE,    /* Volume - */
-		Key_VolumeUp       = 0xB0,    /* Volume + */
-		Key_WebHome        = 0xB2,    /* Web home */
-		Key_NumpadComma    = 0xB3,    /* , on numeric keypad (NEC PC98) */
-		Key_Divide         = 0xB5,    /* / on numeric keypad */
-		Key_Sysrq          = 0xB7,
-		Key_RMenu          = 0xB8,    /* right Alt */
-		Key_Pause          = 0xC5,    /* Pause */
-		Key_Home           = 0xC7,    /* Home on arrow keypad */
-		Key_Up             = 0xC8,    /* UpArrow on arrow keypad */
-		Key_Prior          = 0xC9,    /* PgUp on arrow keypad */
-		Key_Left           = 0xCB,    /* LeftArrow on arrow keypad */
-		Key_Right          = 0xCD,    /* RightArrow on arrow keypad */
-		Key_End            = 0xCF,    /* End on arrow keypad */
-		Key_Down           = 0xD0,    /* DownArrow on arrow keypad */
-		Key_Next           = 0xD1,    /* PgDn on arrow keypad */
-		Key_Insert         = 0xD2,    /* Insert on arrow keypad */
-		Key_Delete         = 0xD3,    /* Delete on arrow keypad */
-		Key_LWin           = 0xDB,    /* Left Windows key */
-		Key_RWin           = 0xDC,    /* Right Windows key */
-		Key_Apps           = 0xDD,    /* AppMenu key */
-		Key_Power          = 0xDE,    /* System Power */
-		Key_Sleep          = 0xDF,    /* System Sleep */
-		Key_Wake           = 0xE3,    /* System Wake */
-		Key_WebSearch      = 0xE5,    /* Web Search */
-		Key_WebFavorites   = 0xE6,    /* Web Favorites */
-		Key_WebRefresh     = 0xE7,    /* Web Refresh */
-		Key_WebStop        = 0xE8,    /* Web Stop */
-		Key_WebForward     = 0xE9,    /* Web Forward */
-		Key_WebBack        = 0xEA,    /* Web Back */
-		Key_MyComputer     = 0xEB,    /* My Computer */
-		Key_Mail           = 0xEC,    /* Mail */
-		Key_MediaSelect    = 0xED     /* Media Select */
+		KeyboardKey_Escape,
+		KeyboardKey_BackSpace,
+		KeyboardKey_Tab,
+		KeyboardKey_Return,
+		KeyboardKey_LeftControl,
+		KeyboardKey_RightControl,
+		KeyboardKey_LeftShift,
+		KeyboardKey_RightShift,
+		KeyboardKey_LeftAlt,
+		KeyboardKey_RightAlt,
+		KeyboardKey_LeftSystem,			// left windows key
+		KeyboardKey_RightSystem,		// right windows key
+
+		KeyboardKey_Insert,
+		KeyboardKey_Delete,
+		KeyboardKey_Home,
+		KeyboardKey_End,
+		KeyboardKey_PageUp,
+		KeyboardKey_PageDown,
+
+		KeyboardKey_Left,
+		KeyboardKey_Up,
+		KeyboardKey_Down,
+		KeyboardKey_Right,
+
+		KeyboardKey_Space,
+		KeyboardKey_Minus,
+		KeyboardKey_Plus,
+		KeyboardKey_Slash,
+		KeyboardKey_Star,
+		KeyboardKey_Equals,
+		KeyboardKey_Semicolon,
+		KeyboardKey_Apostrophe,
+		KeyboardKey_BackSlash,
+		KeyboardKey_Comma,
+		KeyboardKey_Dot,
+		KeyboardKey_GraveAccent,
+
+		KeyboardKey_Alpha1,
+		KeyboardKey_Alpha2,
+		KeyboardKey_Alpha3,
+		KeyboardKey_Alpha4,
+		KeyboardKey_Alpha5,
+		KeyboardKey_Alpha6,
+		KeyboardKey_Alpha7,
+		KeyboardKey_Alpha8,
+		KeyboardKey_Alpha9,
+		KeyboardKey_Alpha0,
+
+		KeyboardKey_A,
+		KeyboardKey_B,
+		KeyboardKey_C,
+		KeyboardKey_D,
+		KeyboardKey_E,
+		KeyboardKey_F,
+		KeyboardKey_G,
+		KeyboardKey_H,
+		KeyboardKey_I,
+		KeyboardKey_J,
+		KeyboardKey_K,
+		KeyboardKey_L,
+		KeyboardKey_M,
+		KeyboardKey_N,
+		KeyboardKey_O,
+		KeyboardKey_P,
+		KeyboardKey_Q,
+		KeyboardKey_R,
+		KeyboardKey_S,
+		KeyboardKey_T,
+		KeyboardKey_U,
+		KeyboardKey_V,
+		KeyboardKey_W,
+		KeyboardKey_X,
+		KeyboardKey_Y,
+		KeyboardKey_Z,
+
+		KeyboardKey_F1,
+		KeyboardKey_F2,
+		KeyboardKey_F3,
+		KeyboardKey_F4,
+		KeyboardKey_F5,
+		KeyboardKey_F6,
+		KeyboardKey_F7,
+		KeyboardKey_F8,
+		KeyboardKey_F9,
+		KeyboardKey_F10,
+		KeyboardKey_F11,
+		KeyboardKey_F12,
+
+		KeyboardKey_Numpad0,
+		KeyboardKey_Numpad1,
+		KeyboardKey_Numpad2,
+		KeyboardKey_Numpad3,
+		KeyboardKey_Numpad4,
+		KeyboardKey_Numpad5,
+		KeyboardKey_Numpad6,
+		KeyboardKey_Numpad7,
+		KeyboardKey_Numpad8,
+		KeyboardKey_Numpad9,
+		KeyboardKey_NumpadEquals,
+		KeyboardKey_NumpadComma,
+		KeyboardKey_NumpadEnter,
+
+		KeyboardKey_CapsLock,
+		KeyboardKey_Numlock,
+		KeyboardKey_Scroll,
+
+		KeyboardKey_Count
 	};
+
+	namespace input
+	{
+		const char*	getKeyboardKeyName( KeyboardKey key );
+	}
 }
 
 #endif // TIKI_KEYBOARDKEY_HPP

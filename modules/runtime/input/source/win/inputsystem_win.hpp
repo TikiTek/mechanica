@@ -28,6 +28,8 @@ namespace tiki
 		IDirectInputDeviceA*	pMouse;
 		IDirectInputDeviceA*	pKeyboard;
 
+		uint8					keyboardMapping[ 256u ];
+
 		uint					currentStateIndex;
 		InputSystemState*		pStates[ 2u ];
 	};

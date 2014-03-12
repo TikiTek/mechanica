@@ -17,6 +17,8 @@
 #	define TIKI_MEMORY_ALLOCALIGN( size, alignment ) ::tiki::memory::allocAlign( size, alignment )
 #endif
 
+#define TIKI_MEMORY_FREE( pData ) ::tiki::memory::freeAlign( pData )
+
 namespace tiki
 {
 	namespace memory
