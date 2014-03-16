@@ -95,34 +95,28 @@ namespace tiki
 	void TikiArenaGame::update()
 	{
 		m_gameFlow.update();
-
-		if ( !m_gameFlow.isInTransition() )
-		{
-			InputSystem& input = framework::getInputSystem();
-
-			InputEvent inputEvent;
-			while ( input.popEvent( inputEvent ) )
-			{
-				if ( inputEvent.deviceType == InputDeviceType_Keyboard )
-				{
-					const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
-					TIKI_TRACE_INFO( "[game] keyboard input event '%s' has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
-				}
-			} 
-
-			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
-			{
-				//if ( input.hasKeyPressed( (Keys)( KEY_F5 + i ) ) )
-				//{
-				//	m_gameFlow.startTransition( i + 1 );
-				//}
-			}
-		}
 	}
 
 	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const
 	{
 		m_gameFlow.render( graphicsContext );
+	}
+
+	bool TikiArenaGame::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( !m_gameFlow.isInTransition() )
+		{
+			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
+			{
+				if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == (KeyboardKey)( KeyboardKey_F5 + i ) )
+				{
+					m_gameFlow.startTransition( i + 1 );
+					return true;
+				}
+			}
+		}
+
+		return m_gameFlow.processInputEvent( inputEvent );
 	}
 
 	GameFramework& framework::getGame()

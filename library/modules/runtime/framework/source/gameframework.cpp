@@ -131,11 +131,28 @@ namespace tiki
 
 		m_frameworkData.inputSystem.update();
 
-		//if( m_frameworkData.inputSystem.hasKeyReleased( KEY_ESCAPE ) )
-		//{
-		//	return false;
-		//}
-		
+		InputEvent inputEvent;
+		while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )
+		{
+			if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_Escape )
+			{
+				return false;
+			}
+
+			if ( !processInputEvent( inputEvent ) )
+			{
+				if ( inputEvent.deviceType == InputDeviceType_Keyboard )
+				{
+					const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
+					TIKI_TRACE_INFO( "[game] keyboard event not handled. %s has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
+				}
+				else
+				{
+					TIKI_TRACE_INFO( "[gameflow] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
+				}
+			}
+		}
+
 		update();
 
 		GraphicsContext& graphicsContext = m_frameworkData.graphicSystem.beginFrame();

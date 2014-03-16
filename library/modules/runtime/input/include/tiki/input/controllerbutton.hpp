@@ -11,8 +11,8 @@ namespace tiki
 		ControllerButton_X,
 		ControllerButton_Y,
 
-		ControllerButton_LB,
-		ControllerButton_RB,
+		ControllerButton_LeftShoulder,
+		ControllerButton_RightShoulder,
 
 		ControllerButton_LeftStick,
 		ControllerButton_RightStick,

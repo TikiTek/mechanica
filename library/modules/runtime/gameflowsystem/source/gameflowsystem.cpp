@@ -10,21 +10,22 @@ namespace tiki
 		m_isCreated = false;
 	}
 
-	void GameFlowSystem::create( const GameStateDefinition* pDefinition, size_t definitionCount )
+	void GameFlowSystem::create( const GameStateDefinition* pDefinition, uint definitionCount )
 	{
 		StateDefinition stateTreeDefinitions[ StateTree_MaxStateCount ];
 
-		m_stateCount = definitionCount;
+		m_stateCount		= definitionCount;
+		m_activeStateCount	= 0u;
 
-		for (size_t i = 0u; i < definitionCount; ++i)
+		for (uint i = 0u; i < definitionCount; ++i)
 		{
 			StateDefinition& targetDef = stateTreeDefinitions[ i ];
 			const GameStateDefinition& def = pDefinition[ i ];
 
 			m_states[ i ] = def;
 		
-			size_t index = i;
-			size_t count = 1u;
+			uint index = i;
+			uint count = 1u;
 			while ( index != 0u )
 			{
 				index = pDefinition[ index ].parentStateIndex;
@@ -33,7 +34,7 @@ namespace tiki
 			TIKI_ASSERT( count <= StateTree_MaxHierarchyDepth );
 
 			index = i;
-			for (size_t j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
+			for (uint j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
 			{
 				targetDef.stateHierarchy[ j ] = index;
 				index = pDefinition[ index ].parentStateIndex;
@@ -65,10 +66,10 @@ namespace tiki
 			TransitionState result;
 			if ( pState != nullptr )
 			{
-				const int step		= m_stateTree.getCurrentStep();
-				const bool create	= m_stateTree.isCreating();
-				const bool inital	= m_stateTree.isInitial();
-				result				= pState->processTransitionStep( step, create, inital );
+				const int step			= m_stateTree.getCurrentStep();
+				const bool isCreateing	= m_stateTree.isCreating();
+				const bool isInital		= m_stateTree.isInitial();
+				result					= pState->processTransitionStep( step, isCreateing, isInital );
 			}
 			else
 			{
@@ -76,46 +77,60 @@ namespace tiki
 			}
 
 			m_stateTree.updateTree( result );
-		}
 
-		const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
-
-		for (size_t i = 1u; i < currentState.hierarchyLength; ++i)
-		{
-			const size_t index = currentState.stateHierarchy[ i ];
-
-			if ( m_stateTree.isInTransition() )
+			const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
+			m_activeStateCount = 0u;
+			for (uint i = 1u; i < currentState.hierarchyLength; ++i)
 			{
-				const size_t transitionIndex = ( m_stateTree.isCreating() ? m_stateTree.getTransitionState() : m_stateTree.getCurrentState() );
+				const uint stateIndex = currentState.stateHierarchy[ i ];
 
-				if ( index == transitionIndex )
+				if ( m_stateTree.isInTransition() )
 				{
-					continue;
-				}
-			}
+					const uint transitionIndex = ( m_stateTree.isCreating() ? m_stateTree.getTransitionState() : m_stateTree.getCurrentState() );
 
-  			m_states[ index ].pState->update();
+					if ( stateIndex == transitionIndex )
+					{
+						continue;
+					}
+				}
+
+				m_activeStates[ m_activeStateCount++ ] = stateIndex;
+			}
+		}
+		
+
+
+		for (uint i = 0u; i < m_activeStateCount; ++i)
+		{
+			const uint stateIndex = m_activeStates[ i ];
+  			m_states[ stateIndex ].pState->update();
 		}
 	}
 
 	void GameFlowSystem::render( GraphicsContext& graphicsContext ) const
 	{
-		const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
-
-		for (size_t i = 1u; i < currentState.hierarchyLength; ++i)
+		for (uint i = 0u; i < m_activeStateCount; ++i)
 		{
-			const size_t index = currentState.stateHierarchy[ i ];
-
-			if ( index == m_stateTree.getCurrentState() && m_stateTree.isInTransition() )
-			{
-				continue;
-			}
-
-			m_states[ index ].pState->render( graphicsContext );
+			const uint stateIndex = m_activeStates[ i ];
+			m_states[ stateIndex ].pState->render( graphicsContext );
 		}
 	}
 
-	void GameFlowSystem::startTransition( const int stateIndex )
+	bool GameFlowSystem::processInputEvent( const InputEvent& inputEvent )
+	{
+		for (uint i = 0u; i < m_activeStateCount; ++i)
+		{
+			const uint stateIndex = m_activeStates[ i ];
+			if ( m_states[ stateIndex ].pState->processInputEvent( inputEvent ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void GameFlowSystem::startTransition( int stateIndex )
 	{		
 		m_stateTree.startTransition( stateIndex );
 	}

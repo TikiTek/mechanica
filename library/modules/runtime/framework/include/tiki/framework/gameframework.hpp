@@ -60,6 +60,8 @@ namespace tiki
 		virtual void				update() = 0;
 		virtual void				render( GraphicsContext& graphicsContext ) const = 0;
 
+		virtual bool				processInputEvent( const InputEvent& inputEvent ) = 0;
+
 	private:
 		
 		bool						m_isInitialized;

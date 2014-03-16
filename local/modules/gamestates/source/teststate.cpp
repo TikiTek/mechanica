@@ -125,6 +125,9 @@ namespace tiki
 
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
 
+					vector::clear( m_leftStickState );
+					vector::clear( m_rightStickState );
+
 					return TransitionState_Finish;
 				}
 				else
@@ -147,8 +150,9 @@ namespace tiki
 
 	void TestState::update()
 	{
+		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
+
 		FrameData& frameData = m_pGameRenderer->getFrameData();
-		InputSystem& inputSystem = framework::getInputSystem();
 
 		Vector3 cameraPosition		= frameData.mainCamera.getPosition();
 		Quaternion cameraRotation	= frameData.mainCamera.getRotation();
@@ -160,31 +164,22 @@ namespace tiki
 			quaternion::getForward( cameraForward, cameraRotation );
 			quaternion::getRight( cameraRight, cameraRotation );
 
-			Vector3 cameraBackward	= cameraForward;
-			Vector3 cameraLeft		= cameraRight;
-			vector::negate( cameraBackward );
-			vector::negate( cameraLeft );
+			vector::scale( cameraForward,	m_leftStickState.y * timeDelta );
+			vector::scale( cameraRight,		m_leftStickState.x * timeDelta );
 
-			const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
-			//vector::scale( cameraForward,	( inputSystem.isKeyDown( KEY_W ) ? 1.0f : 0.0f ) * timeDelta );
-			//vector::scale( cameraBackward,	( inputSystem.isKeyDown( KEY_S ) ? 1.0f : 0.0f ) * timeDelta );
-			//vector::scale( cameraLeft,		( inputSystem.isKeyDown( KEY_A ) ? 1.0f : 0.0f ) * timeDelta );
-			//vector::scale( cameraRight,		( inputSystem.isKeyDown( KEY_D ) ? 1.0f : 0.0f ) * timeDelta );
-
-			//vector::add( cameraPosition, cameraForward );
-			//vector::add( cameraPosition, cameraBackward );
-			//vector::add( cameraPosition, cameraLeft );
-			//vector::add( cameraPosition, cameraRight );
+			vector::add( cameraPosition, cameraForward );
+			vector::add( cameraPosition, cameraRight );
 		}
 
 		// rotate camera
 		{
-			//const Vector2& mouseDelta = inputSystem.getMouseDeltaNormalized();
+			Vector2 rotation = m_rightStickState;
+			vector::scale( rotation, timeDelta * 2.0f );
 
-			//Quaternion cameraRotationDelta;
-			//quaternion::fromYawPitchRoll( cameraRotationDelta, mouseDelta.x, -mouseDelta.y, 0.0f );
+			Quaternion cameraRotationDelta;
+			quaternion::fromYawPitchRoll( cameraRotationDelta, rotation.x, rotation.y, 0.0f );
 
-			//quaternion::mul( cameraRotation, cameraRotationDelta );
+			quaternion::mul( cameraRotation, cameraRotationDelta );
 		}
 
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
@@ -218,5 +213,26 @@ namespace tiki
 		m_immediateRenderer.flush( graphicsContext );
 		
 		graphicsContext.endRenderPass();
+	}
+
+	bool TestState::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
+		{
+			switch ( inputEvent.data.controllerStick.stickIndex )
+			{
+			case 0u:
+				m_leftStickState.x	= inputEvent.data.controllerStick.xState;
+				m_leftStickState.y	= inputEvent.data.controllerStick.yState;
+				break;
+
+			case 1u:
+				m_rightStickState.x	= inputEvent.data.controllerStick.xState;
+				m_rightStickState.y	= inputEvent.data.controllerStick.yState;
+				break;
+			}
+		}
+
+		return false;
 	}
 }

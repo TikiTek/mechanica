@@ -10,12 +10,14 @@ namespace tiki
 {
 	class GameState;
 	class GraphicsContext;
+	class InputSystem;
+	struct InputEvent;
 
 	struct GameStateDefinition
 	{
 		GameState*		pState;
-		size_t			parentStateIndex;
-		size_t			transitionStepCount;
+		uint			parentStateIndex;
+		uint			transitionStepCount;
 
 		const char*		pName;
 	};
@@ -28,20 +30,22 @@ namespace tiki
 
 		GameFlowSystem();
 
-		void				create( const GameStateDefinition* pDefinition, size_t definitionCount );
+		void				create( const GameStateDefinition* pDefinition, uint definitionCount );
 		void				dispose();
 
 		void				update();
 		void				render( GraphicsContext& graphicsContext ) const;
 
-		void				startTransition( const int stateIndex );
+		bool				processInputEvent( const InputEvent& inputEvent );
+
+		void				startTransition( int stateIndex );
 
 		const StateTree&	getStateTree() const	{ return m_stateTree; }
 
 		bool				isInTransition() const	{ return m_stateTree.isInTransition(); }
 		int					getCurrentState() const	{ return m_stateTree.getCurrentState(); }
 
-		size_t				getStateCount() const	{ return m_stateCount; }
+		uint				getStateCount() const	{ return m_stateCount; }
 
 		bool				isCreated() const		{ return m_isCreated; }
 
@@ -50,8 +54,10 @@ namespace tiki
 		bool				m_isCreated;
 
 		StateTree			m_stateTree;
+		int					m_activeStates[ StateTree_MaxStateCount ];
+		uint				m_activeStateCount;
 
-		size_t				m_stateCount;
+		uint				m_stateCount;
 		GameStateDefinition	m_states[ StateTree_MaxStateCount ];
 		
 	};

@@ -12,7 +12,7 @@ namespace tiki
 		m_isInitial		= false;
 	}
 
-	void StateTree::create( StateDefinition* pStateDefinitions, const size_t stateCount )
+	void StateTree::create( StateDefinition* pStateDefinitions, uint stateCount )
 	{
 		m_stateDefinition.create( pStateDefinitions, stateCount );
 
@@ -33,7 +33,7 @@ namespace tiki
 		m_stateDefinition.dispose();
 	}
 
-	void StateTree::startTransition( const int stateIndex )
+	void StateTree::startTransition( int stateIndex )
 	{
 		TIKI_ASSERT( stateIndex < (int)m_stateDefinition.getCount() );
 		TIKI_ASSERT( m_transitionCurrentPathIndex == TIKI_SIZE_T_MAX );
@@ -93,7 +93,7 @@ namespace tiki
 		m_isInitial		= true;
 	}
 
-	void StateTree::updateTree( const TransitionState newState )
+	void StateTree::updateTree( TransitionState newState )
 	{
 		m_isInitial = false;
 

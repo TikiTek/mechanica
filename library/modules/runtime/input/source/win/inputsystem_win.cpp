@@ -121,14 +121,101 @@ namespace tiki
 		DIK_SCROLL,			// KeyboardKey_Scroll
 	};
 
+	static const uint16 s_aControllerButtonMapping[ ControllerButton_Count ] = 
+	{
+		XINPUT_GAMEPAD_A,				// ControllerButton_A
+		XINPUT_GAMEPAD_B,				// ControllerButton_B
+		XINPUT_GAMEPAD_X,				// ControllerButton_X
+		XINPUT_GAMEPAD_Y,				// ControllerButton_Y
+
+		XINPUT_GAMEPAD_LEFT_SHOULDER,	// ControllerButton_LeftShoulder
+		XINPUT_GAMEPAD_RIGHT_SHOULDER,	// ControllerButton_RightShoulder
+
+		XINPUT_GAMEPAD_LEFT_THUMB,		// ControllerButton_LeftStick
+		XINPUT_GAMEPAD_RIGHT_THUMB,		// ControllerButton_RightStick
+
+		XINPUT_GAMEPAD_DPAD_LEFT,		// ControllerButton_DPadLeft
+		XINPUT_GAMEPAD_DPAD_RIGHT,		// ControllerButton_DPadRight
+		XINPUT_GAMEPAD_DPAD_UP,			// ControllerButton_DPadUp
+		XINPUT_GAMEPAD_DPAD_DOWN,		// ControllerButton_DPadDown
+
+		XINPUT_GAMEPAD_START,			// ControllerButton_Start
+		XINPUT_GAMEPAD_BACK				// ControllerButton_Back
+	};
+
 	struct InputSystemState
 	{
 		DIMOUSESTATE	mouse;
-		uint8			keyboard[ 256u ];
+		uint8			aKeyboard[ 256u ];
 
-		bool			controllerConnected[ XUSER_MAX_COUNT ];
-		XINPUT_STATE	controller[ XUSER_MAX_COUNT ];
+		bool			aControllerConnected[ XUSER_MAX_COUNT ];
+		XINPUT_STATE	aController[ XUSER_MAX_COUNT ];
 	};
+
+	TIKI_FORCE_INLINE static void checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
+	{
+		if ( currentState != previousState )
+		{
+			if ( currentState < XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
+			{
+				currentState = 0u;
+			}
+
+			InputEvent& inputEvent = events.push();
+			inputEvent.eventType	= InputEventType_Controller_TriggerChanged;
+			inputEvent.deviceType	= InputDeviceType_Controller;
+			inputEvent.deviceId		= controllerIndex;
+			inputEvent.data.controllerTrigger.triggerIndex	= 0u;
+			inputEvent.data.controllerTrigger.state			= (float)currentState / 255.0f;
+		}
+	}
+
+	TIKI_FORCE_INLINE static void checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY )
+	{
+		if ( currentStateX != previousStateX || currentStateY != previousStateY )
+		{
+			if ( abs( currentStateX ) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+			{
+				currentStateX = 0u;
+			}
+
+			if ( abs( currentStateY ) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+			{
+				currentStateY = 0u;
+			}
+
+			InputEvent& inputEvent = events.push();
+			inputEvent.eventType	= InputEventType_Controller_StickChanged;
+			inputEvent.deviceType	= InputDeviceType_Controller;
+			inputEvent.deviceId		= controllerIndex;
+			inputEvent.data.controllerStick.stickIndex		= stickIndex;
+			inputEvent.data.controllerStick.xState			= (float)currentStateX / 32767.0f;
+			inputEvent.data.controllerStick.yState			= (float)currentStateY / 32767.0f;
+		}
+	}
+
+	TIKI_FORCE_INLINE static void checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState )
+	{
+		const bool isPressed	= isBitSet( currentState, nativeButton );
+		const bool wasPressed	= isBitSet( previousState, nativeButton );
+
+		if ( isPressed && !wasPressed )
+		{
+			InputEvent& inputEvent = events.push();
+			inputEvent.eventType	= InputEventType_Controller_ButtonDown;
+			inputEvent.deviceType	= InputDeviceType_Controller;
+			inputEvent.deviceId		= controllerIndex;
+			inputEvent.data.controllerButton.button = button;
+		}
+		else if ( !isPressed && wasPressed )
+		{
+			InputEvent& inputEvent = events.push();
+			inputEvent.eventType	= InputEventType_Controller_ButtonUp;
+			inputEvent.deviceType	= InputDeviceType_Controller;
+			inputEvent.deviceId		= controllerIndex;
+			inputEvent.data.controllerButton.button = button;
+		}
+	}
 
 	InputSystem::InputSystem()
 	{
@@ -206,9 +293,9 @@ namespace tiki
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &m_platformData.pStates[ 0u ]->controller[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( controllerIndex, &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
-				m_platformData.pStates[ 0u ]->controllerConnected[ controllerIndex ] = true;
+				m_platformData.pStates[ 0u ]->aControllerConnected[ controllerIndex ] = true;
 
 				InputDevice device;
 				device.deviceType	= InputDeviceType_Controller;
@@ -264,7 +351,7 @@ namespace tiki
 		HRESULT result = DIERR_UNSUPPORTED;		
 		if ( m_platformData.pKeyboard != nullptr )
 		{
-			result = m_platformData.pKeyboard->GetDeviceState( sizeof( pCurrentState->keyboard ), &pCurrentState->keyboard );
+			result = m_platformData.pKeyboard->GetDeviceState( sizeof( pCurrentState->aKeyboard ), &pCurrentState->aKeyboard );
 			if( FAILED( result ) )
 			{
 				if( result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED )
@@ -278,14 +365,14 @@ namespace tiki
 			}
 			else
 			{
-				for (uint i = 0u; i < TIKI_COUNT( pCurrentState->keyboard ); ++i)
+				for (uint i = 0u; i < TIKI_COUNT( pCurrentState->aKeyboard ); ++i)
 				{
 					const KeyboardKey mappedKey = static_cast< KeyboardKey >( m_platformData.keyboardMapping[ i ] );
 					if ( mappedKey >= KeyboardKey_Count )
 					{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-						const bool isPressed = isBitSet( pCurrentState->keyboard[ i ], 0x80u );
-						const bool wasPressed = isBitSet( pPreviousState->keyboard[ i ], 0x80u );
+						const bool isPressed = isBitSet( pCurrentState->aKeyboard[ i ], 0x80u );
+						const bool wasPressed = isBitSet( pPreviousState->aKeyboard[ i ], 0x80u );
 						if ( isPressed != wasPressed )
 						{
 							TIKI_TRACE_INFO( "[input] input received from unmapped key with code: %u\n", i );
@@ -295,8 +382,8 @@ namespace tiki
 						continue;
 					}
 
-					const bool isPressed = isBitSet( pCurrentState->keyboard[ i ], 0x80u );
-					const bool wasPressed = isBitSet( pPreviousState->keyboard[ i ], 0x80u );
+					const bool isPressed = isBitSet( pCurrentState->aKeyboard[ i ], 0x80u );
+					const bool wasPressed = isBitSet( pPreviousState->aKeyboard[ i ], 0x80u );
 
 					if ( isPressed && !wasPressed )
 					{
@@ -334,25 +421,90 @@ namespace tiki
 			}
 			else
 			{
-				// check for changes
+				for (uint i = 0u; i < MouseButton_Count; ++i)
+				{
+					const bool isPressed = ( pCurrentState->mouse.rgbButtons[ i ] != 0u );
+					const bool wasPressed = ( pPreviousState->mouse.rgbButtons[ i ] != 0u );
+
+					if ( isPressed && !wasPressed )
+					{
+						InputEvent& inputEvent = m_events.push();
+						inputEvent.eventType	= InputEventType_Mouse_ButtonDown;
+						inputEvent.deviceType	= InputDeviceType_Mouse;
+						inputEvent.deviceId		= 0u;
+						inputEvent.data.mouseButton.button = (MouseButton)i;
+					}
+					else if ( !isPressed && wasPressed )
+					{
+						InputEvent& inputEvent = m_events.push();
+						inputEvent.eventType	= InputEventType_Mouse_ButtonUp;
+						inputEvent.deviceType	= InputDeviceType_Mouse;
+						inputEvent.deviceId		= 0u;
+						inputEvent.data.mouseButton.button = (MouseButton)i;
+					}
+				} 
+				
+				if ( pCurrentState->mouse.lX != pPreviousState->mouse.lX || pCurrentState->mouse.lY != pPreviousState->mouse.lY )
+				{
+					InputEvent& inputEvent = m_events.push();
+					inputEvent.eventType	= InputEventType_Mouse_Moved;
+					inputEvent.deviceType	= InputDeviceType_Mouse;
+					inputEvent.deviceId		= 0u;
+					inputEvent.data.mouseMoved.xOffset = ( pPreviousState->mouse.lX - pCurrentState->mouse.lX );
+					inputEvent.data.mouseMoved.yOffset = ( pPreviousState->mouse.lY - pCurrentState->mouse.lY );
+				}
+
+				if ( pCurrentState->mouse.lZ != pPreviousState->mouse.lZ )
+				{
+					InputEvent& inputEvent = m_events.push();
+					inputEvent.eventType	= InputEventType_Mouse_Wheel;
+					inputEvent.deviceType	= InputDeviceType_Mouse;
+					inputEvent.deviceId		= 0u;
+					inputEvent.data.mouseWheel.offset = ( pPreviousState->mouse.lZ - pCurrentState->mouse.lZ );
+				}
 			}
 		}
 
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &m_platformData.pStates[ 0u ]->controller[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( controllerIndex, &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
-				// check for changes				
+				if ( !pCurrentState->aControllerConnected[ controllerIndex ] )
+				{
+					InputDevice device;
+					device.deviceType	= InputDeviceType_Controller;
+					device.deviceId		= controllerIndex;
+					connectDevice( device );
+
+					pCurrentState->aControllerConnected[ controllerIndex ] = true;
+					continue;
+				}
+
+				const XINPUT_GAMEPAD& currentState = pCurrentState->aController[ controllerIndex ].Gamepad;
+				const XINPUT_GAMEPAD& previousState = pPreviousState->aController[ controllerIndex ].Gamepad;
+
+				checkControllerTrigger( m_events, controllerIndex, 0u, currentState.bLeftTrigger, previousState.bLeftTrigger );
+				checkControllerTrigger( m_events, controllerIndex, 1u, currentState.bRightTrigger, previousState.bRightTrigger );
+
+				checkControllerStick( m_events, controllerIndex, 0u, currentState.sThumbLX, previousState.sThumbLX, currentState.sThumbLY, previousState.sThumbLY );
+				checkControllerStick( m_events, controllerIndex, 1u, currentState.sThumbRX, previousState.sThumbRX, currentState.sThumbRY, previousState.sThumbRY );
+
+				const uint16 currentButtons = currentState.wButtons;
+				const uint16 previousButtons = previousState.wButtons;
+				for (uint i = 0u; i < TIKI_COUNT( s_aControllerButtonMapping ); ++i)
+				{
+					checkControllerButton( m_events, controllerIndex, (ControllerButton)i, s_aControllerButtonMapping[ i ], currentButtons, previousButtons );
+				}
 			}
-			else if ( pCurrentState->controllerConnected[ controllerIndex ] )
+			else if ( pCurrentState->aControllerConnected[ controllerIndex ] )
 			{
 				InputDevice device;
 				device.deviceType	= InputDeviceType_Controller;
 				device.deviceId		= controllerIndex;
 				disconnectDevice( device );
 
-				pCurrentState->controllerConnected[ controllerIndex ] = false;
+				pCurrentState->aControllerConnected[ controllerIndex ] = false;
 			}
 		}		
 	}
@@ -389,52 +541,4 @@ namespace tiki
 			inputEvent.data.device.device = device;
 		}
 	}
-
-	//bool InputSystem::isButtonDown( const MouseButtons button ) const
-	//{
-	//	const DIMOUSESTATE* pState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
-	//	return pState->rgbButtons[ button ] != 0;
-	//}
-
-	//bool InputSystem::isButtonUp( const MouseButtons button ) const
-	//{
-	//	const DIMOUSESTATE* pState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
-	//	return pState->rgbButtons[ button ] == 0;
-	//}
-
-	//bool InputSystem::isButtonPressed( const MouseButtons button ) const
-	//{
-	//	const DIMOUSESTATE* pPreviousState = reinterpret_cast< const DIMOUSESTATE* >( m_previousState.mouseState );
-	//	const DIMOUSESTATE* pCurrentState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
-
-	//	return ( pPreviousState->rgbButtons[ button ] == 0 ) && ( pCurrentState->rgbButtons[ button ] != 0 );
-	//}
-
-	//bool InputSystem::isButtonReleased( const MouseButtons button ) const
-	//{
-	//	const DIMOUSESTATE* pPreviousState = reinterpret_cast< const DIMOUSESTATE* >( m_previousState.mouseState );
-	//	const DIMOUSESTATE* pCurrentState = reinterpret_cast< const DIMOUSESTATE* >( m_currentState.mouseState );
-
-	//	return ( pPreviousState->rgbButtons[ button ] != 0 ) && ( pCurrentState->rgbButtons[ button ] == 0 );
-	//}
-
-	//bool InputSystem::isKeyDown( Keys key ) const
-	//{
-	//	return ( m_currentState.keyboardState[ key ] & 0x80 ) != 0;
-	//}
-
-	//bool InputSystem::isKeyUp( Keys key ) const
-	//{
-	//	return ( m_currentState.keyboardState[ key ] & 0x80 ) == 0;
-	//}
-
-	//bool InputSystem::hasKeyPressed( Keys key ) const
-	//{
-	//	return ( !( m_previousState.keyboardState[ key ] & 0x80 ) && ( m_currentState.keyboardState[ key ] & 0x80 ) );
-	//}
-
-	//bool InputSystem::hasKeyReleased( Keys key ) const
-	//{
-	//	return (( m_previousState.keyboardState[ key ] & 0x80 ) && !( m_currentState.keyboardState[ key ] & 0x80 ) );
-	//}
 }
