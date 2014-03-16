@@ -99,4 +99,9 @@ namespace tiki
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
 	}
+
+	bool PlayState::processInputEvent( const InputEvent& inputEvent )
+	{
+		return false;
+	}
 }

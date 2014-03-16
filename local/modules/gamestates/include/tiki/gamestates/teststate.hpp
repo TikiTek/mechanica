@@ -41,6 +41,8 @@ namespace tiki
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext );
 
+		virtual bool			processInputEvent( const InputEvent& inputEvent );
+
 	private:
 		
 		ApplicationState*			m_pParentState;
@@ -59,6 +61,9 @@ namespace tiki
 		StaticModelComponent		m_staticModelComponent;
 
 		ImmediateRenderer			m_immediateRenderer;
+
+		Vector2						m_leftStickState;
+		Vector2						m_rightStickState;
 
 	};
 }

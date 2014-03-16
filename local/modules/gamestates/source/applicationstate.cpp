@@ -93,4 +93,9 @@ namespace tiki
 	{
 		m_renderer.render( graphicsContext );
 	}
+
+	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )
+	{
+		return false;
+	}
 }

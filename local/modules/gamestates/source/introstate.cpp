@@ -23,4 +23,10 @@ namespace tiki
 	void IntroState::render( GraphicsContext& graphicsContext )
 	{
 	}
+
+	bool IntroState::processInputEvent( const InputEvent& inputEvent )
+	{
+		return false;
+	}
+
 }

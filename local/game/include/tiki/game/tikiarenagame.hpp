@@ -36,6 +36,8 @@ namespace tiki
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext ) const;
 
+		virtual bool			processInputEvent( const InputEvent& inputEvent );
+
 	private:
 
 		GameFlowSystem			m_gameFlow;

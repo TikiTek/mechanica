@@ -32,6 +32,8 @@ namespace tiki
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext );
 
+		bool					processInputEvent( const InputEvent& inputEvent );
+
 	private:
 
 		GameRenderer			m_renderer;
