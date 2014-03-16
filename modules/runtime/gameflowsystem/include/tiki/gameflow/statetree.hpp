@@ -28,7 +28,7 @@ namespace tiki
 	struct StateDefinition
 	{
 		int			stateHierarchy[ StateTree_MaxHierarchyDepth ];
-		size_t		hierarchyLength;
+		uint		hierarchyLength;
 
 		int			transitionStepCount;
 
@@ -43,21 +43,21 @@ namespace tiki
 
 		StateTree();
 
-		void						create( StateDefinition* pStateDefinitions, const size_t stateCount );
+		void						create( StateDefinition* pStateDefinitions, uint stateCount );
 		void						dispose();
 
-		void						startTransition( const int stateIndex );
+		void						startTransition( int stateIndex );
 
-		void						updateTree( const TransitionState newState );
+		void						updateTree( TransitionState newState );
 
-		const StateDefinition&		getCurrentStateDefinition() const { return m_stateDefinition[ m_currentState ]; }
-		int							getCurrentState() const { return m_currentState; }
-		int							getTransitionState() const { return m_transitionNextState; }
-		bool						isInTransition() const { return m_transitionCurrentPathIndex != TIKI_SIZE_T_MAX; }
+		const StateDefinition&		getCurrentStateDefinition() const	{ return m_stateDefinition[ m_currentState ]; }
+		int							getCurrentState() const				{ return m_currentState; }
+		int							getTransitionState() const			{ return m_transitionNextState; }
+		bool						isInTransition() const				{ return m_transitionCurrentPathIndex != TIKI_SIZE_T_MAX; }
 
-		int							getCurrentStep() const { return m_currentStep; }
-		bool						isCreating() const { return m_isCreating; }
-		bool						isInitial() const { return m_isInitial; }
+		int							getCurrentStep() const	{ return m_currentStep; }
+		bool						isCreating() const		{ return m_isCreating; }
+		bool						isInitial() const		{ return m_isInitial; }
 
 	private:
 
@@ -67,9 +67,9 @@ namespace tiki
 
 		int							m_transitionNextState;
 		int							m_transitionPathDirection;
-		size_t						m_transitionCurrentPathIndex;
+		uint						m_transitionCurrentPathIndex;
 		int							m_transitionPath[ StateTree_MaxTransitionPathSize ];
-		size_t						m_transitionPathSize;
+		uint						m_transitionPathSize;
 
 		int							m_currentStep;
 		bool						m_isCreating;

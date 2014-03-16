@@ -27,6 +27,15 @@ namespace tiki
 
 	public:
 
+		enum
+		{
+			MaxInputDeviceCount	= 8u,
+			MaxInputEventCount	= 64u
+		};
+
+		typedef FixedSizedArray< InputDevice, MaxInputDeviceCount > InputDeviceArray;
+		typedef FixedSizedArray< InputEvent, MaxInputEventCount > InputEventArray;
+
 		bool					create( const InputSystemParameters& params );
 		void					dispose();
 
@@ -60,16 +69,7 @@ namespace tiki
 								~InputSystem();
 							
 	private:
-
-		enum
-		{
-			MaxInputDeviceCount	= 8u,
-			MaxInputEventCount	= 64u
-		};
-
-		typedef FixedSizedArray< InputDevice, MaxInputDeviceCount > InputDeviceArray;
-		typedef FixedSizedArray< InputEvent, MaxInputEventCount > InputEventArray;
-		
+			
 		InputDeviceArray		m_devices;
 		InputEventArray			m_events;
 

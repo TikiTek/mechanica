@@ -7,8 +7,10 @@ namespace tiki
 	enum MouseButton
 	{
 		MouseButton_Left,
+		MouseButton_Middle,
 		MouseButton_Right,
-		MouseButton_Middle
+
+		MouseButton_Count
 	};
 }
 
