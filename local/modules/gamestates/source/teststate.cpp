@@ -10,7 +10,7 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/graphicsbase/graphicstypes.hpp"
+#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
@@ -73,7 +73,15 @@ namespace tiki
 					TIKI_ASSERT( m_pTexture != nullptr );
 					TIKI_ASSERT( m_pFont != nullptr );
 
+					Vector2 screenSize;
+					screenSize.x = (float)framework::getGraphicsSystem().getBackBuffer().getWidth();
+					screenSize.y = (float)framework::getGraphicsSystem().getBackBuffer().getHeight();
+
+					Projection projection;
+					projection.createOrthographicCenter( screenSize.x, -screenSize.y, 0.0f, 1.0f );
+
 					m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_immediateRenderer.setProjection( projection );
 
 					{
 						ComponentState* pState = m_storage.allocateState( m_staticModelComponentTypeId );
@@ -128,10 +136,26 @@ namespace tiki
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
 
+					m_debugMenu.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
+					m_debugMenuPageDebugProp.create( *(DebugPropManager*)nullptr );
+					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+
 					return TransitionState_Finish;
 				}
 				else
 				{
+					m_debugMenu.removePage( m_debugMenuPageDebugProp );
+					m_debugMenu.removePage( m_debugMenuPageDebugProp );
+					m_debugMenu.removePage( m_debugMenuPageDebugProp );
+					m_debugMenu.removePage( m_debugMenuPageDebugProp );
+					m_debugMenu.removePage( m_debugMenuPageDebugProp );
+					m_debugMenuPageDebugProp.dispose();
+					m_debugMenu.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+
 					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
 					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -190,6 +214,8 @@ namespace tiki
 
 
 		m_staticModelComponent.render( *m_pGameRenderer );
+
+		m_debugMenu.update();
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -202,15 +228,17 @@ namespace tiki
 
 		const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( 0u );
 
-		const Rectangle rect = Rectangle( 0.0f, 0.0f, 1.0f, 1.0f );
+		const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
 		m_immediateRenderer.drawTexture( &texture, rect );
 
-		const Rectangle rect2 = Rectangle( 0.25f, 0.25f, 0.1f, 0.1f );
-		m_immediateRenderer.drawTexture( nullptr, rect2, TIKI_COLOR( 0u, 50, 200, 128 ) );
+		const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
+		m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
 
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
 		
 		m_immediateRenderer.flush( graphicsContext );
+
+		m_debugMenu.render( graphicsContext );
 		
 		graphicsContext.endRenderPass();
 	}
@@ -231,6 +259,12 @@ namespace tiki
 				m_rightStickState.y	= inputEvent.data.controllerStick.yState;
 				break;
 			}
+			return true;
+		}
+		else if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F1 )
+		{
+			m_debugMenu.setActive( !m_debugMenu.getActive() );
+			return true;
 		}
 
 		return false;
