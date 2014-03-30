@@ -14,7 +14,7 @@
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
-#include "tiki/graphicsbase/graphicsstateobject.hpp"
+#include "tiki/graphics/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/graphicssystem_d3d11.hpp"

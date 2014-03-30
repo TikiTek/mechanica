@@ -6,10 +6,12 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/graphics/texturedata.hpp"
-#include "tiki/graphicsbase/fontchar.hpp"
+#include "tiki/graphics/fontchar.hpp"
 
 namespace tiki
 {
+	struct Vector2;
+
 	class Font : public Resource
 	{
 		TIKI_DEFINE_RESOURCE( Font, TIKI_FOURCC( 'F', 'O', 'N', 'T' ) );
@@ -20,8 +22,10 @@ namespace tiki
 		static void				registerResourceType( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
 		static void				unregisterResourceType( ResourceManager& resourceManager );
 
-		const TextureData&		getTextureData() const { return m_textureData; }	
-		void					fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const;
+		const TextureData&		getTextureData() const { return m_textureData; }
+
+		void					calcuateTextSize( Vector2& textSize, const char* pText, uint textLength ) const;
+		void					fillVertices( FontChar* pChars, uint capacity, const char* pText, uint textLength ) const;
 
 	protected:
 		

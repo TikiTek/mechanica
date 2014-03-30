@@ -5,7 +5,7 @@
 #include "tiki/base/float32.hpp"
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/structs.hpp"
-#include "tiki/graphicsbase/color.hpp"
+#include "tiki/graphics/color.hpp"
 
 #include "libpsd.h"
 

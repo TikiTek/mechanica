@@ -2,8 +2,8 @@
 #ifndef TIKI_VERTEXATTRIBUTE_HPP__INCLUDED
 #define TIKI_VERTEXATTRIBUTE_HPP__INCLUDED
 
-#include "tiki/graphicsbase/vertexattributeformat.hpp"
-#include "tiki/graphicsbase/vertexsemantic.hpp"
+#include "tiki/graphics/vertexattributeformat.hpp"
+#include "tiki/graphics/vertexsemantic.hpp"
 
 namespace tiki
 {

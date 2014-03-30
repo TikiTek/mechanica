@@ -1,6 +1,7 @@
 
 #include "tiki/graphics/font.hpp"
 
+#include "tiki/math/vector.hpp"
 #include "tiki/resource/resourcefile.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
@@ -65,14 +66,29 @@ namespace tiki
 		m_chars.dispose();
 		m_textureData.dispose( pFactory->graphicsSystem );
 	}
+	
+	void Font::calcuateTextSize( Vector2& textSize, const char* pText, uint textLength ) const
+	{
+		textSize = Vector2::zero;
 
-	void Font::fillVertices( FontChar* pChars, size_t capacity, cstring text, size_t textLength ) const
+		for (uint i = 0u; i < textLength; ++i)
+		{
+			const char charIndex		= pText[ i ];
+			const FontChar& charStruct	= m_chars[ charIndex ];
+			TIKI_ASSERT( charIndex != '\0' );
+			
+			textSize.x += charStruct.width;
+			textSize.y = TIKI_MAX( textSize.y, charStruct.height );
+		}
+	}
+
+	void Font::fillVertices( FontChar* pChars, uint capacity, const char* pText, uint textLength ) const
 	{
 		TIKI_ASSERT( capacity >= textLength );
-		for (size_t i = 0u; i < textLength; ++i)
+		for (uint i = 0u; i < textLength; ++i)
 		{
-			TIKI_ASSERT( text[ i ] != '\0' );
-			pChars[ i ]	= m_chars[ text[ i ] ];
+			TIKI_ASSERT( pText[ i ] != '\0' );
+			pChars[ i ]	= m_chars[ pText[ i ] ];
 		}
 	}
 }

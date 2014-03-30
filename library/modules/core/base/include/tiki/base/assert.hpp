@@ -31,10 +31,10 @@
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	define TIKI_TRACE( format, ... ) ::tiki::debug::trace( format, __VA_ARGS__ )
-#	define TIKI_TRACE_INFO( format, ... ) ::tiki::debug::traceInfo( format, __VA_ARGS__ )
-#	define TIKI_TRACE_WARNING( format, ... ) ::tiki::debug::traceWarning( format, __VA_ARGS__ )
-#	define TIKI_TRACE_ERROR( format, ... ) ::tiki::debug::traceError( format, __VA_ARGS__ )
+#	define TIKI_TRACE			::tiki::debug::trace
+#	define TIKI_TRACE_INFO		::tiki::debug::traceInfo
+#	define TIKI_TRACE_WARNING	::tiki::debug::traceWarning
+#	define TIKI_TRACE_ERROR		::tiki::debug::traceError
 #else
 #	define TIKI_TRACE( format, ... )
 #	define TIKI_TRACE_INFO( format, ... )
@@ -43,7 +43,7 @@
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-#	define TIKI_TRACE_DEBUG( format, ... ) TIKI_TRACE( format, __VA_ARGS__ )
+#	define TIKI_TRACE_DEBUG		::tiki::debug::trace
 #else
 #	define TIKI_TRACE_DEBUG( format, ... )
 #endif

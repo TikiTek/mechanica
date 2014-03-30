@@ -4,7 +4,7 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
-#include "tiki/graphicsbase/vertexattribute.hpp"
+#include "tiki/graphics/vertexattribute.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/resource/resourcefile.hpp"
 

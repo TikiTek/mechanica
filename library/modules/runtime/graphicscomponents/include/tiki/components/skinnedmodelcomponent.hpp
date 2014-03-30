@@ -8,7 +8,7 @@
 //#include "tiki/base/array.hpp"
 //#include "tiki/math/matrix.hpp"
 //#include "tiki/graphics/buffer.hpp"
-//#include "tiki/graphicsbase/color.hpp"
+//#include "tiki/graphics/color.hpp"
 //#include "tiki/math/vector3.hpp"
 
 namespace tiki

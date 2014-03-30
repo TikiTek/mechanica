@@ -7,7 +7,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/graphicsbase/color.hpp"
+#include "tiki/graphics/color.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"

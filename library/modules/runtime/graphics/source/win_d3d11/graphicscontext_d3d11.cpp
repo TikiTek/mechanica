@@ -16,7 +16,7 @@
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 #include "tiki/math/rectangle.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"

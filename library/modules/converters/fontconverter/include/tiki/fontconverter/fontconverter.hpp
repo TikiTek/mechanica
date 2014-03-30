@@ -4,8 +4,6 @@
 
 #include "tiki/converterbase/converterbase.hpp"
 
-#include <time.h>
-
 namespace tiki
 {
 	class FontConverter : public ConverterBase
@@ -14,7 +12,7 @@ namespace tiki
 
 	protected:
 
-		virtual size_t			getConverterRevision() const { return 1u; }
+		virtual size_t			getConverterRevision() const { return 0u; }
 
 		virtual crc32			getInputType() const;
 		virtual crc32			getOutputType() const;

@@ -210,6 +210,7 @@ function Project:finalize()
 	local shader_file = io.open( _OPTIONS[ "outpath" ] .. "/shaderinc.lst", "w" );
 	if shader_file ~= nil then
 		for i,dir in pairs( shader_global_dirs ) do
+			print( "Shader: " .. dir );
 			if i > 1 then
 				shader_file:write( "\n" );
 			end

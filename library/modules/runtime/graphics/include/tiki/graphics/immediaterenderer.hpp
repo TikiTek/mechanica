@@ -8,13 +8,18 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
-#include "tiki/graphicsbase/color.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/immediaterenderer_shader.hpp"
 
 namespace tiki
 {
+	class BlendState;
+	class DepthStencilState;
 	class Font;
 	class GraphicsContext;
 	class GraphicsSystem;
+	class Projection;
+	class RasterizerState;
 	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
@@ -35,6 +40,8 @@ namespace tiki
 		
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+
+		void				setProjection( const Projection& projection );
 
 		void				flush( GraphicsContext& graphicsContext );
 
@@ -81,6 +88,8 @@ namespace tiki
 		
 		VertexBuffer						m_vertexBuffer;
 		ConstantBuffer						m_constantBuffer;
+
+		ImmediateRendererConstantData		m_constantData;
 
 	};
 }

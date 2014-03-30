@@ -6,7 +6,7 @@
 //#include "tiki/gamecore/transform.hpp"
 //#include "tiki/graphics/gpucontext.hpp"
 //#include "tiki/graphics/model.hpp"
-//#include "tiki/graphicsbase/primitivetopologies.hpp"
+//#include "tiki/graphics/primitivetopologies.hpp"
 //
 //#include "tiki/framework/framework.hpp"
 //#include "tiki/resource/resourcemanager.hpp"

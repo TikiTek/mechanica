@@ -5,9 +5,9 @@
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/basebuffer.hpp"
-#include "tiki/graphicsbase/color.hpp"
-#include "tiki/graphicsbase/graphissystemlimits.hpp"
-#include "tiki/graphicsbase/primitivetopologies.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/primitivetopologies.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/graphicscontext_d3d11.hpp"

@@ -11,6 +11,7 @@ namespace tiki
 		ProjectionType_Invalid,
 
 		ProjectionType_Orthographic,
+		ProjectionType_OrthographicCenter,
 		ProjectionType_Perspective
 	};
 
@@ -20,6 +21,7 @@ namespace tiki
 
 		void			createPerspective( float aspectRatio, float fieldOfView, float nearPlane, float farPlane );
 		void			createOrthographic( float width, float height, float nearPlane, float farPlane );
+		void			createOrthographicCenter( float width, float height, float nearPlane, float farPlane );
 
 		const Matrix44&	getMatrix() const { return m_matrix; }
 

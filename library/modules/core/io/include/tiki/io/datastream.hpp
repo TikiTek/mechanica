@@ -27,7 +27,7 @@ namespace tiki
 		
 		virtual FileSize	getPosition() = 0;
 		virtual void		setPosition( FileSize position ) = 0;
-		virtual FileSize	seekPosition( FileSize seek ) = 0u;
+		virtual FileSize	seekPosition( FileSize seek ) = 0;
 
 		virtual FileSize	getLength() = 0;
 		virtual void		setLength( FileSize length ) = 0;

@@ -1,4 +1,4 @@
 <tikiasset output-name="debug">
   <input file="debug.ttf" type="font" />
-  <param key="font_size" value="24" />
+  <param key="font_size" value="12" />
 </tikiasset>

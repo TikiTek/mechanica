@@ -18,7 +18,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE bool SizedArray<T>::create( size_t capacity )
+	TIKI_FORCE_INLINE bool SizedArray<T>::create( uint capacity )
 	{
 		TIKI_ASSERT( capacity > 0u );
 		TIKI_ASSERT( m_pData == nullptr );
@@ -58,13 +58,13 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE size_t SizedArray<T>::getCount() const
+	TIKI_FORCE_INLINE uint SizedArray<T>::getCount() const
 	{
 		return m_count;
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE size_t SizedArray<T>::getCapacity() const
+	TIKI_FORCE_INLINE uint SizedArray<T>::getCapacity() const
 	{
 		return m_capacity;
 	}
@@ -107,57 +107,63 @@ namespace tiki
 		return m_pData[ m_count - 1u ];
 	}
 
-	template<typename T>
-	TIKI_FORCE_INLINE bool tiki::SizedArray<T>::remove( const T& value )
-	{
-		bool found = false;
-		size_t offset = 0u;
+	//template<typename T>
+	//TIKI_FORCE_INLINE bool tiki::SizedArray<T>::remove( const T& value )
+	//{
+	//	bool found = false;
+	//	uint offset = 0u;
 
-		for (size_t i = 0u; i < m_count - offset; ++i)
+	//	for (uint i = 0u; i < m_count - offset; ++i)
+	//	{
+	//		if ( m_pData[ i ] == value )
+	//		{
+	//			found = true;
+	//			offset++;
+	//		}
+
+	//		if ( offset > 0u )
+	//		{
+	//			m_pData[ i ] = m_pData[ i + offset ];
+	//		}
+	//	}
+	//	m_count -= offset;
+
+	//	return found;
+	//}
+	
+	//template<typename T>
+	//TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeSortedByIndex( uint index )
+	//{
+	//	TIKI_ASSERT( index < m_count );
+
+	//	for (uint i = index; i < m_count - 1u; ++i)
+	//	{
+	//		m_pData[ i ] = m_pData[ i + 1u ];
+	//	}
+
+	//	m_count--;
+	//}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeUnsortedByIndex( uint index )
+	{
+		TIKI_ASSERT( index < m_count );
+		m_pData[ index ] = m_pData[ --m_count ];
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE bool tiki::SizedArray<T>::removeUnsortedByValue( const T& value )
+	{
+		for (uint i = 0u; i < m_count; ++i)
 		{
 			if ( m_pData[ i ] == value )
 			{
-				found = true;
-				offset++;
-			}
-
-			if ( offset > 0u )
-			{
-				m_pData[ i ] = m_pData[ i + offset ];
-			}
-		}
-		m_count -= offset;
-
-		return found;
-	}
-	
-	template<typename T>
-	TIKI_FORCE_INLINE bool tiki::SizedArray<T>::removeUnsorted( const T& value )
-	{
-		bool found = false;
-		for (size_t i = 0u; i < m_count; ++i)
-		{
-			while ( m_pData[ i ] == value )
-			{
-				m_pData[ i ] = m_pData[ --m_count ];
-				found = true;
+				removeUnsortedByIndex( i );
+				return true;
 			}
 		}
 
-		return found;
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeAt( size_t index )
-	{
-		TIKI_ASSERT( index < m_count );
-		
-		for (size_t i = index; i < m_count - 1u; ++i)
-		{
-			m_pData[ i ] = m_pData[ i + 1u ];
-		}
-
-		m_count--;
+		return false;
 	}
 
 	template<typename T>
@@ -187,7 +193,7 @@ namespace tiki
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( m_count + count <= m_capacity );
 		
-		const size_t currentCount = m_count;
+		const uint currentCount = m_count;
 		m_count += count;
 
 		return &m_pData[ currentCount ];
@@ -199,21 +205,21 @@ namespace tiki
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( m_count + count <= m_capacity );
 
-		for (size_t i = 0u; i < count; ++i)
+		for (uint i = 0u; i < count; ++i)
 		{
 			m_pData[ m_count++ ] = pData[ i ];
 		}
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T& SizedArray<T>::operator[]( size_t index )
+	TIKI_FORCE_INLINE T& SizedArray<T>::operator[]( uint index )
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T& SizedArray<T>::operator[]( size_t index ) const
+	TIKI_FORCE_INLINE const T& SizedArray<T>::operator[]( uint index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];

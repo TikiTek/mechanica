@@ -1,6 +1,7 @@
 // vs-features= ps-features=TIKI_FONT_MODE,TIKI_COLOR_MODE
 
 #include "shader/platform.fxh"
+#include "tiki/graphics/immediaterenderer_shader.hpp"
 
 struct VertexToPixel
 {
@@ -22,12 +23,15 @@ struct VertexInput
 	float4 color	: TIKI_COLOR;
 };
 
+TIKI_DEFINE_CONSTANT( 0, ImmediateRendererConstantData, s_constantData );
+
 VertexToPixel main( VertexInput input )
 {
     VertexToPixel output;
 
-	float2 clipPosition = input.position.xy * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );	
-    output.position = float4( clipPosition, 0.0f, 1.0f );	
+	//float2 clipPosition = input.position.xy * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );	
+    output.position = float4( input.position, 0.0f, 1.0f );
+	output.position = mul( output.position, s_constantData.projection );
 	output.texcoord = input.texcoord;
 	output.color	= input.color;
     

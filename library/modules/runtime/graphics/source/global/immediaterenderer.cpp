@@ -5,17 +5,13 @@
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer_shader.hpp"
+#include "tiki/graphics/primitivetopologies.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphicsbase/primitivetopologies.hpp"
+#include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-
-//#include "tiki/graphicsresources/material.hpp"
-//#include "tiki/graphicsresources/shaderset.hpp"
-//#include "tiki/math/rectangle.hpp"
-
 
 namespace tiki
 {
@@ -109,6 +105,14 @@ namespace tiki
 			return false;
 		}
 		
+		Projection projection;
+		projection.createOrthographicCenter( 1.0f, -1.0f, 0.0f, 1.0f );
+
+		createGraphicsMatrix44(
+			m_constantData.projection,
+			projection.getMatrix()
+		);
+
 		return true;
 	}
 
@@ -139,6 +143,14 @@ namespace tiki
 		m_constantBuffer.dispose( graphicsSystem );
 	}
 
+	void ImmediateRenderer::setProjection( const Projection& projection )
+	{
+		createGraphicsMatrix44(
+			m_constantData.projection,
+			projection.getMatrix()
+		);
+	}
+
 	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
 	{
 		if( m_sprites.getCount() > 0u )
@@ -146,11 +158,18 @@ namespace tiki
 			const uint vertexCount	= m_vertices.getCount();
 			const uint count		= m_sprites.getCount();
 
-			SpriteVertex* pTargetVertexData = static_cast< SpriteVertex* >( graphicsContext.mapBuffer( m_vertexBuffer ) );
-			memory::copy( pTargetVertexData, m_vertices.getData(), sizeof( SpriteVertex ) * vertexCount );
-			graphicsContext.unmapBuffer( m_vertexBuffer );
+			{
+				ImmediateRendererConstantData* pConstantData = static_cast< ImmediateRendererConstantData* >( graphicsContext.mapBuffer( m_constantBuffer ) );
+				*pConstantData = m_constantData;
+				graphicsContext.unmapBuffer( m_constantBuffer );
+
+				SpriteVertex* pTargetVertexData = static_cast< SpriteVertex* >( graphicsContext.mapBuffer( m_vertexBuffer ) );
+				memory::copy( pTargetVertexData, m_vertices.getData(), sizeof( SpriteVertex ) * vertexCount );
+				graphicsContext.unmapBuffer( m_vertexBuffer );
+			}
 
 			graphicsContext.setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
+			graphicsContext.setVertexShaderConstant( 0u, m_constantBuffer );
 
 			graphicsContext.setBlendState( m_pBlendState );
 			graphicsContext.setDepthStencilState( m_pDepthStencilState );
@@ -176,7 +195,7 @@ namespace tiki
 		m_vertices.clear();
 	}
 
-	void tiki::ImmediateRenderer::drawTexture( const TextureData* pTexture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  )
+	void ImmediateRenderer::drawTexture( const TextureData* pTexture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  )
 	{
 		Sprite& sprite	= m_sprites.push();
 		sprite.vertexOffset		= m_vertices.getCount();
@@ -289,8 +308,8 @@ namespace tiki
 
 		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
 
-		const float texelWidth	= 1.0f / 1280.0f;
-		const float texelHeight	= 1.0f / 720.0f;
+		const float texelWidth	= 1.0f; //m_constantData.projection.data[ 0u ] / 2.0f;
+		const float texelHeight	= 1.0f; //m_constantData.projection.data[ 5u ] / -2.0f;
 
 		float x = 0.0f;
 		for (size_t charIndex = 0u; charIndex < textLength; charIndex++)

@@ -10,6 +10,9 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
+#include "tiki/debugmenu/debugmenu.hpp"
+#include "tiki/debugmenu/debugmenupage_debugprop.hpp"
+
 namespace tiki
 {
 	class ApplicationState;
@@ -64,6 +67,9 @@ namespace tiki
 
 		Vector2						m_leftStickState;
 		Vector2						m_rightStickState;
+
+		DebugMenu					m_debugMenu;
+		DebugMenuPageDebugProp		m_debugMenuPageDebugProp;
 
 	};
 }

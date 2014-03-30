@@ -7,7 +7,7 @@
 #include "tiki/base/structs.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/graphicsbase/fontchar.hpp"
+#include "tiki/graphics/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
 #include "tiki/toolbase/list.hpp"
@@ -51,21 +51,18 @@ namespace tiki
 			return false;
 		}
 
-		const int fontSize = params.arguments.getOptionalInt( "font_size", 16 ) ;
-
+		const int fontSize = params.arguments.getOptionalInt( "font_size", 16 );
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{			
 			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			FT_Face face;
 			error = FT_New_Face( library, file.fileName.cStr(), 0u, &face );;
-
 			if ( error )
 			{
 				TIKI_TRACE_ERROR( "[fontconverter] Font loading has currupted an error. File: '%s'\n", file.fileName.cStr() );
 				continue;
 			}
-
 			error = FT_Set_Pixel_Sizes( face, 0, fontSize );
 
 			FT_GlyphSlot slot = face->glyph;
@@ -84,43 +81,45 @@ namespace tiki
 			List< FontChar > chars;
 			for (size_t j = 0u; j < 256u; ++j)
 			{
-				int glyph_index = FT_Get_Char_Index( face, j );
+				const int glyph_index = FT_Get_Char_Index( face, j );
 
-				error = FT_Load_Glyph( face, glyph_index,  FT_LOAD_DEFAULT ); 
-
+				error = FT_Load_Glyph( face, glyph_index,  FT_LOAD_DEFAULT );
 				if ( error )
 				{
 					continue;
 				}
 
 				error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
-
 				if ( error )
 				{
 					continue;
 				}
 
-				if ( imagePos.x + slot->bitmap.width + 3u >= image.getWidth() )
+				const uint imagePosX = imagePos.x + slot->bitmap_left;
+				const uint imagePosY = imagePos.y + slot->bitmap_top;
+				const uint charWidth = slot->bitmap.width + slot->bitmap_left;
+				const uint charHeight = slot->bitmap.rows + slot->bitmap_top;
+
+				if ( imagePos.x + charWidth + 3u >= image.getWidth() )
 				{
-					imagePos.x	= 3u;
+					imagePos.x = 3u;
 					imagePos.y += fontSize + 6u;
 				}
-				
+
 				FontChar& inst = chars.add();
-				inst.width	= (float)slot->bitmap.width + 2.0f;
-				inst.height	= (float)fontSize;
+				inst.width	= (float)charWidth + 2.0f;
+				inst.height	= (float)charHeight;
 				inst.x1		= u16::floatToUnorm( (float)imagePos.x / floatSize );
 				inst.y1		= u16::floatToUnorm( (float)imagePos.y / floatSize );
-				inst.x2		= u16::floatToUnorm( ( (float)( imagePos.x + slot->bitmap.width ) + 2.0f ) / floatSize );
-				inst.y2		= u16::floatToUnorm( (float)( imagePos.y + fontSize ) / floatSize );
+				inst.x2		= u16::floatToUnorm( ( (float)( imagePos.x + charWidth ) + 2.0f ) / floatSize );
+				inst.y2		= u16::floatToUnorm( (float)( imagePos.y + charHeight ) / floatSize );
 
 				if ( j == ' ' )
 				{
 					inst.width = (float)fontSize / 4.0f;
 				}
 
-				float* pRow = image.getData() + ( imagePos.y * rowPitch ) + ( imagePos.x * image.getChannelCount() ) + ( ( fontSize - slot->bitmap.rows ) * rowPitch );
-				
+				float* pRow = image.getData() + ( imagePos.y * rowPitch ) + ( imagePos.x * image.getChannelCount() ) + ( ( fontSize - slot->bitmap_top ) * rowPitch );				
 				for (size_t y = 0u; y < (size_t)slot->bitmap.rows; ++y)
 				{
 					for (size_t x = 0u; x < (size_t)slot->bitmap.width; ++x)
@@ -133,7 +132,7 @@ namespace tiki
 					pRow += rowPitch;
 				}
 
-				imagePos.x += slot->bitmap.width + 3u;
+				imagePos.x += charWidth + 3u;
 			}
 
 			TextureWriter textureWriter;

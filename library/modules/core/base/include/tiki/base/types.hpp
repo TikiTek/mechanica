@@ -137,7 +137,9 @@ namespace tiki
 
 #else
 
-#	error not supported
+#	define TIKI_PRE_ALIGN( var )
+#	define TIKI_POST_ALIGN( var )	__attribute__( ( aligned( var ) ) );
+#	define TIKI_ALIGNOF( type )		( __alignof__( type ) )
 
 #endif
 

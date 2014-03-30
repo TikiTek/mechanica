@@ -148,7 +148,7 @@ namespace tiki
 				}
 				else
 				{
-					TIKI_TRACE_INFO( "[gameflow] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
+					//TIKI_TRACE_INFO( "[gameflow] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
 				}
 			}
 		}

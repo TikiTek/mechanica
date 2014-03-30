@@ -10,7 +10,7 @@
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
@@ -44,7 +44,11 @@ namespace tiki
 				Array< string > dirs;
 				text.split( dirs, "\n" );
 
-				m_includeDirs.addRange( dirs.getData(), dirs.getCount() );
+				for (uint i = 0u; i < dirs.getCount(); ++i)
+				{
+					m_includeDirs.add( dirs[ i ].trim() );
+				} 
+				
 				dirs.dispose();
 			}
 		}
@@ -82,6 +86,7 @@ namespace tiki
 					if ( file::exists( fullName ) )
 					{
 						found = true;
+						break;
 					}
 				} 
 			}
