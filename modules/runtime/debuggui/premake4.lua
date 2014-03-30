@@ -1,6 +1,6 @@
--- library/modules/runtime/debugmenu
+-- library/modules/runtime/debuggui
 
-local module = Module:new( "debugmenu" );
+local module = Module:new( "debuggui" );
 
 module:add_files( "include/**/*.hpp" );
 module:add_files( "source/*.*" );
