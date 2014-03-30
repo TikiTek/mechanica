@@ -506,7 +506,7 @@ namespace tiki
 				{
 				case ConversionResult::DependencyType_Converter:
 					{
-						if ( (uint)valueInt != pConverter->getConverterRevision() )
+						if ( (uint)valueInt != pConverter->getConverterRevision() || pConverter->getConverterRevision() == TIKI_SIZE_T_MAX )
 						{
 							return true;
 						}

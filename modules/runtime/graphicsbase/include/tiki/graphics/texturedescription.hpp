@@ -3,7 +3,7 @@
 #define TIKI_TEXTUREDESCRIPTION_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/pixelformat.hpp"
+#include "tiki/graphics/pixelformat.hpp"
 
 namespace tiki
 {

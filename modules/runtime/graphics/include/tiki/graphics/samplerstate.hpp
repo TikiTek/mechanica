@@ -1,9 +1,9 @@
 #ifndef TIKI_SAMPLERSTATE_HPP__
 #define TIKI_SAMPLERSTATE_HPP__
 
-#include "tiki/graphicsbase/graphicsstateobject.hpp"
+#include "tiki/graphics/graphicsstateobject.hpp"
 
-#include "tiki/graphicsbase/color.hpp"
+#include "tiki/graphics/color.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/graphicsstatesplatformdata_d3d11.hpp"

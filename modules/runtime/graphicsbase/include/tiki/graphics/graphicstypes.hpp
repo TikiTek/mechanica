@@ -1,8 +1,12 @@
 #ifndef TIKI_GRAPHICSTYPES_HPP__INCLUDED
 #define TIKI_GRAPHICSTYPES_HPP__INCLUDED
 
+#if __cplusplus
 #include "tiki/base/inline.hpp"
 #include "tiki/math/matrix.hpp"
+
+#define TIKI_GRAPHICS_NAMESPACE_BEGIN namespace tiki {
+#define TIKI_GRAPHICS_NAMESPACE_END }
 
 namespace tiki
 {
@@ -51,5 +55,14 @@ namespace tiki
 		mtx.data[ 15u ] = input.w.w;
 	}
 }
+
+#else
+
+#define TIKI_GRAPHICS_NAMESPACE_BEGIN
+#define TIKI_GRAPHICS_NAMESPACE_END
+
+typedef float4x4 GraphicsMatrix44;
+
+#endif
 
 #endif // TIKI_GRAPHICSTYPES_HPP__INCLUDED

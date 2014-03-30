@@ -4,9 +4,9 @@
 #include "tiki/base/fixedarray.hpp"
 #include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/graphicsstateobject.hpp"
-#include "tiki/graphicsbase/graphissystemlimits.hpp"
-#include "tiki/graphicsbase/vertexattribute.hpp"
+#include "tiki/graphics/graphicsstateobject.hpp"
+#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/vertexattribute.hpp"
 
 namespace tiki
 {

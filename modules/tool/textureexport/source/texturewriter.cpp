@@ -2,7 +2,7 @@
 #include "tiki/textureexport/texturewriter.hpp"
 
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/graphicsbase/texturedescription.hpp"
+#include "tiki/graphics/texturedescription.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 
 namespace tiki

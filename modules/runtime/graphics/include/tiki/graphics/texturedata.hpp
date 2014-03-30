@@ -2,7 +2,7 @@
 #ifndef TIKI_TEXTUREDATA_HPP__INCLUDED
 #define TIKI_TEXTUREDATA_HPP__INCLUDED
 
-#include "tiki/graphicsbase/texturedescription.hpp"
+#include "tiki/graphics/texturedescription.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/texturedata_d3d11.hpp"

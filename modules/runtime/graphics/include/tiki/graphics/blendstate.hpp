@@ -2,7 +2,7 @@
 #ifndef __TIKI_BLENDSTATE_HPP_INCLUDED__
 #define __TIKI_BLENDSTATE_HPP_INCLUDED__
 
-#include "tiki/graphicsbase/graphicsstateobject.hpp"
+#include "tiki/graphics/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/graphicsstatesplatformdata_d3d11.hpp"

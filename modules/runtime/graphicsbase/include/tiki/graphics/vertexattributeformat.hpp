@@ -65,7 +65,7 @@ namespace tiki
 			return 4u;
 
 		default:
-			TIKI_BREAK( "[graphicsbase] vertex attribute format not spported.\n" );
+			TIKI_BREAK( "[graphics] vertex attribute format not spported.\n" );
 			break;
 		}
 
@@ -104,7 +104,7 @@ namespace tiki
 			return 4u;
 
 		default:
-			TIKI_BREAK( "[graphicsbase] vertex attribute format not spported.\n" );
+			TIKI_BREAK( "[graphics] vertex attribute format not spported.\n" );
 			break;
 		}
 

@@ -6,7 +6,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphicsbase/vertexsemantic.hpp"
+#include "tiki/graphics/vertexsemantic.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"
 

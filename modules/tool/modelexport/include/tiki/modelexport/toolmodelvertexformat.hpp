@@ -3,7 +3,7 @@
 #define TIKI_TOOLMODELVERTEXFORMAT_HPP__INCLUDED
 
 #include "tiki/base/array.hpp"
-#include "tiki/graphicsbase/vertexattribute.hpp"
+#include "tiki/graphics/vertexattribute.hpp"
 #include "tiki/toolbase/list.hpp"
 
 namespace tiki

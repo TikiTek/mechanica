@@ -11,14 +11,19 @@ namespace tiki
 	class SizedArray
 	{
 	public:
+		
+		typedef T			Type;
 
-		typedef T* Iterator;
-		typedef const T* ConstIterator;
+		typedef T*			Iterator;
+		typedef const T*	ConstIterator;
+
+		typedef T&			Reference;
+		typedef const T&	ConstReference;
 
 		SizedArray();
 		~SizedArray();
 
-		TIKI_FORCE_INLINE bool		create( size_t capacity );
+		TIKI_FORCE_INLINE bool		create( uint capacity );
 		TIKI_FORCE_INLINE void		dispose();
 
 		TIKI_FORCE_INLINE void		clear();
@@ -26,8 +31,8 @@ namespace tiki
 		TIKI_FORCE_INLINE bool		isEmpty() const	{ return m_count == 0u; }
 		TIKI_FORCE_INLINE bool		isFull() const	{ return m_count == m_capacity; }
 
-		TIKI_FORCE_INLINE size_t	getCount() const;
-		TIKI_FORCE_INLINE size_t	getCapacity() const;
+		TIKI_FORCE_INLINE uint		getCount() const;
+		TIKI_FORCE_INLINE uint		getCapacity() const;
 
 		TIKI_FORCE_INLINE T*		getData();
 		TIKI_FORCE_INLINE const T*	getData() const;
@@ -38,9 +43,9 @@ namespace tiki
 		TIKI_FORCE_INLINE T&		getTop();
 		TIKI_FORCE_INLINE const T&	getTop() const;
 
-		TIKI_FORCE_INLINE bool		remove( const T& value );
-		TIKI_FORCE_INLINE bool		removeUnsorted( const T& value );
-		TIKI_FORCE_INLINE void		removeAt( size_t index );
+		//TIKI_FORCE_INLINE bool		remove( const T& value );
+		TIKI_FORCE_INLINE void		removeUnsortedByIndex( uint index );
+		TIKI_FORCE_INLINE bool		removeUnsortedByValue( const T& value );
 
 		TIKI_FORCE_INLINE T&		pop();
 		TIKI_FORCE_INLINE T&		push();
@@ -48,15 +53,15 @@ namespace tiki
 		TIKI_FORCE_INLINE T*		pushRange( uint count );
 		TIKI_FORCE_INLINE void		pushRange( const T* pData, uint count );
 
-		TIKI_FORCE_INLINE T&		operator[]( size_t index );
-		TIKI_FORCE_INLINE const T&	operator[]( size_t index ) const;
+		TIKI_FORCE_INLINE T&		operator[]( uint index );
+		TIKI_FORCE_INLINE const T&	operator[]( uint index ) const;
 
 	private:
 
 		T*		m_pData;
 
-		size_t	m_count;
-		size_t	m_capacity;
+		uint	m_count;
+		uint	m_capacity;
 
 	};
 }

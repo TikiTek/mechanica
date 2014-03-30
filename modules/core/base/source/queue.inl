@@ -101,7 +101,7 @@ namespace tiki
 	template<typename T>
 	uint Queue<T>::getCount() const
 	{
-		const uint bottom = m_bottom + ( m_bottom < m_top : m_capacity : 0u );
+		const uint bottom = m_bottom + ( m_bottom < m_top ? m_capacity : 0u );
 		return bottom - m_top;
 	}
 }

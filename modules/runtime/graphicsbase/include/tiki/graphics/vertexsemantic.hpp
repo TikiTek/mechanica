@@ -2,7 +2,7 @@
 #ifndef TIKI_VERTEXSEMANTIC_HPP__INCLUDED
 #define TIKI_VERTEXSEMANTIC_HPP__INCLUDED
 
-#include "tiki/graphicsbase/vertexattributeformat.hpp"
+#include "tiki/graphics/vertexattributeformat.hpp"
 
 namespace tiki
 {
@@ -44,7 +44,7 @@ namespace tiki
 			return VertexAttributeFormat_x16y16z16w16_unorm;
 			
 		default:
-			TIKI_BREAK( "[graphicsbase] semantic not supported.\n" );
+			TIKI_BREAK( "[graphics] semantic not supported.\n" );
 			break;
 		}
 

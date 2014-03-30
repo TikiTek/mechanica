@@ -7,7 +7,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/vertexsemantic.hpp"
+#include "tiki/graphics/vertexsemantic.hpp"
 #include "tiki/toolbase/tokenizer.hpp"
 
 namespace tiki

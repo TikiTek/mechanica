@@ -5,7 +5,7 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/pixelformat.hpp"
+#include "tiki/graphics/pixelformat.hpp"
 
 namespace tiki
 {

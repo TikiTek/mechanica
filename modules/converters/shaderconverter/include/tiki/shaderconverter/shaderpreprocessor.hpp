@@ -3,7 +3,7 @@
 #define TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
 
 #include "tiki/base/string.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 
 namespace tiki
 {

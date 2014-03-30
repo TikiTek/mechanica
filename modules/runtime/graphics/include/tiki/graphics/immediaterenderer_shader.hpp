@@ -1,20 +1,15 @@
 #ifndef TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED
 #define TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED
 
-#include "tiki/graphicsbase/graphicstypes.hpp"
+#include "tiki/graphics/graphicstypes.hpp"
 
-#ifdef __cplusplus
-namespace tiki
+TIKI_GRAPHICS_NAMESPACE_BEGIN
+
+struct ImmediateRendererConstantData
 {
-#endif // __cplusplus
+	GraphicsMatrix44 projection;
+};
 
-	struct ImmediateRendererConstantData
-	{
-		GraphicsMatrix44	projection;
-	};
-
-#ifdef __cplusplus
-}
-#endif
+TIKI_GRAPHICS_NAMESPACE_END
 
 #endif // TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED

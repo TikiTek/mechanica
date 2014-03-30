@@ -5,7 +5,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"
 

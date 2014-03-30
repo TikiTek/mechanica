@@ -3,7 +3,7 @@
 #define TIKI_RENDERTARGET_HPP__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/pixelformat.hpp"
+#include "tiki/graphics/pixelformat.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/rendertarget_d3d11.hpp"

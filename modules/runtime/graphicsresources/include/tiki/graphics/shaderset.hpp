@@ -4,7 +4,7 @@
 
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 #include "tiki/resource/resource.hpp"
 
 namespace tiki

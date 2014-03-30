@@ -3,7 +3,7 @@
 #define TIKI_SHADER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphicsbase/shadertype.hpp"
+#include "tiki/graphics/shadertype.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "win_d3d11/shader_d3d11.hpp"

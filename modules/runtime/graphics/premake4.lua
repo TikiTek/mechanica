@@ -6,6 +6,7 @@ module:add_files( "source/global/*.*" );
 --module:add_files( "source/shader/*.fx" );
 module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
+module:add_shader_dir( "include" );
 
 module:add_dependency( "math" );
 module:add_dependency( "graphicsbase" );
