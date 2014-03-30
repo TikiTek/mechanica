@@ -20,8 +20,8 @@ namespace tiki
 
 		void				render( GameRenderer& gameRenderer ) const;
 
-		virtual uint		getStateSize() const;
 		virtual crc32		getTypeCrc() const;
+		virtual uint32		getStateSize() const;
 		virtual const char*	getTypeName() const;
 
 	protected:

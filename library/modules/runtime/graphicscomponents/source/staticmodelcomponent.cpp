@@ -35,14 +35,14 @@ namespace tiki
 		}
 	}
 
-	uint StaticModelComponent::getStateSize() const
-	{
-		return sizeof( StaticModelComponentState );
-	}
-
 	crc32 StaticModelComponent::getTypeCrc() const
 	{
 		return crcString( "StaticModelComponent" );
+	}
+
+	uint32 StaticModelComponent::getStateSize() const
+	{
+		return sizeof( StaticModelComponentState );
 	}
 
 	const char* StaticModelComponent::getTypeName() const
