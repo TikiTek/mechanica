@@ -121,7 +121,7 @@ namespace tiki
 					chunk.pNextChunkOfSameType	= nullptr;
 					chunk.typeId				= typeId;
 					chunk.usedCount				= 0u;
-					chunk.maxCount				= m_chunkSize / stateSize;
+					chunk.maxCount				= uint16( m_chunkSize / stateSize );
 					TIKI_ASSERT( chunk.maxCount != 0u );
 
 					ComponentState* pPrevState = nullptr;

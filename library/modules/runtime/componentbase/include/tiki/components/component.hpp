@@ -20,7 +20,7 @@ namespace tiki
 		virtual void			disposeState( ComponentState* pComponentState ) = 0;
 
 		virtual crc32			getTypeCrc() const = 0;
-		virtual uint			getStateSize() const = 0;
+		virtual uint32			getStateSize() const = 0;
 		virtual const char*		getTypeName() const = 0;
 
 	protected:

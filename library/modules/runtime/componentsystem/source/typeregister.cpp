@@ -101,7 +101,7 @@ namespace tiki
 		return m_types[ typeId ].typeCrc;
 	}
 
-	uint ComponentTypeRegister::getTypeStateSize( ComponentTypeId typeId ) const
+	uint32 ComponentTypeRegister::getTypeStateSize( ComponentTypeId typeId ) const
 	{
 		TIKI_ASSERT( isTypeRegistred( typeId ) );
 		return m_types[ typeId ].stateSize;
