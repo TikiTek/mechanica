@@ -1,25 +1,26 @@
 #pragma once
-#ifndef __TIKI_DEBUGMENUPAGE_HPP_INCLUDED__
-#define __TIKI_DEBUGMENUPAGE_HPP_INCLUDED__
+#ifndef __TIKI_DEBUGGUIWINDOW_HPP_INCLUDED__
+#define __TIKI_DEBUGGUIWINDOW_HPP_INCLUDED__
+
+#include "tiki/debuggui/debugguicontrol.hpp"
 
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class DebugMenuPage
+	class DebugGuiWindow : public DebugGuiControl
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugMenuPage );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiWindow );
 
 	public:
 
-		virtual const char*		getTitle() const = 0;
-
-		virtual void			setRectangle( const Rectangle& boundingRectangle ) = 0;
-
-		virtual void			update() = 0;
-		virtual void			render( const ImmediateRenderer& renderer ) = 0;
-
+		const char*		getTitle() const;
+		void			setTitle( const char* pTitle );
+		
+		bool			getVisibility() const;
+		void			setVisibility( bool visible );
+		
 	};
 }
 
-#endif // __TIKI_DEBUGMENUPAGE_HPP_INCLUDED__
+#endif // __TIKI_DEBUGGUIWINDOW_HPP_INCLUDED__
