@@ -136,25 +136,13 @@ namespace tiki
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
 
-					m_debugMenu.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
-					m_debugMenuPageDebugProp.create( *(DebugPropManager*)nullptr );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
 
 					return TransitionState_Finish;
 				}
 				else
 				{
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenuPageDebugProp.dispose();
-					m_debugMenu.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_debugGui.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
 					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
@@ -215,7 +203,7 @@ namespace tiki
 
 		m_staticModelComponent.render( *m_pGameRenderer );
 
-		m_debugMenu.update();
+		m_debugGui.update();
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -238,7 +226,7 @@ namespace tiki
 		
 		m_immediateRenderer.flush( graphicsContext );
 
-		m_debugMenu.render( graphicsContext );
+		m_debugGui.render( graphicsContext );
 		
 		graphicsContext.endRenderPass();
 	}
@@ -263,7 +251,7 @@ namespace tiki
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F1 )
 		{
-			m_debugMenu.setActive( !m_debugMenu.getActive() );
+			m_debugGui.setActive( !m_debugGui.getActive() );
 			return true;
 		}
 

@@ -9,22 +9,22 @@
 
 namespace tiki
 {
-	class DebugMenuPage;
+	class DebugGuiWindow;
 	class Font;
 	class GraphicsContext;
 	struct InputEvent;
 
-	class DebugMenu
+	class DebugGui
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugMenu );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGui );
 
 	public:
 
 		bool		create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount );
 		void		dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
 
-		void		addPage( DebugMenuPage& page );
-		void		removePage( DebugMenuPage& page );
+		void		addWindow( DebugGuiWindow& window );
+		void		removeWindow( DebugGuiWindow& window );
 
 		bool		getActive() const			{ return m_isActive; }
 		void		setActive( bool isActive )	{ m_isActive = isActive; }
@@ -39,13 +39,11 @@ namespace tiki
 	private:
 
 		bool							m_isActive;
-		uint							m_activePageIndex;
 		Vector2							m_screenSize;
 
-		const Font*						m_pFont;
+		SizedArray< DebugGuiWindow* >	m_windows;
 
-		SizedArray< DebugMenuPage* >	m_pages;
-
+		const Font*						m_pDefaultFont;
 		ImmediateRenderer				m_renderer;
 
 	};
