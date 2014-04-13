@@ -7,6 +7,8 @@
 
 namespace tiki
 {
+	class Texture;
+
 	struct PostProcessAsciiParameters
 	{
 		PostProcessAsciiParameters()
@@ -37,7 +39,7 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessAsciiParameters& parameters );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		const TextureData&	getResultData() const { return m_finalResultData; }
+		const TextureData&	getResultData() const { return m_downSampleData; }
 
 		void				render( GraphicsContext& graphicsContext, const TextureData& inputData );
 		

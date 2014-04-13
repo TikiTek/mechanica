@@ -5,6 +5,7 @@
 struct VertexToPixel
 {
 	float4 position	: TIKI_OUTPUT_POSITION0;
+	float2 texcoord	: TIKI_TEXCOORD;
 };
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
@@ -24,6 +25,7 @@ VertexToPixel main( VertexInput input )
     VertexToPixel output;
 
     output.position = float4( input.position, 0.0f, 1.0f );
+	output.texcoord = input.texcoord;
     
     return output;
 }
@@ -40,9 +42,9 @@ TIKI_DEFINE_SAMPLER( 0, s_sampler );
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
 #if TIKI_DOWNSAMPLE
-	float4 color = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+	float4 color = float4( 1.0f, 0.0f, 1.0f, 1.0f );
 #else
-	float4 color = float4( 0.0f, 0.0f, 0.0f, 0.0f );
+	float4 color = t_texture.Sample( s_sampler, input.texcoord ); //float4( 0.0f, 1.0f, 0.0f, 0.0f );
 #endif
 
 	return color;

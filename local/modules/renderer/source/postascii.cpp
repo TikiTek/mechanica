@@ -1,17 +1,21 @@
 
 #include "tiki/renderer/postascii.hpp"
 
+#include "tiki/graphics/stockvertex.hpp"
+
 namespace tiki
 {
 	PostProcessAscii::PostProcessAscii()
 	{
-		m_pAsciiCharTexture	= nullptr;
-		m_pShader			= nullptr;
+		m_pAsciiCharTexture		= nullptr;
+		m_pShader				= nullptr;
 
-		m_pBlendState		= nullptr;
-		m_pDepthState		= nullptr;
-		m_pRasterizerState	= nullptr;
-		m_pSampler			= nullptr;
+		m_pBlendState			= nullptr;
+		m_pDepthState			= nullptr;
+		m_pRasterizerState		= nullptr;
+		m_pSampler				= nullptr;
+
+		m_pVertexInputBinding	= nullptr;
 	}
 
 	PostProcessAscii::~PostProcessAscii()
@@ -49,6 +53,15 @@ namespace tiki
 		m_pSampler			= graphicsSystem.createSamplerState( SamplerStateParamters() );
 		success &= ( m_pBlendState != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSampler != nullptr );
 
+		if ( m_pShader != nullptr )
+		{
+			m_pVertexInputBinding = graphicsSystem.createVertexInputBinding(
+				m_pShader->getShader( ShaderType_VertexShader, 0u ),
+				graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 )
+			);
+			success &= ( m_pVertexInputBinding != nullptr );
+		}
+
 		if ( !success )
 		{
 			dispose( graphicsSystem, resourceManager );
@@ -60,6 +73,8 @@ namespace tiki
 
 	void PostProcessAscii::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
+
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		graphicsSystem.disposeDepthStencilState( m_pDepthState );
@@ -88,6 +103,26 @@ namespace tiki
 
 		graphicsContext.setPixelShaderTexture( 0u, &inputData );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
+
+		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
+		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+
+		graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
+
+		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( graphicsContext.beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 4u ) );
+		createFloat2( pVertices[ 0u ].position, -1.0f, -1.0f );
+		createFloat2( pVertices[ 0u ].texCoord, 0.0f, 1.0f );
+		
+		createFloat2( pVertices[ 1u ].position, -1.0f, 1.0f );
+		createFloat2( pVertices[ 1u ].texCoord, 0.0f, 0.0f );
+		
+		createFloat2( pVertices[ 2u ].position, 1.0f, -1.0f );
+		createFloat2( pVertices[ 2u ].texCoord, 1.0f, 1.0f );
+
+		createFloat2( pVertices[ 3u ].position, 1.0f, 1.0f );
+		createFloat2( pVertices[ 3u ].texCoord, 1.0f, 0.0f );
+		graphicsContext.endImmediateGeometry();
 
 		graphicsContext.endRenderPass();
 	}
