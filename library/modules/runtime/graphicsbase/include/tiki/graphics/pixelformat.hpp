@@ -12,19 +12,18 @@ namespace tiki
 		PixelFormat_Invalid = -1,
 
 		PixelFormat_R8,
-
 		PixelFormat_R8G8B8A8,
 		PixelFormat_R8G8B8A8_Gamma,
-
 		PixelFormat_R16G16B16A16_Float,
-
 		PixelFormat_R32_Float,
 		PixelFormat_R32G32B32_Float,
 		PixelFormat_R32G32B32A32_Float,
-
 		PixelFormat_Depth24Stencil8,
 
-		PixelFormat_Count
+		PixelFormat_Count,
+
+		PixelFormat_Color	= PixelFormat_R8G8B8A8,
+		PixelFormat_Depth	= PixelFormat_Depth24Stencil8
 	};
 
 	TIKI_FORCE_INLINE size_t getBitsPerPixel( PixelFormat format )
