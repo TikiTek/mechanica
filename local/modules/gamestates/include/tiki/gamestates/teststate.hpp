@@ -4,9 +4,6 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
-#include "tiki/components/componentstorage.hpp"
-#include "tiki/components/staticmodelcomponent.hpp"
-#include "tiki/components/typeregister.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
@@ -56,12 +53,6 @@ namespace tiki
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
-
-		ComponentStorage			m_storage;
-		ComponentTypeRegister		m_typeRegister;
-
-		ComponentTypeId				m_staticModelComponentTypeId;
-		StaticModelComponent		m_staticModelComponent;
 
 		ImmediateRenderer			m_immediateRenderer;
 
