@@ -78,7 +78,7 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	void PostProcessAscii::render( GraphicsContext& graphicsContext )
+	void PostProcessAscii::render( GraphicsContext& graphicsContext, const TextureData& inputData )
 	{
 		graphicsContext.beginRenderPass( m_downSampleTarget );
 
@@ -86,7 +86,8 @@ namespace tiki
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 
-			
+		graphicsContext.setPixelShaderTexture( 0u, &inputData );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
 
 		graphicsContext.endRenderPass();
 	}

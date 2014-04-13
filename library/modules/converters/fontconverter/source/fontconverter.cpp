@@ -135,8 +135,13 @@ namespace tiki
 				imagePos.x += charWidth + 3u;
 			}
 
+			TextureWriterParameters writerParameters;
+			writerParameters.targetFormat	= PixelFormat_R8;
+			writerParameters.targetType		= TextureType_2d;
+			writerParameters.mipMapCount	= 1u;
+
 			TextureWriter textureWriter;
-			textureWriter.create( image, PixelFormat_R8, 0u );
+			textureWriter.create( image, writerParameters );
 			
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "font", params.targetPlatform );

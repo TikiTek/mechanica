@@ -50,6 +50,7 @@ namespace tiki
 		const Font*					m_pFont;
 		const Model*				m_pModel;
 		const Texture*				m_pTexture;
+		const Texture*				m_pTexture2;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;

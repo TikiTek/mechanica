@@ -24,7 +24,7 @@ namespace tiki
 			return false;
 		}
 
-		m_isActive			= true;
+		m_isActive			= false;
 		m_activePageIndex	= 0u;
 
 		Vector2 screenSize;
