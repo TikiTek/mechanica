@@ -32,6 +32,8 @@ function Module:new( name, initFunc )
 		initFunc( module_new );
 	end
 
+	--print( "Module: "..module_new.name );
+	
 	return module_new;
 end
 
@@ -88,6 +90,8 @@ function Module:add_dependency( module_name )
 end
 
 function Module:resolve_dependency( target_list )
+	print( "Module: "..self.name );
+
 	for i,module_name in pairs( self.module_dependencies ) do
 		local module = find_module( module_name )
 
