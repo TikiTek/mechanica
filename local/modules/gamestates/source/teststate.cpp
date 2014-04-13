@@ -2,7 +2,6 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/base/timer.hpp"
-#include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
@@ -45,18 +44,10 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
-				m_typeRegister.create( 32u );
-				m_staticModelComponentTypeId =  m_typeRegister.registerType( &m_staticModelComponent );
-
-				m_storage.create( 2048u, 128u, &m_typeRegister );
-
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_storage.dispose();
-				m_typeRegister.dispose();
-
 				return TransitionState_Finish;
 			}
 			//break;
@@ -82,14 +73,6 @@ namespace tiki
 
 					m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
 					m_immediateRenderer.setProjection( projection );
-
-					{
-						ComponentState* pState = m_storage.allocateState( m_staticModelComponentTypeId );
-
-						StaticModelComponentInitData initData;
-						initData.pModel = m_pModel;
-						m_staticModelComponent.initializeState( pState, &initData );
-					}
 
 					return TransitionState_Finish;
 				}
@@ -208,12 +191,11 @@ namespace tiki
 
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
 
-		//Matrix43 mtx;
-		//matrix::clear( mtx );
-		//matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 10.0f );
+		Matrix43 mtx;
+		matrix::clear( mtx );
+		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 10.0f );
 
-
-		m_staticModelComponent.render( *m_pGameRenderer );
+		m_pGameRenderer->queueModel( m_pModel, &mtx );		
 
 		m_debugMenu.update();
 	}
