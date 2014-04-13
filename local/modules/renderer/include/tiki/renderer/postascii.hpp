@@ -39,12 +39,14 @@ namespace tiki
 
 		const TextureData&	getResultData() const { return m_finalResultData; }
 
-		void				render( GraphicsContext& graphicsContext );
+		void				render( GraphicsContext& graphicsContext, const TextureData& inputData );
 		
 	private:
 
 		const Texture*				m_pAsciiCharTexture;
 		const ShaderSet*			m_pShader;
+
+		const VertexInputBinding*	m_pVertexInputBinding;
 
 		const BlendState*			m_pBlendState;
 		const DepthStencilState*	m_pDepthState;
