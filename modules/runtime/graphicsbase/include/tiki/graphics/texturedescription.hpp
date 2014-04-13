@@ -37,7 +37,7 @@ namespace tiki
 			width		= 0u;
 			height		= 0u;
 			depth		= 0u;
-			arrayCount	= 0u;
+			arrayCount	= 1u;
 			mipCount	= 0u;
 
 			flags		= TextureFlags_None;
