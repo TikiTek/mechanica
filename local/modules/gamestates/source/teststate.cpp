@@ -44,10 +44,23 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
+				PostProcessAsciiParameters asciiParameters;	
+
+				m_ascii.create(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager(),
+					asciiParameters
+				);
+
 				return TransitionState_Finish;
 			}
 			else
 			{
+				m_ascii.dispose(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager()
+				);
+
 				return TransitionState_Finish;
 			}
 			//break;
@@ -205,19 +218,22 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
+		const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( 0u );
+		m_ascii.render( graphicsContext, texture );
+
 		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
 		const string frameRate = formatString( " FPS: %.2f", 1.0f / timeDelta );
 
 		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( 0u );
-
 		const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
 		m_immediateRenderer.drawTexture( &texture, rect );
 
-		const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
-		m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
+		const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
+		m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
+		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
 
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
 		

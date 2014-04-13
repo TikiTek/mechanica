@@ -10,6 +10,8 @@
 #include "tiki/debugmenu/debugmenu.hpp"
 #include "tiki/debugmenu/debugmenupage_debugprop.hpp"
 
+#include "tiki/renderer/postascii.hpp"
+
 namespace tiki
 {
 	class ApplicationState;
@@ -62,6 +64,8 @@ namespace tiki
 
 		DebugMenu					m_debugMenu;
 		DebugMenuPageDebugProp		m_debugMenuPageDebugProp;
+
+		PostProcessAscii			m_ascii;
 
 	};
 }
