@@ -428,7 +428,7 @@ namespace tiki
 		}
 		writeConvertResult( assetId, result, hasError );
 
-		return hasError;
+		return !hasError;
 	}
 
 	uint ConverterManager::findAssetIdByName( const string& name )

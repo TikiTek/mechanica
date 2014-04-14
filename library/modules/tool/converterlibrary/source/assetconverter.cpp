@@ -142,6 +142,8 @@ namespace tiki
 					m_changedFiles.addRange( outputFiles.getData(), outputFiles.getCount() );
 				}
 			}
+
+			Sleep( 100u );
 		}
 	}
 
