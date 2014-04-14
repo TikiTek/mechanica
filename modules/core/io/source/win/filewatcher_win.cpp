@@ -146,16 +146,20 @@ namespace tiki
 				nullptr
 			);
 
-			const DWORD lastError = GetLastError();
-			if ( result && lastError == ERROR_SUCCESS )
+			if ( result )
 			{
 				m_platformData.running = true;
+			}
+			else
+			{
+				const DWORD lastError = GetLastError();
+				TIKI_TRACE_ERROR( "[io] ReadDirectoryChangesW in FileWatcher has returned an error code: %u\n", lastError );
 			}
 		}
 		
 		if ( m_platformData.running )
 		{
-			waitForEvent( 0u );
+			waitForEvent( 1u );
 		}
 
 		if ( m_events.isEmpty() == false )
@@ -183,8 +187,11 @@ namespace tiki
 		{
 			createEvents( m_events, m_platformData.basePath, m_platformData.dataBuffer );
 			m_platformData.running = false;
-			
 			return true;
+		}
+		else if ( lastError != WAIT_TIMEOUT )
+		{
+			TIKI_TRACE_ERROR( "[io] GetQueuedCompletionStatus in FileWatcher has return an error code: %u\n", lastError );
 		}
 
 		return false;
