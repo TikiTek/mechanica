@@ -27,7 +27,7 @@ namespace tiki
 
 	enum FilterMode
 	{
-		FilterMode_Neares,
+		FilterMode_Nearest,
 		FilterMode_Linear,
 		FilterMode_Anisotropic,
 
@@ -53,7 +53,7 @@ namespace tiki
 			addressW		= AddressMode_Wrap;
 			
 			magFilter		= FilterMode_Linear;
-			mipFilter		= FilterMode_Neares;
+			mipFilter		= FilterMode_Nearest;
 
 			maxAnisotropy	= 1u;
 			borderColor		= TIKI_COLOR_BLACK;

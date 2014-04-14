@@ -32,19 +32,19 @@ namespace tiki
 				{
 				case FilterMode_Linear:
 					return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-				case FilterMode_Neares:
+				case FilterMode_Nearest:
 					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 				}
 			}
 			break;
-		case FilterMode_Neares:
+		case FilterMode_Nearest:
 			{
 				TIKI_ASSERT( mip != FilterMode_Anisotropic );
 				switch ( mip )
 				{
 				case FilterMode_Linear:
 					return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-				case  FilterMode_Neares:
+				case  FilterMode_Nearest:
 					return D3D11_FILTER_MIN_MAG_MIP_POINT;
 				}
 			}
