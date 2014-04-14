@@ -36,15 +36,36 @@ VertexToPixel main( VertexInput input )
 ////////////////////////////////////////////////////////////////////////////////
 
 // constants
-TIKI_DEFINE_TEXTURE2D( 0, t_texture );
-TIKI_DEFINE_SAMPLER( 0, s_sampler );
+TIKI_DEFINE_SAMPLER( 0, s_samplerLinear );
+
+#if TIKI_DOWNSAMPLE
+
+TIKI_DEFINE_TEXTURE2D( 0, t_gBufferDiffuse );
+TIKI_DEFINE_TEXTURE2D( 1, t_gBufferNormal );
+
+#else
+
+TIKI_DEFINE_TEXTURE2D( 0, t_downsample );
+TIKI_DEFINE_TEXTURE3D( 1, t_ascii );
+TIKI_DEFINE_SAMPLER( 1, s_samplerNearst );
+
+#endif
 
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
 #if TIKI_DOWNSAMPLE
-	float4 color = float4( 1.0f, 0.0f, 1.0f, 1.0f );
+	float4 color = t_gBufferDiffuse.Sample( s_samplerLinear, input.texcoord );
 #else
-	float4 color = t_texture.Sample( s_sampler, input.texcoord ); //float4( 0.0f, 1.0f, 0.0f, 0.0f );
+	float4 color = t_downsample.Sample( s_samplerNearst, input.texcoord );
+
+	float3 uvw = float3( input.texcoord, 0.0f );
+	uvw.x *= 128.0f;
+	uvw.y *= 72.0f;
+	uvw.z = color.r;
+
+	float4 ascii = t_ascii.Sample( s_samplerLinear, uvw );
+
+	color = float4( ascii.rgb, 1.0f ); //float4( color.rgb * ascii.rrr, 1.0f);
 #endif
 
 	return color;

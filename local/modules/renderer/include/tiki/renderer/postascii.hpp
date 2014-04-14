@@ -39,7 +39,7 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessAsciiParameters& parameters );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		const TextureData&	getResultData() const { return m_downSampleData; }
+		const TextureData&	getResultData() const { return m_finalResultData; }
 
 		void				render( GraphicsContext& graphicsContext, const TextureData& inputData );
 		
@@ -53,7 +53,8 @@ namespace tiki
 		const BlendState*			m_pBlendState;
 		const DepthStencilState*	m_pDepthState;
 		const RasterizerState*		m_pRasterizerState;
-		const SamplerState*			m_pSampler;
+		const SamplerState*			m_pSamplerLinear;
+		const SamplerState*			m_pSamplerNearest;
 
 		TextureData					m_finalResultData;
 		TextureData					m_downSampleData;
