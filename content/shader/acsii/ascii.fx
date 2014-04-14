@@ -59,13 +59,13 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float4 color = t_downsample.Sample( s_samplerNearst, input.texcoord );
 
 	float3 uvw = float3( input.texcoord, 0.0f );
-	uvw.x *= 128.0f;
-	uvw.y *= 72.0f;
+	uvw.x *= 105.0f;
+	uvw.y *= 60.0f;
 	uvw.z = color.r;
 
 	float4 ascii = t_ascii.Sample( s_samplerLinear, uvw );
 
-	color = float4( ascii.rgb, 1.0f ); //float4( color.rgb * ascii.rrr, 1.0f);
+	color = float4( ascii.rrr, 1.0f ); //float4( color.rgb * ascii.rrr, 1.0f);
 #endif
 
 	return color;

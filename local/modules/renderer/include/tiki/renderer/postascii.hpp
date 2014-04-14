@@ -8,6 +8,7 @@
 namespace tiki
 {
 	class Texture;
+	class Font;
 
 	struct PostProcessAsciiParameters
 	{
@@ -45,7 +46,7 @@ namespace tiki
 		
 	private:
 
-		const Texture*				m_pAsciiCharTexture;
+		const Font*					m_pAsciiCharTexture;
 		const ShaderSet*			m_pShader;
 
 		const VertexInputBinding*	m_pVertexInputBinding;
