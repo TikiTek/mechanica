@@ -13,7 +13,8 @@ namespace tiki
 		m_pBlendState			= nullptr;
 		m_pDepthState			= nullptr;
 		m_pRasterizerState		= nullptr;
-		m_pSampler				= nullptr;
+		m_pSamplerLinear		= nullptr;
+		m_pSamplerNearest		= nullptr;
 
 		m_pVertexInputBinding	= nullptr;
 	}
@@ -50,8 +51,9 @@ namespace tiki
 		m_pBlendState		= graphicsSystem.createBlendState( BlendStateParamters() );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
 		m_pRasterizerState	= graphicsSystem.createRasterizerState( RasterizerStateParamters() );
-		m_pSampler			= graphicsSystem.createSamplerState( SamplerStateParamters() );
-		success &= ( m_pBlendState != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSampler != nullptr );
+		m_pSamplerLinear	= graphicsSystem.createSamplerState( AddressMode_Wrap, AddressMode_Wrap, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
+		m_pSamplerNearest	= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Nearest, FilterMode_Nearest );
+		success &= ( m_pBlendState != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerLinear != nullptr ) && ( m_pSamplerNearest != nullptr );
 
 		if ( m_pShader != nullptr )
 		{
@@ -74,11 +76,18 @@ namespace tiki
 	void PostProcessAscii::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
+		m_pVertexInputBinding	= nullptr;
 
-		graphicsSystem.disposeSamplerState( m_pSampler );
+		graphicsSystem.disposeSamplerState( m_pSamplerLinear );
+		graphicsSystem.disposeSamplerState( m_pSamplerNearest );
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		graphicsSystem.disposeDepthStencilState( m_pDepthState );
 		graphicsSystem.disposeBlendState( m_pBlendState );
+		m_pBlendState			= nullptr;
+		m_pDepthState			= nullptr;
+		m_pRasterizerState		= nullptr;
+		m_pSamplerLinear		= nullptr;
+		m_pSamplerNearest		= nullptr;
 
 		m_downSampleTarget.dispose( graphicsSystem );
 		m_finalResultTarget.dispose( graphicsSystem );
@@ -95,6 +104,7 @@ namespace tiki
 
 	void PostProcessAscii::render( GraphicsContext& graphicsContext, const TextureData& inputData )
 	{
+		// downsample
 		graphicsContext.beginRenderPass( m_downSampleTarget );
 
 		graphicsContext.setBlendState( m_pBlendState );
@@ -102,7 +112,29 @@ namespace tiki
 		graphicsContext.setDepthStencilState( m_pDepthState );
 
 		graphicsContext.setPixelShaderTexture( 0u, &inputData );
-		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
+
+		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
+		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+
+		graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 1u ) );
+
+		graphicsContext.drawFullScreenQuadPos2Tex2();
+
+		graphicsContext.endRenderPass();
+
+		// ascii
+		graphicsContext.beginRenderPass( m_finalResultTarget );
+
+		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setRasterizerState( m_pRasterizerState );
+		graphicsContext.setDepthStencilState( m_pDepthState );
+
+		graphicsContext.setPixelShaderTexture( 0u, &m_downSampleData );
+		graphicsContext.setPixelShaderTexture( 1u, &m_pAsciiCharTexture->getTextureData() );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
+		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerNearest );
 
 		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
@@ -110,19 +142,7 @@ namespace tiki
 		graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
 
-		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( graphicsContext.beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 4u ) );
-		createFloat2( pVertices[ 0u ].position, -1.0f, -1.0f );
-		createFloat2( pVertices[ 0u ].texCoord, 0.0f, 1.0f );
-		
-		createFloat2( pVertices[ 1u ].position, -1.0f, 1.0f );
-		createFloat2( pVertices[ 1u ].texCoord, 0.0f, 0.0f );
-		
-		createFloat2( pVertices[ 2u ].position, 1.0f, -1.0f );
-		createFloat2( pVertices[ 2u ].texCoord, 1.0f, 1.0f );
-
-		createFloat2( pVertices[ 3u ].position, 1.0f, 1.0f );
-		createFloat2( pVertices[ 3u ].texCoord, 1.0f, 0.0f );
-		graphicsContext.endImmediateGeometry();
+		graphicsContext.drawFullScreenQuadPos2Tex2();
 
 		graphicsContext.endRenderPass();
 	}
