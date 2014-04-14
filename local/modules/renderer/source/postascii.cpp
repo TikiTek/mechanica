@@ -1,6 +1,7 @@
 
 #include "tiki/renderer/postascii.hpp"
 
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/stockvertex.hpp"
 
 namespace tiki
@@ -25,7 +26,7 @@ namespace tiki
 
 	bool PostProcessAscii::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessAsciiParameters& parameters )
 	{
-		m_pAsciiCharTexture	= resourceManager.loadResource< Texture >( "ascii.texture" );
+		m_pAsciiCharTexture	= resourceManager.loadResource< Font >( "ascii.font" );
 		m_pShader			= resourceManager.loadResource< ShaderSet >( "ascii.shader" );
 
 		bool success = ( m_pAsciiCharTexture != nullptr ) && ( m_pShader != nullptr );
