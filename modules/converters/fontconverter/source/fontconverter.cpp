@@ -51,6 +51,16 @@ namespace tiki
 			return false;
 		}
 
+		string allChars = params.arguments.getOptionalString( "chars", "" );
+		if ( allChars.isEmpty() )
+		{
+			allChars = string( 256u );
+			for (uint charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
+			{
+				allChars[ charIndex ] = (char)charIndex;
+			}
+		}
+
 		const bool mode3D	= params.arguments.getOptionalBool( "3d_mode",  false );
 		const int fontSize	= params.arguments.getOptionalInt( "font_size", 16 );
 
@@ -69,11 +79,11 @@ namespace tiki
 
 			FT_GlyphSlot slot = face->glyph;
 
-			const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * 256.0f );
+			const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
 			const size_t imageSize	= nextPowerOfTwo( baseSize );
 			const float floatSize	= (float)imageSize;
 
-			const uint imageWidth	= ( mode3D ? fontSize * 256u : imageSize );
+			const uint imageWidth	= ( mode3D ? fontSize * allChars.getLength() : imageSize );
 			const uint imageHeight	= ( mode3D ? fontSize : imageSize );
 
 			HdrImage image;
@@ -84,9 +94,10 @@ namespace tiki
 			const size_t rowPitch = ( image.getWidth() * image.getChannelCount() );
 
 			List< FontChar > chars;
-			for (size_t charIndex = 0u; charIndex < 256u; ++charIndex)
+			for (size_t charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
 			{
-				const int glyph_index = FT_Get_Char_Index( face, charIndex );
+				const char c = allChars[ charIndex ];
+				const int glyph_index = FT_Get_Char_Index( face, c );
 
 				error = FT_Load_Glyph( face, glyph_index,  FT_LOAD_DEFAULT );
 				if ( error )

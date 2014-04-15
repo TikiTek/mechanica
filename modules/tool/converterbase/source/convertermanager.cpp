@@ -247,13 +247,17 @@ namespace tiki
 			const XmlAttribute* pAttKey		= xmlFile.findAttributeByName( "key", pParam );
 			const XmlAttribute* pAttValue	= xmlFile.findAttributeByName( "value", pParam );
 
-			if ( pAttKey == nullptr || pAttValue == nullptr )
+			if ( pAttKey == nullptr )
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
 					( pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content ).cStr(),
 					( pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content ).cStr()
 				);
+			}
+			else if ( pAttValue == nullptr )
+			{
+				arguments[ pAttKey->content ] = pParam->content;
 			}
 			else
 			{

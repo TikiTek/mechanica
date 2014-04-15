@@ -108,6 +108,14 @@ namespace tiki
 		}
 	}
 
+	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
+	{
+		m_platformData.pContext->CopyResource(
+			targetData.m_platformData.pResource,
+			sourceData.m_platformData.pResource
+		);
+	}
+
 	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );

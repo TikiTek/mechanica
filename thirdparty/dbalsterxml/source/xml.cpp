@@ -148,7 +148,7 @@ XML_C_API bool xml_compare( const char* _str, const char* _text )
 		if (_str[i]!=_text[i]) return false;
 		++i;
 	}
-	return _str[i]==0;
+	return true;
 }
 
 static bool xml_namespace_compare(const char* _name, const char* _value)

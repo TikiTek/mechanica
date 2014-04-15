@@ -317,7 +317,7 @@ namespace tiki
 		size_t shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 		if ( args.debugMode )
 		{
-			shaderFlags |= D3DCOMPILE_DEBUG;
+			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
 		const string sourceCode = args.defineCode + formatString( "\n#include \"%s\"", args.fileName.cStr() );
