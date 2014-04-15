@@ -35,37 +35,46 @@ VertexToPixel main( VertexInput input )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "shader/functions.fxh"
+#include "shader/ascii_shader.hpp"
+
 // constants
 TIKI_DEFINE_SAMPLER( 0, s_samplerLinear );
+TIKI_DEFINE_SAMPLER( 1, s_samplerNearst );
 
 #if TIKI_DOWNSAMPLE
 
 TIKI_DEFINE_TEXTURE2D( 0, t_gBufferDiffuse );
 TIKI_DEFINE_TEXTURE2D( 1, t_gBufferNormal );
+TIKI_DEFINE_TEXTURE2D( 2, t_depthBuffer );
+
+TIKI_DEFINE_CONSTANT( 0, AsciiPixelConstantData, c_pixelData );
 
 #else
 
 TIKI_DEFINE_TEXTURE2D( 0, t_downsample );
 TIKI_DEFINE_TEXTURE3D( 1, t_ascii );
-TIKI_DEFINE_SAMPLER( 1, s_samplerNearst );
 
 #endif
 
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
 #if TIKI_DOWNSAMPLE
+	float4 projectedPosition = getProjectedPosition( input.texcoord, t_depthBuffer.Sample( s_samplerNearst, input.texcoord ).r );
+	float3 viewPosition = reconstructViewSpacePosition( projectedPosition, c_pixelData.inverseProjection );
+
 	float4 color = t_gBufferDiffuse.Sample( s_samplerLinear, input.texcoord );
+	color.a = viewPosition.z;
 #else
 	float4 color = t_downsample.Sample( s_samplerNearst, input.texcoord );
 
 	float3 uvw = float3( input.texcoord, 0.0f );
 	uvw.x *= 105.0f;
 	uvw.y *= 60.0f;
-	uvw.z = color.r;
+	uvw.z = color.a;
 
-	float4 ascii = t_ascii.Sample( s_samplerLinear, uvw );
-
-	color = float4( ascii.rrr, 1.0f ); //float4( color.rgb * ascii.rrr, 1.0f);
+	float ascii = t_ascii.Sample( s_samplerLinear, uvw ).r;
+	color = float4( color.rgb * ascii.rrr, 1.0f);
 #endif
 
 	return color;

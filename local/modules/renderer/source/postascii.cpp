@@ -4,6 +4,8 @@
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/stockvertex.hpp"
 
+#include "shader/ascii_shader.hpp"
+
 namespace tiki
 {
 	PostProcessAscii::PostProcessAscii()
@@ -65,6 +67,8 @@ namespace tiki
 			success &= ( m_pVertexInputBinding != nullptr );
 		}
 
+		success &= m_pixelConstants.create( graphicsSystem, sizeof( AsciiPixelConstantData ) );
+
 		if ( !success )
 		{
 			dispose( graphicsSystem, resourceManager );
@@ -76,6 +80,8 @@ namespace tiki
 
 	void PostProcessAscii::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		m_pixelConstants.dispose( graphicsSystem );
+
 		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
 		m_pVertexInputBinding	= nullptr;
 
@@ -103,23 +109,38 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	void PostProcessAscii::render( GraphicsContext& graphicsContext, const TextureData& inputData )
+	void PostProcessAscii::render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext )
 	{
 		// downsample
+		{
+			Matrix44 inverseProjection;
+			matrix::invert( inverseProjection, frameData.mainCamera.getProjection().getMatrix() );
+
+			AsciiPixelConstantData* pPixelConstantData = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
+			createFloat4( pPixelConstantData->param0, frameData.farPlane, 0.25f, 0.5f, 0.75f );
+			createGraphicsMatrix44( pPixelConstantData->inverseProjection, inverseProjection );
+			graphicsContext.unmapBuffer( m_pixelConstants );
+		}
+
 		graphicsContext.beginRenderPass( m_downSampleTarget );
 
 		graphicsContext.setBlendState( m_pBlendState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 
-		graphicsContext.setPixelShaderTexture( 0u, &inputData );
+		graphicsContext.setPixelShaderTexture( 0u, rendererContext.pGBufferDiffuse );
+		graphicsContext.setPixelShaderTexture( 1u, rendererContext.pGBufferNormal );
+		graphicsContext.setPixelShaderTexture( 2u, rendererContext.pDepthBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
+		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerNearest );
 
 		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
 		graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 1u ) );
+
+		graphicsContext.setPixelShaderConstant( 0u, m_pixelConstants );
 
 		graphicsContext.drawFullScreenQuadPos2Tex2();
 

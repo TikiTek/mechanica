@@ -16,6 +16,11 @@ namespace tiki
 
 		uint			rendererWidth;
 		uint			rendererHeight;
+
+		const TextureData*	pGBufferDiffuse;
+		const TextureData*	pGBufferSelfIllu;
+		const TextureData*	pGBufferNormal;
+		const TextureData*	pDepthBuffer;
 	};
 
 	struct FrameData

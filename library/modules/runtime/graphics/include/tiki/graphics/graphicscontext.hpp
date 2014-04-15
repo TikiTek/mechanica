@@ -65,6 +65,7 @@ namespace tiki
 	public:
 
 		void				clear( const RenderTarget& renderTarget, Color color = TIKI_COLOR_BLACK, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
+		void				copyTextureData( const TextureData& sourceData, const TextureData& targetData );
 
 		void				beginRenderPass( const RenderTarget& renderTarget );
 		void				endRenderPass();

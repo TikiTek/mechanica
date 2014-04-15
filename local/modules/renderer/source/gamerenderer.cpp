@@ -19,6 +19,10 @@ namespace tiki
 		m_context.pGraphicsSystem	= &graphicsSystem;
 		m_context.rendererWidth		= parameters.rendererWidth;
 		m_context.rendererHeight	= parameters.rendererHeight;
+		m_context.pGBufferDiffuse	= &m_geometryBufferData[ 0u ];
+		m_context.pGBufferSelfIllu	= &m_geometryBufferData[ 1u ];
+		m_context.pGBufferNormal	= &m_geometryBufferData[ 2u ];
+		m_context.pDepthBuffer		= &m_readyOnlyDepthBuffer;
 
 		m_frameData.nearPlane		= parameters.nearPlane;
 		m_frameData.farPlane		= parameters.farPlane;
@@ -65,8 +69,8 @@ namespace tiki
 		disposeRenderTargets();
 		disposeTextureData();
 
-		m_context.rendererWidth		= width;
-		m_context.rendererHeight	= height;
+		m_context.rendererWidth		= TIKI_MAX( 10u, width );
+		m_context.rendererHeight	= TIKI_MAX( 10u, height );
 
 		m_frameData.aspectRatio		= (float)width / (float)height;
 
@@ -120,6 +124,8 @@ namespace tiki
 		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
 
 		graphicsContext.endRenderPass();
+
+		graphicsContext.copyTextureData( m_depthBuffer, m_readyOnlyDepthBuffer );
 	}
 
 	bool GameRenderer::createTextureData()

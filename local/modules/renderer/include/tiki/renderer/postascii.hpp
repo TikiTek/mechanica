@@ -2,6 +2,7 @@
 #ifndef __TIKI_POSTASCII_HPP_INCLUDED__
 #define __TIKI_POSTASCII_HPP_INCLUDED__
 
+#include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
@@ -17,8 +18,8 @@ namespace tiki
 			resultDataWidth		= 1280u;
 			resultDataHeight	= 720u;
 
-			maxCharsWidth		= 128u;
-			maxCharsHeight		= 72u;
+			maxCharsWidth		= 105u;
+			maxCharsHeight		= 60u;
 		}
 
 		uint	resultDataWidth;
@@ -42,7 +43,7 @@ namespace tiki
 
 		const TextureData&	getResultData() const { return m_finalResultData; }
 
-		void				render( GraphicsContext& graphicsContext, const TextureData& inputData );
+		void				render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext );
 		
 	private:
 
@@ -62,6 +63,8 @@ namespace tiki
 
 		RenderTarget				m_finalResultTarget;
 		RenderTarget				m_downSampleTarget;
+
+		ConstantBuffer				m_pixelConstants;
 
 	};
 }
