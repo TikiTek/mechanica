@@ -59,7 +59,8 @@ namespace tiki
 		FrameData&			getFrameData()			{ return m_frameData; }
 		RendererContext&	getRendererContext()	{ return m_context; }
 
-		const TextureData&	getGeometryBufferBxIndex( uint index ) const { return m_geometryBufferData[ index ]; }
+		const TextureData&	getGeometryBufferBxIndex( uint index ) const	{ return m_geometryBufferData[ index ]; }
+		const TextureData&	getDepthBuffer() const							{ return m_readyOnlyDepthBuffer; }
 
 		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr );
 
