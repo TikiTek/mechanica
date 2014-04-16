@@ -1,5 +1,5 @@
 
-#include "tiki/renderer/fallbackrendereffect.hpp"
+#include "tiki/renderer/scenerendereffect.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/material.hpp"
@@ -8,47 +8,48 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/graphics/graphicstypes.hpp"
-#include "tiki/renderer/fallbackrendereffectdata.hpp"
+#include "tiki/renderer/scenerendereffectdata.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
 {
-	struct FallbackVertexConstants
+	struct SceneVertexConstants
 	{
 		GraphicsMatrix44	mvpMatrix;
 		GraphicsMatrix44	modelViewMatrix;
 	};
 
-	FallbackRenderEffect::FallbackRenderEffect()
+	SceneRenderEffect::SceneRenderEffect()
 	{
-		m_pGraphicsSystem		= nullptr;
-
 		m_pShader				= nullptr;
-
+		
 		m_pBlendState			= nullptr;
 		m_pDepthStencilState	= nullptr;
 		m_pRasterizerState		= nullptr;
 		m_pSampler				= nullptr;
+
+		m_pVertexFormat			= nullptr;
+		m_pVertexInputBinding	= nullptr;
 	}
 
-	FallbackRenderEffect::~FallbackRenderEffect()
+	SceneRenderEffect::~SceneRenderEffect()
 	{
-		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-
 		TIKI_ASSERT( m_pShader == nullptr );
 
 		TIKI_ASSERT( m_pBlendState == nullptr );
 		TIKI_ASSERT( m_pDepthStencilState == nullptr );
 		TIKI_ASSERT( m_pRasterizerState == nullptr );
 		TIKI_ASSERT( m_pSampler == nullptr );
+
+		TIKI_ASSERT( m_pVertexFormat == nullptr );
+		TIKI_ASSERT( m_pVertexInputBinding == nullptr );
 	}
 
-	bool FallbackRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool SceneRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		m_pGraphicsSystem	= &graphicsSystem;
-		m_pShader			= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
+		m_pShader				= resourceManager.loadResource< ShaderSet >( "scene.shader" );
 
 		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
@@ -56,13 +57,22 @@ namespace tiki
 		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 
 		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ) );
+		
+		VertexAttribute attributes[] =
+		{
+			{ VertexSementic_Position,		0u, VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
+			{ VertexSementic_Normal,		0u, VertexAttributeFormat_x32y32z32_float,		0u, VertexInputType_PerVertex },
+			{ VertexSementic_TangentFlip,	0u, VertexAttributeFormat_x32y32z32w32_float,	0u, VertexInputType_PerVertex },
+			{ VertexSementic_TexCoord,		0u, VertexAttributeFormat_x32y32_float,			0u, VertexInputType_PerVertex }
+		};
 
-		m_vertexInputBindings.create( 32u );
+		m_pVertexFormat			= graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
+		m_pVertexInputBinding	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 
 		return true;
 	}
 
-	void FallbackRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	void SceneRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		graphicsSystem.disposeBlendState( m_pBlendState );
 		m_pBlendState = nullptr;
@@ -76,23 +86,19 @@ namespace tiki
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
+		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
+		m_pVertexInputBinding = nullptr;
+
+		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
+		m_pVertexFormat = nullptr;
+
 		resourceManager.unloadResource< ShaderSet >( m_pShader );
 		m_pShader = nullptr;
 
 		m_vertexConstantBuffer.dispose( graphicsSystem );
-
-		for (uint i = 0u; i < m_vertexInputBindings.getCount(); ++i)
-		{
-			graphicsSystem.disposeVertexInputBinding(
-				m_vertexInputBindings.getValueAt( i )
-			);
-		}
-		m_vertexInputBindings.dispose();
-
-		m_pGraphicsSystem = nullptr;
 	}
 
-	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
+	void SceneRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
 	{
 		const Shader* pVertexShader = m_pShader->getShader( ShaderType_VertexShader, 0u );
 
@@ -100,6 +106,7 @@ namespace tiki
 		graphicsContext.setBlendState( m_pBlendState );
 		graphicsContext.setDepthStencilState( m_pDepthStencilState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
+		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 
 		graphicsContext.setVertexShader( pVertexShader );
 		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
@@ -127,49 +134,33 @@ namespace tiki
 				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mvMtx );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
 
-				const ModelGeometry& geometry					= *command.pGeometry;
-				const VertexInputBinding* pVertexInputBinding	= nullptr;
-				const crc32 vertexFormatHash					= geometry.getVertexFormat()->getHashValue();
+				const ModelGeometry& geometry = *command.pGeometry;
 
-				if ( m_vertexInputBindings.findValue( &pVertexInputBinding, vertexFormatHash ) == false )
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+				if ( geometry.getVertexFormat() != m_pVertexFormat )
 				{
-					pVertexInputBinding = m_pGraphicsSystem->createVertexInputBinding(
-						pVertexShader,
-						geometry.getVertexFormat()
-					);
-					TIKI_ASSERT( pVertexInputBinding != nullptr );
-
-					m_vertexInputBindings.set( vertexFormatHash, pVertexInputBinding );
+					TIKI_TRACE_ERROR( "[renderer] Invalid vertex format. Geometry will be ignored.\n" );
+					continue;
 				}
 
-				graphicsContext.setVertexInputBinding( pVertexInputBinding );
-
-				if ( command.pRenderEffectData != nullptr )
+				if ( command.pRenderEffectData->renderEffectId != RenderEffectId_Scene )
 				{
-					if ( command.pRenderEffectData->renderEffectId == RenderEffectId_Fallback )
-					{
-						const FallbackRenderEffectData* pRenderEffectData = static_cast< const FallbackRenderEffectData* >( command.pRenderEffectData );
-						const Texture* pTexture = pRenderEffectData->defaultTexture.getData();
-
-						if ( pTexture != nullptr )
-						{
-							graphicsContext.setPixelShaderTexture( 0u, &pTexture->getTextureData() );
-						}
-					}
-					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectDataInvalidTextureOffset )
-					{
-						const Texture* pDefaultTexture = addPtrCast< const Texture >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
-
-						if ( pDefaultTexture != nullptr )
-						{
-							graphicsContext.setPixelShaderTexture( 0u, &pDefaultTexture->getTextureData() );
-						}
-					}
-					else
-					{
-						graphicsContext.setPixelShaderTexture( 0u, nullptr );
-					}
+					TIKI_TRACE_ERROR( "[renderer] Invalid effect data. Geometry will be ignored.\n" );
+					continue;
 				}
+#endif
+
+				const SceneRenderEffectData* pRenderEffectData = static_cast< const SceneRenderEffectData* >( command.pRenderEffectData );
+				const Texture* pDiffuseMap	= pRenderEffectData->diffuseMap.getData();
+				const Texture* pNormalMap	= pRenderEffectData->normalMap.getData();
+				const Texture* pSelfilluMap	= pRenderEffectData->selfilluMap.getData();
+				const TextureData* pDiffuseMapData	= ( pDiffuseMap == nullptr ? nullptr : &pDiffuseMap->getTextureData() );
+				const TextureData* pNormalMapData	= ( pNormalMap == nullptr ? nullptr : &pNormalMap->getTextureData() );
+				const TextureData* pSelfilluMapFata	= ( pSelfilluMap == nullptr ? nullptr : &pSelfilluMap->getTextureData() );
+
+				graphicsContext.setPixelShaderTexture( 0u, pDiffuseMapData );
+				graphicsContext.setPixelShaderTexture( 1u, pNormalMapData );
+				graphicsContext.setPixelShaderTexture( 2u, pSelfilluMapFata );
 
 				geometry.render( graphicsContext );
 			}

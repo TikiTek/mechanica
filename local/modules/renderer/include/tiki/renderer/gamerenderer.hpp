@@ -69,11 +69,11 @@ namespace tiki
 
 	private:
 
-		enum GeometryBuffer			// | red	| green		| blue			| alpha					|
-		{							// |--------|-----------|---------------|-----------------------|
-			GeometryBuffer_Target0,	// | diffuseColor.rgb					| specluarBrightness	|
-			GeometryBuffer_Target1,	// | selfIllumination.rgb				| specluarIntensity		|
-			GeometryBuffer_Target2,	// | normal.xy			| specluarColor	| specluarPower			| // 16 bit?
+		enum GeometryBuffer			// | red | green | blue	                  | alpha              |
+		{							// |-----|-------|------------------------|--------------------|
+			GeometryBuffer_Target0,	// | diffuseColor.rgb                     | specluarBrightness |
+			GeometryBuffer_Target1,	// | selfIllumination.rgb                 | specluarIntensity  |
+			GeometryBuffer_Target2,	// | normal.xy   | selfIlluminationFactor | specluarPower      | // 16 bit?
 
 			GeometryBuffer_Count
 		};

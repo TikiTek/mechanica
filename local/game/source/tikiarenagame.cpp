@@ -40,6 +40,10 @@ namespace tiki
 		parameters.screenHeight	= 720;
 
 		parameters.graphicsMode = GraphicsRendererMode_Hardware;
+
+#if TIKI_ENABLED( TIKI_BUILD_MASTER )
+		parameters.pGamebuildPath = "./gamebuild/";
+#endif
 	}
 
 	void TikiArenaGame::initialize()

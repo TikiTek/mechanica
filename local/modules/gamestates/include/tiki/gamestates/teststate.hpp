@@ -6,6 +6,7 @@
 
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
+#include "tiki/renderer/scenerendereffect.hpp"
 
 #include "tiki/debugmenu/debugmenu.hpp"
 #include "tiki/debugmenu/debugmenupage_debugprop.hpp"
@@ -51,11 +52,10 @@ namespace tiki
 
 		const Font*					m_pFont;
 		const Model*				m_pModel;
-		const Texture*				m_pTexture;
-		const Texture*				m_pTexture2;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
+		SceneRenderEffect			m_sceneRenderEffect;
 
 		ImmediateRenderer			m_immediateRenderer;
 
