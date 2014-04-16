@@ -70,13 +70,9 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModel		= framework::getResourceManager().loadResource< Model >( "test.model" );
-					m_pTexture		= framework::getResourceManager().loadResource< Texture >( "checker.texture" );
-					m_pTexture2		= framework::getResourceManager().loadResource< Texture >( "ascii.texture" );
+					m_pModel		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
 					m_pFont			= framework::getResourceManager().loadResource< Font >( "debug.font" );
 					TIKI_ASSERT( m_pModel != nullptr );
-					TIKI_ASSERT( m_pTexture != nullptr );
-					TIKI_ASSERT( m_pTexture2 != nullptr );
 					TIKI_ASSERT( m_pFont != nullptr );
 
 					Vector2 screenSize;
@@ -102,8 +98,6 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
-				framework::getResourceManager().unloadResource< Texture >( m_pTexture );
-				framework::getResourceManager().unloadResource< Texture >( m_pTexture2 );
 				framework::getResourceManager().unloadResource< Model >( m_pModel );
 				framework::getResourceManager().unloadResource< Font >( m_pFont );
 

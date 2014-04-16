@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
-#define __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
+#ifndef __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
+#define __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
 
 #include "tiki/renderer/rendereffect.hpp"
 
@@ -18,16 +18,16 @@ namespace tiki
 	class ShaderSet;
 	class VertexInputBinding;
 
-	class FallbackRenderEffect : public RenderEffect
+	class SceneRenderEffect : public RenderEffect
 	{
-		TIKI_NONCOPYABLE_CLASS( FallbackRenderEffect );
+		TIKI_NONCOPYABLE_CLASS( SceneRenderEffect );
 
 	public:
 
-								FallbackRenderEffect();
-		virtual					~FallbackRenderEffect();
+		SceneRenderEffect();
+		virtual					~SceneRenderEffect();
 
-		virtual RenderEffectId	getRenderEffectId() const { return RenderEffectId_Fallback; }
+		virtual RenderEffectId	getRenderEffectId() const { return RenderEffectId_Scene; }
 
 	protected:
 
@@ -38,10 +38,6 @@ namespace tiki
 
 	private:
 
-		typedef SortedSizedMap< crc32, const VertexInputBinding* > VertexInputBindingMap;
-
-		GraphicsSystem*				m_pGraphicsSystem;
-
 		const ShaderSet*			m_pShader;
 
 		const BlendState*			m_pBlendState;
@@ -49,11 +45,12 @@ namespace tiki
 		const RasterizerState*		m_pRasterizerState;
 		const SamplerState*			m_pSampler;
 
-		VertexInputBindingMap		m_vertexInputBindings;
+		const VertexFormat*			m_pVertexFormat;
+		const VertexInputBinding*	m_pVertexInputBinding;
 
 		ConstantBuffer				m_vertexConstantBuffer;
 
 	};
 }
 
-#endif // __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
+#endif // __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
