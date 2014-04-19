@@ -27,7 +27,7 @@ float3 decodeNormal( float2 compressedNormal )
     half f		= dot( fenc, fenc );
     half g		= sqrt( 1.0f - f / 4.0f );
 
-    half3 nprmal;
+    half3 normal;
     normal.xy	= fenc * g;
     normal.z	= 1 - f / 2.0f;
 
