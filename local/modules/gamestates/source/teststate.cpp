@@ -122,9 +122,11 @@ namespace tiki
 					const Vector3 cameraPosition = { 0.0f, 0.0f, 1.0f };
 					frameData.mainCamera.create( cameraPosition, Quaternion::identity );
 
-					m_fallbackRenderEffect.create( m_pGameRenderer->getRendererContext(), framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_fallbackRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_sceneRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
+					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
 
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
@@ -149,7 +151,9 @@ namespace tiki
 					m_debugMenuPageDebugProp.dispose();
 					m_debugMenu.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
+					m_pGameRenderer->unregisterRenderEffect( &m_sceneRenderEffect );
 					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
+					m_sceneRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					return TransitionState_Finish;
@@ -225,11 +229,12 @@ namespace tiki
 		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		//const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-		//m_immediateRenderer.drawTexture( &texture, rect );
+		const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+		m_immediateRenderer.drawTexture( &texture, rect );
 
-		const Rectangle rect2 = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-		m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+		//const Rectangle rect2 = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
+		//m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
 		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
 

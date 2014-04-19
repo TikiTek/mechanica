@@ -1,16 +1,38 @@
 #include "tiki/materialconverter/toolmaterial.hpp"
 
 #include "tiki/base/reflection.hpp"
+#include "tiki/base/sort.hpp"
+#include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/toolbase/tikixml.hpp"
 
 namespace tiki
 {
-	struct MaterialDataReference
+	struct MaterialFieldSortData
 	{
-		uint			dataOffset;
-		ReferenceKey	referenceKey;
+		uint							dataOffset;
+		const reflection::FieldMember*	pField;
+
+		bool operator>( const MaterialFieldSortData& rhs )
+		{
+			return dataOffset > rhs.dataOffset;
+		}
+
+		bool operator<( const MaterialFieldSortData& rhs )
+		{
+			return dataOffset < rhs.dataOffset;
+		}
+
+		bool operator>=( const MaterialFieldSortData& rhs )
+		{
+			return dataOffset >= rhs.dataOffset;
+		}
+
+		bool operator<=( const MaterialFieldSortData& rhs )
+		{
+			return dataOffset <= rhs.dataOffset;
+		}
 	};
 
 	ToolMaterial::ToolMaterial()
@@ -59,17 +81,36 @@ namespace tiki
 				const XmlAttribute* pTypeAtt = xml.findAttributeByName( "type", pValueNode );
 				if ( pTypeAtt != nullptr )
 				{
+					const string typeString = pTypeAtt->content;
+					MaterialFieldType type = MaterialFieldType_Invalid;
+					if ( typeString == "resource" )
+					{
+						type = MaterialFieldType_Reference;
+					}
+					else if ( typeString == "integer" )
+					{
+						type = MaterialFieldType_Integer;
+					}
+					else if ( typeString == "float" )
+					{
+						type = MaterialFieldType_Float;
+					}
+					else
+					{
+						TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' has a invalid type '%s'.\n", pNameAtt->content, typeString.cStr() );
+					}
+
 					const reflection::FieldMember* pField = m_pDataType->getFieldByName( pNameAtt->content );
-					if ( pField != nullptr )
+					if ( pField != nullptr && type != MaterialFieldType_Invalid )
 					{
 						MaterialField fieldInfo;
 						fieldInfo.name	= pNameAtt->content;
-						fieldInfo.type	= pTypeAtt->content;
+						fieldInfo.type	= type;
 						fieldInfo.value	= pValueNode->content;
 
 						m_effectData.set( pField, fieldInfo );
 					}
-					else
+					else if ( type != MaterialFieldType_Invalid )
 					{
 						TIKI_TRACE_ERROR( "[toolmaterial] Field with name '%s' is not a member of Type: '%s'.\n", pNameAtt->content, m_pDataType->getName().cStr() );
 					}
@@ -97,59 +138,126 @@ namespace tiki
 		m_effectData.dispose();
 	}
 
-	ReferenceKey ToolMaterial::writeResource( ResourceWriter& writer ) const
+	ReferenceKey ToolMaterial::writeResource( ResourceWriter& writer )
 	{
 		void* pData = m_pDataType->createInstance();
 
-		uint8 workingMemory[ 16u ];
-		List< MaterialDataReference > references;
+		List< MaterialFieldSortData > sortDataList;
+		for (uint i = 0u; i < m_pDataType->getFieldCount(); ++i)
+		{
+			MaterialFieldSortData& data = sortDataList.add();
+			data.dataOffset	= m_pDataType->getFieldByIndex( i )->getOffset();
+			data.pField		= m_pDataType->getFieldByIndex( i );
+		}
+		quickSort( sortDataList.getData(), sortDataList.getCount() );
+		
 		for (uint i = 0u; i < m_effectData.getCount(); ++i)
 		{
-			const MaterialFieldMap::Pair& kvp = m_effectData.getPairAt( i );
+			MaterialFieldMap::Pair& kvp = m_effectData.getPairAt( i );
 			
-			TIKI_ASSERT( sizeof( workingMemory ) >= kvp.key->getTypeInfo().getType()->getSize() );
-			memory::zero( workingMemory, sizeof( workingMemory ) );
-
-			if ( kvp.value.type == "resource" )
+			switch ( kvp.value.type )
 			{
-				MaterialDataReference reference;
-				reference.dataOffset = kvp.key->getOffset();
-				if ( readResourceReference( writer, kvp.value.value, reference.referenceKey ) )
+			case MaterialFieldType_Reference:
+				if ( !readResourceReference( writer, kvp.value.value, kvp.value.data.referenceKey ) )
 				{
-					references.add( reference );
+					TIKI_TRACE_ERROR( "[toolmaterial] Invalid reference value '%s'.\n", kvp.value.value.cStr() );
 				}
-			}
-			else if ( kvp.value.type == "integer" )
-			{
-				//static_cast< uint64* >
-			}
-			else if ( kvp.value.type == "float" )
-			{
+				break;
 
-			}
-			else
-			{
-				TIKI_TRACE_ERROR( "[toolmaterial] field type '%s' not supported.\n", kvp.value.type.cStr() );
-				continue;
-			}
+			case MaterialFieldType_Integer:
+				kvp.value.data.integerValue = ParseString::parseInt64( kvp.value.value );
+				break;
 
-			kvp.key->setValue( pData, workingMemory );
+			case MaterialFieldType_Float:
+				kvp.value.data.floatValue = ParseString::parseDouble( kvp.value.value );
+				break;
+			}
 		} 
 
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
 		const ReferenceKey key = writer.addDataPoint();
 
-		uint currentOffset = 0u;
-		for (uint i = 0u; i < references.getCount(); ++i)
+		uint currentSectionSize = 0u;
+		for (uint i = 0u; i < sortDataList.getCount(); ++i)
 		{
-			const MaterialDataReference& reference = references[ i ];
+			const MaterialFieldSortData& sortData = sortDataList[ i ];
 
-			writer.writeData( addPtr( pData, currentOffset ), reference.dataOffset - currentOffset );
-			writer.writeReference( &reference.referenceKey );
+			MaterialField field;
+			if ( m_effectData.findValue( &field, sortData.pField ) )
+			{
+				const uint offsetDifference = sortData.dataOffset - currentSectionSize;
+				if ( offsetDifference > 0u )
+				{
+					writer.writeData( addPtr( pData, currentSectionSize ), offsetDifference );
+				}
+				currentSectionSize = sortData.dataOffset;
 
-			currentOffset += reference.dataOffset + 8u;
+				switch ( field.type )
+				{
+				case MaterialFieldType_Reference:
+					writer.writeReference( &field.data.referenceKey );
+					currentSectionSize += 8u;
+					break;
+
+				case MaterialFieldType_Integer:
+					if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "uint8" ) )
+					{
+						writer.writeUInt8( (uint8)field.data.integerValue );
+						currentSectionSize += 1u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "uint16" ) )
+					{
+						writer.writeUInt16( (uint16)field.data.integerValue );
+						currentSectionSize += 2u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "uint32" ) )
+					{
+						writer.writeUInt32( (uint32)field.data.integerValue );
+						currentSectionSize += 4u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "uint64" ) )
+					{
+						writer.writeUInt64( (uint64)field.data.integerValue );
+						currentSectionSize += 8u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "sint8" ) )
+					{
+						writer.writeSInt8( (sint8)field.data.integerValue );
+						currentSectionSize += 1u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "sint16" ) )
+					{
+						writer.writeSInt16( (sint16)field.data.integerValue );
+						currentSectionSize += 2u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "sint32" ) )
+					{
+						writer.writeSInt32( (sint32)field.data.integerValue );
+						currentSectionSize += 4u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "sint64" ) )
+					{
+						writer.writeSInt64( (sint64)field.data.integerValue );
+						currentSectionSize += 8u;
+					}
+					break;
+
+				case MaterialFieldType_Float:
+					if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "float" ) )
+					{
+						writer.writeFloat( (float)field.data.floatValue );
+						currentSectionSize += 4u;
+					}
+					else if ( sortData.pField->getTypeInfo().getType() == reflection::getTypeOf( "double" ) )
+					{
+						writer.writeDouble( (float)field.data.floatValue );
+						currentSectionSize += 8u;
+					}
+					break;
+				}
+			}		
 		}
-		writer.writeData( addPtr( pData, currentOffset ), m_pDataType->getSize() - currentOffset );
+		writer.writeData( addPtr( pData, currentSectionSize ), m_pDataType->getSize() - currentSectionSize );
 		
 		writer.closeDataSection();
 

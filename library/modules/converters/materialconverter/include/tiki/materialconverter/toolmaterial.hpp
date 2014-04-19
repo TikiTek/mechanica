@@ -24,15 +24,31 @@ namespace tiki
 		bool			create( const string& fileName );
 		void			dispose();
 
-		ReferenceKey	writeResource( ResourceWriter& writer ) const;
+		ReferenceKey	writeResource( ResourceWriter& writer );
 
 	private:
 
+		enum MaterialFieldType
+		{
+			MaterialFieldType_Invalid = -1,
+
+			MaterialFieldType_Reference,
+			MaterialFieldType_Integer,
+			MaterialFieldType_Float
+		};
+
 		struct MaterialField
 		{
-			string	name;
-			string	type;
-			string	value;
+			string				name;
+			string				value;
+			MaterialFieldType	type;
+
+			union
+			{
+				ReferenceKey	referenceKey;
+				sint64			integerValue;
+				double			floatValue;
+			} data;
 		};
 		typedef SortedSizedMap< const reflection::FieldMember*, MaterialField > MaterialFieldMap;
 

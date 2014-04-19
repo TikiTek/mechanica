@@ -3,4 +3,5 @@
 	<field name="diffuseMap" type="resource">TEXR:test_diffuse.texture</field>
 	<field name="normalMap" type="resource">TEXR:test_normal.texture</field>
 	<field name="selfilluMap" type="resource">TEXR:test_selfillu.texture</field>
+	<field name="specluarBrightness" type="float">1.0</field>	
 </tikimaterial>

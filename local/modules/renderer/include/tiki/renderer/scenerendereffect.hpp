@@ -49,6 +49,7 @@ namespace tiki
 		const VertexInputBinding*	m_pVertexInputBinding;
 
 		ConstantBuffer				m_vertexConstantBuffer;
+		ConstantBuffer				m_pixelConstantBuffer;
 
 	};
 }
