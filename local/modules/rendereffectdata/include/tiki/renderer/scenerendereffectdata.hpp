@@ -11,14 +11,22 @@ namespace tiki
 		RenderEffectData,
 		SceneRenderEffectData()
 		{
-			renderEffectId			= RenderEffectId_Fallback;
+			renderEffectId			= RenderEffectId_Scene;
 			renderPassMask			= 0u;
 			renderFlags				= 0u;
 			defaultTextureOffset	= (uint16)TIKI_OFFSETOF( SceneRenderEffectData, diffuseMap );
+			selfIlluminationFactor	= 0.0f;
+			specluarBrightness		= 0.0f;
+			specluarIntensity		= 0.0f;
+			specluarPower			= 0.0f;
 		}
 		TextureReference	diffuseMap;
 		TextureReference	normalMap;
 		TextureReference	selfilluMap;
+		float				selfIlluminationFactor;
+		float				specluarBrightness;
+		float				specluarIntensity;
+		float				specluarPower;
 	);
 }
 

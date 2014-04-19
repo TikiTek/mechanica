@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __TIKI_GBUFFER_HPP_INCLUDED__
 #define __TIKI_GBUFFER_HPP_INCLUDED__
 

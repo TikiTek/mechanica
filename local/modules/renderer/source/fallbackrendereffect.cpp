@@ -158,7 +158,7 @@ namespace tiki
 					}
 					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectDataInvalidTextureOffset )
 					{
-						const Texture* pDefaultTexture = addPtrCast< const Texture >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
+						const Texture* pDefaultTexture = *addPtrCast< const Texture* >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
 
 						if ( pDefaultTexture != nullptr )
 						{

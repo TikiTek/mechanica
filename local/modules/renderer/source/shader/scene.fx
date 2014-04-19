@@ -1,6 +1,9 @@
 // vs-features= ps-features=
 
+#include "shader/functions.fxh"
+#include "shader/geometrybuffer.fxh"
 #include "shader/platform.fxh"
+#include "shader/scene_shader.hpp"
 
 struct VertexToPixel
 {
@@ -22,15 +25,8 @@ struct VertexInput
 	float2	texCoord	: TIKI_TEXCOORD;
 };
 
-struct VertexConstants
-{
-	matrix	mvpMatrix;
-	matrix	modelMatrix;
-	matrix	modelViewMatrix;
-};
-
 // constants
-TIKI_DEFINE_CONSTANT( 0, VertexConstants, c_instanceData );
+TIKI_DEFINE_CONSTANT( 0, SceneVertexConstantData, c_instanceData );
 
 VertexToPixel main( VertexInput input )
 {
@@ -39,9 +35,8 @@ VertexToPixel main( VertexInput input )
 	output.position = float4( input.position, 1.0f );
 	output.position = mul( output.position, c_instanceData.mvpMatrix );
 
-	float3x3 normalMatrix = (float3x3)c_instanceData.modelMatrix;
-	output.normal	= mul( input.normal, normalMatrix );
-	output.tangent	= mul( input.tangentFlip.xyz, normalMatrix );
+	output.normal	= mul( input.normal, c_instanceData.modelViewMatrix );
+	output.tangent	= mul( input.tangentFlip.xyz, c_instanceData.modelViewMatrix );
 	output.binormal	= cross( output.normal, output.tangent ) * input.tangentFlip.w;
 
 	output.texCoord	= input.texCoord;
@@ -55,21 +50,26 @@ VertexToPixel main( VertexInput input )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// types
-//struct PixelConstants
-//{
-//	float4 vertexColor;
-//};
-
 // constants
-//TIKI_DEFINE_CONSTANT( 0, PixelConstants, c_instanceData );
+TIKI_DEFINE_CONSTANT( 0, ScenePixelConstantData, c_instanceData );
+
 TIKI_DEFINE_TEXTURE2D( 0, t_diffuseMap );
+TIKI_DEFINE_TEXTURE2D( 1, t_normalMap );
+TIKI_DEFINE_TEXTURE2D( 2, t_selfilluMap );
+
 TIKI_DEFINE_SAMPLER( 0, s_linear );
 
-float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
+GeometryBufferSample main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
-	float4 output = TIKI_TEX2D( t_diffuseMap, s_linear, input.texCoord );
-	return saturate( output );
+	float3 diffuseColor = TIKI_TEX2D( t_diffuseMap, s_linear, input.texCoord ).rgb;
+	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, input.texCoord ).rgb;
+	float3 selfIlluminationColor = TIKI_TEX2D( t_selfilluMap, s_linear, input.texCoord ).rgb;
+
+	float3x3 tangentSpaceNormalMatrix = float3x3( input.tangent, input.binormal, input.normal );
+	float3 normal = mul( normalSample, tangentSpaceNormalMatrix );
+	float2 packedNormal = encodeNormal( normal );
+
+	return createGeometryBufferSample( diffuseColor, selfIlluminationColor, c_instanceData.selfIlluminationFactor, packedNormal, c_instanceData.specluarBrightness, c_instanceData.specluarIntensity, c_instanceData.specluarPower );
 }
 
 #else
