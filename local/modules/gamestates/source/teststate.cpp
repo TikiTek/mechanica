@@ -51,6 +51,9 @@ namespace tiki
 					framework::getResourceManager(),
 					asciiParameters
 				);
+				m_enableAsciiMode = false;
+
+				m_gbufferIndex = -1;
 
 				return TransitionState_Finish;
 			}
@@ -216,7 +219,6 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( 0u );
 		m_ascii.render(
 			graphicsContext,
 			m_pGameRenderer->getFrameData(),
@@ -229,11 +231,23 @@ namespace tiki
 		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-		m_immediateRenderer.drawTexture( &texture, rect );
-
-		//const Rectangle rect2 = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-		//m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+		if ( m_enableAsciiMode )
+		{
+			const Rectangle rect2 = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
+			m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+		}
+		else if ( m_gbufferIndex != -1 )
+		{
+			const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			m_immediateRenderer.drawTexture( &texture, rect );
+		}
+		else
+		{
+			const TextureData& texture = m_pGameRenderer->getAccumulationBuffer();
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			m_immediateRenderer.drawTexture( &texture, rect );
+		}
 
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
 		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
@@ -265,10 +279,30 @@ namespace tiki
 			}
 			return true;
 		}
-		else if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F1 )
+		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		{
-			m_debugMenu.setActive( !m_debugMenu.getActive() );
-			return true;
+			switch ( inputEvent.data.keybaordKey.key )
+			{
+			case KeyboardKey_F1:
+				m_debugMenu.setActive( !m_debugMenu.getActive() );
+				return true;
+
+			case KeyboardKey_V:
+				m_pGameRenderer->setVisualizationMode( (VisualizationMode)( ( m_pGameRenderer->getVisualizationMode() + 1u ) % VisualizationMode_Count ) );
+				return true;
+
+			case KeyboardKey_G:
+				m_gbufferIndex++;
+				if ( m_gbufferIndex > 2 ) m_gbufferIndex = -1;
+				return true;
+
+			case KeyboardKey_X:
+				m_enableAsciiMode = !m_enableAsciiMode;
+				return true;
+
+			default:
+				break;
+			}
 		}
 
 		return false;

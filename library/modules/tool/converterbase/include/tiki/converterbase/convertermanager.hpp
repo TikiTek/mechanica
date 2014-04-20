@@ -5,6 +5,7 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterresourcemap.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/threading/mutex.hpp"
@@ -58,6 +59,7 @@ namespace tiki
 		// resource map
 		void					registerResource( const string& resourceName );
 		void					writeResourceMap();
+		void					addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt );
 
 		// misc
 		const string&			getOutputPath() const { return m_outputPath; }

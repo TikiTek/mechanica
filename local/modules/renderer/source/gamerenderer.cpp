@@ -14,7 +14,7 @@ namespace tiki
 	{
 	}
 
-	bool GameRenderer::create( GraphicsSystem& graphicsSystem, const GameRendererParamaters& parameters )
+	bool GameRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const GameRendererParamaters& parameters )
 	{
 		m_context.pGraphicsSystem	= &graphicsSystem;
 		m_context.rendererWidth		= parameters.rendererWidth;
@@ -22,7 +22,7 @@ namespace tiki
 		m_context.pGBufferDiffuse	= &m_geometryBufferData[ 0u ];
 		m_context.pGBufferSelfIllu	= &m_geometryBufferData[ 1u ];
 		m_context.pGBufferNormal	= &m_geometryBufferData[ 2u ];
-		m_context.pDepthBuffer		= &m_readyOnlyDepthBuffer;
+		m_context.pDepthBuffer		= &m_readOnlyDepthBuffer;
 
 		m_frameData.nearPlane		= parameters.nearPlane;
 		m_frameData.farPlane		= parameters.farPlane;
@@ -30,32 +30,85 @@ namespace tiki
 
 		if ( m_renderBatch.create( parameters.maxSeqeuenceCount, parameters.maxRenderCommandCount ) == false )
 		{
+			dispose( resourceManager );
 			return false;
 		}
 
 		if ( m_renderEffectSystem.create( m_context ) == false )
 		{
-			dispose();
+			dispose( resourceManager );
 			return false;
 		}
 
 		if ( createTextureData() == false )
 		{
-			dispose();
+			dispose( resourceManager );
 			return false;
 		}
 
 		if ( createRenderTargets() == false )
 		{
-			dispose();
+			dispose( resourceManager );
 			return false;
 		}
+
+		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
+		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
+		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
+		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
+		
+		if ( m_pBlendState == nullptr || m_pDepthStencilState == nullptr || m_pRasterizerState == nullptr || m_pSampler == nullptr )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_pVisualizationShader = resourceManager.loadResource< ShaderSet >( "visualization.shader" );
+		if ( m_pVisualizationShader == nullptr )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+
+		m_pVisualizationInputBinding = graphicsSystem.createVertexInputBinding( m_pVisualizationShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if ( m_pVisualizationInputBinding == nullptr )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+
+		m_visualizationMode = VisualizationMode_Invalid;
+#endif
 
 		return true;
 	}
 
-	void GameRenderer::dispose()
+	void GameRenderer::dispose( ResourceManager& resourceManager )
 	{
+		TIKI_ASSERT( m_context.pGraphicsSystem != nullptr );
+		GraphicsSystem& graphicsSystem = *m_context.pGraphicsSystem;
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		graphicsSystem.disposeVertexInputBinding( m_pVisualizationInputBinding );
+		m_pVisualizationInputBinding = nullptr;
+
+		resourceManager.unloadResource( m_pVisualizationShader );
+		m_pVisualizationShader = nullptr;
+#endif
+
+		graphicsSystem.disposeBlendState( m_pBlendState );
+		m_pBlendState = nullptr;
+
+		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState );
+		m_pDepthStencilState = nullptr;
+
+		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
+		m_pRasterizerState = nullptr;
+
+		graphicsSystem.disposeSamplerState( m_pSampler );
+		m_pSampler = nullptr;
+
 		disposeRenderTargets();
 		disposeTextureData();
 
@@ -76,7 +129,6 @@ namespace tiki
 
 		if ( createTextureData() == false || createRenderTargets() == false )
 		{
-			dispose();
 			return false;
 		}
 
@@ -125,7 +177,12 @@ namespace tiki
 
 		graphicsContext.endRenderPass();
 
-		graphicsContext.copyTextureData( m_depthBuffer, m_readyOnlyDepthBuffer );
+		graphicsContext.copyTextureData( m_depthBuffer, m_readOnlyDepthBuffer );
+		graphicsContext.copyTextureData( m_geometryBufferData[ 0u ], m_accumulationData );
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		renderVisualization( graphicsContext );
+#endif
 	}
 
 	bool GameRenderer::createTextureData()
@@ -145,7 +202,7 @@ namespace tiki
 		if ( m_depthBuffer.create( graphicsSystem, desc ) == false ) return false;
 
 		desc.flags		= TextureFlags_ShaderInput;
-		if ( m_readyOnlyDepthBuffer.create( graphicsSystem, desc ) == false ) return false;
+		if ( m_readOnlyDepthBuffer.create( graphicsSystem, desc ) == false ) return false;
 
 		desc.format		= PixelFormat_R8G8B8A8_Gamma;
 		desc.flags		= TextureFlags_ShaderInput | TextureFlags_RenderTarget;
@@ -205,7 +262,7 @@ namespace tiki
 		GraphicsSystem& graphicsSystem = *m_context.pGraphicsSystem;
 		
 		m_depthBuffer.dispose( graphicsSystem );
-		m_readyOnlyDepthBuffer.dispose( graphicsSystem );
+		m_readOnlyDepthBuffer.dispose( graphicsSystem );
 
 		for (uint i = 0u; i < TIKI_COUNT( m_geometryBufferData ); ++i)
 		{
@@ -222,4 +279,33 @@ namespace tiki
 		m_geometryTarget.dispose( graphicsSystem );
 		m_accumulationTarget.dispose( graphicsSystem );
 	}
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+	void GameRenderer::renderVisualization( GraphicsContext& graphicsContext ) const
+	{
+		if ( m_visualizationMode == VisualizationMode_Invalid )
+		{
+			return;
+		}
+
+		graphicsContext.beginRenderPass( m_accumulationTarget );
+
+		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setDepthStencilState( m_pDepthStencilState );
+		graphicsContext.setRasterizerState( m_pRasterizerState );
+
+		graphicsContext.setPixelShaderTexture( 0u, &m_geometryBufferData[ 0u ] );
+		graphicsContext.setPixelShaderTexture( 1u, &m_geometryBufferData[ 1u ] );
+		graphicsContext.setPixelShaderTexture( 2u, &m_geometryBufferData[ 2u ] );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
+		
+		graphicsContext.setVertexShader( m_pVisualizationShader->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setVertexInputBinding( m_pVisualizationInputBinding );
+		graphicsContext.setPixelShader( m_pVisualizationShader->getShader( ShaderType_PixelShader, m_visualizationMode ) );
+
+		graphicsContext.drawFullScreenQuadPos2Tex2();
+
+		graphicsContext.endRenderPass();
+	}
+#endif
 }
