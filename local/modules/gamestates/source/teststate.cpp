@@ -51,7 +51,7 @@ namespace tiki
 					framework::getResourceManager(),
 					asciiParameters
 				);
-				m_enableAsciiMode = false;
+				m_enableAsciiMode = true;
 
 				m_gbufferIndex = -1;
 
@@ -233,14 +233,17 @@ namespace tiki
 
 		if ( m_enableAsciiMode )
 		{
-			const Rectangle rect2 = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-			m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect2, TIKI_COLOR_WHITE );
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
+			m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect );
 		}
 		else if ( m_gbufferIndex != -1 )
 		{
-			const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			m_immediateRenderer.drawTexture( &texture, rect );
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getDownSampleData().getWidth()*5, (float)m_ascii.getDownSampleData().getHeight()*5 );
+			m_immediateRenderer.drawTexture( &m_ascii.getDownSampleData(), rect );
+
+			//const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
+			//const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			//m_immediateRenderer.drawTexture( &texture, rect );
 		}
 		else
 		{
@@ -250,7 +253,7 @@ namespace tiki
 		}
 
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
-		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2, TIKI_COLOR_WHITE );
+		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
 
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
 		
