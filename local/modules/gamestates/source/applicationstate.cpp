@@ -57,7 +57,7 @@ namespace tiki
 				{
 					GameRendererParamaters params;
 
-					if ( m_renderer.create( framework::getGraphicsSystem(), params ) == false )
+					if ( m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager(), params ) == false )
 					{
 						TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
 						return TransitionState_Error;
@@ -65,7 +65,7 @@ namespace tiki
 				}
 				else
 				{
-					m_renderer.dispose();
+					m_renderer.dispose( framework::getResourceManager() );
 				}
 
 				return TransitionState_Finish;
@@ -83,7 +83,10 @@ namespace tiki
 		if ( pEvent != nullptr )
 		{
 			framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
-			m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
+			if ( !m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
+			{
+				m_renderer.dispose( framework::getResourceManager() );				
+			}
 		}
 
 		m_renderer.update();

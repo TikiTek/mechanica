@@ -65,6 +65,9 @@ namespace tiki
 		DebugMenu					m_debugMenu;
 		DebugMenuPageDebugProp		m_debugMenuPageDebugProp;
 
+		int							m_gbufferIndex;
+
+		bool						m_enableAsciiMode;
 		PostProcessAscii			m_ascii;
 
 	};

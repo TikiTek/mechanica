@@ -35,8 +35,8 @@ VertexToPixel main( VertexInput input )
 	output.position = float4( input.position, 1.0f );
 	output.position = mul( output.position, c_instanceData.mvpMatrix );
 
-	output.normal	= mul( input.normal, c_instanceData.modelViewMatrix );
-	output.tangent	= mul( input.tangentFlip.xyz, c_instanceData.modelViewMatrix );
+	output.normal	= mul( input.normal, c_instanceData.modelMatrix );
+	output.tangent	= mul( input.tangentFlip.xyz, c_instanceData.modelMatrix );
 	output.binormal	= cross( output.normal, output.tangent ) * input.tangentFlip.w;
 
 	output.texCoord	= input.texCoord;
@@ -62,7 +62,7 @@ TIKI_DEFINE_SAMPLER( 0, s_linear );
 GeometryBufferSample main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
 	float3 diffuseColor = TIKI_TEX2D( t_diffuseMap, s_linear, input.texCoord ).rgb;
-	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, input.texCoord ).rgb;
+	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, input.texCoord ).rgb * 2.0f - 1.0f;
 	float3 selfIlluminationColor = TIKI_TEX2D( t_selfilluMap, s_linear, input.texCoord ).rgb;
 
 	float3x3 tangentSpaceNormalMatrix = float3x3( input.tangent, input.binormal, input.normal );

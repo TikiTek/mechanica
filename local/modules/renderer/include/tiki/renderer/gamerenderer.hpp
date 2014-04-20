@@ -11,9 +11,29 @@
 
 namespace tiki
 {
+	class BlendState;
+	class DepthStencilState;
 	class GraphicsContext;
 	class GraphicsSystem;
 	class Model;
+	class RasterizerState;
+	class ResourceManager;
+	class SamplerState;
+	class ShaderSet;
+	class VertexInputBinding;
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+	enum VisualizationMode
+	{
+		VisualizationMode_Invalid = -1,
+
+		VisualizationMode_Diffuse,
+		VisualizationMode_SelfIllumination,
+		VisualizationMode_Normal,
+
+		VisualizationMode_Count
+	};
+#endif
 
 	struct  GameRendererParamaters
 	{
@@ -48,8 +68,8 @@ namespace tiki
 		GameRenderer();
 		~GameRenderer();
 
-		bool				create( GraphicsSystem& graphicsSystem, const GameRendererParamaters& parameters );
-		void				dispose();
+		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const GameRendererParamaters& parameters );
+		void				dispose( ResourceManager& resourceManager );
 
 		bool				resize( uint width, uint height );
 
@@ -60,7 +80,13 @@ namespace tiki
 		RendererContext&	getRendererContext()	{ return m_context; }
 
 		const TextureData&	getGeometryBufferBxIndex( uint index ) const	{ return m_geometryBufferData[ index ]; }
-		const TextureData&	getDepthBuffer() const							{ return m_readyOnlyDepthBuffer; }
+		const TextureData&	getAccumulationBuffer() const					{ return m_accumulationData; }
+		const TextureData&	getDepthBuffer() const							{ return m_readOnlyDepthBuffer; }
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		VisualizationMode	getVisualizationMode() const					{ return m_visualizationMode; }
+		void				setVisualizationMode( VisualizationMode mode )	{ m_visualizationMode = mode; }
+#endif
 
 		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr );
 
@@ -78,25 +104,39 @@ namespace tiki
 			GeometryBuffer_Count
 		};
 
-		RendererContext		m_context;
-		FrameData			m_frameData;
+		RendererContext				m_context;
+		FrameData					m_frameData;
 
-		RenderBatch			m_renderBatch;
-		RenderEffectSystem	m_renderEffectSystem;
+		RenderBatch					m_renderBatch;
+		RenderEffectSystem			m_renderEffectSystem;
 
-		TextureData			m_depthBuffer;
-		TextureData			m_readyOnlyDepthBuffer;
-		TextureData			m_geometryBufferData[ GeometryBuffer_Count ];
-		TextureData			m_accumulationData;
+		const BlendState*			m_pBlendState;
+		const DepthStencilState*	m_pDepthStencilState;
+		const RasterizerState*		m_pRasterizerState;
+		const SamplerState*			m_pSampler;
 
-		RenderTarget		m_geometryTarget;
-		RenderTarget		m_accumulationTarget;
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		const ShaderSet*			m_pVisualizationShader;
+		const VertexInputBinding*	m_pVisualizationInputBinding;
 
-		bool				createTextureData();
-		bool				createRenderTargets();
+		VisualizationMode			m_visualizationMode;
+#endif
 
-		void				disposeTextureData();
-		void				disposeRenderTargets();
+		TextureData					m_depthBuffer;
+		TextureData					m_readOnlyDepthBuffer;
+		TextureData					m_geometryBufferData[ GeometryBuffer_Count ];
+		TextureData					m_accumulationData;
+
+		RenderTarget				m_geometryTarget;
+		RenderTarget				m_accumulationTarget;
+
+		bool						createTextureData();
+		bool						createRenderTargets();
+
+		void						disposeTextureData();
+		void						disposeRenderTargets();
+
+		void						renderVisualization( GraphicsContext& graphicsContext ) const;
 
 	};
 }

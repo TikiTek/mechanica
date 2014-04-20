@@ -148,16 +148,13 @@ namespace tiki
 
 				const SceneRenderEffectData* pRenderEffectData = static_cast< const SceneRenderEffectData* >( command.pRenderEffectData );
 
-				Matrix33 mvMtx = command.worldTransform.rot;
-				matrix::mul( mvMtx, frameData.mainCamera.getViewMatrix().rot );
-
 				Matrix44 mvpMtx;
 				matrix::set( mvpMtx, command.worldTransform );
 				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
 
 				SceneVertexConstantData* pVertexConstants = static_cast< SceneVertexConstantData* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
-				createGraphicsMatrix33( pVertexConstants->modelViewMatrix, mvMtx );
+				createGraphicsMatrix33( pVertexConstants->modelMatrix, command.worldTransform.rot );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
 
 				ScenePixelConstantData* pPixelConstants = static_cast< ScenePixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstantBuffer ) );
