@@ -67,9 +67,10 @@ namespace tiki
 					string name = featuresList[ j ];
 					uint maxValue = 1u;
 
-					const int arrayIndex = name.indexOf( '[' );
+					int arrayIndex = name.indexOf( '[' );
 					if ( arrayIndex != -1 )
 					{
+						arrayIndex++;
 						const int arrayLength = name.indexOf( ']' ) - arrayIndex;
 						if ( arrayLength < 0u )
 						{
@@ -78,7 +79,7 @@ namespace tiki
 						}
 
 						const string maxValueString = name.substring( arrayIndex, arrayLength );
-						maxValue	= ParseString::parseUInt32( maxValueString );
+						maxValue	= ParseString::parseUInt32( maxValueString ) - 1u;
 						name		= name.substring( 0u, arrayIndex - 1u );
 					}
 

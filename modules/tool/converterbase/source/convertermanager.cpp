@@ -214,6 +214,11 @@ namespace tiki
 			path::getFilename( resourceName )
 		);
 	}
+
+	void ConverterManager::addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt )
+	{
+		s_pCurrentResult->addDependency( type, identifier, valueText, valueInt );
+	}
 	
 	void ConverterManager::writeResourceMap()
 	{
@@ -403,11 +408,11 @@ namespace tiki
 		TIKI_TRACE( "Building asset: %s\n", file.fullFileName.cStr() );
 		
 		result.addDependency( ConversionResult::DependencyType_Converter, "", "", pConverter->getConverterRevision() );
-		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", file::getLastChangeCrc( params.sourceFile ) );
+		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", 0u );
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const string& inputFileName = params.inputFiles[ i ].fileName;
-			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", file::getLastChangeCrc( inputFileName ) );
+			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", 0u );
 		}
 
 		s_pCurrentResult = &result;
@@ -580,7 +585,7 @@ namespace tiki
 		for (uint i = 0u; i < parametes.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& inputFile = parametes.inputFiles[ i ];
-			const string inputFileName = inputFile.fileName;
+			const string inputFileName = path::getAbsolutePath( inputFile.fileName );
 
 			const bool sqlResult = m_dataBase.executeCommand(
 				formatString(

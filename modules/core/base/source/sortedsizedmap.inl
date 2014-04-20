@@ -150,6 +150,11 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	uint SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
 	{
+		if ( m_count == 0u )
+		{
+			return TIKI_SIZE_T_MAX;
+		}
+
 		int imin = 0u;
 		int imax = m_count;
 		// continue searching while [imin,imax] is not empty
