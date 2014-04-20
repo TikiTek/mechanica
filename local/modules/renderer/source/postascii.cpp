@@ -117,7 +117,7 @@ namespace tiki
 			matrix::invert( inverseProjection, frameData.mainCamera.getProjection().getMatrix() );
 
 			AsciiPixelConstantData* pPixelConstantData = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
-			createFloat4( pPixelConstantData->param0, frameData.farPlane, 0.25f, 0.5f, 0.75f );
+			createFloat4( pPixelConstantData->param0, frameData.farPlane, (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
 			createGraphicsMatrix44( pPixelConstantData->inverseProjection, inverseProjection );
 			graphicsContext.unmapBuffer( m_pixelConstants );
 		}

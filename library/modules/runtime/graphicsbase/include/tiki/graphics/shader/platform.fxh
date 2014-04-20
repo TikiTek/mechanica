@@ -1,11 +1,24 @@
 #ifndef __TIKI_PLATFORM_FXH_INCLUDED__
 #define __TIKI_PLATFORM_FXH_INCLUDED__
 
+#define M_PI		3.14159265f
+#define M_TWOPI		6.28318530f
+#define M_PIOVER2	1.57079632f
+#define M_PIOVER4	0.78539816f
+
 #define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
 #define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )
 
 #define TIKI_HLSL4 1
 #if TIKI_HLSL4
+
+// types
+
+#define TIKI_SAMPLER		SamplerState
+#define TIKI_TEXTURE1D		Texture1D
+#define TIKI_TEXTURE2D		Texture2D
+#define TIKI_TEXTURE3D		Texture3D
+#define TIKI_TEXTURECUBE	TextureCube
 
 // constants
 #define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
