@@ -385,7 +385,7 @@ namespace tiki
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
 
-	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )
+	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
 		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
 
@@ -395,7 +395,7 @@ namespace tiki
 		return mapped.pData;
 	}
 
-	void GraphicsContext::unmapBuffer( BaseBuffer& buffer )
+	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
 		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
 	}

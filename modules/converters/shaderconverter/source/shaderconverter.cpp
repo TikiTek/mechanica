@@ -352,7 +352,7 @@ namespace tiki
 			else if ( pErrorBlob )
 			{
 				string error = (const char*)pErrorBlob->GetBufferPointer();
-				TIKI_TRACE_ERROR( "failed to compile shader. error message: %s\n", error.cStr() );
+				TIKI_TRACE_ERROR( "failed to compile shader. error message:\n%s\n", error.cStr() );
 			}
 			else
 			{

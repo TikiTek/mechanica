@@ -11,7 +11,7 @@ namespace tiki
 {
 	namespace f32
 	{
-		static const float epsilon	= 4.37114e-05f;
+		static const float epsilon	= 4.37114e-08f;
 		static const float pi		= 3.141592653f;
 		static const float twoPi	= 6.283185307f;
 		static const float piOver2	= 1.570796326f;

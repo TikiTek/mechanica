@@ -102,8 +102,8 @@ namespace tiki
 		void				drawFullScreenQuadPos3();
 		void				drawFullScreenQuadPos3Tex2( float x0 = 0.0f, float y0 = 0.0f, float x1 = 1.0f, float y1 = 1.0f );
 
-		void*				mapBuffer( BaseBuffer& buffer );
-		void				unmapBuffer( BaseBuffer& buffer );
+		void*				mapBuffer( const BaseBuffer& buffer );
+		void				unmapBuffer( const BaseBuffer& buffer );
 
 		const RenderTarget&	getBackBuffer() const;
 

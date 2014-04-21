@@ -130,6 +130,11 @@ namespace tiki
 
 	bool GraphicsSystem::resize( uint width, uint height )
 	{
+		if ( width == 0u || height == 0u )
+		{
+			return false;
+		}
+
 		m_platformData.pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
 
 		safeRelease( &m_platformData.pDepthStencilView );
