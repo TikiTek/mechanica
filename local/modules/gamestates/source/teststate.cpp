@@ -51,7 +51,7 @@ namespace tiki
 					framework::getResourceManager(),
 					asciiParameters
 				);
-				m_enableAsciiMode = true;
+				m_enableAsciiMode = false;
 
 				m_gbufferIndex = -1;
 
@@ -131,6 +131,7 @@ namespace tiki
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
 					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
 
+					vector::clear( m_cameraRotation );
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
 
@@ -178,8 +179,19 @@ namespace tiki
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
-		Vector3 cameraPosition		= frameData.mainCamera.getPosition();
-		Quaternion cameraRotation	= frameData.mainCamera.getRotation();
+		Vector3 cameraPosition = frameData.mainCamera.getPosition();
+		Quaternion cameraRotation;
+
+		// rotate camera
+		{
+			Vector2 rotation = m_rightStickState;
+			vector::scale( rotation, timeDelta * 2.0f );
+
+			m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
+
+			vector::add( m_cameraRotation, rotation );
+			quaternion::fromYawPitchRoll( cameraRotation, m_cameraRotation.x, m_cameraRotation.y, 0.0f );
+		}
 
 		// move camera
 		{
@@ -195,18 +207,11 @@ namespace tiki
 			vector::add( cameraPosition, cameraRight );
 		}
 
-		// rotate camera
-		{
-			Vector2 rotation = m_rightStickState;
-			vector::scale( rotation, timeDelta * 2.0f );
-
-			Quaternion cameraRotationDelta;
-			quaternion::fromYawPitchRoll( cameraRotationDelta, rotation.x, rotation.y, 0.0f );
-
-			quaternion::mul( cameraRotation, cameraRotationDelta );
-		}
-
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
+
+		DirectionalLightData& directionalLight = frameData.directionalLights.push();
+		vector::set( directionalLight.direction, 1.0f, 0.0f, 0.0f );
+		directionalLight.color = TIKI_COLOR_WHITE;
 
 		Matrix43 mtx;
 		matrix::clear( mtx );
@@ -291,7 +296,14 @@ namespace tiki
 				return true;
 
 			case KeyboardKey_V:
-				m_pGameRenderer->setVisualizationMode( (VisualizationMode)( ( m_pGameRenderer->getVisualizationMode() + 1u ) % VisualizationMode_Count ) );
+				{
+					VisualizationMode visualizationMode = (VisualizationMode)( m_pGameRenderer->getVisualizationMode() + 1u );
+					if ( visualizationMode == VisualizationMode_Count )
+					{
+						visualizationMode = VisualizationMode_Invalid;
+					}
+					m_pGameRenderer->setVisualizationMode( visualizationMode );
+				}
 				return true;
 
 			case KeyboardKey_G:

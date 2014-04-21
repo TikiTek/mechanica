@@ -20,7 +20,7 @@ GeometryBufferSample createGeometryBufferSample( float3 diffuseColor, float3 sel
 	sample.buffer1Sample.a		= specluarIntensity;
 	sample.buffer2Sample.xy		= normal;
 	sample.buffer2Sample.z		= selfIlluminationFactor;
-	sample.buffer2Sample.w		= specluarPower;
+	sample.buffer2Sample.w		= specluarPower / 100.0f;
 	return sample;
 }
 
@@ -39,9 +39,14 @@ float getSelfIlluminationFactor( GeometryBufferSample sample )
 	return sample.buffer2Sample.z;
 }
 
-float2 getNormal( GeometryBufferSample sample )
+float2 getCompressedNormal( GeometryBufferSample sample )
 {
 	return sample.buffer2Sample.xy;
+}
+
+float3 getNormal( GeometryBufferSample sample )
+{
+	return decodeNormal( getCompressedNormal( sample ) );
 }
 
 float getSpecluarBrightness( GeometryBufferSample sample )
@@ -56,7 +61,7 @@ float getSpecluarIntensity( GeometryBufferSample sample )
 
 float getSpecluarPower( GeometryBufferSample sample )
 {
-	return sample.buffer2Sample.a;
+	return sample.buffer2Sample.a * 100.0f;
 }
 
 GeometryBufferSample sampleGeometryBuffer( TIKI_TEXTURE2D gBuffer0, TIKI_TEXTURE2D gBuffer1, TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )

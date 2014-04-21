@@ -4,10 +4,26 @@
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/model.hpp"
 
+#include "shader/lighting_shader.hpp"
+
 namespace tiki
 {
 	GameRenderer::GameRenderer()
 	{
+		m_pBlendStateAdd				= nullptr;
+		m_pBlendStateSet				= nullptr;
+		m_pDepthStencilState			= nullptr;
+		m_pRasterizerState				= nullptr;
+		m_pSamplerLinear				= nullptr;
+		m_pSamplerNearst				= nullptr;
+
+		m_pLightingShader				= nullptr;
+		m_pLightingInputBinding			= nullptr;
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_pVisualizationShader			= nullptr;
+		m_pVisualizationInputBinding	= nullptr;
+#endif
 	}
 
 	GameRenderer::~GameRenderer()
@@ -16,17 +32,18 @@ namespace tiki
 
 	bool GameRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const GameRendererParamaters& parameters )
 	{
-		m_context.pGraphicsSystem	= &graphicsSystem;
-		m_context.rendererWidth		= parameters.rendererWidth;
-		m_context.rendererHeight	= parameters.rendererHeight;
-		m_context.pGBufferDiffuse	= &m_geometryBufferData[ 0u ];
-		m_context.pGBufferSelfIllu	= &m_geometryBufferData[ 1u ];
-		m_context.pGBufferNormal	= &m_geometryBufferData[ 2u ];
-		m_context.pDepthBuffer		= &m_readOnlyDepthBuffer;
+		m_context.pGraphicsSystem		= &graphicsSystem;
+		m_context.rendererWidth			= parameters.rendererWidth;
+		m_context.rendererHeight		= parameters.rendererHeight;
+		m_context.pGBuffer0				= &m_geometryBufferData[ 0u ];
+		m_context.pGBuffer1				= &m_geometryBufferData[ 1u ];
+		m_context.pGBuffer2				= &m_geometryBufferData[ 2u ];
+		m_context.pAccumulationBuffer	= &m_accumulationData;
+		m_context.pDepthBuffer			= &m_readOnlyDepthBuffer;
 
-		m_frameData.nearPlane		= parameters.nearPlane;
-		m_frameData.farPlane		= parameters.farPlane;
-		m_frameData.aspectRatio		= (float)parameters.rendererWidth / (float)parameters.rendererHeight;
+		m_frameData.nearPlane			= parameters.nearPlane;
+		m_frameData.farPlane			= parameters.farPlane;
+		m_frameData.aspectRatio			= (float)parameters.rendererWidth / (float)parameters.rendererHeight;
 
 		if ( m_renderBatch.create( parameters.maxSeqeuenceCount, parameters.maxRenderCommandCount ) == false )
 		{
@@ -52,17 +69,39 @@ namespace tiki
 			return false;
 		}
 
-		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendStateAdd		= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendStateSet		= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
-		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
+		m_pSamplerLinear		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
+		m_pSamplerNearst		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Nearest, FilterMode_Nearest );
 		
-		if ( m_pBlendState == nullptr || m_pDepthStencilState == nullptr || m_pRasterizerState == nullptr || m_pSampler == nullptr )
+		if ( m_pBlendStateAdd == nullptr || m_pBlendStateSet == nullptr || m_pDepthStencilState == nullptr || m_pRasterizerState == nullptr || m_pSamplerLinear == nullptr || m_pSamplerNearst == nullptr )
 		{
 			dispose( resourceManager );
 			return false;
 		}
 
+		m_pLightingShader = resourceManager.loadResource< ShaderSet >( "lighting.shader" );
+		if ( m_pLightingShader == nullptr )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+
+		m_pLightingInputBinding = graphicsSystem.createVertexInputBinding( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if ( m_pLightingInputBinding == nullptr )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+
+		if ( !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) ) )
+		{
+			dispose( resourceManager );
+			return false;
+		}
+		
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_pVisualizationShader = resourceManager.loadResource< ShaderSet >( "visualization.shader" );
 		if ( m_pVisualizationShader == nullptr )
@@ -97,8 +136,18 @@ namespace tiki
 		m_pVisualizationShader = nullptr;
 #endif
 
-		graphicsSystem.disposeBlendState( m_pBlendState );
-		m_pBlendState = nullptr;
+		m_lightingPixelConstants.dispose( graphicsSystem );
+
+		graphicsSystem.disposeVertexInputBinding( m_pLightingInputBinding );
+		m_pLightingInputBinding = nullptr;
+
+		resourceManager.unloadResource( m_pLightingShader );
+		m_pLightingShader = nullptr;
+
+		graphicsSystem.disposeBlendState( m_pBlendStateAdd );
+		graphicsSystem.disposeBlendState( m_pBlendStateSet );
+		m_pBlendStateAdd = nullptr;
+		m_pBlendStateSet = nullptr;
 
 		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState );
 		m_pDepthStencilState = nullptr;
@@ -106,8 +155,10 @@ namespace tiki
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		m_pRasterizerState = nullptr;
 
-		graphicsSystem.disposeSamplerState( m_pSampler );
-		m_pSampler = nullptr;
+		graphicsSystem.disposeSamplerState( m_pSamplerLinear );
+		graphicsSystem.disposeSamplerState( m_pSamplerNearst );
+		m_pSamplerLinear = nullptr;
+		m_pSamplerNearst = nullptr;
 
 		disposeRenderTargets();
 		disposeTextureData();
@@ -157,6 +208,7 @@ namespace tiki
 
 	void GameRenderer::update()
 	{
+		m_frameData.reset();
 		m_frameData.mainCamera.getProjection().createPerspective(
 			m_frameData.aspectRatio,
 			f32::piOver4,
@@ -170,15 +222,8 @@ namespace tiki
 
 	void GameRenderer::render( GraphicsContext& graphicsContext ) const
 	{
-		graphicsContext.beginRenderPass( m_geometryTarget );
-		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_GRAY );
-
-		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
-
-		graphicsContext.endRenderPass();
-
-		graphicsContext.copyTextureData( m_depthBuffer, m_readOnlyDepthBuffer );
-		graphicsContext.copyTextureData( m_geometryBufferData[ 0u ], m_accumulationData );
+		renderGeometry( graphicsContext );
+		renderLighting( graphicsContext );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		renderVisualization( graphicsContext );
@@ -280,6 +325,60 @@ namespace tiki
 		m_accumulationTarget.dispose( graphicsSystem );
 	}
 
+	void GameRenderer::renderGeometry( GraphicsContext& graphicsContext ) const
+	{
+		graphicsContext.beginRenderPass( m_geometryTarget );
+		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_BLACK );
+
+		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
+
+		graphicsContext.endRenderPass();
+
+		graphicsContext.copyTextureData( m_depthBuffer, m_readOnlyDepthBuffer );
+	}
+
+	void GameRenderer::renderLighting( GraphicsContext& graphicsContext ) const
+	{
+		if ( m_frameData.directionalLights.getCount() == 0u )
+		{
+			return;
+		}
+
+		graphicsContext.beginRenderPass( m_accumulationTarget );
+		graphicsContext.clear( m_accumulationTarget, TIKI_COLOR_BLACK, 1.0f, 0u, ClearMask_Color );
+
+		graphicsContext.setBlendState( m_pBlendStateAdd );
+		graphicsContext.setDepthStencilState( m_pDepthStencilState );
+		graphicsContext.setRasterizerState( m_pRasterizerState );
+
+		graphicsContext.setPixelShaderTexture( 0u, &m_geometryBufferData[ 0u ] );
+		graphicsContext.setPixelShaderTexture( 1u, &m_geometryBufferData[ 1u ] );
+		graphicsContext.setPixelShaderTexture( 2u, &m_geometryBufferData[ 2u ] );
+		graphicsContext.setPixelShaderTexture( 3u, &m_readOnlyDepthBuffer );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerNearst );
+
+		const DirectionalLightData& lightData = m_frameData.directionalLights[ 0u ];
+
+		Matrix44 inverseProjection;
+		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
+
+		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
+
+		createFloat4( pPixelConstants->param0, lightData.direction.x, lightData.direction.y, lightData.direction.z, 0.0f );
+		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
+		color::toFloat4( pPixelConstants->param1, lightData.color );
+		graphicsContext.unmapBuffer( m_lightingPixelConstants );
+
+		graphicsContext.setVertexShader( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, 0u ) );
+		graphicsContext.setVertexInputBinding( m_pLightingInputBinding );
+		graphicsContext.setPixelShaderConstant( 0u, m_lightingPixelConstants );
+
+		graphicsContext.drawFullScreenQuadPos2Tex2();
+
+		graphicsContext.endRenderPass();
+	}
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	void GameRenderer::renderVisualization( GraphicsContext& graphicsContext ) const
 	{
@@ -290,14 +389,14 @@ namespace tiki
 
 		graphicsContext.beginRenderPass( m_accumulationTarget );
 
-		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setBlendState( m_pBlendStateSet );
 		graphicsContext.setDepthStencilState( m_pDepthStencilState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 
 		graphicsContext.setPixelShaderTexture( 0u, &m_geometryBufferData[ 0u ] );
 		graphicsContext.setPixelShaderTexture( 1u, &m_geometryBufferData[ 1u ] );
 		graphicsContext.setPixelShaderTexture( 2u, &m_geometryBufferData[ 2u ] );
-		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
 		
 		graphicsContext.setVertexShader( m_pVisualizationShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setVertexInputBinding( m_pVisualizationInputBinding );

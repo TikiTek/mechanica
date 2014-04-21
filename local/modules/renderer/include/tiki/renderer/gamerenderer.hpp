@@ -3,6 +3,7 @@
 #define __TIKI_GAMERENDERER_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/renderer/renderbatch.hpp"
@@ -110,10 +111,16 @@ namespace tiki
 		RenderBatch					m_renderBatch;
 		RenderEffectSystem			m_renderEffectSystem;
 
-		const BlendState*			m_pBlendState;
+		const BlendState*			m_pBlendStateAdd;
+		const BlendState*			m_pBlendStateSet;
 		const DepthStencilState*	m_pDepthStencilState;
 		const RasterizerState*		m_pRasterizerState;
-		const SamplerState*			m_pSampler;
+		const SamplerState*			m_pSamplerLinear;
+		const SamplerState*			m_pSamplerNearst;
+
+		const ShaderSet*			m_pLightingShader;
+		const VertexInputBinding*	m_pLightingInputBinding;
+		ConstantBuffer				m_lightingPixelConstants;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const ShaderSet*			m_pVisualizationShader;
@@ -136,6 +143,8 @@ namespace tiki
 		void						disposeTextureData();
 		void						disposeRenderTargets();
 
+		void						renderGeometry( GraphicsContext& graphicsContext ) const;
+		void						renderLighting( GraphicsContext& graphicsContext ) const;
 		void						renderVisualization( GraphicsContext& graphicsContext ) const;
 
 	};

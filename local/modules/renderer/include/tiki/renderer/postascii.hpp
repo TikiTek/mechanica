@@ -44,7 +44,7 @@ namespace tiki
 		const TextureData&	getDownSampleData() const	{ return m_downSampleData; }
 		const TextureData&	getResultData() const		{ return m_finalResultData; }
 
-		void				render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext );
+		void				render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext ) const;
 		
 	private:
 

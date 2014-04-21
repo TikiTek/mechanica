@@ -82,10 +82,12 @@ namespace tiki
 		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
 		if ( pEvent != nullptr )
 		{
-			framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
-			if ( !m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
+			if ( framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
 			{
-				m_renderer.dispose( framework::getResourceManager() );				
+				if ( !m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
+				{
+					m_renderer.dispose( framework::getResourceManager() );				
+				}
 			}
 		}
 

@@ -52,6 +52,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	color.rgb = TIKI_TEX2D( t_gBuffer2, s_linear, input.texCoord ).rgb;
 #elif TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_NORMAL
 	color.rgb = decodeNormal( TIKI_TEX2D( t_gBuffer3, s_linear, input.texCoord ).xy );
+	color.rgb = ( color.rgb / 2.0f ) + 0.5f;
 #else
 	color.r = 1.0f;
 #endif
