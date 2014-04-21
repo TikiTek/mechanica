@@ -166,6 +166,15 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix44& matrix::set( Matrix44& mtx, const Matrix33& rot )
+	{
+		vector::set( mtx.x, rot.x, 0.0f );
+		vector::set( mtx.y, rot.y, 0.0f );
+		vector::set( mtx.z, rot.z, 0.0f );
+		vector::set( mtx.w, 0.0f, 0.0f, 0.0f, 1.0f );
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix44& matrix::set( Matrix44& mtx, const Matrix43& rotPos )
 	{
 		vector::set( mtx.x, rotPos.rot.x, 0.0f );

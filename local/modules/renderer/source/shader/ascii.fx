@@ -45,9 +45,8 @@ TIKI_DEFINE_SAMPLER( 1, s_samplerNearst );
 
 #if TIKI_DOWNSAMPLE
 
-TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer0 );
-TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer2 );
-TIKI_DEFINE_TEXTURE2D( 2, t_depthBuffer );
+TIKI_DEFINE_TEXTURE2D( 0, t_accumulationBuffer );
+TIKI_DEFINE_TEXTURE2D( 1, t_depthBuffer );
 
 TIKI_DEFINE_CONSTANT( 0, AsciiPixelConstantData, c_pixelData );
 
@@ -79,49 +78,43 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
     // from its texture coordinate.
     float fXIndex = input.texCoord.x * fWidth;
     float fYIndex = input.texCoord.y * fHeight;
-
-    /* image boundaries Top, Bottom, Left, Right pixels*/
-    if( ! ( fYIndex < 1.0 || fYIndex > fHeight - 1.0 || fXIndex < 1.0 || fXIndex > fWidth - 1.0 ) )
+    if( !( fYIndex < 1.0 || fYIndex > fHeight - 1.0 || fXIndex < 1.0 || fXIndex > fWidth - 1.0 ) )
     {
-		float4 fSumX		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
-		float4 fSumY		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
+		float4 sumX		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
+		float4 sumY		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
 
 	    for(float I=-1.0; I <= 1.0f; I = I + 1.0f)
         {
             for(float J=-1.0; J <= 1.0f; J = J + 1.0f)
             {
-                float fTempX = ( fXIndex + I + 0.5f ) / fWidth ;
-                float fTempY = ( fYIndex + J + 0.5f ) / fHeight ;
-                float4 fTempSumX = TIKI_TEX2D( t_gBuffer0, s_samplerLinear, float2( fTempX, fTempY ) );
-                fSumX = fSumX + ( fTempSumX * float4( GX[int(I+1.0)][int(J+1.0)],
-                                                    GX[int(I+1.0)][int(J+1.0)],
-                                                    GX[int(I+1.0)][int(J+1.0)],
-                                                    GX[int(I+1.0)][int(J+1.0)]));
+                float texCoordX = ( fXIndex + I + 0.5f ) / fWidth;
+                float texCoordY = ( fYIndex + J + 0.5f ) / fHeight;
 
-                float4 fTempSumY = TIKI_TEX2D( t_gBuffer0, s_samplerLinear, float2( fTempX, fTempY ) );
-                fSumY = fSumY + ( fTempSumY * float4( GY[int(I+1.0)][int(J+1.0)],
-                                                    GY[int(I+1.0)][int(J+1.0)],
-                                                    GY[int(I+1.0)][int(J+1.0)],
-                                                    GY[int(I+1.0)][int(J+1.0)]));
+				float valueX = GX[int(I+1.0)][int(J+1.0)];
+				float valueY = GY[int(I+1.0)][int(J+1.0)];
+                float4 sampleX = TIKI_TEX2D( t_accumulationBuffer, s_samplerLinear, float2( texCoordX, texCoordY ) );
+                float4 sampleY = TIKI_TEX2D( t_accumulationBuffer, s_samplerLinear, float2( texCoordX, texCoordY ) );
+                sumX += sampleX * valueX.xxxx;
+                sumY += sampleY * valueY.xxxx;
             }
         }
 
-        float4 fTem = fSumX * fSumX + fSumY * fSumY;
+        float4 fTem = sumX * sumX + sumY * sumY;
         fTotalSum = sqrt( fTem );
     }
 	
-	float edgeAlpha = ( fTotalSum.x + fTotalSum.y + fTotalSum.z ) / 6.0f;
-	float4 color = t_gBuffer0.Sample( s_samplerLinear, input.texCoord );
+	float edgeAlpha = dot( fTotalSum, 1.0f ) / 8.0f;
+	float4 color = TIKI_TEX2D( t_accumulationBuffer, s_samplerLinear, input.texCoord );
 	color.a = viewPosition.z + edgeAlpha;
 #else
-	float4 color = t_downsample.Sample( s_samplerNearst, input.texCoord );
+	float4 color = TIKI_TEX2D( t_downsample, s_samplerNearst, input.texCoord );
 
 	float3 uvw = float3( input.texCoord, 0.0f );
 	uvw.x *= 105.0f;
 	uvw.y *= 60.0f;
 	uvw.z = color.a;
 
-	float ascii = t_ascii.Sample( s_samplerLinear, uvw ).r;
+	float ascii = TIKI_TEX3D( t_ascii, s_samplerLinear, uvw ).r;
 	color = float4( color.rgb * ascii.rrr, 1.0f);
 #endif
 

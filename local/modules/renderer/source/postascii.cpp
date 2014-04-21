@@ -109,9 +109,9 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	void PostProcessAscii::render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext )
+	void PostProcessAscii::render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext ) const
 	{
-		// downsample
+		// down sample
 		{
 			Matrix44 inverseProjection;
 			matrix::invert( inverseProjection, frameData.mainCamera.getProjection().getMatrix() );
@@ -128,9 +128,8 @@ namespace tiki
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 
-		graphicsContext.setPixelShaderTexture( 0u, rendererContext.pGBufferDiffuse );
-		graphicsContext.setPixelShaderTexture( 1u, rendererContext.pGBufferNormal );
-		graphicsContext.setPixelShaderTexture( 2u, rendererContext.pDepthBuffer );
+		graphicsContext.setPixelShaderTexture( 0u, rendererContext.pAccumulationBuffer );
+		graphicsContext.setPixelShaderTexture( 1u, rendererContext.pDepthBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
 		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerNearest );
 

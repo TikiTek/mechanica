@@ -739,13 +739,23 @@ namespace tiki
 			return;
 		}
 
+		const Vector3 rotX = { worldTransform.x.x, worldTransform.x.y, worldTransform.x.z };
+		const Vector3 rotY = { worldTransform.y.x, worldTransform.y.y, worldTransform.y.z };
+		const Vector3 rotZ = { worldTransform.z.x, worldTransform.z.y, worldTransform.z.z };
+
+		Matrix33 normalMatrix;
+		matrix::set( normalMatrix, rotX, rotY, rotZ );
+
 		for (uint i = 0u; i < m_vertices.getCount(); ++i)
 		{
 			ToolModelVertex& vertex = m_vertices[ i ];
 
-			Vector3 pos = { vertex.position.x, vertex.position.y, vertex.position.z };
-			matrix::transform( pos, worldTransform );
-			createFloat3( vertex.position, pos.x, pos.y, pos.z );
+			Vector3 position	= { vertex.position.x, vertex.position.y, vertex.position.z };
+			Vector3 normal		= { vertex.normal.x, vertex.normal.y, vertex.normal.z };
+			matrix::transform( position, worldTransform );
+			matrix::transform( normal, normalMatrix );
+			createFloat3( vertex.position, position.x, position.y, position.z );
+			createFloat3( vertex.normal, normal.x, normal.y, normal.z );
 		} 
 	}
 }

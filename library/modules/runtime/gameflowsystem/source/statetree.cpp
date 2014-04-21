@@ -17,6 +17,7 @@ namespace tiki
 		m_stateDefinition.create( pStateDefinitions, stateCount );
 
 		m_currentState					= 0;		
+		m_transitionSourceState			= 0;
 		m_transitionNextState			= 0;
 		m_transitionPathSize			= 0;
 		m_transitionCurrentPathIndex	= TIKI_SIZE_T_MAX;
@@ -36,12 +37,12 @@ namespace tiki
 	void StateTree::startTransition( int stateIndex )
 	{
 		TIKI_ASSERT( stateIndex < (int)m_stateDefinition.getCount() );
-		TIKI_ASSERT( m_transitionCurrentPathIndex == TIKI_SIZE_T_MAX );
 
-		if ( m_currentState == stateIndex )
+		if ( m_currentState == stateIndex && m_transitionCurrentPathIndex == TIKI_SIZE_T_MAX )
 		{
 			return;
 		}
+		m_transitionSourceState = m_currentState;
 
 		const StateDefinition& curDef	= m_stateDefinition[ m_currentState ];
 		const StateDefinition& destDef	= m_stateDefinition[ stateIndex ];
@@ -141,12 +142,14 @@ namespace tiki
 
 		case TransitionState_Error:
 			{
-				TIKI_BREAK( "[statetree] errors currently not supported.\n");
-				//TIKI_ASSERT( m_isCreating ); // shutdown must success
+				//TIKI_TRACE( "[statetree] error has occured. current state: %i, current step: %i\n", m_currentState, m_currentStep );
+				if ( !m_isCreating )
+				{
+					// ignore errors during shutdown
+					break;
+				}
 
-				//m_transitionPathDirection	= -1;
-				//m_isCreating				= false;
-				//m_currentStep--;
+				startTransition( m_transitionSourceState );
 			}
 			break;
 

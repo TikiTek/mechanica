@@ -126,7 +126,7 @@ namespace tiki
 		for (uint sequnceIndex = 0u; sequnceIndex < sequenceCount; ++sequnceIndex)
 		{
 			const RenderSequence& sequence = pSequences[ sequnceIndex ];
-
+			
 			for (uint commandIndex = 0u; commandIndex < sequence.commandCount; ++commandIndex)
 			{
 				const RenderCommand& command = sequence.pCommands[ commandIndex ];
@@ -152,9 +152,16 @@ namespace tiki
 				matrix::set( mvpMtx, command.worldTransform );
 				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
 
+				Matrix44 modelMatrix;
+				matrix::set( modelMatrix, command.worldTransform );
+
+				Matrix44 modelInverseTranspose = modelMatrix;
+				//matrix::invert( modelInverseTranspose, modelMatrix );
+				//matrix::transpose( modelInverseTranspose );
+
 				SceneVertexConstantData* pVertexConstants = static_cast< SceneVertexConstantData* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
-				createGraphicsMatrix33( pVertexConstants->modelMatrix, command.worldTransform.rot );
+				createGraphicsMatrix44( pVertexConstants->modelMatrix, modelInverseTranspose );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
 
 				ScenePixelConstantData* pPixelConstants = static_cast< ScenePixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstantBuffer ) );

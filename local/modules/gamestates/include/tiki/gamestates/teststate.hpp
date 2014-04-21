@@ -59,6 +59,7 @@ namespace tiki
 
 		ImmediateRenderer			m_immediateRenderer;
 
+		Vector2						m_cameraRotation;
 		Vector2						m_leftStickState;
 		Vector2						m_rightStickState;
 
