@@ -29,19 +29,21 @@ namespace tiki
 			pLastFeature = features.getLast();
 		}
 
-		ShaderFeature& feature = features.add();
+		ShaderFeature feature;
 		feature.name		= name;
 		feature.bitCount	= 64u - countLeadingZeros64( maxValue );
 		feature.maxValue	= maxValue;
 
 		if ( pLastFeature != nullptr )
 		{
-			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount;
+			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount + 1u;
 		}
 		else
 		{
 			feature.startBit = 0u;
 		}
+
+		features.add( feature );
 	}
 
 	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, uint typeCount, const string& featuresLine )

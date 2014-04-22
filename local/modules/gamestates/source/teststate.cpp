@@ -73,9 +73,11 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModel		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
+					m_pModelBoxes	= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
+					m_pModelPlane	= framework::getResourceManager().loadResource< Model >( "plane.model" );
 					m_pFont			= framework::getResourceManager().loadResource< Font >( "debug.font" );
-					TIKI_ASSERT( m_pModel != nullptr );
+					TIKI_ASSERT( m_pModelBoxes != nullptr );
+					TIKI_ASSERT( m_pModelPlane != nullptr );
 					TIKI_ASSERT( m_pFont != nullptr );
 
 					Vector2 screenSize;
@@ -101,7 +103,8 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
-				framework::getResourceManager().unloadResource< Model >( m_pModel );
+				framework::getResourceManager().unloadResource< Model >( m_pModelBoxes );
+				framework::getResourceManager().unloadResource< Model >( m_pModelPlane );
 				framework::getResourceManager().unloadResource< Font >( m_pFont );
 
 				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
@@ -210,14 +213,36 @@ namespace tiki
 		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
 
 		DirectionalLightData& directionalLight = frameData.directionalLights.push();
-		vector::set( directionalLight.direction, 1.0f, 0.0f, 0.0f );
+		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
-		Matrix43 mtx;
-		matrix::clear( mtx );
-		matrix::createRotationY( mtx.rot, (float)framework::getFrameTimer().getTotalTime() / 10.0f );
+		const uint pointLightCount = 4u;
+		const Color s_colors[ 4u ] =
+		{
+			TIKI_COLOR_RED,
+			TIKI_COLOR_GREEN,
+			TIKI_COLOR_BLUE,
+			TIKI_COLOR_YELLOW
+		};
 
-		m_pGameRenderer->queueModel( m_pModel, &mtx );		
+		const float timeValue = (float)framework::getFrameTimer().getTotalTime() / 10.0f;
+		for (uint i = 0u; i < pointLightCount; ++i)
+		{
+			const float value = ( ( f32::twoPi / pointLightCount ) * i ) + ( timeValue * -5.0f );
+
+			PointLightData& pointLight = frameData.pointLights.push();
+			vector::set( pointLight.position, sinf( value ) * 0.5f, 0.0f, cosf( value ) * 0.5f );
+			pointLight.color = s_colors[ i ];
+			pointLight.range = 2.0f;
+		}
+
+		Matrix43 mtx = Matrix43::identity;
+		mtx.pos.y = -0.1f;
+		m_pGameRenderer->queueModel( m_pModelPlane, &mtx );
+
+		matrix::clear( mtx );
+		matrix::createRotationY( mtx.rot, timeValue );
+		m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
 
 		m_debugMenu.update();
 	}

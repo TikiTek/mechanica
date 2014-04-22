@@ -52,7 +52,7 @@ namespace tiki
 		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
-		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
+		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Wrap, AddressMode_Wrap, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 		success &= ( m_pBlendState != nullptr && m_pDepthStencilState != nullptr && m_pRasterizerState != nullptr && m_pSampler != nullptr );
 
 		success &= m_vertexConstantBuffer.create( graphicsSystem, alignValue( sizeof( SceneVertexConstantData ), 16u ) );
@@ -108,15 +108,13 @@ namespace tiki
 
 	void SceneRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
 	{
-		const Shader* pVertexShader = m_pShader->getShader( ShaderType_VertexShader, 0u );
-
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 		graphicsContext.setBlendState( m_pBlendState );
 		graphicsContext.setDepthStencilState( m_pDepthStencilState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 
-		graphicsContext.setVertexShader( pVertexShader );
+		graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
 
 		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
