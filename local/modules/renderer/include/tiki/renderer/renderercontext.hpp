@@ -52,6 +52,9 @@ namespace tiki
 		Vector3		position;
 		Vector3		direction;
 		Color		color;
+		float		range;
+		float		theta;
+		float		phi;
 	};
 
 	struct FrameData

@@ -51,7 +51,8 @@ namespace tiki
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
-		const Model*				m_pModel;
+		const Model*				m_pModelBoxes;
+		const Model*				m_pModelPlane;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;

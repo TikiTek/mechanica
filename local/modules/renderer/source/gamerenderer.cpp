@@ -1,6 +1,7 @@
 
 #include "tiki/renderer/gamerenderer.hpp"
 
+#include "tiki/base/bits.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/model.hpp"
 
@@ -8,6 +9,15 @@
 
 namespace tiki
 {
+	static uint32 getShaderVariantMask( uint32 directionalLightCount, uint32 pointLightCount, uint32 spotLightCount )
+	{
+		uint32 mask = 0u;
+		mask = setBitValue( mask, 0u, 2u, directionalLightCount );
+		mask = setBitValue( mask, 3u, 4u, pointLightCount );
+		mask = setBitValue( mask, 7u, 2u, spotLightCount );
+		return mask;
+	}
+
 	GameRenderer::GameRenderer()
 	{
 		m_pBlendStateAdd				= nullptr;
@@ -339,11 +349,6 @@ namespace tiki
 
 	void GameRenderer::renderLighting( GraphicsContext& graphicsContext ) const
 	{
-		if ( m_frameData.directionalLights.getCount() == 0u )
-		{
-			return;
-		}
-
 		graphicsContext.beginRenderPass( m_accumulationTarget );
 		graphicsContext.clear( m_accumulationTarget, TIKI_COLOR_BLACK, 1.0f, 0u, ClearMask_Color );
 
@@ -356,21 +361,43 @@ namespace tiki
 		graphicsContext.setPixelShaderTexture( 2u, &m_geometryBufferData[ 2u ] );
 		graphicsContext.setPixelShaderTexture( 3u, &m_readOnlyDepthBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerNearst );
-
-		const DirectionalLightData& lightData = m_frameData.directionalLights[ 0u ];
-
+		
 		Matrix44 inverseProjection;
 		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
 
+		Matrix44 inverseViewProjection;
+		matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
+
 		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
 
-		createFloat4( pPixelConstants->param0, lightData.direction.x, lightData.direction.y, lightData.direction.z, 0.0f );
 		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
-		color::toFloat4( pPixelConstants->param1, lightData.color );
+		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseViewProjection );
+
+		const uint directionalLightCount	= m_frameData.directionalLights.getCount();
+		const uint pointLightCount			= m_frameData.pointLights.getCount();
+		const uint spotLightCount			= m_frameData.spotLights.getCount();
+		for (uint i = 0u; i < directionalLightCount; ++i)
+		{
+			const DirectionalLightData& lightData = m_frameData.directionalLights[ i ];
+			pPixelConstants->directionalLights[ i ] = fillDirectionalLightData( lightData.direction, lightData.color );
+		}
+
+		for (uint i = 0u; i < pointLightCount; ++i)
+		{
+			const PointLightData& lightData = m_frameData.pointLights[ i ];
+			pPixelConstants->pointLights[ i ] = fillPointLightData( lightData.position, m_frameData.mainCamera.getWorldMatrix(), m_frameData.mainCamera.getPosition(), lightData.color, lightData.range );
+		}
+		
+		for (uint i = 0u; i < spotLightCount; ++i)
+		{
+			const SpotLightData& lightData = m_frameData.spotLights[ i ];
+			pPixelConstants->spotLights[ i ] = fillSpotLightData( lightData.position, m_frameData.mainCamera.getViewMatrix(), lightData.direction, lightData.color, lightData.range, lightData.theta, lightData.phi );
+		} 
+
 		graphicsContext.unmapBuffer( m_lightingPixelConstants );
 
 		graphicsContext.setVertexShader( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ) );
-		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, 0u ) );
+		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, getShaderVariantMask( directionalLightCount, pointLightCount, spotLightCount ) ) );
 		graphicsContext.setVertexInputBinding( m_pLightingInputBinding );
 		graphicsContext.setPixelShaderConstant( 0u, m_lightingPixelConstants );
 
