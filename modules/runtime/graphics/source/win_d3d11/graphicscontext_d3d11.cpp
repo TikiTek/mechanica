@@ -277,7 +277,7 @@ namespace tiki
 
 	void GraphicsContext::setPixelShader( const Shader* pShader )
 	{
-		TIKI_ASSERT( pShader );
+		TIKI_ASSERT( pShader != nullptr );
 		TIKI_ASSERT( pShader->getShaderType() == ShaderType_PixelShader );
 
 		if ( m_pPixelShader != pShader )

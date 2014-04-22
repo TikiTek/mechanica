@@ -15,6 +15,12 @@ float3 reconstructViewSpacePosition( float4 projectedPosition, GraphicsMatrix44 
     return viewPosition.xyz / viewPosition.w;  
 }
 
+float3 reconstructWorldSpacePosition( float4 projectedPosition, GraphicsMatrix44 inverseViewProjection )
+{
+    float4 viewPosition = mul( projectedPosition, inverseViewProjection );
+    return viewPosition.xyz / viewPosition.w;  
+}
+
 float2 encodeNormal( float3 normal )
 {
 	float p = sqrt( normal.z * 8.0f + 8.0f );
