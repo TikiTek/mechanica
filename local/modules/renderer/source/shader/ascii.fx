@@ -36,7 +36,7 @@ VertexToPixel main( VertexInput input )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "shader/functions.fxh"
+#include "shader/positionspace.fxh"
 #include "shader/ascii_shader.hpp"
 
 // constants
@@ -60,8 +60,9 @@ TIKI_DEFINE_TEXTURE3D( 1, t_ascii );
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
 #if TIKI_DOWNSAMPLE
-	float4 projectedPosition = getProjectedPosition( input.texCoord, t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r );
-	float3 viewPosition = reconstructViewSpacePosition( projectedPosition, c_pixelData.inverseProjection );
+	float4 projectedPosition = float4( reconstructClipSpacePosition( input.texCoord ), t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r, 1.0f );
+	float4 viewPosition2 = mul( projectedPosition, c_pixelData.inverseProjection );
+	float3 viewPosition = viewPosition2.xyz / viewPosition2.w;
 
 	float2 screenSize = getScreenSize( c_pixelData );
 	

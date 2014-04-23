@@ -37,8 +37,10 @@ VertexToPixel main( VertexInput input )
 
 #include "shader/functions.fxh"
 #include "shader/geometrybuffer.fxh"
+#include "shader/positionspace.fxh"
 
 #include "shader/lighting_shader.hpp"
+#include "shader/cameraparameter.hpp"
 
 // constants
 TIKI_DEFINE_SAMPLER( 0, s_samplerNearst );
@@ -49,6 +51,7 @@ TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer2 );
 TIKI_DEFINE_TEXTURE2D( 3, t_depthBuffer );
 
 TIKI_DEFINE_CONSTANT( 0, LightingPixelConstantData, c_pixelData );
+TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter );
 
 float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 {
@@ -56,9 +59,12 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float3 diffuseColor			= getDiffuseColor( sample );
 	float3 normal				= getNormal( sample );
 
-	float4 projectedPosition	= getProjectedPosition( input.texCoord, TIKI_TEX2D( t_depthBuffer, s_samplerNearst, input.texCoord ).r );
-	float3 viewPosition			= reconstructViewSpacePosition( projectedPosition, c_pixelData.inverseProjection );
-	float3 worldPosition		= reconstructWorldSpacePosition( projectedPosition, c_pixelData.inverseProjection );
+	float nonLinearDepth		= TIKI_TEX2D( t_depthBuffer, s_samplerNearst, input.texCoord ).x;
+	float linearDepth			= reconstructLinearDepth( nonLinearDepth, c_cameraParameter );
+	float2 clipPosition			= reconstructClipSpacePosition( input.texCoord );
+	float4 projectionPosition	= reconstructProjectionSpacePosition( input.texCoord, nonLinearDepth );
+	float3 viewPosition			= reconstructViewSpacePosition( clipPosition, linearDepth, c_cameraParameter );
+	float3 worldPosition		= reconstructWorldSpacePosition( projectionPosition, c_cameraParameter );
 
 	float3 color = float3( 0.0f, 0.0f, 0.0f );
 
@@ -121,7 +127,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 
 		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot;
 	}
-	
+
 	return float4( color, 1.0f );
 }
 

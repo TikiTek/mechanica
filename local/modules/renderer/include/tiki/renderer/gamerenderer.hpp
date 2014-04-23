@@ -121,6 +121,7 @@ namespace tiki
 		const ShaderSet*			m_pLightingShader;
 		const VertexInputBinding*	m_pLightingInputBinding;
 		ConstantBuffer				m_lightingPixelConstants;
+		ConstantBuffer				m_cameraParameterConstants;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const ShaderSet*			m_pVisualizationShader;

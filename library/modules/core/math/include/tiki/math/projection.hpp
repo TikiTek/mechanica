@@ -25,6 +25,9 @@ namespace tiki
 
 		const Matrix44&	getMatrix() const { return m_matrix; }
 
+		float			getNearPlane() const { return m_nearPlane; }
+		float			getFarPlane() const { return m_farPlane; }
+
 	private:
 
 		Matrix44		m_matrix;

@@ -110,7 +110,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE float quaternion::length( const Quaternion& quat )
 	{
-		return math::sqrt( quaternion::lengthSquared( quat ) );
+		return f32::sqrt( quaternion::lengthSquared( quat ) );
 	}
 
 	TIKI_FORCE_INLINE float quaternion::lengthSquared( const Quaternion& quat )
@@ -145,7 +145,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( quaternion::lengthSquared( quat ) ) == false );
 		return quaternion::scale(
 			quat,
-			math::rsqrt( quaternion::lengthSquared( quat ) )
+			f32::rsqrt( quaternion::lengthSquared( quat ) )
 		);
 	}
 
@@ -200,7 +200,7 @@ namespace tiki
 		Vector3 right;
 		vector::normalize( vector::cross( right, up, forward ) );
 
-		quat.w = math::sqrt( 1.0f + right.x + up.y + forward.z ) * 0.5f;
+		quat.w = f32::sqrt( 1.0f + right.x + up.y + forward.z ) * 0.5f;
 		const float reciprocal = 1.0f / ( 4.0f * quat.w );
 
 		quat.x = ( up.z - forward.y ) * reciprocal;
