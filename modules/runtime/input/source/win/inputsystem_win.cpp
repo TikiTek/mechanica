@@ -444,14 +444,14 @@ namespace tiki
 					}
 				} 
 				
-				if ( pCurrentState->mouse.lX != pPreviousState->mouse.lX || pCurrentState->mouse.lY != pPreviousState->mouse.lY )
+				if ( pCurrentState->mouse.lX != 0u || pCurrentState->mouse.lY != 0u )
 				{
 					InputEvent& inputEvent = m_events.push();
 					inputEvent.eventType	= InputEventType_Mouse_Moved;
 					inputEvent.deviceType	= InputDeviceType_Mouse;
 					inputEvent.deviceId		= 0u;
-					inputEvent.data.mouseMoved.xOffset = ( pPreviousState->mouse.lX - pCurrentState->mouse.lX );
-					inputEvent.data.mouseMoved.yOffset = ( pPreviousState->mouse.lY - pCurrentState->mouse.lY );
+					inputEvent.data.mouseMoved.xOffset = pCurrentState->mouse.lX;
+					inputEvent.data.mouseMoved.yOffset = pCurrentState->mouse.lY;
 				}
 
 				if ( pCurrentState->mouse.lZ != pPreviousState->mouse.lZ )

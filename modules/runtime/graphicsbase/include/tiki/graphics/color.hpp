@@ -52,12 +52,13 @@
 #	define TIKI_COLOR_OFFSET_ALPHA	24u
 #endif
 
-#define TIKI_COLOR_MASK_RED		( 0xffu << TIKI_COLOR_OFFSET_RED )
-#define TIKI_COLOR_MASK_GREEN	( 0xffu << TIKI_COLOR_OFFSET_GREEN )
-#define TIKI_COLOR_MASK_BLUE	( 0xffu << TIKI_COLOR_OFFSET_BLUE )
-#define TIKI_COLOR_MASK_ALPHA	( 0xffu << TIKI_COLOR_OFFSET_ALPHA )
+#define TIKI_COLOR_MASK_RED			( 0xffu << TIKI_COLOR_OFFSET_RED )
+#define TIKI_COLOR_MASK_GREEN		( 0xffu << TIKI_COLOR_OFFSET_GREEN )
+#define TIKI_COLOR_MASK_BLUE		( 0xffu << TIKI_COLOR_OFFSET_BLUE )
+#define TIKI_COLOR_MASK_ALPHA		( 0xffu << TIKI_COLOR_OFFSET_ALPHA )
 
-#define TIKI_COLOR( r, g, b, a ) ( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( ( a ) << TIKI_COLOR_OFFSET_ALPHA ) )
+#define TIKI_COLOR( r, g, b, a )	( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( ( a ) << TIKI_COLOR_OFFSET_ALPHA ) )
+#define TIKI_COLOR_RGB( r, g, b )	( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( 255u << TIKI_COLOR_OFFSET_ALPHA ) )
 
 #define TIKI_COLOR_BLACK			TIKI_COLOR( 0x00u, 0x00u, 0x00u, 0xffu )
 #define TIKI_COLOR_WHITE			TIKI_COLOR( 0xffu, 0xffu, 0xffu, 0xffu )
