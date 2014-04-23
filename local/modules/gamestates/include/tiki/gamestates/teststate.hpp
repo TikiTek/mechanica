@@ -4,13 +4,13 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
-#include "tiki/components/componentstorage.hpp"
-#include "tiki/components/staticmodelcomponent.hpp"
-#include "tiki/components/typeregister.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
+#include "tiki/renderer/scenerendereffect.hpp"
 
 #include "tiki/debuggui/debuggui.hpp"
+
+#include "tiki/renderer/postascii.hpp"
 
 namespace tiki
 {
@@ -50,24 +50,25 @@ namespace tiki
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
-		const Model*				m_pModel;
-		const Texture*				m_pTexture;
+		const Model*				m_pModelBoxes;
+		const Model*				m_pModelPlane;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
-
-		ComponentStorage			m_storage;
-		ComponentTypeRegister		m_typeRegister;
-
-		ComponentTypeId				m_staticModelComponentTypeId;
-		StaticModelComponent		m_staticModelComponent;
+		SceneRenderEffect			m_sceneRenderEffect;
 
 		ImmediateRenderer			m_immediateRenderer;
 
+		Vector2						m_cameraRotation;
 		Vector2						m_leftStickState;
 		Vector2						m_rightStickState;
 
 		DebugGui					m_debugGui;
+
+		int							m_gbufferIndex;
+
+		bool						m_enableAsciiMode;
+		PostProcessAscii			m_ascii;
 
 	};
 }

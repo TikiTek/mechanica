@@ -33,7 +33,12 @@ namespace tiki
 		
 	string path::getExtension( const string& fullPath )
 	{
-		sint32 index = fullPath.lastIndexOf( '.' );
+		const sint32 index = fullPath.lastIndexOf( '.' );
+		if ( index == -1 )
+		{
+			return "";
+		}
+
 		return fullPath.substring( (uint32)index  );
 	}
 
@@ -64,12 +69,19 @@ namespace tiki
 	string path::getAbsolutePath( const string& path )
 	{
 		const string slashPath = checkSlashes( path );
-		if ( slashPath.substring( 1u, 2u) == ":/" )
+
+		const bool beginWithDrive	= ( slashPath.substring( 1u, 2u ) == ":/" );
+		const bool containsDots		= ( slashPath.contains( "/../" ) || slashPath.contains( "/./" ) );
+		if ( beginWithDrive && !containsDots )
 		{
 			// is already absolute
 			return slashPath;
 		}
-		string fullPath = path::combine( getCurrentDir(), slashPath );
+		string fullPath = slashPath;
+		if ( !beginWithDrive )
+		{
+			fullPath = path::combine( getCurrentDir(), slashPath );
+		}
 			
 		for (;;)
 		{
@@ -86,7 +98,7 @@ namespace tiki
 			fullPath = fullPath.remove( prevIndex, lastIndex - prevIndex );
 		}
 
-		return fullPath.replace( "/.", "" );
+		return fullPath.replace( "/./", "/" );
 	}
 
 	string path::getCurrentDir()

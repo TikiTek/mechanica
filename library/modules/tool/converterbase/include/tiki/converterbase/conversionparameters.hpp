@@ -2,6 +2,8 @@
 #ifndef TIKI_CONVERSIONPARAMETERS_HPP
 #define TIKI_CONVERSIONPARAMETERS_HPP
 
+#include "tiki/base/file.hpp"
+#include "tiki/base/iopath.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
@@ -134,12 +136,19 @@ namespace tiki
 
 		void addDependency( DependencyType type, const string& identifier, const string& valueText, int valueInt )
 		{
+			string id = identifier;
+			if ( type == DependencyType_File )
+			{
+				id			= path::getAbsolutePath( id );
+				valueInt	= file::getLastChangeCrc( id );
+			}
+
 			Dependency* pDependency = nullptr;
 			for (uint i = 0u; i < dependencies.getCount(); ++i)
 			{
 				Dependency& dep = dependencies[ i ];
 
-				if ( dep.type == type && dep.identifier == identifier )
+				if ( dep.type == type && dep.identifier == id )
 				{
 					pDependency = &dep;
 					break;
@@ -150,7 +159,7 @@ namespace tiki
 			{
 				pDependency = &dependencies.add();
 				pDependency->type		= type;
-				pDependency->identifier	= identifier;
+				pDependency->identifier	= id;
 			}
 
 			pDependency->valueText	= valueText;

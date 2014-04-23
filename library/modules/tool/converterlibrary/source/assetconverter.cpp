@@ -86,7 +86,7 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		m_fileWatcher.create( m_sourcePath.cStr(), 32u );
+		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
 		m_converterMutex.create();
 		
 		if ( m_watchThread.create( watchThreadStaticEntryPoint, 8192u, "AssetConverter" ) == true )
@@ -142,6 +142,8 @@ namespace tiki
 					m_changedFiles.addRange( outputFiles.getData(), outputFiles.getCount() );
 				}
 			}
+
+			Sleep( 100u );
 		}
 	}
 

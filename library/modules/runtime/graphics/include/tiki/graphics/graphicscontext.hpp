@@ -65,6 +65,7 @@ namespace tiki
 	public:
 
 		void				clear( const RenderTarget& renderTarget, Color color = TIKI_COLOR_BLACK, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
+		void				copyTextureData( const TextureData& sourceData, const TextureData& targetData );
 
 		void				beginRenderPass( const RenderTarget& renderTarget );
 		void				endRenderPass();
@@ -96,8 +97,13 @@ namespace tiki
 		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
 		void				drawIndexedGeometry( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );
 
-		void*				mapBuffer( BaseBuffer& buffer );
-		void				unmapBuffer( BaseBuffer& buffer );
+		void				drawFullScreenQuadPos2();
+		void				drawFullScreenQuadPos2Tex2( float x0 = 0.0f, float y0 = 0.0f, float x1 = 1.0f, float y1 = 1.0f );
+		void				drawFullScreenQuadPos3();
+		void				drawFullScreenQuadPos3Tex2( float x0 = 0.0f, float y0 = 0.0f, float x1 = 1.0f, float y1 = 1.0f );
+
+		void*				mapBuffer( const BaseBuffer& buffer );
+		void				unmapBuffer( const BaseBuffer& buffer );
 
 		const RenderTarget&	getBackBuffer() const;
 

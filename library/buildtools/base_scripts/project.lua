@@ -207,10 +207,24 @@ function Project:finalize()
 		end
 	end
 
-	local shader_file = io.open( _OPTIONS[ "outpath" ] .. "/shaderinc.lst", "w" );
-	if shader_file ~= nil then
-		for i,dir in pairs( shader_global_dirs ) do
+	local shader_file_name = _OPTIONS[ "outpath" ] .. "/shaderinc.lst";
+	local shader_lines = {};
+	if io.exists( shader_file_name ) then
+		for line in io.lines( shader_file_name ) do 
+			shader_lines[ #shader_lines + 1 ] = line
+		end	
+	end
+	for i,dir in pairs( shader_global_dirs ) do
+		if table.index_of( shader_lines, dir ) == -1 then
+			table.insert( shader_lines, dir );
+		end
+	end
+	
+	local shader_file = io.open( shader_file_name, "w" );
+	if shader_file ~= nil then		
+		for i,dir in pairs( shader_lines ) do
 			print( "Shader: " .. dir );
+
 			if i > 1 then
 				shader_file:write( "\n" );
 			end

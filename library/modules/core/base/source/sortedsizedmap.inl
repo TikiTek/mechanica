@@ -150,28 +150,57 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	uint SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
 	{
-		uint min = 0u;
-		uint max = m_count;
-		uint pos = TIKI_SIZE_T_MAX;
-		while ( max > min && pos == TIKI_SIZE_T_MAX )
+		if ( m_count == 0u )
 		{
-			const uint mid = ( max + min ) / 2u;
-
-			if ( m_pData[ mid ].key == key )
-			{
-				pos = mid;
-			}
-			else if( m_pData[ mid ].key < key )
-			{
-				min = mid;
-			}
-			else if( m_pData[ mid ].key > key )
-			{
-				max = mid;
-			}
+			return TIKI_SIZE_T_MAX;
 		}
 
-		return pos;
+		int imin = 0u;
+		int imax = m_count;
+		// continue searching while [imin,imax] is not empty
+		while (imax >= imin)
+		{
+			// calculate the midpoint for roughly equal partition
+			const int imid =  ( imax + imin ) / 2u; //midpoint(imin, imax);
+			if(m_pData[ imid ].key == key)
+			{
+				// key found at index imid
+				return imid; 
+			}
+			// determine which subarray to search
+			else if (m_pData[ imid ].key < key)
+			{
+				// change min index to search upper subarray
+				imin = imid + 1;
+			}
+			else
+			{
+				// change max index to search lower subarray
+				imax = imid - 1;
+			}
+		}
+		// key was not found
+		return TIKI_SIZE_T_MAX;
+
+		//while ( max > min && pos == TIKI_SIZE_T_MAX )
+		//{
+		//	const uint mid = ( max + min ) / 2u;
+
+		//	if ( m_pData[ mid ].key == key )
+		//	{
+		//		pos = mid;
+		//	}
+		//	else if( m_pData[ mid ].key < key )
+		//	{
+		//		min = mid;
+		//	}
+		//	else if( m_pData[ mid ].key > key )
+		//	{
+		//		max = mid;
+		//	}
+		//}
+
+		//return pos;
 	}
 }
 

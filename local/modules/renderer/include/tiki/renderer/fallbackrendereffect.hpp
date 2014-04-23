@@ -42,7 +42,7 @@ namespace tiki
 
 		GraphicsSystem*				m_pGraphicsSystem;
 
-		const ShaderSet*			m_pShaderSet;
+		const ShaderSet*			m_pShader;
 
 		const BlendState*			m_pBlendState;
 		const DepthStencilState*	m_pDepthStencilState;

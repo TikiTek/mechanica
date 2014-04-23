@@ -14,7 +14,7 @@ namespace tiki
 {
 	ConverterBase::ConverterBase()
 	{
-		m_pManager = nullptr;
+		m_pManager			= nullptr;
 	}
 
 	ConverterBase::~ConverterBase()
@@ -43,7 +43,7 @@ namespace tiki
 
 	void ConverterBase::convert( ConversionResult& result, const ConversionParameters& params ) const
 	{
-		TIKI_ASSERT( m_pManager );
+		TIKI_ASSERT( m_pManager != nullptr );
 		
 		if ( !startConversionJob( params ) )
 		{
@@ -65,4 +65,8 @@ namespace tiki
 		writer.dispose();
 	}
 
+	void ConverterBase::addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt )
+	{
+		m_pManager->addDependency( type, identifier, valueText, valueInt );
+	}
 }

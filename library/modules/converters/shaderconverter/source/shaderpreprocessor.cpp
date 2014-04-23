@@ -29,19 +29,21 @@ namespace tiki
 			pLastFeature = features.getLast();
 		}
 
-		ShaderFeature& feature = features.add();
+		ShaderFeature feature;
 		feature.name		= name;
 		feature.bitCount	= 64u - countLeadingZeros64( maxValue );
 		feature.maxValue	= maxValue;
 
 		if ( pLastFeature != nullptr )
 		{
-			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount;
+			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount + 1u;
 		}
 		else
 		{
 			feature.startBit = 0u;
 		}
+
+		features.add( feature );
 	}
 
 	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, uint typeCount, const string& featuresLine )
@@ -67,9 +69,10 @@ namespace tiki
 					string name = featuresList[ j ];
 					uint maxValue = 1u;
 
-					const int arrayIndex = name.indexOf( '[' );
+					int arrayIndex = name.indexOf( '[' );
 					if ( arrayIndex != -1 )
 					{
+						arrayIndex++;
 						const int arrayLength = name.indexOf( ']' ) - arrayIndex;
 						if ( arrayLength < 0u )
 						{
@@ -78,7 +81,7 @@ namespace tiki
 						}
 
 						const string maxValueString = name.substring( arrayIndex, arrayLength );
-						maxValue	= ParseString::parseUInt32( maxValueString );
+						maxValue	= ParseString::parseUInt32( maxValueString ) - 1u;
 						name		= name.substring( 0u, arrayIndex - 1u );
 					}
 

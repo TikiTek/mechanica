@@ -58,8 +58,6 @@ namespace tiki
 			model.create( file.fileName, scale );
 			model.parseGeometies( calcTangents );
 
-			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
-			
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "model", params.targetPlatform );
 			

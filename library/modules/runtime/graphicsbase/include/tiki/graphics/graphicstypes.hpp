@@ -10,10 +10,28 @@
 
 namespace tiki
 {
+	struct GraphicsMatrix33
+	{
+		float	data[ 9u ];
+	};
+
 	struct GraphicsMatrix44
 	{
-		float	data[ 16 ];
+		float	data[ 16u ];
 	};
+
+	TIKI_FORCE_INLINE void createGraphicsMatrix33( GraphicsMatrix33& mtx, const Matrix33& input )
+	{
+		mtx.data[ 0u ] = input.x.x;
+		mtx.data[ 1u ] = input.y.x;
+		mtx.data[ 2u ] = input.z.x;
+		mtx.data[ 3u ] = input.x.y;
+		mtx.data[ 4u ] = input.y.y;
+		mtx.data[ 5u ] = input.z.y;
+		mtx.data[ 6u ] = input.x.z;
+		mtx.data[ 7u ] = input.y.z;
+		mtx.data[ 8u ] = input.z.z;
+	}
 
 	TIKI_FORCE_INLINE void createGraphicsMatrix44( GraphicsMatrix44& mtx, const Matrix43& input )
 	{
@@ -61,6 +79,7 @@ namespace tiki
 #define TIKI_GRAPHICS_NAMESPACE_BEGIN
 #define TIKI_GRAPHICS_NAMESPACE_END
 
+typedef float3x3 GraphicsMatrix33;
 typedef float4x4 GraphicsMatrix44;
 
 #endif

@@ -9,7 +9,7 @@ namespace tiki
 {
 	enum TextureType
 	{
-		TextureType_Invalid,
+		TextureType_Invalid = -1,
 
 		TextureType_1d,
 		TextureType_2d,
@@ -37,7 +37,7 @@ namespace tiki
 			width		= 0u;
 			height		= 0u;
 			depth		= 0u;
-			arrayCount	= 0u;
+			arrayCount	= 1u;
 			mipCount	= 0u;
 
 			flags		= TextureFlags_None;

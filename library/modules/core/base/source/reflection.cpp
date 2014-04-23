@@ -165,7 +165,7 @@ namespace tiki
 			}
 			m_pBaseType = pBaseType;
 
-			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,&<>*)]+\\}", getName().cStr() );
+			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,.&<>*)]+\\}", getName().cStr() );
 
 			TRexpp regex;
 			regex.Compile( regexString.cStr() );
