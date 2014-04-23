@@ -23,24 +23,32 @@ namespace tiki
 
 	FallbackRenderEffect::FallbackRenderEffect()
 	{
-		m_pGraphicsSystem	= nullptr;
+		m_pGraphicsSystem		= nullptr;
 
-		m_pShaderSet		= nullptr;
-		m_pSampler			= nullptr;
+		m_pShader				= nullptr;
+
+		m_pBlendState			= nullptr;
+		m_pDepthStencilState	= nullptr;
+		m_pRasterizerState		= nullptr;
+		m_pSampler				= nullptr;
 	}
 
 	FallbackRenderEffect::~FallbackRenderEffect()
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
 
-		TIKI_ASSERT( m_pShaderSet == nullptr );
+		TIKI_ASSERT( m_pShader == nullptr );
+
+		TIKI_ASSERT( m_pBlendState == nullptr );
+		TIKI_ASSERT( m_pDepthStencilState == nullptr );
+		TIKI_ASSERT( m_pRasterizerState == nullptr );
 		TIKI_ASSERT( m_pSampler == nullptr );
 	}
 
 	bool FallbackRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		m_pGraphicsSystem	= &graphicsSystem;
-		m_pShaderSet		= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
+		m_pShader			= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
 
 		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
@@ -68,8 +76,8 @@ namespace tiki
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
-		resourceManager.unloadResource< ShaderSet >( m_pShaderSet );
-		m_pShaderSet = nullptr;
+		resourceManager.unloadResource< ShaderSet >( m_pShader );
+		m_pShader = nullptr;
 
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 
@@ -86,7 +94,7 @@ namespace tiki
 
 	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
 	{
-		const Shader* pVertexShader = m_pShaderSet->getShader( ShaderType_VertexShader, 0u );
+		const Shader* pVertexShader = m_pShader->getShader( ShaderType_VertexShader, 0u );
 
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 		graphicsContext.setBlendState( m_pBlendState );
@@ -94,7 +102,7 @@ namespace tiki
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 
 		graphicsContext.setVertexShader( pVertexShader );
-		graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
+		graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
 
 		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSampler );
@@ -150,7 +158,7 @@ namespace tiki
 					}
 					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectDataInvalidTextureOffset )
 					{
-						const Texture* pDefaultTexture = addPtrCast< const Texture >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
+						const Texture* pDefaultTexture = *addPtrCast< const Texture* >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
 
 						if ( pDefaultTexture != nullptr )
 						{
