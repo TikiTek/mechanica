@@ -5,6 +5,7 @@
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/input/inputevent.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -32,6 +33,14 @@ namespace tiki
 		setScreenSize( screenSize );
 
 		m_pDefaultFont = resourceManager.loadResource< Font >( "debug.font" );
+		DebugGuiControl::setDefaultFont( m_pDefaultFont );
+
+		vector::clear( m_inputState.mousePosition );
+		m_inputState.mouseWheel = 0.0f;
+		for (uint i = 0u; i < TIKI_COUNT( m_inputState.mouseButtonState ); ++i)
+		{
+			m_inputState.mouseButtonState[ i ] = false;
+		} 
 
 		return true;
 	}
@@ -43,6 +52,7 @@ namespace tiki
 
 		m_renderer.dispose( grahicsSystem, resourceManager );
 
+		DebugGuiControl::setDefaultFont( nullptr );
 		resourceManager.unloadResource( m_pDefaultFont );
 		m_pDefaultFont = nullptr;
 	}
@@ -64,17 +74,6 @@ namespace tiki
 		Projection projection;
 		projection.createOrthographicCenter( screenSize.x, -screenSize.y, 0.0f, 1.0f );
 		m_renderer.setProjection( projection );
-
-		Rectangle boundingRectangle;
-		boundingRectangle.x			= 25.0f;
-		boundingRectangle.y			= 25.0f;
-		boundingRectangle.width		= m_screenSize.x - 50.0f;
-		boundingRectangle.height	= m_screenSize.y - 50.0f;
-
-		for ( uint i = 0u; i < m_windows.getCount( ); ++i )
-		{
-			m_windows[ i ]->setRectangle( boundingRectangle );
-		} 
 	}
 
 	void DebugGui::update()
@@ -97,25 +96,12 @@ namespace tiki
 			return;
 		}
 
-		m_renderer.drawTexture( nullptr, Rectangle( 0.0f, 0.0f, m_screenSize.x, m_screenSize.y ), TIKI_COLOR( 128, 128, 128, 128 ) );
-		
-		float xOffset = 5.0f;
-		for ( uint i = 0u; i < m_windows.getCount( ); ++i )
-		{
-			const DebugGuiWindow* pWindow = m_windows[ i ];
-			
-			Vector2 textSize;
-			m_pDefaultFont->calcuateTextSize( textSize, pWindow->getTitle(), getStringLength( pWindow->getTitle() ) );
-
-			const uint alpha = ( i == 0u ? 128 : 64 );
-			m_renderer.drawTexture( nullptr, Rectangle( xOffset, 5.0f, textSize.x + 10.0f, 20.0f ), TIKI_COLOR( 64, 64, 64, alpha ) );
-
-			const Vector2 textPosition = { xOffset + 5.0f, 6.0f };
-			m_renderer.drawText( textPosition, *m_pDefaultFont, pWindow->getTitle( ), TIKI_COLOR_WHITE );
-			
-			xOffset += textSize.x + 15.0f;
-		}
-		m_renderer.drawTexture( nullptr, Rectangle( 5.0f, 25.0f, m_screenSize.x - 10.0f, m_screenSize.y - 30.0f ), TIKI_COLOR( 64, 64, 64, 128 ) );
+		Rectangle mouseReactangle;
+		mouseReactangle.x = m_inputState.mousePosition.x;
+		mouseReactangle.y = m_inputState.mousePosition.y;
+		mouseReactangle.width = 10.0f;
+		mouseReactangle.height = 10.0f;
+		m_renderer.drawTexture( nullptr, mouseReactangle, TIKI_COLOR_RED );
 
 		for ( uint i = 0u; i < m_windows.getCount(); ++i )
 		{
@@ -123,5 +109,46 @@ namespace tiki
 		}
 
 		m_renderer.flush( graphicsContext );
+	}
+
+	bool DebugGui::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( inputEvent.deviceType == InputDeviceType_Mouse )
+		{
+			switch ( inputEvent.eventType )
+			{
+			case InputEventType_Mouse_Moved:
+				m_inputState.mousePosition.x += inputEvent.data.mouseMoved.xOffset;
+				m_inputState.mousePosition.y += inputEvent.data.mouseMoved.yOffset;
+				break;
+
+			case InputEventType_Mouse_ButtonDown:
+				m_inputState.mouseButtonState[ inputEvent.data.mouseButton.button ] = true;
+				break;
+
+			case InputEventType_Mouse_ButtonUp:
+				m_inputState.mouseButtonState[ inputEvent.data.mouseButton.button ] = false;
+				break;
+
+			case InputEventType_Mouse_Wheel:
+				m_inputState.mouseWheel += inputEvent.data.mouseWheel.offset;
+				break;
+			}
+		}
+
+		if ( !m_isActive )
+		{
+			return false;
+		}
+
+		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		{
+			if ( m_windows[ i ]->processInputEvent( inputEvent, m_inputState ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

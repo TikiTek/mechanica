@@ -59,11 +59,10 @@ namespace tiki
 
 	void GameFlowSystem::update()
 	{
-		if ( m_stateTree.isInTransition() )
+		TransitionState result = TransitionState_Finish;
+		while ( m_stateTree.isInTransition() && result == TransitionState_Finish  )
 		{
 			GameState* pState = m_states[ m_stateTree.getTransitionState() ].pState;
-
-			TransitionState result;
 			if ( pState != nullptr )
 			{
 				const int step			= m_stateTree.getCurrentStep();
@@ -98,8 +97,6 @@ namespace tiki
 			}
 		}
 		
-
-
 		for (uint i = 0u; i < m_activeStateCount; ++i)
 		{
 			const uint stateIndex = m_activeStates[ i ];

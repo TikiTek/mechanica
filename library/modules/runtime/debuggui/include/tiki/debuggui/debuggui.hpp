@@ -5,6 +5,7 @@
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/mousebutton.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -14,17 +15,22 @@ namespace tiki
 	class GraphicsContext;
 	struct InputEvent;
 
+	struct DebugGuiInputState
+	{
+		Vector2		mousePosition;
+		float		mouseWheel;
+		bool		mouseButtonState[ MouseButton_Count ];
+	};
+
 	class DebugGui
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGui );
+		friend class DebugGuiWindow;
 
 	public:
 
 		bool		create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount );
 		void		dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
-
-		void		addWindow( DebugGuiWindow& window );
-		void		removeWindow( DebugGuiWindow& window );
 
 		bool		getActive() const			{ return m_isActive; }
 		void		setActive( bool isActive )	{ m_isActive = isActive; }
@@ -36,6 +42,11 @@ namespace tiki
 
 		bool		processInputEvent( const InputEvent& inputEvent );
 
+	private: // friend
+
+		void		addWindow( DebugGuiWindow& window );
+		void		removeWindow( DebugGuiWindow& window );
+
 	private:
 
 		bool							m_isActive;
@@ -45,6 +56,8 @@ namespace tiki
 
 		const Font*						m_pDefaultFont;
 		ImmediateRenderer				m_renderer;
+
+		DebugGuiInputState				m_inputState;
 
 	};
 }

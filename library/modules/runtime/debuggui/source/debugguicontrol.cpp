@@ -3,6 +3,8 @@
 
 namespace tiki
 {
+	const Font* DebugGuiControl::s_pDefaultFont = nullptr;
+
 	void DebugGuiControl::addChildControl( DebugGuiControl* pChild )
 	{
 		m_childControls.push( pChild );
@@ -15,21 +17,30 @@ namespace tiki
 
 	void DebugGuiControl::update()
 	{
-		handleUpdate();
-
 		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
 		{
 			m_childControls[ i ]->update();
 		}
 	}
 
-	void DebugGuiControl::render( const ImmediateRenderer& renderer )
+	void DebugGuiControl::render( ImmediateRenderer& renderer )
 	{
-		handleRender( renderer );
-
 		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
 		{
 			m_childControls[ i ]->render( renderer );
 		}
+	}
+
+	bool DebugGuiControl::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
+	{
+		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
+		{
+			if ( m_childControls[ i ]->processInputEvent( inputEvent, state ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

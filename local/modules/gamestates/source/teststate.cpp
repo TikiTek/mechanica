@@ -138,25 +138,16 @@ namespace tiki
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
 
-					m_debugMenu.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
-					m_debugMenuPageDebugProp.create( *(DebugPropManager*)nullptr );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
-					m_debugMenu.addPage( m_debugMenuPageDebugProp );
+					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
+					m_testWindow.create( m_debugGui );
+					m_testWindow.setRectangle( Rectangle( 50.0f, 50.0f, 250.0f, 200.0f ) );
 
 					return TransitionState_Finish;
 				}
 				else
 				{
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenu.removePage( m_debugMenuPageDebugProp );
-					m_debugMenuPageDebugProp.dispose();
-					m_debugMenu.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_testWindow.dispose();
+					m_debugGui.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					m_pGameRenderer->unregisterRenderEffect( &m_sceneRenderEffect );
 					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
@@ -252,7 +243,7 @@ namespace tiki
 		matrix::createRotationY( mtx.rot, timeValue );
 		m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
 
-		m_debugMenu.update();
+		m_debugGui.update();
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -297,13 +288,18 @@ namespace tiki
 		
 		m_immediateRenderer.flush( graphicsContext );
 
-		m_debugMenu.render( graphicsContext );
+		m_debugGui.render( graphicsContext );
 		
 		graphicsContext.endRenderPass();
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
 	{
+		if ( m_debugGui.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
 		if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
 		{
 			switch ( inputEvent.data.controllerStick.stickIndex )
@@ -318,6 +314,7 @@ namespace tiki
 				m_rightStickState.y	= inputEvent.data.controllerStick.yState;
 				break;
 			}
+
 			return true;
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
@@ -325,7 +322,7 @@ namespace tiki
 			switch ( inputEvent.data.keybaordKey.key )
 			{
 			case KeyboardKey_F1:
-				m_debugMenu.setActive( !m_debugMenu.getActive() );
+				m_debugGui.setActive( !m_debugGui.getActive() );
 				return true;
 
 			case KeyboardKey_V:

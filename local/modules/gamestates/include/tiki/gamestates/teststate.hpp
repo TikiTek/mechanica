@@ -4,13 +4,13 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
+#include "tiki/debuggui/debuggui.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
+#include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/scenerendereffect.hpp"
 
-#include "tiki/debuggui/debuggui.hpp"
-
-#include "tiki/renderer/postascii.hpp"
+#include "tiki/game/debuggui_testwindow.hpp"
 
 namespace tiki
 {
@@ -64,6 +64,7 @@ namespace tiki
 		Vector2						m_rightStickState;
 
 		DebugGui					m_debugGui;
+		DebugGuiTestWindow			m_testWindow;
 
 		int							m_gbufferIndex;
 
