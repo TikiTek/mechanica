@@ -13,8 +13,8 @@ namespace tiki
 	{
 		uint32 mask = 0u;
 		mask = setBitValue( mask, 0u, 2u, directionalLightCount );
-		mask = setBitValue( mask, 3u, 4u, pointLightCount );
-		mask = setBitValue( mask, 7u, 2u, spotLightCount );
+		mask = setBitValue( mask, 3u, 3u, pointLightCount );
+		mask = setBitValue( mask, 7u, 1u, spotLightCount );
 		return mask;
 	}
 
@@ -396,8 +396,9 @@ namespace tiki
 
 		graphicsContext.unmapBuffer( m_lightingPixelConstants );
 
+		const uint32 shaderMask = getShaderVariantMask( directionalLightCount, pointLightCount, spotLightCount );
 		graphicsContext.setVertexShader( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ) );
-		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, getShaderVariantMask( directionalLightCount, pointLightCount, spotLightCount ) ) );
+		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, shaderMask ) );
 		graphicsContext.setVertexInputBinding( m_pLightingInputBinding );
 		graphicsContext.setPixelShaderConstant( 0u, m_lightingPixelConstants );
 

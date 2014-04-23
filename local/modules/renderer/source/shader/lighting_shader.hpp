@@ -72,10 +72,10 @@ SpotLightConstantData fillSpotLightData( const Vector3& worldPosition, const Mat
 {
 	SpotLightConstantData data;
 
-	Vector3 viewPosition = viewMatrix.pos;
-	vector::negate( viewPosition );
-	vector::sub( viewPosition, worldPosition );
-	matrix::transform( viewPosition, viewMatrix );
+	Vector3 viewPosition = worldPosition;
+	//vector::negate( viewPosition );
+	//vector::sub( viewPosition, worldPosition );
+	//matrix::transform( viewPosition, viewMatrix );
 	
 	createFloat4( data.param0, viewPosition.x, viewPosition.y, viewPosition.z, theta );
 	createFloat4( data.param1, direction.x, direction.y, direction.z, phi );
@@ -110,6 +110,36 @@ float3 getPointLightColor( PointLightConstantData data )
 float getPointLightInverseRange( PointLightConstantData data )
 {
 	return data.param1.w;
+}
+
+float3 getSpotLightPosition( SpotLightConstantData data )
+{
+	return data.param0.xyz;
+}
+
+float3 getSpotLightDirection( SpotLightConstantData data )
+{
+	return data.param1.xyz;
+}
+
+float3 getSpotLightColor( SpotLightConstantData data )
+{
+	return data.param1.xyz;
+}
+
+float getSpotLightTheta( SpotLightConstantData data )
+{
+	return data.param0.w;
+}
+
+float getSpotLightPhi( SpotLightConstantData data )
+{
+	return data.param1.w;
+}
+
+float getSpotLightInverseRange( SpotLightConstantData data )
+{
+	return data.param2.w;
 }
 
 #endif

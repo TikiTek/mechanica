@@ -226,15 +226,23 @@ namespace tiki
 		};
 
 		const float timeValue = (float)framework::getFrameTimer().getTotalTime() / 10.0f;
-		for (uint i = 0u; i < pointLightCount; ++i)
-		{
-			const float value = ( ( f32::twoPi / pointLightCount ) * i ) + ( timeValue * -5.0f );
+		//for (uint i = 0u; i < pointLightCount; ++i)
+		//{
+		//	const float value = ( ( f32::twoPi / pointLightCount ) * i ) + ( timeValue * -5.0f );
 
-			PointLightData& pointLight = frameData.pointLights.push();
-			vector::set( pointLight.position, sinf( value ) * 0.5f, 0.0f, cosf( value ) * 0.5f );
-			pointLight.color = s_colors[ i ];
-			pointLight.range = 2.0f;
-		}
+		//	PointLightData& pointLight = frameData.pointLights.push();
+		//	vector::set( pointLight.position, sinf( value ) * 0.5f, 0.0f, cosf( value ) * 0.5f );
+		//	pointLight.color = s_colors[ i ];
+		//	pointLight.range = 2.0f;
+		//}
+
+		SpotLightData& spotLight = frameData.spotLights.push();
+		vector::set( spotLight.position, 1.0f, 1.0f, 0.0f );
+		vector::set( spotLight.direction, 0.5f, 0.5f, 0.0f );
+		spotLight.color = TIKI_COLOR_BLUE;
+		spotLight.range = 5.0f;
+		spotLight.theta = 0.174532925f;
+		spotLight.phi	= 1.22173048f;
 
 		Matrix43 mtx = Matrix43::identity;
 		mtx.pos.y = -0.1f;
