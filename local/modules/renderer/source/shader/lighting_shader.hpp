@@ -34,9 +34,6 @@ struct SpotLightConstantData
 
 struct LightingPixelConstantData
 {
-	GraphicsMatrix44				inverseProjection;
-	GraphicsMatrix44				inverseViewProjection;
-
 	DirectionalLightConstantData	directionalLights[ TIKI_MAX_DIRECTIONAL_LIGHT_COUNT ];
 	PointLightConstantData			pointLights[ TIKI_MAX_POINT_LIGHT_COUNT ];
 	SpotLightConstantData			spotLights[ TIKI_MAX_SPOT_LIGHT_COUNT ];

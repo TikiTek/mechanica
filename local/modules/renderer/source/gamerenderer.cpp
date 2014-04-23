@@ -6,6 +6,7 @@
 #include "tiki/graphics/model.hpp"
 
 #include "shader/lighting_shader.hpp"
+#include "tiki/graphics/shader/cameraparameter.hpp"
 
 namespace tiki
 {
@@ -100,13 +101,10 @@ namespace tiki
 		}
 
 		m_pLightingInputBinding = graphicsSystem.createVertexInputBinding( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
-		if ( m_pLightingInputBinding == nullptr )
-		{
-			dispose( resourceManager );
-			return false;
-		}
 
-		if ( !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) ) )
+		if( m_pLightingInputBinding == nullptr
+			|| !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) )
+			|| !m_cameraParameterConstants.create( graphicsSystem, sizeof( CameraParameter ) ) )
 		{
 			dispose( resourceManager );
 			return false;
@@ -146,6 +144,7 @@ namespace tiki
 		m_pVisualizationShader = nullptr;
 #endif
 
+		m_cameraParameterConstants.dispose( graphicsSystem );
 		m_lightingPixelConstants.dispose( graphicsSystem );
 
 		graphicsSystem.disposeVertexInputBinding( m_pLightingInputBinding );
@@ -362,16 +361,20 @@ namespace tiki
 		graphicsContext.setPixelShaderTexture( 3u, &m_readOnlyDepthBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerNearst );
 		
-		Matrix44 inverseProjection;
-		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
+		//Matrix44 inverseProjection;
+		//matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
 
-		Matrix44 inverseViewProjection;
-		matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
+		//Matrix44 inverseViewProjection;
+		//matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
+
+		CameraParameter* pCameraConstants = static_cast< CameraParameter* >( graphicsContext.mapBuffer( m_cameraParameterConstants ) );
+		*pCameraConstants = fillCameraParameter( m_frameData.mainCamera );
+		graphicsContext.unmapBuffer( m_cameraParameterConstants );
 
 		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
 
-		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
-		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseViewProjection );
+		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
+		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseViewProjection );
 
 		const uint directionalLightCount	= m_frameData.directionalLights.getCount();
 		const uint pointLightCount			= m_frameData.pointLights.getCount();
@@ -401,6 +404,7 @@ namespace tiki
 		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, shaderMask ) );
 		graphicsContext.setVertexInputBinding( m_pLightingInputBinding );
 		graphicsContext.setPixelShaderConstant( 0u, m_lightingPixelConstants );
+		graphicsContext.setPixelShaderConstant( 1u, m_cameraParameterConstants );
 
 		graphicsContext.drawFullScreenQuadPos2Tex2();
 
