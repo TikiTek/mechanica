@@ -36,7 +36,7 @@ namespace tiki
 
 		if ( pLastFeature != nullptr )
 		{
-			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount + 1u;
+			feature.startBit = pLastFeature->startBit + pLastFeature->bitCount;
 		}
 		else
 		{

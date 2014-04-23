@@ -33,7 +33,6 @@ namespace tiki
 
 		m_pAssetConverter = createAssetConverter();
 		m_pAssetConverter->create( converterParameters );
-		m_pAssetConverter->convertAll();
 
 		m_pAssetConverter->startWatch();
 #endif
@@ -104,12 +103,16 @@ namespace tiki
 
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
+		m_pAssetConverter->lockConversion();
+
 		TIKI_ASSERT( pFileName != nullptr );
 		const crc32 crcFileName = crcString( pFileName );
 
 		Resource* pResource = nullptr;
 		const ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
 		traceResourceLoadResult( result, pFileName, crcFileName, type );
+
+		m_pAssetConverter->unlockConversion();
 
 		return pResource;	
 	}

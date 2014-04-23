@@ -14,8 +14,8 @@ namespace tiki
 	{
 		uint32 mask = 0u;
 		mask = setBitValue( mask, 0u, 2u, directionalLightCount );
-		mask = setBitValue( mask, 3u, 3u, pointLightCount );
-		mask = setBitValue( mask, 7u, 1u, spotLightCount );
+		mask = setBitValue( mask, 2u, 3u, pointLightCount );
+		mask = setBitValue( mask, 5u, 1u, spotLightCount );
 		return mask;
 	}
 
