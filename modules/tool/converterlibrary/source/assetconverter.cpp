@@ -30,6 +30,7 @@ namespace tiki
 		ConverterManagerParameter managerParameters;
 		managerParameters.outputPath	= parameters.outputPath;
 		managerParameters.forceRebuild	= parameters.forceRebuild;
+		m_converterMutex.create();
 		m_manager.create( managerParameters );
 
 		//m_animationConverter.create( &m_manager );
@@ -54,6 +55,7 @@ namespace tiki
 		m_textureConverter.dispose();
 
 		m_manager.dispose();
+		m_converterMutex.dispose();
 
 		TIKI_TRACE( "AssetConverter: finish\n" );
 	}
@@ -70,12 +72,16 @@ namespace tiki
 			m_manager.addTemplate( templateFiles[ i ] );
 		}
 
+		int result = 0;
+		List< string > outputFiles;
 		for (size_t i = 0u; i < assetFiles.getCount(); ++i)
 		{
-			m_manager.queueFile( assetFiles[ i ] );
+			if ( !m_manager.startConvertFile( assetFiles[ i ], outputFiles, &m_converterMutex ) )
+			{
+				result = 1;
+			}
 		}
 
-		const int result = m_manager.startConversion();
 		if ( result == 0 )
 		{
 			m_manager.writeResourceMap();
@@ -87,7 +93,6 @@ namespace tiki
 	void AssetConverter::startWatch()
 	{
 		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
-		m_converterMutex.create();
 		
 		if ( m_watchThread.create( watchThreadStaticEntryPoint, 8192u, "AssetConverter" ) == true )
 		{
@@ -101,7 +106,6 @@ namespace tiki
 		m_watchThread.waitForExit();
 		m_watchThread.dispose();
 
-		m_converterMutex.dispose();
 		m_fileWatcher.dispose();
 	}
 
@@ -129,6 +133,8 @@ namespace tiki
 
 	void AssetConverter::watchThreadEntryPoint( const Thread& thread )
 	{
+		convertAll();
+
 		while ( thread.isExitRequested() == false )
 		{
 			FileWatcherEvent fileEvent;

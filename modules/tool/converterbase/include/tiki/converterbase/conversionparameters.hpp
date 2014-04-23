@@ -48,6 +48,8 @@ namespace tiki
 			crc32	typeCrc;
 		};
 
+		uint					assetId;
+
 		PlatformType			targetPlatform;
 		crc32					typeCrc;
 
