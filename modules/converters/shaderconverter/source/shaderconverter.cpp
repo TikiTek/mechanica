@@ -34,8 +34,11 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler()
+		ShaderIncludeHandler( ConverterManager* pManager )
 		{
+			TIKI_ASSERT( pManager != nullptr );
+			m_pManager = pManager;
+
 			m_includeDirs.add( "./" );
 
 			string text;
@@ -92,7 +95,9 @@ namespace tiki
 			}
 			
 			if ( found )
-			{			
+			{	
+				m_pManager->addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
+
 				size_t freeStreamIndex = TIKI_SIZE_T_MAX;
 				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
 				{
@@ -145,8 +150,10 @@ namespace tiki
 			MaxFileStreams = 8u
 		};
 
-		List< string >	m_includeDirs;
-		Array< uint8 >	m_fileData[ MaxFileStreams ];
+		ConverterManager*	m_pManager;
+
+		List< string >		m_includeDirs;
+		Array< uint8 >		m_fileData[ MaxFileStreams ];
 
 	};
 
@@ -172,7 +179,7 @@ namespace tiki
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
-		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler();
+		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler( getManager() );
 
 		return true;
 	}
@@ -192,7 +199,7 @@ namespace tiki
 		{
 			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
-
+		
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
@@ -317,7 +324,7 @@ namespace tiki
 		size_t shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 		if ( args.debugMode )
 		{
-			shaderFlags |= D3DCOMPILE_DEBUG;
+			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
 		const string sourceCode = args.defineCode + formatString( "\n#include \"%s\"", args.fileName.cStr() );
@@ -345,7 +352,7 @@ namespace tiki
 			else if ( pErrorBlob )
 			{
 				string error = (const char*)pErrorBlob->GetBufferPointer();
-				TIKI_TRACE_ERROR( "failed to compile shader. error message: %s\n", error.cStr() );
+				TIKI_TRACE_ERROR( "failed to compile shader. error message:\n%s\n", error.cStr() );
 			}
 			else
 			{

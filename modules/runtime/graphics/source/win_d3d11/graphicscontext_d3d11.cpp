@@ -108,6 +108,14 @@ namespace tiki
 		}
 	}
 
+	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
+	{
+		m_platformData.pContext->CopyResource(
+			targetData.m_platformData.pResource,
+			sourceData.m_platformData.pResource
+		);
+	}
+
 	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
@@ -269,7 +277,7 @@ namespace tiki
 
 	void GraphicsContext::setPixelShader( const Shader* pShader )
 	{
-		TIKI_ASSERT( pShader );
+		TIKI_ASSERT( pShader != nullptr );
 		TIKI_ASSERT( pShader->getShaderType() == ShaderType_PixelShader );
 
 		if ( m_pPixelShader != pShader )
@@ -377,7 +385,7 @@ namespace tiki
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
 
-	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )
+	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
 		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
 
@@ -387,7 +395,7 @@ namespace tiki
 		return mapped.pData;
 	}
 
-	void GraphicsContext::unmapBuffer( BaseBuffer& buffer )
+	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
 		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
 	}

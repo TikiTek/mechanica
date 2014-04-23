@@ -214,6 +214,11 @@ namespace tiki
 			path::getFilename( resourceName )
 		);
 	}
+
+	void ConverterManager::addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt )
+	{
+		s_pCurrentResult->addDependency( type, identifier, valueText, valueInt );
+	}
 	
 	void ConverterManager::writeResourceMap()
 	{
@@ -247,13 +252,17 @@ namespace tiki
 			const XmlAttribute* pAttKey		= xmlFile.findAttributeByName( "key", pParam );
 			const XmlAttribute* pAttValue	= xmlFile.findAttributeByName( "value", pParam );
 
-			if ( pAttKey == nullptr || pAttValue == nullptr )
+			if ( pAttKey == nullptr )
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
 					( pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content ).cStr(),
 					( pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content ).cStr()
 				);
+			}
+			else if ( pAttValue == nullptr )
+			{
+				arguments[ pAttKey->content ] = pParam->content;
 			}
 			else
 			{
@@ -399,11 +408,11 @@ namespace tiki
 		TIKI_TRACE( "Building asset: %s\n", file.fullFileName.cStr() );
 		
 		result.addDependency( ConversionResult::DependencyType_Converter, "", "", pConverter->getConverterRevision() );
-		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", file::getLastChangeCrc( params.sourceFile ) );
+		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", 0u );
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const string& inputFileName = params.inputFiles[ i ].fileName;
-			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", file::getLastChangeCrc( inputFileName ) );
+			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", 0u );
 		}
 
 		s_pCurrentResult = &result;
@@ -428,7 +437,7 @@ namespace tiki
 		}
 		writeConvertResult( assetId, result, hasError );
 
-		return hasError;
+		return !hasError;
 	}
 
 	uint ConverterManager::findAssetIdByName( const string& name )
@@ -576,7 +585,7 @@ namespace tiki
 		for (uint i = 0u; i < parametes.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& inputFile = parametes.inputFiles[ i ];
-			const string inputFileName = inputFile.fileName;
+			const string inputFileName = path::getAbsolutePath( inputFile.fileName );
 
 			const bool sqlResult = m_dataBase.executeCommand(
 				formatString(

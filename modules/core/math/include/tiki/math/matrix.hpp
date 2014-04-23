@@ -71,6 +71,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Matrix33&	set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z );
 		TIKI_FORCE_INLINE Matrix43&	set( Matrix43& mtx, const Matrix33& rot, const Vector3& pos );
+		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Matrix33& rot );
 		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Matrix43& rotPos );
 		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Vector4& x, const Vector4& y, const Vector4& z, const Vector4& w );
 

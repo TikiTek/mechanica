@@ -11,6 +11,47 @@ namespace tiki
 	class HdrImage;
 	class ResourceWriter;
 
+	struct TextureWriterParameters
+	{
+		struct Texture1dData
+		{
+		};
+
+		struct Texture2dData
+		{
+		};
+
+		struct Texture3dData
+		{
+			uint sliceSize;
+		};
+
+		struct TextureCubeData
+		{
+		};
+
+		TextureWriterParameters()
+		{
+			targetType		= TextureType_Invalid;
+			targetFormat	= PixelFormat_Invalid;
+
+			mipMapCount		= 0u;
+		}
+
+		TextureType targetType;
+		PixelFormat targetFormat;
+		
+		uint mipMapCount;
+
+		union
+		{
+			Texture1dData	texture1d;
+			Texture2dData	texture2d;
+			Texture3dData	texture3d;
+			TextureCubeData	textureCube;
+		} data;
+	};
+
 	class TextureWriter
 	{
 		TIKI_NONCOPYABLE_CLASS( TextureWriter );
@@ -20,7 +61,7 @@ namespace tiki
 		TextureWriter();
 		~TextureWriter();
 
-		bool						create( const HdrImage& image, PixelFormat targetFormat, uint mipMapCount );
+		bool						create( const HdrImage& image, const TextureWriterParameters& parameters );
 		void						dispose();
 
 		const TextureDescription&	getDescription() const { return m_description; }
@@ -29,8 +70,10 @@ namespace tiki
 
 	private:
 
-		TextureDescription	m_description;
-		const HdrImage*		m_pImage;
+		TextureWriterParameters	m_parameters;
+		TextureDescription		m_description;
+
+		const HdrImage*			m_pImage;
 
 	};
 }

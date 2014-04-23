@@ -19,7 +19,7 @@ namespace tiki
 
 	protected:
 
-		virtual size_t			getConverterRevision() const { return 2u; }
+		virtual size_t			getConverterRevision() const { return 3u; }
 
 		virtual crc32			getInputType() const;
 		virtual crc32			getOutputType() const;

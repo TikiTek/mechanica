@@ -2,6 +2,7 @@
 #ifndef __TIKI_CAMERA_HPP_INCLUDED__
 #define __TIKI_CAMERA_HPP_INCLUDED__
 
+#include "tiki/math/frustum.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
@@ -12,7 +13,12 @@ namespace tiki
 
 	class Camera
 	{
+		TIKI_NONCOPYABLE_CLASS( Camera );
+
 	public:
+
+		Camera();
+		~Camera();
 
 		void				create( const Vector3& position, const Quaternion& rotation, const Projection* pProjection = nullptr, const Vector3& upVector = Vector3::unitY );
 
@@ -28,8 +34,7 @@ namespace tiki
 		const Matrix43&		getViewMatrix() const			{ return m_view; }
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
-		//const AABB&		getBoundingBox() const;
-		//const Frustum&	getFrustum() const;
+		const Frustum&		getFrustum();
 
 	private:
 
@@ -42,6 +47,9 @@ namespace tiki
 		Matrix43	m_world;
 		Matrix43	m_view;
 		Matrix44	m_viewProjection;
+
+		bool		m_isFrustumValid;
+		Frustum		m_frustum;
 
 		void		createMatrix();
 

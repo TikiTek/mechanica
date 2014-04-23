@@ -47,7 +47,7 @@ namespace tiki
 		~RenderTarget();
 
 		bool						create( GraphicsSystem& graphicsSystem, uint width, uint height, const RenderTargetBuffer* pColorBuffers, uint colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
-		void						dispose();
+		void						dispose( GraphicsSystem& graphicsSystem );
 
 		uint						getWidth() const	{ return m_width; }
 		uint						getHeight() const	{ return m_height; }

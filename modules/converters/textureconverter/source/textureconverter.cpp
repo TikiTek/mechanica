@@ -114,14 +114,40 @@ namespace tiki
 				}
 			}
 
-			uint mipMapCount = 1u;
+			TextureWriterParameters writerParameters;
+			writerParameters.targetFormat = PixelFormat_R8G8B8A8;
+				
+			writerParameters.mipMapCount = 1u;
 			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )
 			{
-				mipMapCount = 63u - countLeadingZeros64( TIKI_MAX( image.getWidth(), image.getHeight() ) );
+				writerParameters.mipMapCount = 63u - countLeadingZeros64( TIKI_MIN( image.getWidth(), image.getHeight() ) );
+			}
+
+			const string dimentionsString = params.arguments.getOptionalString( "type" , "2d" ).toLower();
+			if ( dimentionsString == "1d" )
+			{
+				writerParameters.targetType = TextureType_1d;
+			}
+			else if ( dimentionsString == "2d" )
+			{
+				writerParameters.targetType = TextureType_2d;
+			}
+			else if ( dimentionsString == "3d" )
+			{
+				writerParameters.targetType = TextureType_3d;
+				writerParameters.data.texture3d.sliceSize = params.arguments.getInt( "slice_size" );
+			}
+			else if ( dimentionsString == "cube" )
+			{
+				writerParameters.targetType = TextureType_Cube;
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "texture type '%s' not supported.\n", dimentionsString.cStr() );
 			}
 
 			TextureWriter textureWriter;
-			textureWriter.create( image, PixelFormat_R8G8B8A8, mipMapCount );
+			textureWriter.create( image, writerParameters );
 
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "texture", params.targetPlatform );

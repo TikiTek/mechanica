@@ -54,6 +54,15 @@ function vardump(value, depth, key)
   end
 end
 
+function io.exists( file_name )
+	local file_handle = io.open( file_name, "rb" );
+	if file_handle then
+		file_handle:close();
+		return true;
+	end
+	return false;
+end
+
 function table.join( table, src1, src2, src3 )
 	if ( table == nil or src1 == nil ) then
 		throw( "table.join: null argument exception" );

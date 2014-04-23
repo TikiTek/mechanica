@@ -3,7 +3,6 @@
 #define __TIKI_VECTOR_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
-#include "tiki/math/functions.hpp"
 
 namespace tiki
 {
@@ -222,6 +221,30 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2& vector::div( Vector2& vec, const Vector2& rhs )
+	{
+		vec.x /= rhs.x;
+		vec.y /= rhs.y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::div( Vector3& vec, const Vector3& rhs )
+	{
+		vec.x /= rhs.x;
+		vec.y /= rhs.y;
+		vec.z /= rhs.z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::div( Vector4& vec, const Vector4& rhs )
+	{
+		vec.x /= rhs.x;
+		vec.y /= rhs.y;
+		vec.z /= rhs.z;
+		vec.w /= rhs.w;
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::scale( Vector2& vec, float val )
 	{
 		vec.x *= val;
@@ -263,17 +286,17 @@ namespace tiki
 
 	TIKI_FORCE_INLINE float vector::length( const Vector2& vec )
 	{
-		return math::sqrt( lengthSquared( vec ) );
+		return f32::sqrt( lengthSquared( vec ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::length( const Vector3& vec )
 	{
-		return math::sqrt( lengthSquared( vec ) );
+		return f32::sqrt( lengthSquared( vec ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::length( const Vector4& vec )
 	{
-		return math::sqrt( lengthSquared( vec ) );
+		return f32::sqrt( lengthSquared( vec ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::lengthSquared( const Vector2& vec )
@@ -296,7 +319,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( lengthSquared( vec ) ) == false );
 		return scale(
 			vec,
-			math::rsqrt( lengthSquared( vec ) )
+			f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
@@ -305,7 +328,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( lengthSquared( vec ) ) == false );
 		return scale(
 			vec,
-			math::rsqrt( lengthSquared( vec ) )
+			f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
@@ -314,7 +337,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( lengthSquared( vec ) ) == false );
 		return scale(
 			vec,
-			math::rsqrt( lengthSquared( vec ) )
+			f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
@@ -326,7 +349,7 @@ namespace tiki
 			return clear( vec );
 		}
 
-		return scale( vec, math::rsqrt( lenghtSqr ) );
+		return scale( vec, f32::rsqrt( lenghtSqr ) );
 	}
 
 	TIKI_FORCE_INLINE Vector3& vector::normalizeZero( Vector3& vec )
@@ -337,7 +360,7 @@ namespace tiki
 			return clear( vec );
 		}
 
-		return scale( vec, math::rsqrt( lenghtSqr ) );
+		return scale( vec, f32::rsqrt( lenghtSqr ) );
 	}
 
 	TIKI_FORCE_INLINE Vector4& vector::normalizeZero( Vector4& vec )
@@ -348,7 +371,7 @@ namespace tiki
 			return clear( vec );
 		}
 
-		return scale( vec, math::rsqrt( lenghtSqr ) );
+		return scale( vec, f32::rsqrt( lenghtSqr ) );
 	}
 
 	TIKI_FORCE_INLINE Vector2& vector::truncate( Vector2& vec, float len )
@@ -356,7 +379,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( len ) == false );
 		return scale(
 			vec,
-			len * math::rsqrt( lengthSquared( vec ) )
+			len * f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
@@ -365,7 +388,7 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( len ) == false );
 		return scale(
 			vec,
-			len * math::rsqrt( lengthSquared( vec ) )
+			len * f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
@@ -374,23 +397,23 @@ namespace tiki
 		TIKI_ASSERT( f32::isZero( len ) == false );
 		return scale(
 			vec,
-			len * math::rsqrt( lengthSquared( vec ) )
+			len * f32::rsqrt( lengthSquared( vec ) )
 		);
 	}
 
 	TIKI_FORCE_INLINE float vector::distance( const Vector2& start, const Vector2& end )
 	{
-		return math::sqrt( distanceSquared( start, end ) );
+		return f32::sqrt( distanceSquared( start, end ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::distance( const Vector3& start, const Vector3& end )
 	{
-		return math::sqrt( distanceSquared( start, end ) );
+		return f32::sqrt( distanceSquared( start, end ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::distance( const Vector4& start, const Vector4& end )
 	{
-		return math::sqrt( distanceSquared( start, end ) );
+		return f32::sqrt( distanceSquared( start, end ) );
 	}
 
 	TIKI_FORCE_INLINE float vector::distanceSquared( const Vector2& start, const Vector2& end )
