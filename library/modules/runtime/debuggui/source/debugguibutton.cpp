@@ -31,7 +31,9 @@ namespace tiki
 
 	void DebugGuiButton::render( ImmediateRenderer& renderer )
 	{
-		renderer.drawTexture( nullptr, getRectangle(), m_mouseOver ? TIKI_COLOR( 164, 164, 255, 196 ) : TIKI_COLOR( 194, 194, 255, 164 ) );
+		const Color color = ( m_mouseOver ? ( m_mouseDown ? TIKI_COLOR( 164, 164, 255, 224 ) : TIKI_COLOR( 164, 164, 255, 196 ) ) : TIKI_COLOR( 194, 194, 255, 164 ) );
+
+		renderer.drawTexture( nullptr, getRectangle(), color );
 		renderer.drawText( vector::add( vector::create( DebugGui_DefaultMargin, DebugGui_DefaultMargin ), getRectangle().xy() ), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
 	}
 
@@ -41,14 +43,14 @@ namespace tiki
 		{
 			m_mouseOver = getRectangle().contains( state.mousePosition );
 		}
-		else if ( inputEvent.eventType == InputEventType_Controller_ButtonDown && m_mouseOver )
+		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && m_mouseOver )
 		{
 			m_mouseDown = true;
 			return true;
 		}
-		else if ( inputEvent.eventType == InputEventType_Controller_ButtonUp && m_mouseDown && m_mouseOver )
+		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && m_mouseDown && m_mouseOver )
 		{
-			// todo click
+			pushEvent( DebugGuiEvent( this, DebugGuiEventType_Click ) );
 			m_mouseDown = false;
 			return true;
 		}

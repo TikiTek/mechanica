@@ -294,20 +294,20 @@ namespace tiki
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix33& matrix::div( Matrix33& mtx, const Matrix33& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix33& matrix::div( Matrix33& mtx, const Matrix33& rhs )
+	//{
 
-	}
+	//}
 
-	TIKI_FORCE_INLINE Matrix43& matrix::div( Matrix43& mtx, const Matrix43& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix43& matrix::div( Matrix43& mtx, const Matrix43& rhs )
+	//{
 
-	}
+	//}
 
-	TIKI_FORCE_INLINE Matrix44& matrix::div( Matrix44& mtx, const Matrix44& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix44& matrix::div( Matrix44& mtx, const Matrix44& rhs )
+	//{
 
-	}
+	//}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::scale( Matrix33& mtx, float val )
 	{

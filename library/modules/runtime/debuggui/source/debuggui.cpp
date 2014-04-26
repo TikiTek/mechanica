@@ -33,7 +33,7 @@ namespace tiki
 		setScreenSize( screenSize );
 
 		m_pDefaultFont = resourceManager.loadResource< Font >( "debug.font" );
-		DebugGuiControl::setDefaultFont( m_pDefaultFont );
+		DebugGuiControl::initialize( m_pDefaultFont, this );
 
 		vector::clear( m_inputState.mousePosition );
 		m_inputState.mouseWheel = 0.0f;
@@ -52,7 +52,7 @@ namespace tiki
 
 		m_renderer.dispose( grahicsSystem, resourceManager );
 
-		DebugGuiControl::setDefaultFont( nullptr );
+		DebugGuiControl::shutdown();
 		resourceManager.unloadResource( m_pDefaultFont );
 		m_pDefaultFont = nullptr;
 	}
@@ -118,8 +118,8 @@ namespace tiki
 			switch ( inputEvent.eventType )
 			{
 			case InputEventType_Mouse_Moved:
-				m_inputState.mousePosition.x += inputEvent.data.mouseMoved.xOffset;
-				m_inputState.mousePosition.y += inputEvent.data.mouseMoved.yOffset;
+				m_inputState.mousePosition.x = inputEvent.data.mouseMoved.xState;
+				m_inputState.mousePosition.y = inputEvent.data.mouseMoved.yState;
 				break;
 
 			case InputEventType_Mouse_ButtonDown:
@@ -151,4 +151,18 @@ namespace tiki
 
 		return false;
 	}
+
+	void DebugGui::pushEvent( const DebugGuiEvent& guiEvent )
+	{
+		for (uint i = 0u; i < m_windows.getCount(); ++i)
+		{
+			if ( m_windows[ i ]->processGuiEvent( guiEvent ) )
+			{
+				return;
+			}
+		} 
+
+		TIKI_TRACE_INFO( "[DebugGui] event of type '%u' was not handled.\n", guiEvent.eventType );
+	}
+
 }

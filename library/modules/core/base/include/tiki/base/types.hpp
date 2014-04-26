@@ -54,9 +54,9 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 
-	typedef unsigned char		uint8;
-	typedef unsigned short		uint16;
-	typedef unsigned int		uint32;
+	typedef unsigned char			uint8;
+	typedef unsigned short			uint16;
+	typedef unsigned int			uint32;
 	typedef unsigned long long int	uint64;
 
 	typedef char				sint8;
@@ -68,7 +68,7 @@ namespace tiki
 	typedef unsigned int		fourcc;
 
 #	if TIKI_ENABLED( TIKI_BUILD_64BIT )
-	typedef long long int		sint;
+	typedef long long int			sint;
 	typedef unsigned long long int	uint;
 	typedef unsigned long long int	size_t;
 #	else

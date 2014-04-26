@@ -40,9 +40,9 @@ namespace tiki
 			arrayCount	= 1u;
 			mipCount	= 0u;
 
-			flags		= TextureFlags_None;
-			format		= PixelFormat_Invalid;
-			type		= TextureType_Invalid;
+			flags		= (uint16)TextureFlags_None;
+			format		= (uint16)PixelFormat_Invalid;
+			type		= (uint16)TextureType_Invalid;
 		}
 
 		uint16	width;

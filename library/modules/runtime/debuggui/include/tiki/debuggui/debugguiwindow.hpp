@@ -14,6 +14,7 @@ namespace tiki
 	class DebugGuiWindow : public DebugGuiControl
 	{
 		TIKI_NONCOPYABLE_CLASS( DebugGuiWindow );
+		friend class DebugGui;
 
 	public:
 
@@ -40,6 +41,10 @@ namespace tiki
 		void			setTitle( const char* pTitle );
 
 		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+
+	private: // friend
+
+		virtual bool	processGuiEvent( const DebugGuiEvent& guiEvent );
 
 	private:
 

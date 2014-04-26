@@ -216,4 +216,9 @@ namespace tiki
 
 		return m_pLayout->processInputEvent( inputEvent, state );
 	}
+
+	bool DebugGuiWindow::processGuiEvent( const DebugGuiEvent& guiEvent )
+	{
+		return false;
+	}
 }

@@ -232,7 +232,9 @@ namespace tiki
 	{
 		const HINSTANCE hInstance = (HINSTANCE)getInstanceHandle();
 
-		m_platformData.currentStateIndex = 0u;
+		m_platformData.windowHandle			= params.windowHandle;
+		m_platformData.currentStateIndex	= 0u;
+
 		m_platformData.pStates[ 0u ] = static_cast< InputSystemState* >( TIKI_MEMORY_ALLOC( sizeof( InputSystemState ) * 2u ) );
 		m_platformData.pStates[ 1u ] = m_platformData.pStates[ 0u ] + 1u;
 		memory::zero( m_platformData.pStates[ 0u ], sizeof( InputSystemState ) * 2u );
@@ -450,8 +452,20 @@ namespace tiki
 					inputEvent.eventType	= InputEventType_Mouse_Moved;
 					inputEvent.deviceType	= InputDeviceType_Mouse;
 					inputEvent.deviceId		= 0u;
-					inputEvent.data.mouseMoved.xOffset = pCurrentState->mouse.lX;
-					inputEvent.data.mouseMoved.yOffset = pCurrentState->mouse.lY;
+					inputEvent.data.mouseMoved.xOffset = (sint16)pCurrentState->mouse.lX;
+					inputEvent.data.mouseMoved.yOffset = (sint16)pCurrentState->mouse.lY;
+
+					POINT mousePosition;
+					if ( GetCursorPos( &mousePosition) && ScreenToClient( (HWND)m_platformData.windowHandle, &mousePosition ) )
+					{
+						inputEvent.data.mouseMoved.xState = (sint16)mousePosition.x;
+						inputEvent.data.mouseMoved.yState = (sint16)mousePosition.y;
+					}
+					else
+					{
+						inputEvent.data.mouseMoved.xState = 0;
+						inputEvent.data.mouseMoved.yState = 0;
+					}
 				}
 
 				if ( pCurrentState->mouse.lZ != pPreviousState->mouse.lZ )

@@ -244,8 +244,8 @@ namespace tiki
 		GraphicsSystem& graphicsSystem = *m_context.pGraphicsSystem;
 
 		TextureDescription desc;
-		desc.width		= m_context.rendererWidth;
-		desc.height		= m_context.rendererHeight;
+		desc.width		= (uint16)m_context.rendererWidth;
+		desc.height		= (uint16)m_context.rendererHeight;
 		desc.depth		= 1u;
 		desc.type		= TextureType_2d;
 		desc.mipCount	= 0u;
