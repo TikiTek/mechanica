@@ -10,8 +10,6 @@ namespace tiki
 		const float maxHeight	= boundingRectangle.height - ( DebugGui_DefaultMargin * 2.0f );
 
 		const Vector2 minSize = getMinimumSize();
-		//TIKI_ASSERT( minSize.x <= maxWidth );
-		//TIKI_ASSERT( minSize.y <= maxHeight );
 		const float scale = maxHeight / minSize.y;
 		
 		float currentY = boundingRectangle.y + DebugGui_DefaultMargin;
@@ -33,7 +31,7 @@ namespace tiki
 
 	Vector2 DebugGuiHorizontalLayout::getMinimumSize()
 	{
-		Vector2 minSize = { DebugGui_DefaultMargin, 0.0f };
+		Vector2 minSize = { 0.0f, DebugGui_DefaultMargin };
 		for (uint childIndex = 0u; childIndex < getChildCount(); ++childIndex)
 		{
 			DebugGuiControl* pChild = getChildByIndex( childIndex );
@@ -42,6 +40,7 @@ namespace tiki
 			minSize.y += childMinSize.y + DebugGui_DefaultMargin;
 			minSize.x = TIKI_MAX( minSize.x, childMinSize.x );
 		}
+		minSize.x += DebugGui_DefaultMargin * 2.0f;
 		return minSize;
 	}
 }

@@ -92,11 +92,11 @@ namespace tiki
 	{
 		Vector2 minSize;
 		getDefaultFont()->calcuateTextSize( minSize, m_aTitle, getStringLength( m_aTitle ) );
-		minSize.x += 4.0f * DebugGui_DefaultMargin;
-		minSize.y = ( 3.0f * DebugGui_DefaultMargin ) + TitleHeight;
+		minSize.y = ( 2.0f * DebugGui_DefaultMargin ) + TitleHeight;
 
 		const Vector2 layoutMinSize = m_pLayout->getMinimumSize();
 		minSize.x = TIKI_MAX( minSize.x, layoutMinSize.x );
+		minSize.x += 2.0f * DebugGui_DefaultMargin;
 		minSize.y += layoutMinSize.y;
 
 		return minSize;
