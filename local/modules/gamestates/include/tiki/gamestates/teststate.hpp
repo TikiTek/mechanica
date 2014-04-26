@@ -10,6 +10,7 @@
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/scenerendereffect.hpp"
 
+#include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
 
 namespace tiki
@@ -65,6 +66,7 @@ namespace tiki
 
 		DebugGui					m_debugGui;
 		DebugGuiTestWindow			m_testWindow;
+		DebugGuiLightingWindow		m_lightingWindow;
 
 		int							m_gbufferIndex;
 
