@@ -30,6 +30,12 @@ namespace tiki
 			m_bottomLayout.addChildControl( &m_buttons[ i ] );
 		} 
 
+		m_slider.create( 5.0f, 15.0f, 10.0f );
+		m_bottomLayout.addChildControl( &m_slider );
+
+		m_checkBox.create( "Test Box", true );
+		m_bottomLayout.addChildControl( &m_checkBox );
+
 		m_baseLayout.addChildControl( &m_bottomLayout );
 	}
 

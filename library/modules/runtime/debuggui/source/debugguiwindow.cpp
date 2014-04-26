@@ -51,15 +51,7 @@ namespace tiki
 	void DebugGuiWindow::setTitle( const char* pTitle )
 	{
 		TIKI_ASSERT( pTitle != nullptr );
-
-		const uint titleLenght = getStringLength( pTitle );
-		TIKI_ASSERT( titleLenght < MaxTitleLength );
-
-		if ( titleLenght < MaxTitleLength )
-		{
-			memory::copy( m_aTitle, pTitle, titleLenght );
-			m_aTitle[ titleLenght ] = '\0';
-		}
+		copyString( m_aTitle, TIKI_COUNT( m_aTitle ), pTitle );
 	}
 
 	bool DebugGuiWindow::getVisibility() const
