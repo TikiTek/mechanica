@@ -23,16 +23,15 @@ namespace tiki
 		{
 		}
 
-		bool contains( const Vector2& point )
+		bool contains( const Vector2& point ) const
 		{
 			return ( point.x >= x ) && ( point.x <= x + width ) && ( point.y >= y ) && ( point.y <= y + height );
 		}
 
-		Vector2 xy()
+		Vector2 xy() const
 		{
-			const Vector2 xy = { x, y };
-			return xy;
-		}
+			return vector::create( x, y );
+		}		
 	};
 }
 

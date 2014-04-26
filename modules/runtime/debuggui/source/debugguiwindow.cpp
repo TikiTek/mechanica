@@ -9,26 +9,23 @@ namespace tiki
 {
 	DebugGuiWindow::DebugGuiWindow()
 	{
-		m_pDebugGui = nullptr;
+		m_pDebugGui	= nullptr;
+		m_pLayout	= nullptr;
 	}
 
 	DebugGuiWindow::~DebugGuiWindow()
 	{
 		TIKI_ASSERT( m_pDebugGui == nullptr );
+		TIKI_ASSERT( m_pLayout == nullptr );
 	}
 
-	const char* DebugGuiWindow::getTitle() const
+	void DebugGuiWindow::create( DebugGui& debugGui, const char* pTitle, DebugGuiLayout& layout )
 	{
-		return m_aTitle;
-	}
-
-	void DebugGuiWindow::create( DebugGui& debugGui, const char* pTitle )
-	{
-		TIKI_ASSERT( m_pDebugGui == nullptr );
-
-		m_pDebugGui	= &debugGui;
-		m_isMoving	= false;
-		m_isVisible	= true;
+		m_pDebugGui		= &debugGui;
+		m_pLayout		= &layout;
+		m_isMoving		= false;
+		m_isVisible		= true;
+		m_resizeMode	= WindowResizeMask_None;
 
 		setTitle( pTitle );
 
@@ -37,13 +34,18 @@ namespace tiki
 
 	void DebugGuiWindow::dispose()
 	{
-		TIKI_ASSERT( m_pDebugGui != nullptr );
-
 		m_pDebugGui->removeWindow( *this );
 
-		m_pDebugGui = nullptr;
-		m_isMoving	= false;
-		m_isVisible	= false;
+		m_pDebugGui		= nullptr;
+		m_pLayout		= nullptr;
+		m_isMoving		= false;
+		m_isVisible		= false;
+		m_resizeMode	= WindowResizeMask_None;
+	}
+
+	const char* DebugGuiWindow::getTitle() const
+	{
+		return m_aTitle;
 	}
 
 	void DebugGuiWindow::setTitle( const char* pTitle )
@@ -71,19 +73,33 @@ namespace tiki
 		m_isMoving &= visible;
 	}
 
-	void DebugGuiWindow::setRectangle( const Rectangle& boundingRectangle )
+	void DebugGuiWindow::handleRectangleChanged( const Rectangle& boundingRectangle )
 	{
-		m_fullRectangle = boundingRectangle;
-
-		m_titleRectangle.x		= boundingRectangle.x + WindowMargin;
-		m_titleRectangle.y		= boundingRectangle.y + WindowMargin;
-		m_titleRectangle.width	= boundingRectangle.width - ( WindowMargin * 2.0f );
+		m_titleRectangle.x		= boundingRectangle.x + DebugGui_DefaultMargin;
+		m_titleRectangle.y		= boundingRectangle.y + DebugGui_DefaultMargin;
+		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
 		m_titleRectangle.height = TitleHeight;
 
-		m_clientRectangle.x			= boundingRectangle.x + WindowMargin;
-		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + WindowMargin;
-		m_clientRectangle.width		= boundingRectangle.width - ( WindowMargin * 2.0f );
-		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( WindowMargin * 3.0f );		
+		m_clientRectangle.x			= boundingRectangle.x + DebugGui_DefaultMargin;
+		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + DebugGui_DefaultMargin;
+		m_clientRectangle.width		= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
+		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( DebugGui_DefaultMargin * 3.0f );
+
+		m_pLayout->setRectangle( m_clientRectangle );
+	}
+
+	Vector2 DebugGuiWindow::getMinimumSize()
+	{
+		Vector2 minSize;
+		getDefaultFont()->calcuateTextSize( minSize, m_aTitle, getStringLength( m_aTitle ) );
+		minSize.x += 4.0f * DebugGui_DefaultMargin;
+		minSize.y = ( 3.0f * DebugGui_DefaultMargin ) + TitleHeight;
+
+		const Vector2 layoutMinSize = m_pLayout->getMinimumSize();
+		minSize.x = TIKI_MAX( minSize.x, layoutMinSize.x );
+		minSize.y += layoutMinSize.y;
+
+		return minSize;
 	}
 
 	void DebugGuiWindow::update()
@@ -93,9 +109,7 @@ namespace tiki
 			return;
 		}
 
-		// todo
-
-		DebugGuiControl::update();
+		m_pLayout->update();
 	}
 
 	void DebugGuiWindow::render( ImmediateRenderer& renderer )
@@ -105,15 +119,15 @@ namespace tiki
 			return;
 		}
 
-		renderer.drawTexture( nullptr, m_fullRectangle, TIKI_COLOR( 64, 64, 64, 128 ) );
+		renderer.drawTexture( nullptr, getRectangle(), TIKI_COLOR( 64, 64, 64, 128 ) );
 		renderer.drawTexture( nullptr, m_titleRectangle, TIKI_COLOR( 128, 128, 128, 196 ) );
 		renderer.drawTexture( nullptr, m_clientRectangle, TIKI_COLOR( 196, 196, 196, 128 ) );
 
-		Vector2 textPosition = { WindowMargin, WindowMargin };
+		Vector2 textPosition = { DebugGui_DefaultMargin, DebugGui_DefaultMargin };
 		vector::add( textPosition, m_titleRectangle.xy() );
 		renderer.drawText( textPosition, *getDefaultFont(), m_aTitle, TIKI_COLOR_WHITE );
 
-		DebugGuiControl::render( renderer );
+		m_pLayout->render( renderer );
 	}
 
 	bool DebugGuiWindow::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
@@ -130,22 +144,76 @@ namespace tiki
 				m_isMoving = true;
 				return true;
 			}
+			else
+			{
+				const float leftDistance	= state.mousePosition.x - getRectangle().x;
+				const float rightDistance	= ( getRectangle().x + getRectangle().width ) - state.mousePosition.x;
+				const float topDistance		= state.mousePosition.y - getRectangle().y;
+				const float bottomDistance	= ( getRectangle().y + getRectangle().height ) - state.mousePosition.y;
+
+				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && leftDistance > 0.0f && leftDistance < DebugGui_DefaultMargin ? WindowResizeMask_Left : WindowResizeMask_None );
+				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && rightDistance > 0.0f && rightDistance < DebugGui_DefaultMargin ? WindowResizeMask_Right : WindowResizeMask_None );
+				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && topDistance > 0.0f && topDistance < DebugGui_DefaultMargin ? WindowResizeMask_Top : WindowResizeMask_None );
+				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && bottomDistance > 0.0f && bottomDistance < DebugGui_DefaultMargin ? WindowResizeMask_Bottom : WindowResizeMask_None );
+			}
 		}
-		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && m_isMoving )
+		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && ( m_isMoving || m_resizeMode != WindowResizeMask_None ) )
 		{
-			m_isMoving = false;
+			m_isMoving		= false;
+			m_resizeMode	= WindowResizeMask_None;
 			return true;
 		}
-		else if ( inputEvent.eventType == InputEventType_Mouse_Moved && m_isMoving )
+		else if ( inputEvent.eventType == InputEventType_Mouse_Moved )
 		{
-			Rectangle rectangle = m_fullRectangle;
-			rectangle.x = m_fullRectangle.x + inputEvent.data.mouseMoved.xOffset;
-			rectangle.y = m_fullRectangle.y + inputEvent.data.mouseMoved.yOffset;
-			setRectangle( rectangle );
-			return true;
+			if ( m_isMoving )
+			{
+				Rectangle rectangle = getRectangle();
+				rectangle.x += inputEvent.data.mouseMoved.xOffset;
+				rectangle.y += inputEvent.data.mouseMoved.yOffset;
+				setRectangle( rectangle );
+				return true;
+			}
+			else if ( m_resizeMode != WindowResizeMask_None )
+			{
+				const InputEventMouseMovedData& moveData = inputEvent.data.mouseMoved;
+
+				Rectangle rectangle = getRectangle();
+				
+				if ( isBitSet( m_resizeMode, WindowResizeMask_Left ) )
+				{
+					if ( getMinimumSize().x >= rectangle.width - moveData.xOffset )
+					{
+						return true;
+					}
+
+					rectangle.x		+= moveData.xOffset;
+					rectangle.width	-= moveData.xOffset;
+				}
+				else if ( isBitSet( m_resizeMode, WindowResizeMask_Right ) )
+				{
+					rectangle.width	+= moveData.xOffset;
+				}
+
+				if ( isBitSet( m_resizeMode, WindowResizeMask_Top ) )
+				{
+					if ( getMinimumSize().y >= rectangle.height - moveData.yOffset )
+					{
+						return true;
+					}
+
+					rectangle.y			+= moveData.yOffset;
+					rectangle.height	-= moveData.yOffset;
+				}
+				else if ( isBitSet( m_resizeMode, WindowResizeMask_Bottom ) )
+				{
+					rectangle.height += moveData.yOffset;
+				}
+
+				setRectangle( rectangle );
+				return true;
+			}
 		}
 
-		return DebugGuiControl::processInputEvent( inputEvent, state );
+		return m_pLayout->processInputEvent( inputEvent, state );
 	}
-
 }

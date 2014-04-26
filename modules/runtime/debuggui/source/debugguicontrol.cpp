@@ -5,42 +5,29 @@ namespace tiki
 {
 	const Font* DebugGuiControl::s_pDefaultFont = nullptr;
 
-	void DebugGuiControl::addChildControl( DebugGuiControl* pChild )
+	const Font* DebugGuiControl::getDefaultFont()
 	{
-		m_childControls.push( pChild );
+		return s_pDefaultFont;
 	}
 
-	bool DebugGuiControl::removeChildControl( DebugGuiControl* pChild )
+	void DebugGuiControl::setDefaultFont( const Font* pDefaultFont )
 	{
-		return m_childControls.removeUnsortedByValue( pChild );
+		s_pDefaultFont = pDefaultFont;
 	}
 
-	void DebugGuiControl::update()
+	const Rectangle& DebugGuiControl::getRectangle() const
 	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
-		{
-			m_childControls[ i ]->update();
-		}
+		return m_rectangle;
 	}
 
-	void DebugGuiControl::render( ImmediateRenderer& renderer )
+	void DebugGuiControl::setRectangle( const Rectangle& boundingRectangle )
 	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
-		{
-			m_childControls[ i ]->render( renderer );
-		}
-	}
+		m_rectangle = boundingRectangle;
 
-	bool DebugGuiControl::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
-	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
-		{
-			if ( m_childControls[ i ]->processInputEvent( inputEvent, state ) )
-			{
-				return true;
-			}
-		}
+		const Vector2 minSize = getMinimumSize();
+		m_rectangle.width = TIKI_MAX( minSize.x, m_rectangle.width );
+		m_rectangle.height = TIKI_MAX( minSize.y, m_rectangle.height );
 
-		return false;
+		handleRectangleChanged( m_rectangle );
 	}
 }
