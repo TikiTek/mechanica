@@ -17,7 +17,8 @@ namespace tiki
 
 	enum
 	{
-		DebugGui_DefaultMargin = 5u
+		DebugGui_DefaultMargin = 5u,
+		DebugGui_MaxTextLength = 32u
 	};
 
 	class DebugGuiControl

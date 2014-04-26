@@ -31,12 +31,7 @@ namespace tiki
 
 	private:
 
-		enum
-		{
-			MaxTextLength = 32u
-		};
-
-		char	m_aText[ MaxTextLength ];
+		char	m_aText[ DebugGui_MaxTextLength ];
 
 	};
 }

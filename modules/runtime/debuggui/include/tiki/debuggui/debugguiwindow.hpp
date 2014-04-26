@@ -50,7 +50,6 @@ namespace tiki
 
 		enum
 		{
-			MaxTitleLength	= 32u,
 			TitleHeight		= 25
 		};
 
@@ -67,7 +66,7 @@ namespace tiki
 		DebugGui*			m_pDebugGui;
 		DebugGuiLayout*		m_pLayout;
 
-		char				m_aTitle[ MaxTitleLength ];
+		char				m_aTitle[ DebugGui_MaxTextLength ];
 
 		bool				m_isMoving;
 		bool				m_isVisible;
