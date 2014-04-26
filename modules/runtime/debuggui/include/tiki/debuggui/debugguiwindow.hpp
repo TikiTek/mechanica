@@ -5,6 +5,7 @@
 #include "tiki/debuggui/debugguilayout.hpp"
 
 #include "tiki/base/types.hpp"
+#include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/math/rectangle.hpp"
 
 namespace tiki
@@ -65,6 +66,8 @@ namespace tiki
 		
 		DebugGui*			m_pDebugGui;
 		DebugGuiLayout*		m_pLayout;
+
+		DebugGuiButton		m_minimizeButton;
 
 		char				m_aTitle[ DebugGui_MaxTextLength ];
 

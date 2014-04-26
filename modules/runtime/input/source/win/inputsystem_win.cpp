@@ -143,6 +143,13 @@ namespace tiki
 		XINPUT_GAMEPAD_BACK				// ControllerButton_Back
 	};
 
+	static const MouseButton s_aMouseButtonMapping[ MouseButton_Count ] =
+	{
+		MouseButton_Left,
+		MouseButton_Right,
+		MouseButton_Middle
+	};
+
 	struct InputSystemState
 	{
 		DIMOUSESTATE	mouse;
@@ -434,7 +441,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Mouse_ButtonDown;
 						inputEvent.deviceType	= InputDeviceType_Mouse;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.mouseButton.button = (MouseButton)i;
+						inputEvent.data.mouseButton.button = s_aMouseButtonMapping[ i ];
 					}
 					else if ( !isPressed && wasPressed )
 					{
@@ -442,7 +449,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Mouse_ButtonUp;
 						inputEvent.deviceType	= InputDeviceType_Mouse;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.mouseButton.button = (MouseButton)i;
+						inputEvent.data.mouseButton.button = s_aMouseButtonMapping[ i ];
 					}
 				} 
 				

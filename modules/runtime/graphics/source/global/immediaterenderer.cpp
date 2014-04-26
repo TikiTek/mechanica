@@ -308,17 +308,14 @@ namespace tiki
 
 		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
 
-		const float texelWidth	= 1.0f; //m_constantData.projection.data[ 0u ] / 2.0f;
-		const float texelHeight	= 1.0f; //m_constantData.projection.data[ 5u ] / -2.0f;
-
 		float x = 0.0f;
 		for (size_t charIndex = 0u; charIndex < textLength; charIndex++)
 		{
 			const size_t vertexIndex = charIndex * 4u;
 			const FontChar& character = chars[ charIndex ];
 
-			const float charWidth	= character.width * texelWidth;
-			const float charHeight	= character.height * texelHeight;
+			const float charWidth	= character.width;
+			const float charHeight	= character.height;
 
 			const float posLeft		= position.x + x;
 			const float posRight	= posLeft + charWidth;

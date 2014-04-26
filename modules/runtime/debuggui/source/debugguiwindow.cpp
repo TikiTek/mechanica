@@ -28,6 +28,7 @@ namespace tiki
 		m_resizeMode	= WindowResizeMask_None;
 
 		setTitle( pTitle );
+		m_minimizeButton.create( "_" );
 
 		m_pDebugGui->addWindow( *this );
 	}
@@ -69,13 +70,20 @@ namespace tiki
 	{
 		m_titleRectangle.x		= boundingRectangle.x + DebugGui_DefaultMargin;
 		m_titleRectangle.y		= boundingRectangle.y + DebugGui_DefaultMargin;
-		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
+		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f + 25.0f );
 		m_titleRectangle.height = TitleHeight;
 
 		m_clientRectangle.x			= boundingRectangle.x + DebugGui_DefaultMargin;
 		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + DebugGui_DefaultMargin;
 		m_clientRectangle.width		= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
 		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( DebugGui_DefaultMargin * 3.0f );
+
+		Rectangle minimizeRect;
+		minimizeRect.x		= boundingRectangle.x + boundingRectangle.width - ( 25.0f + DebugGui_DefaultMargin );
+		minimizeRect.y		= boundingRectangle.y + DebugGui_DefaultMargin;
+		minimizeRect.width	= 25.0f;
+		minimizeRect.height	= 25.0f;
+		m_minimizeButton.setRectangle( minimizeRect );
 
 		m_pLayout->setRectangle( m_clientRectangle );
 	}
@@ -88,7 +96,7 @@ namespace tiki
 
 		const Vector2 layoutMinSize = m_pLayout->getMinimumSize();
 		minSize.x = TIKI_MAX( minSize.x, layoutMinSize.x );
-		minSize.x += 2.0f * DebugGui_DefaultMargin;
+		minSize.x += 3.0f * DebugGui_DefaultMargin + 25.0f;
 		minSize.y += layoutMinSize.y;
 
 		return minSize;
@@ -102,6 +110,7 @@ namespace tiki
 		}
 
 		m_pLayout->update();
+		m_minimizeButton.update();
 	}
 
 	void DebugGuiWindow::render( ImmediateRenderer& renderer )
@@ -120,6 +129,7 @@ namespace tiki
 		renderer.drawText( textPosition, *getDefaultFont(), m_aTitle, TIKI_COLOR_WHITE );
 
 		m_pLayout->render( renderer );
+		m_minimizeButton.render( renderer );
 	}
 
 	bool DebugGuiWindow::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
@@ -206,11 +216,22 @@ namespace tiki
 			}
 		}
 
-		return m_pLayout->processInputEvent( inputEvent, state );
+		if ( m_pLayout->processInputEvent( inputEvent, state ) )
+		{
+			return true;
+		}
+
+		return m_minimizeButton.processInputEvent( inputEvent, state );
 	}
 
 	bool DebugGuiWindow::processGuiEvent( const DebugGuiEvent& guiEvent )
 	{
+		if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &m_minimizeButton )
+		{
+			m_isVisible = false;
+			return true;
+		}
+
 		return false;
 	}
 }
