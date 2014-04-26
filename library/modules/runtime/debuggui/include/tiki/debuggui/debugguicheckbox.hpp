@@ -16,6 +16,7 @@ namespace tiki
 		void			dispose();
 
 		bool			getValue() const;
+		void			setValue( bool value );
 
 		virtual Vector2 getMinimumSize();
 

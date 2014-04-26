@@ -28,6 +28,12 @@ namespace tiki
 		return m_value;
 	}
 
+	void DebugGuiSlider::setValue( float value )
+	{
+		m_value = value;
+		setSliderRectangle();
+	}
+
 	Vector2 DebugGuiSlider::getMinimumSize()
 	{
 		return vector::create( 25.0f, 25.0f );

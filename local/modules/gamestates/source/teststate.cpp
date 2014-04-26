@@ -140,12 +140,16 @@ namespace tiki
 
 					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
 					m_testWindow.create( m_debugGui );
-					m_testWindow.setRectangle( Rectangle( 50.0f, 50.0f, 250.0f, 200.0f ) );
+					m_lightingWindow.create( m_debugGui );
+
+					m_testWindow.setRectangle( Rectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
+					m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
 
 					return TransitionState_Finish;
 				}
 				else
 				{
+					m_lightingWindow.dispose();
 					m_testWindow.dispose();
 					m_debugGui.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -227,13 +231,15 @@ namespace tiki
 		//	pointLight.range = 2.0f;
 		//}
 
-		SpotLightData& spotLight = frameData.spotLights.push();
-		vector::set( spotLight.position, 1.0f, 1.0f, 0.0f );
-		vector::set( spotLight.direction, 0.5f, 0.5f, 0.0f );
-		spotLight.color = TIKI_COLOR_BLUE;
-		spotLight.range = 5.0f;
-		spotLight.theta = 0.174532925f;
-		spotLight.phi	= 1.22173048f;
+		//SpotLightData& spotLight = frameData.spotLights.push();
+		//vector::set( spotLight.position, 1.0f, 1.0f, 0.0f );
+		//vector::set( spotLight.direction, 0.5f, 0.5f, 0.0f );
+		//spotLight.color = TIKI_COLOR_BLUE;
+		//spotLight.range = 5.0f;
+		//spotLight.theta = 0.174532925f;
+		//spotLight.phi	= 1.22173048f;
+
+		m_lightingWindow.fillFrameData( frameData );
 
 		Matrix43 mtx = Matrix43::identity;
 		mtx.pos.y = -0.1f;

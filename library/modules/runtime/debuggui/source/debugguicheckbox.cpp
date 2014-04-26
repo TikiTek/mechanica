@@ -23,6 +23,11 @@ namespace tiki
 		return m_value;
 	}
 
+	void DebugGuiCheckBox::setValue( bool value )
+	{
+		m_value = value;
+	}
+
 	Vector2 DebugGuiCheckBox::getMinimumSize()
 	{
 		Vector2 textSize;

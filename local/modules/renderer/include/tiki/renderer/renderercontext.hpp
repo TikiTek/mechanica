@@ -12,6 +12,7 @@
 namespace tiki
 {
 	class GraphicsSystem;
+	class TextureData;
 	
 	enum 
 	{

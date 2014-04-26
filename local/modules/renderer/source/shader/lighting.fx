@@ -125,7 +125,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 		float3 halfVector		= normalize( lightDirection - viewPosition );
 		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( pow( saturate( dot( halfVector, normal ) ), specularPower ), 0 );
 
-		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot;
+		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot * attenuation;
 	}
 
 	return float4( color, 1.0f );
