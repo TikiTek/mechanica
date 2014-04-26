@@ -10,7 +10,7 @@ namespace tiki
 		for (uint i = 0u; i < TIKI_COUNT( m_buttons ); ++i)
 		{
 			char text[] = "Button0";
-			text[ 6u ] = '0' + i;
+			text[ 6u ] = (char)( '0' + i );
 
 			m_buttons[ i ].create( text );
 			m_layout.addChildControl( &m_buttons[ i ] );
