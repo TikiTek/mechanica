@@ -134,6 +134,7 @@ namespace tiki
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
 					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
 
+					m_enableMouseCamera = false;
 					vector::clear( m_cameraRotation );
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
@@ -183,6 +184,7 @@ namespace tiki
 		// rotate camera
 		{
 			Vector2 rotation = m_rightStickState;
+			vector::clear( m_rightStickState );
 			vector::scale( rotation, timeDelta * 2.0f );
 
 			m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
@@ -354,6 +356,55 @@ namespace tiki
 			default:
 				break;
 			}
+
+			if ( m_enableMouseCamera )
+			{
+				switch ( inputEvent.data.keybaordKey.key )
+				{
+				case KeyboardKey_W:
+					m_leftStickState.y = 1.0f;
+					break;
+				case KeyboardKey_A:
+					m_leftStickState.x = -1.0f;
+					break;
+				case KeyboardKey_S:
+					m_leftStickState.y = -1.0f;
+					break;
+				case KeyboardKey_D:
+					m_leftStickState.x = 1.0f;
+					break;
+				}
+			}
+		}
+		else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
+		{
+			if ( m_enableMouseCamera )
+			{
+				switch ( inputEvent.data.keybaordKey.key )
+				{
+				case KeyboardKey_W:
+					m_leftStickState.y = 0.0f;
+					break;
+				case KeyboardKey_A:
+					m_leftStickState.x = 0.0f;
+					break;
+				case KeyboardKey_S:
+					m_leftStickState.y = 0.0f;
+					break;
+				case KeyboardKey_D:
+					m_leftStickState.x = 0.0f;
+					break;
+				}
+			}
+		}
+		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
+		{
+			m_enableMouseCamera = !m_enableMouseCamera;
+		}
+		else if ( inputEvent.eventType == InputEventType_Mouse_Moved && m_enableMouseCamera )
+		{
+			m_rightStickState.x = ( (float)inputEvent.data.mouseMoved.xOffset ) * 0.1f;
+			m_rightStickState.y = ( (float)inputEvent.data.mouseMoved.yOffset ) * -0.1f;
 		}
 
 		return false;

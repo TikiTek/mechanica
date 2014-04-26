@@ -2,6 +2,8 @@
 #ifndef __TIKI_DEBUGGUIBUTTON_HPP_INCLUDED__
 #define __TIKI_DEBUGGUIBUTTON_HPP_INCLUDED__
 
+#include "tiki/debuggui/debugguicontrol.hpp"
+
 namespace tiki
 {
 	class DebugGuiButton : public DebugGuiControl

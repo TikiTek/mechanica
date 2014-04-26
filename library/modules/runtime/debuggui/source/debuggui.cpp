@@ -14,7 +14,7 @@ namespace tiki
 {
 	bool DebugGui::create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount )
 	{
-		if ( !m_windows.create( maxPageCount ) )
+		if ( !m_windows.create( maxPageCount ) || !m_minimizedData.create( maxPageCount ) )
 		{
 			return false;
 		}
@@ -25,7 +25,7 @@ namespace tiki
 			return false;
 		}
 
-		m_isActive = true;
+		m_isActive = false;
 
 		Vector2 screenSize;
 		screenSize.x = (float)grahicsSystem.getBackBuffer().getWidth();
@@ -49,6 +49,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_windows.getCount() == 0u );
 		m_windows.dispose();
+		m_minimizedData.dispose();
 
 		m_renderer.dispose( grahicsSystem, resourceManager );
 
@@ -59,12 +60,22 @@ namespace tiki
 
 	void DebugGui::addWindow( DebugGuiWindow& window )
 	{
+		const uint windowIndex = m_windows.getCount();
 		m_windows.push( &window );
+
+		WindowMinimizedData& data = m_minimizedData[ windowIndex ];
+		data.isVisible = window.getVisibility();
+		data.button.create( window.getTitle() );
 	}
 
 	void DebugGui::removeWindow( DebugGuiWindow& window )
 	{
-		m_windows.removeUnsortedByValue( &window );
+		const uint windowIndex = m_windows.getIndexOf( &window );
+		if ( windowIndex != TIKI_SIZE_T_MAX )
+		{
+			m_windows.removeUnsortedByIndex( windowIndex );
+			m_minimizedData[ windowIndex ].button.dispose();
+		}
 	}
 
 	void DebugGui::setScreenSize( const Vector2& screenSize )
@@ -74,6 +85,13 @@ namespace tiki
 		Projection projection;
 		projection.createOrthographicCenter( screenSize.x, -screenSize.y, 0.0f, 1.0f );
 		m_renderer.setProjection( projection );
+
+		Rectangle minimizeLayoutRect;
+		minimizeLayoutRect.x		= 0.0f;
+		minimizeLayoutRect.y		= screenSize.y - 35.0f;
+		minimizeLayoutRect.width	= screenSize.x;
+		minimizeLayoutRect.height	= 35.0f;
+		m_minimizedLayout.setRectangle( minimizeLayoutRect );
 	}
 
 	void DebugGui::update()
@@ -86,7 +104,24 @@ namespace tiki
 		for (uint i = 0u; i < m_windows.getCount(); ++i)
 		{
 			m_windows[ i ]->update();
-		} 
+
+			const bool isVisible = m_windows[ i ]->getVisibility();
+			WindowMinimizedData& data = m_minimizedData[ i ];
+			if ( isVisible != data.isVisible )
+			{
+				if ( isVisible )
+				{
+					m_minimizedLayout.removeChildControl( &data.button );
+				}
+				else
+				{
+					m_minimizedLayout.addChildControl( &data.button );
+				}
+				data.isVisible = isVisible;
+			}
+		}
+
+		m_minimizedLayout.update();
 	}
 
 	void DebugGui::render( GraphicsContext& graphicsContext )
@@ -100,6 +135,9 @@ namespace tiki
 		{
 			m_windows[ i ]->render( m_renderer );
 		}
+
+		m_renderer.drawTexture( nullptr, m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
+		m_minimizedLayout.render( m_renderer );
 
 		Rectangle mouseReactangle;
 		mouseReactangle.x = m_inputState.mousePosition.x;
@@ -149,7 +187,7 @@ namespace tiki
 			}
 		}
 
-		return false;
+		return m_minimizedLayout.processInputEvent( inputEvent, m_inputState );
 	}
 
 	void DebugGui::pushEvent( const DebugGuiEvent& guiEvent )
@@ -160,8 +198,13 @@ namespace tiki
 			{
 				return;
 			}
-		} 
 
+			if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &m_minimizedData[ i ].button )
+			{
+				m_windows[ i ]->setVisibility( !m_windows[ i ]->getVisibility() );
+			}
+		}
+		
 		TIKI_TRACE_INFO( "[DebugGui] event of type '%u' was not handled.\n", guiEvent.eventType );
 	}
 
