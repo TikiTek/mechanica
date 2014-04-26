@@ -43,8 +43,10 @@ namespace tiki
 
 	struct InputEventMouseMovedData
 	{
-		int xOffset;
-		int yOffset;
+		sint16 xState;
+		sint16 yState;
+		sint16 xOffset;
+		sint16 yOffset;
 	};
 
 	struct InputEventMouseButtonData
@@ -54,7 +56,7 @@ namespace tiki
 
 	struct InputEventMouseWheelData
 	{
-		int offset;
+		sint offset;
 	};
 
 	struct InputEventControllerButtonData

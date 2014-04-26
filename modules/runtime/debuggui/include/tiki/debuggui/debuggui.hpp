@@ -4,6 +4,7 @@
 
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/debuggui/debugguievent.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/mousebutton.hpp"
 #include "tiki/math/vector.hpp"
@@ -25,6 +26,7 @@ namespace tiki
 	class DebugGui
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGui );
+		friend class DebugGuiControl;
 		friend class DebugGuiWindow;
 
 	public:
@@ -46,6 +48,8 @@ namespace tiki
 
 		void		addWindow( DebugGuiWindow& window );
 		void		removeWindow( DebugGuiWindow& window );
+
+		void		pushEvent( const DebugGuiEvent& guiEvent );
 
 	private:
 

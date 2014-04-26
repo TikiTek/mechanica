@@ -3,16 +3,35 @@
 
 namespace tiki
 {
-	const Font* DebugGuiControl::s_pDefaultFont = nullptr;
+	const Font* DebugGuiControl::s_pDefaultFont	= nullptr;
+	DebugGui* DebugGuiControl::s_pDebugGui		= nullptr;
 
 	const Font* DebugGuiControl::getDefaultFont()
 	{
+		TIKI_ASSERT( s_pDefaultFont != nullptr );
 		return s_pDefaultFont;
 	}
 
-	void DebugGuiControl::setDefaultFont( const Font* pDefaultFont )
+	void DebugGuiControl::pushEvent( const DebugGuiEvent& guiEvent )
 	{
-		s_pDefaultFont = pDefaultFont;
+		TIKI_ASSERT( s_pDebugGui != nullptr );
+		s_pDebugGui->pushEvent( guiEvent );
+	}
+
+	void DebugGuiControl::initialize( const Font* pDefaultFont, DebugGui* pDebugGui )
+	{
+		TIKI_ASSERT( s_pDefaultFont == nullptr );
+		TIKI_ASSERT( s_pDebugGui == nullptr );
+		s_pDefaultFont	= pDefaultFont;
+		s_pDebugGui		= pDebugGui;
+	}
+
+	void DebugGuiControl::shutdown()
+	{
+		TIKI_ASSERT( s_pDefaultFont != nullptr );
+		TIKI_ASSERT( s_pDebugGui != nullptr );
+		s_pDefaultFont	= nullptr;
+		s_pDebugGui		= nullptr;
 	}
 
 	const Rectangle& DebugGuiControl::getRectangle() const

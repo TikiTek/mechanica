@@ -47,22 +47,6 @@ namespace tiki
 		uint					getEventCount() const;
 		bool					popEvent( InputEvent& inputEvent );
 
-		//bool					isKeyDown( Keys key ) const;
-		//bool					isKeyUp( Keys key ) const;
-
-		//bool					hasKeyPressed( Keys key ) const;
-		//bool					hasKeyReleased( Keys key ) const;
-
-		//bool					isButtonDown( MouseButtons button ) const;
-		//bool					isButtonUp( MouseButtons button ) const;
-
-		//bool					isButtonPressed( MouseButtons button ) const;
-		//bool					isButtonReleased( MouseButtons button ) const;
-
-		//const Vector2&			getMousePosition() const			{ return m_mousePosition; }
-		//const Vector2&			getMousePositionNormalized() const	{ return m_mousePositionNormalized; }
-		//const Vector2&			getMouseDeltaNormalized() const		{ return m_mouseDeltaNormalized; }
-
 	private: // friends
 
 								InputSystem();
@@ -74,10 +58,6 @@ namespace tiki
 		InputEventArray			m_events;
 
 		InputSystemPlatformData	m_platformData;
-
-		//Vector2					m_mousePosition;
-		//Vector2					m_mousePositionNormalized;
-		//Vector2					m_mouseDeltaNormalized;
 
 		void					connectDevice( const InputDevice& device );
 		void					disconnectDevice( const InputDevice& device );

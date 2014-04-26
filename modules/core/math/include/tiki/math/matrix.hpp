@@ -87,9 +87,9 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix43&	mul( Matrix43& mtx, const Matrix43& rhs );
 		TIKI_FORCE_INLINE Matrix44&	mul( Matrix44& mtx, const Matrix44& rhs );
 
-		TIKI_FORCE_INLINE Matrix33&	div( Matrix33& mtx, const Matrix33& rhs );
-		TIKI_FORCE_INLINE Matrix43&	div( Matrix43& mtx, const Matrix43& rhs );
-		TIKI_FORCE_INLINE Matrix44&	div( Matrix44& mtx, const Matrix44& rhs );
+		//TIKI_FORCE_INLINE Matrix33&	div( Matrix33& mtx, const Matrix33& rhs );
+		//TIKI_FORCE_INLINE Matrix43&	div( Matrix43& mtx, const Matrix43& rhs );
+		//TIKI_FORCE_INLINE Matrix44&	div( Matrix44& mtx, const Matrix44& rhs );
 
 		TIKI_FORCE_INLINE Matrix33&	scale( Matrix33& mtx, float val );
 		TIKI_FORCE_INLINE Matrix43&	scale( Matrix43& mtx, float val );

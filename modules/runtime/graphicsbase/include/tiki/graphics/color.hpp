@@ -126,10 +126,10 @@ namespace tiki
 			return fromRGBA( r, g, b, a );
 		}
 
-		TIKI_FORCE_INLINE uint8 getChannelR( Color c ) { return ( c & TIKI_COLOR_MASK_RED )		>> TIKI_COLOR_OFFSET_RED; }
-		TIKI_FORCE_INLINE uint8 getChannelG( Color c ) { return ( c & TIKI_COLOR_MASK_GREEN )	>> TIKI_COLOR_OFFSET_GREEN; }
-		TIKI_FORCE_INLINE uint8 getChannelB( Color c ) { return ( c & TIKI_COLOR_MASK_BLUE )	>> TIKI_COLOR_OFFSET_BLUE; }
-		TIKI_FORCE_INLINE uint8 getChannelA( Color c ) { return ( c & TIKI_COLOR_MASK_ALPHA )	>> TIKI_COLOR_OFFSET_ALPHA; }
+		TIKI_FORCE_INLINE uint8 getChannelR( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_RED )	>> TIKI_COLOR_OFFSET_RED ); }
+		TIKI_FORCE_INLINE uint8 getChannelG( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_GREEN )	>> TIKI_COLOR_OFFSET_GREEN ); }
+		TIKI_FORCE_INLINE uint8 getChannelB( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_BLUE )	>> TIKI_COLOR_OFFSET_BLUE ); }
+		TIKI_FORCE_INLINE uint8 getChannelA( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_ALPHA )	>> TIKI_COLOR_OFFSET_ALPHA ); }
 
 		TIKI_FORCE_INLINE float getFloatChannelR( Color c ) { return (float)getChannelR( c ) / 255.0f; }
 		TIKI_FORCE_INLINE float getFloatChannelG( Color c ) { return (float)getChannelG( c ) / 255.0f; }

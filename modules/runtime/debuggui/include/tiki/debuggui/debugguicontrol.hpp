@@ -10,11 +10,12 @@ namespace tiki
 {
 	class Font;
 	class ImmediateRenderer;
+	struct DebugGuiEvent;
 	struct DebugGuiInputState;
 	struct InputEvent;
 	struct Rectangle;
 
-	enum MyEnum
+	enum
 	{
 		DebugGui_DefaultMargin = 5u
 	};
@@ -40,14 +41,17 @@ namespace tiki
 		virtual void			handleRectangleChanged( const Rectangle& boundingRectangle ) = 0;
 
 		static const Font*		getDefaultFont();
+		static void				pushEvent( const DebugGuiEvent& guiEvent );
 
 	private: // friend
 
-		static void				setDefaultFont( const Font* pDefaultFont );
+		static void				initialize( const Font* pDefaultFont, DebugGui* pDebugGui );
+		static void				shutdown();
 
 	private:
 
 		static const Font*		s_pDefaultFont;
+		static DebugGui*		s_pDebugGui;
 
 		Rectangle				m_rectangle;
 
