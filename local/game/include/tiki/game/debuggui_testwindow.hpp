@@ -3,8 +3,12 @@
 #define __TIKI_DEBUGGUI_TESTWINDOW_HPP_INCLUDED__
 
 #include "tiki/debuggui/debugguiwindow.hpp"
-#include "tiki/debuggui/debugguihorizontallayout.hpp"
+
 #include "tiki/debuggui/debugguibutton.hpp"
+#include "tiki/debuggui/debugguihorizontallayout.hpp"
+#include "tiki/debuggui/debugguilabel.hpp"
+#include "tiki/debuggui/debugguiminimumlayout.hpp"
+#include "tiki/debuggui/debugguiverticallayout.hpp"
 
 namespace tiki
 {
@@ -19,9 +23,12 @@ namespace tiki
 
 	private:
 
-		DebugGuiHorizontalLayout	m_layout;
+		DebugGuiMinimumLayout		m_baseLayout;
+		DebugGuiHorizontalLayout	m_bottomLayout;
+		DebugGuiVerticalLayout		m_labelLayout;
 
 		DebugGuiButton				m_buttons[ 5u ];
+		DebugGuiLabel				m_labels[ 5u ];
 
 	};
 }

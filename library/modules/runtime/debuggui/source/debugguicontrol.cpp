@@ -41,11 +41,11 @@ namespace tiki
 
 	void DebugGuiControl::setRectangle( const Rectangle& boundingRectangle )
 	{
-		m_rectangle = boundingRectangle;
-
 		const Vector2 minSize = getMinimumSize();
-		m_rectangle.width = TIKI_MAX( minSize.x, m_rectangle.width );
-		m_rectangle.height = TIKI_MAX( minSize.y, m_rectangle.height );
+		Rectangle rectangle = boundingRectangle;
+		rectangle.width = TIKI_MAX( minSize.x, rectangle.width );
+		rectangle.height = TIKI_MAX( minSize.y, rectangle.height );
+		m_rectangle = rectangle;
 
 		handleRectangleChanged( m_rectangle );
 	}
