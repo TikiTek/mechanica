@@ -3,7 +3,8 @@
 #define __TIKI_DEBUGGUICONTROL_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/math/rectangle.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
@@ -13,6 +14,11 @@ namespace tiki
 	struct InputEvent;
 	struct Rectangle;
 
+	enum MyEnum
+	{
+		DebugGui_DefaultMargin = 5u
+	};
+
 	class DebugGuiControl
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiControl );
@@ -20,29 +26,30 @@ namespace tiki
 
 	public:
 
-		virtual void	setRectangle( const Rectangle& boundingRectangle ) = 0;
+		const Rectangle&		getRectangle() const;
+		void					setRectangle( const Rectangle& boundingRectangle );
+		virtual Vector2			getMinimumSize() = 0;
 
-		void			addChildControl( DebugGuiControl* pChild );
-		bool			removeChildControl( DebugGuiControl* pChild );
+		virtual void			update() = 0;
+		virtual void			render( ImmediateRenderer& renderer ) = 0;
 
-		virtual void	update();
-		virtual void	render( ImmediateRenderer& renderer );
-
-		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
+		virtual bool			processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) = 0;
 
 	protected:
 
-		static const Font*		getDefaultFont() { return s_pDefaultFont; }
+		virtual void			handleRectangleChanged( const Rectangle& boundingRectangle ) = 0;
+
+		static const Font*		getDefaultFont();
 
 	private: // friend
 
-		static void				setDefaultFont( const Font* pDefaultFont ) { s_pDefaultFont = pDefaultFont; }
+		static void				setDefaultFont( const Font* pDefaultFont );
 
 	private:
 
-		SizedArray< DebugGuiControl* >	m_childControls;
+		static const Font*		s_pDefaultFont;
 
-		static const Font*				s_pDefaultFont;
+		Rectangle				m_rectangle;
 
 	};
 }

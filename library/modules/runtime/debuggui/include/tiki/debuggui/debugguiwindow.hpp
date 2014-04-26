@@ -2,7 +2,7 @@
 #ifndef __TIKI_DEBUGGUIWINDOW_HPP_INCLUDED__
 #define __TIKI_DEBUGGUIWINDOW_HPP_INCLUDED__
 
-#include "tiki/debuggui/debugguicontrol.hpp"
+#include "tiki/debuggui/debugguilayout.hpp"
 
 #include "tiki/base/types.hpp"
 #include "tiki/math/rectangle.hpp"
@@ -17,47 +17,60 @@ namespace tiki
 
 	public:
 
-		DebugGuiWindow();
-		~DebugGuiWindow();
-
-		const char*		getTitle() const;
-		
-		bool			getVisibility() const;
-		void			setVisibility( bool visible );
-
-		virtual void	setRectangle( const Rectangle& boundingRectangle );
+		virtual Vector2	getMinimumSize();
 
 		virtual void	update();
 		virtual void	render( ImmediateRenderer& renderer );
 
 		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
 
+		const char*		getTitle() const;
+
+		bool			getVisibility() const;
+		void			setVisibility( bool visible );
+
 	protected:
 
-		void			create( DebugGui& debugGui, const char* pTitle );
+		DebugGuiWindow();
+		~DebugGuiWindow();
+
+		void			create( DebugGui& debugGui, const char* pTitle, DebugGuiLayout& layout );
 		void			dispose();
 
 		void			setTitle( const char* pTitle );
+
+		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
 
 	private:
 
 		enum
 		{
 			MaxTitleLength	= 32u,
-			WindowMargin	= 5,
 			TitleHeight		= 25
 		};
+
+		enum WindowResizeMask
+		{
+			WindowResizeMask_None	= 0u,
+
+			WindowResizeMask_Left	= 1u << 0u,
+			WindowResizeMask_Right	= 1u << 1u,
+			WindowResizeMask_Top	= 1u << 2u,
+			WindowResizeMask_Bottom	= 1u << 3u
+		};
 		
-		DebugGui*		m_pDebugGui;
+		DebugGui*			m_pDebugGui;
+		DebugGuiLayout*		m_pLayout;
 
-		char			m_aTitle[ MaxTitleLength ];
+		char				m_aTitle[ MaxTitleLength ];
 
-		bool			m_isMoving;
-		bool			m_isVisible;
-		Rectangle		m_fullRectangle;
-		Rectangle		m_titleRectangle;
-		Rectangle		m_clientRectangle;
-
+		bool				m_isMoving;
+		bool				m_isVisible;
+		uint				m_resizeMode;
+		
+		Rectangle			m_titleRectangle;
+		Rectangle			m_clientRectangle;
+		
 	};
 }
 

@@ -96,17 +96,17 @@ namespace tiki
 			return;
 		}
 
+		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		{
+			m_windows[ i ]->render( m_renderer );
+		}
+
 		Rectangle mouseReactangle;
 		mouseReactangle.x = m_inputState.mousePosition.x;
 		mouseReactangle.y = m_inputState.mousePosition.y;
 		mouseReactangle.width = 10.0f;
 		mouseReactangle.height = 10.0f;
 		m_renderer.drawTexture( nullptr, mouseReactangle, TIKI_COLOR_RED );
-
-		for ( uint i = 0u; i < m_windows.getCount(); ++i )
-		{
-			m_windows[ i ]->render( m_renderer );
-		}
 
 		m_renderer.flush( graphicsContext );
 	}

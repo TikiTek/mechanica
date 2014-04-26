@@ -36,6 +36,24 @@ namespace tiki
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon ) && f32::isZero( vec.z, epsilon ) && f32::isZero( vec.w, epsilon );
 	}
 
+	TIKI_FORCE_INLINE Vector2 vector::create( float x, float y )
+	{
+		const Vector2 vec = { x, y };
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3 vector::create( float x, float y, float z )
+	{
+		const Vector3 vec = { x, y, z };
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4 vector::create( float x, float y, float z, float w )
+	{
+		const Vector4 vec = { x, y, z, w };
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::clear( Vector2& vec )
 	{
 		vec.x = 0.0f;

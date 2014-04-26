@@ -798,10 +798,10 @@ namespace tiki
 			else
 			{
 				pTargetBuffer[ length ] = pSourceBuffer[ length ];
-
 				++length;
 			}
 		}
+		pTargetBuffer[ length ] = '\0';
 
 		return length;
 	}
