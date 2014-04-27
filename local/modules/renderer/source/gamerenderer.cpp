@@ -13,9 +13,9 @@ namespace tiki
 	static uint32 getShaderVariantMask( uint32 directionalLightCount, uint32 pointLightCount, uint32 spotLightCount )
 	{
 		uint32 mask = 0u;
-		mask = setBitValue( mask, 0u, 2u, directionalLightCount );
-		mask = setBitValue( mask, 2u, 3u, pointLightCount );
-		mask = setBitValue( mask, 5u, 1u, spotLightCount );
+		mask = setBitValue( mask, 0u, 1u, directionalLightCount );
+		mask = setBitValue( mask, 1u, 3u, pointLightCount );
+		mask = setBitValue( mask, 4u, 1u, spotLightCount );
 		return mask;
 	}
 
@@ -361,8 +361,8 @@ namespace tiki
 		graphicsContext.setPixelShaderTexture( 3u, &m_readOnlyDepthBuffer );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerNearst );
 		
-		//Matrix44 inverseProjection;
-		//matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
+		Matrix44 inverseProjection;
+		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
 
 		//Matrix44 inverseViewProjection;
 		//matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
@@ -374,7 +374,10 @@ namespace tiki
 		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
 
 		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
-		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseViewProjection );
+		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
+
+		const Vector3& cameraPosition = m_frameData.mainCamera.getPosition();
+		createFloat4( pPixelConstants->param0, cameraPosition.x, cameraPosition.y, cameraPosition.z, 0.0f );
 
 		const uint directionalLightCount	= m_frameData.directionalLights.getCount();
 		const uint pointLightCount			= m_frameData.pointLights.getCount();

@@ -35,7 +35,7 @@ VertexToPixel main( VertexInput input )
 	output.position = float4( input.position, 1.0f );
 	output.position = mul( output.position, c_instanceData.mvpMatrix );
 
-	float3x3 normalMatrix = (float3x3)c_instanceData.modelMatrix;
+	float3x3 normalMatrix = (float3x3)c_instanceData.modelViewMatrix;
 	output.normal	= normalize( mul( input.normal, normalMatrix ) );
 	output.tangent	= normalize( mul( input.tangentFlip.xyz, normalMatrix ) );
 	output.binormal	= normalize( cross( output.normal, output.tangent ) * input.tangentFlip.w );
@@ -69,7 +69,6 @@ GeometryBufferSample main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float3x3 tangentSpaceNormalMatrix = float3x3( input.tangent, input.binormal, input.normal );
 	float3 normal = normalize( mul( normalSample, tangentSpaceNormalMatrix ) );
 	float2 packedNormal = encodeNormal( normal );
-	selfIlluminationColor = normal * 0.5f + 0.5f;
 
 	return createGeometryBufferSample( diffuseColor, selfIlluminationColor, c_instanceData.selfIlluminationFactor, packedNormal, c_instanceData.specluarBrightness, c_instanceData.specluarIntensity, c_instanceData.specluarPower );
 }
