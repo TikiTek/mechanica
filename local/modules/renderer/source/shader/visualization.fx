@@ -36,9 +36,9 @@ VertexToPixel main( VertexInput input )
 ////////////////////////////////////////////////////////////////////////////////
 
 // constants
-TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer1 );
-TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer2 );
-TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer3 );
+TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer0 );
+TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer1 );
+TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer2 );
 
 TIKI_DEFINE_SAMPLER( 0, s_linear );
 
@@ -47,11 +47,11 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float4 color = float4( 0.0f, 0.0f, 0.0f, 1.0f );
 
 #if TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_DIFFUSE
-	color.rgb = TIKI_TEX2D( t_gBuffer1, s_linear, input.texCoord ).rgb;
+	color.rgb = TIKI_TEX2D( t_gBuffer0, s_linear, input.texCoord ).rgb;
 #elif TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_SELFILLUMINATION
-	color.rgb = TIKI_TEX2D( t_gBuffer2, s_linear, input.texCoord ).rgb;
+	color.rgb = TIKI_TEX2D( t_gBuffer1, s_linear, input.texCoord ).rgb;
 #elif TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_NORMAL
-	color.rgb = decodeNormal( TIKI_TEX2D( t_gBuffer3, s_linear, input.texCoord ).xy );
+	color.rgb = decodeNormal( TIKI_TEX2D( t_gBuffer2, s_linear, input.texCoord ).xy );
 	color.rgb = ( color.rgb / 2.0f ) + 0.5f;
 #else
 	color.r = 1.0f;

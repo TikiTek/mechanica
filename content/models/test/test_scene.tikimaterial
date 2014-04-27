@@ -5,5 +5,5 @@
 	<field name="selfilluMap" type="resource">TEXR:test_selfillu.texture</field>
 	<field name="specluarBrightness" type="float">0.75</field>	
 	<field name="specluarIntensity" type="float">0.5</field>	
-	<field name="specluarPower" type="float">1.0</field>	
+	<field name="specluarPower" type="float">0.05</field>	
 </tikimaterial>

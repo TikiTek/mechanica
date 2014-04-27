@@ -9,10 +9,10 @@ namespace tiki
 	{
 		DebugGuiWindow::create( debugGui, "Lighting", m_layout );
 
-		m_positionX.create( -10.0f, 10.0f, 0.0f );
-		m_positionY.create( -10.0f, 10.0f, 0.0f );
+		m_positionX.create( -10.0f, 10.0f, -0.1f );
+		m_positionY.create( -10.0f, 10.0f, 0.1f );
 		m_positionZ.create( -10.0f, 10.0f, 0.0f );
-		m_range.create( 0.0f, 10.0f, 0.0f );
+		m_range.create( 0.0f, 10.0f, 5.0f );
 		m_theta.create( -f32::pi, f32::pi, 0.174532925f );
 		m_phi.create( -f32::pi, f32::pi, 1.22173048f );
 
@@ -48,7 +48,7 @@ namespace tiki
 		SpotLightData& spotLight = frameData.spotLights.push();
 		vector::set( spotLight.position, m_positionX.getValue(), m_positionY.getValue(), m_positionZ.getValue() );
 		vector::set( spotLight.direction, 0.5f, 0.5f, 0.0f );
-		spotLight.color = TIKI_COLOR_BLUE;
+		spotLight.color = TIKI_COLOR_WHITE;
 		spotLight.range = m_range.getValue();
 		spotLight.theta = m_theta.getValue();
 		spotLight.phi	= m_phi.getValue();

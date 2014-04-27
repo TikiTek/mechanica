@@ -184,7 +184,10 @@ namespace tiki
 		// rotate camera
 		{
 			Vector2 rotation = m_rightStickState;
-			vector::clear( m_rightStickState );
+			if ( m_enableMouseCamera )
+			{
+				vector::clear( m_rightStickState );
+			}
 			vector::scale( rotation, timeDelta * 2.0f );
 
 			m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
@@ -232,6 +235,11 @@ namespace tiki
 		//	pointLight.color = s_colors[ i ];
 		//	pointLight.range = 2.0f;
 		//}
+
+		//PointLightData& pointLight = frameData.pointLights.push();
+		//vector::set( pointLight.position, 0.0f, 0.0f, 0.0f );
+		//pointLight.color	= TIKI_COLOR_WHITE;
+		//pointLight.range	= 2.0f;
 
 		//SpotLightData& spotLight = frameData.spotLights.push();
 		//vector::set( spotLight.position, 1.0f, 1.0f, 0.0f );

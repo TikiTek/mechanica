@@ -150,16 +150,17 @@ namespace tiki
 				matrix::set( mvpMtx, command.worldTransform );
 				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
 
-				Matrix44 modelMatrix;
-				matrix::set( modelMatrix, command.worldTransform );
+				Matrix43 modelView = command.worldTransform;
+				//matrix::mul( modelView, frameData.mainCamera.getViewMatrix() );
 
-				Matrix44 modelInverseTranspose = modelMatrix;
-				//matrix::invert( modelInverseTranspose, modelMatrix );
-				//matrix::transpose( modelInverseTranspose );
+				Matrix44 modelInverseTranspose;
+				matrix::set( modelInverseTranspose, modelView );
+				matrix::invert( modelInverseTranspose, modelInverseTranspose );
+				matrix::transpose( modelInverseTranspose );
 
 				SceneVertexConstantData* pVertexConstants = static_cast< SceneVertexConstantData* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
-				createGraphicsMatrix44( pVertexConstants->modelMatrix, modelInverseTranspose );
+				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, modelInverseTranspose );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
 
 				ScenePixelConstantData* pPixelConstants = static_cast< ScenePixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstantBuffer ) );

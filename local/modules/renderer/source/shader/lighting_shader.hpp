@@ -34,6 +34,9 @@ struct SpotLightConstantData
 
 struct LightingPixelConstantData
 {
+	GraphicsMatrix44				inverseProjection;
+	float4							param0;
+
 	DirectionalLightConstantData	directionalLights[ TIKI_MAX_DIRECTIONAL_LIGHT_COUNT ];
 	PointLightConstantData			pointLights[ TIKI_MAX_POINT_LIGHT_COUNT ];
 	SpotLightConstantData			spotLights[ TIKI_MAX_SPOT_LIGHT_COUNT ];
@@ -83,6 +86,11 @@ SpotLightConstantData fillSpotLightData( const Vector3& worldPosition, const Mat
 }
 
 #else
+
+float3 getCameraWorldPosition( LightingPixelConstantData data )
+{
+	return data.param0.xyz;
+}
 
 float3 getDirectionalLightDirection( DirectionalLightConstantData data )
 {
