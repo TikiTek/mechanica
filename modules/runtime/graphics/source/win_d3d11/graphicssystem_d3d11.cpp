@@ -178,7 +178,7 @@ namespace tiki
 	{
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
 		swapDesc.BufferCount						= 2;
-		swapDesc.BufferDesc.Format					= DXGI_FORMAT_B8G8R8A8_UNORM;
+		swapDesc.BufferDesc.Format					= DXGI_FORMAT_R16G16B16A16_FLOAT;
 		swapDesc.BufferDesc.Width					= backBufferSize.x;
 		swapDesc.BufferDesc.Height					= backBufferSize.y;
 		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;

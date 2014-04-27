@@ -29,6 +29,25 @@ namespace tiki
 	struct Rectangle; 
 	struct Vector2;
 
+	enum ImmediateBlendState
+	{
+		ImmediateBlendState_None,
+		ImmediateBlendState_Add,
+
+		ImmediateBlendState_Count
+	};
+
+	enum ImmediateDepthState
+	{
+		ImmediateDepthState_TestOffWriteOff,
+		ImmediateDepthState_TestOnWriteOn,
+		ImmediateDepthState_TestOnWriteOff,
+
+		ImmediateDepthState_Count
+	};
+
+	
+
 	class ImmediateRenderer
 	{
 		TIKI_NONCOPYABLE_CLASS( ImmediateRenderer );
