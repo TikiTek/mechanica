@@ -82,10 +82,6 @@ namespace tiki
 	{
 		m_screenSize = screenSize;
 
-		Projection projection;
-		projection.createOrthographicCenter( screenSize.x, -screenSize.y, 0.0f, 1.0f );
-		m_renderer.setProjection( projection );
-
 		Rectangle minimizeLayoutRect;
 		minimizeLayoutRect.x		= 0.0f;
 		minimizeLayoutRect.y		= screenSize.y - 35.0f;
@@ -131,12 +127,15 @@ namespace tiki
 			return;
 		}
 
+		m_renderer.beginRendering( graphicsContext );
+		m_renderer.beginRenderPass();
+
 		for ( uint i = 0u; i < m_windows.getCount(); ++i )
 		{
 			m_windows[ i ]->render( m_renderer );
 		}
 
-		m_renderer.drawTexture( nullptr, m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
+		m_renderer.drawRectangle( m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
 		m_minimizedLayout.render( m_renderer );
 
 		Rectangle mouseReactangle;
@@ -144,9 +143,10 @@ namespace tiki
 		mouseReactangle.y = m_inputState.mousePosition.y;
 		mouseReactangle.width = 10.0f;
 		mouseReactangle.height = 10.0f;
-		m_renderer.drawTexture( nullptr, mouseReactangle, TIKI_COLOR_RED );
+		m_renderer.drawRectangle( mouseReactangle, TIKI_COLOR_RED );
 
-		m_renderer.flush( graphicsContext );
+		m_renderer.endRenderPass();
+		m_renderer.endRendering();
 	}
 
 	bool DebugGui::processInputEvent( const InputEvent& inputEvent )

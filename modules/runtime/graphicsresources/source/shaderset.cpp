@@ -10,8 +10,8 @@ namespace tiki
 {
 	struct ShaderSetVariantData
 	{
-		uint16			shaderType;
-		uint16			codeLength;
+		uint32			shaderType;
+		uint32			codeLength;
 		crc32			variantKey;
 		ResRef< void >	data;
 	};

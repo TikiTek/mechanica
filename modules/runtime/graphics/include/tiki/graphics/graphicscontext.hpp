@@ -37,6 +37,7 @@ namespace tiki
 	struct Rectangle;
 	struct Vector2;
 	struct Vector3;
+	struct Viewport;
 
 	enum ClearMask
 	{
@@ -67,7 +68,7 @@ namespace tiki
 		void				clear( const RenderTarget& renderTarget, Color color = TIKI_COLOR_BLACK, float depthValue = 1.0f, uint8 stencilValue = 0u, ClearMask clearMask = ClearMask_All );
 		void				copyTextureData( const TextureData& sourceData, const TextureData& targetData );
 
-		void				beginRenderPass( const RenderTarget& renderTarget );
+		void				beginRenderPass( const RenderTarget& renderTarget, const Viewport* pViewport = nullptr );
 		void				endRenderPass();
 
 		void				setVertexShader( const Shader* pVertexShader );

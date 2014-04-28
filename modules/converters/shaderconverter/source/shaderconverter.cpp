@@ -281,8 +281,8 @@ namespace tiki
 			for (uint i = 0u; i < shaderVariants.getCount(); ++i)
 			{
 				const ShaderVariantData& shaderVarName = shaderVariants[ i ];
-				writer.writeUInt16( shaderVarName.type );
-				writer.writeUInt16( (uint16)shaderVarName.codeLength );
+				writer.writeUInt32( shaderVarName.type );
+				writer.writeUInt32( shaderVarName.codeLength );
 				writer.writeUInt32( shaderVarName.variantKey );
 				writer.writeReference( &shaderVarName.key );
 			}

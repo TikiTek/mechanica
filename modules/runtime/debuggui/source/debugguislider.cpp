@@ -45,8 +45,8 @@ namespace tiki
 
 	void DebugGuiSlider::render( ImmediateRenderer& renderer )
 	{
-		renderer.drawTexture( nullptr, m_line, TIKI_COLOR( 255, 255, 255, 128 ) );
-		renderer.drawTexture( nullptr, m_slider, TIKI_COLOR( 255, 255, 255, 224 ) );
+		renderer.drawRectangle( m_line, TIKI_COLOR( 255, 255, 255, 128 ) );
+		renderer.drawRectangle( m_slider, TIKI_COLOR( 255, 255, 255, 224 ) );
 	}
 
 	void DebugGuiSlider::handleRectangleChanged( const Rectangle& boundingRectangle )
