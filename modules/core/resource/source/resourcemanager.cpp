@@ -105,7 +105,9 @@ namespace tiki
 
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_pAssetConverter->lockConversion();
+#endif
 
 		TIKI_ASSERT( pFileName != nullptr );
 		const crc32 crcFileName = crcString( pFileName );
@@ -114,7 +116,9 @@ namespace tiki
 		const ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
 		traceResourceLoadResult( result, pFileName, crcFileName, type );
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_pAssetConverter->unlockConversion();
+#endif
 
 		return pResource;	
 	}
