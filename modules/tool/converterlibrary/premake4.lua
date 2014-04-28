@@ -12,6 +12,7 @@ module:add_dependency( "shaderconverter" );
 module:add_dependency( "textureconverter" );
 module:add_dependency( "modelconverter" );
 module:add_dependency( "materialconverter" );
+module:add_dependency( "animationconverter" );
 
 local project = Project:new(
 	"converterlibrary",
