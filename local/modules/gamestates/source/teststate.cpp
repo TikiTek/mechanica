@@ -359,12 +359,14 @@ namespace tiki
 
 			case KeyboardKey_V:
 				{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 					VisualizationMode visualizationMode = (VisualizationMode)( m_pGameRenderer->getVisualizationMode() + 1u );
 					if ( visualizationMode == VisualizationMode_Count )
 					{
 						visualizationMode = VisualizationMode_Invalid;
 					}
 					m_pGameRenderer->setVisualizationMode( visualizationMode );
+#endif
 				}
 				return true;
 
