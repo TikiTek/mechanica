@@ -33,7 +33,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	List< T >::List( const T* pData, uint count, bool readOnly )
+	List< T >::List( const T* pData, uint count, bool readOnly /*= false*/ )
 	{
 		m_capacity		= getNextSize( count );
 		m_count		= count;
