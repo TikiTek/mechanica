@@ -8,6 +8,7 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 #include "tiki/renderer/postascii.hpp"
+#include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/scenerendereffect.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
@@ -72,7 +73,9 @@ namespace tiki
 		int							m_gbufferIndex;
 
 		bool						m_enableAsciiMode;
+		bool						m_enableBloom;
 		PostProcessAscii			m_ascii;
+		PostProcessBloom			m_bloom;
 
 	};
 }
