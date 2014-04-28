@@ -20,6 +20,7 @@ namespace tiki
 	class GraphicsSystem;
 	class Projection;
 	class RasterizerState;
+	class RenderTarget;
 	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
@@ -60,32 +61,23 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		void				setProjection( const Projection& projection );
+		void				beginRendering( GraphicsContext& graphicsContext );
+		void				endRendering();
 
-		void				flush( GraphicsContext& graphicsContext );
+		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Projection* pProjection = nullptr );
+		void				endRenderPass();
 
-		void				drawTexture( const TextureData* pTexture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
-		void				drawTexture( const TextureData* pTexture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE );
+		void				setBlendState( ImmediateBlendState blendState );
+		void				setDepthState( ImmediateDepthState depthState );
+
+		void				drawRectangle( const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
+		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
+		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE );
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE );
 
 	private:
 
-		enum
-		{
-			MaxSprites		= 100u,
-			MaxVertices		= 1000u
-		};
-
-		struct Sprite
-		{
-			uint				vertexOffset;
-			uint				vertexCount;
-			uint				shaderBitMask;
-
-			const TextureData*	pTexture;
-		};
-
-		struct SpriteVertex
+		struct ImmediateVertex
 		{
 			float3	position;
 			uint16	u;
@@ -93,22 +85,20 @@ namespace tiki
 			Color	color;
 		};
 
+		GraphicsContext*					m_pContext;
+
 		const ShaderSet*					m_pShaderSet;
 		
-		const BlendState*					m_pBlendState;
-		const DepthStencilState*			m_pDepthStencilState;
+		const BlendState*					m_pBlendState[ ImmediateBlendState_Count ];
+		const DepthStencilState*			m_pDepthStencilState[ ImmediateDepthState_Count ];
 		const RasterizerState*				m_pRasterizerState;
 		const SamplerState*					m_pSamplerState;
 		const VertexFormat*					m_pVertexFormat;
 		const VertexInputBinding*			m_pVertexInputBinding;
 
-		SizedArray< Sprite >				m_sprites;
-		SizedArray< SpriteVertex >			m_vertices;
-		
-		VertexBuffer						m_vertexBuffer;
-		ConstantBuffer						m_constantBuffer;
+		ConstantBuffer						m_vertexConstantBuffer;
 
-		ImmediateRendererConstantData		m_constantData;
+		void						setState();
 
 	};
 }

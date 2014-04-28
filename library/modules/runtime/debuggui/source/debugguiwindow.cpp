@@ -120,9 +120,9 @@ namespace tiki
 			return;
 		}
 
-		renderer.drawTexture( nullptr, getRectangle(), TIKI_COLOR( 64, 64, 64, 128 ) );
-		renderer.drawTexture( nullptr, m_titleRectangle, TIKI_COLOR( 128, 128, 128, 196 ) );
-		renderer.drawTexture( nullptr, m_clientRectangle, TIKI_COLOR( 196, 196, 196, 128 ) );
+		renderer.drawRectangle( getRectangle(), TIKI_COLOR( 64, 64, 64, 128 ) );
+		renderer.drawRectangle( m_titleRectangle, TIKI_COLOR( 128, 128, 128, 196 ) );
+		renderer.drawRectangle( m_clientRectangle, TIKI_COLOR( 196, 196, 196, 128 ) );
 
 		Vector2 textPosition = { DebugGui_DefaultMargin, DebugGui_DefaultMargin };
 		vector::add( textPosition, m_titleRectangle.xy() );

@@ -45,11 +45,11 @@ namespace tiki
 	void DebugGuiCheckBox::render( ImmediateRenderer& renderer )
 	{
 		renderer.drawText( m_textPosition, *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
-		renderer.drawTexture( nullptr, m_box, TIKI_COLOR( 255, 255, 255, 128 ) );
+		renderer.drawRectangle( m_box, TIKI_COLOR( 255, 255, 255, 128 ) );
 
 		if ( m_value )
 		{
-			renderer.drawTexture( nullptr, m_checker, TIKI_COLOR( 128, 128, 255, 224 ) );
+			renderer.drawRectangle( m_checker, TIKI_COLOR( 128, 128, 255, 224 ) );
 		}
 	}
 

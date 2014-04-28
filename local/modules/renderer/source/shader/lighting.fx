@@ -4,7 +4,7 @@
 
 struct VertexToPixel
 {
-	float4 position	: TIKI_OUTPUT_POSITION0;
+	float4 position	: TIKI_OUTPUT_POSITION;
 	float2 texCoord	: TIKI_TEXCOORD;
 };
 
@@ -16,7 +16,7 @@ struct VertexToPixel
 // types
 struct VertexInput
 {
-	float2 position	: TIKI_INPUT_POSITION0;
+	float2 position	: TIKI_INPUT_POSITION;
 	float2 texCoord	: TIKI_TEXCOORD;
 };
 

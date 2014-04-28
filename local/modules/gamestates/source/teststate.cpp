@@ -45,13 +45,23 @@ namespace tiki
 			if ( isCreating )
 			{
 				PostProcessAsciiParameters asciiParameters;	
-
-				m_ascii.create(
+				TIKI_VERIFY( m_ascii.create(
 					framework::getGraphicsSystem(),
 					framework::getResourceManager(),
 					asciiParameters
-				);
+				) );
 				m_enableAsciiMode = false;
+
+				PostProcessBloomParameters bloomParameters;	
+				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
+				bloomParameters.height		= framework::getGraphicsSystem().getBackBuffer().getHeight() / 2u;
+				bloomParameters.passCount	= 6u;
+				TIKI_VERIFY( m_bloom.create(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager(),
+					bloomParameters
+				) );
+				m_enableBloom = true;
 
 				m_gbufferIndex = -1;
 
@@ -59,6 +69,11 @@ namespace tiki
 			}
 			else
 			{
+				m_bloom.dispose(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager()
+				);
+
 				m_ascii.dispose(
 					framework::getGraphicsSystem(),
 					framework::getResourceManager()
@@ -84,11 +99,7 @@ namespace tiki
 					screenSize.x = (float)framework::getGraphicsSystem().getBackBuffer().getWidth();
 					screenSize.y = (float)framework::getGraphicsSystem().getBackBuffer().getHeight();
 
-					Projection projection;
-					projection.createOrthographicCenter( screenSize.x, -screenSize.y, 0.0f, 1.0f );
-
 					m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
-					m_immediateRenderer.setProjection( projection );
 
 					return TransitionState_Finish;
 				}
@@ -264,37 +275,43 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		m_ascii.render(
-			graphicsContext,
-			m_pGameRenderer->getFrameData(),
-			m_pGameRenderer->getRendererContext()
-		);
+		m_ascii.render( graphicsContext, m_pGameRenderer->getFrameData(), m_pGameRenderer->getRendererContext() );
+		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
 		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
 		const string frameRate = formatString( " FPS: %.2f", 1.0f / timeDelta );
 
-		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
+		m_immediateRenderer.beginRendering( graphicsContext );
+		m_immediateRenderer.beginRenderPass();
+
+	
 		if ( m_enableAsciiMode )
 		{
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-			m_immediateRenderer.drawTexture( &m_ascii.getResultData(), rect );
+			m_immediateRenderer.drawTexturedRectangle( m_ascii.getResultData(), rect );
 		}
 		else if ( m_gbufferIndex != -1 )
 		{
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getDownSampleData().getWidth()*5, (float)m_ascii.getDownSampleData().getHeight()*5 );
-			m_immediateRenderer.drawTexture( &m_ascii.getDownSampleData(), rect );
+			m_immediateRenderer.drawTexturedRectangle( m_ascii.getDownSampleData(), rect );
 
 			//const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
 			//const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			//m_immediateRenderer.drawTexture( &texture, rect );
+			//m_immediateRenderer.drawTexturedRectangle( &texture, rect );
 		}
 		else
 		{
 			const TextureData& texture = m_pGameRenderer->getAccumulationBuffer();
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			m_immediateRenderer.drawTexture( &texture, rect );
+			m_immediateRenderer.drawTexturedRectangle( texture, rect );
+		}
+
+		if ( m_enableBloom )
+		{
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
+			m_immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
 		}
 
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
@@ -302,11 +319,10 @@ namespace tiki
 
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
 		
-		m_immediateRenderer.flush( graphicsContext );
+		m_immediateRenderer.endRenderPass();
+		m_immediateRenderer.endRendering();
 
 		m_debugGui.render( graphicsContext );
-		
-		graphicsContext.endRenderPass();
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
@@ -359,6 +375,10 @@ namespace tiki
 
 			case KeyboardKey_X:
 				m_enableAsciiMode = !m_enableAsciiMode;
+				return true;
+
+			case KeyboardKey_B:
+				m_enableBloom = !m_enableBloom;
 				return true;
 
 			default:
