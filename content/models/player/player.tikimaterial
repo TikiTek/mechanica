@@ -1,0 +1,9 @@
+<tikimaterial>
+	<type>SceneRenderEffectData</type>
+	<field name="diffuseMap" type="resource">TEXR:player_diffuse.texture</field>
+	<field name="normalMap" type="resource">TEXR:player_normal.texture</field>
+	<field name="selfilluMap" type="resource">TEXR:player_selfillu.texture</field>
+	<field name="specluarBrightness" type="float">0.75</field>	
+	<field name="specluarIntensity" type="float">0.5</field>	
+	<field name="specluarPower" type="float">0.05</field>	
+</tikimaterial>
