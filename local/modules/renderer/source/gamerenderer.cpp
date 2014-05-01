@@ -205,13 +205,14 @@ namespace tiki
 		m_renderEffectSystem.unregisterRenderEffect( pRenderEffect );
 	}
 	
-	void GameRenderer::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/ )
+	void GameRenderer::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/, const SkinningData** ppSkinningData /*= nullptr*/ )
 	{
 		m_renderBatch.beginSequence( RenderPassMask_Geometry, (RenderEffectId)pModel->getMaterial()->getData()->renderEffectId, 0u );
 		for (uint i = 0u; i < pModel->getGeometryCount(); ++i)
 		{
-			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pModel->getMaterial(), pWorldTransform );
-		} 
+			const SkinningData* pSkinningData = ( ppSkinningData != nullptr ? ppSkinningData[ i ] : nullptr );
+			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pModel->getMaterial(), pWorldTransform, pSkinningData );
+		}
 		m_renderBatch.endSequence();
 	}
 

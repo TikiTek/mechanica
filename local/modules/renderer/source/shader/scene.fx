@@ -1,4 +1,4 @@
-// vs-features= ps-features=
+// vs-features=TIKI_ENABLE_SKINNING ps-features=
 
 #include "shader/functions.fxh"
 #include "shader/geometrybuffer.fxh"
@@ -23,16 +23,36 @@ struct VertexInput
 	float3	normal		: TIKI_NORMAL;
 	float4	tangentFlip	: TIKI_TANGENT;
 	float2	texCoord	: TIKI_TEXCOORD;
+#if TIKI_ENABLE_SKINNING
+	uint4	skinIndices	: TIKI_JOINTINDICES;
+	float4	skinWeights	: TIKI_JOINTWEIGHTS;
+#endif
 };
 
 // constants
 TIKI_DEFINE_CONSTANT( 0, SceneVertexConstantData, c_instanceData );
+#if TIKI_ENABLE_SKINNING
+TIKI_DEFINE_CONSTANT( 1, SceneSkinningVertexConstantData, c_skinningData );
+#endif
 
 VertexToPixel main( VertexInput input )
 {
 	VertexToPixel output = (VertexToPixel)0;
 
+#if TIKI_ENABLE_SKINNING
+	float4x4 skinMatrix = 0;
+	for(int i = 0; i < 4; i++)	
+	{
+		skinMatrix += c_skinningData.matrices[ input.skinIndices[ i ] ] * input.skinWeights[ i ];
+	}
+	skinMatrix /= dot( input.skinWeights, 1.0f );
+
 	output.position = float4( input.position, 1.0f );
+	output.position = mul( output.position, skinMatrix );
+#else
+	output.position = float4( input.position, 1.0f );
+#endif
+
 	output.position = mul( output.position, c_instanceData.mvpMatrix );
 
 	float3x3 normalMatrix = (float3x3)c_instanceData.modelViewMatrix;
@@ -40,7 +60,7 @@ VertexToPixel main( VertexInput input )
 	output.tangent	= normalize( mul( input.tangentFlip.xyz, normalMatrix ) );
 	output.binormal	= normalize( cross( output.normal, output.tangent ) * input.tangentFlip.w );
 
-	output.texCoord	= input.texCoord;
+	output.texCoord	= float2( input.texCoord.x, 1.0f - input.texCoord.y );
 
 	return output;
 }

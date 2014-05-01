@@ -88,7 +88,7 @@ namespace tiki
 		m_pCurrentSequence->pCommands		= nullptr;
 	}
 
-	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */ )
+	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */, const SkinningData* pSkinningData /*= nullptr*/ )
 	{
 		if ( m_pCurrentSequence == nullptr )
 		{
@@ -101,7 +101,8 @@ namespace tiki
 			return;
 		}
 
-		pCommand->pGeometry	= &geometry;
+		pCommand->pGeometry		= &geometry;
+		pCommand->pSkinningData	= pSkinningData;
 
 		if ( pMaterial == nullptr )
 		{
