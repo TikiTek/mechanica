@@ -88,12 +88,19 @@ namespace tiki
 			{
 				if ( isInital )
 				{
-					m_pModelBoxes	= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
-					m_pModelPlane	= framework::getResourceManager().loadResource< Model >( "plane.model" );
-					m_pFont			= framework::getResourceManager().loadResource< Font >( "debug.font" );
+					m_pFont				= framework::getResourceManager().loadResource< Font >( "debug.font" );
+					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
+					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
+					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
+					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
+					TIKI_ASSERT( m_pFont != nullptr );
 					TIKI_ASSERT( m_pModelBoxes != nullptr );
 					TIKI_ASSERT( m_pModelPlane != nullptr );
-					TIKI_ASSERT( m_pFont != nullptr );
+					TIKI_ASSERT( m_pModelPlayer != nullptr );
+					TIKI_ASSERT( m_pAnimationPlayer != nullptr );
+
+					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
+					m_skinningData.matrices.create( framework::getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
 
 					Vector2 screenSize;
 					screenSize.x = (float)framework::getGraphicsSystem().getBackBuffer().getWidth();
@@ -114,9 +121,14 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
-				framework::getResourceManager().unloadResource< Model >( m_pModelBoxes );
-				framework::getResourceManager().unloadResource< Model >( m_pModelPlane );
-				framework::getResourceManager().unloadResource< Font >( m_pFont );
+				framework::getResourceManager().unloadResource( m_pAnimationPlayer );
+				framework::getResourceManager().unloadResource( m_pModelPlayer );
+				framework::getResourceManager().unloadResource( m_pModelBoxes );
+				framework::getResourceManager().unloadResource( m_pModelPlane );
+				framework::getResourceManager().unloadResource( m_pFont );
+
+				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
+				m_animationData.dispose();
 
 				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -146,6 +158,7 @@ namespace tiki
 					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
 
 					m_enableMouseCamera = false;
+					m_cameraSpeed = 1.0f;
 					vector::clear( m_cameraRotation );
 					vector::clear( m_leftStickState );
 					vector::clear( m_rightStickState );
@@ -214,8 +227,8 @@ namespace tiki
 			quaternion::getForward( cameraForward, cameraRotation );
 			quaternion::getRight( cameraRight, cameraRotation );
 
-			vector::scale( cameraForward,	m_leftStickState.y * timeDelta );
-			vector::scale( cameraRight,		m_leftStickState.x * timeDelta );
+			vector::scale( cameraForward,	m_leftStickState.y * timeDelta * m_cameraSpeed );
+			vector::scale( cameraRight,		m_leftStickState.x * timeDelta * m_cameraSpeed );
 
 			vector::add( cameraPosition, cameraForward );
 			vector::add( cameraPosition, cameraRight );
@@ -260,21 +273,38 @@ namespace tiki
 		//spotLight.theta = 0.174532925f;
 		//spotLight.phi	= 1.22173048f;
 
+		m_pAnimationPlayer->sample( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy(), timeValue );
+
 		m_lightingWindow.fillFrameData( frameData );
 
 		Matrix43 mtx = Matrix43::identity;
 		mtx.pos.y = -0.1f;
 		m_pGameRenderer->queueModel( m_pModelPlane, &mtx );
 
-		matrix::clear( mtx );
+		matrix::createIdentity( mtx );
 		matrix::createRotationY( mtx.rot, timeValue );
-		m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
+
+		const SkinningData* pSkinningData = &m_skinningData;
+		m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
+
+		//m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
 
 		m_debugGui.update();
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
+		Matrix44 matrices[ 256u ];
+		//AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
+		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getData(), *m_pModelPlayer->getHierarchy() );
+
+		GraphicsMatrix44* pShaderConstants = static_cast< GraphicsMatrix44* >( graphicsContext.mapBuffer( m_skinningData.matrices ) );
+		for (uint i = 0u; i < m_animationData.getCount(); ++i)
+		{
+			createGraphicsMatrix44( pShaderConstants[ i ], matrices[ i ] );
+		} 
+		graphicsContext.unmapBuffer( m_skinningData.matrices );
+
 		m_ascii.render( graphicsContext, m_pGameRenderer->getFrameData(), m_pGameRenderer->getRendererContext() );
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
@@ -285,8 +315,7 @@ namespace tiki
 
 		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
-
-	
+			
 		if ( m_enableAsciiMode )
 		{
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
@@ -403,6 +432,10 @@ namespace tiki
 				case KeyboardKey_D:
 					m_leftStickState.x = 1.0f;
 					break;
+				case KeyboardKey_LeftShift:
+				case KeyboardKey_RightShift:
+					m_cameraSpeed = 10.0f;
+					break;
 				}
 			}
 		}
@@ -423,6 +456,10 @@ namespace tiki
 					break;
 				case KeyboardKey_D:
 					m_leftStickState.x = 0.0f;
+					break;
+				case KeyboardKey_LeftShift:
+				case KeyboardKey_RightShift:
+					m_cameraSpeed = 1.0f;
 					break;
 				}
 			}

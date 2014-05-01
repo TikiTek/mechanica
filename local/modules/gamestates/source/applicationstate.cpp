@@ -3,8 +3,10 @@
 
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
-#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+
+#include "tiki/animation/animation.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/shaderset.hpp"
@@ -36,6 +38,7 @@ namespace tiki
 					Model::registerResourceType( resourceManager, graphicsSystem );
 					ShaderSet::registerResourceType( resourceManager, graphicsSystem );
 					Texture::registerResourceType( resourceManager, graphicsSystem );
+					Animation::registerResourceType( resourceManager );
 				}
 				else
 				{
@@ -44,6 +47,7 @@ namespace tiki
 					Model::unregisterResourceType( resourceManager );
 					ShaderSet::unregisterResourceType( resourceManager );
 					Texture::unregisterResourceType( resourceManager );
+					Animation::unregisterResourceType( resourceManager );
 				}
 
 				return TransitionState_Finish;

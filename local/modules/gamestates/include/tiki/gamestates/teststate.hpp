@@ -4,8 +4,10 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
+#include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
@@ -16,6 +18,7 @@
 
 namespace tiki
 {
+	class Animation;
 	class ApplicationState;
 	class Font;
 	class GameRenderer;
@@ -54,6 +57,11 @@ namespace tiki
 		const Font*					m_pFont;
 		const Model*				m_pModelBoxes;
 		const Model*				m_pModelPlane;
+		const Model*				m_pModelPlayer;
+		const Animation*			m_pAnimationPlayer;
+
+		Array< AnimationJoint >		m_animationData;
+		SkinningData				m_skinningData;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
@@ -62,6 +70,7 @@ namespace tiki
 		ImmediateRenderer			m_immediateRenderer;
 
 		bool						m_enableMouseCamera;
+		float						m_cameraSpeed;
 		Vector2						m_cameraRotation;
 		Vector2						m_leftStickState;
 		Vector2						m_rightStickState;
