@@ -89,7 +89,7 @@ namespace tiki
 		void				setVisualizationMode( VisualizationMode mode )	{ m_visualizationMode = mode; }
 #endif
 
-		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr );
+		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr, const SkinningData** ppSkinningData = nullptr );
 
 		void				update();
 		void				render( GraphicsContext& graphicsContext ) const;

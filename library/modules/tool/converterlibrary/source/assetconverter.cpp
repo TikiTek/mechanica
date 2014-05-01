@@ -33,8 +33,8 @@ namespace tiki
 		m_converterMutex.create();
 		m_manager.create( managerParameters );
 
-		//m_animationConverter.create( &m_manager );
 		//m_navmeshConverter.create( &m_manager );
+		m_animationConverter.create( &m_manager );
 		m_fontConverter.create( &m_manager );
 		m_materialConverter.create( &m_manager );
 		m_modelConverter.create( &m_manager );
@@ -46,8 +46,8 @@ namespace tiki
 
 	void AssetConverter::dispose()
 	{
-		//m_animationConverter.dispose();
 		//m_navmeshConverter.dispose();
+		m_animationConverter.dispose();
 		m_fontConverter.dispose();
 		m_materialConverter.dispose();
 		m_modelConverter.dispose();
@@ -86,6 +86,8 @@ namespace tiki
 		{
 			m_manager.writeResourceMap();
 		}
+
+		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
 		return result;
 	}

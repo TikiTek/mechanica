@@ -8,7 +8,6 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 
-
 namespace tiki
 {
 	class BlendState;
@@ -16,6 +15,7 @@ namespace tiki
 	class RasterizerState;
 	class SamplerState;
 	class ShaderSet;
+	class VertexFormat;
 	class VertexInputBinding;
 
 	class SceneRenderEffect : public RenderEffect
@@ -38,6 +38,14 @@ namespace tiki
 
 	private:
 
+		enum ModelType
+		{
+			ModelType_Static,
+			ModelType_Skinned,
+
+			ModelType_Count
+		};
+
 		const ShaderSet*			m_pShader;
 
 		const BlendState*			m_pBlendState;
@@ -45,8 +53,8 @@ namespace tiki
 		const RasterizerState*		m_pRasterizerState;
 		const SamplerState*			m_pSampler;
 
-		const VertexFormat*			m_pVertexFormat;
-		const VertexInputBinding*	m_pVertexInputBinding;
+		const VertexFormat*			m_pVertexFormat[ ModelType_Count ];
+		const VertexInputBinding*	m_pVertexInputBinding[ ModelType_Count ];
 
 		ConstantBuffer				m_vertexConstantBuffer;
 		ConstantBuffer				m_pixelConstantBuffer;

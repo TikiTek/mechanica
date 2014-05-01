@@ -102,6 +102,10 @@ namespace tiki
 		return ( 64u - countPopulation64( x ) );
 	}
 
+	TIKI_FORCE_INLINE uint clamp( uint value, uint min, uint max )
+	{
+		return ( value < min ? min : value > max ? max : value );
+	}
 }
 
 #endif // TIKI_BASE_FUNCTIONS_HPP

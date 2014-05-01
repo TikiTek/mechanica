@@ -11,6 +11,11 @@ struct SceneVertexConstantData
 	GraphicsMatrix44	modelViewMatrix;
 };
 
+struct SceneSkinningVertexConstantData
+{
+	GraphicsMatrix44	matrices[ 256 ];
+};
+
 struct ScenePixelConstantData
 {
 	float selfIlluminationFactor;

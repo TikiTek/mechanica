@@ -151,13 +151,25 @@ XML_C_API bool xml_compare( const char* _str, const char* _text )
 	return true;
 }
 
+XML_C_API bool xml_compare2( const char* _str, const char* _text )
+{
+	int i=0;
+	if (0==_str) return false;
+	while (_text[i])
+	{
+		if (_str[i]!=_text[i]) return false;
+		++i;
+	}
+	return _str[i]=='\0';
+}
+
 static bool xml_namespace_compare(const char* _name, const char* _value)
 {
 	const char* name = strchr(_name,':');
 	const char* value = strchr(_value,':');
 	if (name) name++; else name=_name;
 	if (value) value++; else value=_value;
-	return xml_compare(name,value);
+	return xml_compare2(name,value);
 }
 
 XML_C_API bool xml_element_name( XmlElement* _elem, const char* _value )

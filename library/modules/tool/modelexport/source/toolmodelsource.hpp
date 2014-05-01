@@ -29,6 +29,7 @@ namespace tiki
 		{
 			pMatrix[ i ] = ParseString::parseSingle( source[ i ] );
 		}
+		matrix::transpose( target );
 	}
 
 	struct ToolModelSourceBase
@@ -242,10 +243,12 @@ namespace tiki
 			TIKI_ASSERT( j <= 16u );
 		}
 
+		matrix::transpose( mtx );
+
 		// scale translation
-		mtx.x.w *= scale;
-		mtx.y.w *= scale;
-		mtx.z.w *= scale;
+		mtx.w.x *= scale;
+		mtx.w.y *= scale;
+		mtx.w.z *= scale;
 	}
 
 }

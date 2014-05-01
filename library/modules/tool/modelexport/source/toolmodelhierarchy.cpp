@@ -36,6 +36,7 @@ namespace tiki
 
 				joint.name	= pIdAtt->content;
 				joint.crc	= crcString( joint.name );
+				matrix::createIdentity( joint.skinToBone );
 
 				const XmlElement* pMatrix = pXml->findFirstChild( "matrix", joint.pNode );			
 				if ( pMatrix == nullptr )

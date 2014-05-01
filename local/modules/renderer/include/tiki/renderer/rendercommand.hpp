@@ -9,12 +9,13 @@ namespace tiki
 {
 	class ModelGeometry;
 	struct RenderEffectData;
+	struct SkinningData;
 
 	struct RenderCommand
 	{
 		const ModelGeometry*	pGeometry;
 		const RenderEffectData*	pRenderEffectData;
-		//const SkinningData*	pSkinningData;
+		const SkinningData*		pSkinningData;
 		Matrix43				worldTransform;
 	};
 
