@@ -733,7 +733,9 @@ namespace tiki
 
 	void ToolModelGeometrie::transformToInstance()
 	{
-		const Matrix44 worldTransform = m_desc.instanceMatrix;
+		Matrix44 worldTransform = m_desc.instanceMatrix;
+		matrix::transpose( worldTransform );
+
 		if ( matrix::isIdentity( worldTransform ) )
 		{
 			return;
