@@ -492,9 +492,9 @@ namespace tiki
 			Matrix44 mtx = matrices.data[ i ];
 
 			// scale translation
-			mtx.x.w *= m_desc.scale;
-			mtx.y.w *= m_desc.scale;
-			mtx.z.w *= m_desc.scale;
+			mtx.w.x *= m_desc.scale;
+			mtx.w.y *= m_desc.scale;
+			mtx.w.z *= m_desc.scale;
 			
 			hierarchy.markJointAsUsed( *pJoint );
 			hierarchy.setBindMatrix( *pJoint, mtx );
@@ -595,7 +595,7 @@ namespace tiki
 						const float weight = weights.data[ value ];
 						TIKI_ASSERT( weight >= 0.0f && weight <= 1.0f );
 
-						pWeights[ c ] = weight;;
+						pWeights[ c ] = weight;
 					}
 				}
 				

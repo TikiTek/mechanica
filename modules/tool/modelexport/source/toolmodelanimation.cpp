@@ -205,7 +205,14 @@ namespace tiki
 						const float koeff = (time - pLeftKey->time) / (pRightKey->time - pLeftKey->time);
 
 						Matrix44 mtx;
-						matrix::lerp( mtx, pLeftKey->transform, pRightKey->transform, koeff );
+						if ( koeff < 0.0f )
+						{
+							mtx = pLeftKey->transform;
+						}
+						else
+						{
+							matrix::lerp( mtx, pLeftKey->transform, pRightKey->transform, koeff );
+						}
 
 						joint.samples[ i ] = mtx;
 					}

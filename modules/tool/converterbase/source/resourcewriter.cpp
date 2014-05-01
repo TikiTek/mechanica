@@ -347,4 +347,9 @@ namespace tiki
 		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
 	}
 
+	uint ResourceWriter::getSizeOfCurrentSection() const
+	{
+		TIKI_ASSERT( m_pCurrentSection != nullptr );
+		return m_pCurrentSection->binaryData.getLength();
+	}
 }
