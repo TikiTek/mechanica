@@ -156,7 +156,7 @@ namespace tiki
 		}
 
 		int imin = 0u;
-		int imax = m_count;
+		int imax = int( m_count );
 		// continue searching while [imin,imax] is not empty
 		while (imax >= imin)
 		{
@@ -167,40 +167,20 @@ namespace tiki
 				// key found at index imid
 				return imid; 
 			}
-			// determine which subarray to search
+			// determine which sub array to search
 			else if (m_pData[ imid ].key < key)
 			{
-				// change min index to search upper subarray
+				// change min index to search upper sub array
 				imin = imid + 1;
 			}
 			else
 			{
-				// change max index to search lower subarray
+				// change max index to search lower sub array
 				imax = imid - 1;
 			}
 		}
 		// key was not found
 		return TIKI_SIZE_T_MAX;
-
-		//while ( max > min && pos == TIKI_SIZE_T_MAX )
-		//{
-		//	const uint mid = ( max + min ) / 2u;
-
-		//	if ( m_pData[ mid ].key == key )
-		//	{
-		//		pos = mid;
-		//	}
-		//	else if( m_pData[ mid ].key < key )
-		//	{
-		//		min = mid;
-		//	}
-		//	else if( m_pData[ mid ].key > key )
-		//	{
-		//		max = mid;
-		//	}
-		//}
-
-		//return pos;
 	}
 }
 

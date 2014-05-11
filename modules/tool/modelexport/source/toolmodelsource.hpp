@@ -104,7 +104,7 @@ namespace tiki
 				const XmlAttribute* pSourceAtt	= pXml->findAttributeByName( "source", pAccessorNode );
 
 				count			= ParseString::parseUInt32( pCountAtt->content );
-				techniqueSource	= string( pSourceAtt->content ).substring( 1 );
+				techniqueSource	= string( pSourceAtt->content ).subString( 1u );
 
 				if ( pStrideAtt != nullptr )
 				{

@@ -262,7 +262,7 @@ namespace tiki
 			const ChunkHeader& header = m_headers[ i ];
 
 			resourceWriter.writeAlignment( 4u );
-			resourceWriter.writeUInt32( header.dataOffset );
+			resourceWriter.writeUInt32( uint32( header.dataOffset ) );
 
 			resourceWriter.writeUInt16( header.startTime );
 			resourceWriter.writeUInt16( header.endTime );
@@ -297,7 +297,7 @@ namespace tiki
 
 			if ( sourceKeys.getCount() == 0 )
 			{
-				defaultPoseJointIndices.add( jointIndex );
+				defaultPoseJointIndices.add( uint32( jointIndex ) );
 				continue;
 			}
 			else
@@ -332,11 +332,11 @@ namespace tiki
 					
 					if ( isEquals )
 					{
-						defaultPoseJointIndices.add( jointIndex );						
+						defaultPoseJointIndices.add( uint16( jointIndex ) );
 						continue;
 					}
 
-					constantData.add( jointIndex );
+					constantData.add( sint16( jointIndex ) );
 					fillDataArray( constantData, sourceKeys[ 0u ], dimensions, factor, factorTangent, true );
 				}
 				else
@@ -344,7 +344,7 @@ namespace tiki
 					TIKI_ASSERT( mask > 0ull );
 
 					masks.add(mask);
-					interpolationData.add( jointIndex );
+					interpolationData.add( sint16( jointIndex ) );
 
 					for (uint k = 0; k < sourceKeys.getCount(); ++k)
 					{
@@ -379,7 +379,7 @@ namespace tiki
 			resourceWriter.writeUInt16( defaultPoseJointIndices[ i ] );
 		}
 
-		defaultPoseJointCount = defaultPoseJointIndices.getCount();
+		defaultPoseJointCount = uint16( defaultPoseJointIndices.getCount() );
 	}
 
 	void AnimationBuilder::fillDataArray( List< sint16 >& target, const SplineKey& sourceKey, uint dimensions, float factor, float factorTangent, bool isConstKey )
@@ -529,7 +529,7 @@ namespace tiki
 		uint64 mask = 0;
 
 		insertBitMask( targetList, mask, firstKey, startTime );
-		for (uint32 i = firstIndex; i < lastIndex; i++)
+		for (uint i = firstIndex; i < lastIndex; i++)
 		{
 			insertBitMask( targetList, mask, sourceKeys[ i ], startTime );
 		}

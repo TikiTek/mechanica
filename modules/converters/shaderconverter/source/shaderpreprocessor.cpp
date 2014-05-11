@@ -15,13 +15,13 @@ namespace tiki
 	{
 		string	name;
 
-		uint	startBit;
-		uint	bitCount;
+		uint32	startBit;
+		uint32	bitCount;
 
-		uint	maxValue;			
+		uint32	maxValue;			
 	};
 
-	static void addFeature( List< ShaderFeature >& features, const string& name, uint maxValue )
+	static void addFeature( List< ShaderFeature >& features, const string& name, uint32 maxValue )
 	{
 		const ShaderFeature* pLastFeature = nullptr;
 		if ( features.getCount() > 0u )
@@ -31,7 +31,7 @@ namespace tiki
 
 		ShaderFeature feature;
 		feature.name		= name;
-		feature.bitCount	= 64u - countLeadingZeros64( maxValue );
+		feature.bitCount	= uint32( 64u - countLeadingZeros64( maxValue ) );
 		feature.maxValue	= maxValue;
 
 		if ( pLastFeature != nullptr )
@@ -57,9 +57,9 @@ namespace tiki
 
 			if ( index != -1 )
 			{
-				const int baseIndex = index + search.getLength();
+				const int baseIndex = int( index + search.getLength() );
 				const int length = featuresLine.indexOf( ' ', baseIndex ) - baseIndex;
-				const string featuresString = featuresLine.substring( baseIndex, length );
+				const string featuresString = featuresLine.subString( baseIndex, length );
 
 				Array< string > featuresList;
 				featuresString.trim().split( featuresList, "," );
@@ -67,7 +67,7 @@ namespace tiki
 				for (uint j = 0u; j < featuresList.getCount(); ++j)
 				{
 					string name = featuresList[ j ];
-					uint maxValue = 1u;
+					uint32 maxValue = 1u;
 
 					int arrayIndex = name.indexOf( '[' );
 					if ( arrayIndex != -1 )
@@ -80,9 +80,9 @@ namespace tiki
 							continue;
 						}
 
-						const string maxValueString = name.substring( arrayIndex, arrayLength );
+						const string maxValueString = name.subString( arrayIndex, arrayLength );
 						maxValue	= ParseString::parseUInt32( maxValueString ) - 1u;
-						name		= name.substring( 0u, arrayIndex - 1u );
+						name		= name.subString( 0u, arrayIndex - 1 );
 					}
 
 					if ( i == 0u ) // fx feature will be applied to all shaders in file
@@ -145,7 +145,7 @@ namespace tiki
 		return resultCode;
 	}
 
-	static string createDefineString( List< ShaderFeature >& features, uint bitMask )
+	static string createDefineString( List< ShaderFeature >& features, uint32 bitMask )
 	{
 		string defineString = "";
 
@@ -170,7 +170,7 @@ namespace tiki
 		m_sourceCode = resolveIncludes( shaderText, includeDirs );
 
 		// parse features
-		const string featuresLine = shaderText.substring( 0u, shaderText.indexOf( '\n' ) );
+		const string featuresLine = shaderText.subString( 0u, shaderText.indexOf( '\n' ) );
 
 		if ( featuresLine.startsWith( "//" ) == false )
 		{
@@ -198,9 +198,9 @@ namespace tiki
 
 					if ( variants.getCount() == 0u )
 					{
-						for (uint featureValue = 0u; featureValue <= feature.maxValue; ++featureValue)
+						for (uint32 featureValue = 0u; featureValue <= feature.maxValue; ++featureValue)
 						{
-							const uint bitMask = featureValue << feature.startBit;
+							const uint32 bitMask = featureValue << feature.startBit;
 
 							ShaderVariant variant;
 							variant.bitMask		= bitMask;
@@ -210,9 +210,9 @@ namespace tiki
 					}
 					else
 					{
-						for (uint featureValue = 1u; featureValue <= feature.maxValue; ++featureValue)
+						for (uint32 featureValue = 1u; featureValue <= feature.maxValue; ++featureValue)
 						{
-							const uint bitMask = featureValue << feature.startBit;
+							const uint32 bitMask = featureValue << feature.startBit;
 
 							for (uint k = 0u; k < variants.getCount(); ++k)
 							{

@@ -65,7 +65,7 @@ namespace tiki
 				}
 				else
 				{
-					uint4 rect = { 0, 0, image.getWidth(), image.getHeight() };
+					uint4 rect = { 0, 0, uint32( image.getWidth() ), uint32( image.getHeight() ) };
 					uint32* pRect = &rect.x;
 					for (size_t k = 0u; k < 4u; ++k)
 					{
@@ -84,11 +84,11 @@ namespace tiki
 			if ( ( scaleX[ 0u ] == '/' || scaleX[ 0u ] == '*' ) && ( scaleY[ 0u ] == '/' || scaleY[ 0u ] == '*' ) )
 			{
 				uint2 scale;
-				scale.x = image.getWidth();
-				scale.y = image.getHeight();
+				scale.x = uint32( image.getWidth() );
+				scale.y = uint32( image.getHeight() );
 
-				const uint modX = ParseString::parseUInt32( scaleX.substring( 1u ) );
-				const uint modY = ParseString::parseUInt32( scaleY.substring( 1u ) );
+				const uint32 modX = ParseString::parseUInt32( scaleX.subString( 1u ) );
+				const uint32 modY = ParseString::parseUInt32( scaleY.subString( 1u ) );
 
 				if ( scaleX[ 0u ] == '/' )
 				{

@@ -28,7 +28,7 @@ namespace tiki
 		ResourceFileHeader fileHeader;
 		fileHeader.tikiFourcc		= TIKI_FOURCC( 'T', 'I', 'K', 'I' );
 		fileHeader.version			= ResourceFileHeader::CurrentFormatVersion;
-		fileHeader.resourceCount	= m_resources.getCount();
+		fileHeader.resourceCount	= uint16( m_resources.getCount() );
 
 		MemoryStream stream;
 		stream.write( &fileHeader, sizeof( ResourceFileHeader ) );
@@ -43,9 +43,9 @@ namespace tiki
 			header.key		= crcString( resource.name );
 			header.version	= resource.version;
 
-			header.linkCount	= resource.links.getCount();
-			header.sectionCount	= resource.sections.getCount();
-			header.stringCount	= resource.strings.getCount();
+			header.linkCount	= uint16( resource.links.getCount() );
+			header.sectionCount	= uint16( resource.sections.getCount() );
+			header.stringCount	= uint16( resource.strings.getCount() );
 
 			header.offsetInFile				= 0u;
 
@@ -58,7 +58,7 @@ namespace tiki
 		{
 			const ResourceData& resource	= m_resources[ resourceIndex ];
 			ResourceHeader& header			= resourceHeaders[ resourceIndex ];
-			header.offsetInFile = stream.getPosition();
+			header.offsetInFile				= uint32( stream.getPosition() );
 
 			List< SectionHeader > sectionHeaders;
 			for (uint j = 0u; j < resource.sections.getCount(); ++j)
@@ -66,10 +66,10 @@ namespace tiki
 				const SectionData& sectionData = resource.sections[ j ];
 
 				SectionHeader& header = sectionHeaders.add();
-				header.alignment					= 64u - countLeadingZeros64( sectionData.alignment );
-				header.allocatorType_allocatorId	= (uint8)( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
-				header.referenceCount				= sectionData.references.getCount();
-				header.sizeInBytes					= sectionData.binaryData.getLength();
+				header.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
+				header.allocatorType_allocatorId	= uint8( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
+				header.referenceCount				= uint16( sectionData.references.getCount() );
+				header.sizeInBytes					= uint32( sectionData.binaryData.getLength() );
 
 				header.offsetInResource				= 0u;
 			} 
@@ -81,14 +81,14 @@ namespace tiki
 				const StringData& stringData = resource.strings[ stringIndex ];
 
 				uint32 bitMask = setBitValue( 0u, 0u, 2u, stringData.type );
-				bitMask = setBitValue( bitMask, 2u, 2u, stringData.sizeInBytes / stringData.text.getLength() );
-				bitMask = setBitValue( bitMask, 4u, 28u, stringData.text.getLength() );
+				bitMask = setBitValue( bitMask, 2u, 2u, uint32( stringData.sizeInBytes / stringData.text.getLength() ) );
+				bitMask = setBitValue( bitMask, 4u, 28u, uint32( stringData.text.getLength() ) );
 
 				StringItem& stringItem = stringItems.add();
 				stringItem.type_lengthModifier_textLength	= bitMask;
 				stringItem.offsetInBlock					= 0u;
 
-				header.stringSizeInBytes += stringData.text.getLength() + 1u;
+				header.stringSizeInBytes += uint32( stringData.text.getLength() + 1u );
 			}
 			stream.write( stringItems.getData(), sizeof( StringItem ) * stringItems.getCount() );
 
@@ -110,7 +110,7 @@ namespace tiki
 
 				stream.writeAlignment( sectionData.alignment );
 
-				sectionHeaders[ sectionIndex ].offsetInResource = stream.getPosition() - header.offsetInFile;
+				sectionHeaders[ sectionIndex ].offsetInResource = uint32( stream.getPosition() - header.offsetInFile );
 				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
 
 				for (uint k = 0u; k < sectionData.references.getCount(); ++k)
@@ -118,19 +118,19 @@ namespace tiki
 					const ReferenceData& referenceData = sectionData.references[ k ];
 
 					ReferenceItem item;
-					item.type					= (uint8)referenceData.key.type;
-					item.targetId				= (uint16)referenceData.key.identifier;
-					item.offsetInTargetSection	= referenceData.key.offsetInTargetSection;
+					item.type					= uint8( referenceData.key.type );
+					item.targetId				= uint16( referenceData.key.identifier );
+					item.offsetInTargetSection	= uint32( referenceData.key.offsetInTargetSection );
 					item.offsetInSection		= referenceData.position;
 
 					stream.write( &item, sizeof( item ) );
 				}
 			}
 
-			header.stringOffsetInResource = stream.getPosition() - header.offsetInFile;
+			header.stringOffsetInResource = uint32( stream.getPosition() - header.offsetInFile );
 			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
 			{
-				stringItems[ stringIndex ].offsetInBlock = stream.getPosition() - header.offsetInFile - header.stringOffsetInResource;
+				stringItems[ stringIndex ].offsetInBlock = uint32( stream.getPosition() - header.offsetInFile - header.stringOffsetInResource );
 
 				const string& text = resource.strings[ stringIndex ].text;
 				stream.write( text.cStr(), text.getLength() + 1u );
@@ -273,7 +273,7 @@ namespace tiki
 		{
 			ReferenceData& data = m_pCurrentSection->references.add();
 			data.key		= *pKey;
-			data.position	= m_pCurrentSection->binaryData.getLength();
+			data.position	= uint32( m_pCurrentSection->binaryData.getLength() );
 		}
 
 		// reserve space for the pointer

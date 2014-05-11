@@ -19,20 +19,20 @@ namespace tiki
 		m_token		= "";
 	}
 
-	string Tokenizer::findNext( size_t* pIndex /*= nullptr */ )
+	string Tokenizer::findNext( uint* pIndex /*= nullptr */ )
 	{
-		size_t nextIndex	= (size_t)-1;
+		uint nextIndex = TIKI_SIZE_T_MAX;
 
 		if ( m_tokenAsChars )
 		{
 			bool found = false;
-			size_t index = m_currentIndex - 1u;
+			uint index = m_currentIndex - 1u;
 			cstring pText = m_text.cStr();
 			do 
 			{
 				const char tc = pText[ ++index ];
 
-				for (size_t i = 0u; i < m_token.getLength(); ++i)
+				for (uint i = 0u; i < m_token.getLength(); ++i)
 				{
 					if ( tc == m_token[ i ])
 					{
@@ -69,7 +69,7 @@ namespace tiki
 			*pIndex = nextIndex;
 		}
 
-		if ( nextIndex == (size_t)-1 )
+		if ( nextIndex == TIKI_SIZE_T_MAX )
 		{
 			nextIndex	= m_text.getLength();
 		}
@@ -79,7 +79,7 @@ namespace tiki
 			return "";
 		}
 
-		string part = m_text.substring( m_currentIndex, nextIndex - m_currentIndex );
+		string part = m_text.subString( m_currentIndex, sint( nextIndex - m_currentIndex ) );
 		m_currentIndex = nextIndex;
 
 		return part;

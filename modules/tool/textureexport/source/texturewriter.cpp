@@ -22,11 +22,11 @@ namespace tiki
 		m_pImage					= &image;
 		m_parameters				= parameters;
 
-		m_description.width			= m_pImage->getWidth();
-		m_description.height		= m_pImage->getHeight();
+		m_description.width			= uint16( m_pImage->getWidth() );
+		m_description.height		= uint16( m_pImage->getHeight() );
 		m_description.depth			= 1u;
 		m_description.arrayCount	= 1u;
-		m_description.mipCount		= parameters.mipMapCount;
+		m_description.mipCount		= uint16( parameters.mipMapCount );
 
 		m_description.format		= parameters.targetFormat;
 		m_description.type			= parameters.targetType;
@@ -34,8 +34,8 @@ namespace tiki
 
 		if ( parameters.targetType == TextureType_3d )
 		{
-			m_description.width = parameters.data.texture3d.sliceSize;
-			m_description.depth	= m_pImage->getWidth() / m_description.width;
+			m_description.width = uint16( parameters.data.texture3d.sliceSize );
+			m_description.depth	= uint16( m_pImage->getWidth() / m_description.width );
 		}
 
 		return true;
@@ -73,9 +73,9 @@ namespace tiki
 				mipImage.createFromImage( *m_pImage );
 
 				uint4 cropData;
-				cropData.x	= depthLevel * sliceSize;
+				cropData.x	= uint32( depthLevel * sliceSize );
 				cropData.y	= 0u;
-				cropData.z	= sliceSize;
+				cropData.z	= uint32( sliceSize );
 				cropData.w	= m_description.height;
 				mipImage.cropImage( cropData );
 

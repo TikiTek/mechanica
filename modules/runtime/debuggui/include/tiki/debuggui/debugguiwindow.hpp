@@ -73,7 +73,7 @@ namespace tiki
 
 		bool				m_isMoving;
 		bool				m_isVisible;
-		uint				m_resizeMode;
+		uint32				m_resizeMode;
 		
 		Rectangle			m_titleRectangle;
 		Rectangle			m_clientRectangle;

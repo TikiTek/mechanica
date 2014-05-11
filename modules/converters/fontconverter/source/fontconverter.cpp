@@ -154,7 +154,7 @@ namespace tiki
 					pRow += rowPitch;
 				}
 
-				imagePos.x += charWidth + 3u;
+				imagePos.x += uint32( charWidth ) + 3u;
 			}
 
 			TextureWriterParameters writerParameters;
@@ -181,7 +181,7 @@ namespace tiki
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
 			writer.writeReference( &textureDataKey );
-			writer.writeUInt32( chars.getCount() );
+			writer.writeUInt32( uint32( chars.getCount() ) );
 			writer.writeReference( &charArrayKey );
 			writer.closeDataSection();
 

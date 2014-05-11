@@ -3,11 +3,11 @@
 
 namespace tiki
 {
-	void ToolModelVertexFormat::create( size_t streamCount /* = 1u */ )
+	void ToolModelVertexFormat::create( uint streamCount /* = 1u */ )
 	{
 		m_vertexStrides.create( streamCount );
 
-		for (size_t i = 0u; i < m_vertexStrides.getCount(); ++i)
+		for (uint i = 0u; i < m_vertexStrides.getCount(); ++i)
 		{
 			m_vertexStrides[ i ] = 0u;
 		}
@@ -24,7 +24,7 @@ namespace tiki
 		return findAttributeBySemantic( semantic, 0u ) != nullptr;
 	}
 
-	void ToolModelVertexFormat::addSemantic( VertexSementic semantic, VertexAttributeFormat format, size_t streamIndex /* = 0u */ )
+	void ToolModelVertexFormat::addSemantic( VertexSementic semantic, VertexAttributeFormat format, uint32 streamIndex /* = 0u */ )
 	{
 		TIKI_ASSERT( semantic < VertexSementic_Count);
 		TIKI_ASSERT( format < VertexAttributeFormat_Count );
@@ -32,7 +32,7 @@ namespace tiki
 		setAttribute( m_attributes.add(), semantic, format, streamIndex );
 	}
 
-	bool ToolModelVertexFormat::insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format /*= VertexAttributeFormat_Invalid*/, size_t streamIndex /*= 0u */ )
+	bool ToolModelVertexFormat::insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format /*= VertexAttributeFormat_Invalid*/, uint32 streamIndex /*= 0u */ )
 	{
 		TIKI_ASSERT( semantic < VertexSementic_Count);
 		TIKI_ASSERT( format < VertexAttributeFormat_Count );
@@ -43,9 +43,9 @@ namespace tiki
 		{
 			return false;
 		}
-		const int index = m_attributes.indexOf( *pAttribute );
-		const uint finalIndex = (uint)index + 1u;
-		TIKI_ASSERT( index > 0u );
+		const sint index = m_attributes.indexOf( *pAttribute );
+		const uint finalIndex = uint( index + 1 );
+		TIKI_ASSERT( index > 0 );
 
 		m_attributes.add();
 		for (uint i = m_attributes.getCount() - 1u; i > finalIndex; --i)
@@ -60,7 +60,7 @@ namespace tiki
 	
 	const VertexAttribute* ToolModelVertexFormat::findAttributeBySemantic( VertexSementic semantic, uint semanicIndex ) const
 	{
-		for (size_t i = 0u; i < m_attributes.getCount(); ++i)
+		for (uint i = 0u; i < m_attributes.getCount(); ++i)
 		{
 			const VertexAttribute& attribute = m_attributes[ i ];
 
@@ -73,7 +73,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	void ToolModelVertexFormat::setAttribute( VertexAttribute& target, VertexSementic semantic, VertexAttributeFormat format, size_t streamIndex )
+	void ToolModelVertexFormat::setAttribute( VertexAttribute& target, VertexSementic semantic, VertexAttributeFormat format, uint32 streamIndex )
 	{
 		if ( format == VertexAttributeFormat_Invalid )
 		{

@@ -141,14 +141,14 @@ namespace tiki
 		safeRelease( &m_platformData.pDepthStencilBuffer );
 		safeRelease( &m_platformData.pBackBufferTargetView);
 
-		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, 0 );
+		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, UINT( width ), UINT( height ), DXGI_FORMAT_UNKNOWN, 0 );
 		if ( FAILED( result ) )
 		{
 			dispose();
 			return false;
 		}
 
-		uint2 backBufferSize = { width, height };
+		uint2 backBufferSize = { uint32( width ), uint32( height ) };
 		graphics::initBackBuffer( m_platformData );
 		graphics::initDepthStencilBuffer( m_platformData, backBufferSize );
 

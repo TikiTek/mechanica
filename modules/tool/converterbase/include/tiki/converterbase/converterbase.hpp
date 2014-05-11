@@ -41,7 +41,7 @@ namespace tiki
 		virtual crc32			getInputType() const = 0;
 		virtual crc32			getOutputType() const = 0;
 		virtual void			getDependingType( List< crc32 >& types ) const = 0;
-		virtual size_t			getConverterRevision() const = 0;
+		virtual uint16			getConverterRevision() const = 0;
 
 		virtual bool			initializeConverter() = 0;
 		virtual void			disposeConverter() = 0;

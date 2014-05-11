@@ -15,7 +15,7 @@ namespace tiki
 		string fileName = checkSlashes( fullPath );
 		sint32 index = fileName.lastIndexOf( '/' ) + 1;
 
-		return fileName.substring( index, fileName.getLength() - index );
+		return fileName.subString( index, fileName.getLength() - index );
 	}
 
 	string path::getFilenameWithoutExtension( const string& fullPath )
@@ -23,10 +23,10 @@ namespace tiki
 		string fileName = checkSlashes( fullPath );
 
 		sint32 index = fileName.lastIndexOf( '/' ) + 1;
-		fileName = fullPath.substring(index, fileName.getLength() - index);
+		fileName = fullPath.subString( index, fileName.getLength() - index );
 
 		index = fileName.lastIndexOf( '.' );
-		fileName = fileName.substring( 0, index );
+		fileName = fileName.subString( 0, index );
 
 		return fileName;
 	}
@@ -39,13 +39,13 @@ namespace tiki
 			return "";
 		}
 
-		return fullPath.substring( (uint32)index  );
+		return fullPath.subString( uint( index )  );
 	}
 
 	string path::getDirectoryName( const string& fullPath )
 	{
 		string dirName = checkSlashes( fullPath );
-		return dirName.substring( 0, dirName.lastIndexOf( '/' ) );
+		return dirName.subString( 0, dirName.lastIndexOf( '/' ) );
 	}
 
 	string path::combine( const string& path1, const string& path2 )
@@ -55,8 +55,8 @@ namespace tiki
 
 		int rightV = (i2 == '/' || i2 == '\\' ? 1 : 0);
 
-		string left		= path1.substring( 0, path1.getLength() - ( i1 == '/' || i1 == '\\' ? 1 : 0 ) );
-		string right	= path2.substring( rightV, path2.getLength() - rightV );
+		string left		= path1.subString( 0, path1.getLength() - ( i1 == '/' || i1 == '\\' ? 1 : 0 ) );
+		string right	= path2.subString( rightV, path2.getLength() - rightV );
 
 		return checkSlashes( left + "/" + right );
 	}
@@ -70,7 +70,7 @@ namespace tiki
 	{
 		const string slashPath = checkSlashes( path );
 
-		const bool beginWithDrive	= ( slashPath.substring( 1u, 2u ) == ":/" );
+		const bool beginWithDrive	= ( slashPath.subString( 1u, 2 ) == ":/" );
 		const bool containsDots		= ( slashPath.contains( "/../" ) || slashPath.contains( "/./" ) );
 		if ( beginWithDrive && !containsDots )
 		{

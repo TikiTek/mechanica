@@ -19,26 +19,26 @@ namespace tiki
 
 	public:
 
-		void					create( size_t streamCount = 1u );
+		void					create( uint streamCount = 1u );
 		void					dispose();
 
 		bool					hasSemantic( VertexSementic semantic ) const;
 
-		void					addSemantic( VertexSementic semantic, VertexAttributeFormat format = VertexAttributeFormat_Invalid, size_t streamIndex = 0u );
-		bool					insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format = VertexAttributeFormat_Invalid, size_t streamIndex = 0u );
+		void					addSemantic( VertexSementic semantic, VertexAttributeFormat format = VertexAttributeFormat_Invalid, uint32 streamIndex = 0u );
+		bool					insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format = VertexAttributeFormat_Invalid, uint32 streamIndex = 0u );
 
-		size_t					getVertexStride( size_t streamIndex ) const { return m_vertexStrides[ streamIndex ]; }
+		uint					getVertexStride( uint streamIndex ) const { return m_vertexStrides[ streamIndex ]; }
 
 		const VertexAttribute*	getAttributes() const { return m_attributes.getData(); }
-		size_t					getAttributeCount() const { return m_attributes.getCount(); }
+		uint					getAttributeCount() const { return m_attributes.getCount(); }
 
 	private:
 
-		Array< size_t >			m_vertexStrides;
+		Array< uint32 >			m_vertexStrides;
 		List< VertexAttribute >	m_attributes;
 
 		const VertexAttribute*	findAttributeBySemantic( VertexSementic semantic, uint semanicIndex ) const;
-		void					setAttribute( VertexAttribute& target, VertexSementic semantic, VertexAttributeFormat format, size_t streamIndex );
+		void					setAttribute( VertexAttribute& target, VertexSementic semantic, VertexAttributeFormat format, uint32 streamIndex );
 
 	};
 }

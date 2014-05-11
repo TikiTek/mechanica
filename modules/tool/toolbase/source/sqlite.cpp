@@ -71,7 +71,7 @@ namespace tiki
 		TIKI_ASSERT( m_pQuery == nullptr );
 
 		const char* pErrorMessage = nullptr;
-		if ( sqlite3_prepare( dataBase.m_pDatabase, sql.cStr(), sql.getLength(), &m_pQuery, &pErrorMessage ) != SQLITE_OK )
+		if ( sqlite3_prepare( dataBase.m_pDatabase, sql.cStr(), int( sql.getLength() ), &m_pQuery, &pErrorMessage ) != SQLITE_OK )
 		{
 			m_lastError = pErrorMessage;
 			return false;
@@ -136,12 +136,12 @@ namespace tiki
 		{
 			if ( m_colunmNames[ i ] == fieldName )
 			{
-				return i;
+				return int( i );
 			}
 		}
 
 		TIKI_ASSERT( false );
-		return TIKI_SIZE_T_MAX;
+		return -1;
 	}
 
 }

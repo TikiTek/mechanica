@@ -47,7 +47,7 @@ psd_int psd_fsize(void * file)
 
 psd_int psd_fread(psd_uchar * buffer, psd_int count, void * file)
 {
-	return fread(buffer, 1, count, (FILE *)file);
+	return (psd_int)fread(buffer, 1, count, (FILE *)file);
 }
 
 psd_int psd_fseek(void * file, psd_int length)
