@@ -11,15 +11,15 @@
 #endif
 
 #ifndef TIKI_BUILD_DEBUG
-#	error "TIKI_BUILD_DEBUG not defined"
+#	define TIKI_BUILD_DEBUG TIKI_OFF
 #endif
 
 #ifndef TIKI_BUILD_RELEASE
-#	error "TIKI_BUILD_RELEASE not defined"
+#	define TIKI_BUILD_RELEASE TIKI_OFF
 #endif
 
 #ifndef TIKI_BUILD_MASTER
-#	error "TIKI_BUILD_MASTER not defined"
+#	define TIKI_BUILD_MASTER TIKI_OFF
 #endif
 
 #define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )

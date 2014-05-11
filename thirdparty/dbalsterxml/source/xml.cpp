@@ -496,7 +496,7 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 		{
 			if (marker)
 			{
-				int n = _begin-marker-1;
+				int n = (int)(_begin-marker-1);
 				if (_scanonly)
 				{
 					_ctx->nChars += n+1;
@@ -527,7 +527,7 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 					const char* end = strstr(_begin,"]]>");
 					if (end)
 					{
-						int n = end - _begin;
+						int n = (int)(end - _begin);
 						if (_scanonly)
 						{
 							_ctx->nChars += n+1;
@@ -588,13 +588,13 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 				size_t elementSize = sizeof(XmlElement) + xml_sizeof(_ctx->sizeofHints,_begin,end-_begin,0,0);
 				if (_scanonly)
 				{
-					_ctx->nChars += (end-_begin) + 1;
-					_ctx->nBytes += elementSize;
+					_ctx->nChars += (unsigned int)(end-_begin) + 1;
+					_ctx->nBytes += (unsigned int)elementSize;
 				}
 				else
 				{
-					element = (XmlElement*) xml_alloc_memory(_ctx,elementSize,false);
-					element->name = xml_clone_string(_ctx,_begin,end-_begin,true);
+					element = (XmlElement*) xml_alloc_memory(_ctx,(unsigned int)elementSize,false);
+					element->name = xml_clone_string(_ctx,_begin,(unsigned int)(end-_begin),true);
 					element->content = 0;
 					xml_element_add_element( _element,element );
 				}
@@ -641,13 +641,13 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 					end = scan_identifier(_begin,_end);
 					if (_scanonly)
 					{
-						_ctx->nChars += (end-_begin) + 1;
+						_ctx->nChars += (unsigned int)(end-_begin) + 1;
 						_ctx->nBytes += sizeof(XmlAttribute);
 					}
 					else
 					{            
 						attribute = (XmlAttribute*) xml_alloc_memory(_ctx,sizeof(XmlAttribute),false);
-						attribute->name = xml_clone_string(_ctx,_begin,end-_begin,true);
+						attribute->name = xml_clone_string(_ctx,_begin,(unsigned int)(end-_begin),true);
 						attribute->content = "";
 						xml_element_add_attribute( element, attribute );
 					}
@@ -666,11 +666,11 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 						{
 							if (_scanonly)
 							{
-								_ctx->nChars += (end-_begin) + 1;
+								_ctx->nChars += (unsigned int)(end-_begin) + 1;
 							}
 							else
 							{
-								attribute->content = xml_clone_string(_ctx,_begin,end-_begin,true);
+								attribute->content = xml_clone_string(_ctx,_begin,(unsigned int)(end-_begin),true);
 							}
 						}
 					}
