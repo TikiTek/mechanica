@@ -34,15 +34,15 @@ namespace tiki
 		bool success = ( m_pAsciiCharTexture != nullptr ) && ( m_pShader != nullptr );
 
 		TextureDescription description;
-		description.width	= parameters.resultDataWidth;
-		description.height	= parameters.resultDataHeight;
+		description.width	= uint16( parameters.resultDataWidth );
+		description.height	= uint16( parameters.resultDataHeight );
 		description.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
 		description.type	= TextureType_2d;
 		description.format	= PixelFormat_Color;
 		success &= m_finalResultData.create( graphicsSystem, description );
 
-		description.width	= parameters.maxCharsWidth;
-		description.height	= parameters.maxCharsHeight;
+		description.width	= uint16( parameters.maxCharsWidth );
+		description.height	= uint16( parameters.maxCharsHeight );
 		success &= m_downSampleData.create( graphicsSystem, description );
 
 		RenderTargetBuffer renderTargetBuffer = RenderTargetBuffer( m_finalResultData );

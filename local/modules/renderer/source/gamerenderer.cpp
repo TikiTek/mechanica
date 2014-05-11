@@ -10,12 +10,12 @@
 
 namespace tiki
 {
-	static uint32 getShaderVariantMask( uint32 directionalLightCount, uint32 pointLightCount, uint32 spotLightCount )
+	static uint32 getShaderVariantMask( uint directionalLightCount, uint pointLightCount, uint spotLightCount )
 	{
 		uint32 mask = 0u;
-		mask = setBitValue( mask, 0u, 1u, directionalLightCount );
-		mask = setBitValue( mask, 1u, 3u, pointLightCount );
-		mask = setBitValue( mask, 4u, 1u, spotLightCount );
+		mask = setBitValue( mask, 0u, 1u, uint32( directionalLightCount ) );
+		mask = setBitValue( mask, 1u, 3u, uint32( pointLightCount ) );
+		mask = setBitValue( mask, 4u, 1u, uint32( spotLightCount ) );
 		return mask;
 	}
 

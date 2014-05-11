@@ -60,8 +60,8 @@ namespace tiki
 		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Wrap, AddressMode_Wrap, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 		success &= ( m_pBlendState != nullptr && m_pDepthStencilState != nullptr && m_pRasterizerState != nullptr && m_pSampler != nullptr );
 
-		success &= m_vertexConstantBuffer.create( graphicsSystem, alignValue( sizeof( SceneVertexConstantData ), 16u ) );
-		success &= m_pixelConstantBuffer.create( graphicsSystem, alignValue( sizeof( ScenePixelConstantData ), 16u ) );
+		success &= m_vertexConstantBuffer.create( graphicsSystem, alignValue< uint >( sizeof( SceneVertexConstantData ), 16u ) );
+		success &= m_pixelConstantBuffer.create( graphicsSystem, alignValue< uint >( sizeof( ScenePixelConstantData ), 16u ) );
 		
 		VertexAttribute attributesStatic[] =
 		{
