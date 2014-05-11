@@ -30,6 +30,17 @@ namespace tiki
 	void TestState::create( ApplicationState* pParentState )
 	{
 		m_pParentState	= pParentState;
+
+		m_drawPlayer		= false;
+		m_enableBloom		= true;
+		m_enableAsciiMode	= true;
+		m_gbufferIndex		= -1;
+		m_enableMouseCamera	= false;
+		m_cameraSpeed		= 1.0f;
+
+		vector::clear( m_cameraRotation );
+		vector::clear( m_leftStickState );
+		vector::clear( m_rightStickState );
 	}
 
 	void TestState::dispose()
@@ -50,7 +61,6 @@ namespace tiki
 					framework::getResourceManager(),
 					asciiParameters
 				) );
-				m_enableAsciiMode = false;
 
 				PostProcessBloomParameters bloomParameters;	
 				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
@@ -61,9 +71,6 @@ namespace tiki
 					framework::getResourceManager(),
 					bloomParameters
 				) );
-				m_enableBloom = true;
-
-				m_gbufferIndex = -1;
 
 				return TransitionState_Finish;
 			}
@@ -101,10 +108,6 @@ namespace tiki
 
 					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
 					m_skinningData.matrices.create( framework::getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
-
-					Vector2 screenSize;
-					screenSize.x = (float)framework::getGraphicsSystem().getBackBuffer().getWidth();
-					screenSize.y = (float)framework::getGraphicsSystem().getBackBuffer().getHeight();
 
 					m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -156,12 +159,6 @@ namespace tiki
 
 					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
 					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
-
-					m_enableMouseCamera = false;
-					m_cameraSpeed = 1.0f;
-					vector::clear( m_cameraRotation );
-					vector::clear( m_leftStickState );
-					vector::clear( m_rightStickState );
 
 					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
 					m_testWindow.create( m_debugGui );
@@ -283,11 +280,16 @@ namespace tiki
 
 		matrix::createIdentity( mtx );
 		matrix::createRotationY( mtx.rot, timeValue );
+		if ( m_drawPlayer )
+		{
+			const SkinningData* pSkinningData = &m_skinningData;
+			m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
 
-		const SkinningData* pSkinningData = &m_skinningData;
-		m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
-
-		//m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
+		}
+		else
+		{
+			m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
+		}
 
 		m_debugGui.update();
 	}
@@ -423,18 +425,26 @@ namespace tiki
 				case KeyboardKey_W:
 					m_leftStickState.y = 1.0f;
 					break;
+
 				case KeyboardKey_A:
 					m_leftStickState.x = -1.0f;
 					break;
+
 				case KeyboardKey_S:
 					m_leftStickState.y = -1.0f;
 					break;
+
 				case KeyboardKey_D:
 					m_leftStickState.x = 1.0f;
 					break;
+
 				case KeyboardKey_LeftShift:
 				case KeyboardKey_RightShift:
 					m_cameraSpeed = 10.0f;
+					break;
+
+				case KeyboardKey_Space:
+					m_drawPlayer = !m_drawPlayer;
 					break;
 				}
 			}
@@ -448,15 +458,19 @@ namespace tiki
 				case KeyboardKey_W:
 					m_leftStickState.y = 0.0f;
 					break;
+
 				case KeyboardKey_A:
 					m_leftStickState.x = 0.0f;
 					break;
+
 				case KeyboardKey_S:
 					m_leftStickState.y = 0.0f;
 					break;
+
 				case KeyboardKey_D:
 					m_leftStickState.x = 0.0f;
 					break;
+
 				case KeyboardKey_LeftShift:
 				case KeyboardKey_RightShift:
 					m_cameraSpeed = 1.0f;

@@ -60,6 +60,7 @@ namespace tiki
 		const Model*				m_pModelPlayer;
 		const Animation*			m_pAnimationPlayer;
 
+		bool						m_drawPlayer;
 		Array< AnimationJoint >		m_animationData;
 		SkinningData				m_skinningData;
 
