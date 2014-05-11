@@ -18,7 +18,7 @@ namespace tiki
 	ToolModelSourceBase* setSourceSemantic( Array< ToolModelSourceBase* >& sources, string id, string semantic )
 	{
 		TIKI_ASSERT( id[ 0u ] == '#' );
-		const string sourceId = id.substring( 1u );
+		const string sourceId = id.subString( 1u );
 		const string semanticName = semantic.toLower();
 		
 		string targetField;
@@ -300,7 +300,7 @@ namespace tiki
 
 					const sint index = indicesCrcIndex.indexOf( indexCrc );
 					TIKI_ASSERT( index >= 0 );
-					indicesIndex.add( (uint)index );
+					indicesIndex.add( uint32( index ) );
 				}
 
 				List< uint > indicesSkinningData;
@@ -473,7 +473,7 @@ namespace tiki
 		}
 
 		// calculate joint ids
-		Array< uint > jointIndices;
+		Array< uint32 > jointIndices;
 		jointIndices.create( boneNames.data.getCount() );
 
 		for (uint i = 0u; i < boneNames.data.getCount(); ++i)
@@ -583,7 +583,7 @@ namespace tiki
 					{
 						uint32* pIndices = &vertex.jointIndices.x;
 
-						const uint index = jointIndices[ value ];
+						const uint32 index = jointIndices[ value ];
 						TIKI_ASSERT( index < hierarchy.getJointCount() );
 
 						pIndices[ c ] = index;

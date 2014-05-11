@@ -109,8 +109,8 @@ namespace tiki
 				const uint depthPitch	= rowPitch * height;
 
 				initData[ mipLevel ].pSysMem			= pLevelData;
-				initData[ mipLevel ].SysMemPitch		= rowPitch;
-				initData[ mipLevel ].SysMemSlicePitch	= depthPitch;
+				initData[ mipLevel ].SysMemPitch		= UINT( rowPitch );
+				initData[ mipLevel ].SysMemSlicePitch	= UINT( depthPitch );
 
 				pLevelData	+= depthPitch * depth;
 				width		/= 2u;

@@ -68,7 +68,7 @@ namespace tiki
 					const XmlAttribute* pIdAtt = m_xml.findAttributeByName( "source", pSkinNode );
 					TIKI_ASSERT( pIdAtt );
 
-					const string id = string( pIdAtt->content ).substring( 1u );
+					const string id = string( pIdAtt->content ).subString( 1u );
 
 					bool found = false;
 					for (size_t i = 0u; i < m_geometries.getCount(); ++i)

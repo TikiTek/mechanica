@@ -36,11 +36,11 @@ namespace tiki
 			index = i;
 			for (uint j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
 			{
-				targetDef.stateHierarchy[ j ] = index;
+				targetDef.stateHierarchy[ j ] = int( index );
 				index = pDefinition[ index ].parentStateIndex;
 			}
 
-			targetDef.transitionStepCount	= def.transitionStepCount;
+			targetDef.transitionStepCount	= int( def.transitionStepCount );
 			targetDef.hierarchyLength		= count;
 			targetDef.pName					= def.pName;
 		}
@@ -93,7 +93,7 @@ namespace tiki
 					}
 				}
 
-				m_activeStates[ m_activeStateCount++ ] = stateIndex;
+				m_activeStates[ m_activeStateCount++ ] = int( stateIndex );
 			}
 		}
 		

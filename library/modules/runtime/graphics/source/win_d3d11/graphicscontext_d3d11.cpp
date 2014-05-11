@@ -201,7 +201,7 @@ namespace tiki
 
 		if ( m_pDepthStencilState != pDepthStencilState )
 		{
-			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, pDepthStencilState->m_platformData.stencilRef );
+			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, UINT( pDepthStencilState->m_platformData.stencilRef ) );
 			m_pDepthStencilState = pDepthStencilState;
 		}		
 	}

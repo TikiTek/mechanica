@@ -21,10 +21,9 @@ namespace tiki
 	public:
 
 														BasicString();
-														BasicString( TChar c );
 														BasicString( uint len );
 														BasicString( const TChar* string );
-														BasicString( const TChar* string, sint32 length );
+														BasicString( const TChar* string, sint length );
 														BasicString( const BasicString<TChar>& copy );
 														~BasicString();
 
@@ -36,7 +35,7 @@ namespace tiki
 		TIKI_FORCE_INLINE void							split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( TChar oldValue, TChar newValue ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			replace( const BasicString<TChar>& oldValue, const BasicString<TChar>& newValue ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			substring( uint startIndex, sint32 length = -1 ) const;
+		TIKI_FORCE_INLINE BasicString<TChar>			subString( uint startIndex, sint length = -1 ) const;
 		TIKI_FORCE_INLINE BasicString<TChar>			trim() const;
 
 		TIKI_FORCE_INLINE BasicString<TChar>			insert( const BasicString<TChar>& str, uint index ) const;
@@ -105,11 +104,8 @@ namespace tiki
 	TIKI_FORCE_INLINE BasicString< char >				operator+( const char* str1, const BasicString< char >& str2 );
 	TIKI_FORCE_INLINE BasicString< wchar_t >			operator+( const wchar_t* str1, const BasicString< wchar_t >& str2 );
 
-	typedef BasicString<char>		string;
-	typedef BasicString<char>		String;
-
-	typedef BasicString<wchar_t>	wstring;
-	typedef BasicString<wchar_t>	WString;
+	typedef BasicString< char >		string;
+	typedef BasicString< wchar_t >	wstring;
 
 	string					formatString( cstring format, ... );
 

@@ -14,7 +14,7 @@ namespace tiki
 		TIKI_ASSERT( m_size == 0u );
 	}
 
-	TIKI_FORCE_INLINE bool ConstantBuffer::create( GraphicsSystem& graphicsSystem, size_t bufferSize )
+	TIKI_FORCE_INLINE bool ConstantBuffer::create( GraphicsSystem& graphicsSystem, uint bufferSize )
 	{
 		if ( BaseBuffer::create( graphicsSystem, bufferSize, true, GraphicsBufferType_ConstantBuffer ) )
 		{

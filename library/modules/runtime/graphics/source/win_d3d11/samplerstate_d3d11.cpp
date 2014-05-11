@@ -68,7 +68,7 @@ namespace tiki
 		stateDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
 		stateDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
 		stateDesc.MipLODBias		= 0.0f;
-		stateDesc.MaxAnisotropy		= creationParamter.maxAnisotropy;
+		stateDesc.MaxAnisotropy		= uint32( creationParamter.maxAnisotropy );
 		stateDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
 		stateDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
 		stateDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );

@@ -167,8 +167,8 @@ namespace tiki
 		description.format		= m_format;
 		description.mipCount	= 1u;
 		description.flags		= TextureFlags_ShaderInput | TextureFlags_RenderTarget;
-		description.width		= width;
-		description.height		= height;
+		description.width		= uint16( width );
+		description.height		= uint16( height );
 
 		if ( !m_textureData.create( graphicsSystem, description ) )
 		{

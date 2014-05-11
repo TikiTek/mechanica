@@ -24,7 +24,7 @@ namespace tiki
 	{
 		ShaderType		type;
 		crc32			variantKey;
-		uint			codeLength;
+		uint32			codeLength;
 		ReferenceKey	key;
 	};
 
@@ -98,7 +98,7 @@ namespace tiki
 			{	
 				m_pManager->addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
 
-				size_t freeStreamIndex = TIKI_SIZE_T_MAX;
+				uint freeStreamIndex = TIKI_SIZE_T_MAX;
 				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
 				{
 					if ( m_fileData[ j ].getCount() == 0u )
@@ -121,7 +121,7 @@ namespace tiki
 				}
 
 				*ppData = m_fileData[ freeStreamIndex ].getData();
-				*pBytes	= m_fileData[ freeStreamIndex ].getCount();
+				*pBytes	= UINT( m_fileData[ freeStreamIndex ].getCount() );
 				return S_OK;
 			}
 
@@ -195,12 +195,12 @@ namespace tiki
 		const string shaderDefine[]	= { nullptr, "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
 
 		string functionNames[ ShaderType_Count ];
-		for (size_t i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
 			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
 		
-		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
+		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
@@ -260,7 +260,7 @@ namespace tiki
 
 						ShaderVariantData& variantVarName = shaderVariants.add();
 						variantVarName.type			= type;
-						variantVarName.codeLength	= variantData.getCount();
+						variantVarName.codeLength	= uint32( variantData.getCount() );
 						variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
 
 						writer.openDataSection( 0u, AllocatorType_MainMemory );
@@ -275,7 +275,7 @@ namespace tiki
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 
-			writer.writeUInt32( shaderVariants.getCount() );
+			writer.writeUInt32( uint32( shaderVariants.getCount() ) );
 			writer.writeAlignment( 8u );
 
 			for (uint i = 0u; i < shaderVariants.getCount(); ++i)
@@ -321,7 +321,7 @@ namespace tiki
 		ID3D10Blob* pBlob		= nullptr;
 		ID3D10Blob* pErrorBlob	= nullptr;
 
-		size_t shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+		UINT shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 		if ( args.debugMode )
 		{
 			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -331,7 +331,7 @@ namespace tiki
 
 		HRESULT result = D3DCompile(
 			sourceCode.cStr(),
-			sourceCode.getLength(),
+			SIZE_T( sourceCode.getLength() ),
 			args.fileName.cStr(), 
 			nullptr,
 			m_pIncludeHandler,

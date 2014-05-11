@@ -37,13 +37,13 @@ namespace tiki
 		case WM_KEYDOWN:
 			{
 				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
-				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_KEYUP:
 			{
 				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
-				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( wParam, MAPVK_VK_TO_VSC );
+				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
 			}
 			break;
 		case WM_MOUSEMOVE:
@@ -128,14 +128,14 @@ namespace tiki
 		m_eventBuffer.create();
 		s_pEventBuffer = &m_eventBuffer;
 
-		HWND hWnd = CreateWindowA(
+		const HWND hWnd = CreateWindowA(
 			params.pClassName,
 			params.pWindowTitle,
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			params.width,
-			params.height,
+			int( params.width ),
+			int( params.height ),
 			NULL,
 			NULL,
 			hInst,
@@ -147,7 +147,7 @@ namespace tiki
 			MessageBoxA( nullptr, "Can't create Window.", params.pWindowTitle, MB_ICONSTOP );
 			return false;
 		}
-		m_pHandle = (WindowHandle)hWnd;
+		m_pHandle = WindowHandle( hWnd );
 		
 		ShowWindow( hWnd, 1 );
 		UpdateWindow( hWnd );

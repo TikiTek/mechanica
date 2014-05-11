@@ -262,7 +262,7 @@ namespace tiki
 		for (uint i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i)
 		{
 			const uint8 directInputCode = s_aVirtualKeyCodeMapping[ i ];
-			m_platformData.keyboardMapping[ directInputCode ] = i;
+			m_platformData.keyboardMapping[ directInputCode ] = uint8( i );
 		} 
 
 		result = m_platformData.pInputDevice->CreateDevice( GUID_SysKeyboard, &m_platformData.pKeyboard, nullptr );
@@ -302,7 +302,7 @@ namespace tiki
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( DWORD( controllerIndex ), &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
 				m_platformData.pStates[ 0u ]->aControllerConnected[ controllerIndex ] = true;
 
@@ -489,7 +489,7 @@ namespace tiki
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( DWORD( controllerIndex ), &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
 				if ( !pCurrentState->aControllerConnected[ controllerIndex ] )
 				{

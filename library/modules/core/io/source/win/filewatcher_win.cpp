@@ -179,7 +179,7 @@ namespace tiki
 			&m_platformData.requiredSize,
 			&key,
 			&pOverlapped,
-			timeOut
+			DWORD( timeOut )
 		);
 
 		const DWORD lastError = GetLastError();

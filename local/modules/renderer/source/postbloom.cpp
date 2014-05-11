@@ -104,7 +104,7 @@ namespace tiki
 		{
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
 
-			const uint pixelShaderIndex = ( passIndex == 0u ? 1u : 0u );
+			const uint32 pixelShaderIndex = ( passIndex == 0u ? 1u : 0u );
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 			graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, pixelShaderIndex ) );
 
@@ -177,8 +177,8 @@ namespace tiki
 		description.mipCount	= 0u;
 		description.flags		= TextureFlags_ShaderInput | TextureFlags_RenderTarget;
 
-		uint passWidth	= m_width;
-		uint passHeight	= m_height;
+		uint16 passWidth	= uint16( m_width );
+		uint16 passHeight	= uint16( m_height );
 		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
 			TIKI_ASSERT( passWidth > 0u );

@@ -60,7 +60,7 @@ namespace tiki
 		for (ResourceMap::const_iterator it = m_map.cbegin(); it != m_map.cend(); it++)
 		{
 			crcData[ index ]	= it->first;
-			offsetData[ index ]	= stringData.getCount();
+			offsetData[ index ]	= uint32( stringData.getCount() );
 
 			const string& fileName = it->second;
 			stringData.addRange( fileName.cStr(), fileName.getLength() + 1u );
@@ -71,9 +71,9 @@ namespace tiki
 		MemoryStream stream;
 		stream.create();
 
-		const fourcc header = TIKI_FOURCC( 'T', 'R', 'N', 'M' );
-		const uint32 elementCount = m_map.size();
-		const uint32 stringDataSize = stringData.getCount();
+		const fourcc header			= TIKI_FOURCC( 'T', 'R', 'N', 'M' );
+		const uint32 elementCount	= uint32( m_map.size() );
+		const uint32 stringDataSize	= uint32( stringData.getCount() );
 
 		stream.write( &header, sizeof( header ) );
 		stream.write( &elementCount, sizeof( elementCount ) );

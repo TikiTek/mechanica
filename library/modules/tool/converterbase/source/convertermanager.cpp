@@ -129,7 +129,7 @@ namespace tiki
 
 		FileDescription& file = m_files.add();
 		file.fullFileName	= path::getAbsolutePath( fileName );
-		file.fileType		= crcString( path::getExtension( nameData ).substring( 1u ) );
+		file.fileType		= crcString( path::getExtension( nameData ).subString( 1u ) );
 	}
 	
 	int ConverterManager::startConversion( Mutex* pConversionMutex /*= nullptr*/ )
@@ -158,7 +158,7 @@ namespace tiki
 
 			FileDescription file;
 			file.fullFileName	= absoluteFileName;
-			file.fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
+			file.fileType		= crcString( path::getExtension( fileTypeString ).subString( 1u ) );
 
 			return convertFile( file, outputFiles, pConversionMutex );
 		}

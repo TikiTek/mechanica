@@ -26,41 +26,41 @@ namespace tiki
 	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
 	{
 		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
-		return 1 << shift;
+		return T( 1 ) << shift;
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* alignPtr( T* pPtr, size_t alignment )
+	TIKI_FORCE_INLINE T* alignPtr( T* pPtr, uint alignment )
 	{
-		return (T*)alignValue( (size_t)pPtr, alignment );
+		return (T*)alignValue( (uint)pPtr, alignment );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* alignPtr( const T* pPtr, size_t alignment )
+	TIKI_FORCE_INLINE const T* alignPtr( const T* pPtr, uint alignment )
 	{
-		return (const T*)alignValue( (size_t)pPtr, alignment );
+		return (const T*)alignValue( (uint)pPtr, alignment );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* addPtr( T* pPtr, size_t byteCountToAdd )
+	TIKI_FORCE_INLINE T* addPtr( T* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< T* >( (void*)( (uint8*)pPtr + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* addPtr( const T* pPtr, size_t byteCountToAdd )
+	TIKI_FORCE_INLINE const T* addPtr( const T* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< const T* >( (const void*)( (const uint8*)pPtr + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* addPtrCast( void* pPtr, size_t byteCountToAdd )
+	TIKI_FORCE_INLINE T* addPtrCast( void* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< T* >( static_cast< void* >( static_cast< uint8* >( pPtr ) + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* addPtrCast( const void* pPtr, size_t byteCountToAdd )
+	TIKI_FORCE_INLINE const T* addPtrCast( const void* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< const T* >( static_cast< const void* >( static_cast< const uint8* >( pPtr ) + byteCountToAdd ) );
 	}
@@ -81,7 +81,7 @@ namespace tiki
 		return ( x & ( x - 1 ) ) == 0;
 	}
 
-	TIKI_FORCE_INLINE size_t countPopulation64( uint64 w )
+	TIKI_FORCE_INLINE uint countPopulation64( uint64 w )
 	{
 		uint64 w1 = (w & 0x2222222222222222) + ((w+w) & 0x2222222222222222);
 		uint64 w2 = (w >> 1 & 0x2222222222222222) + (w >> 2 & 0x2222222222222222);
@@ -90,7 +90,7 @@ namespace tiki
 		return (w1 + w2) * 0x0101010101010101 >> 57;
 	}
 
-	TIKI_FORCE_INLINE size_t countLeadingZeros64( uint64 value )
+	TIKI_FORCE_INLINE uint countLeadingZeros64( uint64 value )
 	{
 		register uint64 x = value;
 		x |= (x >> 1);

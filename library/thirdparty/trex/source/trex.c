@@ -485,7 +485,7 @@ static const TRexChar *trex_matchnode(TRex* exp,TRexNode *node,const TRexChar *s
 			} while((n->next != -1) && (n = &exp->_nodes[n->next]));
 
 			if(capture != -1) 
-				exp->_matches[capture].len = cur - exp->_matches[capture].begin;
+				exp->_matches[capture].len = (int)( cur - exp->_matches[capture].begin );
 			return cur;
 	}				 
 	case OP_WB:
