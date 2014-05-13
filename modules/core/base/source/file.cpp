@@ -110,7 +110,7 @@ namespace tiki
 			}
 
 			CloseHandle( handle );
-			return crcT( &time );
+			return crcTemplate( time );
 		}
 
 		return 0u;

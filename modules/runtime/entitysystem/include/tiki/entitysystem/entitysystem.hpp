@@ -25,22 +25,23 @@ namespace tiki
 		EntitySystem();
 		~EntitySystem();
 
-		bool		create( const EntitySystemParameters& parameters );
-		void		dispose();
+		bool					create( const EntitySystemParameters& parameters );
+		void					dispose();
 
-		bool		registerComponentType( ComponentBase* pComponent );
-		void		unregisterComponentType( ComponentBase* pComponent );
+		bool					registerComponentType( ComponentBase* pComponent );
+		void					unregisterComponentType( ComponentBase* pComponent );
 
-		EntityId	createEntityFromTemplate( const EntityTemplate& entityTemplate );
-		void		destroyEntity( EntityId entityId );
+		EntityId				createEntityFromTemplate( const EntityTemplate& entityTemplate );
+		void					destroyEntity( EntityId entityId );
+
+		const ComponentState*	getFirstComponentOfEntity( EntityId entityId ) const;
+		const ComponentState*	getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId ) const;
 		
 	private:
 
 		ComponentTypeRegister	m_typeRegister;
 		ComponentStorage		m_storage;
-
-
-
+		
 	};
 }
 
