@@ -5,6 +5,7 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/toolbase/list.hpp"
 
 namespace tiki
@@ -28,17 +29,19 @@ namespace tiki
 
 		void					convert( ConversionResult& result, const ConversionParameters& params ) const;
 
-		const ConverterManager*	getManager() const { return m_pManager; }
+		ConverterManager*		getManager() { return m_pManager; }
 
 	protected:
 
 		void					openResourceWriter( ResourceWriter& writer, const string& fileName, const string& extension, PlatformType platform ) const;
 		void					closeResourceWriter( ResourceWriter& writer ) const;
 
+		void					addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt );
+
 		virtual crc32			getInputType() const = 0;
 		virtual crc32			getOutputType() const = 0;
 		virtual void			getDependingType( List< crc32 >& types ) const = 0;
-		virtual size_t			getConverterRevision() const = 0;
+		virtual uint16			getConverterRevision() const = 0;
 
 		virtual bool			initializeConverter() = 0;
 		virtual void			disposeConverter() = 0;
@@ -47,7 +50,7 @@ namespace tiki
 
 	private:
 
-		ConverterManager*		m_pManager;
+		ConverterManager*			m_pManager;
 
 	};
 }

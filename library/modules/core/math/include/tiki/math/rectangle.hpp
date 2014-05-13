@@ -2,6 +2,7 @@
 #define TIKI_RECTANGLE_HPP__
 
 #include "tiki/base/types.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
@@ -21,8 +22,17 @@ namespace tiki
 			: x( _x ), y( _y ), width( _width ), height( _height )
 		{
 		}
-	};
 
+		bool contains( const Vector2& point ) const
+		{
+			return ( point.x >= x ) && ( point.x <= x + width ) && ( point.y >= y ) && ( point.y <= y + height );
+		}
+
+		Vector2 xy() const
+		{
+			return vector::create( x, y );
+		}		
+	};
 }
 
 #endif // TIKI_RECTANGLE_HPP__

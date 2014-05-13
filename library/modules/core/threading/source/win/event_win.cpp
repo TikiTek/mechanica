@@ -51,7 +51,7 @@ namespace tiki
 	bool Event::waitForSignal( uint timeOut /*= TimeOutInfinity */ )
 	{
 		TIKI_ASSERT( m_platformData.eventHandle != INVALID_HANDLE_VALUE );
-		if ( WaitForSingleObject( m_platformData.eventHandle, timeOut ) == WAIT_TIMEOUT )
+		if ( WaitForSingleObject( m_platformData.eventHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 		{
 			return false;
 		}

@@ -50,14 +50,6 @@ namespace tiki
 				m_hierarchy.getGeometryInstanceByIndex( i ),
 				m_scale
 			);
-
-			if ( calculateTangents )
-			{
-				if ( m_geometries[ i ].calculateTangents() == false )
-				{
-					TIKI_TRACE_ERROR( "[modelconverter] can't calculate tangents because this geometry has no normals.\n" );
-				}
-			}
 		}
 
 		// Skinning
@@ -76,7 +68,7 @@ namespace tiki
 					const XmlAttribute* pIdAtt = m_xml.findAttributeByName( "source", pSkinNode );
 					TIKI_ASSERT( pIdAtt );
 
-					const string id = string( pIdAtt->content ).substring( 1u );
+					const string id = string( pIdAtt->content ).subString( 1u );
 
 					bool found = false;
 					for (size_t i = 0u; i < m_geometries.getCount(); ++i)
@@ -103,6 +95,14 @@ namespace tiki
 		for (uint i = 0u; i < m_geometries.getCount(); ++i)
 		{
 			m_geometries[ i ].transformToInstance();
+
+			if ( calculateTangents )
+			{
+				if ( !m_geometries[ i ].calculateTangents() )
+				{
+					TIKI_TRACE_ERROR( "[modelconverter] can't calculate tangents because this geometry has no normals.\n" );
+				}
+			}
 		} 
 
 		if ( isSkinned == false && m_hierarchy.isCreated() )

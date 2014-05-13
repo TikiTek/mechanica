@@ -58,8 +58,6 @@ namespace tiki
 			model.create( file.fileName, scale );
 			model.parseGeometies( calcTangents );
 
-			const ToolModelJoint* joint = model.getHierarchy().getJointByName("upperRibCage_bn");
-			
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "model", params.targetPlatform );
 			
@@ -100,7 +98,7 @@ namespace tiki
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 			writeResourceReference( writer, material );
 			writer.writeReference( pHierarchyKey );
-			writer.writeUInt32( model.getGeometyCount() );
+			writer.writeUInt32( uint32( model.getGeometyCount() ) );
 			for (uint i = 0u; i < geometryKeys.getCount(); ++i)
 			{
 				writer.writeReference( &geometryKeys[ i ] );
@@ -131,7 +129,7 @@ namespace tiki
 		const ReferenceKey parentIndicesKey = writer.addDataPoint();
 		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
-			writer.writeUInt16( hierarchy.getJointByIndex( j ).parentIndex );
+			writer.writeUInt16( uint16( hierarchy.getJointByIndex( j ).parentIndex ) );
 		}
 
 		Array< Quaternion > dpRotation;
@@ -186,7 +184,7 @@ namespace tiki
 		}
 
 		const ReferenceKey refKey = writer.addDataPoint();
-		writer.writeUInt16( hierarchy.getJointCount() );
+		writer.writeUInt16( uint16( hierarchy.getJointCount() ) );
 		writer.writeUInt16( alignedJointCount );
 
 		writer.writeReference( &jointNamesKey );
@@ -351,17 +349,17 @@ namespace tiki
 		const ReferenceKey indexDataKey = writer.addDataPoint();
 		for (uint k = 0u; k < geometry.getIndexCount(); ++k)
 		{
-			writer.writeUInt32( geometry.getIndexByIndex( k ) );
+			writer.writeUInt32( uint32( geometry.getIndexByIndex( k ) ) );
 		}
 
 		const ReferenceKey geometryKey = writer.addDataPoint();
-		writer.writeUInt16( geometry.getVertexCount() );
-		writer.writeUInt16( geometry.getIndexCount() );
+		writer.writeUInt16( uint16( geometry.getVertexCount() ) );
+		writer.writeUInt16( uint16( geometry.getIndexCount() ) );
 
 		writer.writeUInt8( geometry.getDesc().isSkinned );
-		writer.writeUInt8( vertexFormat.getVertexStride( 0u ) );
+		writer.writeUInt8( uint8( vertexFormat.getVertexStride( 0u ) ) );
 		writer.writeUInt8( 4u ); // index size
-		writer.writeUInt8( vertexFormat.getAttributeCount() );
+		writer.writeUInt8( uint8( vertexFormat.getAttributeCount() ) );
 
 		writer.writeReference( &vertexAttributesKey );		
 

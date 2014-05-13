@@ -166,6 +166,15 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix44& matrix::set( Matrix44& mtx, const Matrix33& rot )
+	{
+		vector::set( mtx.x, rot.x, 0.0f );
+		vector::set( mtx.y, rot.y, 0.0f );
+		vector::set( mtx.z, rot.z, 0.0f );
+		vector::set( mtx.w, 0.0f, 0.0f, 0.0f, 1.0f );
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix44& matrix::set( Matrix44& mtx, const Matrix43& rotPos )
 	{
 		vector::set( mtx.x, rotPos.rot.x, 0.0f );
@@ -285,20 +294,20 @@ namespace tiki
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix33& matrix::div( Matrix33& mtx, const Matrix33& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix33& matrix::div( Matrix33& mtx, const Matrix33& rhs )
+	//{
 
-	}
+	//}
 
-	TIKI_FORCE_INLINE Matrix43& matrix::div( Matrix43& mtx, const Matrix43& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix43& matrix::div( Matrix43& mtx, const Matrix43& rhs )
+	//{
 
-	}
+	//}
 
-	TIKI_FORCE_INLINE Matrix44& matrix::div( Matrix44& mtx, const Matrix44& rhs )
-	{
+	//TIKI_FORCE_INLINE Matrix44& matrix::div( Matrix44& mtx, const Matrix44& rhs )
+	//{
 
-	}
+	//}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::scale( Matrix33& mtx, float val )
 	{
@@ -355,7 +364,56 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Matrix44& matrix::invert( Matrix44& mtx, const Matrix44& source )
 	{
+		// source: https://github.com/sharpdx/SharpDX/blob/master/Source/SharpDX/Matrix.cs
 
+		const float b0 = (source.z.x * source.w.y) - (source.z.y * source.w.x);
+		const float b1 = (source.z.x * source.w.z) - (source.z.z * source.w.x);
+		const float b2 = (source.z.w * source.w.x) - (source.z.x * source.w.w);
+		const float b3 = (source.z.y * source.w.z) - (source.z.z * source.w.y);
+		const float b4 = (source.z.w * source.w.y) - (source.z.y * source.w.w);
+		const float b5 = (source.z.z * source.w.w) - (source.z.w * source.w.z);
+
+		const float d11 = source.y.y * b5 + source.y.z * b4 + source.y.w * b3;
+		const float d12 = source.y.x * b5 + source.y.z * b2 + source.y.w * b1;
+		const float d13 = source.y.x * -b4 + source.y.y * b2 + source.y.w * b0;
+		const float d14 = source.y.x * b3 + source.y.y * -b1 + source.y.z * b0;
+
+		const float det = source.x.x * d11 - source.x.y * d12 + source.x.z * d13 - source.x.w * d14;
+		if ( f32::abs( det ) == 0.0f)
+		{
+			mtx = Matrix44::zero;
+			return mtx;
+		}
+		const float inverseDet = 1.0f / det;
+
+		float a0 = (source.x.x * source.y.y) - (source.x.y * source.y.x);
+		float a1 = (source.x.x * source.y.z) - (source.x.z * source.y.x);
+		float a2 = (source.x.w * source.y.x) - (source.x.x * source.y.w);
+		float a3 = (source.x.y * source.y.z) - (source.x.z * source.y.y);
+		float a4 = (source.x.w * source.y.y) - (source.x.y * source.y.w);
+		float a5 = (source.x.z * source.y.w) - (source.x.w * source.y.z);
+
+		float d21 = source.x.y * b5 + source.x.z * b4 + source.x.w * b3;
+		float d22 = source.x.x * b5 + source.x.z * b2 + source.x.w * b1;
+		float d23 = source.x.x * -b4 + source.x.y * b2 + source.x.w * b0;
+		float d24 = source.x.x * b3 + source.x.y * -b1 + source.x.z * b0;
+
+		float d31 = source.w.y * a5 + source.w.z * a4 + source.w.w * a3;
+		float d32 = source.w.x * a5 + source.w.z * a2 + source.w.w * a1;
+		float d33 = source.w.x * -a4 + source.w.y * a2 + source.w.w * a0;
+		float d34 = source.w.x * a3 + source.w.y * -a1 + source.w.z * a0;
+
+		float d41 = source.z.y * a5 + source.z.z * a4 + source.z.w * a3;
+		float d42 = source.z.x * a5 + source.z.z * a2 + source.z.w * a1;
+		float d43 = source.z.x * -a4 + source.z.y * a2 + source.z.w * a0;
+		float d44 = source.z.x * a3 + source.z.y * -a1 + source.z.z * a0;
+
+		mtx.x.x = +d11 * inverseDet; mtx.x.y = -d21 * inverseDet; mtx.x.z = +d31 * inverseDet; mtx.x.w = -d41 * inverseDet;
+		mtx.y.x = -d12 * inverseDet; mtx.y.y = +d22 * inverseDet; mtx.y.z = -d32 * inverseDet; mtx.y.w = +d42 * inverseDet;
+		mtx.z.x = +d13 * inverseDet; mtx.z.y = -d23 * inverseDet; mtx.z.z = +d33 * inverseDet; mtx.z.w = -d43 * inverseDet;
+		mtx.w.x = -d14 * inverseDet; mtx.w.y = +d24 * inverseDet; mtx.w.z = -d34 * inverseDet; mtx.w.w = +d44 * inverseDet;
+
+		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::lerp( Matrix33& mtx, const Matrix33& start, const Matrix33& end, const float amount )
@@ -450,9 +508,9 @@ namespace tiki
 		vector::set( vec4, vec, 1.0f );
 		vector::set(
 			vec,
-			vector::dot( vec4, mtx.x ),
-			vector::dot( vec4, mtx.y ),
-			vector::dot( vec4, mtx.z )
+			vector::dot( vec4, mtx.x ) + mtx.w.x,
+			vector::dot( vec4, mtx.y ) + mtx.w.y,
+			vector::dot( vec4, mtx.z ) + mtx.w.z
 		);
 		vector::scale(
 			vec,

@@ -130,20 +130,25 @@ namespace tiki
 
 	bool GraphicsSystem::resize( uint width, uint height )
 	{
+		if ( width == 0u || height == 0u )
+		{
+			return false;
+		}
+
 		m_platformData.pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
 
 		safeRelease( &m_platformData.pDepthStencilView );
 		safeRelease( &m_platformData.pDepthStencilBuffer );
 		safeRelease( &m_platformData.pBackBufferTargetView);
 
-		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, 0 );
+		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, UINT( width ), UINT( height ), DXGI_FORMAT_UNKNOWN, 0 );
 		if ( FAILED( result ) )
 		{
 			dispose();
 			return false;
 		}
 
-		uint2 backBufferSize = { width, height };
+		uint2 backBufferSize = { uint32( width ), uint32( height ) };
 		graphics::initBackBuffer( m_platformData );
 		graphics::initDepthStencilBuffer( m_platformData, backBufferSize );
 
@@ -173,7 +178,7 @@ namespace tiki
 	{
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
 		swapDesc.BufferCount						= 2;
-		swapDesc.BufferDesc.Format					= DXGI_FORMAT_B8G8R8A8_UNORM;
+		swapDesc.BufferDesc.Format					= DXGI_FORMAT_R16G16B16A16_FLOAT;
 		swapDesc.BufferDesc.Width					= backBufferSize.x;
 		swapDesc.BufferDesc.Height					= backBufferSize.y;
 		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;

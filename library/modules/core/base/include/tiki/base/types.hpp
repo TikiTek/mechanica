@@ -2,6 +2,26 @@
 #ifndef TIKI_TYPES_HPP
 #define TIKI_TYPES_HPP
 
+#ifndef TIKI_ON
+#	define TIKI_ON 2-
+#endif
+
+#ifndef TIKI_OFF
+#	define TIKI_OFF 1-
+#endif
+
+#ifndef TIKI_BUILD_DEBUG
+#	define TIKI_BUILD_DEBUG TIKI_OFF
+#endif
+
+#ifndef TIKI_BUILD_RELEASE
+#	define TIKI_BUILD_RELEASE TIKI_OFF
+#endif
+
+#ifndef TIKI_BUILD_MASTER
+#	define TIKI_BUILD_MASTER TIKI_OFF
+#endif
+
 #define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )
 #define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )
 
@@ -34,9 +54,9 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 
-	typedef unsigned char		uint8;
-	typedef unsigned short		uint16;
-	typedef unsigned int		uint32;
+	typedef unsigned char			uint8;
+	typedef unsigned short			uint16;
+	typedef unsigned int			uint32;
 	typedef unsigned long long int	uint64;
 
 	typedef char				sint8;
@@ -48,7 +68,7 @@ namespace tiki
 	typedef unsigned int		fourcc;
 
 #	if TIKI_ENABLED( TIKI_BUILD_64BIT )
-	typedef long long int		sint;
+	typedef long long int			sint;
 	typedef unsigned long long int	uint;
 	typedef unsigned long long int	size_t;
 #	else
@@ -142,7 +162,5 @@ namespace tiki
 #	define TIKI_ALIGNOF( type )		( __alignof__( type ) )
 
 #endif
-
-
 
 #endif // TIKI_TYPES_HPP

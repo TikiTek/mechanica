@@ -25,7 +25,7 @@ namespace tiki
 	struct StockVertexPos3Tex2
 	{
 		float3	position;
-		float3	texCoord;
+		float2	texCoord;
 	};
 }
 

@@ -112,6 +112,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeBlendState( const BlendState* pBlendState )
 	{
+		if ( pBlendState == nullptr )
+		{
+			return;
+		}
+
 		BlendState* pNonConstState = const_cast< BlendState* >( pBlendState );
 		if ( pNonConstState->releaseRef() == false )
 		{
@@ -144,6 +149,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeDepthStencilState( const DepthStencilState* pDepthStencilState )
 	{
+		if ( pDepthStencilState == nullptr )
+		{
+			return;
+		}
+
 		DepthStencilState* pNonConstState = const_cast< DepthStencilState* >( pDepthStencilState );
 		if ( pNonConstState->releaseRef() == false )
 		{
@@ -177,6 +187,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeRasterizerState( const RasterizerState* pRasterizerState )
 	{
+		if ( pRasterizerState == nullptr )
+		{
+			return;
+		}
+
 		RasterizerState* pNonConstState = const_cast< RasterizerState* >( pRasterizerState );
 		if ( pNonConstState->releaseRef() == false )
 		{
@@ -214,6 +229,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeSamplerState( const SamplerState* pSamplerState )
 	{
+		if ( pSamplerState == nullptr )
+		{
+			return;
+		}
+		
 		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
 		if ( pNonConstState->releaseRef() == false )
 		{
@@ -246,6 +266,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeVertexFormat( const VertexFormat* pVertexFormat )
 	{
+		if ( pVertexFormat == nullptr )
+		{
+			return;
+		}
+
 		VertexFormat* pNonConst = const_cast< VertexFormat* >( pVertexFormat );
 		if ( pNonConst->releaseRef() == false )
 		{
@@ -287,6 +312,11 @@ namespace tiki
 
 	void GraphicsSystem::disposeVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
 	{
+		if ( pVertexInputBinding == nullptr )
+		{
+			return;
+		}
+
 		VertexInputBinding* pNonConst = const_cast< VertexInputBinding* >( pVertexInputBinding );
 		if ( pNonConst->releaseRef() == false )
 		{

@@ -40,8 +40,8 @@ namespace tiki
 
 		uint								getFrameCount() const { return m_frameCount; }
 		
-		size_t								getJointCount() const { return m_joints.getCount(); }
-		const ToolModelAnimationJoint&		getJointByIndex( size_t index ) const { return m_joints[ index ]; }
+		uint								getJointCount() const { return m_joints.getCount(); }
+		const ToolModelAnimationJoint&		getJointByIndex( uint index ) const { return m_joints[ index ]; }
 
 	private:
 
@@ -51,7 +51,7 @@ namespace tiki
 
 		Array< ToolModelAnimationJoint >	m_joints;
 
-		size_t								createJoint( const TikiXml* pXml, const _XmlElement* pNode, const ToolModelHierarchy& hierarchy );
+		uint								createJoint( const TikiXml* pXml, const _XmlElement* pNode, const ToolModelHierarchy& hierarchy );
 
 	};
 }

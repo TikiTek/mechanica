@@ -22,8 +22,8 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.semaphoreHandle == INVALID_HANDLE_VALUE );
 		m_platformData.semaphoreHandle = CreateSemaphoreA(
 			nullptr,
-			initialCount,
-			maxCount,
+			DWORD( initialCount ),
+			DWORD( maxCount ),
 			pName
 		);
 	}
@@ -43,7 +43,7 @@ namespace tiki
 
 		ReleaseSemaphore(
 			m_platformData.semaphoreHandle,
-			count,
+			DWORD( count ),
 			nullptr
 		);
 	}
@@ -64,7 +64,7 @@ namespace tiki
 
 		for (uint i = 0u; i < count; ++i)
 		{
-			if ( WaitForSingleObject( m_platformData.semaphoreHandle, timeOut ) == WAIT_TIMEOUT )
+			if ( WaitForSingleObject( m_platformData.semaphoreHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 			{
 				return false;
 			}

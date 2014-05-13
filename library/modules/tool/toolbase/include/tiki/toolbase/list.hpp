@@ -15,7 +15,7 @@ namespace tiki
 
 		List();
 		List( const List<T>& copy );
-		List( const T* data, uint count, bool readOnly );
+		List( const T* data, uint count, bool readOnly = false );
 		~List();
 
 		TIKI_FORCE_INLINE void		clear();

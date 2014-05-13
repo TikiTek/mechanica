@@ -65,6 +65,7 @@ namespace tiki
 
 		int							m_currentState;
 
+		int							m_transitionSourceState;
 		int							m_transitionNextState;
 		int							m_transitionPathDirection;
 		uint						m_transitionCurrentPathIndex;

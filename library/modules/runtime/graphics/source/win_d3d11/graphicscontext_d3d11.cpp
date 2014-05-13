@@ -18,6 +18,7 @@
 #include "tiki/graphics/vertexinputbinding.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/graphics/viewport.hpp"
 
 #include "graphicssystem_internal_d3d11.hpp"
 
@@ -87,7 +88,7 @@ namespace tiki
 			depthClearFlags |= D3D10_CLEAR_STENCIL;
 		}
 
-		if ( depthClearFlags != 0u )
+		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthView != nullptr )
 		{
 			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.pDepthView, depthClearFlags, depthValue, stencilValue );
 		}
@@ -108,22 +109,48 @@ namespace tiki
 		}
 	}
 
-	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget )
+	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
+	{
+		m_platformData.pContext->CopyResource(
+			targetData.m_platformData.pResource,
+			sourceData.m_platformData.pResource
+		);
+	}
+
+	void GraphicsContext::beginRenderPass( const RenderTarget& renderTarget, const Viewport* pViewport /* = nullptr*/ )
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
 
 		m_pRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
+		
+		TGShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
+		{
+			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
+		};
+		m_platformData.pContext->PSSetShaderResources( 0u, TIKI_COUNT( apShaderResources ), apShaderResources );
 
 		m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 
 		D3D11_VIEWPORT viewPort;
-		viewPort.TopLeftX	= 0.0f;
-		viewPort.TopLeftY	= 0.0f;
-		viewPort.Width		= (float)renderTarget.getWidth();
-		viewPort.Height		= (float)renderTarget.getHeight();
-		viewPort.MinDepth	= 0.0f;
-		viewPort.MaxDepth	= 1.0f;
+		if ( pViewport == nullptr )
+		{
+			viewPort.TopLeftX	= 0.0f;
+			viewPort.TopLeftY	= 0.0f;
+			viewPort.Width		= (float)renderTarget.getWidth();
+			viewPort.Height		= (float)renderTarget.getHeight();
+			viewPort.MinDepth	= 0.0f;
+			viewPort.MaxDepth	= 1.0f;
+		}
+		else
+		{
+			viewPort.TopLeftX	= pViewport->x;
+			viewPort.TopLeftY	= pViewport->y;
+			viewPort.Width		= pViewport->width;
+			viewPort.Height		= pViewport->height;
+			viewPort.MinDepth	= pViewport->minDepth;
+			viewPort.MaxDepth	= pViewport->maxDepth;
+		}
 		m_platformData.pContext->RSSetViewports( 1u, &viewPort );
 
 		invalidateState();
@@ -140,6 +167,15 @@ namespace tiki
 		{
 			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
 			m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+		}
+		else
+		{
+			TGRenderTargetView* apRenderTargetViews[ GraphicsSystemLimits_RenderTargetSlots ] =
+			{
+				nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
+			};
+
+			m_platformData.pContext->OMSetRenderTargets( GraphicsSystemLimits_RenderTargetSlots, apRenderTargetViews, nullptr );
 		}
 
 		invalidateState();
@@ -165,7 +201,7 @@ namespace tiki
 
 		if ( m_pDepthStencilState != pDepthStencilState )
 		{
-			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, pDepthStencilState->m_platformData.stencilRef );
+			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, UINT( pDepthStencilState->m_platformData.stencilRef ) );
 			m_pDepthStencilState = pDepthStencilState;
 		}		
 	}
@@ -269,7 +305,7 @@ namespace tiki
 
 	void GraphicsContext::setPixelShader( const Shader* pShader )
 	{
-		TIKI_ASSERT( pShader );
+		TIKI_ASSERT( pShader != nullptr );
 		TIKI_ASSERT( pShader->getShaderType() == ShaderType_PixelShader );
 
 		if ( m_pPixelShader != pShader )
@@ -377,7 +413,7 @@ namespace tiki
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
 
-	void* GraphicsContext::mapBuffer( BaseBuffer& buffer )
+	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
 		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
 
@@ -387,7 +423,7 @@ namespace tiki
 		return mapped.pData;
 	}
 
-	void GraphicsContext::unmapBuffer( BaseBuffer& buffer )
+	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
 		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
 	}

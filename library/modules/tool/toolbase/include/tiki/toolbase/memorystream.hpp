@@ -16,30 +16,30 @@ namespace tiki
 
 		void		operator=( const MemoryStream& copy );
 
-		void		create( size_t capacity = 0u );
-		void		create( const void* pData, size_t length );
+		void		create( uint capacity = 0u );
+		void		create( const void* pData, uint length );
 		void		dispose();
 
 		bool		isOpen() const;
 		const void*	getData() const;
 
-		size_t		read( void* pData, size_t length ) const;
+		uint		read( void* pData, uint length ) const;
 		
-		void		write( const void* pData, size_t length );
+		void		write( const void* pData, uint length );
 		void		writeAlignment( uint alignment );
 
-		size_t		getLength() const;
+		uint		getLength() const;
 
-		size_t		getPosition() const;
-		size_t		setPosition( size_t pos );
+		uint		getPosition() const;
+		uint		setPosition( uint pos );
 
 	private:
 
 		uint8*		m_pData;
 
-		size_t		m_pos;
-		size_t		m_length;
-		size_t		m_capacity;
+		uint		m_pos;
+		uint		m_length;
+		uint		m_capacity;
 
 	};
 }

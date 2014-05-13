@@ -40,7 +40,7 @@ namespace tiki
 		dispose();
 	}
 
-	void MemoryStream::create( size_t capacity /*= 0u */ )
+	void MemoryStream::create( uint capacity /*= 0u */ )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -58,7 +58,7 @@ namespace tiki
 		m_capacity		= capacity;
 	}
 
-	void MemoryStream::create( const void* pData, size_t length )
+	void MemoryStream::create( const void* pData, uint length )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -93,19 +93,19 @@ namespace tiki
 		return m_pData;
 	}
 
-	size_t MemoryStream::read( void* pData, size_t length ) const
+	uint MemoryStream::read( void* pData, uint length ) const
 	{
-		size_t length2 = TIKI_MIN( length, (m_length - m_pos) );
+		uint length2 = TIKI_MIN( length, (m_length - m_pos) );
 		memory::copy( pData, m_pData, length2 );
 		return length2;
 	}
 
-	void MemoryStream::write( const void* pData, size_t length )
+	void MemoryStream::write( const void* pData, uint length )
 	{
 		if ( m_length + length >= m_capacity )
 		{
-			const size_t tl	= m_length + length;
-			const size_t cl	= nextPowerOfTwo( tl );
+			const uint tl	= m_length + length;
+			const uint cl	= nextPowerOfTwo( tl );
 			TIKI_ASSERT( cl >= tl );
 
 			uint8* pNewData	= (uint8*)TIKI_MEMORY_ALLOC( cl );
@@ -147,19 +147,19 @@ namespace tiki
 		}
 	}
 
-	size_t MemoryStream::getLength() const
+	uint MemoryStream::getLength() const
 	{
 		return m_length;
 	}
 
-	size_t MemoryStream::getPosition() const
+	uint MemoryStream::getPosition() const
 	{
 		return m_pos;
 	}
 
-	size_t MemoryStream::setPosition( size_t pos )
+	uint MemoryStream::setPosition( uint pos )
 	{
-		size_t pos2 = TIKI_MIN( pos, m_capacity );
+		uint pos2 = TIKI_MIN( pos, m_capacity );
 		m_pos		= pos2;
 		return pos2;
 	}

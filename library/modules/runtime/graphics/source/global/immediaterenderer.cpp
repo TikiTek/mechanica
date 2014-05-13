@@ -15,22 +15,17 @@
 
 namespace tiki
 {
-	static TIKI_FORCE_INLINE float toClipSpaceX( float x )
-	{
-		return -1.0f + x * 2.0f;
-	}
-
-	static TIKI_FORCE_INLINE float toClipSpaceY( float y )
-	{
-		return 1.0f - y * 2.0f;
-	}
-
 	ImmediateRenderer::ImmediateRenderer()
 	{
-		m_pShaderSet			= nullptr;
+		m_pContext = nullptr;
 
-		m_pBlendState			= nullptr;
-		m_pDepthStencilState	= nullptr;
+		m_pShaderSet = nullptr;
+
+		m_pBlendState[ ImmediateBlendState_None ] = nullptr;
+		m_pBlendState[ ImmediateBlendState_Add ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] = nullptr;
 		m_pRasterizerState		= nullptr;
 		m_pSamplerState			= nullptr;
 
@@ -40,10 +35,14 @@ namespace tiki
 
 	ImmediateRenderer::~ImmediateRenderer()
 	{
-		TIKI_ASSERT( m_pShaderSet			== nullptr );
+		TIKI_ASSERT( m_pContext == nullptr );
+		TIKI_ASSERT( m_pShaderSet == nullptr );
 
-		TIKI_ASSERT( m_pBlendState			== nullptr );
-		TIKI_ASSERT( m_pDepthStencilState	== nullptr );
+		TIKI_ASSERT( m_pBlendState[ ImmediateBlendState_None ]						== nullptr );
+		TIKI_ASSERT( m_pBlendState[ ImmediateBlendState_Add ]						== nullptr );
+		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ]	== nullptr );
+		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ]		== nullptr );
+		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ]		== nullptr );
 		TIKI_ASSERT( m_pRasterizerState		== nullptr );
 		TIKI_ASSERT( m_pSamplerState		== nullptr );
 
@@ -82,51 +81,44 @@ namespace tiki
 			}
 		}
 
-		m_pBlendState			= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
-		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( false, false );
+		m_pBlendState[ ImmediateBlendState_None ]	= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendState[ ImmediateBlendState_Add ]	= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
+
+		m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ]	= graphicsSystem.createDepthStencilState( false, false );
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ]	= graphicsSystem.createDepthStencilState( true, false );
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ]	= graphicsSystem.createDepthStencilState( true, true );
+
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSamplerState			= graphicsSystem.createSamplerState( SamplerStateParamters() );
 
-		if ( m_sprites.create( MaxSprites ) == false || m_vertices.create( MaxVertices ) == false )
-		{
-			dispose( graphicsSystem, resourceManager );
-			return false;
-		}
-
-		if ( m_vertexBuffer.create( graphicsSystem, MaxVertices, sizeof( SpriteVertex ), true ) == false )
-		{
-			dispose( graphicsSystem, resourceManager );
-			return false;
-		}
-
-		if ( m_constantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) ) == false )
+		if ( m_vertexConstantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) ) == false )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
 		
-		Projection projection;
-		projection.createOrthographicCenter( 1.0f, -1.0f, 0.0f, 1.0f );
-
-		createGraphicsMatrix44(
-			m_constantData.projection,
-			projection.getMatrix()
-		);
-
 		return true;
 	}
 
 	void ImmediateRenderer::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		TIKI_ASSERT( m_pContext == nullptr );
+
 		resourceManager.unloadResource( m_pShaderSet );
 		m_pShaderSet = nullptr;
 
-		graphicsSystem.disposeBlendState( m_pBlendState );
-		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState );
+		graphicsSystem.disposeBlendState( m_pBlendState[ ImmediateBlendState_None ] );
+		graphicsSystem.disposeBlendState( m_pBlendState[ ImmediateBlendState_Add ] );
+		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] );
+		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] );
+		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] );
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		graphicsSystem.disposeSamplerState( m_pSamplerState );
-		m_pBlendState = nullptr;
-		m_pDepthStencilState = nullptr;
+		m_pBlendState[ ImmediateBlendState_None ] = nullptr;
+		m_pBlendState[ ImmediateBlendState_Add ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] = nullptr;
+		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] = nullptr;
 		m_pRasterizerState = nullptr;
 		m_pSamplerState = nullptr;
 
@@ -136,79 +128,130 @@ namespace tiki
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
 		m_pVertexFormat = nullptr;
 
-		m_sprites.dispose();
-		m_vertices.dispose();
+		//m_sprites.dispose();
+		//m_vertices.dispose();
 
-		m_vertexBuffer.dispose( graphicsSystem );
-		m_constantBuffer.dispose( graphicsSystem );
+		//m_vertexBuffer.dispose( graphicsSystem );
+		m_vertexConstantBuffer.dispose( graphicsSystem );
 	}
 
-	void ImmediateRenderer::setProjection( const Projection& projection )
+	void ImmediateRenderer::beginRendering( GraphicsContext& graphicsContext )
 	{
-		createGraphicsMatrix44(
-			m_constantData.projection,
-			projection.getMatrix()
-		);
+		TIKI_ASSERT( m_pContext == nullptr );
+		m_pContext = &graphicsContext;
 	}
 
-	void ImmediateRenderer::flush( GraphicsContext& graphicsContext )
+	void ImmediateRenderer::endRendering()
 	{
-		if( m_sprites.getCount() > 0u )
+		TIKI_ASSERT( m_pContext != nullptr );
+		m_pContext = nullptr;
+	}
+
+	void ImmediateRenderer::beginRenderPass( const RenderTarget* pRenderTarget, const Projection* pProjection )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+
+		if ( pRenderTarget == nullptr )
 		{
-			const uint vertexCount	= m_vertices.getCount();
-			const uint count		= m_sprites.getCount();
+			pRenderTarget = &m_pContext->getBackBuffer();
+		}
+		m_pContext->beginRenderPass( *pRenderTarget );
 
-			{
-				ImmediateRendererConstantData* pConstantData = static_cast< ImmediateRendererConstantData* >( graphicsContext.mapBuffer( m_constantBuffer ) );
-				*pConstantData = m_constantData;
-				graphicsContext.unmapBuffer( m_constantBuffer );
-
-				SpriteVertex* pTargetVertexData = static_cast< SpriteVertex* >( graphicsContext.mapBuffer( m_vertexBuffer ) );
-				memory::copy( pTargetVertexData, m_vertices.getData(), sizeof( SpriteVertex ) * vertexCount );
-				graphicsContext.unmapBuffer( m_vertexBuffer );
-			}
-
-			graphicsContext.setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
-			graphicsContext.setVertexShaderConstant( 0u, m_constantBuffer );
-
-			graphicsContext.setBlendState( m_pBlendState );
-			graphicsContext.setDepthStencilState( m_pDepthStencilState );
-			graphicsContext.setRasterizerState( m_pRasterizerState );
-			graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
-
-			graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
-
-			graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
-			graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-
-			for( uint i = 0u; i < count; ++i )
-			{
-				const Sprite& sprite = m_sprites[ i ];
-
-				graphicsContext.setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, sprite.shaderBitMask ) );
-				graphicsContext.setPixelShaderTexture( 0u, sprite.pTexture );				
-				graphicsContext.drawGeometry( sprite.vertexCount, sprite.vertexOffset );
-			}
+		Projection projection;
+		if ( pProjection == nullptr )
+		{
+			projection.createOrthographicCenter(
+				(float)pRenderTarget->getWidth(),
+				-(float)pRenderTarget->getHeight(),
+				0.0f,
+				1.0f
+			);
+		}
+		else
+		{
+			projection = *pProjection;
 		}
 
-		m_sprites.clear();
-		m_vertices.clear();
+		ImmediateRendererConstantData* pConstantData = static_cast< ImmediateRendererConstantData* >( m_pContext->mapBuffer( m_vertexConstantBuffer ) );
+		createGraphicsMatrix44( pConstantData->projection, projection.getMatrix() );
+		m_pContext->unmapBuffer( m_vertexConstantBuffer );
+
+		setState();
 	}
 
-	void ImmediateRenderer::drawTexture( const TextureData* pTexture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  )
+	void ImmediateRenderer::endRenderPass()
 	{
-		Sprite& sprite	= m_sprites.push();
-		sprite.vertexOffset		= m_vertices.getCount();
-		sprite.vertexCount		= 4u;
-		sprite.shaderBitMask	= ( pTexture == nullptr ? 2u : 0u );
-		sprite.pTexture			= pTexture;
+		TIKI_ASSERT( m_pContext != nullptr );
+		m_pContext->endRenderPass();
+	}
 
-		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
+	void ImmediateRenderer::setBlendState( ImmediateBlendState blendState )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		TIKI_ASSERT( blendState < ImmediateBlendState_Count );
+		m_pContext->setBlendState( m_pBlendState[ blendState ] );
+	}
+
+	void ImmediateRenderer::setDepthState( ImmediateDepthState depthState )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		TIKI_ASSERT( depthState < ImmediateDepthState_Count );
+		m_pContext->setDepthStencilState( m_pDepthStencilState[ depthState ] );
+	}
+
+	void ImmediateRenderer::drawRectangle( const Rectangle& d, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
 
 		const float posLeft		= d.x;
 		const float posRight	= d.x + d.width;
 		const float posTop		= d.y;
 		const float posBottom	= d.y + d.height;
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
+
+		// bottom left
+		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		pVertices[ 0u ].u			= 0u;
+		pVertices[ 0u ].v			= 0u;
+		pVertices[ 0u ].color		= color;
+
+		// top left
+		createFloat3( pVertices[ 1u ].position, posLeft, posTop, 0.0f );
+		pVertices[ 1u ].u			= 0u;
+		pVertices[ 1u ].v			= 0u;
+		pVertices[ 1u ].color		= color;
+
+		// bottom right
+		createFloat3( pVertices[ 2u ].position, posRight, posBottom, 0.0f );
+		pVertices[ 2u ].u			= 0u;
+		pVertices[ 2u ].v			= 0u;
+		pVertices[ 2u ].color		= color;
+
+		// top right
+		createFloat3( pVertices[ 3u ].position, posRight, posTop, 0.0f );
+		pVertices[ 3u ].u			= 0u;
+		pVertices[ 3u ].v			= 0u;
+		pVertices[ 3u ].color		= color;
+
+		m_pContext->endImmediateGeometry();
+	}
+
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+
+		const float posLeft		= d.x;
+		const float posRight	= d.x + d.width;
+		const float posTop		= d.y;
+		const float posBottom	= d.y + d.height;
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
+		m_pContext->setPixelShaderTexture( 0u, &texture );
+
+		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
 
 		// bottom left
 		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
@@ -233,23 +276,16 @@ namespace tiki
 		pVertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
 		pVertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
 		pVertices[ 3u ].color		= color;
+
+		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawTexture( const TextureData* pTexture, const Rectangle& d, const Rectangle& s, Color color /*= TIKI_COLOR_WHITE*/ )
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, const Rectangle& s, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
-		Sprite& sprite = m_sprites.push();
-		sprite.vertexOffset		= m_vertices.getCount();
-		sprite.vertexCount		= 4u;
-		sprite.shaderBitMask	= ( pTexture == nullptr ? 2u : 0u );
-		sprite.pTexture			= pTexture;
+		TIKI_ASSERT( m_pContext != nullptr );
 
-		float uScale = 0.0f;
-		float vScale = 0.0f;
-		if ( pTexture != nullptr )
-		{
-			uScale = 1.0f / (float)pTexture->getWidth();
-			vScale = 1.0f / (float)pTexture->getHeight();
-		}
+		const float uScale = 1.0f / (float)texture.getWidth();
+		const float vScale = 1.0f / (float)texture.getHeight();
 
 		const float uRight	= s.x + s.width;
 		const float vBottom	= s.y + s.height;
@@ -259,7 +295,10 @@ namespace tiki
 		const float posTop		= d.y;
 		const float posBottom	= d.y + d.height;
 
-		SpriteVertex* pVertices = m_vertices.pushRange( 4u );
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
+		m_pContext->setPixelShaderTexture( 0u, &texture );
+
+		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
 
 		// bottom left
 		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
@@ -284,10 +323,14 @@ namespace tiki
 		pVertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
 		pVertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
 		pVertices[ 3u ].color		= color;
+
+		m_pContext->endImmediateGeometry();
 	}
 
 	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const char* pText, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
+		TIKI_ASSERT( m_pContext != nullptr );
+
 		const uint textLength = getStringLength( pText );
 		if ( textLength == 0u )
 		{
@@ -295,21 +338,14 @@ namespace tiki
 		}
 
 		TIKI_ASSERT( textLength <= 128u );
-		const size_t vertexCount = textLength * 4u;
-
-		Sprite& sprite = m_sprites.push();
-		sprite.vertexOffset		= m_vertices.getCount();
-		sprite.vertexCount		= vertexCount;
-		sprite.shaderBitMask	= 1u;
-		sprite.pTexture			= &font.getTextureData();
-
 		FontChar chars[ 128u ];
 		font.fillVertices( chars, TIKI_COUNT( chars ), pText, textLength );
 
-		SpriteVertex* pVertices = m_vertices.pushRange( vertexCount );
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 1u ) );
+		m_pContext->setPixelShaderTexture( 0u, &font.getTextureData() );
 
-		const float texelWidth	= 1.0f; //m_constantData.projection.data[ 0u ] / 2.0f;
-		const float texelHeight	= 1.0f; //m_constantData.projection.data[ 5u ] / -2.0f;
+		const size_t vertexCount = textLength * 4u;
+		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), vertexCount ) );
 
 		float x = 0.0f;
 		for (size_t charIndex = 0u; charIndex < textLength; charIndex++)
@@ -317,8 +353,8 @@ namespace tiki
 			const size_t vertexIndex = charIndex * 4u;
 			const FontChar& character = chars[ charIndex ];
 
-			const float charWidth	= character.width * texelWidth;
-			const float charHeight	= character.height * texelHeight;
+			const float charWidth	= character.width;
+			const float charHeight	= character.height;
 
 			const float posLeft		= position.x + x;
 			const float posRight	= posLeft + charWidth;
@@ -351,6 +387,28 @@ namespace tiki
 		
 			x += charWidth;
 		}
+
+		m_pContext->endImmediateGeometry();
+	}
+
+	void ImmediateRenderer::setState()
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+
+		m_pContext->setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
+		m_pContext->setVertexShaderConstant( 0u, m_vertexConstantBuffer );
+
+		m_pContext->setBlendState( m_pBlendState[ ImmediateBlendState_Add ] );
+		m_pContext->setDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] );
+		m_pContext->setRasterizerState( m_pRasterizerState );
+		m_pContext->setVertexInputBinding( m_pVertexInputBinding );
+
+		m_pContext->setPixelShaderSamplerState( 0u, m_pSamplerState );
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+		
+		setBlendState( ImmediateBlendState_Add );
+		setDepthState( ImmediateDepthState_TestOffWriteOff );
 	}
 }
 

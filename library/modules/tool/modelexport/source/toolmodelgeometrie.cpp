@@ -18,7 +18,7 @@ namespace tiki
 	ToolModelSourceBase* setSourceSemantic( Array< ToolModelSourceBase* >& sources, string id, string semantic )
 	{
 		TIKI_ASSERT( id[ 0u ] == '#' );
-		const string sourceId = id.substring( 1u );
+		const string sourceId = id.subString( 1u );
 		const string semanticName = semantic.toLower();
 		
 		string targetField;
@@ -300,7 +300,7 @@ namespace tiki
 
 					const sint index = indicesCrcIndex.indexOf( indexCrc );
 					TIKI_ASSERT( index >= 0 );
-					indicesIndex.add( (uint)index );
+					indicesIndex.add( uint32( index ) );
 				}
 
 				List< uint > indicesSkinningData;
@@ -473,7 +473,7 @@ namespace tiki
 		}
 
 		// calculate joint ids
-		Array< uint > jointIndices;
+		Array< uint32 > jointIndices;
 		jointIndices.create( boneNames.data.getCount() );
 
 		for (uint i = 0u; i < boneNames.data.getCount(); ++i)
@@ -492,9 +492,9 @@ namespace tiki
 			Matrix44 mtx = matrices.data[ i ];
 
 			// scale translation
-			mtx.x.w *= m_desc.scale;
-			mtx.y.w *= m_desc.scale;
-			mtx.z.w *= m_desc.scale;
+			mtx.w.x *= m_desc.scale;
+			mtx.w.y *= m_desc.scale;
+			mtx.w.z *= m_desc.scale;
 			
 			hierarchy.markJointAsUsed( *pJoint );
 			hierarchy.setBindMatrix( *pJoint, mtx );
@@ -583,7 +583,7 @@ namespace tiki
 					{
 						uint32* pIndices = &vertex.jointIndices.x;
 
-						const uint index = jointIndices[ value ];
+						const uint32 index = jointIndices[ value ];
 						TIKI_ASSERT( index < hierarchy.getJointCount() );
 
 						pIndices[ c ] = index;
@@ -595,7 +595,7 @@ namespace tiki
 						const float weight = weights.data[ value ];
 						TIKI_ASSERT( weight >= 0.0f && weight <= 1.0f );
 
-						pWeights[ c ] = weight;;
+						pWeights[ c ] = weight;
 					}
 				}
 				
@@ -733,19 +733,31 @@ namespace tiki
 
 	void ToolModelGeometrie::transformToInstance()
 	{
-		const Matrix44 worldTransform = m_desc.instanceMatrix;
+		Matrix44 worldTransform = m_desc.instanceMatrix;
+		matrix::transpose( worldTransform );
+
 		if ( matrix::isIdentity( worldTransform ) )
 		{
 			return;
 		}
 
+		const Vector3 rotX = { worldTransform.x.x, worldTransform.x.y, worldTransform.x.z };
+		const Vector3 rotY = { worldTransform.y.x, worldTransform.y.y, worldTransform.y.z };
+		const Vector3 rotZ = { worldTransform.z.x, worldTransform.z.y, worldTransform.z.z };
+
+		Matrix33 normalMatrix;
+		matrix::set( normalMatrix, rotX, rotY, rotZ );
+
 		for (uint i = 0u; i < m_vertices.getCount(); ++i)
 		{
 			ToolModelVertex& vertex = m_vertices[ i ];
 
-			Vector3 pos = { vertex.position.x, vertex.position.y, vertex.position.z };
-			matrix::transform( pos, worldTransform );
-			createFloat3( vertex.position, pos.x, pos.y, pos.z );
+			Vector3 position	= { vertex.position.x, vertex.position.y, vertex.position.z };
+			Vector3 normal		= { vertex.normal.x, vertex.normal.y, vertex.normal.z };
+			matrix::transform( position, worldTransform );
+			matrix::transform( normal, normalMatrix );
+			createFloat3( vertex.position, position.x, position.y, position.z );
+			createFloat3( vertex.normal, normal.x, normal.y, normal.z );
 		} 
 	}
 }

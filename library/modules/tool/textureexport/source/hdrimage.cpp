@@ -80,6 +80,11 @@ namespace tiki
 
 	void HdrImage::resizeImage( uint targetWidth, uint targetHeight )
 	{
+		if ( targetWidth == m_width && targetHeight == m_height )
+		{
+			return;
+		}
+
 		Array< HdrColor > tempImage;
 		tempImage.create( targetWidth * targetHeight );
 
@@ -264,6 +269,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( rect.x + rect.z <= m_width );
 		TIKI_ASSERT( rect.y + rect.w <= m_height );
+
+		if ( rect.x == 0u && rect.y == 0u && rect.z == m_width && rect.w == m_height )
+		{
+			return;
+		}
 
 		SizedArray< float > tempImage;
 		tempImage.create( rect.z * rect.w * ChannelCount );

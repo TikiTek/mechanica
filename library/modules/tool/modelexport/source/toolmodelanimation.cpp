@@ -16,7 +16,7 @@ namespace tiki
 		m_frameCount	= TIKI_SIZE_T_MAX;
 		m_joints.create( hierarchy.getJointCount() );
 
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		for (uint i = 0u; i < m_joints.getCount(); ++i)
 		{
 			m_joints[ i ].pJoint = &hierarchy.getJointByIndex( i );
 		}
@@ -25,7 +25,7 @@ namespace tiki
 
 		while ( pAnimation )
 		{
-			const size_t index = createJoint( pXml, pAnimation, hierarchy );
+			const uint index = createJoint( pXml, pAnimation, hierarchy );
 
 			if ( index != TIKI_SIZE_T_MAX )
 			{
@@ -38,7 +38,7 @@ namespace tiki
 
 	void ToolModelAnimation::dispose()
 	{
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		for (uint i = 0u; i < m_joints.getCount(); ++i)
 		{
 			m_joints[ i ].keys.dispose();
 			m_joints[ i ].samples.dispose();
@@ -50,7 +50,7 @@ namespace tiki
 		}
 	}
 
-	size_t ToolModelAnimation::createJoint( const TikiXml* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
+	uint ToolModelAnimation::createJoint( const TikiXml* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
 	{
 		const XmlElement* pNode = pXml->findFirstChild( "animation", pParentNode );
 
@@ -77,10 +77,10 @@ namespace tiki
 			const XmlAttribute* pTarget = pXml->findAttributeByName( "target", pChannel );
 
 			const string target = pTarget->content;
-			const size_t sli = target.indexOf( '/' );
+			const uint sli = target.indexOf( '/' );
 
-			const string first = target.substring( 0u, sli );
-			const string second = target.substring( sli + 1u );
+			const string first = target.subString( 0u, sli );
+			const string second = target.subString( sli + 1u );
 
 			if ( second != "matrix" )
 			{
@@ -118,11 +118,11 @@ namespace tiki
 				const XmlAttribute* pSourceAtt	= pXml->findAttributeByName( "source", pInput );
 
 				const string semanticName	= string( pSemanicAtt->content ).toLower();
-				const string sourceName		= string( pSourceAtt->content ).substring( 1u );
+				const string sourceName		= string( pSourceAtt->content ).subString( 1u );
 
 				const XmlElement* pSource = nullptr;
 
-				for (size_t i = 0u; i < sourcesIds.getCount(); ++i)
+				for (uint i = 0u; i < sourcesIds.getCount(); ++i)
 				{
 					if ( sourcesIds[ i ] == sourceName )
 					{
@@ -153,7 +153,7 @@ namespace tiki
 			}
 		}
 
-		size_t index = TIKI_SIZE_T_MAX;
+		uint index = TIKI_SIZE_T_MAX;
 
 		if ( times.isCreated() && transforms.isCreated() ) // && interpolators.isCreated()
 		{
@@ -164,7 +164,7 @@ namespace tiki
 				index = hierarchy.getJointData().getIndex( *pHierachyJoint );
 				ToolModelAnimationJoint& joint = m_joints[ index ];
 
-				size_t count = times.data.getCount();
+				uint count = times.data.getCount();
 				if ( times.data.getCount() != ( transforms.data.getCount() / 16u ) )
 				{
 					TIKI_TRACE_WARNING( "different times and transforms count in joint '%s'.\n", pHierachyJoint->name.cStr() );
@@ -175,22 +175,22 @@ namespace tiki
 				{
 					joint.keys.create( count );
 
-					for (size_t i = 0u; i < count; ++i)
+					for (uint i = 0u; i < count; ++i)
 					{
 						joint.keys[ i ].time		= times.data[ i ];
 						joint.keys[ i ].transform	= transforms.data[ i ];
 					}
 
-					const size_t frameCount = (size_t)( joint.keys.getLast()->time * 60.0f );
+					const uint frameCount = (uint)( joint.keys.getLast()->time * 60.0f );
 					m_frameCount = TIKI_MIN( m_frameCount, frameCount );
 
 					joint.samples.create( frameCount );
 
 					const ToolModelKey* pLeftKey = &joint.keys[ 0u ];
 					const ToolModelKey* pRightKey = &joint.keys[ 1u ];
-					size_t rightIndex = 1u;
+					uint rightIndex = 1u;
 
-					for (size_t i = 0u; i < frameCount; ++i)
+					for (uint i = 0u; i < frameCount; ++i)
 					{
 						const float time	= (float)i / 60.0f;
 
@@ -205,7 +205,14 @@ namespace tiki
 						const float koeff = (time - pLeftKey->time) / (pRightKey->time - pLeftKey->time);
 
 						Matrix44 mtx;
-						matrix::lerp( mtx, pLeftKey->transform, pRightKey->transform, koeff );
+						if ( koeff < 0.0f )
+						{
+							mtx = pLeftKey->transform;
+						}
+						else
+						{
+							matrix::lerp( mtx, pLeftKey->transform, pRightKey->transform, koeff );
+						}
 
 						joint.samples[ i ] = mtx;
 					}

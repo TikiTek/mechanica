@@ -1,0 +1,4 @@
+<tikiasset>
+  <input file="../../local/modules/renderer/source/shader/lighting.fx" type="shader" />
+  <param key="compile_debug" value="true" />  
+<tikiasset>

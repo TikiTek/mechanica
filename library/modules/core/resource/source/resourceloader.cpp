@@ -160,6 +160,9 @@ namespace tiki
 			cancelOperation( context );
 		}
 
+		context.pStream->close();
+		context.pStream = nullptr;
+
 		return result;
 	}
 

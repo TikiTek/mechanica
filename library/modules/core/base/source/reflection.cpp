@@ -165,7 +165,7 @@ namespace tiki
 			}
 			m_pBaseType = pBaseType;
 
-			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,&<>*)]+\\}", getName().cStr() );
+			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,.&<>*)]+\\}", getName().cStr() );
 
 			TRexpp regex;
 			regex.Compile( regexString.cStr() );
@@ -196,8 +196,8 @@ namespace tiki
 				uint fieldAlign		= 0u;
 
 				uint32 flags			= TypeMemberFlag_Public;
-				string fieldName		= field.substring( lastSpaceIndex + 1u );
-				string typeName			= field.substring( 0u, lastSpaceIndex );
+				string fieldName		= field.subString( lastSpaceIndex + 1u );
+				string typeName			= field.subString( 0u, lastSpaceIndex );
 
 				bool found = true;
 				while ( found )
@@ -222,7 +222,7 @@ namespace tiki
 					if ( found == true )
 					{
 						int firstSpaceIndex = typeName.indexOf( ' ' );
-						typeName = typeName.substring( firstSpaceIndex );
+						typeName = typeName.subString( firstSpaceIndex );
 					}
 				}
 				typeName = typeName.replace( " ", "" );
@@ -238,7 +238,7 @@ namespace tiki
 
 				if ( isBitSet( flags, TypeMemberFlag_Pointer ) || isBitSet( flags, TypeMemberFlag_Reference ) )
 				{
-					typeName = typeName.substring( 0u, typeName.getLength() - 1u );
+					typeName = typeName.subString( 0u, typeName.getLength() - 1 );
 
 					fieldSize	= sizeof( void* );
 					fieldAlign	= sizeof( void* );
@@ -357,15 +357,15 @@ namespace tiki
 		void StructType::findFieldRecursve( List< const FieldMember* >& wayToField, const string& name ) const
 		{
 			bool lastField	= false;
-			uint index	= TIKI_MIN( (uint)name.indexOf( '.' ), (uint)name.indexOf( "->" ) );
 
+			sint index	= TIKI_MIN( name.indexOf( '.' ), name.indexOf( "->" ) );
 			if ( index == -1 )
 			{
-				index		= name.getLength();
+				index		= sint( name.getLength() );
 				lastField	= true;
 			}
 
-			string localField = name.substring( 0u, index );
+			string localField = name.subString( 0u, index );
 
 			const FieldMember* pLocalField = getFieldByName( localField );
 			TIKI_ASSERT( pLocalField );
@@ -379,7 +379,7 @@ namespace tiki
 			}
 
 			const StructType* pStructType = static_cast< const StructType* >( pLocalField->getTypeInfo().getType() );
-			pStructType->findFieldRecursve( wayToField, name.substring( index + 1u ) );
+			pStructType->findFieldRecursve( wayToField, name.subString( index + 1u ) );
 		}
 
 		//////////////////////////////////////////////////////////////////////////
