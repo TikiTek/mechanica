@@ -4,16 +4,15 @@
 
 #include "tiki/base/reflection.hpp"
 
-#include "tiki/math/vector.hpp"
-#include "tiki/math/quaternion.hpp"
+#include "tiki/base/structs.hpp"
 
 namespace tiki
 {
-	struct TransformComponentInitData
-	{
-		Vector3		position;
-		Quaternion	rotation;
-	};
+	TIKI_REFLECTION_STRUCT(
+		TransformComponentInitData,
+		TIKI_REFLECTION_FIELD( float3, position )
+		TIKI_REFLECTION_FIELD( float4, rotation )
+	);
 }
 
 #endif // __TIKI_STATICMODELCOMPONENT_INITDATA_HPP_INCLUDED__

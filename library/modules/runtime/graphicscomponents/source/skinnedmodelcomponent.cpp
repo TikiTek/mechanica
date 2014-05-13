@@ -1,11 +1,17 @@
 
 #include "tiki/components/skinnedmodelcomponent.hpp"
+
+#include "tiki/base/crc32.hpp"
+#include "tiki/components/componentstate.hpp"
+#include "tiki/components/skinnedmodelcomponent_initdata.hpp"
+#include "tiki/graphics/model.hpp"
+#include "tiki/math/matrix.hpp"
+
 //
 //#include "tiki/base/debugprop.hpp"
 //#include "tiki/gamecore/meshrenderer.hpp"
 //#include "tiki/gamecore/transform.hpp"
 //#include "tiki/graphics/gpucontext.hpp"
-//#include "tiki/graphics/model.hpp"
 //#include "tiki/graphics/primitivetopologies.hpp"
 //
 //#include "tiki/framework/framework.hpp"
@@ -15,6 +21,47 @@
 
 namespace tiki
 {
+	struct SkinnedModelComponentState : public ComponentState
+	{
+		const Model*	pModel;
+
+		Matrix43		modelPose[ 256u ];
+		uint			jointCount;
+	};
+
+	SkinnedModelComponent::SkinnedModelComponent()
+	{
+	}
+
+	SkinnedModelComponent::~SkinnedModelComponent()
+	{
+	}
+
+	crc32 SkinnedModelComponent::getTypeCrc() const
+	{
+		return crcString( "SkinnedModelComponent" );
+	}
+
+	uint32 SkinnedModelComponent::getStateSize() const
+	{
+		return sizeof( SkinnedModelComponentState );
+	}
+
+	const char* SkinnedModelComponent::getTypeName() const
+	{
+		return "SkinnedModelComponent";
+	}
+
+	bool SkinnedModelComponent::internalInitializeState( SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData )
+	{		
+		return false;
+	}
+
+	void SkinnedModelComponent::internalDisposeState( SkinnedModelComponentState* pComponentState )
+	{		
+	}
+
+
 	//void SkinnedModelComponent::initializeSystem()
 	//{
 	//}
@@ -22,16 +69,6 @@ namespace tiki
 	//void SkinnedModelComponent::disposeSystem()
 	//{
 	//	s_skinningBuffer.dispose();
-	//}
-
-	//SkinnedModelComponent::SkinnedModelComponent()
-	//{
-	//	m_pModel		= nullptr;
-	//	m_pTransform	= nullptr;
-	//}
-
-	//SkinnedModelComponent::~SkinnedModelComponent()
-	//{
 	//}
 
 	//void SkinnedModelComponent::initialize( const Transform* pTransform, const Model* pModel, const Material* pMaterial /*= nullptr*/ )
@@ -193,4 +230,6 @@ namespace tiki
 	//		}
 	//	}
 	//}
+
+
 }

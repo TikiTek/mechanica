@@ -4,14 +4,14 @@
 
 #include "tiki/base/reflection.hpp"
 
+#include "tiki/graphics/graphics_references.hpp"
+
 namespace tiki
 {
-	class Model;
-
-	struct StaticModelComponentInitData
-	{
-		const Model*	pModel;
-	};
+	TIKI_REFLECTION_STRUCT(
+		StaticModelComponentInitData,
+		TIKI_REFLECTION_FIELD( ModelReference, model )
+	);
 }
 
 #endif // __TIKI_STATICMODELCOMPONENT_INITDATA_HPP_INCLUDED__

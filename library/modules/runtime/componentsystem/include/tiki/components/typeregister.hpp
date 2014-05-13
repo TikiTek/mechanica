@@ -15,7 +15,7 @@ namespace tiki
 		bool				create( uint maxTypeCount );
 		void				dispose();
 
-		uint				getTypeCount() const { return m_types.getCount(); }
+		uint				getMaxTypeCount() const { return m_types.getCount(); }
 
 		ComponentTypeId		registerType( ComponentBase* pComponent );
 		void				unregisterType( ComponentTypeId typeId );

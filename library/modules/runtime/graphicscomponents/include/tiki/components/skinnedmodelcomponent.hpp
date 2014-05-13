@@ -3,7 +3,8 @@
 #define TIKI_SKINNEDMODELCOMPONENT_HPP
 
 #include "tiki/components/component.hpp"
-#include "tiki/components/componentstate.hpp"
+
+#include "tiki/graphics/constantbuffer.hpp"
 
 //#include "tiki/base/array.hpp"
 //#include "tiki/math/matrix.hpp"
@@ -13,18 +14,30 @@
 
 namespace tiki
 {
-	class Model;
-	class Transform;
-	class Material;
+	struct SkinnedModelComponentInitData;
+	struct SkinnedModelComponentState;
 
-	class SkinnedModelComponent : public ComponentBase
+	class SkinnedModelComponent : public Component< SkinnedModelComponentState, SkinnedModelComponentInitData >
 	{
 		TIKI_NONCOPYABLE_CLASS( SkinnedModelComponent );
 
 	public:
 
-											SkinnedModelComponent();
-		virtual								~SkinnedModelComponent();
+								SkinnedModelComponent();
+		virtual					~SkinnedModelComponent();
+
+		virtual crc32			getTypeCrc() const;
+		virtual uint32			getStateSize() const;
+		virtual const char*		getTypeName() const;
+
+	protected:
+
+		virtual bool			internalInitializeState( SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData );
+		virtual void			internalDisposeState( SkinnedModelComponentState* pComponentState );
+
+	private:
+
+		ConstantBuffer			m_skinningData;
 
 	//	void								initialize( const Transform* pTransform, const Model* pModel, const Material* pMaterial = nullptr );
 	//	void								dispose();

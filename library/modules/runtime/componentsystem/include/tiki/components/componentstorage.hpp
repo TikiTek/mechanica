@@ -21,7 +21,7 @@ namespace tiki
 		ComponentStorage();
 		~ComponentStorage();
 
-		bool				create( uint chunkSize, uint chunkCount, const ComponentTypeRegister* pTypeRegister );
+		bool				create( uint chunkSize, uint chunkCount, const ComponentTypeRegister& typeRegister );
 		void				dispose();
 
 		ComponentState*		allocateState( ComponentTypeId typeId );

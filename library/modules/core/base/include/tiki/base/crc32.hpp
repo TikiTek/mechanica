@@ -89,9 +89,15 @@ namespace tiki
 	 }
 
 	 template<typename T>
-	 TIKI_FORCE_INLINE crc32 crcT( const T* pData )
+	 TIKI_FORCE_INLINE crc32 crcTemplate( const T& data )
 	 {
-		 return crcBytes( (const uint8*)pData, sizeof( T ) );
+		 return crcBytes( (const uint8*)&data, sizeof( T ) );
+	 }
+
+	 template<typename T>
+	 TIKI_FORCE_INLINE crc32 crcTemplate( const T* pData, uint count )
+	 {
+		 return crcBytes( (const uint8*)pData, sizeof( T ) * count );
 	 }
 }
 

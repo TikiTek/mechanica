@@ -86,7 +86,7 @@ namespace tiki
 
 	const BlendState* GraphicsSystem::createBlendState( const BlendStateParamters& creationParameters )
 	{
-		BlendState* pState = m_blendStates.findOrAllocate( crcT( &creationParameters ) );
+		BlendState* pState = m_blendStates.findOrAllocate( crcTemplate( creationParameters ) );
 		if ( pState != nullptr && pState->isCreated() == false )
 		{
 			if ( pState->create( *this, creationParameters ) == false )
@@ -126,7 +126,7 @@ namespace tiki
 
 	const DepthStencilState* GraphicsSystem::createDepthStencilState( const DepthStencilStateParamters& creationParameters )
 	{
-		DepthStencilState* pState = m_depthStencilStates.findOrAllocate( crcT( &creationParameters ) );
+		DepthStencilState* pState = m_depthStencilStates.findOrAllocate( crcTemplate( creationParameters ) );
 		if ( pState != nullptr && pState->isCreated() == false )
 		{
 			if ( pState->create( *this, creationParameters ) == false )
@@ -163,7 +163,7 @@ namespace tiki
 
 	const RasterizerState* GraphicsSystem::createRasterizerState( const RasterizerStateParamters& creationParameters )
 	{
-		RasterizerState* pState = m_rasterizerStates.findOrAllocate( crcT( &creationParameters ) );
+		RasterizerState* pState = m_rasterizerStates.findOrAllocate( crcTemplate( creationParameters ) );
 		if ( pState != nullptr && pState->isCreated() == false )
 		{
 			if ( pState->create( *this, creationParameters ) == false )
@@ -201,7 +201,7 @@ namespace tiki
 
 	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
 	{
-		SamplerState* pState = m_samplerStates.findOrAllocate( crcT( &creationParameters ) );
+		SamplerState* pState = m_samplerStates.findOrAllocate( crcTemplate( creationParameters ) );
 		if ( pState != nullptr && pState->isCreated() == false )
 		{
 			if ( pState->create( *this, creationParameters ) == false )

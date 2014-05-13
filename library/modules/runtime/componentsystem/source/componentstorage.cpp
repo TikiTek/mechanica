@@ -32,16 +32,14 @@ namespace tiki
 		TIKI_ASSERT( m_pMemory == nullptr );
 	}
 
-	bool ComponentStorage::create( uint chunkSize, uint chunkCount, const ComponentTypeRegister* pTypeRegister )
+	bool ComponentStorage::create( uint chunkSize, uint chunkCount, const ComponentTypeRegister& typeRegister )
 	{
-		TIKI_ASSERT( pTypeRegister != nullptr );
-
 		if ( chunkSize < MinChunkSize || chunkSize > MaxChunkSize || !isValueAligned( chunkSize, (uint)ChunkAlignment ) )
 		{
 			return false;
 		}
 
-		m_pTypeRegister = pTypeRegister;
+		m_pTypeRegister = &typeRegister;
 		m_chunkCount	= chunkCount;
 		m_chunkSize		= chunkSize;
 
@@ -54,7 +52,7 @@ namespace tiki
 			return false;
 		}
 
-		const uint typeCount = pTypeRegister->getTypeCount();
+		const uint typeCount = typeRegister.getMaxTypeCount();
 		if ( m_firstChunk.create( typeCount ) == false || m_lastState.create( typeCount ) == false )
 		{
 			dispose();

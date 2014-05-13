@@ -52,14 +52,14 @@ namespace tiki
 
 	bool StaticModelComponent::internalInitializeState( StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
-		pState->pModel	= pInitData->pModel;
+		pState->pModel = pInitData->model.getData();
 
 		return true;
 	}
 
 	void StaticModelComponent::internalDisposeState( StaticModelComponentState* pState )
 	{
-
+		pState->pModel = nullptr;
 	}
 
 	//void StaticModelComponent::initializeSystem()
