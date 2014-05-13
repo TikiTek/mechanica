@@ -3,8 +3,10 @@
 
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
-#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+
+#include "tiki/animation/animation.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/shaderset.hpp"
@@ -36,6 +38,7 @@ namespace tiki
 					Model::registerResourceType( resourceManager, graphicsSystem );
 					ShaderSet::registerResourceType( resourceManager, graphicsSystem );
 					Texture::registerResourceType( resourceManager, graphicsSystem );
+					Animation::registerResourceType( resourceManager );
 				}
 				else
 				{
@@ -44,6 +47,7 @@ namespace tiki
 					Model::unregisterResourceType( resourceManager );
 					ShaderSet::unregisterResourceType( resourceManager );
 					Texture::unregisterResourceType( resourceManager );
+					Animation::unregisterResourceType( resourceManager );
 				}
 
 				return TransitionState_Finish;
@@ -57,7 +61,7 @@ namespace tiki
 				{
 					GameRendererParamaters params;
 
-					if ( m_renderer.create( framework::getGraphicsSystem(), params ) == false )
+					if ( m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager(), params ) == false )
 					{
 						TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
 						return TransitionState_Error;
@@ -65,7 +69,7 @@ namespace tiki
 				}
 				else
 				{
-					m_renderer.dispose();
+					m_renderer.dispose( framework::getResourceManager() );
 				}
 
 				return TransitionState_Finish;
@@ -82,8 +86,13 @@ namespace tiki
 		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
 		if ( pEvent != nullptr )
 		{
-			framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
-			m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y );
+			if ( framework::getGraphicsSystem().resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
+			{
+				if ( !m_renderer.resize( pEvent->data.sizeChangedEvent.size.x, pEvent->data.sizeChangedEvent.size.y ) )
+				{
+					m_renderer.dispose( framework::getResourceManager() );				
+				}
+			}
 		}
 
 		m_renderer.update();

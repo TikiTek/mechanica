@@ -4,14 +4,21 @@
 
 #include "tiki/gameflow/gamestate.hpp"
 
+#include "tiki/animation/animationjoint.hpp"
+#include "tiki/debuggui/debuggui.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
+#include "tiki/renderer/postascii.hpp"
+#include "tiki/renderer/postbloom.hpp"
+#include "tiki/renderer/scenerendereffect.hpp"
 
-#include "tiki/debugmenu/debugmenu.hpp"
-#include "tiki/debugmenu/debugmenupage_debugprop.hpp"
+#include "tiki/game/debuggui_lighting.hpp"
+#include "tiki/game/debuggui_testwindow.hpp"
 
 namespace tiki
 {
+	class Animation;
 	class ApplicationState;
 	class Font;
 	class GameRenderer;
@@ -48,19 +55,37 @@ namespace tiki
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
-		const Model*				m_pModel;
-		const Texture*				m_pTexture;
+		const Model*				m_pModelBoxes;
+		const Model*				m_pModelPlane;
+		const Model*				m_pModelPlayer;
+		const Animation*			m_pAnimationPlayer;
+
+		bool						m_drawPlayer;
+		Array< AnimationJoint >		m_animationData;
+		SkinningData				m_skinningData;
 
 		GameRenderer*				m_pGameRenderer;
 		FallbackRenderEffect		m_fallbackRenderEffect;
+		SceneRenderEffect			m_sceneRenderEffect;
 
 		ImmediateRenderer			m_immediateRenderer;
 
+		bool						m_enableMouseCamera;
+		float						m_cameraSpeed;
+		Vector2						m_cameraRotation;
 		Vector2						m_leftStickState;
 		Vector2						m_rightStickState;
 
-		DebugMenu					m_debugMenu;
-		DebugMenuPageDebugProp		m_debugMenuPageDebugProp;
+		DebugGui					m_debugGui;
+		DebugGuiTestWindow			m_testWindow;
+		DebugGuiLightingWindow		m_lightingWindow;
+
+		int							m_gbufferIndex;
+
+		bool						m_enableAsciiMode;
+		bool						m_enableBloom;
+		PostProcessAscii			m_ascii;
+		PostProcessBloom			m_bloom;
 
 	};
 }

@@ -88,7 +88,7 @@ namespace tiki
 		m_pCurrentSequence->pCommands		= nullptr;
 	}
 
-	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */ )
+	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */, const SkinningData* pSkinningData /*= nullptr*/ )
 	{
 		if ( m_pCurrentSequence == nullptr )
 		{
@@ -101,11 +101,12 @@ namespace tiki
 			return;
 		}
 
-		pCommand->pGeometry	= &geometry;
+		pCommand->pGeometry		= &geometry;
+		pCommand->pSkinningData	= pSkinningData;
 
 		if ( pMaterial == nullptr )
 		{
-			static RenderEffectData fallbackRenderEffectData = { RenderEffectId_Invalid, 0xffffu, 0x0000u, RenderEffectDataInvalidTextureOffset };
+			static RenderEffectData fallbackRenderEffectData = { (uint16)RenderEffectId_Invalid, 0xffffu, 0x0000u, RenderEffectDataInvalidTextureOffset };
 			pCommand->pRenderEffectData = &fallbackRenderEffectData;
 		}
 		else

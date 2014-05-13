@@ -1,13 +1,12 @@
 #pragma once
-#ifndef __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
-#define __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
+#ifndef __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
+#define __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
 
 #include "tiki/renderer/rendereffect.hpp"
 
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
-
 
 namespace tiki
 {
@@ -16,18 +15,19 @@ namespace tiki
 	class RasterizerState;
 	class SamplerState;
 	class ShaderSet;
+	class VertexFormat;
 	class VertexInputBinding;
 
-	class FallbackRenderEffect : public RenderEffect
+	class SceneRenderEffect : public RenderEffect
 	{
-		TIKI_NONCOPYABLE_CLASS( FallbackRenderEffect );
+		TIKI_NONCOPYABLE_CLASS( SceneRenderEffect );
 
 	public:
 
-								FallbackRenderEffect();
-		virtual					~FallbackRenderEffect();
+		SceneRenderEffect();
+		virtual					~SceneRenderEffect();
 
-		virtual RenderEffectId	getRenderEffectId() const { return RenderEffectId_Fallback; }
+		virtual RenderEffectId	getRenderEffectId() const { return RenderEffectId_Scene; }
 
 	protected:
 
@@ -38,9 +38,13 @@ namespace tiki
 
 	private:
 
-		typedef SortedSizedMap< crc32, const VertexInputBinding* > VertexInputBindingMap;
+		enum ModelType
+		{
+			ModelType_Static,
+			ModelType_Skinned,
 
-		GraphicsSystem*				m_pGraphicsSystem;
+			ModelType_Count
+		};
 
 		const ShaderSet*			m_pShader;
 
@@ -49,11 +53,13 @@ namespace tiki
 		const RasterizerState*		m_pRasterizerState;
 		const SamplerState*			m_pSampler;
 
-		VertexInputBindingMap		m_vertexInputBindings;
+		const VertexFormat*			m_pVertexFormat[ ModelType_Count ];
+		const VertexInputBinding*	m_pVertexInputBinding[ ModelType_Count ];
 
 		ConstantBuffer				m_vertexConstantBuffer;
+		ConstantBuffer				m_pixelConstantBuffer;
 
 	};
 }
 
-#endif // __TIKI_FALLBACKRENDEREFFECT_HPP_INCLUDED__
+#endif // __TIKI_SCENERENDEREFFECT_HPP_INCLUDED__
