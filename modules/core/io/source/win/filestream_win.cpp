@@ -61,7 +61,7 @@ namespace tiki
 	{
 		DWORD bytesRead = 0u;
 		
-		if ( ReadFile( m_fileHandle, pTargetData, bytesToRead, &bytesRead, nullptr ) )
+		if ( ReadFile( m_fileHandle, pTargetData, DWORD( bytesToRead ), &bytesRead, nullptr ) )
 		{
 			return bytesRead;
 		}
@@ -73,7 +73,7 @@ namespace tiki
 	{
 		DWORD bytesWritten = 0u;
 
-		if ( WriteFile( m_fileHandle, pSourceData, bytesToWrite, &bytesWritten, nullptr ) )
+		if ( WriteFile( m_fileHandle, pSourceData, DWORD( bytesToWrite ), &bytesWritten, nullptr ) )
 		{
 			return bytesWritten;
 		}

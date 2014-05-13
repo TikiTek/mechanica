@@ -19,16 +19,16 @@ namespace tiki
 	{
 		const _XmlElement*	pNode;
 
-		size_t				index;
+		uint32				index;
 		string				name;
 		crc32				crc;
 
 		bool				used;
-		size_t				finalIndex;
-		size_t				finalParentIndex;
+		uint32				finalIndex;
+		uint32				finalParentIndex;
 
 		const _XmlElement*	pParentNode;
-		size_t				parentIndex;
+		uint32				parentIndex;
 
 		Matrix44			defaultPose;
 		Matrix44			skinToBone;
@@ -54,8 +54,8 @@ namespace tiki
 		bool								isCreated() const { return m_pXml != nullptr; }
 
 		const Array< ToolModelJoint >&		getJointData() const						{ return m_joints; }
-		size_t								getJointCount() const						{ return m_joints.getCount(); }
-		const ToolModelJoint&				getJointByIndex( size_t index ) const		{ return m_joints[ index ]; }
+		uint								getJointCount() const						{ return m_joints.getCount(); }
+		const ToolModelJoint&				getJointByIndex( uint index ) const		{ return m_joints[ index ]; }
 		const ToolModelJoint*				getJointByName( const string& name ) const;
 
 		const ToolModelGeometryInstance&	getGeometryInstanceByIndex( uint index ) const	{ return m_instances[ index ]; }
@@ -73,7 +73,7 @@ namespace tiki
 		Array< ToolModelJoint >				m_joints;
 		Array< ToolModelGeometryInstance >	m_instances;
 
-		size_t								m_finalJointCount;
+		uint								m_finalJointCount;
 		bool								m_hasFinalIndices;
 
 		void								searchNodes( List< ToolModelJoint >& targetList, const _XmlElement* pNode );

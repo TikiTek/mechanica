@@ -82,7 +82,7 @@ namespace tiki
 	bool Thread::waitForExit( uint timeOut /*= TimeOutInfinity */ )
 	{
 		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
-		if ( WaitForSingleObject( m_platformData.threadHandle, timeOut ) == WAIT_TIMEOUT )
+		if ( WaitForSingleObject( m_platformData.threadHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 		{
 			return false;
 		}

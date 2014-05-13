@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-	struct Vector2
+	TIKI_PRE_ALIGN( 8 ) struct Vector2
 	{
 		float x;
 		float y;
@@ -18,7 +18,8 @@ namespace tiki
 		static const Vector2 one;
 		static const Vector2 unitX;
 		static const Vector2 unitY;
-	};
+	}
+	TIKI_POST_ALIGN( 8 );
 
 	TIKI_PRE_ALIGN( 16 ) struct Vector3
 	{
@@ -34,7 +35,7 @@ namespace tiki
 		static const Vector3 unitY;
 		static const Vector3 unitZ;
 	}
-	TIKI_POST_ALIGN( 16);
+	TIKI_POST_ALIGN( 16 );
 
 	TIKI_PRE_ALIGN( 16 ) struct Vector4
 	{
@@ -50,7 +51,7 @@ namespace tiki
 		static const Vector4 unitZ;
 		static const Vector4 unitW;
 	}
-	TIKI_POST_ALIGN( 16);
+	TIKI_POST_ALIGN( 16 );
 
 	namespace vector
 	{
@@ -61,6 +62,10 @@ namespace tiki
 		TIKI_FORCE_INLINE bool		isZero( const Vector2& vec, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isZero( const Vector3& vec, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isZero( const Vector4& vec, float epsilon = f32::epsilon );
+
+		TIKI_FORCE_INLINE Vector2	create( float x, float y );
+		TIKI_FORCE_INLINE Vector3	create( float x, float y, float z );
+		TIKI_FORCE_INLINE Vector4	create( float x, float y, float z, float w );
 
 		TIKI_FORCE_INLINE Vector2&	clear( Vector2& vec );
 		TIKI_FORCE_INLINE Vector3&	clear( Vector3& vec );
@@ -89,6 +94,10 @@ namespace tiki
 		TIKI_FORCE_INLINE Vector2&	mul( Vector2& vec, const Vector2& rhs );
 		TIKI_FORCE_INLINE Vector3&	mul( Vector3& vec, const Vector3& rhs );
 		TIKI_FORCE_INLINE Vector4&	mul( Vector4& vec, const Vector4& rhs );
+
+		TIKI_FORCE_INLINE Vector2&	div( Vector2& vec, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	div( Vector3& vec, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	div( Vector4& vec, const Vector4& rhs );
 
 		TIKI_FORCE_INLINE Vector2&	scale( Vector2& vec, float val );
 		TIKI_FORCE_INLINE Vector3&	scale( Vector3& vec, float val );

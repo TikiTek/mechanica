@@ -15,6 +15,8 @@ namespace tiki
 	{
 		InputSystemPlatformData()
 		{
+			windowHandle	= nullptr;
+
 			pInputDevice	= nullptr;
 			pMouse			= nullptr;
 			pKeyboard		= nullptr;
@@ -23,6 +25,8 @@ namespace tiki
 			pStates[ 0u ]		= nullptr;
 			pStates[ 1u ]		= nullptr;
 		}
+
+		WindowHandle			windowHandle;
 
 		IDirectInputA*			pInputDevice;
 		IDirectInputDeviceA*	pMouse;

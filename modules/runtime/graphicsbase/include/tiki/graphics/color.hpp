@@ -52,12 +52,13 @@
 #	define TIKI_COLOR_OFFSET_ALPHA	24u
 #endif
 
-#define TIKI_COLOR_MASK_RED		( 0xffu << TIKI_COLOR_OFFSET_RED )
-#define TIKI_COLOR_MASK_GREEN	( 0xffu << TIKI_COLOR_OFFSET_GREEN )
-#define TIKI_COLOR_MASK_BLUE	( 0xffu << TIKI_COLOR_OFFSET_BLUE )
-#define TIKI_COLOR_MASK_ALPHA	( 0xffu << TIKI_COLOR_OFFSET_ALPHA )
+#define TIKI_COLOR_MASK_RED			( 0xffu << TIKI_COLOR_OFFSET_RED )
+#define TIKI_COLOR_MASK_GREEN		( 0xffu << TIKI_COLOR_OFFSET_GREEN )
+#define TIKI_COLOR_MASK_BLUE		( 0xffu << TIKI_COLOR_OFFSET_BLUE )
+#define TIKI_COLOR_MASK_ALPHA		( 0xffu << TIKI_COLOR_OFFSET_ALPHA )
 
-#define TIKI_COLOR( r, g, b, a ) ( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( ( a ) << TIKI_COLOR_OFFSET_ALPHA ) )
+#define TIKI_COLOR( r, g, b, a )	( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( ( a ) << TIKI_COLOR_OFFSET_ALPHA ) )
+#define TIKI_COLOR_RGB( r, g, b )	( ( ( r ) << TIKI_COLOR_OFFSET_RED ) | ( ( g ) << TIKI_COLOR_OFFSET_GREEN )  | ( ( b ) << TIKI_COLOR_OFFSET_BLUE )  | ( 255u << TIKI_COLOR_OFFSET_ALPHA ) )
 
 #define TIKI_COLOR_BLACK			TIKI_COLOR( 0x00u, 0x00u, 0x00u, 0xffu )
 #define TIKI_COLOR_WHITE			TIKI_COLOR( 0xffu, 0xffu, 0xffu, 0xffu )
@@ -125,10 +126,10 @@ namespace tiki
 			return fromRGBA( r, g, b, a );
 		}
 
-		TIKI_FORCE_INLINE uint8 getChannelR( Color c ) { return ( c & TIKI_COLOR_MASK_RED )		>> TIKI_COLOR_OFFSET_RED; }
-		TIKI_FORCE_INLINE uint8 getChannelG( Color c ) { return ( c & TIKI_COLOR_MASK_GREEN )	>> TIKI_COLOR_OFFSET_GREEN; }
-		TIKI_FORCE_INLINE uint8 getChannelB( Color c ) { return ( c & TIKI_COLOR_MASK_BLUE )	>> TIKI_COLOR_OFFSET_BLUE; }
-		TIKI_FORCE_INLINE uint8 getChannelA( Color c ) { return ( c & TIKI_COLOR_MASK_ALPHA )	>> TIKI_COLOR_OFFSET_ALPHA; }
+		TIKI_FORCE_INLINE uint8 getChannelR( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_RED )	>> TIKI_COLOR_OFFSET_RED ); }
+		TIKI_FORCE_INLINE uint8 getChannelG( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_GREEN )	>> TIKI_COLOR_OFFSET_GREEN ); }
+		TIKI_FORCE_INLINE uint8 getChannelB( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_BLUE )	>> TIKI_COLOR_OFFSET_BLUE ); }
+		TIKI_FORCE_INLINE uint8 getChannelA( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_ALPHA )	>> TIKI_COLOR_OFFSET_ALPHA ); }
 
 		TIKI_FORCE_INLINE float getFloatChannelR( Color c ) { return (float)getChannelR( c ) / 255.0f; }
 		TIKI_FORCE_INLINE float getFloatChannelG( Color c ) { return (float)getChannelG( c ) / 255.0f; }

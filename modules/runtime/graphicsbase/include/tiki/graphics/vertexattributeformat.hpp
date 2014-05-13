@@ -33,7 +33,7 @@ namespace tiki
 		VertexAttributeFormat_Count
 	};
 
-	TIKI_FORCE_INLINE size_t getVertexAttributeFormatSize( VertexAttributeFormat format )
+	TIKI_FORCE_INLINE uint32 getVertexAttributeFormatSize( VertexAttributeFormat format )
 	{
 		switch ( format )
 		{
@@ -69,10 +69,10 @@ namespace tiki
 			break;
 		}
 
-		return TIKI_SIZE_T_MAX;
+		return 0u;
 	}
 
-	TIKI_FORCE_INLINE size_t getVertexAttributeFormatElementCount( VertexAttributeFormat format )
+	TIKI_FORCE_INLINE uint getVertexAttributeFormatElementCount( VertexAttributeFormat format )
 	{
 		switch ( format )
 		{

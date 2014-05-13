@@ -61,6 +61,8 @@ namespace tiki
 		void			writeFloat( float value );
 		void			writeDouble( double value );
 
+		uint			getSizeOfCurrentSection() const;
+
 	private:
 
 		struct ReferenceData

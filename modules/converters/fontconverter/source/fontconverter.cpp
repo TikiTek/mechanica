@@ -51,13 +51,25 @@ namespace tiki
 			return false;
 		}
 
-		const int fontSize = params.arguments.getOptionalInt( "font_size", 16 );
+		string allChars = params.arguments.getOptionalString( "chars", "" );
+		if ( allChars.isEmpty() )
+		{
+			allChars = string( 256u );
+			for (uint charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
+			{
+				allChars[ charIndex ] = (char)charIndex;
+			}
+		}
+
+		const bool mode3D	= params.arguments.getOptionalBool( "3d_mode",  false );
+		const int fontSize	= params.arguments.getOptionalInt( "font_size", 16 );
+
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{			
 			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
 
 			FT_Face face;
-			error = FT_New_Face( library, file.fileName.cStr(), 0u, &face );;
+			error = FT_New_Face( library, file.fileName.cStr(), 0u, &face );
 			if ( error )
 			{
 				TIKI_TRACE_ERROR( "[fontconverter] Font loading has currupted an error. File: '%s'\n", file.fileName.cStr() );
@@ -67,21 +79,25 @@ namespace tiki
 
 			FT_GlyphSlot slot = face->glyph;
 
-			const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * 256.0f );
+			const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
 			const size_t imageSize	= nextPowerOfTwo( baseSize );
 			const float floatSize	= (float)imageSize;
 
+			const uint imageWidth	= ( mode3D ? fontSize * allChars.getLength() : imageSize );
+			const uint imageHeight	= ( mode3D ? fontSize : imageSize );
+
 			HdrImage image;
-			image.create( imageSize, imageSize, HdrImage::GammaType_Linear );
+			image.create( imageWidth, imageHeight, HdrImage::GammaType_Linear );
 
 			uint2 imagePos = { 3u, 3u };
 
 			const size_t rowPitch = ( image.getWidth() * image.getChannelCount() );
 
 			List< FontChar > chars;
-			for (size_t j = 0u; j < 256u; ++j)
+			for (size_t charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
 			{
-				const int glyph_index = FT_Get_Char_Index( face, j );
+				const char c = allChars[ charIndex ];
+				const int glyph_index = FT_Get_Char_Index( face, c );
 
 				error = FT_Load_Glyph( face, glyph_index,  FT_LOAD_DEFAULT );
 				if ( error )
@@ -106,20 +122,26 @@ namespace tiki
 					imagePos.y += fontSize + 6u;
 				}
 
-				FontChar& inst = chars.add();
-				inst.width	= (float)charWidth + 2.0f;
-				inst.height	= (float)charHeight;
-				inst.x1		= u16::floatToUnorm( (float)imagePos.x / floatSize );
-				inst.y1		= u16::floatToUnorm( (float)imagePos.y / floatSize );
-				inst.x2		= u16::floatToUnorm( ( (float)( imagePos.x + charWidth ) + 2.0f ) / floatSize );
-				inst.y2		= u16::floatToUnorm( (float)( imagePos.y + charHeight ) / floatSize );
-
-				if ( j == ' ' )
+				if ( !mode3D )
 				{
-					inst.width = (float)fontSize / 4.0f;
+					FontChar& inst = chars.add();
+					inst.width	= (float)charWidth + 2.0f;
+					inst.height	= (float)charHeight;
+					inst.x1		= u16::floatToUnorm( (float)imagePos.x / floatSize );
+					inst.y1		= u16::floatToUnorm( (float)imagePos.y / floatSize );
+					inst.x2		= u16::floatToUnorm( ( (float)( imagePos.x + charWidth ) + 2.0f ) / floatSize );
+					inst.y2		= u16::floatToUnorm( (float)( imagePos.y + charHeight ) / floatSize );
+
+					if ( charIndex == ' ' )
+					{
+						inst.width = (float)fontSize / 4.0f;
+					}
 				}
 
-				float* pRow = image.getData() + ( imagePos.y * rowPitch ) + ( imagePos.x * image.getChannelCount() ) + ( ( fontSize - slot->bitmap_top ) * rowPitch );				
+				const uint xOffset = ( mode3D ? ( ( fontSize * charIndex ) + ( fontSize / 2u ) ) - ( slot->bitmap.width / 2u ) : imagePos.x );
+				const uint yOffset = ( mode3D ? ( fontSize / 2u ) - ( slot->bitmap.rows / 2u ) : imagePos.y + ( fontSize - slot->bitmap_top ) );
+
+				float* pRow = image.getData() + ( yOffset * rowPitch ) + ( xOffset * image.getChannelCount() );
 				for (size_t y = 0u; y < (size_t)slot->bitmap.rows; ++y)
 				{
 					for (size_t x = 0u; x < (size_t)slot->bitmap.width; ++x)
@@ -132,11 +154,17 @@ namespace tiki
 					pRow += rowPitch;
 				}
 
-				imagePos.x += charWidth + 3u;
+				imagePos.x += uint32( charWidth ) + 3u;
 			}
 
+			TextureWriterParameters writerParameters;
+			writerParameters.targetFormat	= PixelFormat_R8;
+			writerParameters.targetType		= (mode3D ? TextureType_3d : TextureType_2d );
+			writerParameters.mipMapCount	= 1u;
+			writerParameters.data.texture3d.sliceSize = fontSize;
+
 			TextureWriter textureWriter;
-			textureWriter.create( image, PixelFormat_R8, 0u );
+			textureWriter.create( image, writerParameters );
 			
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "font", params.targetPlatform );
@@ -153,7 +181,7 @@ namespace tiki
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
 			writer.writeReference( &textureDataKey );
-			writer.writeUInt32( chars.getCount() );
+			writer.writeUInt32( uint32( chars.getCount() ) );
 			writer.writeReference( &charArrayKey );
 			writer.closeDataSection();
 

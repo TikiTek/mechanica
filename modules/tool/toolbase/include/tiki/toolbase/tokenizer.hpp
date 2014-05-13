@@ -13,7 +13,7 @@ namespace tiki
 		void	create( const string& text, const string& token, bool tokenIsCharList = false );
 		void	dispose();
 
-		string	findNext( size_t* pIndex = nullptr );
+		string	findNext( uint* pIndex = nullptr );
 
 	private:
 
@@ -22,7 +22,7 @@ namespace tiki
 
 		bool	m_tokenAsChars;
 
-		size_t	m_currentIndex;
+		uint	m_currentIndex;
 
 	};
 }

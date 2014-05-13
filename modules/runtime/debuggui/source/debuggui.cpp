@@ -1,0 +1,211 @@
+
+#include "tiki/debuggui/debuggui.hpp"
+
+#include "tiki/debuggui/debugguiwindow.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/font.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/input/inputevent.hpp"
+#include "tiki/math/projection.hpp"
+#include "tiki/math/rectangle.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
+namespace tiki
+{
+	bool DebugGui::create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount )
+	{
+		if ( !m_windows.create( maxPageCount ) || !m_minimizedData.create( maxPageCount ) )
+		{
+			return false;
+		}
+
+		if ( !m_renderer.create( grahicsSystem, resourceManager ) )
+		{
+			dispose( grahicsSystem, resourceManager );
+			return false;
+		}
+
+		m_isActive = false;
+
+		Vector2 screenSize;
+		screenSize.x = (float)grahicsSystem.getBackBuffer().getWidth();
+		screenSize.y = (float)grahicsSystem.getBackBuffer().getHeight();
+		setScreenSize( screenSize );
+
+		m_pDefaultFont = resourceManager.loadResource< Font >( "debug.font" );
+		DebugGuiControl::initialize( m_pDefaultFont, this );
+
+		vector::clear( m_inputState.mousePosition );
+		m_inputState.mouseWheel = 0.0f;
+		for (uint i = 0u; i < TIKI_COUNT( m_inputState.mouseButtonState ); ++i)
+		{
+			m_inputState.mouseButtonState[ i ] = false;
+		} 
+
+		return true;
+	}
+
+	void DebugGui::dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager )
+	{
+		TIKI_ASSERT( m_windows.getCount() == 0u );
+		m_windows.dispose();
+		m_minimizedData.dispose();
+
+		m_renderer.dispose( grahicsSystem, resourceManager );
+
+		DebugGuiControl::shutdown();
+		resourceManager.unloadResource( m_pDefaultFont );
+		m_pDefaultFont = nullptr;
+	}
+
+	void DebugGui::addWindow( DebugGuiWindow& window )
+	{
+		const uint windowIndex = m_windows.getCount();
+		m_windows.push( &window );
+
+		WindowMinimizedData& data = m_minimizedData[ windowIndex ];
+		data.isVisible = window.getVisibility();
+		data.button.create( window.getTitle() );
+	}
+
+	void DebugGui::removeWindow( DebugGuiWindow& window )
+	{
+		const uint windowIndex = m_windows.getIndexOf( &window );
+		if ( windowIndex != TIKI_SIZE_T_MAX )
+		{
+			m_windows.removeUnsortedByIndex( windowIndex );
+			m_minimizedData[ windowIndex ].button.dispose();
+		}
+	}
+
+	void DebugGui::setScreenSize( const Vector2& screenSize )
+	{
+		m_screenSize = screenSize;
+
+		Rectangle minimizeLayoutRect;
+		minimizeLayoutRect.x		= 0.0f;
+		minimizeLayoutRect.y		= screenSize.y - 35.0f;
+		minimizeLayoutRect.width	= screenSize.x;
+		minimizeLayoutRect.height	= 35.0f;
+		m_minimizedLayout.setRectangle( minimizeLayoutRect );
+	}
+
+	void DebugGui::update()
+	{
+		if ( !m_isActive )
+		{
+			return;
+		}
+
+		for (uint i = 0u; i < m_windows.getCount(); ++i)
+		{
+			m_windows[ i ]->update();
+
+			const bool isVisible = m_windows[ i ]->getVisibility();
+			WindowMinimizedData& data = m_minimizedData[ i ];
+			if ( isVisible != data.isVisible )
+			{
+				if ( isVisible )
+				{
+					m_minimizedLayout.removeChildControl( &data.button );
+				}
+				else
+				{
+					m_minimizedLayout.addChildControl( &data.button );
+				}
+				data.isVisible = isVisible;
+			}
+		}
+
+		m_minimizedLayout.update();
+	}
+
+	void DebugGui::render( GraphicsContext& graphicsContext )
+	{
+		if ( !m_isActive )
+		{
+			return;
+		}
+
+		m_renderer.beginRendering( graphicsContext );
+		m_renderer.beginRenderPass();
+
+		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		{
+			m_windows[ i ]->render( m_renderer );
+		}
+
+		m_renderer.drawRectangle( m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
+		m_minimizedLayout.render( m_renderer );
+
+		Rectangle mouseReactangle;
+		mouseReactangle.x = m_inputState.mousePosition.x;
+		mouseReactangle.y = m_inputState.mousePosition.y;
+		mouseReactangle.width = 10.0f;
+		mouseReactangle.height = 10.0f;
+		m_renderer.drawRectangle( mouseReactangle, TIKI_COLOR_RED );
+
+		m_renderer.endRenderPass();
+		m_renderer.endRendering();
+	}
+
+	bool DebugGui::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( inputEvent.deviceType == InputDeviceType_Mouse )
+		{
+			switch ( inputEvent.eventType )
+			{
+			case InputEventType_Mouse_Moved:
+				m_inputState.mousePosition.x = inputEvent.data.mouseMoved.xState;
+				m_inputState.mousePosition.y = inputEvent.data.mouseMoved.yState;
+				break;
+
+			case InputEventType_Mouse_ButtonDown:
+				m_inputState.mouseButtonState[ inputEvent.data.mouseButton.button ] = true;
+				break;
+
+			case InputEventType_Mouse_ButtonUp:
+				m_inputState.mouseButtonState[ inputEvent.data.mouseButton.button ] = false;
+				break;
+
+			case InputEventType_Mouse_Wheel:
+				m_inputState.mouseWheel += inputEvent.data.mouseWheel.offset;
+				break;
+			}
+		}
+
+		if ( !m_isActive )
+		{
+			return false;
+		}
+
+		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		{
+			if ( m_windows[ i ]->processInputEvent( inputEvent, m_inputState ) )
+			{
+				return true;
+			}
+		}
+
+		return m_minimizedLayout.processInputEvent( inputEvent, m_inputState );
+	}
+
+	void DebugGui::pushEvent( const DebugGuiEvent& guiEvent )
+	{
+		for (uint i = 0u; i < m_windows.getCount(); ++i)
+		{
+			if ( m_windows[ i ]->processGuiEvent( guiEvent ) )
+			{
+				return;
+			}
+
+			if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &m_minimizedData[ i ].button )
+			{
+				m_windows[ i ]->setVisibility( !m_windows[ i ]->getVisibility() );
+			}
+		}
+		
+		TIKI_TRACE_INFO( "[DebugGui] event of type '%u' was not handled.\n", guiEvent.eventType );
+	}
+
+}

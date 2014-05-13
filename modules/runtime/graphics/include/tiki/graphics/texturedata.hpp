@@ -32,7 +32,7 @@ namespace tiki
 		size_t						getWidth() const		{ return m_description.width; }
 		size_t						getHeight() const		{ return m_description.height; }
 
-		const TextureDescription&	getDesription() const	{ return m_description; }
+		const TextureDescription&	getDescription() const	{ return m_description; }
 
 	private:
 

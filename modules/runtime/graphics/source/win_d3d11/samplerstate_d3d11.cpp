@@ -32,19 +32,19 @@ namespace tiki
 				{
 				case FilterMode_Linear:
 					return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-				case FilterMode_Neares:
+				case FilterMode_Nearest:
 					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 				}
 			}
 			break;
-		case FilterMode_Neares:
+		case FilterMode_Nearest:
 			{
 				TIKI_ASSERT( mip != FilterMode_Anisotropic );
 				switch ( mip )
 				{
 				case FilterMode_Linear:
 					return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-				case  FilterMode_Neares:
+				case  FilterMode_Nearest:
 					return D3D11_FILTER_MIN_MAG_MIP_POINT;
 				}
 			}
@@ -68,7 +68,7 @@ namespace tiki
 		stateDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
 		stateDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
 		stateDesc.MipLODBias		= 0.0f;
-		stateDesc.MaxAnisotropy		= creationParamter.maxAnisotropy;
+		stateDesc.MaxAnisotropy		= uint32( creationParamter.maxAnisotropy );
 		stateDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
 		stateDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
 		stateDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );

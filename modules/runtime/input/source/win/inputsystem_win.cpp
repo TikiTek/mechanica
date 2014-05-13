@@ -143,6 +143,13 @@ namespace tiki
 		XINPUT_GAMEPAD_BACK				// ControllerButton_Back
 	};
 
+	static const MouseButton s_aMouseButtonMapping[ MouseButton_Count ] =
+	{
+		MouseButton_Left,
+		MouseButton_Right,
+		MouseButton_Middle
+	};
+
 	struct InputSystemState
 	{
 		DIMOUSESTATE	mouse;
@@ -232,7 +239,9 @@ namespace tiki
 	{
 		const HINSTANCE hInstance = (HINSTANCE)getInstanceHandle();
 
-		m_platformData.currentStateIndex = 0u;
+		m_platformData.windowHandle			= params.windowHandle;
+		m_platformData.currentStateIndex	= 0u;
+
 		m_platformData.pStates[ 0u ] = static_cast< InputSystemState* >( TIKI_MEMORY_ALLOC( sizeof( InputSystemState ) * 2u ) );
 		m_platformData.pStates[ 1u ] = m_platformData.pStates[ 0u ] + 1u;
 		memory::zero( m_platformData.pStates[ 0u ], sizeof( InputSystemState ) * 2u );
@@ -253,7 +262,7 @@ namespace tiki
 		for (uint i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i)
 		{
 			const uint8 directInputCode = s_aVirtualKeyCodeMapping[ i ];
-			m_platformData.keyboardMapping[ directInputCode ] = i;
+			m_platformData.keyboardMapping[ directInputCode ] = uint8( i );
 		} 
 
 		result = m_platformData.pInputDevice->CreateDevice( GUID_SysKeyboard, &m_platformData.pKeyboard, nullptr );
@@ -293,7 +302,7 @@ namespace tiki
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( DWORD( controllerIndex ), &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
 				m_platformData.pStates[ 0u ]->aControllerConnected[ controllerIndex ] = true;
 
@@ -432,7 +441,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Mouse_ButtonDown;
 						inputEvent.deviceType	= InputDeviceType_Mouse;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.mouseButton.button = (MouseButton)i;
+						inputEvent.data.mouseButton.button = s_aMouseButtonMapping[ i ];
 					}
 					else if ( !isPressed && wasPressed )
 					{
@@ -440,18 +449,30 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Mouse_ButtonUp;
 						inputEvent.deviceType	= InputDeviceType_Mouse;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.mouseButton.button = (MouseButton)i;
+						inputEvent.data.mouseButton.button = s_aMouseButtonMapping[ i ];
 					}
 				} 
 				
-				if ( pCurrentState->mouse.lX != pPreviousState->mouse.lX || pCurrentState->mouse.lY != pPreviousState->mouse.lY )
+				if ( pCurrentState->mouse.lX != 0u || pCurrentState->mouse.lY != 0u )
 				{
 					InputEvent& inputEvent = m_events.push();
 					inputEvent.eventType	= InputEventType_Mouse_Moved;
 					inputEvent.deviceType	= InputDeviceType_Mouse;
 					inputEvent.deviceId		= 0u;
-					inputEvent.data.mouseMoved.xOffset = ( pPreviousState->mouse.lX - pCurrentState->mouse.lX );
-					inputEvent.data.mouseMoved.yOffset = ( pPreviousState->mouse.lY - pCurrentState->mouse.lY );
+					inputEvent.data.mouseMoved.xOffset = (sint16)pCurrentState->mouse.lX;
+					inputEvent.data.mouseMoved.yOffset = (sint16)pCurrentState->mouse.lY;
+
+					POINT mousePosition;
+					if ( GetCursorPos( &mousePosition) && ScreenToClient( (HWND)m_platformData.windowHandle, &mousePosition ) )
+					{
+						inputEvent.data.mouseMoved.xState = (sint16)mousePosition.x;
+						inputEvent.data.mouseMoved.yState = (sint16)mousePosition.y;
+					}
+					else
+					{
+						inputEvent.data.mouseMoved.xState = 0;
+						inputEvent.data.mouseMoved.yState = 0;
+					}
 				}
 
 				if ( pCurrentState->mouse.lZ != pPreviousState->mouse.lZ )
@@ -468,7 +489,7 @@ namespace tiki
 		// controller
 		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
-			if ( XInputGetState( controllerIndex, &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
+			if ( XInputGetState( DWORD( controllerIndex ), &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
 				if ( !pCurrentState->aControllerConnected[ controllerIndex ] )
 				{

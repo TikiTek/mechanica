@@ -17,14 +17,14 @@ namespace tiki
 		TIKI_FORCE_INLINE			ConstantBuffer();
 		TIKI_FORCE_INLINE			~ConstantBuffer();
 
-		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t bufferSize );
+		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, uint bufferSize );
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
-		TIKI_FORCE_INLINE size_t	getSize() const { return m_size; }
+		TIKI_FORCE_INLINE uint		getSize() const { return m_size; }
 
 	private:
 
-		size_t						m_size;
+		uint						m_size;
 
 	};
 }

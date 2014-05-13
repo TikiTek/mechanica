@@ -33,7 +33,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	List< T >::List( const T* pData, uint count, bool readOnly )
+	List< T >::List( const T* pData, uint count, bool readOnly /*= false*/ )
 	{
 		m_capacity		= getNextSize( count );
 		m_count		= count;
@@ -200,10 +200,10 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_isReadOnly == false );
 
-		int index = indexOf( item );
-		if (index != -1)
+		const sint index = indexOf( item );
+		if ( index != -1 )
 		{
-			removeAt(index);
+			removeAt( index );
 			return true;
 		}
 

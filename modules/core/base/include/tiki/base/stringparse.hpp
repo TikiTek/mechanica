@@ -101,12 +101,12 @@ namespace tiki
 		{
 			if (string[0] == BasicString<TString>::numberPlus)
 			{
-				string = string.substring(1);
+				string = string.subString( 1u );
 			}
 
 			if (string[0] == BasicString<TString>::numberMinus)
 			{
-				string = string.substring(1);
+				string = string.subString( 1u );
 				return false;
 			}
 
@@ -123,7 +123,7 @@ namespace tiki
 			{
 				if (string[i] >= BasicString<TString>::numberZero && string[i] <= BasicString<TString>::numberNine)
 				{
-					int p = string.data->stringLength - (i + 1);
+					int p = int( string.data->stringLength - ( i + 1 ) );
 					TUInt c = string[i] - BasicString<TString>::numberZero;
 
 					num += c * (TUInt)pow(10.0, p);

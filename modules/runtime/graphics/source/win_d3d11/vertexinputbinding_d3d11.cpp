@@ -21,8 +21,8 @@ namespace tiki
 		"BINORMAL",
 		"COLOR",
 		"TEXCOORD",
-		"BONEINDICES",
-		"BONEWEIGHTS"
+		"BLENDINDICES",
+		"BLENDWEIGHT"
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_semanticNames ) == VertexSementic_Count );
 

@@ -129,26 +129,26 @@ namespace tiki
 
 		FileDescription& file = m_files.add();
 		file.fullFileName	= path::getAbsolutePath( fileName );
-		file.fileType		= crcString( path::getExtension( nameData ).substring( 1u ) );
+		file.fileType		= crcString( path::getExtension( nameData ).subString( 1u ) );
 	}
 	
-	int ConverterManager::startConversion()
+	int ConverterManager::startConversion( Mutex* pConversionMutex /*= nullptr*/ )
 	{
 		m_returnValue = 0;
 
-		crc32 currentType				= 0u;
-		const ConverterBase* pConverter	= nullptr;
-		
 		List< string > outputFiles;
 		for (size_t i = 0u; i < m_files.getCount(); ++i)
 		{
-			convertFile( m_files[ i ], outputFiles );
+			if ( !convertFile( m_files[ i ], outputFiles, pConversionMutex ) )
+			{
+				m_returnValue = 1;
+			}
 		}
 
 		return m_returnValue;
 	}
 	
-	bool ConverterManager::startConvertFile( const string& fileName, List< string >& outputFiles )
+	bool ConverterManager::startConvertFile( const string& fileName, List< string >& outputFiles, Mutex* pConversionMutex /*= nullptr*/ )
 	{
 		string absoluteFileName	= path::getAbsolutePath( fileName );
 		const string extension	= path::getExtension( absoluteFileName );
@@ -158,9 +158,9 @@ namespace tiki
 
 			FileDescription file;
 			file.fullFileName	= absoluteFileName;
-			file.fileType		= crcString( path::getExtension( fileTypeString ).substring( 1u ) );
+			file.fileType		= crcString( path::getExtension( fileTypeString ).subString( 1u ) );
 
-			return convertFile( file, outputFiles );
+			return convertFile( file, outputFiles, pConversionMutex );
 		}
 		else
 		{
@@ -186,7 +186,7 @@ namespace tiki
 			bool conversionResult = true;
 			for (uint i = 0u; i < filesToBuild.getCount(); ++i)
 			{
-				conversionResult &= convertFile( filesToBuild[ i ], outputFiles );
+				conversionResult &= convertFile( filesToBuild[ i ], outputFiles, pConversionMutex );
 			}
 
 			return conversionResult;
@@ -213,6 +213,11 @@ namespace tiki
 		m_resourceMap.registerResource(
 			path::getFilename( resourceName )
 		);
+	}
+
+	void ConverterManager::addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt )
+	{
+		s_pCurrentResult->addDependency( type, identifier, valueText, valueInt );
 	}
 	
 	void ConverterManager::writeResourceMap()
@@ -247,13 +252,17 @@ namespace tiki
 			const XmlAttribute* pAttKey		= xmlFile.findAttributeByName( "key", pParam );
 			const XmlAttribute* pAttValue	= xmlFile.findAttributeByName( "value", pParam );
 
-			if ( pAttKey == nullptr || pAttValue == nullptr )
+			if ( pAttKey == nullptr )
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
 					( pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content ).cStr(),
 					( pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content ).cStr()
 				);
+			}
+			else if ( pAttValue == nullptr )
+			{
+				arguments[ pAttKey->content ] = pParam->content;
 			}
 			else
 			{
@@ -264,7 +273,7 @@ namespace tiki
 		}
 	}
 
-	bool ConverterManager::convertFile( const FileDescription& file, List< string >& outputFiles )
+	bool ConverterManager::checkChangesAndFillConversionParameters( ConversionParameters& params, const ConverterBase** ppConverter, const FileDescription& file )
 	{
 		const ConverterBase* pConverter = nullptr;
 		for (size_t i = 0u; i < m_converters.getCount(); ++i)
@@ -288,7 +297,7 @@ namespace tiki
 			return false;
 		}
 
-		ConversionParameters params;
+		
 		params.targetPlatform	= PlatformType_Win;
 		params.sourceFile		= file.fullFileName;
 		params.typeCrc			= pConverter->getInputType();
@@ -308,7 +317,7 @@ namespace tiki
 		if ( pOutput == nullptr )
 		{
 			params.outputName = path::getFilenameWithoutExtension( path::getFilenameWithoutExtension( file.fullFileName ) );
-			TIKI_TRACE_DEBUG( "no output name given. use xasset filename: %s\n", params.outputName.cStr() );
+			//TIKI_TRACE_DEBUG( "no output name given. use xasset filename: %s\n", params.outputName.cStr() );
 		}
 		else
 		{
@@ -329,7 +338,7 @@ namespace tiki
 					"input failed: %s%s\n",
 					( pAttFile == nullptr ? "no file-attribute " : string( "file: " ) + pAttFile->content ).cStr(),
 					( pAttType == nullptr ? "no type-attribute " : string( "type: " ) + pAttType->content ).cStr()
-				);
+					);
 			}
 			else
 			{
@@ -384,26 +393,45 @@ namespace tiki
 
 		xmlFile.dispose();	
 
-		uint assetId = 0u;
-		ConversionResult result;
-		if ( writeConvertInput( assetId, params ) == false )
+		params.assetId = 0u;
+		if ( writeConvertInput( params.assetId, params ) == false )
 		{
 			return false;
 		}
 
-		if ( checkDependencies( assetId, pConverter ) == false )
+		*ppConverter = pConverter;
+		if ( checkDependencies( params.assetId, pConverter ) == false )
 		{
 			// no build needed
-			return true;
+			return false;
 		}
-		TIKI_TRACE( "Building asset: %s\n", file.fullFileName.cStr() );
+
+		return true;
+	}
+
+	bool ConverterManager::convertFile( const FileDescription& file, List< string >& outputFiles, Mutex* pConversionMutex )
+	{
+		const ConverterBase* pConverter = nullptr;
+		ConversionParameters params;
+		if ( !checkChangesAndFillConversionParameters( params, &pConverter, file ) )
+		{
+			return pConverter != nullptr;
+		}
+
+		if ( pConversionMutex != nullptr )
+		{
+			pConversionMutex->lock();
+		}
+
+		TIKI_TRACE( "Building asset: %s\n", path::getFilename( params.sourceFile ).cStr() );
 		
+		ConversionResult result;
 		result.addDependency( ConversionResult::DependencyType_Converter, "", "", pConverter->getConverterRevision() );
-		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", file::getLastChangeCrc( params.sourceFile ) );
+		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", 0u );
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const string& inputFileName = params.inputFiles[ i ].fileName;
-			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", file::getLastChangeCrc( inputFileName ) );
+			result.addDependency( ConversionResult::DependencyType_File, inputFileName, "", 0u );
 		}
 
 		s_pCurrentResult = &result;
@@ -426,9 +454,14 @@ namespace tiki
 				break;
 			}
 		}
-		writeConvertResult( assetId, result, hasError );
+		writeConvertResult( params.assetId, result, hasError );
 
-		return hasError;
+		if ( pConversionMutex != nullptr )
+		{
+			pConversionMutex->unlock();
+		}
+
+		return !hasError;
 	}
 
 	uint ConverterManager::findAssetIdByName( const string& name )
@@ -576,7 +609,7 @@ namespace tiki
 		for (uint i = 0u; i < parametes.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& inputFile = parametes.inputFiles[ i ];
-			const string inputFileName = inputFile.fileName;
+			const string inputFileName = path::getAbsolutePath( inputFile.fileName );
 
 			const bool sqlResult = m_dataBase.executeCommand(
 				formatString(

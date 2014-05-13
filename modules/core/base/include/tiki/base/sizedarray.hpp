@@ -43,6 +43,8 @@ namespace tiki
 		TIKI_FORCE_INLINE T&		getTop();
 		TIKI_FORCE_INLINE const T&	getTop() const;
 
+		TIKI_FORCE_INLINE uint		getIndexOf( const T& value ) const;
+
 		//TIKI_FORCE_INLINE bool		remove( const T& value );
 		TIKI_FORCE_INLINE void		removeUnsortedByIndex( uint index );
 		TIKI_FORCE_INLINE bool		removeUnsortedByValue( const T& value );

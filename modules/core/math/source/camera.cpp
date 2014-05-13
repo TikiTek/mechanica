@@ -5,6 +5,15 @@
 
 namespace tiki
 {
+	Camera::Camera()
+	{
+		m_isFrustumValid = false;
+	}
+
+	Camera::~Camera()
+	{
+	}
+
 	void Camera::create( const Vector3& position, const Quaternion& rotation, const Projection* pProjection /*= nullptr*/, const Vector3& upVector /*= Vector3::unitY*/ )
 	{
 		m_upVector		= upVector;
@@ -15,6 +24,8 @@ namespace tiki
 		}
 
 		setTransform( position, rotation );
+
+		m_isFrustumValid = false;
 	}
 
 	void Camera::setTransform( const Vector3& position, const Quaternion& rotation )
@@ -30,6 +41,8 @@ namespace tiki
 
 	void Camera::createMatrix()
 	{
+		m_isFrustumValid = false;
+
 		Quaternion rot;
 		quaternion::fromMatrix( rot, m_world.rot );
 
@@ -63,4 +76,14 @@ namespace tiki
 		matrix::mul( m_viewProjection, m_projection.getMatrix() );
 	}
 
+	const Frustum& Camera::getFrustum()
+	{
+		if ( !m_isFrustumValid )
+		{
+			m_frustum.create( m_viewProjection );
+			m_isFrustumValid = true;
+		}
+
+		return m_frustum;
+	}
 }

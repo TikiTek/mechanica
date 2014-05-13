@@ -143,6 +143,20 @@ namespace tiki
 
 	//	m_count--;
 	//}
+	
+	template<typename T>
+	TIKI_FORCE_INLINE uint tiki::SizedArray<T>::getIndexOf( const T& value ) const
+	{
+		for (uint i = 0u; i < m_count; ++i)
+		{
+			if ( m_pData[ i ] == value )
+			{
+				return i;
+			}
+		}
+
+		return TIKI_SIZE_T_MAX;
+	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE void tiki::SizedArray<T>::removeUnsortedByIndex( uint index )

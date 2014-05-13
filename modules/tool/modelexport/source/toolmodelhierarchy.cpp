@@ -27,7 +27,7 @@ namespace tiki
 			searchNodes( nodes, pHierarchyNode );
 
 			m_joints.create( nodes.getData(), nodes.getCount() );
-			for (size_t i = 0u; i < m_joints.getCount(); ++i)
+			for (uint i = 0u; i < m_joints.getCount(); ++i)
 			{
 				ToolModelJoint& joint = m_joints[ i ];
 
@@ -36,6 +36,7 @@ namespace tiki
 
 				joint.name	= pIdAtt->content;
 				joint.crc	= crcString( joint.name );
+				matrix::createIdentity( joint.skinToBone );
 
 				const XmlElement* pMatrix = pXml->findFirstChild( "matrix", joint.pNode );			
 				if ( pMatrix == nullptr )
@@ -53,7 +54,7 @@ namespace tiki
 					{
 						continue;
 					}
-					const string geometryId = string( pUrlAtt->content ).substring( 1u );
+					const string geometryId = string( pUrlAtt->content ).subString( 1u );
 
 					const XmlElement* pGeometrieNode = pXml->findFirstChild( "geometry", pGeometriesNode );
 					while ( pGeometrieNode != nullptr )
@@ -107,7 +108,7 @@ namespace tiki
 	{
 		const crc32 crc = crcString( name );
 
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		for (uint i = 0u; i < m_joints.getCount(); ++i)
 		{
 			const ToolModelJoint& joint = m_joints[ i ];
 
@@ -122,14 +123,14 @@ namespace tiki
 
 	void ToolModelHierarchy::markJointAsUsed( const ToolModelJoint& constJoint )
 	{
-		const size_t index		= m_joints.getIndex( constJoint );
+		const uint index		= m_joints.getIndex( constJoint );
 		ToolModelJoint& joint	= m_joints[ index ];
 		joint.used = true;
 	}
 
 	void ToolModelHierarchy::setBindMatrix( const ToolModelJoint& constJoint, const Matrix44& matrix )
 	{
-		const size_t index		= m_joints.getIndex( constJoint );
+		const uint index		= m_joints.getIndex( constJoint );
 		ToolModelJoint& joint	= m_joints[ index ];
 		joint.skinToBone = matrix;
 	}
@@ -139,18 +140,18 @@ namespace tiki
 		const string nodeTag		= "node";
 		const XmlElement* pChild	= m_pXml->findFirstChild( nodeTag, pNode );
 
-		size_t parentIndex = targetList.getCount() - 1u;
+		const uint parentIndex = targetList.getCount() - 1u;
 
 		while ( pChild )
 		{
 			ToolModelJoint joint;
-			joint.index				= targetList.getCount();
+			joint.index				= uint32( targetList.getCount() );
 			joint.pNode				= pChild;
 			joint.pParentNode		= pNode;
-			joint.parentIndex		= parentIndex;
+			joint.parentIndex		= uint32( parentIndex );
 			joint.used				= false;
-			joint.finalIndex		= TIKI_SIZE_T_MAX;
-			joint.finalParentIndex	= TIKI_SIZE_T_MAX;
+			joint.finalIndex		= uint32( TIKI_SIZE_T_MAX );
+			joint.finalParentIndex	= uint32( TIKI_SIZE_T_MAX );
 
 			targetList.add( joint );
 
@@ -163,11 +164,11 @@ namespace tiki
 	void ToolModelHierarchy::calculateFinalIndices()
 	{
 		// mark parents as used
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		for (uint i = 0u; i < m_joints.getCount(); ++i)
 		{
 			if ( m_joints[ i ].parentIndex != TIKI_SIZE_T_MAX )
 			{
-				size_t parentIndex = m_joints[ i ].parentIndex;
+				uint parentIndex = m_joints[ i ].parentIndex;
 
 				while ( parentIndex != TIKI_SIZE_T_MAX )
 				{
@@ -178,11 +179,11 @@ namespace tiki
 			}
 		}
 
-		size_t index = 0u;
-		Array< size_t > mappingTable;
+		uint32 index = 0u;
+		Array< uint32 > mappingTable;
 		mappingTable.create( m_joints.getCount() );
 
-		for (size_t i = 0u; i < m_joints.getCount(); ++i)
+		for (uint i = 0u; i < m_joints.getCount(); ++i)
 		{
 			if ( m_joints[ i ].used )
 			{

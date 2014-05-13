@@ -65,7 +65,7 @@ namespace tiki
 				}
 				else
 				{
-					uint4 rect = { 0, 0, image.getWidth(), image.getHeight() };
+					uint4 rect = { 0, 0, uint32( image.getWidth() ), uint32( image.getHeight() ) };
 					uint32* pRect = &rect.x;
 					for (size_t k = 0u; k < 4u; ++k)
 					{
@@ -84,11 +84,11 @@ namespace tiki
 			if ( ( scaleX[ 0u ] == '/' || scaleX[ 0u ] == '*' ) && ( scaleY[ 0u ] == '/' || scaleY[ 0u ] == '*' ) )
 			{
 				uint2 scale;
-				scale.x = image.getWidth();
-				scale.y = image.getHeight();
+				scale.x = uint32( image.getWidth() );
+				scale.y = uint32( image.getHeight() );
 
-				const uint modX = ParseString::parseUInt32( scaleX.substring( 1u ) );
-				const uint modY = ParseString::parseUInt32( scaleY.substring( 1u ) );
+				const uint32 modX = ParseString::parseUInt32( scaleX.subString( 1u ) );
+				const uint32 modY = ParseString::parseUInt32( scaleY.subString( 1u ) );
 
 				if ( scaleX[ 0u ] == '/' )
 				{
@@ -114,14 +114,40 @@ namespace tiki
 				}
 			}
 
-			uint mipMapCount = 1u;
+			TextureWriterParameters writerParameters;
+			writerParameters.targetFormat = PixelFormat_R8G8B8A8;
+				
+			writerParameters.mipMapCount = 1u;
 			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )
 			{
-				mipMapCount = 63u - countLeadingZeros64( TIKI_MAX( image.getWidth(), image.getHeight() ) );
+				writerParameters.mipMapCount = 63u - countLeadingZeros64( TIKI_MIN( image.getWidth(), image.getHeight() ) );
+			}
+
+			const string dimentionsString = params.arguments.getOptionalString( "type" , "2d" ).toLower();
+			if ( dimentionsString == "1d" )
+			{
+				writerParameters.targetType = TextureType_1d;
+			}
+			else if ( dimentionsString == "2d" )
+			{
+				writerParameters.targetType = TextureType_2d;
+			}
+			else if ( dimentionsString == "3d" )
+			{
+				writerParameters.targetType = TextureType_3d;
+				writerParameters.data.texture3d.sliceSize = params.arguments.getInt( "slice_size" );
+			}
+			else if ( dimentionsString == "cube" )
+			{
+				writerParameters.targetType = TextureType_Cube;
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "texture type '%s' not supported.\n", dimentionsString.cStr() );
 			}
 
 			TextureWriter textureWriter;
-			textureWriter.create( image, PixelFormat_R8G8B8A8, mipMapCount );
+			textureWriter.create( image, writerParameters );
 
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "texture", params.targetPlatform );
