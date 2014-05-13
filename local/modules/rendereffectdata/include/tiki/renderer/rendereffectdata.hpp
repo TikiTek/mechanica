@@ -4,14 +4,11 @@
 
 #include "tiki/base/reflection.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/graphics_references.hpp"
 #include "tiki/renderer/rendererdefinition.hpp"
-#include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
 {
-	class Texture;
-	typedef ResRef< Texture > TextureReference;
-
 	enum
 	{
 		RenderEffectDataInvalidTextureOffset = 0xffffu
