@@ -358,7 +358,7 @@ namespace tiki
 		{
 			bool lastField	= false;
 
-			sint index	= TIKI_MIN( name.indexOf( '.' ), name.indexOf( "->" ) );
+			sint index	= (sint)TIKI_MIN( (uint)name.indexOf( '.' ), (uint)name.indexOf( "->" ) );
 			if ( index == -1 )
 			{
 				index		= sint( name.getLength() );

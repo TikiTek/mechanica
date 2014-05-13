@@ -272,7 +272,7 @@ namespace tiki
 		}
 		else if ( targetFormat == VertexAttributeFormat_x8y8z8w8 )
 		{
-			const uint* pSourceData = (const uint*)pSource;
+			const uint32* pSourceData = (const uint32*)pSource;
 
 			for (uint i = 0u; i < elementCount; ++i)
 			{

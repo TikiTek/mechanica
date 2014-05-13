@@ -135,11 +135,11 @@ namespace tiki
 					{
 						string fieldName = string( pNameAtt->content ).toLower();
 
-						if ( fieldName == 's' )
+						if ( fieldName == "s" )
 						{
 							fieldName = "x";
 						}
-						else if ( fieldName == 't' )
+						else if ( fieldName == "t" )
 						{
 							fieldName = "y";
 						}
