@@ -1,3 +1,5 @@
-<tikiasset> 
-<input file="player_normal.psd" type="texture" /> 
+<tikiasset template="texture_normal">
+	<input file="player_normal.psd" type="texture" /> 
+	<param key="width" value="/4" />
+	<param key="height" value="/4" />
 </tikiassets> 

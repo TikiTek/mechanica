@@ -1,4 +1,4 @@
-<xtemplate name="texture_specular">
+<xtemplate name="texture_selfillu">
 	<param key="width" value="/4" />
 	<param key="height" value="/4" />
 </xtemplate>

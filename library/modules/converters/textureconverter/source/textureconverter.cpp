@@ -78,6 +78,11 @@ namespace tiki
 				values.dispose();
 			}
 
+			if ( params.arguments.getOptionalString( "gamma_mode", "" ) == "linear" )
+			{
+				image.covertGamma( HdrImage::GammaType_Linear );
+			}
+
 			const string scaleX = params.arguments.getOptionalString( "width", "/1" );
 			const string scaleY = params.arguments.getOptionalString( "height", "/1" );
 

@@ -1,3 +1,3 @@
-<tikiasset>
-<input file="player_diffuse.psd" type="texture" /> 
+<tikiasset template="texture_diffuse">
+	<input file="player_diffuse.psd" type="texture" /> 
 </tikiassets> 
