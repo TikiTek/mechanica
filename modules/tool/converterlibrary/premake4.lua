@@ -17,7 +17,7 @@ module:add_dependency( "animationconverter" );
 local project = Project:new(
 	"converterlibrary",
 	{ "x32", "x64" },
-	{ "Debug", "Release" },
+	{ "Debug", "Release", "Master" },
 	module,
 	ProjectTypes.sharedLibrary
 );
