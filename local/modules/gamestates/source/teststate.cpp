@@ -414,6 +414,10 @@ namespace tiki
 				m_enableBloom = !m_enableBloom;
 				return true;
 
+			case KeyboardKey_Space:
+				m_drawPlayer = !m_drawPlayer;
+				break;
+
 			default:
 				break;
 			}
@@ -443,8 +447,7 @@ namespace tiki
 					m_cameraSpeed = 10.0f;
 					break;
 
-				case KeyboardKey_Space:
-					m_drawPlayer = !m_drawPlayer;
+				default:
 					break;
 				}
 			}
