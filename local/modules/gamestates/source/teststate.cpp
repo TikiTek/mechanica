@@ -2,6 +2,7 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/base/timer.hpp"
+#include "tiki/components/transformcomponent.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
@@ -301,12 +302,14 @@ namespace tiki
 		//{
 		//	const SkinningData* pSkinningData = &m_skinningData;
 		//	m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
-
 		//}
 		//else
 		//{
 		//	m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
 		//}
+
+		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( 1000u, 0u );
+		quaternion::fromYawPitchRoll( pState->rotation, timeValue, 0.0f, 0.0f );
 
 		m_debugGui.update();
 		m_gameClient.update();
@@ -315,7 +318,6 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-
 		Matrix44 matrices[ 256u ];
 		//AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
 		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
