@@ -24,14 +24,15 @@ namespace tiki
 
 	}
 
-	void TransformComponent::update( float timeStep )
+	void TransformComponent::update()
 	{
-		ConstIterator componentStates = getConstIterator();
+		Iterator componentStates = getIterator();
 
-		const State* pState = nullptr;
+		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			// TODO
+			quaternion::toMatrix( pState->worldTransform.rot, pState->rotation );
+			pState->worldTransform.pos = pState->position;
 		}
 	}
 

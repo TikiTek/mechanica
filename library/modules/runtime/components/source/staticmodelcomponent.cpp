@@ -48,7 +48,7 @@ namespace tiki
 		const State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			gameRenderer.queueModel( pState->pModel, nullptr, nullptr );
+			gameRenderer.queueModel( pState->pModel, &pState->pTransform->worldTransform, nullptr );
 		}
 	}
 
@@ -69,7 +69,8 @@ namespace tiki
 
 	bool StaticModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
-		pState->pModel = pInitData->model.getData();
+		pState->pTransform	= static_cast< TransformComponentState* >( componentIterator.getFirstOfType( m_transformTypeId ) );
+		pState->pModel		= pInitData->model.getData();
 
 		return true;
 	}

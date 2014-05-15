@@ -63,6 +63,22 @@ namespace tiki
 		return pState;
 	}
 
+	TIKI_FORCE_INLINE ComponentState* ComponentEntityIterator::getFirstOfType( ComponentTypeId typeId )
+	{
+		ComponentState* pState = m_pFirst;
+		while ( pState != nullptr )
+		{
+			if ( pState->typeId == typeId )
+			{
+				return pState;
+			}
+
+			pState = pState->pNextComponentOfSameEntity;
+		}
+
+		return nullptr;
+	}
+
 	TIKI_FORCE_INLINE void ComponentEntityIterator::reset()
 	{
 		m_pCurrent = m_pFirst;

@@ -7,9 +7,9 @@
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
@@ -33,7 +33,7 @@ namespace tiki
 
 		m_drawPlayer		= false;
 		m_enableBloom		= true;
-		m_enableAsciiMode	= true;
+		m_enableAsciiMode	= false;
 		m_gbufferIndex		= -1;
 		m_enableMouseCamera	= false;
 		m_cameraSpeed		= 1.0f;
@@ -90,21 +90,6 @@ namespace tiki
 			}
 			//break;
 
-		case TestStateTransitionSteps_CreateGameClient:
-			if ( isCreating )
-			{
-				TIKI_VERIFY( m_gameClient.create() );
-
-				return TransitionState_Finish;
-			}
-			else
-			{
-				m_gameClient.dispose();
-
-				return TransitionState_Finish;
-			}
-			//break;
-
 		case TestStateTransitionSteps_LoadResources:
 			if ( isCreating )
 			{
@@ -149,6 +134,23 @@ namespace tiki
 				m_animationData.dispose();
 
 				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+
+				return TransitionState_Finish;
+			}
+			//break;
+
+		case TestStateTransitionSteps_CreateGameClient:
+			if ( isCreating )
+			{
+				TIKI_VERIFY( m_gameClient.create() );
+
+				m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
+
+				return TransitionState_Finish;
+			}
+			else
+			{
+				m_gameClient.dispose();
 
 				return TransitionState_Finish;
 			}
@@ -293,24 +295,27 @@ namespace tiki
 		mtx.pos.y = -0.1f;
 		m_pGameRenderer->queueModel( m_pModelPlane, &mtx );
 
-		matrix::createIdentity( mtx );
-		matrix::createRotationY( mtx.rot, timeValue );
-		if ( m_drawPlayer )
-		{
-			const SkinningData* pSkinningData = &m_skinningData;
-			m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
+		//matrix::createIdentity( mtx );
+		//matrix::createRotationY( mtx.rot, timeValue );
+		//if ( m_drawPlayer )
+		//{
+		//	const SkinningData* pSkinningData = &m_skinningData;
+		//	m_pGameRenderer->queueModel( m_pModelPlayer, &mtx, &pSkinningData );
 
-		}
-		else
-		{
-			m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
-		}
+		//}
+		//else
+		//{
+		//	m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
+		//}
 
 		m_debugGui.update();
+		m_gameClient.update();
+		m_gameClient.render( *m_pGameRenderer );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
+
 		Matrix44 matrices[ 256u ];
 		//AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
 		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );

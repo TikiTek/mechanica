@@ -6,6 +6,7 @@
 #include "tiki/components/componentstate.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/math/matrix.hpp"
 
 namespace tiki
 {
@@ -15,6 +16,7 @@ namespace tiki
 	{
 		Vector3		position;
 		Quaternion	rotation;
+		Matrix43	worldTransform;
 	};
 
 	class TransformComponent : public Component< TransformComponentState, TransformComponentInitData >
@@ -29,7 +31,7 @@ namespace tiki
 		bool				create();
 		void				dispose();
 
-		void				update( float timeStep );
+		void				update();
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;

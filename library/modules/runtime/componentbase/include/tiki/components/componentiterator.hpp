@@ -34,6 +34,7 @@ namespace tiki
 		TIKI_FORCE_INLINE					~ComponentEntityIterator();
 
 		TIKI_FORCE_INLINE ComponentState*	getNext();
+		TIKI_FORCE_INLINE ComponentState*	getFirstOfType( ComponentTypeId typeId );
 
 		TIKI_FORCE_INLINE void				reset();
 

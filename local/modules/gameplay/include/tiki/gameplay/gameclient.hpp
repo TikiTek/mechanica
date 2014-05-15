@@ -9,17 +9,23 @@
 
 namespace tiki
 {
+	class Model;
+
 	class GameClient
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameClient );
 
 	public:
 
-		bool	create();
-		void	dispose();
+		bool				create();
+		void				dispose();
 
-		void	update();
-		void	render( GameRenderer& gameRenderer );
+		EntityId			createModelEntity( const Model* pModel, const Vector3& position );
+
+		const EntitySystem&	getEntitySystem() const { return m_entitySystem; }
+
+		void				update();
+		void				render( GameRenderer& gameRenderer );
 
 	private:
 

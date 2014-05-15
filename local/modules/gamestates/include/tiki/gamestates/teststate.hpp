@@ -29,8 +29,8 @@ namespace tiki
 	enum TestStateTransitionSteps
 	{
 		TestStateTransitionSteps_Initialize,
-		TestStateTransitionSteps_CreateGameClient,
 		TestStateTransitionSteps_LoadResources,
+		TestStateTransitionSteps_CreateGameClient,
 		TestStateTransitionSteps_SetRendererValues,
 
 		TestStateTransitionSteps_Count
