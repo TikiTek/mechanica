@@ -1,6 +1,10 @@
 
 #include "tiki/gameplay/gameclient.hpp"
 
+#include "tiki/components/entitytemplate.hpp"
+#include "tiki/components/staticmodelcomponent_initdata.hpp"
+#include "tiki/components/transformcomponent_initdata.hpp"
+
 namespace tiki
 {
 	bool GameClient::create()
@@ -51,8 +55,31 @@ namespace tiki
 		m_entitySystem.dispose();
 	}
 
+	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
+	{
+		TransformComponentInitData transformInitData;
+		createFloat3( transformInitData.position, position.x, position.y, position.z );
+		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+
+		StaticModelComponentInitData modelInitData;
+		modelInitData.model = pModel;
+
+		EntityTemplateComponent entityComponents[] =
+		{
+			{ m_transformComponent.getTypeCrc(), &transformInitData },
+			{ m_staticModelComponent.getTypeCrc(), &modelInitData }
+		};
+
+		EntityTemplate entityTemplate;
+		entityTemplate.componentCount	= 2u;
+		entityTemplate.pComponents		= entityComponents;
+
+		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+	}
+
 	void GameClient::update()
 	{
+		m_transformComponent.update();
 	}
 
 	void GameClient::render( GameRenderer& gameRenderer )
@@ -60,5 +87,4 @@ namespace tiki
 		m_staticModelComponent.render( gameRenderer );
 		m_skinnedModelComponent.render( gameRenderer );
 	}
-
 }
