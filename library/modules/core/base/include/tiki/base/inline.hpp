@@ -8,13 +8,13 @@
 
 #if TIKI_ENABLED( TIKI_USE_INLINE )
 #	if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#		define TIKI_INLINE	inline
-#		define TIKI_FORCE_INLINE __forceinline
-#		define TIKI_NO_INLINE __declspec(noinline)
+#		define TIKI_INLINE			inline
+#		define TIKI_FORCE_INLINE	__forceinline
+#		define TIKI_NO_INLINE		__declspec(noinline)
 #	elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-#		define TIKI_INLINE	inline
-#		define TIKI_FORCE_INLINE inline //__attribute__((always_inline))
-#		define TIKI_NO_INLINE __attribute__((noinline))
+#		define TIKI_INLINE			inline
+#		define TIKI_FORCE_INLINE	inline //__attribute__((always_inline))
+#		define TIKI_NO_INLINE		__attribute__((noinline))
 #	else
 #		error Platform not implemented
 #	endif

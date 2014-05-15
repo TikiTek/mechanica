@@ -144,7 +144,15 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE uint SizedArray< T >::getIndexOf( const T& value ) const
 	{
-		return getIndexOf( &value );
+		for (uint i = 0u; i < m_count; ++i)
+		{
+			if ( m_pData[ i ] == value )
+			{
+				return i;
+			}
+		}
+
+		return TIKI_SIZE_T_MAX;
 	}
 
 	template< typename T >

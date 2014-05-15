@@ -14,6 +14,9 @@
 
 namespace tiki
 {
+	class EntitySystem;
+	class GameRenderer;
+	class TransformComponent;
 	struct SkinnedModelComponentInitData;
 	struct SkinnedModelComponentState;
 
@@ -25,6 +28,11 @@ namespace tiki
 
 								SkinnedModelComponent();
 		virtual					~SkinnedModelComponent();
+		
+		bool					create( EntitySystem& entitySystem, TransformComponent& trasformComponent );
+		void					dispose();
+
+		void					render( GameRenderer& gameRenderer ) const;
 
 		virtual crc32			getTypeCrc() const;
 		virtual uint32			getStateSize() const;
@@ -32,10 +40,12 @@ namespace tiki
 
 	protected:
 
-		virtual bool			internalInitializeState( SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData );
+		virtual bool			internalInitializeState( ComponentEntityIterator& componentIterator, SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData );
 		virtual void			internalDisposeState( SkinnedModelComponentState* pComponentState );
 
 	private:
+
+		ComponentTypeId			m_transformTypeId;
 
 		ConstantBuffer			m_skinningData;
 

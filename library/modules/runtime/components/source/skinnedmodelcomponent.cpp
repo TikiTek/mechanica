@@ -4,6 +4,8 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/skinnedmodelcomponent_initdata.hpp"
+#include "tiki/components/transformcomponent.hpp"
+#include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/math/matrix.hpp"
 
@@ -37,6 +39,26 @@ namespace tiki
 	{
 	}
 
+	bool SkinnedModelComponent::create( EntitySystem& entitySystem, TransformComponent& trasformComponent )
+	{
+		if ( !entitySystem.getComponentTypeIdByCrc( m_transformTypeId, trasformComponent.getTypeCrc() ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	void SkinnedModelComponent::dispose()
+	{
+		m_transformTypeId = InvalidComponentTypeId;
+	}
+
+	void SkinnedModelComponent::render( GameRenderer& gameRenderer ) const
+	{
+
+	}
+
 	crc32 SkinnedModelComponent::getTypeCrc() const
 	{
 		return crcString( "SkinnedModelComponent" );
@@ -52,7 +74,7 @@ namespace tiki
 		return "SkinnedModelComponent";
 	}
 
-	bool SkinnedModelComponent::internalInitializeState( SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData )
+	bool SkinnedModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, SkinnedModelComponentState* pComponentState, const SkinnedModelComponentInitData* pComponentInitData )
 	{		
 		return false;
 	}
@@ -60,7 +82,6 @@ namespace tiki
 	void SkinnedModelComponent::internalDisposeState( SkinnedModelComponentState* pComponentState )
 	{		
 	}
-
 
 	//void SkinnedModelComponent::initializeSystem()
 	//{

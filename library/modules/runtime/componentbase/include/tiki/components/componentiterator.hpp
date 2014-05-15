@@ -2,26 +2,45 @@
 #ifndef __TIKI_COMPONENTITERATOR_HPP_INCLUDED__
 #define __TIKI_COMPONENTITERATOR_HPP_INCLUDED__
 
+#include "tiki/base/inline.hpp"
 #include "tiki/components/componentstate.hpp"
 
 namespace tiki
 {
 	template<typename TState>
-	class ComponentIterator
+	class ComponentTypeIterator
 	{
 	public:
 
-					ComponentIterator( TState* pFirstState );
-					~ComponentIterator();
+		TIKI_FORCE_INLINE			ComponentTypeIterator( TState* pFirstState );
+		TIKI_FORCE_INLINE			~ComponentTypeIterator();
 
-		TState*		getNext();
+		TIKI_FORCE_INLINE TState*	getNext();
 
-		void		reset();
+		TIKI_FORCE_INLINE void		reset();
 
 	private:
 
 		TState*		m_pFirst;
 		TState*		m_pCurrent;
+
+	};
+		
+	class ComponentEntityIterator
+	{
+	public:
+
+		TIKI_FORCE_INLINE					ComponentEntityIterator( ComponentState* pFirstState );
+		TIKI_FORCE_INLINE					~ComponentEntityIterator();
+
+		TIKI_FORCE_INLINE ComponentState*	getNext();
+
+		TIKI_FORCE_INLINE void				reset();
+
+	private:
+
+		ComponentState*		m_pFirst;
+		ComponentState*		m_pCurrent;
 
 	};
 }

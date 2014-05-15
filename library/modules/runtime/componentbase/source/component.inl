@@ -4,7 +4,7 @@
 namespace tiki
 {
 	template< typename TState, typename TInitData >
-	bool Component<TState, TInitData>::initializeState( ComponentState* pComponentState, const void* pComponentInitData )
+	bool Component<TState, TInitData>::initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData )
 	{
 		TIKI_ASSERT( pComponentState != nullptr );
 
@@ -19,7 +19,7 @@ namespace tiki
 			m_pLastComponentState = pComponentState;
 		}
 				
-		return internalInitializeState( (TState*)pComponentState, (TInitData*)pComponentInitData );
+		return internalInitializeState( componentIterator, (TState*)pComponentState, (TInitData*)pComponentInitData );
 	}
 		
 	template< typename TState, typename TInitData >
@@ -46,13 +46,13 @@ namespace tiki
 	}
 
 	template< typename TState, typename TInitData >
-	ComponentIterator< TState > Component<TState, TInitData>::getIterator() const
+	ComponentTypeIterator< TState > Component<TState, TInitData>::getIterator() const
 	{
 		return Iterator( static_cast< State* >( m_pFirstComponentState ) );
 	}
 
 	template< typename TState, typename TInitData >
-	ComponentIterator< const TState > Component<TState, TInitData>::getConstIterator() const
+	ComponentTypeIterator< const TState > Component<TState, TInitData>::getConstIterator() const
 	{
 		return ConstIterator( static_cast< const State* >( m_pFirstComponentState ) );
 	}

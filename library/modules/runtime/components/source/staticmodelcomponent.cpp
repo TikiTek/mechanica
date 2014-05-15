@@ -4,6 +4,8 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
+#include "tiki/components/transformcomponent.hpp"
+#include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
 
 namespace tiki
@@ -24,6 +26,21 @@ namespace tiki
 	{
 	}
 
+	bool StaticModelComponent::create( EntitySystem& entitySystem, TransformComponent& trasformComponent )
+	{
+		if ( !entitySystem.getComponentTypeIdByCrc( m_transformTypeId, trasformComponent.getTypeCrc() ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	void StaticModelComponent::dispose()
+	{
+
+	}
+
 	void StaticModelComponent::render( GameRenderer& gameRenderer ) const
 	{
 		ConstIterator componentStates = getConstIterator();
@@ -31,7 +48,7 @@ namespace tiki
 		const State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			gameRenderer.queueModel( pState->pModel, nullptr );
+			gameRenderer.queueModel( pState->pModel, nullptr, nullptr );
 		}
 	}
 
@@ -50,7 +67,7 @@ namespace tiki
 		return "StaticModelComponent";
 	}
 
-	bool StaticModelComponent::internalInitializeState( StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
+	bool StaticModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
 		pState->pModel = pInitData->model.getData();
 

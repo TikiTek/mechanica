@@ -5,7 +5,9 @@
 
 namespace tiki
 {
+	class EntitySystem;
 	class GameRenderer;
+	class TransformComponent;
 	struct StaticModelComponentInitData;
 	struct StaticModelComponentState;
 
@@ -18,6 +20,9 @@ namespace tiki
 		explicit			StaticModelComponent();
 		virtual				~StaticModelComponent();
 
+		bool				create( EntitySystem& entitySystem, TransformComponent& trasformComponent );
+		void				dispose();
+
 		void				render( GameRenderer& gameRenderer ) const;
 
 		virtual crc32		getTypeCrc() const;
@@ -26,8 +31,12 @@ namespace tiki
 
 	protected:
 
-		virtual bool		internalInitializeState( StaticModelComponentState* pComponentState, const StaticModelComponentInitData* pComponentInitData );
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pComponentState, const StaticModelComponentInitData* pComponentInitData );
 		virtual void		internalDisposeState( StaticModelComponentState* pComponentState );
+
+	private:
+
+		ComponentTypeId		m_transformTypeId;
 
 	};
 }

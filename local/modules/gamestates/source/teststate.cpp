@@ -90,6 +90,21 @@ namespace tiki
 			}
 			//break;
 
+		case TestStateTransitionSteps_CreateGameClient:
+			if ( isCreating )
+			{
+				TIKI_VERIFY( m_gameClient.create() );
+
+				return TransitionState_Finish;
+			}
+			else
+			{
+				m_gameClient.dispose();
+
+				return TransitionState_Finish;
+			}
+			//break;
+
 		case TestStateTransitionSteps_LoadResources:
 			if ( isCreating )
 			{

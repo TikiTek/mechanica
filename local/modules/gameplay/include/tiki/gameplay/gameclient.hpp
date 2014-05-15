@@ -2,17 +2,16 @@
 #ifndef TIKI_GAMECLIENT_HPP__INCLUDED
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
-#include "tiki/entitysystem/entitysystem.hpp"
-#include "tiki/components/typeregister.hpp"
-#include "tiki/components/componentstorage.hpp"
-#include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
+#include "tiki/components/staticmodelcomponent.hpp"
+#include "tiki/components/transformcomponent.hpp"
+#include "tiki/entitysystem/entitysystem.hpp"
 
 namespace tiki
 {
 	class GameClient
 	{
-		TIKI_NONCOPYABLE_CLASS( GameClient );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameClient );
 
 	public:
 
@@ -20,7 +19,7 @@ namespace tiki
 		void	dispose();
 
 		void	update();
-		void	render();
+		void	render( GameRenderer& gameRenderer );
 
 	private:
 
@@ -28,14 +27,14 @@ namespace tiki
 		{
 			MaxTypeCount	= 16u,
 			ChunkCount		= 128u,
-			ChunkSize		= 512u
+			ChunkSize		= 4096u
 		};
 
 		EntitySystem			m_entitySystem;
 
-		StaticModelComponent	m_staticModelComponent;
 		SkinnedModelComponent	m_skinnedModelComponent;
-
+		StaticModelComponent	m_staticModelComponent;
+		TransformComponent		m_transformComponent;
 
 	};
 }

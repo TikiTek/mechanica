@@ -16,7 +16,7 @@ namespace tiki
 								ComponentBase();
 		virtual					~ComponentBase();
 
-		virtual bool			initializeState( ComponentState* pComponentState, const void* pComponentInitData ) = 0;
+		virtual bool			initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData ) = 0;
 		virtual void			disposeState( ComponentState* pComponentState ) = 0;
 
 		virtual crc32			getTypeCrc() const = 0;
@@ -37,16 +37,16 @@ namespace tiki
 
 	public:
 		
-		typedef TState								State;
-		typedef TInitData							InitData;
+		typedef TState									State;
+		typedef TInitData								InitData;
 
-		typedef ComponentIterator< TState >			Iterator;
-		typedef ComponentIterator< const TState >	ConstIterator;
+		typedef ComponentTypeIterator< TState >			Iterator;
+		typedef ComponentTypeIterator< const TState >	ConstIterator;
 
 						Component() {}
 		virtual			~Component() {}
 
-		virtual bool	initializeState( ComponentState* pComponentState, const void* pComponentInitData );
+		virtual bool	initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData );
 		virtual void	disposeState( ComponentState* pComponentState );
 
 
@@ -55,7 +55,7 @@ namespace tiki
 
 	protected:
 
-		virtual bool	internalInitializeState( TState* pComponentState, const TInitData* pComponentInitData ) = 0;
+		virtual bool	internalInitializeState( ComponentEntityIterator& componentIterator, TState* pComponentState, const TInitData* pComponentInitData ) = 0;
 		virtual void	internalDisposeState( TState* pComponentState ) = 0;
 
 	};

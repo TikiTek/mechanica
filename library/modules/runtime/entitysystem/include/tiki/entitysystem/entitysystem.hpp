@@ -3,8 +3,9 @@
 #define __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/fixedsizedarray.hpp"
-#include "tiki/components/componentstorage.hpp"
-#include "tiki/components/typeregister.hpp"
+#include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/entitysystem/componentstorage.hpp"
+#include "tiki/entitysystem/componenttyperegister.hpp"
 
 namespace tiki
 {
@@ -47,7 +48,9 @@ namespace tiki
 		bool					registerComponentType( ComponentBase* pComponent );
 		void					unregisterComponentType( ComponentBase* pComponent );
 
-		EntityId				createEntityFromTemplate( const EntityTemplate& entityTemplate );
+		bool					getComponentTypeIdByCrc( ComponentTypeId& targetTypeId, crc32 componentTypeCrc ) const;
+
+		EntityId				createEntityFromTemplate( uint targetPoolIndex, const EntityTemplate& entityTemplate );
 		void					destroyEntity( EntityId entityId );
 
 		ComponentState*			getFirstComponentOfEntity( EntityId entityId );
@@ -63,13 +66,26 @@ namespace tiki
 			ComponentState*		pFirstComponent;
 		};
 
-		ComponentTypeRegister	m_typeRegister;
-		ComponentStorage		m_storage;
-		
-		Array< EntityPool >		m_pools;
-		Array< EntityData >		m_entities;
+		struct EntityPoolInfo
+		{
+			EntityId	firstId;
+			EntityId	firstFreeId;
+			uint16		poolSize;
+			uint16		offset;
+		};
 
-		EntityData*				getEntityData( EntityId entityId );
+		typedef SortedSizedMap< crc32, ComponentTypeId > ComponentTypeIdMapping;
+
+		ComponentTypeRegister		m_typeRegister;
+		ComponentStorage			m_storage;
+		
+		ComponentTypeIdMapping		m_typeMapping;
+
+		Array< EntityPoolInfo >		m_pools;
+		Array< EntityData >			m_entities;
+
+		EntityData*					getEntityData( EntityId entityId );
+		const EntityData*			getEntityData( EntityId entityId ) const;
 
 	};
 }

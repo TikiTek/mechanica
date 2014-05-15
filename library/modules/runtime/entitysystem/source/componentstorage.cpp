@@ -1,11 +1,11 @@
 
-#include "tiki/components/componentstorage.hpp"
+#include "tiki/entitysystem/componentstorage.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/typeregister.hpp"
+#include "tiki/entitysystem/componenttyperegister.hpp"
 
 namespace tiki
 {
@@ -46,14 +46,14 @@ namespace tiki
 		const uint dataSize = chunkSize * chunkCount;
 		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOCALIGN( dataSize, ChunkAlignment ) );
 
-		if ( m_chunks.create( chunkCount ) == false )
+		if ( !m_chunks.create( chunkCount ) )
 		{
 			dispose();
 			return false;
 		}
 
 		const uint typeCount = typeRegister.getMaxTypeCount();
-		if ( m_firstChunk.create( typeCount ) == false || m_lastState.create( typeCount ) == false )
+		if ( !m_firstChunk.create( typeCount ) || !m_lastState.create( typeCount ) )
 		{
 			dispose();
 			return false;
@@ -77,7 +77,7 @@ namespace tiki
 			chunk.maxCount				= 0u;
 		}
 
-		return false;
+		return true;
 	}
 
 	void ComponentStorage::dispose()
@@ -166,8 +166,10 @@ namespace tiki
 			pChunk->pLastFreeState = nullptr;
 		}
 		
-		pState->typeId	= typeId;
-		pState->pNextComponentOfSameType = nullptr;
+		pState->entityId					= InvalidEntityId;
+		pState->typeId						= typeId;
+		pState->pNextComponentOfSameType	= nullptr;
+		pState->pNextComponentOfSameEntity	= nullptr;
 
 		if ( m_lastState[ typeId ] == nullptr )
 		{

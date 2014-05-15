@@ -1,7 +1,8 @@
 
+#include "tiki/entitysystem/componenttyperegister.hpp"
+
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/component.hpp"
-#include "tiki/components/typeregister.hpp"
 
 namespace tiki
 {

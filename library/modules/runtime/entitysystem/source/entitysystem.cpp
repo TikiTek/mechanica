@@ -1,6 +1,9 @@
 
 #include "tiki/entitysystem/entitysystem.hpp"
 
+#include "tiki/components/component.hpp"
+#include "tiki/components/entitytemplate.hpp"
+
 namespace tiki
 {
 	EntitySystem::EntitySystem()
@@ -13,7 +16,19 @@ namespace tiki
 
 	bool EntitySystem::create( const EntitySystemParameters& parameters )
 	{
+		if ( parameters.entityPools.getCount() == 0u )
+		{
+			TIKI_TRACE_ERROR( "[entitysystem] No pols defined. EntitySystem could not created.\n" );
+			return false;
+		}
+
 		if ( !m_typeRegister.create( parameters.typeRegisterMaxCount ) )
+		{
+			dispose();
+			return false;
+		}
+
+		if ( !m_typeMapping.create( parameters.typeRegisterMaxCount ) )
 		{
 			dispose();
 			return false;
@@ -25,19 +40,46 @@ namespace tiki
 			return false;
 		}
 
-		if ( !m_pools.create( parameters.entityPools.getBegin(), parameters.entityPools.getCount() ) )
+		uint16 entityCapacity = 0u;
+		if ( m_pools.create( parameters.entityPools.getCount() + 1u ) )
+		{
+			EntityPoolInfo& firstPool = m_pools[ 0u ];
+			firstPool.firstId		= InvalidEntityId;
+			firstPool.firstFreeId	= InvalidEntityId;
+			firstPool.poolSize		= 1u;
+			firstPool.offset		= 0u;
+
+			// TODO: more checks of integrity
+			for (uint i = 0u; i < parameters.entityPools.getCount(); ++i)
+			{
+				const EntityPool& pool = parameters.entityPools[ i ];
+				
+				EntityPoolInfo& targetPool = m_pools[ i + 1u ];
+				targetPool.firstId		= pool.firstId;
+				targetPool.firstFreeId	= pool.firstId;
+				targetPool.poolSize		= pool.poolSize;
+				targetPool.offset		= entityCapacity;
+
+				entityCapacity += pool.poolSize;
+			} 
+		}
+		else
 		{
 			dispose();
 			return false;
 		}
 
-		uint entityCapacity = 0u;
-		for (uint i = 0u; i < m_pools.getCount(); ++i)
+		if ( m_entities.create( entityCapacity ) )
 		{
-			entityCapacity += m_pools[ i ].poolSize;
-		}
+			for (uint i = 0u; i < m_entities.getCount(); ++i)
+			{
+				EntityData& entityData = m_entities[ i ];
 
-		if ( !m_entities.create( entityCapacity ) )
+				entityData.id				= InvalidEntityId;
+				entityData.pFirstComponent	= nullptr;
+			}
+		}
+		else
 		{
 			dispose();
 			return false;
@@ -48,16 +90,22 @@ namespace tiki
 
 	void EntitySystem::dispose()
 	{
+		m_entities.dispose();
+		m_pools.dispose();
+
 		m_storage.dispose();
+		m_typeMapping.dispose();
 		m_typeRegister.dispose();
 	}
 
 	bool EntitySystem::registerComponentType( ComponentBase* pComponent )
 	{
+		TIKI_ASSERT( pComponent != nullptr );
+
 		const ComponentTypeId typeId = m_typeRegister.registerType( pComponent );
 		if ( typeId != InvalidComponentTypeId )
 		{
-			// todo
+			m_typeMapping.set( pComponent->getTypeCrc(), typeId );
 			return true;
 		}
 
@@ -66,27 +114,189 @@ namespace tiki
 
 	void EntitySystem::unregisterComponentType( ComponentBase* pComponent )
 	{
-		const ComponentTypeId typeId = InvalidComponentTypeId; // todo
-		m_typeRegister.unregisterType( typeId );
+		TIKI_ASSERT( pComponent != nullptr );
+
+		ComponentTypeId typeId;
+		const crc32 componentTypeCrc = pComponent->getTypeCrc();
+		if ( m_typeMapping.findValue( &typeId, componentTypeCrc ) )
+		{
+			m_typeRegister.unregisterType( typeId );
+			m_typeMapping.remove( componentTypeCrc );
+		}
+	}
+	
+	bool EntitySystem::getComponentTypeIdByCrc( ComponentTypeId& targetTypeId, crc32 componentTypeCrc ) const
+	{
+		return m_typeMapping.findValue( &targetTypeId, componentTypeCrc );
 	}
 
-	EntityId EntitySystem::createEntityFromTemplate( const EntityTemplate& entityTemplate )
+	EntityId EntitySystem::createEntityFromTemplate( uint targetPoolIndex, const EntityTemplate& entityTemplate )
 	{
-		return InvalidEntityId;
+		TIKI_ASSERT( targetPoolIndex < m_pools.getCount() );
+
+		EntityPoolInfo& pool = m_pools[ targetPoolIndex + 1u ];
+		if ( pool.firstFreeId == InvalidEntityId )
+		{
+			return InvalidEntityId;
+		}
+
+		const EntityId entityId		= pool.firstFreeId;
+		const uint16 entityIndex	= pool.offset + ( pool.firstId - entityId );
+
+		// find next free id
+		pool.firstFreeId = InvalidEntityId;
+		const uint16 maxEntityIndexInPool = pool.offset + pool.poolSize;
+		for (uint16 i = entityIndex + 1u; i < maxEntityIndexInPool; ++i)
+		{
+			if ( m_entities[ i ].id == InvalidEntityId )
+			{
+				pool.firstFreeId = i;
+			}
+		}
+
+		// create components
+		ComponentState* pLastState = nullptr;
+		ComponentState* pFirstState = nullptr;
+		for (uint i = 0u; i < entityTemplate.componentCount; ++i)
+		{
+			const EntityTemplateComponent& entityComponent = entityTemplate.pComponents[ i ];
+
+			ComponentTypeId typeId;
+			if ( !m_typeMapping.findValue( &typeId, entityComponent.typeCrc ) )
+			{
+				TIKI_TRACE_ERROR( "[entitysystem] Cound find component type with CRC: 0x%08x\n", entityComponent.typeCrc );
+				continue;
+			}
+
+			ComponentState* pComponentState = m_storage.allocateState( typeId );
+			if ( pComponentState == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[entitysystem] Cound allocate component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
+				continue;
+			}
+
+			// initialize state
+			ComponentBase* pComponent = m_typeRegister.getTypeComponent( typeId );
+			if ( !pComponent->initializeState( ComponentEntityIterator( pFirstState ), pComponentState, entityComponent.pInitData ) )
+			{
+				TIKI_TRACE_ERROR( "[entitysystem] Cound initialize component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
+				m_storage.freeState( pComponentState );
+				continue;
+			}
+
+			// fill state data
+			pComponentState->entityId = entityId;
+			if ( pLastState != nullptr )
+			{
+				pLastState->pNextComponentOfSameEntity = pComponentState;
+			}
+
+			if ( pFirstState == nullptr )
+			{
+				pFirstState = pComponentState;
+			}
+
+			pLastState = pComponentState;
+		}
+
+		EntityData& entityData = m_entities[ entityIndex ];
+		entityData.id				= entityId;
+		entityData.pFirstComponent	= pFirstState;
+
+		return entityId;
 	}
 
 	void EntitySystem::destroyEntity( EntityId entityId )
 	{
+		EntityData* pEntityData = getEntityData( entityId );
+		if ( pEntityData == nullptr )
+		{
+			return;
+		}
+		TIKI_ASSERT( pEntityData->id == entityId );
 
+		ComponentState* pComponentState = pEntityData->pFirstComponent;
+		while ( pComponentState != nullptr )
+		{
+			ComponentState* pNextState = pComponentState->pNextComponentOfSameEntity;
+
+			ComponentBase* pComponent = m_typeRegister.getTypeComponent( pComponentState->typeId );
+			pComponent->disposeState( pComponentState );
+
+			m_storage.freeState( pComponentState );
+
+			pComponentState = pNextState;
+		}
 	}
 
 	const ComponentState* EntitySystem::getFirstComponentOfEntity( EntityId entityId ) const
 	{
-		return nullptr;
+		const EntityData* pEntityData = getEntityData( entityId );
+		if ( pEntityData == nullptr )
+		{
+			return nullptr;
+		}
+
+		return pEntityData->pFirstComponent;
 	}
 
 	const ComponentState* EntitySystem::getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId ) const
 	{
+		const ComponentState* pComponentState = getFirstComponentOfEntity( entityId );
+		while ( pComponentState != nullptr )
+		{
+			if ( pComponentState->typeId == typeId )
+			{
+				return pComponentState;
+			}
+
+			pComponentState = pComponentState->pNextComponentOfSameEntity;
+		}
+
 		return nullptr;
+	}
+
+	EntitySystem::EntityData* EntitySystem::getEntityData( EntityId entityId )
+	{
+		const EntityPoolInfo* pEntityPool = nullptr;
+		for (uint i = 0u; i < m_pools.getCount(); ++i)
+		{
+			const EntityPoolInfo& pool = m_pools[ i ];
+			if ( entityId > pool.firstId && entityId < pool.firstId + pool.poolSize )
+			{
+				pEntityPool = &pool;
+				break;
+			}
+		}
+
+		if ( pEntityPool == nullptr )
+		{
+			return nullptr;
+		}
+
+		const uint entityIndex = pEntityPool->offset + ( entityId - pEntityPool->firstId );
+		return &m_entities[ entityIndex ];
+	}
+
+	const EntitySystem::EntityData* EntitySystem::getEntityData( EntityId entityId ) const
+	{
+		const EntityPoolInfo* pEntityPool = nullptr;
+		for (uint i = 0u; i < m_pools.getCount(); ++i)
+		{
+			const EntityPoolInfo& pool = m_pools[ i ];
+			if ( entityId > pool.firstId && entityId < pool.firstId + pool.poolSize )
+			{
+				pEntityPool = &pool;
+				break;
+			}
+		}
+
+		if ( pEntityPool == nullptr )
+		{
+			return nullptr;
+		}
+
+		const uint entityIndex = pEntityPool->offset + ( entityId - pEntityPool->firstId );
+		return &m_entities[ entityIndex ];
 	}
 }
