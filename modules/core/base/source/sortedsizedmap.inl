@@ -7,7 +7,7 @@
 namespace tiki
 {
 	template<typename TKey, typename TValue>
-	SortedSizedMap<TKey, TValue>::SortedSizedMap()
+	TIKI_FORCE_INLINE SortedSizedMap<TKey, TValue>::SortedSizedMap()
 	{
 		m_pData		= nullptr;
 		m_count		= 0u;
@@ -15,7 +15,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	SortedSizedMap<TKey, TValue>::~SortedSizedMap()
+	TIKI_FORCE_INLINE SortedSizedMap<TKey, TValue>::~SortedSizedMap()
 	{
 		TIKI_ASSERT( m_pData	== nullptr );
 		TIKI_ASSERT( m_count	== 0u );
@@ -23,17 +23,24 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	void SortedSizedMap<TKey, TValue>::create( uint size, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::create( uint size, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData		= static_cast< Pair* >( memory::newArray< Pair >( size ) );
+		m_pData = static_cast< Pair* >( memory::newArray< Pair >( size ) );
+		if ( m_pData == nullptr )
+		{
+			return false;
+		}
+
 		m_count		= 0u;
 		m_capacity	= size;
+
+		return true;
 	}
 
 	template<typename TKey, typename TValue>
-	void SortedSizedMap<TKey, TValue>::dispose()
+	TIKI_FORCE_INLINE void SortedSizedMap<TKey, TValue>::dispose()
 	{
 		if ( m_pData != nullptr )
 		{
@@ -46,33 +53,33 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	uint SortedSizedMap<TKey, TValue>::getCount() const
+	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCount() const
 	{
 		return m_count;
 	}
 
 	template<typename TKey, typename TValue>
-	uint SortedSizedMap<TKey, TValue>::getCapacity() const
+	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCapacity() const
 	{
 		return m_capacity;
 	}
 
 	template<typename TKey, typename TValue>
-	TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index )
+	TIKI_FORCE_INLINE TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index )
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	const TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index ) const
+	TIKI_FORCE_INLINE const TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index )
+	TIKI_FORCE_INLINE KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index )
 	{
 		TIKI_ASSERT( index < m_capacity );
 		if ( index >= m_count )
@@ -83,14 +90,14 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	const KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index ) const
+	TIKI_FORCE_INLINE const KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index ) const
 	{
 		TIKI_ASSERT( index < m_capacity );
 		return m_pData[ index ];
 	}
 
 	template<typename TKey, typename TValue>
-	bool SortedSizedMap<TKey, TValue>::findValue( TValue* pTargetValue, TKey key ) const
+	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::findValue( TValue* pTargetValue, TKey key ) const
 	{
 		TIKI_ASSERT( pTargetValue != nullptr );
 
@@ -105,7 +112,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	void SortedSizedMap<TKey, TValue>::set( const TKey& key, const TValue& value )
+	TIKI_FORCE_INLINE void SortedSizedMap<TKey, TValue>::set( const TKey& key, const TValue& value )
 	{
 		TIKI_ASSERT( m_count < m_capacity );
 
@@ -129,7 +136,7 @@ namespace tiki
 	}
 	
 	template<typename TKey, typename TValue>
-	bool SortedSizedMap<TKey, TValue>::remove( const TKey& key )
+	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::remove( const TKey& key )
 	{
 		const uint index = findIndex( key );
 
@@ -148,7 +155,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	uint SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
+	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
 	{
 		if ( m_count == 0u )
 		{

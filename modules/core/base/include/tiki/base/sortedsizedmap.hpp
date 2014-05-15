@@ -3,6 +3,7 @@
 #define __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/inline.hpp"
 
 namespace tiki
 {
@@ -21,26 +22,25 @@ namespace tiki
 	public:
 
 		typedef KeyValuePair<TKey, TValue> Pair;
+		
+		TIKI_FORCE_INLINE				SortedSizedMap();
+		TIKI_FORCE_INLINE				~SortedSizedMap();
 
+		TIKI_FORCE_INLINE bool			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE void			dispose();
 
-		SortedSizedMap();
-		~SortedSizedMap();
+		TIKI_FORCE_INLINE uint			getCount() const;
+		TIKI_FORCE_INLINE uint			getCapacity() const;
 
-		void			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-		void			dispose();
+		TIKI_FORCE_INLINE TValue&		getValueAt( uint index );
+		TIKI_FORCE_INLINE const TValue&	getValueAt( uint index ) const;
+		TIKI_FORCE_INLINE Pair&			getPairAt( uint index );
+		TIKI_FORCE_INLINE const Pair&	getPairAt( uint index ) const;
 
-		uint			getCount() const;
-		uint			getCapacity() const;
+		TIKI_FORCE_INLINE bool			findValue( TValue* pTargetValue, TKey key ) const;
 
-		TValue&			getValueAt( uint index );
-		const TValue&	getValueAt( uint index ) const;
-		Pair&			getPairAt( uint index );
-		const Pair&		getPairAt( uint index ) const;
-
-		bool			findValue( TValue* pTargetValue, TKey key ) const;
-
-		void			set( const TKey& key, const TValue& value );
-		bool			remove( const TKey& key );
+		TIKI_FORCE_INLINE void			set( const TKey& key, const TValue& value );
+		TIKI_FORCE_INLINE bool			remove( const TKey& key );
 
 	private:
 

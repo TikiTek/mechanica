@@ -35,6 +35,15 @@ namespace tiki
 		return quat;
 	}
 
+	TIKI_FORCE_INLINE Quaternion& quaternion::set( Quaternion& quat, const float4& source )
+	{
+		quat.x = source.x;
+		quat.y = source.y;
+		quat.z = source.z;
+		quat.w = source.w;
+		return quat;
+	}
+
 	TIKI_FORCE_INLINE Quaternion& quaternion::set( Quaternion& quat, float x, float y, float z, float w )
 	{
 		quat.x = x;

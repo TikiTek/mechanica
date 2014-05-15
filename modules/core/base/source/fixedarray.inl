@@ -36,7 +36,15 @@ namespace tiki
 	template< typename T, uint TCapacity >
 	TIKI_FORCE_INLINE uint FixedArray< T, TCapacity >::getIndexOf( ConstReference value ) const
 	{
-		return getIndexOf( &value );
+		for (uint i = 0u; i < TCapacity; ++i)
+		{
+			if ( m_aData[ i ] == value )
+			{
+				return i;
+			}
+		}
+
+		return TIKI_SIZE_T_MAX;
 	}
 
 	template< typename T, uint TCapacity >

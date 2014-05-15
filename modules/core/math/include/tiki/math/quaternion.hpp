@@ -27,6 +27,8 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Quaternion&	clear( Quaternion& quat );
 		TIKI_FORCE_INLINE Quaternion&	createIdentity( Quaternion& quat );
+
+		TIKI_FORCE_INLINE Quaternion&	set( Quaternion& quat, const float4& source );
 		TIKI_FORCE_INLINE Quaternion&	set( Quaternion& quat, float x, float y, float z, float w );
 
 		TIKI_FORCE_INLINE Quaternion&	add( Quaternion& quat, const Quaternion& rhs );
