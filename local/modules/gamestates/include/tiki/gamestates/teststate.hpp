@@ -6,6 +6,7 @@
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
+#include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
@@ -28,6 +29,7 @@ namespace tiki
 	enum TestStateTransitionSteps
 	{
 		TestStateTransitionSteps_Initialize,
+		TestStateTransitionSteps_CreateGameClient,
 		TestStateTransitionSteps_LoadResources,
 		TestStateTransitionSteps_SetRendererValues,
 
@@ -86,6 +88,8 @@ namespace tiki
 		bool						m_enableBloom;
 		PostProcessAscii			m_ascii;
 		PostProcessBloom			m_bloom;
+
+		GameClient					m_gameClient;
 
 	};
 }
