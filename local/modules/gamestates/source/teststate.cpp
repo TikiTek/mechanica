@@ -270,7 +270,7 @@ namespace tiki
 		//spotLight.theta = 0.174532925f;
 		//spotLight.phi	= 1.22173048f;
 
-		m_pAnimationPlayer->sample( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy(), timeValue );
+		m_pAnimationPlayer->sample( m_animationData.getBegin(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy(), timeValue );
 
 		m_lightingWindow.fillFrameData( frameData );
 
@@ -298,7 +298,7 @@ namespace tiki
 	{
 		Matrix44 matrices[ 256u ];
 		//AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
-		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getData(), *m_pModelPlayer->getHierarchy() );
+		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
 
 		GraphicsMatrix44* pShaderConstants = static_cast< GraphicsMatrix44* >( graphicsContext.mapBuffer( m_skinningData.matrices ) );
 		for (uint i = 0u; i < m_animationData.getCount(); ++i)
