@@ -75,7 +75,7 @@ namespace tiki
 		fseek( pFile, 0, SEEK_SET );
 
 		buffer.create( (size_t)len, aligment );
-		fread_s( buffer.getData(), (size_t)len, (size_t)len, 1u, pFile );
+		fread_s( buffer.getBegin(), (size_t)len, (size_t)len, 1u, pFile );
 		fclose( pFile );
 
 		return true;

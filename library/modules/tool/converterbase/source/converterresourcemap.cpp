@@ -20,7 +20,7 @@ namespace tiki
 			file::readAllBytes( mapFilename, binaryData );
 
 			ResourceNameMapper mapper;
-			mapper.create( binaryData.getData() );
+			mapper.create( binaryData.getBegin() );
 
 			const ResourceNameMapper::NameMap& map = mapper.getMap();
 			
@@ -79,8 +79,8 @@ namespace tiki
 		stream.write( &elementCount, sizeof( elementCount ) );
 		stream.write( &stringDataSize, sizeof( stringDataSize ) );
 
-		stream.write( crcData.getData(), sizeof( uint32 ) * crcData.getCount() );
-		stream.write( offsetData.getData(), sizeof( uint32 ) * offsetData.getCount() );
+		stream.write( crcData.getBegin(), sizeof( uint32 ) * crcData.getCount() );
+		stream.write( offsetData.getBegin(), sizeof( uint32 ) * offsetData.getCount() );
 		stream.write( stringData.getData(), sizeof( uint8 ) * stringData.getCount() );
 
 		file::writeAllBytes(

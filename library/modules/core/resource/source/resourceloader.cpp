@@ -60,10 +60,10 @@ namespace tiki
 			{
 				Array< uint8 > binaryData;
 				binaryData.create( (uint)pStream->getLength() );
-				pStream->read( binaryData.getData(), binaryData.getCount() );
+				pStream->read( binaryData.getBegin(), binaryData.getCount() );
 				pStream->close();
 
-				m_nameMapper.create( binaryData.getData() );
+				m_nameMapper.create( binaryData.getBegin() );
 
 				binaryData.dispose();
 			}

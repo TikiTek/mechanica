@@ -138,7 +138,7 @@ namespace tiki
 				return nullptr;
 			}
 
-			const string fileText = string( reinterpret_cast< const char* >( fileData.getData() ) );			
+			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ) );			
 			resultCode = resultCode.replace( path, fileText );
 		}
 

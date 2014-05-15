@@ -189,7 +189,7 @@ namespace tiki
 			);
 		}
 
-		output.create( list.getData(), list.getCount() );
+		output.create( list.getBegin(), list.getCount() );
 		list.dispose();
 	}
 

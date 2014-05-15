@@ -40,7 +40,7 @@ namespace tiki
 		size_t			getHeight() const		{ return m_height; }
 		size_t			getChannelCount() const { return ChannelCount; }
 
-		float*			getData() { return m_data.getData(); }
+		float*			getData() { return m_data.getBegin(); }
 
 		void			resizeImage( uint width, uint height );
 		void			resizeImage( const uint2& size );

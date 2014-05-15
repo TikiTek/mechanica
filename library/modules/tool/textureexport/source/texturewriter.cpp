@@ -84,7 +84,7 @@ namespace tiki
 				Array< uint8 > bitmap;
 				mipImage.convertTo( bitmap, format );
 
-				writer.writeData( bitmap.getData(), bitmap.getCount() );
+				writer.writeData( bitmap.getBegin(), bitmap.getCount() );
 
 				bitmap.dispose();
 				mipImage.dispose();
