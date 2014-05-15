@@ -120,7 +120,7 @@ namespace tiki
 					return S_FALSE;
 				}
 
-				*ppData = m_fileData[ freeStreamIndex ].getData();
+				*ppData = m_fileData[ freeStreamIndex ].getBegin();
 				*pBytes	= UINT( m_fileData[ freeStreamIndex ].getCount() );
 				return S_OK;
 			}
@@ -133,7 +133,7 @@ namespace tiki
 		{
 			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
 			{
-				if ( m_fileData[ i ].getData() == pData )
+				if ( m_fileData[ i ].getBegin() == pData )
 				{
 					m_fileData[ i ].dispose();
 					return S_OK;
@@ -265,7 +265,7 @@ namespace tiki
 
 						writer.openDataSection( 0u, AllocatorType_MainMemory );
 						variantVarName.key = writer.addDataPoint();
-						writer.writeData( variantData.getData(), variantData.getCount() );
+						writer.writeData( variantData.getBegin(), variantData.getCount() );
 						writer.closeDataSection();
 
 						variantData.dispose();

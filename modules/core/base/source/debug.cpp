@@ -85,10 +85,9 @@ namespace tiki
 		}
 	}
 
-#pragma warning(disable: 4996)
-
 	static void debug::internalTrace( const string& format, TraceLevel level, va_list pArgs )
 	{
+#pragma warning(disable: 4996)
 		static cstring traceBegins[] =
 		{
 			"",
@@ -115,9 +114,8 @@ namespace tiki
 		{
 			s_pGlobalTraceCallback( message.cStr(), level );
 		}
-	}
-
 #pragma warning(default: 4996)
+	}
 
 	bool debug::isDebuggerActive()
 	{
@@ -144,6 +142,7 @@ namespace tiki
 
 	void debug::dumpMemoryStats()
 	{
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		_CrtMemState memState;
 		_CrtMemCheckpoint( &memState );
 
@@ -161,6 +160,7 @@ namespace tiki
 		trace( "\nMemory Stats:\n\n" );
 		_CrtMemDumpStatistics( &memState );
 		trace( "\n" );
+#endif
 	}
 
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )

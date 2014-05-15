@@ -23,30 +23,38 @@ namespace tiki
 		typedef T*			Iterator;
 		typedef const T*	ConstIterator;
 
-		TIKI_FORCE_INLINE			Array();
-		TIKI_FORCE_INLINE			~Array();
+		TIKI_FORCE_INLINE					Array();
+		TIKI_FORCE_INLINE					~Array();
 
-		TIKI_FORCE_INLINE bool		create( uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
-		TIKI_FORCE_INLINE bool		create( const T* pInitData, uint count, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
-		TIKI_FORCE_INLINE void		dispose();
+		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE bool				create( ConstIterator pInitData, uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE void				dispose();
 
-		TIKI_FORCE_INLINE size_t	getCount() const;
+		TIKI_FORCE_INLINE uint				getCount() const	{ return m_capacity; }
+		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_capacity; }
 
-		TIKI_FORCE_INLINE T*		getData();
-		TIKI_FORCE_INLINE const T*	getData() const;
-		TIKI_FORCE_INLINE T*		getLast();
-		TIKI_FORCE_INLINE const T*	getLast() const;
-		TIKI_FORCE_INLINE T*		getEnd();
-		TIKI_FORCE_INLINE const T*	getEnd() const;
+		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_pData; }
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_pData; }
 
-		TIKI_FORCE_INLINE size_t	getIndex( const T& value ) const;
-		TIKI_FORCE_INLINE T&		operator[]( uint index );
-		TIKI_FORCE_INLINE const T&	operator[]( uint index ) const;
+		TIKI_FORCE_INLINE Iterator			getEnd()			{ return m_pData + m_capacity; }
+		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return m_pData + m_capacity; }
+
+		TIKI_FORCE_INLINE Reference			getFirst()			{ return m_pData[ 0u ]; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return m_pData[ 0u ]; }
+
+		TIKI_FORCE_INLINE Reference			getLast()			{ return m_pData[ m_capacity - 1u ]; }
+		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_pData[ m_capacity - 1u ]; }
+
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;
+
+		TIKI_FORCE_INLINE Reference			operator[]( uint index );
+		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
 
 	private:
 
+		uint	m_capacity;
 		T*		m_pData;
-		uint	m_dataCount;
 
 	};
 }

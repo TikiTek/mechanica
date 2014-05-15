@@ -76,7 +76,7 @@ namespace tiki
 
 		uint							getIndexCount() const { return m_indices.getCount(); };
 		uint							getIndexByIndex( uint index ) const { return m_indices[ index ]; }
-		const uint32*					getIndexData() const { return m_indices.getData(); }
+		const uint32*					getIndexData() const { return m_indices.getBegin(); }
 
 		uint							getVertexCount() const { return m_vertices.getCount(); };
 		const ToolModelVertex&			getVertexByIndex( uint index ) const { return m_vertices[ index ]; }

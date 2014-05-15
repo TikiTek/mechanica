@@ -19,7 +19,7 @@ namespace tiki
 		m_height	= height;
 
 		m_data.create( width * height * ChannelCount );
-		memory::zero( m_data.getData(), m_data.getCount() * sizeof( float ) );
+		memory::zero( m_data.getBegin(), m_data.getCount() * sizeof( float ) );
 	}
 
 	void HdrImage::createFromImage( const HdrImage& imageToCopy )
@@ -29,7 +29,7 @@ namespace tiki
 		m_width		= imageToCopy.m_width;
 		m_height	= imageToCopy.m_height;
 
-		m_data.create( imageToCopy.m_data.getData(), imageToCopy.m_data.getCount() );
+		m_data.create( imageToCopy.m_data.getBegin(), imageToCopy.m_data.getCount() );
 	}
 
 	bool HdrImage::createFromFile( const string& fileName )
@@ -89,7 +89,7 @@ namespace tiki
 		tempImage.create( targetWidth * targetHeight );
 
 		// source: http://paint-mono.googlecode.com/svn/trunk/src/PdnLib/Surface.cs
-		HdrColor* pSourceData = static_cast< HdrColor* >( static_cast< void* >( m_data.getData() ) );
+		HdrColor* pSourceData = static_cast< HdrColor* >( static_cast< void* >( m_data.getBegin() ) );
 
 		for (uint dstY = 0u; dstY < targetHeight; ++dstY)
 		{
@@ -257,7 +257,7 @@ namespace tiki
 		}
 
 		m_data.dispose();
-		m_data.create( (float*)tempImage.getData(), tempImage.getCount() * ChannelCount );
+		m_data.create( (float*)tempImage.getBegin(), tempImage.getCount() * ChannelCount );
 
 		m_width		= targetWidth;
 		m_height	= targetHeight;
@@ -280,13 +280,13 @@ namespace tiki
 
 		for (size_t i = 0u; i < rect.w; ++i)
 		{
-			const float* row = m_data.getData() + ( rect.y * m_width * ChannelCount ) + ( i * m_width * ChannelCount ) + ( rect.x * ChannelCount );
+			const float* row = m_data.getBegin() + ( rect.y * m_width * ChannelCount ) + ( i * m_width * ChannelCount ) + ( rect.x * ChannelCount );
 
 			tempImage.pushRange( row, rect.z * ChannelCount );
 		}
 
 		m_data.dispose();
-		m_data.create( tempImage.getData(), tempImage.getCount() );
+		m_data.create( tempImage.getBegin(), tempImage.getCount() );
 
 		m_width		= rect.z;
 		m_height	= rect.w;
@@ -326,7 +326,7 @@ namespace tiki
 		case PixelFormat_R8:
 			{
 				target.create( m_width * m_height );
-				uint8* pTargetData = (uint8*)target.getData();
+				uint8* pTargetData = (uint8*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
@@ -338,7 +338,7 @@ namespace tiki
 		case PixelFormat_R8G8B8A8_Gamma:
 			{
 				target.create( m_width * m_height * ChannelCount );
-				uint8* pTargetData = (uint8*)target.getData();
+				uint8* pTargetData = (uint8*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
@@ -352,7 +352,7 @@ namespace tiki
 		case PixelFormat_R32G32B32_Float:
 			{
 				target.create( m_width * m_height * 3u * sizeof( float ) );
-				float* pTargetData = (float*)target.getData();
+				float* pTargetData = (float*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
@@ -367,7 +367,7 @@ namespace tiki
 		case PixelFormat_R32G32B32A32_Float:
 			{
 				target.create( m_width * m_height * 4u * sizeof( float ) );
-				float* pTargetData = (float*)target.getData();
+				float* pTargetData = (float*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{

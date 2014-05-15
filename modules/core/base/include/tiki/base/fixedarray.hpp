@@ -25,64 +25,37 @@ namespace tiki
 		typedef T&			Reference;
 		typedef const T&	ConstReference;
 
-		TIKI_FORCE_INLINE void create( ConstReference initValue, uint count = TCapacity )
-		{
-			TIKI_ASSERT( count <= TCapacity );
-
-			for (uint i = 0u; i < count; ++i)
-			{
-				m_data[ i ] = initValue;
-			}
-		}
-
-		TIKI_FORCE_INLINE void create( ConstIterator pInitData, uint count )
-		{
-			TIKI_ASSERT( count <= TCapacity );
-			for (uint i = 0u; i < count; ++i)
-			{
-				m_data[ i ] = pInitData[ i ];
-			}
-		}
+		TIKI_FORCE_INLINE void				create( ConstReference initValue, uint count = TCapacity );
+		TIKI_FORCE_INLINE void				create( ConstIterator pInitData, uint count );
 
 		TIKI_FORCE_INLINE uint				getCount() const	{ return TCapacity; }
 		TIKI_FORCE_INLINE uint				getCapacity() const	{ return TCapacity; }
 
-		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_data; }
-		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_data; }
+		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_aData; }
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_aData; }
 
-		TIKI_FORCE_INLINE Iterator			getEnd()			{ return m_pData + TCapacity; }
-		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return m_pData + TCapacity; }
+		TIKI_FORCE_INLINE Iterator			getEnd()			{ return m_aData + TCapacity; }
+		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return m_aData + TCapacity; }
 
-		TIKI_FORCE_INLINE Reference			getFirst()			{ return m_data[ 0u ]; }
-		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return m_data[ 0u ]; }
+		TIKI_FORCE_INLINE Reference			getFirst()			{ return m_aData[ 0u ]; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return m_aData[ 0u ]; }
 
-		TIKI_FORCE_INLINE Reference			getLast()			{ return m_data[ TCapacity - 1u ]; }
-		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_data[ TCapacity - 1u ]; }
+		TIKI_FORCE_INLINE Reference			getLast()			{ return m_aData[ TCapacity - 1u ]; }
+		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_aData[ TCapacity - 1u ]; }
 
-		TIKI_FORCE_INLINE uint getIndex( ConstReference value ) const
-		{
-			TIKI_ASSERT( &value >= m_data );
-			TIKI_ASSERT( &value < getEnd() );
-			return value - m_data;
-		}
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;
 
-		TIKI_FORCE_INLINE Reference operator[]( uint index )
-		{
-			TIKI_ASSERT( index < TCapacity );
-			return m_data[ index ];
-		}
-
-		TIKI_FORCE_INLINE ConstReference operator[]( uint index ) const
-		{
-			TIKI_ASSERT( index < TCapacity );
-			return m_data[ index ];
-		}
+		TIKI_FORCE_INLINE Reference			operator[]( uint index );
+		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
 
 	private:
 
-		Type m_data[ TCapacity ];
+		Type m_aData[ TCapacity ];
 
 	};
 }
+
+#include "../../../source/fixedarray.inl"
 
 #endif // __TIKI_FIXEDARRAY_HPP_INCLUDED__

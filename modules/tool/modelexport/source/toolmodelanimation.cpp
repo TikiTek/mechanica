@@ -161,7 +161,7 @@ namespace tiki
 
 			if ( pHierachyJoint != nullptr )
 			{
-				index = hierarchy.getJointData().getIndex( *pHierachyJoint );
+				index = hierarchy.getJointData().getIndexOf( pHierachyJoint );
 				ToolModelAnimationJoint& joint = m_joints[ index ];
 
 				uint count = times.data.getCount();
@@ -181,7 +181,7 @@ namespace tiki
 						joint.keys[ i ].transform	= transforms.data[ i ];
 					}
 
-					const uint frameCount = (uint)( joint.keys.getLast()->time * 60.0f );
+					const uint frameCount = (uint)( joint.keys.getLast().time * 60.0f );
 					m_frameCount = TIKI_MIN( m_frameCount, frameCount );
 
 					joint.samples.create( frameCount );

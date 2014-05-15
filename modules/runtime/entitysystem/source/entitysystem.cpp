@@ -25,7 +25,23 @@ namespace tiki
 			return false;
 		}
 
-		// todo
+		if ( !m_pools.create( parameters.entityPools.getBegin(), parameters.entityPools.getCount() ) )
+		{
+			dispose();
+			return false;
+		}
+
+		uint entityCapacity = 0u;
+		for (uint i = 0u; i < m_pools.getCount(); ++i)
+		{
+			entityCapacity += m_pools[ i ].poolSize;
+		}
+
+		if ( !m_entities.create( entityCapacity ) )
+		{
+			dispose();
+			return false;
+		}
 
 		return true;
 	}

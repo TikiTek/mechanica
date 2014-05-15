@@ -54,9 +54,9 @@ namespace tiki
 		m_defaultPoseRotation.create( jointCount );
 		m_defaultPosePosition.create( jointCount );
 		m_defaultPoseScale.create( jointCount );
-		memory::zero( m_defaultPoseRotation.getData(), jointCount * sizeof( DecomposedValue ) );
-		memory::zero( m_defaultPosePosition.getData(), jointCount * sizeof( DecomposedValue ) );
-		memory::zero( m_defaultPoseScale.getData(), jointCount * sizeof( DecomposedValue ) );
+		memory::zero( m_defaultPoseRotation.getBegin(), jointCount * sizeof( DecomposedValue ) );
+		memory::zero( m_defaultPosePosition.getBegin(), jointCount * sizeof( DecomposedValue ) );
+		memory::zero( m_defaultPoseScale.getBegin(), jointCount * sizeof( DecomposedValue ) );
 
 		return true;
 	}

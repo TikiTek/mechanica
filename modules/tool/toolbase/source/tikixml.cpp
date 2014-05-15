@@ -41,7 +41,7 @@ namespace tiki
 
 		s_pAllocInst = this;
 		m_pNode = xml_create(
-			(const char*)data.getData(),
+			(const char*)data.getBegin(),
 			(const char*)data.getEnd(),
 			xmlErrorHandler,
 			xmlAlloc,
