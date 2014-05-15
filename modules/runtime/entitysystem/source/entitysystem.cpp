@@ -150,7 +150,8 @@ namespace tiki
 		{
 			if ( m_entities[ i ].id == InvalidEntityId )
 			{
-				pool.firstFreeId = i;
+				pool.firstFreeId = pool.firstId + ( i - pool.offset );
+				break;
 			}
 		}
 
