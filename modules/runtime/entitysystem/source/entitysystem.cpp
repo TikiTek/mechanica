@@ -285,7 +285,7 @@ namespace tiki
 		for (uint i = 0u; i < m_pools.getCount(); ++i)
 		{
 			const EntityPoolInfo& pool = m_pools[ i ];
-			if ( entityId > pool.firstId && entityId < pool.firstId + pool.poolSize )
+			if ( entityId >= pool.firstId && entityId < pool.firstId + pool.poolSize )
 			{
 				pEntityPool = &pool;
 				break;
