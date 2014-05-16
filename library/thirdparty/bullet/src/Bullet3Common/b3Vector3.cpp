@@ -30,6 +30,9 @@ typedef  float float4 __attribute__ ((vector_size(16)));
 #endif
 //typedef  uint32_t uint4 __attribute__ ((vector_size(16)));
 
+#if DEBUG
+#	include "memory.h"
+#endif
 
 #if defined B3_USE_SSE || defined _WIN32
 
