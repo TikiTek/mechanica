@@ -94,21 +94,37 @@ namespace tiki
 
 	namespace color
 	{
-		TIKI_FORCE_INLINE Color fromRGBA( size_t r, size_t g, size_t b, size_t a = 255u )
+		TIKI_FORCE_INLINE Color fromRGBA( uint r, uint g, uint b, uint a = 255u )
 		{
-			TIKI_ASSERT( r < 256 && g < 256 && b < 256 && a < 256 );
-			return ( r << TIKI_COLOR_OFFSET_RED ) || ( g << TIKI_COLOR_OFFSET_GREEN ) || ( b << TIKI_COLOR_OFFSET_BLUE ) || ( a << TIKI_COLOR_OFFSET_ALPHA );
+			TIKI_ASSERT( r < 256u && g < 256u && b < 256u && a < 256u );
+
+			return Color( ( r << TIKI_COLOR_OFFSET_RED ) | ( g << TIKI_COLOR_OFFSET_GREEN ) | ( b << TIKI_COLOR_OFFSET_BLUE ) | ( a << TIKI_COLOR_OFFSET_ALPHA ) );
 		}
 
-		TIKI_FORCE_INLINE Color fromFloat3( const float3& source, const float alpha = 1.0f )
+		TIKI_FORCE_INLINE Color fromFloatRGBA( float r, float g, float b, float a = 1.0f )
+		{
+			TIKI_ASSERT( r >= 0.0f && r <= 1.0f );
+			TIKI_ASSERT( g >= 0.0f && g <= 1.0f );
+			TIKI_ASSERT( b >= 0.0f && b <= 1.0f );
+			TIKI_ASSERT( a >= 0.0f && a <= 1.0f );
+
+			return fromRGBA(
+				uint( r * 255.0f ),
+				uint( g * 255.0f ),
+				uint( b * 255.0f ),
+				uint( a * 255.0f )
+			);
+		}
+
+		TIKI_FORCE_INLINE Color fromFloat3( const float3& source, float alpha = 1.0f )
 		{
 			TIKI_ASSERT( source.x >= 0.0f && source.y >= 0.0f && source.z >= 0.0f && alpha >= 0.0f );
 			TIKI_ASSERT( source.x <= 1.0f && source.y <= 1.0f && source.z <= 1.0f && alpha <= 1.0f );
 
-			const uint8 r = (uint8)( source.x * 255.0f );
-			const uint8 g = (uint8)( source.y * 255.0f );
-			const uint8 b = (uint8)( source.z * 255.0f );
-			const uint8 a = (uint8)( alpha * 255.0f );
+			const uint8 r = uint8( source.x * 255.0f );
+			const uint8 g = uint8( source.y * 255.0f );
+			const uint8 b = uint8( source.z * 255.0f );
+			const uint8 a = uint8( alpha * 255.0f );
 
 			return fromRGBA( r, g, b, a );
 		}
@@ -118,10 +134,10 @@ namespace tiki
 			TIKI_ASSERT( source.x >= 0.0f && source.y >= 0.0f && source.z >= 0.0f && source.w >= 0.0f );
 			TIKI_ASSERT( source.x <= 1.0f && source.y <= 1.0f && source.z <= 1.0f && source.w <= 1.0f );
 
-			const uint8 r = (uint8)( source.x * 255.0f );
-			const uint8 g = (uint8)( source.y * 255.0f );
-			const uint8 b = (uint8)( source.z * 255.0f );
-			const uint8 a = (uint8)( source.w * 255.0f );
+			const uint8 r = uint8( source.x * 255.0f );
+			const uint8 g = uint8( source.y * 255.0f );
+			const uint8 b = uint8( source.z * 255.0f );
+			const uint8 a = uint8( source.w * 255.0f );
 
 			return fromRGBA( r, g, b, a );
 		}

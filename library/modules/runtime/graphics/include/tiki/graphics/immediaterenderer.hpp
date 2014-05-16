@@ -14,6 +14,7 @@
 namespace tiki
 {
 	class BlendState;
+	class Camera;
 	class DepthStencilState;
 	class Font;
 	class GraphicsContext;
@@ -46,9 +47,7 @@ namespace tiki
 
 		ImmediateDepthState_Count
 	};
-
 	
-
 	class ImmediateRenderer
 	{
 		TIKI_NONCOPYABLE_CLASS( ImmediateRenderer );
@@ -64,7 +63,7 @@ namespace tiki
 		void				beginRendering( GraphicsContext& graphicsContext );
 		void				endRendering();
 
-		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Projection* pProjection = nullptr );
+		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Camera* pProjection = nullptr );
 		void				endRenderPass();
 
 		void				setBlendState( ImmediateBlendState blendState );
@@ -74,6 +73,7 @@ namespace tiki
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE );
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE );
+		void				drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );
 
 	private:
 
@@ -98,7 +98,7 @@ namespace tiki
 
 		ConstantBuffer						m_vertexConstantBuffer;
 
-		void						setState();
+		void								setState();
 
 	};
 }

@@ -147,10 +147,19 @@ namespace tiki
 
 				m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
+				m_physicsWorld.create( vector::create( 0.0f, 9.81f, 0.0f ) );
+				m_physicsBoxCollider.create( Vector3::zero, Vector3::one );
+
+				m_physicsWorld.addCollider( m_physicsBoxCollider );
+
 				return TransitionState_Finish;
 			}
 			else
 			{
+				m_physicsWorld.removeCollider( m_physicsBoxCollider );
+
+				m_physicsWorld.dispose();
+
 				m_gameClient.dispose();
 
 				return TransitionState_Finish;
@@ -312,6 +321,9 @@ namespace tiki
 		quaternion::fromYawPitchRoll( pState->rotation, timeValue, 0.0f, 0.0f );
 
 		m_debugGui.update();
+
+		m_physicsWorld.update( timeDelta );
+
 		m_gameClient.update();
 		m_gameClient.render( *m_pGameRenderer );
 	}
@@ -376,6 +388,7 @@ namespace tiki
 		m_immediateRenderer.endRendering();
 
 		m_debugGui.render( graphicsContext );
+		m_physicsWorld.renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )

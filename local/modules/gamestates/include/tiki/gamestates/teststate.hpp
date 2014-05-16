@@ -9,6 +9,8 @@
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
+#include "tiki/physics/physicsboxcollider.hpp"
+#include "tiki/physics/physicsworld.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
@@ -90,6 +92,9 @@ namespace tiki
 		PostProcessBloom			m_bloom;
 
 		GameClient					m_gameClient;
+
+		PhysicsWorld				m_physicsWorld;
+		PhysicsBoxCollider			m_physicsBoxCollider;
 
 	};
 }
