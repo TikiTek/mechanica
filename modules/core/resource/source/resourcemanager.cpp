@@ -1,6 +1,7 @@
 
 #include "tiki/resource/resourcemanager.hpp"
 
+#include "tiki/base/debugprop.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/iopath.hpp"
@@ -10,6 +11,8 @@
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_BOOL( s_enableAssetConverterWatch, "EnableAssetConverterWatch", false );
+
 	ResourceManager::ResourceManager()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -36,7 +39,10 @@ namespace tiki
 
 		//m_pAssetConverter->convertAll();
 
-		m_pAssetConverter->startWatch();
+		if ( s_enableAssetConverterWatch )
+		{
+			m_pAssetConverter->startWatch();
+		}
 #endif
 
 		return true;
@@ -47,7 +53,11 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_pAssetConverter != nullptr )
 		{
-			m_pAssetConverter->stopWatch();
+			if ( s_enableAssetConverterWatch )
+			{
+				m_pAssetConverter->stopWatch();
+			}
+
 			m_pAssetConverter->dispose();
 			disposeAssetConverter( m_pAssetConverter );
 			m_pAssetConverter = nullptr;
@@ -61,7 +71,7 @@ namespace tiki
 	void ResourceManager::update()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		if ( m_pAssetConverter != nullptr )
+		if ( m_pAssetConverter != nullptr && s_enableAssetConverterWatch )
 		{
 			Array< string > files;
 			if ( m_pAssetConverter->getChangedFiles( files ) == true )
@@ -106,7 +116,10 @@ namespace tiki
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		m_pAssetConverter->lockConversion();
+		if ( s_enableAssetConverterWatch )
+		{
+			m_pAssetConverter->lockConversion();
+		}
 #endif
 
 		TIKI_ASSERT( pFileName != nullptr );
@@ -117,7 +130,10 @@ namespace tiki
 		traceResourceLoadResult( result, pFileName, crcFileName, type );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		m_pAssetConverter->unlockConversion();
+		if ( s_enableAssetConverterWatch )
+		{
+			m_pAssetConverter->unlockConversion();
+		}
 #endif
 
 		return pResource;	

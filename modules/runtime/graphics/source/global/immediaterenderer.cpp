@@ -9,6 +9,7 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -147,7 +148,7 @@ namespace tiki
 		m_pContext = nullptr;
 	}
 
-	void ImmediateRenderer::beginRenderPass( const RenderTarget* pRenderTarget, const Projection* pProjection )
+	void ImmediateRenderer::beginRenderPass( const RenderTarget* pRenderTarget /*= nullptr*/, const Camera* pCamera /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -156,24 +157,26 @@ namespace tiki
 			pRenderTarget = &m_pContext->getBackBuffer();
 		}
 		m_pContext->beginRenderPass( *pRenderTarget );
-
-		Projection projection;
-		if ( pProjection == nullptr )
+			
+		Matrix44 transformMatrix;
+		if ( pCamera == nullptr )
 		{
+			Projection projection;
 			projection.createOrthographicCenter(
 				(float)pRenderTarget->getWidth(),
 				-(float)pRenderTarget->getHeight(),
 				0.0f,
 				1.0f
 			);
+			transformMatrix = projection.getMatrix();
 		}
 		else
 		{
-			projection = *pProjection;
+			transformMatrix = pCamera->getViewProjectionMatrix();
 		}
 
 		ImmediateRendererConstantData* pConstantData = static_cast< ImmediateRendererConstantData* >( m_pContext->mapBuffer( m_vertexConstantBuffer ) );
-		createGraphicsMatrix44( pConstantData->projection, projection.getMatrix() );
+		createGraphicsMatrix44( pConstantData->projection, transformMatrix );
 		m_pContext->unmapBuffer( m_vertexConstantBuffer );
 
 		setState();
@@ -207,6 +210,8 @@ namespace tiki
 		const float posRight	= d.x + d.width;
 		const float posTop		= d.y;
 		const float posBottom	= d.y + d.height;
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
 
@@ -247,6 +252,8 @@ namespace tiki
 		const float posRight	= d.x + d.width;
 		const float posTop		= d.y;
 		const float posBottom	= d.y + d.height;
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
@@ -295,6 +302,8 @@ namespace tiki
 		const float posTop		= d.y;
 		const float posBottom	= d.y + d.height;
 
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
 
@@ -340,6 +349,8 @@ namespace tiki
 		TIKI_ASSERT( textLength <= 128u );
 		FontChar chars[ 128u ];
 		font.fillVertices( chars, TIKI_COUNT( chars ), pText, textLength );
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 1u ) );
 		m_pContext->setPixelShaderTexture( 0u, &font.getTextureData() );
@@ -390,6 +401,31 @@ namespace tiki
 
 		m_pContext->endImmediateGeometry();
 	}
+	
+	void ImmediateRenderer::drawLines( const Vector3* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		TIKI_ASSERT( pPoints != nullptr );
+		TIKI_ASSERT( m_pContext != nullptr );
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), capacity ) );
+
+		for (uint i = 0u; i < capacity; ++i)
+		{
+			ImmediateVertex& targetVertex	= pVertices[ i ];
+			const Vector3& sourcePoint		= pPoints[ i ];
+
+			createFloat3( targetVertex.position, sourcePoint.x, sourcePoint.y, sourcePoint.z );
+			targetVertex.u		= 0u;
+			targetVertex.v		= 0u;
+			targetVertex.color	= color;
+		} 
+
+		m_pContext->endImmediateGeometry();
+	}
 
 	void ImmediateRenderer::setState()
 	{
@@ -405,8 +441,6 @@ namespace tiki
 
 		m_pContext->setPixelShaderSamplerState( 0u, m_pSamplerState );
 
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-		
 		setBlendState( ImmediateBlendState_Add );
 		setDepthState( ImmediateDepthState_TestOffWriteOff );
 	}
