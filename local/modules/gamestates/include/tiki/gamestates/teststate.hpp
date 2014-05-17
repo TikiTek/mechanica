@@ -9,6 +9,7 @@
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
+#include "tiki/physics/physicsboxbody.hpp"
 #include "tiki/physics/physicsboxcollider.hpp"
 #include "tiki/physics/physicsworld.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
@@ -95,6 +96,7 @@ namespace tiki
 
 		PhysicsWorld				m_physicsWorld;
 		PhysicsBoxCollider			m_physicsBoxCollider;
+		PhysicsBoxBody				m_physicsBoxBody;
 
 	};
 }

@@ -147,16 +147,23 @@ namespace tiki
 
 				m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
-				m_physicsWorld.create( vector::create( 0.0f, 9.81f, 0.0f ) );
-				m_physicsBoxCollider.create( Vector3::zero, Vector3::one );
+				m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
+				
+				m_physicsBoxBody.create( Vector3::zero, Vector3::one, 100.0f );
+				m_physicsWorld.addBody( m_physicsBoxBody );
 
+				m_physicsBoxCollider.create( vector::create( 0.0f, -2.0f, 0.0f ), vector::create( 10.0f, 1.0f, 10.0f ) );
 				m_physicsWorld.addCollider( m_physicsBoxCollider );
 
 				return TransitionState_Finish;
 			}
 			else
 			{
+				m_physicsWorld.removeBody( m_physicsBoxBody );
+				m_physicsBoxBody.dispose();
+
 				m_physicsWorld.removeCollider( m_physicsBoxCollider );
+				m_physicsBoxCollider.dispose();
 
 				m_physicsWorld.dispose();
 
