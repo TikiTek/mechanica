@@ -1,14 +1,32 @@
 
 #include "tiki/physics/physicscollider.hpp"
 
+#include "tiki/math/vector.hpp"
+#include "tiki/physics/physicsshape.hpp"
+
 #include "physicsinternal.hpp"
 
 namespace tiki
 {
-	void PhysicsCollider::create( const PhysicColliderParameters& parameters )
+	PhysicsCollider::PhysicsCollider()
 	{
-		m_collitionObject.setCollisionShape( parameters.pCollisionShape );
-		m_collitionObject.setWorldTransform( parameters.transform );
+	}
+
+	PhysicsCollider::~PhysicsCollider()
+	{
+		TIKI_ASSERT( m_collitionObject.getUserPointer() == nullptr );
+	}
+
+	void PhysicsCollider::create( PhysicsShape& shape, const Vector3& position )
+	{
+		dispose();
+
+		btTransform transform;
+		transform.setIdentity();
+		transform.setOrigin( toBulletVector( position ) );
+
+		m_collitionObject.setCollisionShape( static_cast< btCollisionShape* >( shape.getNativeShape() ) );
+		m_collitionObject.setWorldTransform( transform );
 		m_collitionObject.setUserPointer( this );
 	}
 

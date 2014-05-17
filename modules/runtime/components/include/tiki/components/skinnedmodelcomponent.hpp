@@ -6,15 +6,8 @@
 
 #include "tiki/graphics/constantbuffer.hpp"
 
-//#include "tiki/base/array.hpp"
-//#include "tiki/math/matrix.hpp"
-//#include "tiki/graphics/buffer.hpp"
-//#include "tiki/graphics/color.hpp"
-//#include "tiki/math/vector3.hpp"
-
 namespace tiki
 {
-	class EntitySystem;
 	class GameRenderer;
 	class TransformComponent;
 	struct SkinnedModelComponentInitData;
@@ -29,7 +22,7 @@ namespace tiki
 								SkinnedModelComponent();
 		virtual					~SkinnedModelComponent();
 		
-		bool					create( EntitySystem& entitySystem, TransformComponent& trasformComponent );
+		bool					create( TransformComponent& transformComponent );
 		void					dispose();
 
 		void					render( GameRenderer& gameRenderer ) const;

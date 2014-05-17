@@ -5,7 +5,6 @@
 
 namespace tiki
 {
-	class EntitySystem;
 	class GameRenderer;
 	class TransformComponent;
 	struct StaticModelComponentInitData;
@@ -20,7 +19,7 @@ namespace tiki
 		explicit			StaticModelComponent();
 		virtual				~StaticModelComponent();
 
-		bool				create( EntitySystem& entitySystem, TransformComponent& trasformComponent );
+		bool				create( TransformComponent& transformComponent );
 		void				dispose();
 
 		void				render( GameRenderer& gameRenderer ) const;

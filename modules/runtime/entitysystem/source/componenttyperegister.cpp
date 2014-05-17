@@ -52,6 +52,8 @@ namespace tiki
 		type.stateSize	= pComponent->getStateSize();
 		type.pName		= pComponent->getTypeName();
 
+		pComponent->registerComponent( typeId );
+
 		return typeId;
 	}
 
@@ -63,8 +65,16 @@ namespace tiki
 		}
 
 		RegisterType& type = m_types[ typeId ];
+
+		if ( type.pComponent != nullptr )
+		{
+			type.pComponent->unregisterComponent();
+		}
+
 		type.stateSize	= 0u;
 		type.typeCrc	= InvalidCrc32;
+		type.pName		= nullptr;
+		type.pComponent	= nullptr;
 	}
 
 	bool ComponentTypeRegister::isTypeRegistred( ComponentTypeId typeId ) const

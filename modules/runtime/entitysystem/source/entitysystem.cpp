@@ -141,7 +141,7 @@ namespace tiki
 		}
 
 		const EntityId entityId		= pool.firstFreeId;
-		const uint16 entityIndex	= pool.offset + ( pool.firstId - entityId );
+		const uint16 entityIndex	= pool.offset + ( entityId - pool.firstId );
 
 		// find next free id
 		pool.firstFreeId = InvalidEntityId;
@@ -175,6 +175,7 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[entitysystem] Cound allocate component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
 				continue;
 			}
+			pComponentState->entityId = entityId;
 
 			// initialize state
 			ComponentBase* pComponent = m_typeRegister.getTypeComponent( typeId );
@@ -185,13 +186,11 @@ namespace tiki
 				continue;
 			}
 
-			// fill state data
-			pComponentState->entityId = entityId;
 			if ( pLastState != nullptr )
 			{
 				pLastState->pNextComponentOfSameEntity = pComponentState;
 			}
-
+			
 			if ( pFirstState == nullptr )
 			{
 				pFirstState = pComponentState;
@@ -207,7 +206,7 @@ namespace tiki
 		return entityId;
 	}
 
-	void EntitySystem::destroyEntity( EntityId entityId )
+	void EntitySystem::disposeEntity( EntityId entityId )
 	{
 		EntityData* pEntityData = getEntityData( entityId );
 		if ( pEntityData == nullptr )
@@ -263,7 +262,7 @@ namespace tiki
 		for (uint i = 0u; i < m_pools.getCount(); ++i)
 		{
 			const EntityPoolInfo& pool = m_pools[ i ];
-			if ( entityId > pool.firstId && entityId < pool.firstId + pool.poolSize )
+			if ( entityId >= pool.firstId && entityId < pool.firstId + pool.poolSize )
 			{
 				pEntityPool = &pool;
 				break;
@@ -276,6 +275,8 @@ namespace tiki
 		}
 
 		const uint entityIndex = pEntityPool->offset + ( entityId - pEntityPool->firstId );
+		TIKI_ASSERT( m_entities[ entityIndex ].id == entityId );
+
 		return &m_entities[ entityIndex ];
 	}
 
@@ -298,6 +299,8 @@ namespace tiki
 		}
 
 		const uint entityIndex = pEntityPool->offset + ( entityId - pEntityPool->firstId );
+		TIKI_ASSERT( m_entities[ entityIndex ].id == entityId );
+
 		return &m_entities[ entityIndex ];
 	}
 }

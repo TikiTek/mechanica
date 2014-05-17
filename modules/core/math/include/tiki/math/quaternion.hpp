@@ -25,6 +25,8 @@ namespace tiki
 		TIKI_FORCE_INLINE bool			isIdentity( const Quaternion& quat, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool			isZero( const Quaternion& quat, float epsilon = f32::epsilon );
 
+		TIKI_FORCE_INLINE Quaternion	create( float x, float y, float z, float w );
+
 		TIKI_FORCE_INLINE Quaternion&	clear( Quaternion& quat );
 		TIKI_FORCE_INLINE Quaternion&	createIdentity( Quaternion& quat );
 

@@ -20,6 +20,12 @@ namespace tiki
 		return quaternion::isEquals( quat, Quaternion::identity, epsilon );
 	}
 
+	TIKI_FORCE_INLINE Quaternion quaternion::create( float x, float y, float z, float w )
+	{
+		const Quaternion quat = { x, y, z, w };
+		return quat;
+	}
+
 	TIKI_FORCE_INLINE Quaternion& quaternion::clear( Quaternion& quat )
 	{
 		quat.x = 0.0f;
