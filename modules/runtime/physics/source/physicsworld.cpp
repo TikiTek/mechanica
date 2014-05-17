@@ -4,6 +4,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/physics/physicsbody.hpp"
 #include "tiki/physics/physicscollider.hpp"
 
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
@@ -69,6 +70,20 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->removeCollisionObject( &collider.m_collitionObject );
+	}
+
+	void PhysicsWorld::addBody( PhysicsBody& body )
+	{
+		TIKI_ASSERT( m_pPhysicWorld != nullptr );
+
+		m_pPhysicWorld->addRigidBody( &body.m_ridgidBody );
+	}
+
+	void PhysicsWorld::removeBody( PhysicsBody& body )
+	{
+		TIKI_ASSERT( m_pPhysicWorld != nullptr );
+
+		m_pPhysicWorld->removeRigidBody( &body.m_ridgidBody );
 	}
 
 	void PhysicsWorld::update( float timeStep )
