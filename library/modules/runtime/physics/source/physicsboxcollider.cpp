@@ -15,18 +15,15 @@ namespace tiki
 	PhysicsBoxCollider::~PhysicsBoxCollider()
 	{
 	}
-
+	
 	void PhysicsBoxCollider::create( const Vector3& position, const Vector3& size )
 	{
-		const btVector3 btPosition = btVector3( position.x, position.y, position.z );
-		const btVector3 btSize = btVector3( size.x, size.y, size.z );
-
-		m_shape = btBoxShape( btSize );
+		m_shape = btBoxShape( toBulletVector( size ) );
 
 		PhysicColliderParameters parameters;
 		parameters.pCollisionShape	= &m_shape;
 		parameters.transform.setIdentity();
-		parameters.transform.setOrigin( btPosition );
+		parameters.transform.setOrigin( toBulletVector( position ) );
 
 		PhysicsCollider::create( parameters );
 	}

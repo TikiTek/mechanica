@@ -18,7 +18,7 @@ struct VertexToPixel
 // types
 struct VertexInput
 {
-	float2 position	: TIKI_INPUT_POSITION0;
+	float3 position	: TIKI_INPUT_POSITION0;
 	float2 texcoord	: TIKI_TEXCOORD;
 	float4 color	: TIKI_COLOR;
 };
@@ -30,7 +30,7 @@ VertexToPixel main( VertexInput input )
     VertexToPixel output;
 
 	//float2 clipPosition = input.position.xy * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );	
-    output.position = float4( input.position, 0.0f, 1.0f );
+    output.position = float4( input.position, 1.0f );
 	output.position = mul( output.position, s_constantData.projection );
 	output.texcoord = input.texcoord;
 	output.color	= input.color;

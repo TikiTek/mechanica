@@ -11,7 +11,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_enableAssetConverterWatch, "EnableAssetConverterWatch", false );
+	TIKI_DEBUGPROP_BOOL( s_enableAssetConverterWatch, "EnableAssetConverterWatch", true );
 
 	ResourceManager::ResourceManager()
 	{

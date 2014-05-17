@@ -18,6 +18,7 @@ class btDiscreteDynamicsWorld;
 
 namespace tiki
 {
+	class PhysicsBody;
 	class PhysicsCollider;
 	struct Vector3;
 
@@ -35,6 +36,8 @@ namespace tiki
 
 		void		addCollider( PhysicsCollider& collider );
 		void		removeCollider( PhysicsCollider& collider );
+		void		addBody( PhysicsBody& body );
+		void		removeBody( PhysicsBody& body );
 
 		void		update( float timeStep );
 
