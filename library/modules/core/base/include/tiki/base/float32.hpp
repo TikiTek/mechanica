@@ -6,6 +6,7 @@
 #include "tiki/base/inline.hpp"
 
 #include <math.h>
+#include <stdlib.h>
 
 namespace tiki
 {
@@ -65,6 +66,17 @@ namespace tiki
 		TIKI_FORCE_INLINE float sqrt( float x )
 		{
 			return x * rsqrt( x );
+		}
+
+		// return random value between 0 and 1
+		TIKI_FORCE_INLINE float random()
+		{
+			return float( rand() ) / RAND_MAX;
+		}
+
+		TIKI_FORCE_INLINE float random( float min, float max )
+		{
+			return min + ( random() * ( max - min ) );
 		}
 	}
 }

@@ -60,6 +60,8 @@ namespace tiki
 				if ( isCreating )
 				{
 					GameRendererParamaters params;
+					params.rendererWidth	= framework::getGraphicsSystem().getBackBuffer().getWidth();
+					params.rendererHeight	= framework::getGraphicsSystem().getBackBuffer().getHeight();
 
 					if ( m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager(), params ) == false )
 					{

@@ -5,7 +5,6 @@
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/skinnedmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
-#include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/math/matrix.hpp"
 
@@ -33,15 +32,18 @@ namespace tiki
 
 	SkinnedModelComponent::SkinnedModelComponent()
 	{
+		m_transformTypeId = InvalidComponentTypeId;
 	}
 
 	SkinnedModelComponent::~SkinnedModelComponent()
 	{
+		TIKI_ASSERT( m_transformTypeId == InvalidComponentTypeId );
 	}
 
-	bool SkinnedModelComponent::create( EntitySystem& entitySystem, TransformComponent& trasformComponent )
+	bool SkinnedModelComponent::create( TransformComponent& transformComponent )
 	{
-		if ( !entitySystem.getComponentTypeIdByCrc( m_transformTypeId, trasformComponent.getTypeCrc() ) )
+		m_transformTypeId = transformComponent.getTypeId();
+		if ( m_transformTypeId == InvalidComponentTypeId )
 		{
 			return false;
 		}
@@ -56,7 +58,6 @@ namespace tiki
 
 	void SkinnedModelComponent::render( GameRenderer& gameRenderer ) const
 	{
-
 	}
 
 	crc32 SkinnedModelComponent::getTypeCrc() const

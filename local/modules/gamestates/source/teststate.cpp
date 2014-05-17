@@ -2,7 +2,6 @@
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/base/timer.hpp"
-#include "tiki/components/transformcomponent.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
@@ -97,11 +96,13 @@ namespace tiki
 				if ( isInital )
 				{
 					m_pFont				= framework::getResourceManager().loadResource< Font >( "debug.font" );
+					m_pModelBox			= framework::getResourceManager().loadResource< Model >( "box.model" );
 					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
 					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
 					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
 					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
 					TIKI_ASSERT( m_pFont != nullptr );
+					TIKI_ASSERT( m_pModelBox != nullptr );
 					TIKI_ASSERT( m_pModelBoxes != nullptr );
 					TIKI_ASSERT( m_pModelPlane != nullptr );
 					TIKI_ASSERT( m_pModelPlayer != nullptr );
@@ -127,8 +128,9 @@ namespace tiki
 
 				framework::getResourceManager().unloadResource( m_pAnimationPlayer );
 				framework::getResourceManager().unloadResource( m_pModelPlayer );
-				framework::getResourceManager().unloadResource( m_pModelBoxes );
 				framework::getResourceManager().unloadResource( m_pModelPlane );
+				framework::getResourceManager().unloadResource( m_pModelBoxes );
+				framework::getResourceManager().unloadResource( m_pModelBox );
 				framework::getResourceManager().unloadResource( m_pFont );
 
 				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
@@ -145,27 +147,23 @@ namespace tiki
 			{
 				TIKI_VERIFY( m_gameClient.create() );
 
-				m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
+				m_boxEntities.create( 100u );
 
-				m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
-				
-				m_physicsBoxBody.create( Vector3::zero, Vector3::one, 100.0f );
-				m_physicsWorld.addBody( m_physicsBoxBody );
-
-				m_physicsBoxCollider.create( vector::create( 0.0f, -2.0f, 0.0f ), vector::create( 10.0f, 1.0f, 10.0f ) );
-				m_physicsWorld.addCollider( m_physicsBoxCollider );
+				m_planeEntityId = m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
+				m_boxesEntityId = m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_physicsWorld.removeBody( m_physicsBoxBody );
-				m_physicsBoxBody.dispose();
+				for (uint i = 0u; i < m_boxEntities.getCount(); ++i)
+				{
+					m_gameClient.disposeEntity( m_boxEntities[ i ] );
+				}
+				m_boxEntities.dispose();
 
-				m_physicsWorld.removeCollider( m_physicsBoxCollider );
-				m_physicsBoxCollider.dispose();
-
-				m_physicsWorld.dispose();
+				m_gameClient.disposeEntity( m_boxesEntityId );
+				m_gameClient.disposeEntity( m_planeEntityId );
 
 				m_gameClient.dispose();
 
@@ -308,9 +306,9 @@ namespace tiki
 
 		m_lightingWindow.fillFrameData( frameData );
 
-		Matrix43 mtx = Matrix43::identity;
-		mtx.pos.y = -0.1f;
-		m_pGameRenderer->queueModel( m_pModelPlane, &mtx );
+		//Matrix43 mtx = Matrix43::identity;
+		//mtx.pos.y = -0.1f;
+		//m_pGameRenderer->queueModel( m_pModelPlane, &mtx );
 
 		//matrix::createIdentity( mtx );
 		//matrix::createRotationY( mtx.rot, timeValue );
@@ -321,17 +319,15 @@ namespace tiki
 		//}
 		//else
 		//{
-		//	m_pGameRenderer->queueModel( m_pModelBoxes, &mtx );
+		//	m_pGameRenderer->queueModel( m_pModelBox, &mtx );
 		//}
 
-		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( 1000u, 0u );
+		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 		quaternion::fromYawPitchRoll( pState->rotation, timeValue, 0.0f, 0.0f );
 
 		m_debugGui.update();
 
-		m_physicsWorld.update( timeDelta );
-
-		m_gameClient.update();
+		m_gameClient.update( timeDelta );
 		m_gameClient.render( *m_pGameRenderer );
 	}
 
@@ -395,7 +391,8 @@ namespace tiki
 		m_immediateRenderer.endRendering();
 
 		m_debugGui.render( graphicsContext );
-		m_physicsWorld.renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+
+		m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
@@ -458,6 +455,26 @@ namespace tiki
 
 			case KeyboardKey_Space:
 				m_drawPlayer = !m_drawPlayer;
+				break;
+
+			case KeyboardKey_I:
+				{
+					const Vector3 position = vector::create( f32::random( -1.0f, 1.0f ), 10.0f, f32::random( -1.0f, 1.0f ) );
+					const EntityId entityId = m_gameClient.createPhysicsBoxEntity( m_pModelBox, position );
+					if ( entityId != InvalidEntityId )
+					{
+						m_boxEntities.push( entityId );
+					}
+				}
+				break;
+
+			case KeyboardKey_O:
+				{
+					const EntityId firstEntityId = m_boxEntities[ 0u ];
+					m_boxEntities.removeUnsortedByIndex( 0u );
+
+					m_gameClient.disposeEntity( firstEntityId );
+				}
 				break;
 
 			default:

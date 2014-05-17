@@ -11,12 +11,6 @@ namespace tiki
 		if ( m_pFirstComponentState == nullptr )
 		{
 			m_pFirstComponentState	= pComponentState;
-			m_pLastComponentState	= pComponentState;
-		}
-		else
-		{
-			m_pLastComponentState->pNextComponentOfSameType = pComponentState;
-			m_pLastComponentState = pComponentState;
 		}
 				
 		return internalInitializeState( componentIterator, (TState*)pComponentState, (TInitData*)pComponentInitData );
@@ -25,21 +19,11 @@ namespace tiki
 	template< typename TState, typename TInitData >
 	void Component<TState, TInitData>::disposeState( ComponentState* pComponentState )
 	{
-		TIKI_ASSERT( pComponentState == nullptr );
+		TIKI_ASSERT( pComponentState != nullptr );
 
 		if ( pComponentState == m_pFirstComponentState )
 		{
 			m_pFirstComponentState = m_pFirstComponentState->pNextComponentOfSameType;
-		}
-		else
-		{
-			pComponentState->pPrevComponentOfSameType->pNextComponentOfSameType = pComponentState->pNextComponentOfSameType;
-
-			if ( pComponentState == m_pLastComponentState )
-			{
-				TIKI_ASSERT( pComponentState->pPrevComponentOfSameType->pNextComponentOfSameType == nullptr );
-				m_pLastComponentState = pComponentState->pPrevComponentOfSameType;
-			}
 		}
 
 		internalDisposeState( (TState*)pComponentState );

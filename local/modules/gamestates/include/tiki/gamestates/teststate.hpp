@@ -9,9 +9,6 @@
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
-#include "tiki/physics/physicsboxbody.hpp"
-#include "tiki/physics/physicsboxcollider.hpp"
-#include "tiki/physics/physicsworld.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
@@ -60,6 +57,7 @@ namespace tiki
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
+		const Model*				m_pModelBox;
 		const Model*				m_pModelBoxes;
 		const Model*				m_pModelPlane;
 		const Model*				m_pModelPlayer;
@@ -94,9 +92,10 @@ namespace tiki
 
 		GameClient					m_gameClient;
 
-		PhysicsWorld				m_physicsWorld;
-		PhysicsBoxCollider			m_physicsBoxCollider;
-		PhysicsBoxBody				m_physicsBoxBody;
+		EntityId					m_planeEntityId;
+		EntityId					m_boxesEntityId;
+
+		SizedArray< EntityId >		m_boxEntities;
 
 	};
 }

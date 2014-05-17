@@ -8,7 +8,9 @@
 
 namespace tiki
 {
-	struct PhysicsBodyParameters;
+	class PhysicsShape;
+	struct Quaternion;
+	struct Vector3;
 	
 	class PhysicsBody
 	{
@@ -20,8 +22,11 @@ namespace tiki
 							PhysicsBody();
 							~PhysicsBody();
 
-		void				create( const PhysicsBodyParameters& parameters );
+		void				create( PhysicsShape& shape, const Vector3& position, float mass );
 		void				dispose();
+
+		void				getPosition( Vector3& position ) const;
+		void				getRotation( Quaternion& rotation ) const;
 
 	private:
 

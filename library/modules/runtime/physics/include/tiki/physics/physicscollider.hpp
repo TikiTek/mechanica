@@ -8,16 +8,20 @@
 
 namespace tiki
 {
-	struct PhysicColliderParameters;
+	class PhysicsShape;
+	struct Vector3;
 	
 	class PhysicsCollider
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PhysicsCollider );
+		TIKI_NONCOPYABLE_CLASS( PhysicsCollider );
 		friend class PhysicsWorld;
 
 	public:
 
-		void				create( const PhysicColliderParameters& parameters );
+		PhysicsCollider();
+		~PhysicsCollider();
+
+		void				create( PhysicsShape& shape, const Vector3& position );
 		void				dispose();
 
 	private:

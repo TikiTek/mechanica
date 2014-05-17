@@ -51,7 +51,7 @@ namespace tiki
 		bool					getComponentTypeIdByCrc( ComponentTypeId& targetTypeId, crc32 componentTypeCrc ) const;
 
 		EntityId				createEntityFromTemplate( uint targetPoolIndex, const EntityTemplate& entityTemplate );
-		void					destroyEntity( EntityId entityId );
+		void					disposeEntity( EntityId entityId );
 
 		ComponentState*			getFirstComponentOfEntity( EntityId entityId );
 		const ComponentState*	getFirstComponentOfEntity( EntityId entityId ) const;

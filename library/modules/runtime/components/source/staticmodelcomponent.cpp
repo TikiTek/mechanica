@@ -5,7 +5,6 @@
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
-#include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
 
 namespace tiki
@@ -26,9 +25,10 @@ namespace tiki
 	{
 	}
 
-	bool StaticModelComponent::create( EntitySystem& entitySystem, TransformComponent& trasformComponent )
+	bool StaticModelComponent::create( TransformComponent& transformComponent )
 	{
-		if ( !entitySystem.getComponentTypeIdByCrc( m_transformTypeId, trasformComponent.getTypeCrc() ) )
+		m_transformTypeId = transformComponent.getTypeId();
+		if ( m_transformTypeId == InvalidComponentTypeId )
 		{
 			return false;
 		}

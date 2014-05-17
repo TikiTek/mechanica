@@ -100,9 +100,11 @@ namespace tiki
 
 		ComponentChunk* pChunk = m_firstChunk[ typeId ];
 
+		ComponentChunk* pLastFullChunk = nullptr;
 		while ( pChunk != nullptr && pChunk->usedCount == pChunk->maxCount )
 		{
-			pChunk = pChunk->pNextChunkOfSameType;
+			pLastFullChunk	= pChunk;
+			pChunk			= pChunk->pNextChunkOfSameType;
 		}
 
 		if ( pChunk == nullptr )
@@ -121,6 +123,11 @@ namespace tiki
 					chunk.usedCount				= 0u;
 					chunk.maxCount				= uint16( m_chunkSize / stateSize );
 					TIKI_ASSERT( chunk.maxCount != 0u );
+
+					if ( pLastFullChunk != nullptr )
+					{
+						pLastFullChunk->pNextChunkOfSameType = &chunk;
+					}
 
 					ComponentState* pPrevState = nullptr;
 					for (uint stateIndex = 0u; stateIndex < chunk.maxCount; ++stateIndex)
@@ -146,7 +153,12 @@ namespace tiki
 					pChunk = &chunk;
 					break;
 				}
-			} 
+			}
+
+			if ( m_firstChunk[ typeId ] == nullptr )
+			{
+				m_firstChunk[ typeId ] = pChunk;
+			}
 		}
 				
 		if ( pChunk == nullptr )
@@ -199,8 +211,8 @@ namespace tiki
 
 		if ( m_lastState[ chunk.typeId ] == pState )
 		{
-			TIKI_ASSERT( pState->pNextComponentOfSameType = nullptr );
-			m_lastState[ chunk.typeId ] = m_lastState[ chunk.typeId ]->pPrevComponentOfSameType;
+			TIKI_ASSERT( pState->pNextComponentOfSameType == nullptr );
+			m_lastState[ chunk.typeId ] = pState->pPrevComponentOfSameType;
 		}
 
 		if ( chunk.pLastFreeState == nullptr )

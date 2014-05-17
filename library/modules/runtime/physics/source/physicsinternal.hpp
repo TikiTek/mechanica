@@ -3,6 +3,7 @@
 #define __TIKI_PHYSICSINTERNAL_HPP_INCLUDED__
 
 #include "tiki/base/inline.hpp"
+#include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 
 #include "LinearMath/btTransform.h"
@@ -25,6 +26,16 @@ namespace tiki
 	TIKI_FORCE_INLINE btVector3 toBulletVector( const Vector3& vec )
 	{
 		return btVector3( vec.x, vec.y, vec.z );
+	}
+
+	TIKI_FORCE_INLINE Vector3 toTikiVector( const btVector3& vec )
+	{
+		return vector::create( vec.x(), vec.y(), vec.z() );
+	}
+
+	TIKI_FORCE_INLINE Quaternion toTikiQuaternion( const btQuaternion& quat )
+	{
+		return quaternion::create( quat.x(), quat.y(), quat.z(), quat.w() );
 	}
 }
 

@@ -16,6 +16,9 @@ namespace tiki
 								ComponentBase();
 		virtual					~ComponentBase();
 
+		void					registerComponent( ComponentTypeId typeId );
+		void					unregisterComponent();
+
 		virtual bool			initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData ) = 0;
 		virtual void			disposeState( ComponentState* pComponentState ) = 0;
 
@@ -23,10 +26,13 @@ namespace tiki
 		virtual uint32			getStateSize() const = 0;
 		virtual const char*		getTypeName() const = 0;
 
+		ComponentTypeId			getTypeId() const { return m_registedTypeId; }
+		
 	protected:
 
 		ComponentState*			m_pFirstComponentState;
-		ComponentState*			m_pLastComponentState;
+
+		ComponentTypeId			m_registedTypeId;
 
 	};
 
