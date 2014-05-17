@@ -2,10 +2,13 @@
 #ifndef TIKI_GAMECLIENT_HPP__INCLUDED
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
+#include "tiki/components/physicsbodycomponent.hpp"
+#include "tiki/components/physicscollidercomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
 #include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
+#include "tiki/physics/physicsworld.hpp"
 
 namespace tiki
 {
@@ -21,11 +24,16 @@ namespace tiki
 		void				dispose();
 
 		EntityId			createModelEntity( const Model* pModel, const Vector3& position );
+		EntityId			createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId			createPlaneEntity( const Model* pModel, const Vector3& position );
 
-		const EntitySystem&	getEntitySystem() const { return m_entitySystem; }
+		void				disposeEntity( EntityId entityId );
 
-		void				update();
+		void				update( float timeStep );
 		void				render( GameRenderer& gameRenderer );
+
+		const EntitySystem&	getEntitySystem() const	{ return m_entitySystem; }
+		PhysicsWorld&		getPhysicsWorld()		{ return m_physicsWorld; }
 
 	private:
 
@@ -36,11 +44,15 @@ namespace tiki
 			ChunkSize		= 4096u
 		};
 
-		EntitySystem			m_entitySystem;
+		EntitySystem				m_entitySystem;
 
-		SkinnedModelComponent	m_skinnedModelComponent;
-		StaticModelComponent	m_staticModelComponent;
-		TransformComponent		m_transformComponent;
+		PhysicsWorld				m_physicsWorld;
+
+		PhysicsBodyComponent		m_physicsBodyComponent;
+		PhysicsColliderComponent	m_physicsColliderComponent;
+		SkinnedModelComponent		m_skinnedModelComponent;
+		StaticModelComponent		m_staticModelComponent;
+		TransformComponent			m_transformComponent;
 
 	};
 }
