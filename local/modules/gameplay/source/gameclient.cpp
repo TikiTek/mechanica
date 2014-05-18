@@ -3,6 +3,7 @@
 
 #include "tiki/components/entitytemplate.hpp"
 #include "tiki/components/physicscomponents_initdata.hpp"
+#include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent_initdata.hpp"
 #include "tiki/math/vector.hpp"
@@ -35,31 +36,36 @@ namespace tiki
 		}
 
 		TIKI_VERIFY( m_transformComponent.create() );
-		m_entitySystem.registerComponentType( &m_transformComponent );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
 
 		TIKI_VERIFY( m_staticModelComponent.create( m_transformComponent ) );
-		m_entitySystem.registerComponentType( &m_staticModelComponent );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_staticModelComponent ) );
 
 		TIKI_VERIFY( m_skinnedModelComponent.create( m_transformComponent ) );
-		m_entitySystem.registerComponentType( &m_skinnedModelComponent );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_skinnedModelComponent ) );
 
 		TIKI_VERIFY( m_physicsBodyComponent.create( m_physicsWorld, m_transformComponent ) );
-		m_entitySystem.registerComponentType( &m_physicsBodyComponent );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsBodyComponent ) );
 
 		TIKI_VERIFY( m_physicsColliderComponent.create( m_physicsWorld ) );
-		m_entitySystem.registerComponentType( &m_physicsColliderComponent );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsColliderComponent ) );
+
+		TIKI_VERIFY( m_playerControlComponent.create( m_transformComponent, m_physicsBodyComponent ) );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerControlComponent ) );
 
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
+		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
 		m_entitySystem.unregisterComponentType( &m_skinnedModelComponent );
 		m_entitySystem.unregisterComponentType( &m_staticModelComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_playerControlComponent.dispose();
 		m_physicsColliderComponent.dispose();
 		m_physicsBodyComponent.dispose();
 		m_skinnedModelComponent.dispose();
@@ -70,12 +76,49 @@ namespace tiki
 
 		m_physicsWorld.dispose();
 	}
+	
+	EntityId GameClient::createPlayerEntity( const Model* pModel, const Vector3& position )
+	{
+		TransformComponentInitData transformInitData;
+		createFloat3( transformInitData.position, position.x, position.y, position.z );
+		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
+
+		StaticModelComponentInitData modelInitData;
+		modelInitData.model = pModel;
+
+		PhysicsBodyComponentInitData bodyInitData;
+		createFloat3( bodyInitData.position, position.x, position.y, position.z );
+		bodyInitData.mass			= 100.0f;
+		bodyInitData.freeRotation	= false;
+		bodyInitData.shape.shapeType = ShapeType_Capsule;
+		bodyInitData.shape.shapeCapsuleRadius = 0.5f;
+		bodyInitData.shape.shapeCapsuleHeight = 1.0f;
+
+		PlayerControlComponentInitData playerControlInitData;
+		playerControlInitData.speed = 10000.0f;
+
+		EntityTemplateComponent entityComponents[] =
+		{
+			{ m_transformComponent.getTypeCrc(), &transformInitData },
+			{ m_physicsBodyComponent.getTypeCrc(), &bodyInitData },
+			{ m_staticModelComponent.getTypeCrc(), &modelInitData },
+			{ m_playerControlComponent.getTypeCrc(), &playerControlInitData }
+		};
+
+		EntityTemplate entityTemplate;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
+		entityTemplate.pComponents		= entityComponents;
+
+		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+	}
 
 	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
 	{
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
 
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
@@ -87,7 +130,7 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= 2u;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
 		entityTemplate.pComponents		= entityComponents;
 
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
@@ -98,13 +141,15 @@ namespace tiki
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
 
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
 
 		PhysicsBodyComponentInitData bodyInitData;
 		createFloat3( bodyInitData.position, position.x, position.y, position.z );
-		bodyInitData.mass = 100.0f;
+		bodyInitData.mass			= 100.0f;
+		bodyInitData.freeRotation	= true;
 		bodyInitData.shape.shapeType = ShapeType_Box;
 		createFloat3( bodyInitData.shape.shapeBoxSize, 1.0f, 1.0f, 1.0f );
 
@@ -116,7 +161,7 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= 3u;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
 		entityTemplate.pComponents		= entityComponents;
 
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
@@ -127,6 +172,7 @@ namespace tiki
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
 
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
@@ -144,7 +190,7 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= 3u;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
 		entityTemplate.pComponents		= entityComponents;
 
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
@@ -161,11 +207,22 @@ namespace tiki
 
 		m_physicsBodyComponent.update();
 		m_transformComponent.update();
+		m_playerControlComponent.update( timeStep );
 	}
 
 	void GameClient::render( GameRenderer& gameRenderer )
 	{
 		m_staticModelComponent.render( gameRenderer );
 		m_skinnedModelComponent.render( gameRenderer );
+	}
+	
+	bool GameClient::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( m_playerControlComponent.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
+		return false;
 	}
 }

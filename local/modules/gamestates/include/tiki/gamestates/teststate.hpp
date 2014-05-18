@@ -91,8 +91,9 @@ namespace tiki
 		PostProcessBloom			m_bloom;
 
 		GameClient					m_gameClient;
-
+		
 		EntityId					m_planeEntityId;
+		EntityId					m_playerEntityId;
 		EntityId					m_boxesEntityId;
 
 		SizedArray< EntityId >		m_boxEntities;

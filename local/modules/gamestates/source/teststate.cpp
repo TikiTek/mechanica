@@ -150,8 +150,9 @@ namespace tiki
 
 				m_boxEntities.create( 100u );
 
-				m_planeEntityId = m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
-				m_boxesEntityId = m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
+				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
+				m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
+				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
 				return TransitionState_Finish;
 			}
@@ -164,6 +165,7 @@ namespace tiki
 				m_boxEntities.dispose();
 
 				m_gameClient.disposeEntity( m_boxesEntityId );
+				m_gameClient.disposeEntity( m_playerEntityId );
 				m_gameClient.disposeEntity( m_planeEntityId );
 
 				m_gameClient.dispose();
@@ -402,6 +404,11 @@ namespace tiki
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
 	{
 		if ( m_debugGui.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
+		if ( m_gameClient.processInputEvent( inputEvent ) )
 		{
 			return true;
 		}
