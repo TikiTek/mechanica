@@ -20,6 +20,7 @@ namespace tiki
 {
 	class PhysicsBody;
 	class PhysicsCollider;
+	class PhysicsShape;
 	struct Vector3;
 
 	class PhysicsWorld
@@ -38,6 +39,8 @@ namespace tiki
 		void		removeCollider( PhysicsCollider& collider );
 		void		addBody( PhysicsBody& body );
 		void		removeBody( PhysicsBody& body );
+
+		bool		checkIntersection( PhysicsShape& physicsShape, const Vector3& position );
 
 		void		update( float timeStep );
 

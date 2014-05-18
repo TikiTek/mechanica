@@ -15,6 +15,7 @@
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
@@ -474,6 +475,17 @@ namespace tiki
 					m_boxEntities.removeUnsortedByIndex( 0u );
 
 					m_gameClient.disposeEntity( firstEntityId );
+				}
+				break;
+
+			case KeyboardKey_Z:
+				{
+					PhysicsBoxShape shape;
+					shape.create( vector::create( 0.5f, 0.5f, 0.5f ) );
+
+					bool test = m_gameClient.getPhysicsWorld().checkIntersection( shape, vector::create( 0.0f, 0.25f, 0.0f ) );
+
+					shape.dispose();
 				}
 				break;
 
