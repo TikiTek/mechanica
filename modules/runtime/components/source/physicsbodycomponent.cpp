@@ -5,6 +5,8 @@
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
+#include "tiki/math/quaternion.hpp"
+#include "tiki/math/vector.hpp"
 #include "tiki/physics/physicsbody.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/physics/physicscapsuleshape.hpp"
@@ -27,23 +29,26 @@ namespace tiki
 
 	PhysicsBodyComponent::PhysicsBodyComponent()
 	{
-		m_pWorld			= nullptr;
+		m_pPhysicsWorld				= nullptr;
 
-		m_transformTypeId	= InvalidComponentTypeId;
+		m_pTranformComponent		= nullptr;
+		m_transformComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	PhysicsBodyComponent::~PhysicsBodyComponent()
 	{
-		TIKI_ASSERT( m_pWorld == nullptr );
-		TIKI_ASSERT( m_transformTypeId == InvalidComponentTypeId );
+		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
+		TIKI_ASSERT( m_pTranformComponent		== nullptr );
+		TIKI_ASSERT( m_transformComponentTypeId	== InvalidComponentTypeId );
 	}
 
 	bool PhysicsBodyComponent::create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent )
 	{
-		m_pWorld = &physicsWorld;
+		m_pPhysicsWorld			= &physicsWorld;
 
-		m_transformTypeId = transformComponent.getTypeId();
-		if ( m_transformTypeId == InvalidComponentTypeId )
+		m_pTranformComponent		= &transformComponent;
+		m_transformComponentTypeId	= transformComponent.getTypeId();
+		if ( m_transformComponentTypeId == InvalidComponentTypeId )
 		{
 			return false;
 		}
@@ -53,9 +58,10 @@ namespace tiki
 
 	void PhysicsBodyComponent::dispose()
 	{
-		m_pWorld			= nullptr;
+		m_pPhysicsWorld				= nullptr;
 
-		m_transformTypeId	= InvalidComponentTypeId;
+		m_pTranformComponent		= nullptr;
+		m_transformComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	void PhysicsBodyComponent::update()
@@ -65,9 +71,24 @@ namespace tiki
 		const State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			pState->body.getPosition( pState->pTransform->position );
-			pState->body.getRotation( pState->pTransform->rotation );
+			Vector3 position;
+			Quaternion rotation;			
+			pState->body.getPosition( position );
+			pState->body.getRotation( rotation );
+
+			m_pTranformComponent->setPosition( pState->pTransform, position );
+			m_pTranformComponent->setRotation( pState->pTransform, rotation );
 		}
+	}
+
+	void PhysicsBodyComponent::getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState )
+	{
+		pState->body.getPosition( targetPosition );
+	}
+
+	void PhysicsBodyComponent::getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState )
+	{
+		pState->body.getRotation( targetRotation );
 	}
 
 	crc32 PhysicsBodyComponent::getTypeCrc() const
@@ -87,11 +108,11 @@ namespace tiki
 
 	bool PhysicsBodyComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsBodyComponentState* pState, const PhysicsBodyComponentInitData* pInitData )
 	{
-		TIKI_ASSERT( m_pWorld != nullptr );
+		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) PhysicsBodyComponentState;
 		pState->shapeType	= pInitData->shape.shapeType;
-		pState->pTransform	= static_cast< TransformComponentState* >( componentIterator.getFirstOfType( m_transformTypeId ) );
+		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
 
 		PhysicsShape* pShape = nullptr;
 		switch ( pState->shapeType )
@@ -117,18 +138,18 @@ namespace tiki
 		}
 
 		pState->body.create( *pShape, vector::set( Vector3(), pInitData->position ), pInitData->mass );
-		m_pWorld->addBody( pState->body );
+		m_pPhysicsWorld->addBody( pState->body );
 
 		return true;
 	}
 
 	void PhysicsBodyComponent::internalDisposeState( PhysicsBodyComponentState* pState )
 	{
-		TIKI_ASSERT( m_pWorld != nullptr );
+		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState->pTransform = nullptr;
 
-		m_pWorld->removeBody( pState->body );
+		m_pPhysicsWorld->removeBody( pState->body );
 		pState->body.dispose();
 
 		switch ( pState->shapeType )
