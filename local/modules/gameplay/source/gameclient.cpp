@@ -5,6 +5,7 @@
 #include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent_initdata.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
