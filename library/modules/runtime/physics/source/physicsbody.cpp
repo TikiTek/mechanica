@@ -47,6 +47,11 @@ namespace tiki
 		}
 	}
 
+	void PhysicsBody::applyForce( const Vector3& force )
+	{
+		m_ridgidBody.applyForce( toBulletVector( force ), toBulletVector( Vector3::zero ) );
+	}
+
 	void PhysicsBody::getPosition( Vector3& position ) const
 	{
 		position = toTikiVector( m_ridgidBody.getWorldTransform().getOrigin() );

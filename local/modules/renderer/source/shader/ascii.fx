@@ -106,7 +106,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	
 	float edgeAlpha = dot( fTotalSum, 1.0f ) / 8.0f;
 	float4 color = TIKI_TEX2D( t_accumulationBuffer, s_samplerLinear, input.texCoord );
-	color.a = viewPosition.z + edgeAlpha;
+	color.a = ( viewPosition.z / 10.0f ) + ( edgeAlpha * 2.0f );
 #else
 	float4 color = TIKI_TEX2D( t_downsample, s_samplerNearst, input.texCoord );
 

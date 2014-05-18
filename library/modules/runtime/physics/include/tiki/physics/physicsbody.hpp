@@ -25,9 +25,11 @@ namespace tiki
 		void				create( PhysicsShape& shape, const Vector3& position, float mass );
 		void				dispose();
 
+		void				applyForce( const Vector3& direction );
+
 		void				getPosition( Vector3& position ) const;
 		void				getRotation( Quaternion& rotation ) const;
-
+		
 	private:
 
 		btRigidBody			m_ridgidBody;

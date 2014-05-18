@@ -10,6 +10,8 @@ namespace tiki
 	class TransformComponent;
 	struct PhysicsBodyComponentInitData;
 	struct PhysicsBodyComponentState;
+	struct Quaternion;
+	struct Vector3;
 
 	class PhysicsBodyComponent : public Component< PhysicsBodyComponentState, PhysicsBodyComponentInitData >
 	{
@@ -25,6 +27,9 @@ namespace tiki
 
 		void				update();
 
+		void				getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState );
+		void				getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState );
+
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
 		virtual const char*	getTypeName() const;
@@ -36,9 +41,10 @@ namespace tiki
 
 	private:
 
-		PhysicsWorld*		m_pWorld;
+		PhysicsWorld*				m_pPhysicsWorld;
 
-		ComponentTypeId		m_transformTypeId;
+		const TransformComponent*	m_pTranformComponent;
+		ComponentTypeId				m_transformComponentTypeId;
 
 	};
 }

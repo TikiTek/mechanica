@@ -35,7 +35,8 @@ namespace tiki
 
 	private:
 
-		ComponentTypeId		m_transformTypeId;
+		const TransformComponent*	m_pTransformComponent;
+		ComponentTypeId				m_transformComponentTypeId;
 
 	};
 }

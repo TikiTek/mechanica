@@ -20,20 +20,22 @@ namespace tiki
 
 	public:
 
-		bool				create();
-		void				dispose();
+		bool						create();
+		void						dispose();
 
-		EntityId			createModelEntity( const Model* pModel, const Vector3& position );
-		EntityId			createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
-		EntityId			createPlaneEntity( const Model* pModel, const Vector3& position );
+		EntityId					createModelEntity( const Model* pModel, const Vector3& position );
+		EntityId					createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId					createPlaneEntity( const Model* pModel, const Vector3& position );
 
-		void				disposeEntity( EntityId entityId );
+		void						disposeEntity( EntityId entityId );
 
-		void				update( float timeStep );
-		void				render( GameRenderer& gameRenderer );
+		void						update( float timeStep );
+		void						render( GameRenderer& gameRenderer );
 
-		const EntitySystem&	getEntitySystem() const	{ return m_entitySystem; }
-		PhysicsWorld&		getPhysicsWorld()		{ return m_physicsWorld; }
+		const EntitySystem&			getEntitySystem() const	{ return m_entitySystem; }
+		PhysicsWorld&				getPhysicsWorld()		{ return m_physicsWorld; }
+
+		const TransformComponent&	getTransformComponent() const { return m_transformComponent; }
 
 	private:
 

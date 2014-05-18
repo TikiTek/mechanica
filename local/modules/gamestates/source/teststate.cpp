@@ -324,7 +324,10 @@ namespace tiki
 		//}
 
 		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
-		quaternion::fromYawPitchRoll( pState->rotation, timeValue, 0.0f, 0.0f );
+
+		Quaternion rotation;
+		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
+		m_gameClient.getTransformComponent().setRotation( pState, rotation );
 
 		m_debugGui.update();
 
