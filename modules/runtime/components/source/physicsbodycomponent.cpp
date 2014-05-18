@@ -81,13 +81,24 @@ namespace tiki
 		}
 	}
 
-	void PhysicsBodyComponent::getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState )
+	void PhysicsBodyComponent::applyForce( PhysicsBodyComponentState* pState, const Vector3& force ) const
 	{
+		TIKI_ASSERT( pState != nullptr );
+
+		pState->body.applyForce( force );
+	}
+
+	void PhysicsBodyComponent::getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
 		pState->body.getPosition( targetPosition );
 	}
 
-	void PhysicsBodyComponent::getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState )
+	void PhysicsBodyComponent::getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState ) const
 	{
+		TIKI_ASSERT( pState != nullptr );
+
 		pState->body.getRotation( targetRotation );
 	}
 
@@ -137,7 +148,7 @@ namespace tiki
 			return false;
 		}
 
-		pState->body.create( *pShape, vector::set( Vector3(), pInitData->position ), pInitData->mass );
+		pState->body.create( *pShape, vector::set( Vector3(), pInitData->position ), pInitData->mass, pInitData->freeRotation );
 		m_pPhysicsWorld->addBody( pState->body );
 
 		return true;
