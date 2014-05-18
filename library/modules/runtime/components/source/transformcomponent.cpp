@@ -14,6 +14,7 @@ namespace tiki
 	{
 		Vector3		position;
 		Quaternion	rotation;
+		Vector3		scale;
 
 		bool		needUpdate;
 		Matrix43	worldTransform;
@@ -24,6 +25,10 @@ namespace tiki
 		if ( pState->needUpdate )
 		{
 			quaternion::toMatrix( pState->worldTransform.rot, pState->rotation );
+			vector::scale( pState->worldTransform.rot.x, pState->scale.x );
+			vector::scale( pState->worldTransform.rot.y, pState->scale.y );
+			vector::scale( pState->worldTransform.rot.z, pState->scale.z );
+
 			pState->worldTransform.pos = pState->position;
 		}
 	}
@@ -113,6 +118,7 @@ namespace tiki
 	{
 		vector::set( pState->position, pInitData->position );
 		quaternion::set( pState->rotation, pInitData->rotation );
+		vector::set( pState->scale, pInitData->scale );
 		pState->needUpdate = true;
 
 		return true;
@@ -122,5 +128,6 @@ namespace tiki
 	{
 		vector::clear( pState->position );
 		quaternion::clear( pState->rotation );
+		vector::clear( pState->scale );
 	}
 }

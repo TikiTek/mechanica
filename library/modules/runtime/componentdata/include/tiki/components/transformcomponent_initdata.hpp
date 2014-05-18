@@ -12,6 +12,7 @@ namespace tiki
 		TransformComponentInitData,
 		TIKI_REFLECTION_FIELD( float3, position )
 		TIKI_REFLECTION_FIELD( float4, rotation )
+		TIKI_REFLECTION_FIELD( float3, scale )
 	);
 }
 

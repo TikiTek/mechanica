@@ -28,6 +28,7 @@ namespace tiki
 		PhysicsBodyComponentInitData,
 		TIKI_REFLECTION_FIELD( float3,				position )
 		TIKI_REFLECTION_FIELD( float,				mass )
+		TIKI_REFLECTION_FIELD( bool,				freeRotation )
 		TIKI_REFLECTION_FIELD( PhysicsShapeData,	shape )
 	);
 

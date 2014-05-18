@@ -20,7 +20,7 @@ namespace tiki
 		TIKI_ASSERT( m_ridgidBody.getUserPointer() == nullptr );
 	}
 
-	void PhysicsBody::create( PhysicsShape& shape, const Vector3& position, float mass )
+	void PhysicsBody::create( PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
 	{
 		dispose();
 
@@ -30,11 +30,19 @@ namespace tiki
 
 		btCollisionShape* pShape = static_cast< btCollisionShape* >( shape.getNativeShape() );
 		btVector3 localInertia;
-		pShape->calculateLocalInertia( mass, localInertia );
+		if ( freeRotation )
+		{
+			pShape->calculateLocalInertia( mass, localInertia );
+		}
+		else
+		{
+			localInertia = toBulletVector( Vector3::zero );
+		}
 
 		m_ridgidBody = btRigidBody( mass, nullptr, pShape, localInertia );
 		m_ridgidBody.setCenterOfMassTransform( transform );
 		m_ridgidBody.setUserPointer( this );
+		m_ridgidBody.setActivationState( 1u );
 	}
 
 	void PhysicsBody::dispose()
@@ -49,7 +57,7 @@ namespace tiki
 
 	void PhysicsBody::applyForce( const Vector3& force )
 	{
-		m_ridgidBody.applyForce( toBulletVector( force ), toBulletVector( Vector3::zero ) );
+		m_ridgidBody.applyCentralImpulse( toBulletVector( force ) );
 	}
 
 	void PhysicsBody::getPosition( Vector3& position ) const

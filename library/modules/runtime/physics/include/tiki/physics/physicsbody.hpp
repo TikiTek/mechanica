@@ -22,7 +22,7 @@ namespace tiki
 							PhysicsBody();
 							~PhysicsBody();
 
-		void				create( PhysicsShape& shape, const Vector3& position, float mass );
+		void				create( PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation );
 		void				dispose();
 
 		void				applyForce( const Vector3& direction );

@@ -4,6 +4,7 @@
 
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscollidercomponent.hpp"
+#include "tiki/components/playercontrolcomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
 #include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
@@ -13,6 +14,7 @@
 namespace tiki
 {
 	class Model;
+	struct InputEvent;
 
 	class GameClient
 	{
@@ -23,6 +25,7 @@ namespace tiki
 		bool						create();
 		void						dispose();
 
+		EntityId					createPlayerEntity( const Model* pModel, const Vector3& position );
 		EntityId					createModelEntity( const Model* pModel, const Vector3& position );
 		EntityId					createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
 		EntityId					createPlaneEntity( const Model* pModel, const Vector3& position );
@@ -31,6 +34,8 @@ namespace tiki
 
 		void						update( float timeStep );
 		void						render( GameRenderer& gameRenderer );
+
+		bool						processInputEvent( const InputEvent& inputEvent );
 
 		const EntitySystem&			getEntitySystem() const	{ return m_entitySystem; }
 		PhysicsWorld&				getPhysicsWorld()		{ return m_physicsWorld; }
@@ -52,6 +57,7 @@ namespace tiki
 
 		PhysicsBodyComponent		m_physicsBodyComponent;
 		PhysicsColliderComponent	m_physicsColliderComponent;
+		PlayerControlComponent		m_playerControlComponent;
 		SkinnedModelComponent		m_skinnedModelComponent;
 		StaticModelComponent		m_staticModelComponent;
 		TransformComponent			m_transformComponent;

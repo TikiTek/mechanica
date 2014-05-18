@@ -27,8 +27,10 @@ namespace tiki
 
 		void				update();
 
-		void				getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState );
-		void				getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState );
+		void				applyForce( PhysicsBodyComponentState* pState, const Vector3& force ) const;
+
+		void				getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState ) const;
+		void				getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState ) const;
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
