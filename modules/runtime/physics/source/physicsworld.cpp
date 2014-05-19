@@ -5,6 +5,7 @@
 #include "tiki/base/debugprop.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/physics/physicsbody.hpp"
+#include "tiki/physics/physicscharactercontroller.hpp"
 #include "tiki/physics/physicscollider.hpp"
 
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
@@ -66,6 +67,8 @@ namespace tiki
 		);
 		m_pPhysicWorld->setGravity( btVector3( gravity.x, gravity.y, gravity.z ) );
 
+		m_physicOverlappingPair.getOverlappingPairCache()->setInternalGhostPairCallback( &m_ghostPairCallback );
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_debugDraw.create();
 		m_pPhysicWorld->setDebugDrawer( &m_debugDraw );
@@ -89,6 +92,20 @@ namespace tiki
 		}
 	}
 
+	void PhysicsWorld::addBody( PhysicsBody& body )
+	{
+		TIKI_ASSERT( m_pPhysicWorld != nullptr );
+
+		m_pPhysicWorld->addRigidBody( &body.m_ridgidBody );		
+	}
+
+	void PhysicsWorld::removeBody( PhysicsBody& body )
+	{
+		TIKI_ASSERT( m_pPhysicWorld != nullptr );
+
+		m_pPhysicWorld->removeRigidBody( &body.m_ridgidBody );
+	}
+
 	void PhysicsWorld::addCollider( PhysicsCollider& collider )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
@@ -103,18 +120,21 @@ namespace tiki
 		m_pPhysicWorld->removeCollisionObject( &collider.m_collitionObject );
 	}
 
-	void PhysicsWorld::addBody( PhysicsBody& body )
+
+	void PhysicsWorld::addCharacterController( PhysicsCharacterController& controller )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
-		m_pPhysicWorld->addRigidBody( &body.m_ridgidBody );
+		m_pPhysicWorld->addCollisionObject( &controller.m_ghostObject, btBroadphaseProxy::CharacterFilter, ( btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter ) );
+		m_pPhysicWorld->addAction( &controller.m_controller );
 	}
 
-	void PhysicsWorld::removeBody( PhysicsBody& body )
+	void PhysicsWorld::removeCharacterController( PhysicsCharacterController& controller )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
-		m_pPhysicWorld->removeRigidBody( &body.m_ridgidBody );
+		m_pPhysicWorld->removeAction( &controller.m_controller );
+		m_pPhysicWorld->addCollisionObject( &controller.m_ghostObject );
 	}
 
 	bool PhysicsWorld::checkIntersection( PhysicsShape& physicsShape, const Vector3& position )

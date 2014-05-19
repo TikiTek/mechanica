@@ -258,6 +258,11 @@ namespace tiki
 
 	EntitySystem::EntityData* EntitySystem::getEntityData( EntityId entityId )
 	{
+		if ( entityId == InvalidEntityId )
+		{
+			return nullptr;
+		}
+
 		const EntityPoolInfo* pEntityPool = nullptr;
 		for (uint i = 0u; i < m_pools.getCount(); ++i)
 		{
