@@ -151,8 +151,13 @@ namespace tiki
 				m_boxEntities.create( 100u );
 
 				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
-				m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
+				m_playerEntityId	= InvalidEntityId; //m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
+
+				m_physicsShape.create( 1.0f, 0.2f );
+				m_physicsController.create( m_physicsShape, vector::create( 0.0f, 5.0f, 0.0f ) );
+
+				m_gameClient.getPhysicsWorld().addCharacterController( m_physicsController );
 
 				return TransitionState_Finish;
 			}
