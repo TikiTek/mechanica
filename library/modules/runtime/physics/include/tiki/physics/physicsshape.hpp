@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	class PhysicsShape : public PhysicsBody
+	class PhysicsShape
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PhysicsShape );
 

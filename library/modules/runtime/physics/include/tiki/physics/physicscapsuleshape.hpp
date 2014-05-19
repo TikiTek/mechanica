@@ -2,8 +2,9 @@
 #ifndef __TIKI_PHYSICSCAPSULESHAPE_HPP_INCLUDED__
 #define __TIKI_PHYSICSCAPSULESHAPE_HPP_INCLUDED__
 
+#include "tiki/physics/physicsshape.hpp"
+
 #include "tiki/base/types.hpp"
-#include "tiki/physics/physicsbody.hpp"
 
 #include "BulletCollision/CollisionShapes/btCapsuleShape.h"
 

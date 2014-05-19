@@ -13,6 +13,8 @@
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/scenerendereffect.hpp"
+#include "tiki/physics/physicscapsuleshape.hpp"
+#include "tiki/physics/physicscharactercontroller.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -97,6 +99,9 @@ namespace tiki
 		EntityId					m_boxesEntityId;
 
 		SizedArray< EntityId >		m_boxEntities;
+
+		PhysicsCapsuleShape			m_physicsShape;
+		PhysicsCharacterController	m_physicsController;
 
 	};
 }
