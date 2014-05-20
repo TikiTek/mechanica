@@ -10,16 +10,15 @@
 #include "tiki/physics/physicssphereshape.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
+#include "physicscomponents_shared.hpp"
+
 namespace tiki
 {
 	struct PhysicsColliderComponentState : public ComponentState
 	{
-		PhysicsShapeType	shapeType;
-		PhysicsBoxShape		boxShape;
-		PhysicsCapsuleShape	capsuleShape;
-		PhysicsSphereShape	sphereShape;
+		PhysicsComponentShape	shape;
 
-		PhysicsCollider		collider;
+		PhysicsCollider			collider;
 	};
 
 	PhysicsColliderComponent::PhysicsColliderComponent()
@@ -64,28 +63,10 @@ namespace tiki
 		TIKI_ASSERT( m_pWorld != nullptr );
 
 		pState = new( pState ) PhysicsColliderComponentState;
-		pState->shapeType = pInitData->shape.shapeType;
 
-		PhysicsShape* pShape = nullptr;
-		switch ( pState->shapeType )
+		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
+		if ( pShape == nullptr )
 		{
-		case ShapeType_Box:
-			pState->boxShape.create( vector::set( Vector3(), pInitData->shape.shapeBoxSize ) );
-			pShape = &pState->boxShape;
-			break;
-
-		case ShapeType_Capsule:
-			pState->capsuleShape.create( pInitData->shape.shapeCapsuleHeight, pInitData->shape.shapeCapsuleRadius );
-			pShape = &pState->capsuleShape;
-			break;
-
-		case ShapeType_Sphere:
-			pState->sphereShape.create( pInitData->shape.shapeSphereRadius );
-			pShape = &pState->sphereShape;
-			break;
-
-		default:
-			TIKI_TRACE_ERROR( "[PhysicsColliderComponent] Could not initilize State, because of unsupported ShapeType.\n" );
 			return false;
 		}
 
@@ -102,24 +83,7 @@ namespace tiki
 		m_pWorld->removeCollider( pState->collider );
 		pState->collider.dispose();
 
-		switch ( pState->shapeType )
-		{
-		case ShapeType_Box:
-			pState->boxShape.dispose();
-			break;
-
-		case ShapeType_Capsule:
-			pState->capsuleShape.dispose();
-			break;
-
-		case ShapeType_Sphere:
-			pState->sphereShape.dispose();
-			break;
-
-		default:
-			TIKI_TRACE_ERROR( "[PhysicsColliderComponent] Could not dispose State, because of unsupported ShapeType.\n" );
-			break;
-		}
+		disposePhysicsComponentShape( pState->shape );
 
 		pState->~PhysicsColliderComponentState();
 	}

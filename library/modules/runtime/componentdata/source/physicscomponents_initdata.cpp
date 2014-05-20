@@ -7,4 +7,5 @@ namespace tiki
 	
 	TIKI_REFLECTION_CPPDECLARE( PhysicsBodyComponentInitData );
 	TIKI_REFLECTION_CPPDECLARE( PhysicsColliderComponentInitData );
+	TIKI_REFLECTION_CPPDECLARE( PhysicsCharacterControllerComponentInitData );
 }

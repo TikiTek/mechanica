@@ -36,6 +36,7 @@ namespace tiki
 		m_enableBloom		= true;
 		m_enableAsciiMode	= false;
 		m_gbufferIndex		= -1;
+		m_enableFreeCamera	= false;
 		m_enableMouseCamera	= false;
 		m_cameraSpeed		= 1.0f;
 
@@ -151,13 +152,12 @@ namespace tiki
 				m_boxEntities.create( 100u );
 
 				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
-				m_playerEntityId	= InvalidEntityId; //m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
+				m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
-				m_physicsShape.create( 1.0f, 0.2f );
-				m_physicsController.create( m_physicsShape, vector::create( 0.0f, 5.0f, 0.0f ) );
-
-				m_gameClient.getPhysicsWorld().addCharacterController( m_physicsController );
+				//m_physicsShape.create( 1.0f, 0.2f );
+				//m_physicsController.create( m_physicsShape, vector::create( 0.0f, 5.0f, 0.0f ) );
+				//m_gameClient.getPhysicsWorld().addCharacterController( m_physicsController );
 
 				return TransitionState_Finish;
 			}
@@ -239,39 +239,53 @@ namespace tiki
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
-		Vector3 cameraPosition = frameData.mainCamera.getPosition();
-		Quaternion cameraRotation;
-
-		// rotate camera
+		if ( m_enableFreeCamera )
 		{
-			Vector2 rotation = m_rightStickState;
-			if ( m_enableMouseCamera )
+			Vector3 cameraPosition = frameData.mainCamera.getPosition();
+			Quaternion cameraRotation;
+
+			// rotate camera
 			{
-				vector::clear( m_rightStickState );
+				Vector2 rotation = m_rightStickState;
+				if ( m_enableMouseCamera )
+				{
+					vector::clear( m_rightStickState );
+				}
+				vector::scale( rotation, timeDelta * 2.0f );
+
+				m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
+
+				vector::add( m_cameraRotation, rotation );
+				quaternion::fromYawPitchRoll( cameraRotation, m_cameraRotation.x, m_cameraRotation.y, 0.0f );
 			}
-			vector::scale( rotation, timeDelta * 2.0f );
 
-			m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
+			// move camera
+			{
+				Vector3 cameraForward;
+				Vector3 cameraRight;
+				quaternion::getForward( cameraForward, cameraRotation );
+				quaternion::getRight( cameraRight, cameraRotation );
 
-			vector::add( m_cameraRotation, rotation );
-			quaternion::fromYawPitchRoll( cameraRotation, m_cameraRotation.x, m_cameraRotation.y, 0.0f );
+				vector::scale( cameraForward,	m_leftStickState.y * timeDelta * m_cameraSpeed );
+				vector::scale( cameraRight,		m_leftStickState.x * timeDelta * m_cameraSpeed );
+
+				vector::add( cameraPosition, cameraForward );
+				vector::add( cameraPosition, cameraRight );
+			}
+
+			frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
 		}
-
-		// move camera
+		else
 		{
-			Vector3 cameraForward;
-			Vector3 cameraRight;
-			quaternion::getForward( cameraForward, cameraRotation );
-			quaternion::getRight( cameraRight, cameraRotation );
+			TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getTransformComponent().getTypeId() );
 
-			vector::scale( cameraForward,	m_leftStickState.y * timeDelta * m_cameraSpeed );
-			vector::scale( cameraRight,		m_leftStickState.x * timeDelta * m_cameraSpeed );
+			Vector3 cameraPosition;
+			Quaternion cameraRotation;
+			m_gameClient.getTransformComponent().getPosition( cameraPosition, pState );
+			m_gameClient.getTransformComponent().getRotation( cameraRotation, pState );
 
-			vector::add( cameraPosition, cameraForward );
-			vector::add( cameraPosition, cameraRight );
+			frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
 		}
-
-		frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
 
 		DirectionalLightData& directionalLight = frameData.directionalLights.push();
 		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
@@ -502,6 +516,10 @@ namespace tiki
 
 					shape.dispose();
 				}
+				break;
+
+			case KeyboardKey_C:
+				m_enableFreeCamera = !m_enableFreeCamera;
 				break;
 
 			default:

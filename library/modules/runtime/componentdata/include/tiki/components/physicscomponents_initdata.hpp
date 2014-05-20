@@ -16,7 +16,7 @@ namespace tiki
 	};
 
 	TIKI_REFLECTION_STRUCT(
-		PhysicsShapeData,
+		PhysicsComponentShapeInitData,
 		TIKI_REFLECTION_FIELD( PhysicsShapeType,	shapeType )
 		TIKI_REFLECTION_FIELD( float3,				shapeBoxSize )
 		TIKI_REFLECTION_FIELD( float,				shapeCapsuleRadius )
@@ -26,16 +26,22 @@ namespace tiki
 
 	TIKI_REFLECTION_STRUCT(
 		PhysicsBodyComponentInitData,
-		TIKI_REFLECTION_FIELD( float3,				position )
-		TIKI_REFLECTION_FIELD( float,				mass )
-		TIKI_REFLECTION_FIELD( bool,				freeRotation )
-		TIKI_REFLECTION_FIELD( PhysicsShapeData,	shape )
+		TIKI_REFLECTION_FIELD( float3,							position )
+		TIKI_REFLECTION_FIELD( float,							mass )
+		TIKI_REFLECTION_FIELD( bool,							freeRotation )
+		TIKI_REFLECTION_FIELD( PhysicsComponentShapeInitData,	shape )
 	);
 
 	TIKI_REFLECTION_STRUCT(
 		PhysicsColliderComponentInitData,
-		TIKI_REFLECTION_FIELD( float3,				position )
-		TIKI_REFLECTION_FIELD( PhysicsShapeData,	shape )
+		TIKI_REFLECTION_FIELD( float3,							position )
+		TIKI_REFLECTION_FIELD( PhysicsComponentShapeInitData,	shape )
+	);
+
+	TIKI_REFLECTION_STRUCT(
+		PhysicsCharacterControllerComponentInitData,
+		TIKI_REFLECTION_FIELD( float3,							position )
+		TIKI_REFLECTION_FIELD( PhysicsComponentShapeInitData,	shape )
 	);
 }
 

@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	class PhysicsBodyComponent;
+	class PhysicsCharacterControllerComponent;
 	class TransformComponent;
 	struct InputEvent;
 	struct PlayerControlComponentInitData;
@@ -22,7 +22,7 @@ namespace tiki
 		explicit			PlayerControlComponent();
 		virtual				~PlayerControlComponent();
 
-		bool				create( const TransformComponent& transformComponent, const PhysicsBodyComponent& physicsBodyComponent );
+		bool				create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent );
 		void				dispose();
 
 		void				update( float timeStep );
@@ -44,15 +44,17 @@ namespace tiki
 		{
 			Vector2		leftStick;
 			Vector2		rightStick;
+
+			bool		jump;
 		};
 
-		const TransformComponent*		m_pTransformComponent;
-		const PhysicsBodyComponent*		m_pPhysicsBodyComponent;
+		const TransformComponent*					m_pTransformComponent;
+		const PhysicsCharacterControllerComponent*	m_pPhysicsCharacterControllerComponent;
 
-		ComponentTypeId					m_transformComponentTypeId;
-		ComponentTypeId					m_physicsBodyComponentTypeId;
+		ComponentTypeId								m_transformComponentTypeId;
+		ComponentTypeId								m_physicsCharacterControllerComponentTypeId;
 
-		PlayerInputState				m_inputState;
+		PlayerInputState							m_inputState;
 
 	};
 }

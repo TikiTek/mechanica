@@ -134,7 +134,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->removeAction( &controller.m_controller );
-		m_pPhysicWorld->addCollisionObject( &controller.m_ghostObject );
+		m_pPhysicWorld->removeCollisionObject( &controller.m_ghostObject );
 	}
 
 	bool PhysicsWorld::checkIntersection( PhysicsShape& physicsShape, const Vector3& position )

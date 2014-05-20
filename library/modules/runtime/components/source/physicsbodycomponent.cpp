@@ -13,16 +13,15 @@
 #include "tiki/physics/physicssphereshape.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
+#include "physicscomponents_shared.hpp"
+
 namespace tiki
 {
 	struct PhysicsBodyComponentState : public ComponentState
 	{
 		TransformComponentState*	pTransform;
 
-		PhysicsShapeType			shapeType;
-		PhysicsBoxShape				boxShape;
-		PhysicsCapsuleShape			capsuleShape;
-		PhysicsSphereShape			sphereShape;
+		PhysicsComponentShape		shape;
 
 		PhysicsBody					body;
 	};
@@ -122,29 +121,11 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) PhysicsBodyComponentState;
-		pState->shapeType	= pInitData->shape.shapeType;
 		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
 
-		PhysicsShape* pShape = nullptr;
-		switch ( pState->shapeType )
+		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
+		if ( pShape == nullptr )
 		{
-		case ShapeType_Box:
-			pState->boxShape.create( vector::set( Vector3(), pInitData->shape.shapeBoxSize ) );
-			pShape = &pState->boxShape;
-			break;
-
-		case ShapeType_Capsule:
-			pState->capsuleShape.create( pInitData->shape.shapeCapsuleHeight, pInitData->shape.shapeCapsuleRadius );
-			pShape = &pState->capsuleShape;
-			break;
-
-		case ShapeType_Sphere:
-			pState->sphereShape.create( pInitData->shape.shapeSphereRadius );
-			pShape = &pState->sphereShape;
-			break;
-
-		default:
-			TIKI_TRACE_ERROR( "[PhysicsBodyComponent] Could not initilize State, because of unsupported ShapeType.\n" );
 			return false;
 		}
 
@@ -163,24 +144,7 @@ namespace tiki
 		m_pPhysicsWorld->removeBody( pState->body );
 		pState->body.dispose();
 
-		switch ( pState->shapeType )
-		{
-		case ShapeType_Box:
-			pState->boxShape.dispose();
-			break;
-
-		case ShapeType_Capsule:
-			pState->capsuleShape.dispose();
-			break;
-
-		case ShapeType_Sphere:
-			pState->sphereShape.dispose();
-			break;
-
-		default:
-			TIKI_TRACE_ERROR( "[PhysicsBodyComponent] Could not dispose State, because of unsupported ShapeType.\n" );
-			break;
-		}	
+		disposePhysicsComponentShape( pState->shape );
 
 		pState->~PhysicsBodyComponentState();
 	}

@@ -15,40 +15,40 @@ namespace tiki
 {
 	struct PlayerControlComponentState : public ComponentState
 	{
-		TransformComponentState*	pTransform;
-		PhysicsBodyComponentState*	pPhysicsBody;
+		TransformComponentState*					pTransform;
+		PhysicsCharacterControllerComponentState*	pPhysicsController;
 
-		float						speed;
+		float										speed;
 	};
 
 	PlayerControlComponent::PlayerControlComponent()
 	{
-		m_pTransformComponent			= nullptr;
-		m_pPhysicsBodyComponent			= nullptr;
-		m_transformComponentTypeId		= InvalidComponentTypeId;
-		m_physicsBodyComponentTypeId	= InvalidComponentTypeId;
+		m_pTransformComponent						= nullptr;
+		m_pPhysicsCharacterControllerComponent		= nullptr;
+		m_transformComponentTypeId					= InvalidComponentTypeId;
+		m_physicsCharacterControllerComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	PlayerControlComponent::~PlayerControlComponent()
 	{
-		TIKI_ASSERT( m_pTransformComponent			== nullptr );
-		TIKI_ASSERT( m_pPhysicsBodyComponent		== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId		== InvalidComponentTypeId );
-		TIKI_ASSERT( m_physicsBodyComponentTypeId	== InvalidComponentTypeId );
+		TIKI_ASSERT( m_pTransformComponent							== nullptr );
+		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
+		TIKI_ASSERT( m_transformComponentTypeId						== InvalidComponentTypeId );
+		TIKI_ASSERT( m_physicsCharacterControllerComponentTypeId	== InvalidComponentTypeId );
 	}
 
-	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const PhysicsBodyComponent& physicsBodyComponent )
+	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent )
 	{
-		TIKI_ASSERT( m_pTransformComponent			== nullptr );
-		TIKI_ASSERT( m_pPhysicsBodyComponent		== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId		== InvalidComponentTypeId );
-		TIKI_ASSERT( m_physicsBodyComponentTypeId	== InvalidComponentTypeId );
+		TIKI_ASSERT( m_pTransformComponent							== nullptr );
+		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
+		TIKI_ASSERT( m_transformComponentTypeId						== InvalidComponentTypeId );
+		TIKI_ASSERT( m_physicsCharacterControllerComponentTypeId	== InvalidComponentTypeId );
 
-		m_pTransformComponent			= &transformComponent;
-		m_pPhysicsBodyComponent			= &physicsBodyComponent;
+		m_pTransformComponent					= &transformComponent;
+		m_pPhysicsCharacterControllerComponent	= &physicsCharacterControllerComponent;
 
-		m_transformComponentTypeId		= transformComponent.getTypeId();
-		m_physicsBodyComponentTypeId	= physicsBodyComponent.getTypeId();
+		m_transformComponentTypeId					= transformComponent.getTypeId();
+		m_physicsCharacterControllerComponentTypeId	= physicsCharacterControllerComponent.getTypeId();
 
 		vector::clear( m_inputState.leftStick );
 		vector::clear( m_inputState.rightStick );
@@ -58,10 +58,10 @@ namespace tiki
 
 	void PlayerControlComponent::dispose()
 	{
-		m_pTransformComponent			= nullptr;
-		m_pPhysicsBodyComponent			= nullptr;
-		m_transformComponentTypeId		= InvalidComponentTypeId;
-		m_physicsBodyComponentTypeId	= InvalidComponentTypeId;
+		m_pTransformComponent						= nullptr;
+		m_pPhysicsCharacterControllerComponent		= nullptr;
+		m_transformComponentTypeId					= InvalidComponentTypeId;
+		m_physicsCharacterControllerComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	void PlayerControlComponent::update( float timeStep )
@@ -70,10 +70,17 @@ namespace tiki
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			Vector3 walkForce = { m_inputState.leftStick.x, 0.0f, m_inputState.leftStick.y };
-			vector::scale( walkForce, timeStep * pState->speed );
+			Vector3 walkForce = { m_inputState.leftStick.y, 0.0f, -m_inputState.leftStick.x };
+			vector::scale( walkForce, pState->speed );
 
-			m_pPhysicsBodyComponent->applyForce( pState->pPhysicsBody, walkForce );
+			m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
+
+			if ( m_inputState.jump )
+			{
+				m_pPhysicsCharacterControllerComponent->jump( pState->pPhysicsController );
+
+				m_inputState.jump = false;
+			}
 		}
 	}
 
@@ -88,6 +95,10 @@ namespace tiki
 			targetVector.y = stickData.yState;
 
 			return true;
+		}
+		else if ( inputEvent.eventType == InputEventType_Controller_ButtonDown && inputEvent.data.controllerButton.button == ControllerButton_A && inputEvent.deviceId == 0u )
+		{
+			m_inputState.jump = true;
 		}
 
 		return false;
@@ -110,8 +121,8 @@ namespace tiki
 
 	bool PlayerControlComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerControlComponentState* pState, const PlayerControlComponentInitData* pInitData )
 	{
-		pState->pTransform		= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
-		pState->pPhysicsBody	= static_cast< PhysicsBodyComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_physicsBodyComponentTypeId ) ) );
+		pState->pTransform			= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
+		pState->pPhysicsController	= static_cast< PhysicsCharacterControllerComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_physicsCharacterControllerComponentTypeId ) ) );
 
 		pState->speed = pInitData->speed;
 
@@ -120,7 +131,7 @@ namespace tiki
 
 	void PlayerControlComponent::internalDisposeState( PlayerControlComponentState* pState )
 	{
-		pState->pTransform		= nullptr;
-		pState->pPhysicsBody	= nullptr;
+		pState->pTransform			= nullptr;
+		pState->pPhysicsController	= nullptr;
 	}
 }

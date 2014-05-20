@@ -50,7 +50,10 @@ namespace tiki
 		TIKI_VERIFY( m_physicsColliderComponent.create( m_physicsWorld ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsColliderComponent ) );
 
-		TIKI_VERIFY( m_playerControlComponent.create( m_transformComponent, m_physicsBodyComponent ) );
+		TIKI_VERIFY( m_physicsCharacterControllerComponent.create( m_physicsWorld, m_transformComponent ) );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsCharacterControllerComponent ) );
+
+		TIKI_VERIFY( m_playerControlComponent.create( m_transformComponent, m_physicsCharacterControllerComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerControlComponent ) );
 
 		return true;
@@ -59,6 +62,7 @@ namespace tiki
 	void GameClient::dispose()
 	{
 		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
+		m_entitySystem.unregisterComponentType( &m_physicsCharacterControllerComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
 		m_entitySystem.unregisterComponentType( &m_skinnedModelComponent );
@@ -66,6 +70,7 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
 		m_playerControlComponent.dispose();
+		m_physicsCharacterControllerComponent.dispose();
 		m_physicsColliderComponent.dispose();
 		m_physicsBodyComponent.dispose();
 		m_skinnedModelComponent.dispose();
@@ -87,21 +92,19 @@ namespace tiki
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
 
-		PhysicsBodyComponentInitData bodyInitData;
-		createFloat3( bodyInitData.position, position.x, position.y, position.z );
-		bodyInitData.mass			= 100.0f;
-		bodyInitData.freeRotation	= false;
-		bodyInitData.shape.shapeType = ShapeType_Capsule;
-		bodyInitData.shape.shapeCapsuleRadius = 0.5f;
-		bodyInitData.shape.shapeCapsuleHeight = 1.0f;
+		PhysicsCharacterControllerComponentInitData controllerInitData;
+		createFloat3( controllerInitData.position, position.x, position.y, position.z );
+		controllerInitData.shape.shapeType = ShapeType_Capsule;
+		controllerInitData.shape.shapeCapsuleRadius = 0.5f;
+		controllerInitData.shape.shapeCapsuleHeight = 1.0f;
 
 		PlayerControlComponentInitData playerControlInitData;
-		playerControlInitData.speed = 10000.0f;
+		playerControlInitData.speed = 0.1f;
 
 		EntityTemplateComponent entityComponents[] =
 		{
 			{ m_transformComponent.getTypeCrc(), &transformInitData },
-			{ m_physicsBodyComponent.getTypeCrc(), &bodyInitData },
+			{ m_physicsCharacterControllerComponent.getTypeCrc(), &controllerInitData },
 			{ m_staticModelComponent.getTypeCrc(), &modelInitData },
 			{ m_playerControlComponent.getTypeCrc(), &playerControlInitData }
 		};
@@ -205,6 +208,7 @@ namespace tiki
 	{
 		m_physicsWorld.update( timeStep );
 
+		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
 		m_transformComponent.update();
 		m_playerControlComponent.update( timeStep );

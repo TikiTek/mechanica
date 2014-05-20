@@ -3,6 +3,7 @@
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
 #include "tiki/components/physicsbodycomponent.hpp"
+#include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/physicscollidercomponent.hpp"
 #include "tiki/components/playercontrolcomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
@@ -51,16 +52,17 @@ namespace tiki
 			ChunkSize		= 4096u
 		};
 
-		EntitySystem				m_entitySystem;
+		EntitySystem						m_entitySystem;
 
-		PhysicsWorld				m_physicsWorld;
+		PhysicsWorld						m_physicsWorld;
 
-		PhysicsBodyComponent		m_physicsBodyComponent;
-		PhysicsColliderComponent	m_physicsColliderComponent;
-		PlayerControlComponent		m_playerControlComponent;
-		SkinnedModelComponent		m_skinnedModelComponent;
-		StaticModelComponent		m_staticModelComponent;
-		TransformComponent			m_transformComponent;
+		PhysicsBodyComponent				m_physicsBodyComponent;
+		PhysicsCharacterControllerComponent	m_physicsCharacterControllerComponent;
+		PhysicsColliderComponent			m_physicsColliderComponent;
+		PlayerControlComponent				m_playerControlComponent;
+		SkinnedModelComponent				m_skinnedModelComponent;
+		StaticModelComponent				m_staticModelComponent;
+		TransformComponent					m_transformComponent;
 
 	};
 }

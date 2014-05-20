@@ -75,6 +75,7 @@ namespace tiki
 
 		ImmediateRenderer			m_immediateRenderer;
 
+		bool						m_enableFreeCamera;
 		bool						m_enableMouseCamera;
 		float						m_cameraSpeed;
 		Vector2						m_cameraRotation;
@@ -100,8 +101,8 @@ namespace tiki
 
 		SizedArray< EntityId >		m_boxEntities;
 
-		PhysicsCapsuleShape			m_physicsShape;
-		PhysicsCharacterController	m_physicsController;
+		//PhysicsCapsuleShape			m_physicsShape;
+		//PhysicsCharacterController	m_physicsController;
 
 	};
 }
