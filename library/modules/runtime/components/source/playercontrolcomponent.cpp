@@ -70,7 +70,7 @@ namespace tiki
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			Vector3 walkForce = { m_inputState.leftStick.y, 0.0f, -m_inputState.leftStick.x };
+			Vector3 walkForce = { m_inputState.leftStick.x, 0.0f, m_inputState.leftStick.y };
 			vector::scale( walkForce, pState->speed );
 
 			m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
