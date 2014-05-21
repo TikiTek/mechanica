@@ -6,6 +6,7 @@
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
+#include "tiki/framework/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
@@ -13,8 +14,6 @@
 #include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/scenerendereffect.hpp"
-#include "tiki/physics/physicscapsuleshape.hpp"
-#include "tiki/physics/physicscharactercontroller.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -74,13 +73,9 @@ namespace tiki
 		SceneRenderEffect			m_sceneRenderEffect;
 
 		ImmediateRenderer			m_immediateRenderer;
-
+		
 		bool						m_enableFreeCamera;
-		bool						m_enableMouseCamera;
-		float						m_cameraSpeed;
-		Vector2						m_cameraRotation;
-		Vector2						m_leftStickState;
-		Vector2						m_rightStickState;
+		FreeCamera					m_freeCamera;
 
 		DebugGui					m_debugGui;
 		DebugGuiTestWindow			m_testWindow;
@@ -98,11 +93,7 @@ namespace tiki
 		EntityId					m_planeEntityId;
 		EntityId					m_playerEntityId;
 		EntityId					m_boxesEntityId;
-
 		SizedArray< EntityId >		m_boxEntities;
-
-		//PhysicsCapsuleShape			m_physicsShape;
-		//PhysicsCharacterController	m_physicsController;
 
 	};
 }

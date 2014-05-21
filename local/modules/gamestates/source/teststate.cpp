@@ -37,12 +37,6 @@ namespace tiki
 		m_enableAsciiMode	= false;
 		m_gbufferIndex		= -1;
 		m_enableFreeCamera	= false;
-		m_enableMouseCamera	= false;
-		m_cameraSpeed		= 1.0f;
-
-		vector::clear( m_cameraRotation );
-		vector::clear( m_leftStickState );
-		vector::clear( m_rightStickState );
 	}
 
 	void TestState::dispose()
@@ -155,10 +149,6 @@ namespace tiki
 				m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
-				//m_physicsShape.create( 1.0f, 0.2f );
-				//m_physicsController.create( m_physicsShape, vector::create( 0.0f, 5.0f, 0.0f ) );
-				//m_gameClient.getPhysicsWorld().addCharacterController( m_physicsController );
-
 				return TransitionState_Finish;
 			}
 			else
@@ -188,12 +178,11 @@ namespace tiki
 					FrameData& frameData = m_pGameRenderer->getFrameData();
 					frameData.nearPlane		= 0.001f;
 					frameData.farPlane		= 100.0f;
+					frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
+					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
+					
 					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
-
-					const Vector3 cameraPosition = { 0.0f, 0.0f, 1.0f };
-					frameData.mainCamera.create( cameraPosition, Quaternion::identity );
-
 					m_fallbackRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
 					m_sceneRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -220,6 +209,8 @@ namespace tiki
 					m_sceneRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
+					m_freeCamera.dispose();
+
 					return TransitionState_Finish;
 				}
 			}
@@ -241,39 +232,7 @@ namespace tiki
 
 		if ( m_enableFreeCamera )
 		{
-			Vector3 cameraPosition = frameData.mainCamera.getPosition();
-			Quaternion cameraRotation;
-
-			// rotate camera
-			{
-				Vector2 rotation = m_rightStickState;
-				if ( m_enableMouseCamera )
-				{
-					vector::clear( m_rightStickState );
-				}
-				vector::scale( rotation, timeDelta * 2.0f );
-
-				m_cameraRotation.y = f32::clamp( m_cameraRotation.y, -f32::piOver2, f32::piOver2 );
-
-				vector::add( m_cameraRotation, rotation );
-				quaternion::fromYawPitchRoll( cameraRotation, m_cameraRotation.x, m_cameraRotation.y, 0.0f );
-			}
-
-			// move camera
-			{
-				Vector3 cameraForward;
-				Vector3 cameraRight;
-				quaternion::getForward( cameraForward, cameraRotation );
-				quaternion::getRight( cameraRight, cameraRotation );
-
-				vector::scale( cameraForward,	m_leftStickState.y * timeDelta * m_cameraSpeed );
-				vector::scale( cameraRight,		m_leftStickState.x * timeDelta * m_cameraSpeed );
-
-				vector::add( cameraPosition, cameraForward );
-				vector::add( cameraPosition, cameraRight );
-			}
-
-			frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
+			m_freeCamera.update( frameData.mainCamera, timeDelta );
 		}
 		else
 		{
@@ -427,29 +386,17 @@ namespace tiki
 			return true;
 		}
 
+		if ( m_enableFreeCamera && m_freeCamera.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
 		if ( m_gameClient.processInputEvent( inputEvent ) )
 		{
 			return true;
 		}
 
-		if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
-		{
-			switch ( inputEvent.data.controllerStick.stickIndex )
-			{
-			case 0u:
-				m_leftStickState.x	= inputEvent.data.controllerStick.xState;
-				m_leftStickState.y	= inputEvent.data.controllerStick.yState;
-				break;
-
-			case 1u:
-				m_rightStickState.x	= inputEvent.data.controllerStick.xState;
-				m_rightStickState.y	= inputEvent.data.controllerStick.yState;
-				break;
-			}
-
-			return true;
-		}
-		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
+		if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		{
 			switch ( inputEvent.data.keybaordKey.key )
 			{
@@ -525,74 +472,10 @@ namespace tiki
 			default:
 				break;
 			}
-
-			if ( m_enableMouseCamera )
-			{
-				switch ( inputEvent.data.keybaordKey.key )
-				{
-				case KeyboardKey_W:
-					m_leftStickState.y = 1.0f;
-					break;
-
-				case KeyboardKey_A:
-					m_leftStickState.x = -1.0f;
-					break;
-
-				case KeyboardKey_S:
-					m_leftStickState.y = -1.0f;
-					break;
-
-				case KeyboardKey_D:
-					m_leftStickState.x = 1.0f;
-					break;
-
-				case KeyboardKey_LeftShift:
-				case KeyboardKey_RightShift:
-					m_cameraSpeed = 10.0f;
-					break;
-
-				default:
-					break;
-				}
-			}
-		}
-		else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
-		{
-			if ( m_enableMouseCamera )
-			{
-				switch ( inputEvent.data.keybaordKey.key )
-				{
-				case KeyboardKey_W:
-					m_leftStickState.y = 0.0f;
-					break;
-
-				case KeyboardKey_A:
-					m_leftStickState.x = 0.0f;
-					break;
-
-				case KeyboardKey_S:
-					m_leftStickState.y = 0.0f;
-					break;
-
-				case KeyboardKey_D:
-					m_leftStickState.x = 0.0f;
-					break;
-
-				case KeyboardKey_LeftShift:
-				case KeyboardKey_RightShift:
-					m_cameraSpeed = 1.0f;
-					break;
-				}
-			}
 		}
 		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
 		{
-			m_enableMouseCamera = !m_enableMouseCamera;
-		}
-		else if ( inputEvent.eventType == InputEventType_Mouse_Moved && m_enableMouseCamera )
-		{
-			m_rightStickState.x = ( (float)inputEvent.data.mouseMoved.xOffset ) * 0.1f;
-			m_rightStickState.y = ( (float)inputEvent.data.mouseMoved.yOffset ) * -0.1f;
+			m_freeCamera.setMouseControl( !m_freeCamera.getMouseControl() );
 		}
 
 		return false;

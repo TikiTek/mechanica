@@ -172,7 +172,7 @@ namespace tiki
 			inputEvent.eventType	= InputEventType_Controller_TriggerChanged;
 			inputEvent.deviceType	= InputDeviceType_Controller;
 			inputEvent.deviceId		= controllerIndex;
-			inputEvent.data.controllerTrigger.triggerIndex	= 0u;
+			inputEvent.data.controllerTrigger.triggerIndex	= triggerIndex;
 			inputEvent.data.controllerTrigger.state			= (float)currentState / 255.0f;
 		}
 	}
