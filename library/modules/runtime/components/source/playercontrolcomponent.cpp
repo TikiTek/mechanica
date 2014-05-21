@@ -71,7 +71,7 @@ namespace tiki
 		while ( pState = componentStates.getNext() )
 		{
 			Vector3 walkForce = { m_inputState.leftStick.x, 0.0f, m_inputState.leftStick.y };
-			vector::scale( walkForce, pState->speed );
+			vector::scale( walkForce, -pState->speed );
 
 			m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
 
@@ -133,5 +133,15 @@ namespace tiki
 	{
 		pState->pTransform			= nullptr;
 		pState->pPhysicsController	= nullptr;
+	}
+
+	void PlayerControlComponent::getPlayerViewState( PlayerViewState& rTargetState, const PlayerControlComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		m_pTransformComponent->getPosition( rTargetState.eyePosition, pState->pTransform );
+		m_pTransformComponent->getRotation( rTargetState.eyeDirection, pState->pTransform );
+
+		vector::add( rTargetState.eyePosition, vector::create( 0.0f, 0.25f, 0.15f ) );
 	}
 }

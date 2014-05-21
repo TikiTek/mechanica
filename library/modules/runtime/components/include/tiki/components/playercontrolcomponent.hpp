@@ -3,6 +3,7 @@
 #define __TIKI_PLAYERCONTROLCOMPONENT_HPP_INCLUDED__
 
 #include "tiki/components/component.hpp"
+#include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -12,6 +13,12 @@ namespace tiki
 	struct InputEvent;
 	struct PlayerControlComponentInitData;
 	struct PlayerControlComponentState;
+
+	struct PlayerViewState
+	{
+		Vector3		eyePosition;
+		Quaternion	eyeDirection;
+	};
 
 	class PlayerControlComponent : public Component< PlayerControlComponentState, PlayerControlComponentInitData >
 	{
@@ -28,6 +35,8 @@ namespace tiki
 		void				update( float timeStep );
 		
 		bool				processInputEvent( const InputEvent& inputEvent );
+
+		void				getPlayerViewState( PlayerViewState& rTargetState, const PlayerControlComponentState* pState ) const;
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;

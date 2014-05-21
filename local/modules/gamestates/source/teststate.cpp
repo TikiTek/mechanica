@@ -181,6 +181,11 @@ namespace tiki
 					frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
+					m_playerCamera.create(
+						m_playerEntityId,
+						(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPlayerControlComponent().getTypeId() ),
+						m_gameClient.getPlayerControlComponent()
+					);
 					
 					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
 					m_fallbackRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
@@ -209,6 +214,7 @@ namespace tiki
 					m_sceneRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
+					m_playerCamera.dispose();
 					m_freeCamera.dispose();
 
 					return TransitionState_Finish;
@@ -229,22 +235,6 @@ namespace tiki
 		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
-
-		if ( m_enableFreeCamera )
-		{
-			m_freeCamera.update( frameData.mainCamera, timeDelta );
-		}
-		else
-		{
-			TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getTransformComponent().getTypeId() );
-
-			Vector3 cameraPosition;
-			Quaternion cameraRotation;
-			m_gameClient.getTransformComponent().getPosition( cameraPosition, pState );
-			m_gameClient.getTransformComponent().getRotation( cameraRotation, pState );
-
-			frameData.mainCamera.setTransform( cameraPosition, cameraRotation );
-		}
 
 		DirectionalLightData& directionalLight = frameData.directionalLights.push();
 		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
@@ -313,6 +303,15 @@ namespace tiki
 
 		m_gameClient.update( timeDelta );
 		m_gameClient.render( *m_pGameRenderer );
+
+		if ( m_enableFreeCamera )
+		{
+			m_freeCamera.update( frameData.mainCamera, timeDelta );
+		}
+		else
+		{
+			m_playerCamera.update( frameData.mainCamera );
+		}
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )

@@ -8,6 +8,7 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/framework/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
+#include "tiki/gameplay/playercamera.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/fallbackrendereffect.hpp"
@@ -76,6 +77,7 @@ namespace tiki
 		
 		bool						m_enableFreeCamera;
 		FreeCamera					m_freeCamera;
+		PlayerCamera				m_playerCamera;
 
 		DebugGui					m_debugGui;
 		DebugGuiTestWindow			m_testWindow;
