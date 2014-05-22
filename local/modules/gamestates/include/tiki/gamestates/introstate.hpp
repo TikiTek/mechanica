@@ -2,8 +2,9 @@
 #ifndef TIKI_INTROSTATE_HPP__INCLUDED
 #define TIKI_INTROSTATE_HPP__INCLUDED
 
+#include "tiki/gameflow/gameflowstate.hpp"
+
 #include "tiki/base/types.hpp"
-#include "tiki/gameflow/gamestate.hpp"
 
 namespace tiki
 {
@@ -12,7 +13,7 @@ namespace tiki
 		IntroStateTransitionSteps_Count
 	};
 
-	class IntroState : public GameState
+	class IntroState : public GameFlowState
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( IntroState );
 
