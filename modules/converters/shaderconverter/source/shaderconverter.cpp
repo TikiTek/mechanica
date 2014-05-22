@@ -242,7 +242,7 @@ namespace tiki
 					args.outputName	= params.outputName;
 
 					args.entryPoint	= functionNames[ type ];
-					args.version	= shaderStart[ type ] + "_5_0";
+					args.version	= shaderStart[ type ] + "_4_0";
 					args.debugMode	= debugMode;
 
 					args.defineCode = m_baseSourceCode;

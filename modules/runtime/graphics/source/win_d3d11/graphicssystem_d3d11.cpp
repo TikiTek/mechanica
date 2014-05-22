@@ -192,7 +192,12 @@ namespace tiki
 		swapDesc.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		D3D_FEATURE_LEVEL level;
-		D3D_FEATURE_LEVEL levels = D3D_FEATURE_LEVEL_11_0;
+		D3D_FEATURE_LEVEL aLevels[] =
+		{
+			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_11_0
+		};
 
 		D3D_DRIVER_TYPE rendererType;
 		switch ( params.rendererMode )
@@ -221,10 +226,10 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 			D3D11_CREATE_DEVICE_DEBUG,
 #else
-			0u,
+			D3D11_CREATE_DEVICE_SINGLETHREADED,
 #endif
-			&levels,
-			1,
+			aLevels,
+			TIKI_COUNT( aLevels ),
 			D3D11_SDK_VERSION,
 			&swapDesc,
 			&data.pSwapChain,
@@ -232,7 +237,6 @@ namespace tiki
 			&level,
 			&data.pContext
 		);
-		TIKI_ASSERT( level == levels );
 
 		return SUCCEEDED( r );
 	}
