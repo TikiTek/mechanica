@@ -8,14 +8,14 @@
 
 namespace tiki
 {
-	class GameState;
+	class GameFlowState;
 	class GraphicsContext;
 	class InputSystem;
 	struct InputEvent;
 
 	struct GameStateDefinition
 	{
-		GameState*		pState;
+		GameFlowState*	pState;
 		uint			parentStateIndex;
 		uint			transitionStepCount;
 
