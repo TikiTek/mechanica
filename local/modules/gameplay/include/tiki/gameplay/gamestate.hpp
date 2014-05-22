@@ -8,7 +8,10 @@
 
 namespace tiki
 {
+	class Animation;
 	class GameClient;
+	class Model;
+	class ResourceManager;
 
 	class GameState
 	{
@@ -19,8 +22,8 @@ namespace tiki
 		GameState();
 		~GameState();
 
-		void		create( GameClient& gameClient );
-		void		dispose();
+		bool		create( GameClient& gameClient, ResourceManager& resourceManager );
+		void		dispose( ResourceManager& resourceManager );
 
 		void		update( float totalGameTime );
 		void		render() const;
@@ -37,6 +40,13 @@ namespace tiki
 		};
 
 		GameClient*				m_pGameClient;
+
+		const Model*			m_pModelBox;
+		const Model*			m_pModelPlane;
+		const Model*			m_pModelPlayer;
+		const Animation*		m_pAnimationPlayer;
+		
+		EntityId				m_planeEntityId;
 
 		EntityId									m_playerEntityId;
 		PhysicsCharacterControllerComponentState*	m_pPlayerPhysicsControllerState;
