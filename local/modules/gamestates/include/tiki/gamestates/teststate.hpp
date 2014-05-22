@@ -2,7 +2,7 @@
 #ifndef TIKI_TESTSTATE_HPP__INCLUDED
 #define TIKI_TESTSTATE_HPP__INCLUDED
 
-#include "tiki/gameflow/gamestate.hpp"
+#include "tiki/gameflow/gameflowstate.hpp"
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
@@ -38,7 +38,7 @@ namespace tiki
 		TestStateTransitionSteps_Count
 	};
 
-	class TestState : public GameState
+	class TestState : public GameFlowState
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( TestState );
 

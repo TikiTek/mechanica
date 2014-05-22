@@ -1,7 +1,7 @@
 
 #include "tiki/gameflow/gameflowsystem.hpp"
 
-#include "tiki/gameflow/gamestate.hpp"
+#include "tiki/gameflow/gameflowstate.hpp"
 
 namespace tiki
 {
@@ -62,7 +62,7 @@ namespace tiki
 		TransitionState result = TransitionState_Finish;
 		while ( m_stateTree.isInTransition() && result == TransitionState_Finish  )
 		{
-			GameState* pState = m_states[ m_stateTree.getTransitionState() ].pState;
+			GameFlowState* pState = m_states[ m_stateTree.getTransitionState() ].pState;
 			if ( pState != nullptr )
 			{
 				const int step			= m_stateTree.getCurrentStep();
