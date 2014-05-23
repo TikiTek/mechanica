@@ -56,11 +56,15 @@ namespace tiki
 		TIKI_VERIFY( m_playerControlComponent.create( m_transformComponent, m_physicsCharacterControllerComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerControlComponent ) );
 
+		TIKI_VERIFY( m_lifeTimeComponent.create() );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
+
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
+		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
 		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsCharacterControllerComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
@@ -69,6 +73,7 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_staticModelComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_lifeTimeComponent.dispose();
 		m_playerControlComponent.dispose();
 		m_physicsCharacterControllerComponent.dispose();
 		m_physicsColliderComponent.dispose();
@@ -204,14 +209,17 @@ namespace tiki
 		m_entitySystem.disposeEntity( entityId );
 	}
 
-	void GameClient::update( float timeStep )
+	void GameClient::update( float timeDelta )
 	{
-		m_physicsWorld.update( timeStep );
+		m_entitySystem.update();
+
+		m_physicsWorld.update( timeDelta );
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
 		m_transformComponent.update();
-		m_playerControlComponent.update( timeStep );
+		m_playerControlComponent.update( timeDelta );
+		m_lifeTimeComponent.update( m_entitySystem, timeDelta );
 	}
 
 	void GameClient::render( GameRenderer& gameRenderer )

@@ -2,6 +2,7 @@
 #ifndef TIKI_GAMECLIENT_HPP__INCLUDED
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
+#include "tiki/components/lifetimecomponent.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/physicscollidercomponent.hpp"
@@ -33,7 +34,7 @@ namespace tiki
 
 		void							disposeEntity( EntityId entityId );
 
-		void							update( float timeStep );
+		void							update( float timeDelta );
 		void							render( GameRenderer& gameRenderer );
 
 		bool							processInputEvent( const InputEvent& inputEvent );
@@ -57,6 +58,7 @@ namespace tiki
 
 		PhysicsWorld						m_physicsWorld;
 
+		LifeTimeComponent					m_lifeTimeComponent;
 		PhysicsBodyComponent				m_physicsBodyComponent;
 		PhysicsCharacterControllerComponent	m_physicsCharacterControllerComponent;
 		PhysicsColliderComponent			m_physicsColliderComponent;
