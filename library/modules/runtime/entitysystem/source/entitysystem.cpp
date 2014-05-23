@@ -85,17 +85,36 @@ namespace tiki
 			return false;
 		}
 
+		if ( !m_entitiesToDeletion.create( EntitySystemLimits_MaxEntitiesDeletePerFrame ) )
+		{
+			dispose();
+			return false;
+		}
+
 		return true;
 	}
 
 	void EntitySystem::dispose()
 	{
+		update();
+
+		m_entitiesToDeletion.dispose();
+
 		m_entities.dispose();
 		m_pools.dispose();
 
 		m_storage.dispose();
 		m_typeMapping.dispose();
 		m_typeRegister.dispose();
+	}
+
+	void EntitySystem::update()
+	{
+		for (uint i = 0u; i < m_entitiesToDeletion.getCount(); ++i)
+		{
+			disposeEntityFinally( m_entitiesToDeletion[ i ] );
+		}
+		m_entitiesToDeletion.clear();
 	}
 
 	bool EntitySystem::registerComponentType( ComponentBase* pComponent )
@@ -207,6 +226,14 @@ namespace tiki
 	}
 
 	void EntitySystem::disposeEntity( EntityId entityId )
+	{
+		if ( !m_entitiesToDeletion.isFull() )
+		{
+			m_entitiesToDeletion.push( entityId );
+		}
+	}
+
+	void EntitySystem::disposeEntityFinally( EntityId entityId )
 	{
 		EntityData* pEntityData = getEntityData( entityId );
 		if ( pEntityData == nullptr )
