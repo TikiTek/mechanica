@@ -2,6 +2,7 @@
 #include "tiki/gameplay/gameclient.hpp"
 
 #include "tiki/components/entitytemplate.hpp"
+#include "tiki/components/lifetimecomponent_initdata.hpp"
 #include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
@@ -64,6 +65,8 @@ namespace tiki
 
 	void GameClient::dispose()
 	{
+		m_entitySystem.update(); // to dispose all entities
+
 		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
 		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsCharacterControllerComponent );
@@ -161,11 +164,15 @@ namespace tiki
 		bodyInitData.shape.shapeType = ShapeType_Box;
 		createFloat3( bodyInitData.shape.shapeBoxSize, 1.0f, 1.0f, 1.0f );
 
+		LifeTimeComponentInitData lifeTimeInitData;
+		lifeTimeInitData.lifeTimeInSeconds = 10.0f;
+
 		EntityTemplateComponent entityComponents[] =
 		{
-			{ m_transformComponent.getTypeCrc(), &transformInitData },
-			{ m_physicsBodyComponent.getTypeCrc(), &bodyInitData },
-			{ m_staticModelComponent.getTypeCrc(), &modelInitData }
+			{ m_transformComponent.getTypeCrc(),	&transformInitData },
+			{ m_physicsBodyComponent.getTypeCrc(),	&bodyInitData },
+			{ m_staticModelComponent.getTypeCrc(),	&modelInitData },
+			{ m_lifeTimeComponent.getTypeCrc(),		&lifeTimeInitData }
 		};
 
 		EntityTemplate entityTemplate;
