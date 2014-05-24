@@ -11,6 +11,11 @@ namespace tiki
 {
 	struct InputSystemState;
 
+	enum
+	{
+		InvalidTouchInputMapping = 0xffffffffu
+	};
+
 	struct InputSystemPlatformData
 	{
 		InputSystemPlatformData()
@@ -31,8 +36,10 @@ namespace tiki
 		IDirectInputA*			pInputDevice;
 		IDirectInputDeviceA*	pMouse;
 		IDirectInputDeviceA*	pKeyboard;
+		bool					isTouchInputReady;
 
 		uint8					keyboardMapping[ 256u ];
+		uint32					touchInputMapping[ 16u ];
 
 		uint					currentStateIndex;
 		InputSystemState*		pStates[ 2u ];

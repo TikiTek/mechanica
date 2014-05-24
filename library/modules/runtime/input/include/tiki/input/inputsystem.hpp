@@ -15,6 +15,8 @@
 
 namespace tiki
 {
+	class WindowEventBuffer;
+
 	struct InputSystemParameters
 	{
 		WindowHandle windowHandle;
@@ -39,7 +41,7 @@ namespace tiki
 		bool					create( const InputSystemParameters& params );
 		void					dispose();
 
-		void					update();
+		void					update( const WindowEventBuffer& windowEvents );
 
 		uint					getDeviceCount() const;
 		InputDevice&			getDeviceByIndex( uint index ) const;

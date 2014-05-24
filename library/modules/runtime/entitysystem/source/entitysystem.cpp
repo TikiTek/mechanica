@@ -235,7 +235,7 @@ namespace tiki
 	void EntitySystem::disposeEntityFinally( EntityId entityId )
 	{
 		EntityData* pEntityData = getEntityData( entityId );
-		if ( pEntityData == nullptr )
+		if ( pEntityData == nullptr || pEntityData->id == InvalidEntityId )
 		{
 			return;
 		}
@@ -257,6 +257,9 @@ namespace tiki
 
 			pComponentState = pNextState;
 		}
+
+		pEntityData->id					= InvalidEntityId;
+		pEntityData->pFirstComponent	= nullptr;
 	}
 
 	const ComponentState* EntitySystem::getFirstComponentOfEntity( EntityId entityId ) const
@@ -310,7 +313,7 @@ namespace tiki
 		}
 
 		const uint entityIndex = pEntityPool->offset + ( entityId - pEntityPool->firstId );
-		TIKI_ASSERT( m_entities[ entityIndex ].id == entityId );
+		TIKI_ASSERT( m_entities[ entityIndex ].id == entityId || m_entities[ entityIndex ].id == InvalidEntityId );
 
 		return &m_entities[ entityIndex ];
 	}
