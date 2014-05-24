@@ -18,39 +18,51 @@ namespace tiki
 		WindowEventType_MouseDown,
 		WindowEventType_MouseUp,
 		WindowEventType_MouseMove,
-		WindowEventType_SizeChanged
+		WindowEventType_SizeChanged,
+		WindowEventType_Touch
 	};
 
-	struct WindowKeyEvent
+	struct WindowKeyEventData
 	{
 		KeyboardKey		key;		
 	};
 
-	struct WindowMouseButtonEvent
+	struct WindowMouseButtonEventData
 	{
 		MouseButton		button;
 	};
 
-	struct WindowMouseMoveEvent
+	struct WindowMouseMoveEventData
 	{
 		uint2			position;
 	};
 
-	struct WindowSizeChangedEvent
+	struct WindowSizeChangedEventData
 	{
 		uint2			size;
 	};
 
+	TIKI_DEFINE_HANLE( TouchInputHandle );
+
+	struct WindowTouchEventData
+	{
+		uint				pointCount;
+		TouchInputHandle	handle;
+	};
+
+	union WindowEventData
+	{
+		WindowKeyEventData			key;
+		WindowMouseButtonEventData	mouseButton;
+		WindowMouseMoveEventData	mouseMove;
+		WindowSizeChangedEventData	sizeChanged;
+		WindowTouchEventData		touch;
+	};
+
 	struct WindowEvent
 	{
-		WindowEventType			type;
-		union
-		{
-			WindowKeyEvent			keyEvent;
-			WindowMouseButtonEvent	mouseButtonEvent;
-			WindowMouseMoveEvent	mouseMoveEvent;
-			WindowSizeChangedEvent	sizeChangedEvent;
-		}							data;
+		WindowEventType		type;
+		WindowEventData		data;
 	};
 }
 

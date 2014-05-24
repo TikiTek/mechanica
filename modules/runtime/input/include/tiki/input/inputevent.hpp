@@ -28,6 +28,10 @@ namespace tiki
 		InputEventType_Controller_StickChanged,
 		InputEventType_Controller_TriggerChanged,
 
+		InputEventType_Touch_PointDown,
+		InputEventType_Touch_PointUp,
+		InputEventType_Touch_PointMove,
+
 		InputEventType_Count
 	};
 
@@ -77,6 +81,13 @@ namespace tiki
 		float	state;
 	};
 
+	struct InputEventTouchData
+	{
+		uint16 pointIndex;
+		uint16 xState;
+		uint16 yState;
+	};
+
 	union InputEventData
 	{
 		InputEventDeviceData				device;
@@ -90,6 +101,8 @@ namespace tiki
 		InputEventControllerButtonData		controllerButton;;
 		InputEventControllerStickData		controllerStick;
 		InputEventControllerTriggerData		controllerTrigger;
+
+		InputEventTouchData					touch;
 	};
 
 	struct InputEvent
