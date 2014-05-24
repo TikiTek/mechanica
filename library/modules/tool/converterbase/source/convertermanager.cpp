@@ -2,6 +2,7 @@
 #include "tiki/converterbase/convertermanager.hpp"
 
 #include "tiki/base/crc32.hpp"
+#include "tiki/base/directory.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/iopath.hpp"
 #include "tiki/base/platform.hpp"
@@ -43,6 +44,11 @@ namespace tiki
 		m_returnValue	= 0;
 		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
+
+		if ( !directory::exists( m_outputPath ) )
+		{
+			directory::create( m_outputPath );
+		}
 
 		const string databaseFileName = path::combine( m_outputPath, "build.sqlite" );
 		const bool newDatabase = !file::exists( databaseFileName );
