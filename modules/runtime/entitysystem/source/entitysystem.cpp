@@ -96,8 +96,7 @@ namespace tiki
 
 	void EntitySystem::dispose()
 	{
-		update();
-
+		TIKI_ASSERT( m_entitiesToDeletion.isEmpty() );
 		m_entitiesToDeletion.dispose();
 
 		m_entities.dispose();
@@ -251,6 +250,10 @@ namespace tiki
 			pComponent->disposeState( pComponentState );
 
 			m_storage.freeState( pComponentState );
+
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+			pComponent->checkIntegrity();
+#endif
 
 			pComponentState = pNextState;
 		}

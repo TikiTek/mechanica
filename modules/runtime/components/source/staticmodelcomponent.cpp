@@ -78,8 +78,17 @@ namespace tiki
 
 	bool StaticModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
-		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
-		pState->pModel		= pInitData->model.getData();
+		pState->pTransform = static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
+		if ( pState->pTransform == nullptr )
+		{
+			return false;
+		}
+
+		pState->pModel = pInitData->model.getData();
+		if ( pState->pModel == nullptr )
+		{
+			return false;
+		}
 
 		return true;
 	}
