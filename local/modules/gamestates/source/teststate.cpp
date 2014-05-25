@@ -1,6 +1,7 @@
 
 #include "tiki/gamestates/teststate.hpp"
 
+#include "tiki/animation/animation.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
