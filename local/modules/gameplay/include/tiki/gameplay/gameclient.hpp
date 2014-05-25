@@ -36,7 +36,7 @@ namespace tiki
 
 		void							disposeEntity( EntityId entityId );
 
-		void							update( float timeDelta );
+		void							update( float totalGameTime, float timeDelta );
 		void							render( GameRenderer& gameRenderer );
 
 		bool							processInputEvent( const InputEvent& inputEvent );

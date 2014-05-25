@@ -46,7 +46,6 @@ namespace tiki
 		PhysicsWorld*				m_pPhysicsWorld;
 
 		const TransformComponent*	m_pTranformComponent;
-		ComponentTypeId				m_transformComponentTypeId;
 
 	};
 }

@@ -27,30 +27,21 @@ namespace tiki
 	{
 		m_pTransformComponent						= nullptr;
 		m_pPhysicsCharacterControllerComponent		= nullptr;
-		m_transformComponentTypeId					= InvalidComponentTypeId;
-		m_physicsCharacterControllerComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	PlayerControlComponent::~PlayerControlComponent()
 	{
 		TIKI_ASSERT( m_pTransformComponent							== nullptr );
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId						== InvalidComponentTypeId );
-		TIKI_ASSERT( m_physicsCharacterControllerComponentTypeId	== InvalidComponentTypeId );
 	}
 
 	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent )
 	{
 		TIKI_ASSERT( m_pTransformComponent							== nullptr );
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId						== InvalidComponentTypeId );
-		TIKI_ASSERT( m_physicsCharacterControllerComponentTypeId	== InvalidComponentTypeId );
 
 		m_pTransformComponent					= &transformComponent;
 		m_pPhysicsCharacterControllerComponent	= &physicsCharacterControllerComponent;
-
-		m_transformComponentTypeId					= transformComponent.getTypeId();
-		m_physicsCharacterControllerComponentTypeId	= physicsCharacterControllerComponent.getTypeId();
 
 		vector::clear( m_inputState.leftStick );
 		vector::clear( m_inputState.rightStick );
@@ -62,8 +53,6 @@ namespace tiki
 	{
 		m_pTransformComponent						= nullptr;
 		m_pPhysicsCharacterControllerComponent		= nullptr;
-		m_transformComponentTypeId					= InvalidComponentTypeId;
-		m_physicsCharacterControllerComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	void PlayerControlComponent::update( float timeDelta )
@@ -73,7 +62,7 @@ namespace tiki
 		while ( pState = componentStates.getNext() )
 		{
 			Vector2 rotationOffset = m_inputState.rightStick;
-			vector::scale( rotationOffset, timeDelta );
+			vector::scale( rotationOffset, timeDelta * 2.0f );
 			vector::add( pState->rotation, rotationOffset );
 			pState->rotation.y = f32::clamp( pState->rotation.y, -f32::piOver2, f32::piOver2 );
 			quaternion::fromYawPitchRoll( pState->positionRotation, pState->rotation.x, 0.0f, 0.0f );
@@ -129,8 +118,8 @@ namespace tiki
 
 	bool PlayerControlComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerControlComponentState* pState, const PlayerControlComponentInitData* pInitData )
 	{
-		pState->pTransform			= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
-		pState->pPhysicsController	= static_cast< PhysicsCharacterControllerComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_physicsCharacterControllerComponentTypeId ) ) );
+		pState->pTransform			= (TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pPhysicsController	= (PhysicsCharacterControllerComponentState*)componentIterator.getFirstOfType( m_pPhysicsCharacterControllerComponent->getTypeId() );
 
 		pState->speed = pInitData->speed;
 		vector::clear( pState->rotation );

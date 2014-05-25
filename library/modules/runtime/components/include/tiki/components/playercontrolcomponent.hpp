@@ -60,9 +60,6 @@ namespace tiki
 		const TransformComponent*					m_pTransformComponent;
 		const PhysicsCharacterControllerComponent*	m_pPhysicsCharacterControllerComponent;
 
-		ComponentTypeId								m_transformComponentTypeId;
-		ComponentTypeId								m_physicsCharacterControllerComponentTypeId;
-
 		PlayerInputState							m_inputState;
 
 	};

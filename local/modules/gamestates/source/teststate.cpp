@@ -224,7 +224,8 @@ namespace tiki
 
 	void TestState::update()
 	{
-		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
+		const float timeDelta = float( framework::getFrameTimer().getElapsedTime() );
+		const float totalGameTime = float( framework::getFrameTimer().getTotalTime() );
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
@@ -293,8 +294,8 @@ namespace tiki
 
 		m_debugGui.update();
 
-		m_gameState.update( float( framework::getFrameTimer().getTotalTime() ) );
-		m_gameClient.update( timeDelta );
+		m_gameState.update( totalGameTime );
+		m_gameClient.update( totalGameTime, timeDelta );
 		m_gameClient.render( *m_pGameRenderer );
 
 		if ( m_enableFreeCamera )
