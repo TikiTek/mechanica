@@ -18,6 +18,17 @@ namespace tiki
 		uint			index;
 	};
 
+	struct InputSystemState
+	{
+		DIMOUSESTATE	mouse;
+		uint8			aKeyboard[ 256u ];
+
+		bool			aControllerConnected[ XUSER_MAX_COUNT ];
+		XINPUT_STATE	aController[ XUSER_MAX_COUNT ];
+
+		TOUCHINPUT		aTouchPoints[ MaxInputTouchPoints ];
+	};
+
 	static const uint8 s_aVirtualKeyCodeMapping[ KeyboardKey_Count ] =
 	{
 		DIK_ESCAPE,		// KeyboardKey_Escape
@@ -155,17 +166,6 @@ namespace tiki
 		MouseButton_Left,
 		MouseButton_Right,
 		MouseButton_Middle
-	};
-
-	struct InputSystemState
-	{
-		DIMOUSESTATE	mouse;
-		uint8			aKeyboard[ 256u ];
-
-		bool			aControllerConnected[ XUSER_MAX_COUNT ];
-		XINPUT_STATE	aController[ XUSER_MAX_COUNT ];
-
-		TOUCHINPUT		aTouchPoints[ 16u ];
 	};
 
 	TIKI_FORCE_INLINE static void checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
@@ -367,6 +367,11 @@ namespace tiki
 		if ( m_platformData.isTouchInputReady )
 		{
 			RegisterTouchWindow( (HWND)m_platformData.windowHandle, 0 );
+
+			InputDevice device;
+			device.deviceType	= InputDeviceType_Touch;
+			device.deviceId		= 0u;
+			connectDevice( device );
 		}
 
 		return true;
