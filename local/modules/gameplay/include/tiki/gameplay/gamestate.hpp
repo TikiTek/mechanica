@@ -28,20 +28,23 @@ namespace tiki
 		void		update( float totalGameTime );
 		void		render() const;
 
+		EntityId	getPlayerEntityId() const { return m_playerEntityId; }
+
 	private:
 
 		enum
 		{
-			MaxBoxCount					= 128u,
-			MaxCoinCount				= 128u,
+			MaxBoxCount						= 128u,
+			MaxCoinCount					= 128u,
 
-			BoxSpawnIntervalSeconds		= 5u,
-			CoinSpawnIntervalSeconds	= 5u
+			BoxSpawnIntervalMilliseconds	= 1000u,
+			CoinSpawnIntervalMilliseconds	= 1000u
 		};
 
 		GameClient*				m_pGameClient;
 
 		const Model*			m_pModelBox;
+		const Model*			m_pModelCoin;
 		const Model*			m_pModelPlane;
 		const Model*			m_pModelPlayer;
 		const Animation*		m_pAnimationPlayer;
@@ -56,6 +59,11 @@ namespace tiki
 
 		float					m_lastBoxSpawn;
 		float					m_lastCoinSpawn;
+
+		bool					findPositionForShape( Vector3& position, float y, const PhysicsShape& shape );
+
+		void					spawnBox();
+		void					spawnCoin();
 
 	};
 }

@@ -143,27 +143,17 @@ namespace tiki
 			if ( isCreating )
 			{
 				TIKI_VERIFY( m_gameClient.create() );
+				TIKI_VERIFY( m_gameState.create( m_gameClient, framework::getResourceManager() ) );
 
-				m_boxEntities.create( 100u );
-
-				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
-				m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelBoxes, vector::create( 0.0f, 5.0f, 0.0f ) );
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
 
 				return TransitionState_Finish;
 			}
 			else
 			{
-				for (uint i = 0u; i < m_boxEntities.getCount(); ++i)
-				{
-					m_gameClient.disposeEntity( m_boxEntities[ i ] );
-				}
-				m_boxEntities.dispose();
-
 				m_gameClient.disposeEntity( m_boxesEntityId );
-				m_gameClient.disposeEntity( m_playerEntityId );
-				m_gameClient.disposeEntity( m_planeEntityId );
 
+				m_gameState.dispose( framework::getResourceManager() );
 				m_gameClient.dispose();
 
 				return TransitionState_Finish;
@@ -183,8 +173,8 @@ namespace tiki
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
 					m_playerCamera.create(
-						m_playerEntityId,
-						(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPlayerControlComponent().getTypeId() ),
+						m_gameState.getPlayerEntityId(),
+						(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPlayerControlComponent().getTypeId() ),
 						m_gameClient.getPlayerControlComponent()
 					);
 					
@@ -302,6 +292,7 @@ namespace tiki
 
 		m_debugGui.update();
 
+		m_gameState.update( float( framework::getFrameTimer().getTotalTime() ) );
 		m_gameClient.update( timeDelta );
 		m_gameClient.render( *m_pGameRenderer );
 
@@ -432,26 +423,6 @@ namespace tiki
 
 			case KeyboardKey_Space:
 				m_drawPlayer = !m_drawPlayer;
-				break;
-
-			case KeyboardKey_I:
-				{
-					const Vector3 position = vector::create( f32::random( -1.0f, 1.0f ), 10.0f, f32::random( -1.0f, 1.0f ) );
-					const EntityId entityId = m_gameClient.createPhysicsBoxEntity( m_pModelBox, position );
-					if ( entityId != InvalidEntityId )
-					{
-						m_boxEntities.push( entityId );
-					}
-				}
-				break;
-
-			case KeyboardKey_O:
-				{
-					const EntityId firstEntityId = m_boxEntities[ 0u ];
-					m_boxEntities.removeUnsortedByIndex( 0u );
-
-					m_gameClient.disposeEntity( firstEntityId );
-				}
 				break;
 
 			case KeyboardKey_Z:

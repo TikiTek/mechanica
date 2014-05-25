@@ -3,6 +3,7 @@
 
 #include "tiki/animation/animation.hpp"
 #include "tiki/graphics/model.hpp"
+#include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -36,6 +37,7 @@ namespace tiki
 		}
 
 		m_pModelBox			= resourceManager.loadResource< Model >( "box.model" );
+		m_pModelCoin		= resourceManager.loadResource< Model >( "coin.model" );
 		m_pModelPlane		= resourceManager.loadResource< Model >( "plane.model" );
 		m_pModelPlayer		= resourceManager.loadResource< Model >( "player.model" );
 		m_pAnimationPlayer	= resourceManager.loadResource< Animation >( "player.run.animation" );		
@@ -81,8 +83,10 @@ namespace tiki
 		resourceManager.unloadResource( m_pAnimationPlayer );
 		resourceManager.unloadResource( m_pModelPlayer );
 		resourceManager.unloadResource( m_pModelPlane );
+		resourceManager.unloadResource( m_pModelCoin );
 		resourceManager.unloadResource( m_pModelBox );
 		m_pModelBox			= nullptr;
+		m_pModelCoin		= nullptr;
 		m_pModelPlane		= nullptr;
 		m_pModelPlayer		= nullptr;
 		m_pAnimationPlayer	= nullptr;
@@ -92,19 +96,76 @@ namespace tiki
 
 	void GameState::update( float totalGameTime )
 	{
-		if ( m_lastBoxSpawn + BoxSpawnIntervalSeconds < totalGameTime )
+		if ( m_lastBoxSpawn + ( BoxSpawnIntervalMilliseconds / 1000.0f ) < totalGameTime )
 		{
-			const Vector3 position = vector::create( f32::random( -1.0f, 1.0f ), 10.0f, f32::random( -1.0f, 1.0f ) );
-			const EntityId entityId = m_pGameClient->createPhysicsBoxEntity( m_pModelBox, position );
-			if ( entityId != InvalidEntityId )
-			{
-				m_boxEntityIds.push( entityId );
-			}
+			spawnBox();			
+			m_lastBoxSpawn = totalGameTime;
+		}
+
+		if ( m_lastCoinSpawn + ( CoinSpawnIntervalMilliseconds / 1000.0f ) < totalGameTime )
+		{
+			spawnCoin();			
+			m_lastCoinSpawn = totalGameTime;
 		}
 	}
 
 	void GameState::render() const
 	{
 		// remove this?
+	}
+
+	bool GameState::findPositionForShape( Vector3& position, float y, const PhysicsShape& shape )
+	{
+		const PhysicsWorld& world = m_pGameClient->getPhysicsWorld();
+
+		position = vector::create( 0.0f, y, 0.0f );
+
+		uint tryCount = 0u;
+		while (	world.checkIntersection( shape, position ) )
+		{
+			position = vector::create(
+				f32::random( -10.0f, 10.0f ),
+				y,
+				f32::random( -10.0f, 10.0f )
+			);
+
+			tryCount++;
+			if ( tryCount == 100u )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	void GameState::spawnBox()
+	{
+		PhysicsBoxShape shape;
+		shape.create( vector::create( 1.0f, 10.0f, 1.0f ) );
+
+		Vector3 position;
+		if ( findPositionForShape( position, 5.5f, shape ) )
+		{
+			position.y = 10.0f;
+			m_pGameClient->createBoxEntity( m_pModelBox, position );
+		}
+
+		shape.dispose();
+	}
+
+	void GameState::spawnCoin()
+	{
+		PhysicsBoxShape shape;
+		shape.create( vector::create( 1.0f, 10.0f, 1.0f ) );
+
+		Vector3 position;
+		if ( findPositionForShape( position, 5.5f, shape ) )
+		{
+			position.y = 1.0f;
+			m_pGameClient->createCoinEntity( m_pModelCoin, position );
+		}
+
+		shape.dispose();
 	}
 }

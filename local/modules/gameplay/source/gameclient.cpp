@@ -28,13 +28,13 @@ namespace tiki
 
 		entitySystemParams.entityPools.create( entityPools, TIKI_COUNT( entityPools ) );
 
-		m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
-
 		if ( !m_entitySystem.create( entitySystemParams ) )
 		{
 			dispose();
 			return false;
 		}
+
+		m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
 
 		TIKI_VERIFY( m_transformComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
@@ -85,9 +85,9 @@ namespace tiki
 		m_staticModelComponent.dispose();
 		m_transformComponent.dispose();
 
-		m_entitySystem.dispose();
-
 		m_physicsWorld.dispose();
+
+		m_entitySystem.dispose();
 	}
 	
 	EntityId GameClient::createPlayerEntity( const Model* pModel, const Vector3& position )
@@ -121,7 +121,7 @@ namespace tiki
 		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
 		entityTemplate.pComponents		= entityComponents;
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		return m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
 	}
 
 	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
@@ -147,7 +147,7 @@ namespace tiki
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
 	}
 	
-	EntityId GameClient::createPhysicsBoxEntity( const Model* pModel, const Vector3& position )
+	EntityId GameClient::createBoxEntity( const Model* pModel, const Vector3& position )
 	{
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
@@ -165,7 +165,7 @@ namespace tiki
 		createFloat3( bodyInitData.shape.shapeBoxSize, 1.0f, 1.0f, 1.0f );
 
 		LifeTimeComponentInitData lifeTimeInitData;
-		lifeTimeInitData.lifeTimeInSeconds = 10.0f;
+		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
 
 		EntityTemplateComponent entityComponents[] =
 		{
@@ -180,6 +180,11 @@ namespace tiki
 		entityTemplate.pComponents		= entityComponents;
 
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+	}
+	
+	EntityId GameClient::createCoinEntity( const Model* pModel, const Vector3& position )
+	{
+		return createBoxEntity( pModel, position );
 	}
 
 	EntityId GameClient::createPlaneEntity( const Model* pModel, const Vector3& position )

@@ -29,7 +29,8 @@ namespace tiki
 
 		EntityId						createPlayerEntity( const Model* pModel, const Vector3& position );
 		EntityId						createModelEntity( const Model* pModel, const Vector3& position );
-		EntityId						createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId						createBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId						createCoinEntity( const Model* pModel, const Vector3& position );
 		EntityId						createPlaneEntity( const Model* pModel, const Vector3& position );
 
 		void							disposeEntity( EntityId entityId );
