@@ -109,7 +109,11 @@ namespace tiki
 
 	void TikiArenaGame::update()
 	{
-		m_touchSystem.update( framework::getFrameTimer().getElapsedTime() );
+		m_touchSystem.update( float( framework::getFrameTimer().getElapsedTime() ), framework::getGraphicsSystem() );
+		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
+		{
+			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
+		} 
 
 		m_gameFlow.update();
 	}

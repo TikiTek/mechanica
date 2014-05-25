@@ -19,15 +19,23 @@ namespace tiki
 		TouchGameSystem();
 		~TouchGameSystem();
 
-		bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
-		void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		void		update( float timeDelta );
-		void		render( GraphicsContext& graphicsContext ) const;
+		void				update( float timeDelta, const GraphicsSystem& graphicsSystem );
+		void				render( GraphicsContext& graphicsContext ) const;
 
-		bool		processInputEvent( const InputEvent& inputEvent );
+		bool				processInputEvent( const InputEvent& inputEvent );
+
+		uint				getInputEventCount() const					{ return m_inputEvents.getCount(); }
+		const InputEvent&	getInputEventByIndex( uint index ) const	{ return m_inputEvents[ index ]; }
 
 	private:
+
+		enum
+		{
+			MaxTouchInputEventsPerFrame = 16u
+		};
 
 		struct TouchPoint
 		{
@@ -38,14 +46,19 @@ namespace tiki
 		};
 
 		typedef FixedArray< TouchPoint, MaxInputTouchPoints > TouchPointArray;
+		typedef FixedSizedArray< InputEvent, MaxTouchInputEventsPerFrame > InputEventArray;
 
 		TouchPointArray		m_touchPoints;
+		InputEventArray		m_inputEvents;
 
 		const Texture*		m_pPadTexture;
 		const Texture*		m_pPadPointTexture;
 		const Texture*		m_pPointTexture;
+
 		Vector2				m_pointSize;
 		Vector2				m_halfPointSize;
+		Vector2				m_padSize;
+		Vector2				m_halfPadSize;
 
 		ImmediateRenderer	m_renderer;
 
