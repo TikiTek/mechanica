@@ -86,6 +86,7 @@ namespace tiki
 
 		int							m_gbufferIndex;
 
+		bool						m_enablePhysicsDebug;
 		bool						m_enableAsciiMode;
 		bool						m_enableBloom;
 		PostProcessAscii			m_ascii;
