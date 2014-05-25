@@ -12,7 +12,7 @@ namespace tiki
 	{
 	}
 
-	void PhysicsCharacterController::create( PhysicsShape& shape, const Vector3& position )
+	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position )
 	{
 		btConvexShape* pShape = static_cast< btConvexShape* >( static_cast< void* >( shape.getNativeShape() ) );
 

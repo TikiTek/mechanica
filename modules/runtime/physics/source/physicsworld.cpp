@@ -137,7 +137,7 @@ namespace tiki
 		m_pPhysicWorld->removeCollisionObject( &controller.m_ghostObject );
 	}
 
-	bool PhysicsWorld::checkIntersection( PhysicsShape& physicsShape, const Vector3& position )
+	bool PhysicsWorld::checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const
 	{
 		btCollisionShape* pShape = static_cast< btCollisionShape* >( physicsShape.getNativeShape() );
 

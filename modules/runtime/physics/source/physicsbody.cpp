@@ -20,7 +20,7 @@ namespace tiki
 		TIKI_ASSERT( m_ridgidBody.getUserPointer() == nullptr );
 	}
 
-	void PhysicsBody::create( PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
+	void PhysicsBody::create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
 	{
 		dispose();
 

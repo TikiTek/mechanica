@@ -90,8 +90,14 @@ namespace tiki
 
 		SizedArray< EntityId >		m_entitiesToDeletion;
 
-		EntityData*					getEntityData( EntityId entityId );
-		const EntityData*			getEntityData( EntityId entityId ) const;
+		EntityPoolInfo*				findEntityPool( EntityId entityId );
+		const EntityPoolInfo*		findEntityPool( EntityId entityId ) const;
+
+		EntityData*					findEntityData( EntityId entityId );
+		const EntityData*			findEntityData( EntityId entityId ) const;
+
+		EntityData*					getEntityDataInPool( const EntityPoolInfo* pEntityPool, EntityId entityId );
+		const EntityData*			getEntityDataInPool( const EntityPoolInfo* pEntityPool, EntityId entityId ) const;
 
 		void						disposeEntityFinally( EntityId entityId );
 
