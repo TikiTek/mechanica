@@ -70,97 +70,115 @@ namespace tiki
 
 	bool FreeCamera::processInputEvent( const InputEvent& inputEvent )
 	{
-		if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
+		if ( !m_enableMouse )
 		{
-			switch ( inputEvent.data.controllerStick.stickIndex )
+			if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
 			{
-			case 0u:
-				m_leftStickState.x	= inputEvent.data.controllerStick.xState;
-				m_leftStickState.y	= inputEvent.data.controllerStick.yState;
-				break;
+				switch ( inputEvent.data.controllerStick.stickIndex )
+				{
+				case 0u:
+					m_leftStickState.x	= inputEvent.data.controllerStick.xState;
+					m_leftStickState.y	= inputEvent.data.controllerStick.yState;
+					break;
 
-			case 1u:
-				m_rightStickState.x	= inputEvent.data.controllerStick.xState;
-				m_rightStickState.y	= inputEvent.data.controllerStick.yState;
-				break;
-			}
-
-			return true;
-		}
-		else if ( inputEvent.eventType == InputEventType_Controller_TriggerChanged )
-		{
-			switch ( inputEvent.data.controllerTrigger.triggerIndex )
-			{
-			case 0u:
-				m_leftTriggerState = inputEvent.data.controllerTrigger.state;
-				break;
-
-			case 1u:
-				m_rightTriggerState = inputEvent.data.controllerTrigger.state;
-				break;
-			}
-
-			return true;
-		}
-		else if ( inputEvent.eventType == InputEventType_Keyboard_Down && m_enableMouse )
-		{
-			switch ( inputEvent.data.keybaordKey.key )
-			{
-			case KeyboardKey_W:
-				m_leftStickState.y = 1.0f;
-				break;
-
-			case KeyboardKey_A:
-				m_leftStickState.x = -1.0f;
-				break;
-
-			case KeyboardKey_S:
-				m_leftStickState.y = -1.0f;
-				break;
-
-			case KeyboardKey_D:
-				m_leftStickState.x = 1.0f;
-				break;
-
-			case KeyboardKey_LeftShift:
-			case KeyboardKey_RightShift:
-				m_speed = 10.0f;
-				break;
-
-			default:
-				break;
-			}
-		}
-		else if ( inputEvent.eventType == InputEventType_Keyboard_Up && m_enableMouse )
-		{
-			switch ( inputEvent.data.keybaordKey.key )
-			{
-			case KeyboardKey_W:
-				m_leftStickState.y = 0.0f;
-				break;
-
-			case KeyboardKey_A:
-				m_leftStickState.x = 0.0f;
-				break;
-
-			case KeyboardKey_S:
-				m_leftStickState.y = 0.0f;
-				break;
-
-			case KeyboardKey_D:
-				m_leftStickState.x = 0.0f;
-				break;
-
-			case KeyboardKey_LeftShift:
-			case KeyboardKey_RightShift:
-				m_speed = 1.0f;
-				break;
+				case 1u:
+					m_rightStickState.x	= inputEvent.data.controllerStick.xState;
+					m_rightStickState.y	= inputEvent.data.controllerStick.yState;
+					break;
 				}
+
+				return true;
+			}
+			else if ( inputEvent.eventType == InputEventType_Controller_TriggerChanged )
+			{
+				switch ( inputEvent.data.controllerTrigger.triggerIndex )
+				{
+				case 0u:
+					m_leftTriggerState = inputEvent.data.controllerTrigger.state;
+					break;
+
+				case 1u:
+					m_rightTriggerState = inputEvent.data.controllerTrigger.state;
+					break;
+				}
+
+				return true;
+			}
 		}
-		else if ( inputEvent.eventType == InputEventType_Mouse_Moved && m_enableMouse )
+		else
 		{
-			m_rightStickState.x = float( inputEvent.data.mouseMoved.xOffset ) * 0.1f;
-			m_rightStickState.y = float( inputEvent.data.mouseMoved.yOffset ) * -0.1f;
+			if ( inputEvent.eventType == InputEventType_Keyboard_Down )
+			{
+				switch ( inputEvent.data.keybaordKey.key )
+				{
+				case KeyboardKey_W:
+					m_leftStickState.y = 1.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_A:
+					m_leftStickState.x = -1.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_S:
+					m_leftStickState.y = -1.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_D:
+					m_leftStickState.x = 1.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_LeftShift:
+				case KeyboardKey_RightShift:
+					m_speed = 10.0f;
+					return true;
+					//break;
+
+				default:
+					break;
+				}
+			}
+			else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
+			{
+				switch ( inputEvent.data.keybaordKey.key )
+				{
+				case KeyboardKey_W:
+					m_leftStickState.y = 0.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_A:
+					m_leftStickState.x = 0.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_S:
+					m_leftStickState.y = 0.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_D:
+					m_leftStickState.x = 0.0f;
+					return true;
+					//break;
+
+				case KeyboardKey_LeftShift:
+				case KeyboardKey_RightShift:
+					m_speed = 1.0f;
+					return true;
+					//break;
+				}
+			}
+			else if ( inputEvent.eventType == InputEventType_Mouse_Moved )
+			{
+				m_rightStickState.x = float( inputEvent.data.mouseMoved.xOffset ) * 0.1f;
+				m_rightStickState.y = float( inputEvent.data.mouseMoved.yOffset ) * -0.1f;
+
+				return true;
+			}
 		}
 
 		return false;
