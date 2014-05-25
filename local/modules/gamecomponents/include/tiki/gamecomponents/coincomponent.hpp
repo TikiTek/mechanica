@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	class LifeTimeComponent;
+	class TransformComponent;
 	struct CoinComponentInitData;
 	struct CoinComponentState;
 
@@ -18,10 +20,10 @@ namespace tiki
 		explicit			CoinComponent();
 		virtual				~CoinComponent();
 
-		bool				create();
+		bool				create( const TransformComponent& transformComponent, const LifeTimeComponent& lifeTimeComponent );
 		void				dispose();
 
-		void				update();
+		void				update( float totalGameTime );
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
@@ -31,6 +33,11 @@ namespace tiki
 
 		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, CoinComponentState* pComponentState, const CoinComponentInitData* pComponentInitData );
 		virtual void		internalDisposeState( CoinComponentState* pComponentState );
+
+	private:
+
+		const TransformComponent*	m_pTransformComponent;
+		const LifeTimeComponent*	m_pLifeTimeComponent;
 
 	};
 }

@@ -48,7 +48,7 @@ namespace tiki
 		}
 
 		m_planeEntityId = m_pGameClient->createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
-		m_playerEntityId = gameClient.createPlayerEntity( m_pModelPlayer, vector::create( 0.0f, 1.0f, 0.0f ) );
+		m_playerEntityId = gameClient.createPlayerEntity( m_pModelBox, vector::create( 0.0f, 1.0f, 0.0f ) );
 		if ( m_planeEntityId == InvalidEntityId || m_playerEntityId == InvalidEntityId )
 		{
 			dispose( resourceManager );
