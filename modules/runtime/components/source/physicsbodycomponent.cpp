@@ -28,39 +28,31 @@ namespace tiki
 
 	PhysicsBodyComponent::PhysicsBodyComponent()
 	{
-		m_pPhysicsWorld				= nullptr;
+		m_pPhysicsWorld			= nullptr;
 
-		m_pTranformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
+		m_pTranformComponent	= nullptr;
 	}
 
 	PhysicsBodyComponent::~PhysicsBodyComponent()
 	{
-		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
-		TIKI_ASSERT( m_pTranformComponent		== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId	== InvalidComponentTypeId );
+		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
+		TIKI_ASSERT( m_pTranformComponent	== nullptr );
 	}
 
 	bool PhysicsBodyComponent::create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent )
 	{
 		m_pPhysicsWorld			= &physicsWorld;
 
-		m_pTranformComponent		= &transformComponent;
-		m_transformComponentTypeId	= transformComponent.getTypeId();
-		if ( m_transformComponentTypeId == InvalidComponentTypeId )
-		{
-			return false;
-		}
+		m_pTranformComponent	= &transformComponent;
 
 		return true;
 	}
 
 	void PhysicsBodyComponent::dispose()
 	{
-		m_pPhysicsWorld				= nullptr;
+		m_pPhysicsWorld			= nullptr;
 
-		m_pTranformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
+		m_pTranformComponent	= nullptr;
 	}
 
 	void PhysicsBodyComponent::update()
@@ -121,7 +113,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) PhysicsBodyComponentState;
-		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
+		pState->pTransform	= (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
 
 		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )
