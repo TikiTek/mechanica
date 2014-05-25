@@ -1,0 +1,38 @@
+#pragma once
+#ifndef __TIKI_COINCOMPONENT_HPP_INCLUDED__
+#define __TIKI_COINCOMPONENT_HPP_INCLUDED__
+
+#include "tiki/components/component.hpp"
+
+namespace tiki
+{
+	struct CoinComponentInitData;
+	struct CoinComponentState;
+
+	class CoinComponent : public Component< CoinComponentState, CoinComponentInitData >
+	{
+		TIKI_NONCOPYABLE_CLASS( CoinComponent );
+
+	public:
+
+		explicit			CoinComponent();
+		virtual				~CoinComponent();
+
+		bool				create();
+		void				dispose();
+
+		void				update();
+
+		virtual crc32		getTypeCrc() const;
+		virtual uint32		getStateSize() const;
+		virtual const char*	getTypeName() const;
+
+	protected:
+
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, CoinComponentState* pComponentState, const CoinComponentInitData* pComponentInitData );
+		virtual void		internalDisposeState( CoinComponentState* pComponentState );
+
+	};
+}
+
+#endif // __TIKI_COINCOMPONENT_HPP_INCLUDED__
