@@ -33,11 +33,12 @@ namespace tiki
 	{
 		m_pParentState	= pParentState;
 
-		m_drawPlayer		= false;
-		m_enableBloom		= true;
-		m_enableAsciiMode	= false;
-		m_gbufferIndex		= -1;
-		m_enableFreeCamera	= false;
+		m_drawPlayer			= false;
+		m_enableBloom			= true;
+		m_enableAsciiMode		= false;
+		m_gbufferIndex			= -1;
+		m_enableFreeCamera		= false;
+		m_enablePhysicsDebug	= false;
 	}
 
 	void TestState::dispose()
@@ -367,7 +368,10 @@ namespace tiki
 
 		m_debugGui.render( graphicsContext );
 
-		m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+		if ( m_enablePhysicsDebug )
+		{
+			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+		}
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
@@ -423,6 +427,10 @@ namespace tiki
 
 			case KeyboardKey_Space:
 				m_drawPlayer = !m_drawPlayer;
+				break;
+
+			case KeyboardKey_F2:
+				m_enablePhysicsDebug = !m_enablePhysicsDebug;
 				break;
 
 			case KeyboardKey_Z:
