@@ -4,9 +4,12 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+#include "tiki/base/debugprop.hpp"
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", true );
+
 	TouchGameSystem::TouchGameSystem()
 	{
 		m_pPadTexture		= nullptr;
@@ -33,9 +36,13 @@ namespace tiki
 			return false;
 		}
 		
-		vector::set( m_pointSize, m_pPointTexture->getTextureData().getWidth(), m_pPointTexture->getTextureData().getHeight() );
+		vector::set( m_pointSize, float( m_pPointTexture->getTextureData().getWidth() ), float( m_pPointTexture->getTextureData().getHeight() ) );
 		m_halfPointSize	= m_pointSize;
 		vector::scale( m_halfPointSize, 0.5f );
+
+		vector::set( m_padSize, float( m_pPadTexture->getTextureData().getWidth() ), float( m_pPadTexture->getTextureData().getHeight() ) );
+		m_halfPadSize = m_padSize;
+		vector::scale( m_halfPadSize, 0.5f );
 
 		if ( !m_renderer.create( graphicsSystem, resourceManager ) )
 		{
@@ -68,29 +75,89 @@ namespace tiki
 		m_pPointTexture		= nullptr;
 	}
 
-	void TouchGameSystem::update( float timeDelta )
+	void TouchGameSystem::update( float timeDelta, const GraphicsSystem& graphicsSystem )
 	{
+		m_inputEvents.clear();
+
 		static float time = 0.0f;
 		time += timeDelta;
+		
+		const float width = float( graphicsSystem.getBackBuffer().getWidth() );
+		const float height = float( graphicsSystem.getBackBuffer().getHeight() );
+		const float globalScale = width / 4096.0f;
+
+		const Vector2 leftPadPos = { m_padSize.x * globalScale, height - ( m_padSize.y * globalScale ) };
+		const Vector2 rightPadPos = { width - ( m_padSize.x * globalScale ), height - ( m_padSize.y * globalScale ) };
 
 		const float halfTimeDelta = timeDelta / 1.0f;
-		for (uint i = 0u; i < m_touchPoints.getCount(); ++i)
+		for (uint pointIndex = 0u; pointIndex < m_touchPoints.getCount(); ++pointIndex)
 		{
-			TouchPoint& point = m_touchPoints[ i ];
+			TouchPoint& point = m_touchPoints[ pointIndex ];
 
+			bool needToReset = false;
 			if ( !point.isDown )
 			{
 				point.scale -= halfTimeDelta;
-			}
-			//else
-			//{
-			//	point.scale = 1.0f;
-			//}
 
-			//point.isDown	= !bool( int( time + i ) % 5 );
-			//point.isOnPad	= bool( i & 2 );
-			//point.position.x = 50.0f + ( i * 60.0f );
-			//point.position.y = 50.0f + ( i * 60.0f );
+				if ( point.isOnPad )
+				{
+					needToReset = true;
+				}
+			}
+			else
+			{
+				const bool lastPadState = point.isOnPad;
+				point.isOnPad = false;
+
+				Vector2 aDistances[] = { leftPadPos, rightPadPos };
+				for (uint i = 0u; i < TIKI_COUNT( aDistances ); ++i)
+				{
+					Vector2 distance = aDistances[ i ];
+					vector::sub( distance, point.position );
+
+					const bool isOnPad	= ( vector::length( distance ) < m_halfPadSize.x * 1.25f * globalScale );
+					point.isOnPad |= isOnPad;
+
+					if ( isOnPad && !m_inputEvents.isFull() )
+					{
+						vector::scale( distance, 0.8f );
+						vector::div( distance, m_halfPadSize );
+						TIKI_ASSERT( distance.x >= -1.0f && distance.x <= 1.0f );
+						TIKI_ASSERT( distance.y >= -1.0f && distance.y <= 1.0f );
+
+						InputEvent& inputEvent = m_inputEvents.push();
+						inputEvent.eventType	= InputEventType_Controller_StickChanged;
+						inputEvent.deviceType	= InputDeviceType_Controller;
+						inputEvent.deviceId		= 0u;
+						inputEvent.data.controllerStick.stickIndex		= i;
+						inputEvent.data.controllerStick.xState			= -distance.x;
+						inputEvent.data.controllerStick.yState			= distance.y;
+					}
+				}
+
+				needToReset = ( lastPadState && !point.isOnPad );
+			}
+
+			if ( needToReset )
+			{
+				for (uint i = 0u; i < 2u; ++i)
+				{
+					if ( m_inputEvents.isFull() )
+					{
+						continue;
+					}
+
+					InputEvent& inputEvent = m_inputEvents.push();
+					inputEvent.eventType	= InputEventType_Controller_StickChanged;
+					inputEvent.deviceType	= InputDeviceType_Controller;
+					inputEvent.deviceId		= 0u;
+					inputEvent.data.controllerStick.stickIndex		= i;
+					inputEvent.data.controllerStick.xState			= 0u;
+					inputEvent.data.controllerStick.yState			= 0u;
+				}
+
+				point.isOnPad = m_inputEvents.isFull();
+			}
 		} 
 	}
 
@@ -103,21 +170,18 @@ namespace tiki
 		const float height = float( graphicsContext.getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
 
-		const float padWidth = float( m_pPadTexture->getTextureData().getWidth() );
-		const float padHeight = float( m_pPadTexture->getTextureData().getHeight() );
-
 		const Rectangle leftPadRect = Rectangle(
-			padWidth * 0.5f * globalScale,
-			height - ( padHeight * 1.5f * globalScale ),
-			padWidth * globalScale,
-			padHeight * globalScale
+			m_padSize.x * 0.5f * globalScale,
+			height - ( m_padSize.y * 1.5f * globalScale ),
+			m_padSize.x * globalScale,
+			m_padSize.y * globalScale
 		);
 
 		const Rectangle rightPadRect = Rectangle(
-			width - ( padWidth * 1.5f * globalScale ),
-			height - ( padHeight * 1.5f * globalScale ),
-			padWidth * globalScale,
-			padHeight * globalScale
+			width - ( m_padSize.x * 1.5f * globalScale ),
+			height - ( m_padSize.y * 1.5f * globalScale ),
+			m_padSize.x * globalScale,
+			m_padSize.y * globalScale
 		);
 
 		m_renderer.drawTexturedRectangle( m_pPadTexture->getTextureData(), leftPadRect, TIKI_COLOR_WHITE );
@@ -155,6 +219,28 @@ namespace tiki
 	{
 		if ( inputEvent.deviceType != InputDeviceType_Touch )
 		{
+			if ( s_convertMouseToTouchEvents )
+			{
+				switch ( inputEvent.eventType )
+				{
+				case InputEventType_Mouse_ButtonDown:
+					m_touchPoints[ 0u ].isDown	= true;
+					m_touchPoints[ 0u ].scale	= 1.0f;
+					break;
+
+				case InputEventType_Mouse_ButtonUp:
+					m_touchPoints[ 0u ].isDown = false;
+					break;
+
+				case InputEventType_Mouse_Moved:
+					{
+						const InputEventMouseMovedData& data = inputEvent.data.mouseMoved;
+						vector::set( m_touchPoints[ 0u ].position, float( data.xState ), float( data.yState ) );
+					}
+					break;
+				}
+			}
+
 			return false;
 		}
 
@@ -176,6 +262,6 @@ namespace tiki
 			break;
 		}
 
-		return false;
+		return true;
 	}
 }
