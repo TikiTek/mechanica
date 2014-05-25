@@ -374,6 +374,11 @@ namespace tiki
 			connectDevice( device );
 		}
 
+		for (uint i = 0u; i < TIKI_COUNT( m_platformData.touchInputMapping ); ++i)
+		{
+			m_platformData.touchInputMapping[ i ] = InvalidTouchInputMapping;
+		}
+
 		return true;
 	}
 
