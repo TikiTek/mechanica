@@ -7,6 +7,7 @@
 #include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent_initdata.hpp"
+#include "tiki/gamecomponents/coincomponent_initdata.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -60,6 +61,9 @@ namespace tiki
 		TIKI_VERIFY( m_lifeTimeComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
 
+		TIKI_VERIFY( m_coinComponent.create() );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_coinComponent ) );
+
 		return true;
 	}
 
@@ -67,6 +71,7 @@ namespace tiki
 	{
 		m_entitySystem.update(); // to dispose all entities
 
+		m_entitySystem.unregisterComponentType( &m_coinComponent );
 		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
 		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsCharacterControllerComponent );
@@ -76,6 +81,7 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_staticModelComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_coinComponent.dispose();
 		m_lifeTimeComponent.dispose();
 		m_playerControlComponent.dispose();
 		m_physicsCharacterControllerComponent.dispose();
@@ -184,7 +190,41 @@ namespace tiki
 	
 	EntityId GameClient::createCoinEntity( const Model* pModel, const Vector3& position )
 	{
-		return createBoxEntity( pModel, position );
+		TransformComponentInitData transformInitData;
+		createFloat3( transformInitData.position, position.x, position.y, position.z );
+		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 0.5f, 0.5f, 0.5f );
+
+		StaticModelComponentInitData modelInitData;
+		modelInitData.model = pModel;
+
+		PhysicsBodyComponentInitData bodyInitData;
+		createFloat3( bodyInitData.position, position.x, position.y, position.z );
+		bodyInitData.mass			= 100.0f;
+		bodyInitData.freeRotation	= true;
+		bodyInitData.shape.shapeType = ShapeType_Box;
+		createFloat3( bodyInitData.shape.shapeBoxSize, 0.5f, 0.5f, 0.5f );
+
+		LifeTimeComponentInitData lifeTimeInitData;
+		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
+
+		CoinComponentInitData coinInitData;
+		coinInitData.value = 1.0f;
+
+		EntityTemplateComponent entityComponents[] =
+		{
+			{ m_transformComponent.getTypeCrc(),	&transformInitData },
+			{ m_physicsBodyComponent.getTypeCrc(),	&bodyInitData },
+			{ m_staticModelComponent.getTypeCrc(),	&modelInitData },
+			{ m_lifeTimeComponent.getTypeCrc(),		&lifeTimeInitData },
+			{ m_coinComponent.getTypeCrc(),			&coinInitData }
+		};
+
+		EntityTemplate entityTemplate;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
+		entityTemplate.pComponents		= entityComponents;
+
+		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
 	}
 
 	EntityId GameClient::createPlaneEntity( const Model* pModel, const Vector3& position )
@@ -232,6 +272,7 @@ namespace tiki
 		m_transformComponent.update();
 		m_playerControlComponent.update( timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeDelta );
+		m_coinComponent.update();
 	}
 
 	void GameClient::render( GameRenderer& gameRenderer )
