@@ -33,6 +33,8 @@ namespace tiki
 		void				getPosition( Vector3& targetPosition, const PhysicsCharacterControllerComponentState* pState ) const;
 		void				getRotation( Quaternion& targetRotation, const PhysicsCharacterControllerComponentState* pState ) const;
 
+		void				setRotation( PhysicsCharacterControllerComponentState* pState, const Quaternion& rotation ) const;
+
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
 		virtual const char*	getTypeName() const;

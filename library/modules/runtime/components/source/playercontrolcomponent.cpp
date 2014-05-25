@@ -19,6 +19,8 @@ namespace tiki
 		PhysicsCharacterControllerComponentState*	pPhysicsController;
 
 		float										speed;
+		Vector2										rotation;
+		Quaternion									positionRotation;
 	};
 
 	PlayerControlComponent::PlayerControlComponent()
@@ -64,21 +66,27 @@ namespace tiki
 		m_physicsCharacterControllerComponentTypeId	= InvalidComponentTypeId;
 	}
 
-	void PlayerControlComponent::update( float timeStep )
+	void PlayerControlComponent::update( float timeDelta )
 	{
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
+			Vector2 rotationOffset = m_inputState.rightStick;
+			vector::scale( rotationOffset, timeDelta );
+			vector::add( pState->rotation, rotationOffset );
+			pState->rotation.y = f32::clamp( pState->rotation.y, -f32::piOver2, f32::piOver2 );
+			quaternion::fromYawPitchRoll( pState->positionRotation, pState->rotation.x, 0.0f, 0.0f );
+
 			Vector3 walkForce = { m_inputState.leftStick.x, 0.0f, m_inputState.leftStick.y };
 			vector::scale( walkForce, -pState->speed );
+			quaternion::transform( walkForce, pState->positionRotation );
 
 			m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
 
 			if ( m_inputState.jump )
 			{
 				m_pPhysicsCharacterControllerComponent->jump( pState->pPhysicsController );
-
 				m_inputState.jump = false;
 			}
 		}
@@ -125,6 +133,7 @@ namespace tiki
 		pState->pPhysicsController	= static_cast< PhysicsCharacterControllerComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_physicsCharacterControllerComponentTypeId ) ) );
 
 		pState->speed = pInitData->speed;
+		vector::clear( pState->rotation );
 
 		return true;
 	}
@@ -139,9 +148,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( pState != nullptr );
 
-		m_pTransformComponent->getPosition( rTargetState.eyePosition, pState->pTransform );
-		m_pTransformComponent->getRotation( rTargetState.eyeDirection, pState->pTransform );
+		quaternion::fromYawPitchRoll( rTargetState.eyeDirection, pState->rotation.x, pState->rotation.y, 0.0f );
 
-		vector::add( rTargetState.eyePosition, vector::create( 0.0f, 0.25f, 0.15f ) );
+		Vector3 basePosition = { 0.0f, 0.25f, -0.15f };		
+		quaternion::transform( basePosition, pState->positionRotation );
+		m_pTransformComponent->getPosition( rTargetState.eyePosition, pState->pTransform );
+		vector::add( rTargetState.eyePosition, basePosition );
 	}
 }

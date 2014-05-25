@@ -48,6 +48,8 @@ namespace tiki
 		typedef FixedArray< TouchPoint, MaxInputTouchPoints > TouchPointArray;
 		typedef FixedSizedArray< InputEvent, MaxTouchInputEventsPerFrame > InputEventArray;
 
+		bool				m_isEnabled;
+
 		TouchPointArray		m_touchPoints;
 		InputEventArray		m_inputEvents;
 

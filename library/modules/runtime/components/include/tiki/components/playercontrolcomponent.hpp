@@ -32,7 +32,7 @@ namespace tiki
 		bool				create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent );
 		void				dispose();
 
-		void				update( float timeStep );
+		void				update( float timeDelta );
 		
 		bool				processInputEvent( const InputEvent& inputEvent );
 

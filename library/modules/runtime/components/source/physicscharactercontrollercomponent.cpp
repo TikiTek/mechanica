@@ -106,6 +106,13 @@ namespace tiki
 		pState->controller.getRotation( targetRotation );
 	}
 
+	void PhysicsCharacterControllerComponent::setRotation( PhysicsCharacterControllerComponentState* pState, const Quaternion& rotation ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		pState->controller.setRotation( rotation );
+	}
+
 	crc32 PhysicsCharacterControllerComponent::getTypeCrc() const
 	{
 		return crcString( "PhysicsCharacterControllerComponent" );

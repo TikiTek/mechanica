@@ -33,6 +33,11 @@ namespace tiki
 		return vector::create( vec.x(), vec.y(), vec.z() );
 	}
 
+	TIKI_FORCE_INLINE btQuaternion toBulletQuaternion( const Quaternion& quat )
+	{
+		return btQuaternion( quat.x, quat.y, quat.z, quat.w );
+	}
+
 	TIKI_FORCE_INLINE Quaternion toTikiQuaternion( const btQuaternion& quat )
 	{
 		return quaternion::create( quat.x(), quat.y(), quat.z(), quat.w() );

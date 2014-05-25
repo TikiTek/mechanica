@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", true );
+	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", false );
 
 	TouchGameSystem::TouchGameSystem()
 	{
@@ -26,6 +26,8 @@ namespace tiki
 
 	bool TouchGameSystem::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		m_isEnabled = false;
+
 		m_pPadTexture		= resourceManager.loadResource< Texture >( "touch_dpad.texture" );
 		m_pPadPointTexture	= resourceManager.loadResource< Texture >( "touch_dpad_point.texture" );
 		m_pPointTexture		= resourceManager.loadResource< Texture >( "touch_point.texture" );
@@ -79,9 +81,11 @@ namespace tiki
 	{
 		m_inputEvents.clear();
 
-		static float time = 0.0f;
-		time += timeDelta;
-		
+		if ( !m_isEnabled || s_convertMouseToTouchEvents )
+		{
+			return;
+		}
+
 		const float width = float( graphicsSystem.getBackBuffer().getWidth() );
 		const float height = float( graphicsSystem.getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
@@ -163,6 +167,11 @@ namespace tiki
 
 	void TouchGameSystem::render( GraphicsContext& graphicsContext ) const
 	{
+		if ( !m_isEnabled || s_convertMouseToTouchEvents )
+		{
+			return;
+		}
+
 		m_renderer.beginRendering( graphicsContext );
 		m_renderer.beginRenderPass();
 		
@@ -241,6 +250,18 @@ namespace tiki
 				}
 			}
 
+			return false;
+		}
+
+		if ( inputEvent.eventType == InputEventType_Device_Connected || inputEvent.eventType == InputEventType_Device_Disconnected )
+		{
+			m_isEnabled = ( inputEvent.eventType == InputEventType_Device_Connected );
+
+			return false;
+		}
+
+		if ( !m_isEnabled )
+		{
 			return false;
 		}
 

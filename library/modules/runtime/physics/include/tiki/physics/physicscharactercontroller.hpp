@@ -29,6 +29,8 @@ namespace tiki
 		void		getPosition( Vector3& targetPosition ) const;
 		void		getRotation( Quaternion& targetRotation ) const;
 
+		void		setRotation( const Quaternion& rotation );
+
 	private:
 		
 		btPairCachingGhostObject		m_ghostObject;

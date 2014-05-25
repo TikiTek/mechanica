@@ -50,4 +50,9 @@ namespace tiki
 	{
 		targetRotation = toTikiQuaternion( m_ghostObject.getWorldTransform().getRotation() );
 	}
+
+	void PhysicsCharacterController::setRotation( const Quaternion& rotation )
+	{
+		m_ghostObject.getWorldTransform().setRotation( toBulletQuaternion( rotation ) );
+	}
 }
