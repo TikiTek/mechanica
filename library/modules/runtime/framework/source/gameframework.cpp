@@ -88,7 +88,10 @@ namespace tiki
 
 		m_frameworkData.frameTimer.create();
 
-		initialize();
+		if ( !initialize() )
+		{
+			return false;
+		}
 		m_isInitialized = true;
 
 		return true;

@@ -10,7 +10,6 @@ namespace tiki
 {
 	enum ApplicationStateTransitionSteps
 	{
-		ApplicationStateTransitionSteps_RegisterResourceTypes,
 		ApplicationStateTransitionSteps_CreateGameRenderer,
 
 		ApplicationStateTransitionSteps_Count

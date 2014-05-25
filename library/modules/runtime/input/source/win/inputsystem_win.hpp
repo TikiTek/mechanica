@@ -13,7 +13,8 @@ namespace tiki
 
 	enum
 	{
-		InvalidTouchInputMapping = 0xffffffffu
+		MaxInputTouchPoints			= 16u,
+		InvalidTouchInputMapping	= 0xffffffffu
 	};
 
 	struct InputSystemPlatformData
@@ -39,7 +40,7 @@ namespace tiki
 		bool					isTouchInputReady;
 
 		uint8					keyboardMapping[ 256u ];
-		uint32					touchInputMapping[ 16u ];
+		uint32					touchInputMapping[ MaxInputTouchPoints ];
 
 		uint					currentStateIndex;
 		InputSystemState*		pStates[ 2u ];

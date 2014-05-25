@@ -60,20 +60,20 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		void				beginRendering( GraphicsContext& graphicsContext );
-		void				endRendering();
+		void				beginRendering( GraphicsContext& graphicsContext ) const;
+		void				endRendering() const;
 
-		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Camera* pProjection = nullptr );
-		void				endRenderPass();
+		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Camera* pProjection = nullptr ) const;
+		void				endRenderPass() const;
 
-		void				setBlendState( ImmediateBlendState blendState );
-		void				setDepthState( ImmediateDepthState depthState );
+		void				setBlendState( ImmediateBlendState blendState ) const;
+		void				setDepthState( ImmediateDepthState depthState ) const;
 
-		void				drawRectangle( const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
-		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE );
-		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE );
-		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE );
-		void				drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );
+		void				drawRectangle( const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE ) const;
 
 	private:
 
@@ -85,7 +85,7 @@ namespace tiki
 			Color	color;
 		};
 
-		GraphicsContext*					m_pContext;
+		mutable GraphicsContext*			m_pContext;
 
 		const ShaderSet*					m_pShaderSet;
 		
@@ -98,7 +98,7 @@ namespace tiki
 
 		ConstantBuffer						m_vertexConstantBuffer;
 
-		void								setState();
+		void								setState() const;
 
 	};
 }

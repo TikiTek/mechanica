@@ -5,13 +5,6 @@
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 
-#include "tiki/animation/animation.hpp"
-#include "tiki/graphics/font.hpp"
-#include "tiki/graphics/material.hpp"
-#include "tiki/graphics/model.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/graphics/texture.hpp"
-
 namespace tiki
 {
 	void ApplicationState::create()
@@ -26,33 +19,6 @@ namespace tiki
 	{
 		switch ( currentStep )
 		{
-		case ApplicationStateTransitionSteps_RegisterResourceTypes:
-			{
-				ResourceManager& resourceManager = framework::getResourceManager();
-				GraphicsSystem& graphicsSystem = framework::getGraphicsSystem();
-
-				if ( isInital )
-				{
-					Font::registerResourceType( resourceManager, graphicsSystem );
-					Material::registerResourceType( resourceManager );
-					Model::registerResourceType( resourceManager, graphicsSystem );
-					ShaderSet::registerResourceType( resourceManager, graphicsSystem );
-					Texture::registerResourceType( resourceManager, graphicsSystem );
-					Animation::registerResourceType( resourceManager );
-				}
-				else
-				{
-					Font::unregisterResourceType( resourceManager );
-					Material::unregisterResourceType( resourceManager );
-					Model::unregisterResourceType( resourceManager );
-					ShaderSet::unregisterResourceType( resourceManager );
-					Texture::unregisterResourceType( resourceManager );
-					Animation::unregisterResourceType( resourceManager );
-				}
-
-				return TransitionState_Finish;
-			}
-			//break;
 		case ApplicationStateTransitionSteps_CreateGameRenderer:
 			{
 				TIKI_ASSERT( isInital );
