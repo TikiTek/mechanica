@@ -21,7 +21,7 @@ namespace tiki
 		PhysicsCollider();
 		~PhysicsCollider();
 
-		void				create( PhysicsShape& shape, const Vector3& position );
+		void				create( const PhysicsShape& shape, const Vector3& position );
 		void				dispose();
 
 	private:

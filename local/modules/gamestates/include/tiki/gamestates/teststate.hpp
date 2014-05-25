@@ -8,6 +8,7 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/framework/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
+#include "tiki/gameplay/gamestate.hpp"
 #include "tiki/gameplay/playercamera.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
@@ -91,11 +92,9 @@ namespace tiki
 		PostProcessBloom			m_bloom;
 
 		GameClient					m_gameClient;
-		
-		EntityId					m_planeEntityId;
-		EntityId					m_playerEntityId;
+		GameState					m_gameState;
+
 		EntityId					m_boxesEntityId;
-		SizedArray< EntityId >		m_boxEntities;
 
 	};
 }

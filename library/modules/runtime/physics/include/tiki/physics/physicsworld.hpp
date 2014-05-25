@@ -44,7 +44,7 @@ namespace tiki
 		void		addCharacterController( PhysicsCharacterController& controller );
 		void		removeCharacterController( PhysicsCharacterController& controller );
 
-		bool		checkIntersection( PhysicsShape& physicsShape, const Vector3& position );
+		bool		checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const;
 
 		void		update( float timeStep );
 

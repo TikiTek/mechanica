@@ -24,7 +24,7 @@ namespace tiki
 		void			create( float height, float radius );
 		void			dispose();
 
-		virtual void*	getNativeShape();
+		virtual void*	getNativeShape() const;
 
 	private:
 

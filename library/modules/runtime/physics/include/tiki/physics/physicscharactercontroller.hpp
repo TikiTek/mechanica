@@ -20,7 +20,7 @@ namespace tiki
 		PhysicsCharacterController();
 		~PhysicsCharacterController();
 
-		void		create( PhysicsShape& shape, const Vector3& position );
+		void		create( const PhysicsShape& shape, const Vector3& position );
 		void		dispose();
 
 		void		move( const Vector3& direction );

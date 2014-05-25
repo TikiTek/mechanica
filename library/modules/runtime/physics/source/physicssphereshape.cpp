@@ -21,8 +21,8 @@ namespace tiki
 	{
 	}
 
-	void* PhysicsSphereShape::getNativeShape()
+	void* PhysicsSphereShape::getNativeShape() const
 	{
-		return &m_shape;
+		return (void*)&m_shape;
 	}
 }

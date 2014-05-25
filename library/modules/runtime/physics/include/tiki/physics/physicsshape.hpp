@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-		virtual void*	getNativeShape() = 0;
+		virtual void*	getNativeShape() const = 0;
 
 	};
 }
