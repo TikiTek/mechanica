@@ -11,6 +11,7 @@
 #include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
+#include "tiki/gamecomponents/coincomponent.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
 namespace tiki
@@ -67,6 +68,8 @@ namespace tiki
 		SkinnedModelComponent				m_skinnedModelComponent;
 		StaticModelComponent				m_staticModelComponent;
 		TransformComponent					m_transformComponent;
+
+		CoinComponent						m_coinComponent;
 
 	};
 }
