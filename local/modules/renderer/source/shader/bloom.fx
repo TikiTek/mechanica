@@ -53,7 +53,7 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 	float3 accumulationColor = TIKI_TEX2D( t_accumulation, s_samplerLinear, input.texCoord ).rgb;
 	float4 selfilluColor = TIKI_TEX2D( t_selfillu, s_samplerLinear, input.texCoord );
 
-	float3 color = accumulationColor + ( selfilluColor.rgb * selfilluColor.a );
+	float3 color = accumulationColor + selfilluColor.rgb; // * selfilluColor.a );
 	float colorValue = dot( color, float3( 0.2126f, 0.7152f, 0.0722f ) );
 
 	return ( colorValue > 1.0f ? float4( color, 1.0f ) : float4( 0.0f, 0.0f, 0.0f, 0.0f ) );
