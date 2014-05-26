@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_ASSERT( m_collitionObject.getUserPointer() == nullptr );
 	}
 
-	void PhysicsCollider::create( PhysicsShape& shape, const Vector3& position )
+	void PhysicsCollider::create( const PhysicsShape& shape, const Vector3& position )
 	{
 		dispose();
 
@@ -33,5 +33,10 @@ namespace tiki
 	void PhysicsCollider::dispose()
 	{
 		m_collitionObject.setUserPointer( nullptr );
+	}
+
+	void* PhysicsCollider::getNativeObject() const
+	{
+		return (void*)&m_collitionObject;
 	}
 }

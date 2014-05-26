@@ -29,36 +29,28 @@ namespace tiki
 		m_pPhysicsWorld				= nullptr;
 
 		m_pTranformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
 	}
 
 	PhysicsCharacterControllerComponent::~PhysicsCharacterControllerComponent()
 	{
-		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
-		TIKI_ASSERT( m_pTranformComponent		== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId	== InvalidComponentTypeId );
+		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
+		TIKI_ASSERT( m_pTranformComponent	== nullptr );
 	}
 
 	bool PhysicsCharacterControllerComponent::create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent )
 	{
 		m_pPhysicsWorld			= &physicsWorld;
 
-		m_pTranformComponent		= &transformComponent;
-		m_transformComponentTypeId	= transformComponent.getTypeId();
-		if ( m_transformComponentTypeId == InvalidComponentTypeId )
-		{
-			return false;
-		}
+		m_pTranformComponent	= &transformComponent;
 
 		return true;
 	}
 
 	void PhysicsCharacterControllerComponent::dispose()
 	{
-		m_pPhysicsWorld				= nullptr;
+		m_pPhysicsWorld			= nullptr;
 
-		m_pTranformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
+		m_pTranformComponent	= nullptr;
 	}
 
 	void PhysicsCharacterControllerComponent::update()
@@ -106,6 +98,20 @@ namespace tiki
 		pState->controller.getRotation( targetRotation );
 	}
 
+	void PhysicsCharacterControllerComponent::setRotation( PhysicsCharacterControllerComponentState* pState, const Quaternion& rotation ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		pState->controller.setRotation( rotation );
+	}
+
+	const PhysicsCollisionObject& PhysicsCharacterControllerComponent::getPhysicsObject( const PhysicsCharacterControllerComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		return pState->controller;
+	}
+
 	crc32 PhysicsCharacterControllerComponent::getTypeCrc() const
 	{
 		return crcString( "PhysicsCharacterControllerComponent" );
@@ -126,7 +132,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) PhysicsCharacterControllerComponentState;
-		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
+		pState->pTransform	= (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() ) ;
 
 		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )

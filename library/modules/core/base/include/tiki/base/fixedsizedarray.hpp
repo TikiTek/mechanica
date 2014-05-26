@@ -32,7 +32,7 @@ namespace tiki
 		TIKI_FORCE_INLINE void				clear();
 
 		TIKI_FORCE_INLINE bool				isEmpty() const	{ return m_count == 0u; }
-		TIKI_FORCE_INLINE bool				isFull() const	{ return m_count == m_capacity; }
+		TIKI_FORCE_INLINE bool				isFull() const	{ return m_count == TCapacity; }
 
 		TIKI_FORCE_INLINE Reference			push();
 		TIKI_FORCE_INLINE Reference			push( ConstReference value );

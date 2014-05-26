@@ -23,7 +23,7 @@ namespace tiki
 		void			create( const Vector3& size );
 		void			dispose();
 
-		virtual void*	getNativeShape();
+		virtual void*	getNativeShape() const;
 
 	private:
 

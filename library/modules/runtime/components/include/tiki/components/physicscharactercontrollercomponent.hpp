@@ -19,35 +19,38 @@ namespace tiki
 
 	public:
 
-		explicit			PhysicsCharacterControllerComponent();
-		virtual				~PhysicsCharacterControllerComponent();
+		explicit						PhysicsCharacterControllerComponent();
+		virtual							~PhysicsCharacterControllerComponent();
 
-		bool				create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent );
-		void				dispose();
+		bool							create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent );
+		void							dispose();
 
-		void				update();
+		void							update();
 
-		void				move( PhysicsCharacterControllerComponentState* pState, const Vector3& direction ) const;
-		void				jump( PhysicsCharacterControllerComponentState* pState ) const;
+		void							move( PhysicsCharacterControllerComponentState* pState, const Vector3& direction ) const;
+		void							jump( PhysicsCharacterControllerComponentState* pState ) const;
 
-		void				getPosition( Vector3& targetPosition, const PhysicsCharacterControllerComponentState* pState ) const;
-		void				getRotation( Quaternion& targetRotation, const PhysicsCharacterControllerComponentState* pState ) const;
+		void							getPosition( Vector3& targetPosition, const PhysicsCharacterControllerComponentState* pState ) const;
+		void							getRotation( Quaternion& targetRotation, const PhysicsCharacterControllerComponentState* pState ) const;
 
-		virtual crc32		getTypeCrc() const;
-		virtual uint32		getStateSize() const;
-		virtual const char*	getTypeName() const;
+		const PhysicsCollisionObject&	getPhysicsObject( const PhysicsCharacterControllerComponentState* pState ) const;
+
+		void							setRotation( PhysicsCharacterControllerComponentState* pState, const Quaternion& rotation ) const;
+
+		virtual crc32					getTypeCrc() const;
+		virtual uint32					getStateSize() const;
+		virtual const char*				getTypeName() const;
 
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsCharacterControllerComponentState* pComponentState, const PhysicsCharacterControllerComponentInitData* pComponentInitData );
-		virtual void		internalDisposeState( PhysicsCharacterControllerComponentState* pComponentState );
+		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsCharacterControllerComponentState* pComponentState, const PhysicsCharacterControllerComponentInitData* pComponentInitData );
+		virtual void					internalDisposeState( PhysicsCharacterControllerComponentState* pComponentState );
 
 	private:
 
-		PhysicsWorld*				m_pPhysicsWorld;
+		PhysicsWorld*					m_pPhysicsWorld;
 
-		const TransformComponent*	m_pTranformComponent;
-		ComponentTypeId				m_transformComponentTypeId;
+		const TransformComponent*		m_pTranformComponent;
 
 	};
 }

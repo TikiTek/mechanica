@@ -136,19 +136,19 @@ namespace tiki
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 	}
 
-	void ImmediateRenderer::beginRendering( GraphicsContext& graphicsContext )
+	void ImmediateRenderer::beginRendering( GraphicsContext& graphicsContext ) const
 	{
 		TIKI_ASSERT( m_pContext == nullptr );
 		m_pContext = &graphicsContext;
 	}
 
-	void ImmediateRenderer::endRendering()
+	void ImmediateRenderer::endRendering() const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		m_pContext = nullptr;
 	}
 
-	void ImmediateRenderer::beginRenderPass( const RenderTarget* pRenderTarget /*= nullptr*/, const Camera* pCamera /*= nullptr*/ )
+	void ImmediateRenderer::beginRenderPass( const RenderTarget* pRenderTarget /*= nullptr*/, const Camera* pCamera /*= nullptr*/ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -182,27 +182,27 @@ namespace tiki
 		setState();
 	}
 
-	void ImmediateRenderer::endRenderPass()
+	void ImmediateRenderer::endRenderPass() const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		m_pContext->endRenderPass();
 	}
 
-	void ImmediateRenderer::setBlendState( ImmediateBlendState blendState )
+	void ImmediateRenderer::setBlendState( ImmediateBlendState blendState ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		TIKI_ASSERT( blendState < ImmediateBlendState_Count );
 		m_pContext->setBlendState( m_pBlendState[ blendState ] );
 	}
 
-	void ImmediateRenderer::setDepthState( ImmediateDepthState depthState )
+	void ImmediateRenderer::setDepthState( ImmediateDepthState depthState ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		TIKI_ASSERT( depthState < ImmediateDepthState_Count );
 		m_pContext->setDepthStencilState( m_pDepthStencilState[ depthState ] );
 	}
 
-	void ImmediateRenderer::drawRectangle( const Rectangle& d, Color color /*= TIKI_COLOR_WHITE */ )
+	void ImmediateRenderer::drawRectangle( const Rectangle& d, Color color /*= TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -244,7 +244,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  )
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -287,7 +287,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, const Rectangle& s, Color color /*= TIKI_COLOR_WHITE*/ )
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, const Rectangle& s, Color color /*= TIKI_COLOR_WHITE*/ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -336,7 +336,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const char* pText, Color color /*= TIKI_COLOR_WHITE*/ )
+	void ImmediateRenderer::drawText( const Vector2& position, const Font& font, const char* pText, Color color /*= TIKI_COLOR_WHITE*/ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
@@ -402,7 +402,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 	
-	void ImmediateRenderer::drawLines( const Vector3* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ )
+	void ImmediateRenderer::drawLines( const Vector3* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( pPoints != nullptr );
 		TIKI_ASSERT( m_pContext != nullptr );
@@ -427,7 +427,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::setState()
+	void ImmediateRenderer::setState() const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 

@@ -43,6 +43,13 @@ namespace tiki
 		m_pWorld = nullptr;
 	}
 
+	const PhysicsCollisionObject& PhysicsColliderComponent::getPhysicsObject( const PhysicsColliderComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		return pState->collider;
+	}
+
 	crc32 PhysicsColliderComponent::getTypeCrc() const
 	{
 		return crcString( "PhysicsColliderComponent" );

@@ -22,6 +22,7 @@ namespace tiki
 	class PhysicsBody;
 	class PhysicsCharacterController;
 	class PhysicsCollider;
+	class PhysicsCollisionObject;
 	class PhysicsShape;
 	struct Vector3;
 
@@ -44,7 +45,8 @@ namespace tiki
 		void		addCharacterController( PhysicsCharacterController& controller );
 		void		removeCharacterController( PhysicsCharacterController& controller );
 
-		bool		checkIntersection( PhysicsShape& physicsShape, const Vector3& position );
+		bool		checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const;
+		bool		checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const;
 
 		void		update( float timeStep );
 

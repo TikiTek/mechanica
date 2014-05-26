@@ -2,6 +2,8 @@
 #ifndef __TIKI_PHYSICSBODY_HPP_INCLUDED__
 #define __TIKI_PHYSICSBODY_HPP_INCLUDED__
 
+#include "tiki/physics/physicscollisionobject.hpp"
+
 #include "tiki/base/types.hpp"
 
 #include "BulletDynamics/Dynamics/btRigidBody.h"
@@ -12,7 +14,7 @@ namespace tiki
 	struct Quaternion;
 	struct Vector3;
 	
-	class PhysicsBody
+	class PhysicsBody : public PhysicsCollisionObject
 	{
 		TIKI_NONCOPYABLE_CLASS( PhysicsBody );
 		friend class PhysicsWorld;
@@ -20,15 +22,17 @@ namespace tiki
 	public:
 
 							PhysicsBody();
-							~PhysicsBody();
+		virtual				~PhysicsBody();
 
-		void				create( PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation );
+		void				create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation );
 		void				dispose();
 
 		void				applyForce( const Vector3& direction );
 
 		void				getPosition( Vector3& position ) const;
 		void				getRotation( Quaternion& rotation ) const;
+
+		virtual void*		getNativeObject() const;
 		
 	private:
 

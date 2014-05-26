@@ -26,6 +26,10 @@ namespace tiki
 		virtual uint32			getStateSize() const = 0;
 		virtual const char*		getTypeName() const = 0;
 
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		virtual bool			checkIntegrity() const = 0;
+#endif
+
 		ComponentTypeId			getTypeId() const { return m_registedTypeId; }
 		
 	protected:
@@ -54,7 +58,10 @@ namespace tiki
 
 		virtual bool	initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData );
 		virtual void	disposeState( ComponentState* pComponentState );
-
+		
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		virtual bool	checkIntegrity() const;
+#endif
 
 		Iterator		getIterator() const;
 		ConstIterator	getConstIterator() const;

@@ -20,75 +20,95 @@ namespace tiki
 		case WM_CREATE:
 			s_pEventBuffer->pushEvent( WindowEventType_Create );
 			break;
+
 		case WM_DESTROY:
 			PostQuitMessage( 0 );
 			s_pEventBuffer->pushEvent( WindowEventType_Destroy );
 			break;
+
 		case WM_SIZE:
 			{
 				RECT rect;
 				GetClientRect( hWnd, &rect );
 
-				WindowEvent& event					= s_pEventBuffer->pushEvent( WindowEventType_SizeChanged );
-				event.data.sizeChangedEvent.size.x	= (rect.right - rect.left);
-				event.data.sizeChangedEvent.size.y	= (rect.bottom - rect.top);
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_SizeChanged );
+				event.data.sizeChanged.size.x	= (rect.right - rect.left);
+				event.data.sizeChanged.size.y	= (rect.bottom - rect.top);
 			}
 			break;
+
 		case WM_KEYDOWN:
 			{
-				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
-				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
+				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
+				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
 			}
 			break;
+
 		case WM_KEYUP:
 			{
-				WindowEvent& event		= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
-				event.data.keyEvent.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
+				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
+				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
 			}
 			break;
+
 		case WM_MOUSEMOVE:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
-				event.data.mouseMoveEvent.position.x	= GET_X_LPARAM( lParam ); 
-				event.data.mouseMoveEvent.position.y	= GET_Y_LPARAM( lParam ); 
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
+				event.data.mouseMove.position.x	= GET_X_LPARAM( lParam ); 
+				event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam ); 
 			}
 			break;
+
 		case WM_LBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButtonEvent.button		= MouseButton_Left;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+				event.data.mouseButton.button	= MouseButton_Left;
 			}
 			break;
+
 		case WM_MBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButtonEvent.button		= MouseButton_Middle;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+				event.data.mouseButton.button	= MouseButton_Middle;
 			}
 			break;
+
 		case WM_RBUTTONDOWN:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButtonEvent.button		= MouseButton_Right;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+				event.data.mouseButton.button	= MouseButton_Right;
 			}
 			break;
+
 		case WM_LBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButtonEvent.button		= MouseButton_Left;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+				event.data.mouseButton.button	= MouseButton_Left;
 			}
 			break;
+
 		case WM_MBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButtonEvent.button		= MouseButton_Middle;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+				event.data.mouseButton.button	= MouseButton_Middle;
 			}
 			break;
+
 		case WM_RBUTTONUP:
 			{
-				WindowEvent& event						= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButtonEvent.button		= MouseButton_Right;
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+				event.data.mouseButton.button	= MouseButton_Right;
 			}
 			break;
+
+		case WM_TOUCH:
+			{
+				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_Touch );
+				event.data.touch.pointCount		= LOWORD( wParam );
+				event.data.touch.handle			= (TouchInputHandle)lParam;
+			}
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 			break;

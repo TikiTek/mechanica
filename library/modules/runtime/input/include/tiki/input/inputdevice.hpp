@@ -12,6 +12,7 @@ namespace tiki
 		InputDeviceType_Keyboard,
 		InputDeviceType_Mouse,
 		InputDeviceType_Controller,
+		InputDeviceType_Touch,
 
 		InputDeviceType_Count
 	};

@@ -23,6 +23,13 @@ namespace tiki
 
 		if ( internInitialize() )
 		{
+			// HACK: to handle device connect events
+			InputEvent inputEvent;
+			while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )
+			{
+				processInputEvent( inputEvent );
+			}
+
 			while ( frame() ) { }
 		}
 		else
@@ -88,7 +95,10 @@ namespace tiki
 
 		m_frameworkData.frameTimer.create();
 
-		initialize();
+		if ( !initialize() )
+		{
+			return false;
+		}
 		m_isInitialized = true;
 
 		return true;
@@ -116,20 +126,13 @@ namespace tiki
 		m_frameworkData.mainWindow.update();
 		m_frameworkData.resourceManager.update();
 
-		for (size_t i = 0u; i < m_frameworkData.mainWindow.getEventBuffer().getEventCount(); ++i)
+		const WindowEvent* pDestroyEvent = m_frameworkData.mainWindow.getEventBuffer().getEventByType( WindowEventType_Destroy );
+		if ( pDestroyEvent != nullptr )
 		{
-			const WindowEvent& event = m_frameworkData.mainWindow.getEventBuffer().getEventByIndex( i );
-
-			switch (event.type)
-			{
-			case WindowEventType_Destroy:
-				return false;
-			default:
-				break;
-			}
+			return false;
 		}
 
-		m_frameworkData.inputSystem.update();
+		m_frameworkData.inputSystem.update( m_frameworkData.mainWindow.getEventBuffer() );
 
 		InputEvent inputEvent;
 		while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )
@@ -141,15 +144,15 @@ namespace tiki
 
 			if ( !processInputEvent( inputEvent ) )
 			{
-				if ( inputEvent.deviceType == InputDeviceType_Keyboard )
-				{
-					const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
-					TIKI_TRACE_INFO( "[game] keyboard event not handled. %s has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
-				}
-				else
-				{
-					//TIKI_TRACE_INFO( "[gameflow] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
-				}
+				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
+				//{
+				//	const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
+				//	TIKI_TRACE_INFO( "[framework] keyboard event not handled. %s has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
+				//}
+				//else
+				//{
+				//	TIKI_TRACE_INFO( "[framework] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
+				//}
 			}
 		}
 

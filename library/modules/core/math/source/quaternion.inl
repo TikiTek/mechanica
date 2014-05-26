@@ -79,14 +79,21 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Quaternion& quaternion::mul( Quaternion& quat, const Quaternion& rhs )
 	{
-		const float x = quat.y * rhs.z - quat.z * rhs.y;
-		const float y = quat.z * rhs.x - quat.x * rhs.z;
-		const float z = quat.x * rhs.y - quat.y * rhs.x;
-		const float w = quat.x * rhs.x + quat.y * rhs.y + quat.z * rhs.z;
-		quat.x = quat.x * rhs.w + rhs.x * quat.w + x;
-		quat.y = quat.y * rhs.w + rhs.y * quat.w + y;
-		quat.z = quat.z * rhs.w + rhs.z * quat.w + z;
-		quat.w = quat.w * rhs.w - w;
+		const float lx = quat.x;
+		const float ly = quat.y;
+		const float lz = quat.z;
+		const float lw = quat.w;
+
+		const float rx = rhs.x;
+		const float ry = rhs.y;
+		const float rz = rhs.z;
+		const float rw = rhs.w;
+
+		quat.x = ( lx * rw + rx * lw ) + ( ly * rz - lz * ry );
+		quat.y = ( ly * rw + ry * lw ) + ( lz * rx - lx * rz );
+		quat.z = ( lz * rw + rz * lw ) + ( lx * ry - ly * rx );
+		quat.w = ( lw * rw ) - ( lx * rx + ly * ry + lz * rz );
+
 		return quat;
 	}
 
@@ -324,18 +331,25 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void quaternion::transform( Vector3& vec, const Quaternion& quat )
 	{
-		Quaternion view;
-		quaternion::normalize( quaternion::set( view, vec.x, vec.y, vec.z, 0.0f ) );
-		
-		Quaternion conjugated = quat;
-		quaternion::conjugate( conjugated );
+		const float x = quat.x + quat.x;
+		const float y = quat.y + quat.y;
+		const float z = quat.z + quat.z;
 
-		quaternion::mul( view, conjugated );
+		const float wx = quat.w * x;
+		const float wy = quat.w * y;
+		const float wz = quat.w * z;
+		const float xx = quat.x * x;
+		const float xy = quat.x * y;
+		const float xz = quat.x * z;
+		const float yy = quat.y * y;
+		const float yz = quat.y * z;
+		const float zz = quat.z * z;
 
-		Quaternion result = quat;
-		quaternion::mul( result, view );
+		const float rx = ( ( vec.x * ( ( 1.0f - yy ) - zz ) ) + ( vec.y * ( xy - wz ) ) ) + ( vec.z * ( xz + wy ) );
+		const float ry = ( ( vec.x * ( xy + wz ) ) + ( vec.y * ( ( 1.0f - xx ) - zz ) ) ) + ( vec.z * ( yz - wx ) );
+		const float rz = ( ( vec.x * ( xz - wy ) ) + ( vec.y * ( yz + wx ) ) ) + ( vec.z * ( ( 1.0f - xx ) - yy ) );
 
-		vector::set( vec, result.x, result.y, result.z );
+		vector::set( vec, rx, ry, rz );
 	}
 
 	TIKI_FORCE_INLINE void quaternion::getForward( Vector3& result, const Quaternion& quat )
