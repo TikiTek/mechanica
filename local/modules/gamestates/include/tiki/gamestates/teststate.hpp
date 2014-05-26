@@ -60,6 +60,7 @@ namespace tiki
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
+		const Font*					m_pFontBig;
 		const Model*				m_pModelBox;
 		const Model*				m_pModelBoxes;
 		const Model*				m_pModelPlane;

@@ -12,6 +12,7 @@ namespace tiki
 	class GameClient;
 	class Model;
 	class ResourceManager;
+	struct FrameData;
 
 	class GameState
 	{
@@ -25,7 +26,7 @@ namespace tiki
 		bool		create( GameClient& gameClient, ResourceManager& resourceManager );
 		void		dispose( ResourceManager& resourceManager );
 
-		void		update( float totalGameTime );
+		void		update( FrameData& frameData, float timeDelta, float totalGameTime );
 		void		render() const;
 
 		void		processCollectedCoins( const CollectedCoinIdArray& collectedCoins );
@@ -38,10 +39,18 @@ namespace tiki
 		{
 			MaxBoxCount						= 128u,
 			MaxCoinCount					= 128u,
+			MaxCollectedCoinCount			= 8u,
 
 			BoxSpawnIntervalMilliseconds	= 1000u,
 			CoinSpawnIntervalMilliseconds	= 1000u
 		};
+
+		struct CollectedCoinState
+		{
+			Vector3		position;
+			float		timeToLife;
+		};
+		typedef FixedSizedArray< CollectedCoinState, MaxCollectedCoinCount > CollectedCoinStateArray;
 
 		GameClient*				m_pGameClient;
 
@@ -53,14 +62,13 @@ namespace tiki
 		
 		EntityId				m_planeEntityId;
 
-		EntityId									m_playerEntityId;
-		PhysicsCharacterControllerComponentState*	m_pPlayerPhysicsControllerState;
-
-		SizedArray< EntityId >	m_boxEntityIds;
-		SizedArray< EntityId >	m_coinEntityIds;
+		CollectedCoinStateArray	m_collectedCoins;
 
 		float					m_lastBoxSpawn;
 		float					m_lastCoinSpawn;
+		
+		EntityId									m_playerEntityId;
+		PhysicsCharacterControllerComponentState*	m_pPlayerPhysicsControllerState;
 
 		bool					findPositionForShape( Vector3& position, float y, const PhysicsShape& shape );
 

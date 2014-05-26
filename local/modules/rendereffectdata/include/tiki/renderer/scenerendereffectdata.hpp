@@ -15,7 +15,7 @@ namespace tiki
 			renderPassMask			= 0u;
 			renderFlags				= 0u;
 			defaultTextureOffset	= (uint16)TIKI_OFFSETOF( SceneRenderEffectData, diffuseMap );
-			selfIlluminationFactor	= 0.0f;
+			selfIlluminationFactor	= 1.0f;
 			specluarBrightness		= 0.0f;
 			specluarIntensity		= 0.0f;
 			specluarPower			= 0.0f;

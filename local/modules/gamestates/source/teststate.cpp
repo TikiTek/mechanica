@@ -94,12 +94,14 @@ namespace tiki
 				if ( isInital )
 				{
 					m_pFont				= framework::getResourceManager().loadResource< Font >( "debug.font" );
+					m_pFontBig			= framework::getResourceManager().loadResource< Font >( "big.font" );
 					m_pModelBox			= framework::getResourceManager().loadResource< Model >( "box.model" );
 					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
 					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
 					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
 					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
 					TIKI_ASSERT( m_pFont != nullptr );
+					TIKI_ASSERT( m_pFontBig != nullptr );
 					TIKI_ASSERT( m_pModelBox != nullptr );
 					TIKI_ASSERT( m_pModelBoxes != nullptr );
 					TIKI_ASSERT( m_pModelPlane != nullptr );
@@ -129,6 +131,7 @@ namespace tiki
 				framework::getResourceManager().unloadResource( m_pModelPlane );
 				framework::getResourceManager().unloadResource( m_pModelBoxes );
 				framework::getResourceManager().unloadResource( m_pModelBox );
+				framework::getResourceManager().unloadResource( m_pFontBig );
 				framework::getResourceManager().unloadResource( m_pFont );
 
 				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
@@ -302,7 +305,7 @@ namespace tiki
 		m_gameClient.update( gameClientUpdateContext );
 
 		m_gameState.processCollectedCoins( gameClientUpdateContext.collectedCoins );
-		m_gameState.update( totalGameTime );
+		m_gameState.update( frameData, timeDelta, totalGameTime );
 
 		m_gameClient.render( *m_pGameRenderer );
 
@@ -318,26 +321,24 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		Matrix44 matrices[ 256u ];
-		//AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
-		AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
+		m_immediateRenderer.beginRendering( graphicsContext );
 
-		GraphicsMatrix44* pShaderConstants = static_cast< GraphicsMatrix44* >( graphicsContext.mapBuffer( m_skinningData.matrices ) );
-		for (uint i = 0u; i < m_animationData.getCount(); ++i)
-		{
-			createGraphicsMatrix44( pShaderConstants[ i ], matrices[ i ] );
-		} 
-		graphicsContext.unmapBuffer( m_skinningData.matrices );
+		//Matrix44 matrices[ 256u ];
+		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
+		//AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
+
+		//GraphicsMatrix44* pShaderConstants = static_cast< GraphicsMatrix44* >( graphicsContext.mapBuffer( m_skinningData.matrices ) );
+		//for (uint i = 0u; i < m_animationData.getCount(); ++i)
+		//{
+		//	createGraphicsMatrix44( pShaderConstants[ i ], matrices[ i ] );
+		//} 
+		//graphicsContext.unmapBuffer( m_skinningData.matrices );
 
 		m_ascii.render( graphicsContext, m_pGameRenderer->getFrameData(), m_pGameRenderer->getRendererContext() );
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
-		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
-		const string frameRate = formatString( " FPS: %.2f", 1.0f / timeDelta );
-
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
 			
 		if ( m_enableAsciiMode )
@@ -370,7 +371,11 @@ namespace tiki
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
 		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
+		const string frameRate = formatString( " FPS: %.2f", 1.0f / timeDelta );
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
+#endif
 		
 		m_immediateRenderer.endRenderPass();
 		m_immediateRenderer.endRendering();

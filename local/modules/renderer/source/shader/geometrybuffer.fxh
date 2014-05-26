@@ -17,9 +17,9 @@ GeometryBufferSample createGeometryBufferSample( float3 diffuseColor, float3 sel
 	sample.buffer0Sample.rgb	= diffuseColor;
 	sample.buffer0Sample.a		= specluarBrightness;
 	sample.buffer1Sample.rgb	= selfIlluminationColor;
-	sample.buffer1Sample.a		= specluarIntensity;
+	sample.buffer1Sample.a		= selfIlluminationFactor / 32.0f;
 	sample.buffer2Sample.xy		= normal;
-	sample.buffer2Sample.z		= selfIlluminationFactor;
+	sample.buffer2Sample.z		= specluarIntensity;
 	sample.buffer2Sample.w		= specluarPower;
 	return sample;
 }
@@ -36,7 +36,7 @@ float3 getSelfIlluminationColor( GeometryBufferSample sample )
 
 float getSelfIlluminationFactor( GeometryBufferSample sample )
 {
-	return sample.buffer2Sample.z;
+	return sample.buffer1Sample.a * 32.0f;
 }
 
 float2 getCompressedNormal( GeometryBufferSample sample )
@@ -56,7 +56,7 @@ float getSpecluarBrightness( GeometryBufferSample sample )
 
 float getSpecluarIntensity( GeometryBufferSample sample )
 {
-	return sample.buffer1Sample.a;
+	return sample.buffer2Sample.z;
 }
 
 float getSpecluarPower( GeometryBufferSample sample )

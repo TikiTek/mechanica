@@ -4,6 +4,7 @@
 #include "tiki/animation/animation.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
+#include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -29,12 +30,6 @@ namespace tiki
 		TIKI_ASSERT( m_pGameClient == nullptr );
 
 		m_pGameClient = &gameClient;
-
-		if ( !m_boxEntityIds.create( MaxBoxCount ) || !m_coinEntityIds.create( MaxCoinCount ) )
-		{
-			dispose( resourceManager );
-			return false;
-		}
 
 		m_pModelBox			= resourceManager.loadResource< Model >( "box.model" );
 		m_pModelCoin		= resourceManager.loadResource< Model >( "coin.model" );
@@ -62,18 +57,6 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pGameClient != nullptr );
 		
-		for (uint i = 0u; i < m_coinEntityIds.getCount(); ++i)
-		{
-			m_pGameClient->disposeEntity( m_coinEntityIds[ i ] );
-		} 
-		m_coinEntityIds.dispose();
-
-		for (uint i = 0u; i < m_boxEntityIds.getCount(); ++i)
-		{
-			m_pGameClient->disposeEntity( m_boxEntityIds[ i ] );
-		}
-		m_boxEntityIds.dispose();
-		
 		m_pGameClient->disposeEntity( m_playerEntityId );
 		m_playerEntityId = InvalidEntityId;
 
@@ -94,7 +77,7 @@ namespace tiki
 		m_pGameClient = nullptr;
 	}
 
-	void GameState::update( float totalGameTime )
+	void GameState::update( FrameData& frameData, float timeDelta, float totalGameTime )
 	{
 		if ( m_lastBoxSpawn + ( BoxSpawnIntervalMilliseconds / 1000.0f ) < totalGameTime )
 		{
@@ -107,6 +90,31 @@ namespace tiki
 			spawnCoin();			
 			m_lastCoinSpawn = totalGameTime;
 		}
+
+		for (uint i = 0u; i < m_collectedCoins.getCount(); ++i)
+		{
+			if ( frameData.pointLights.isFull() )
+			{
+				break;
+			}
+			CollectedCoinState& coin = m_collectedCoins[ i ];
+
+			PointLightData& light = frameData.pointLights.push();
+			light.position	= coin.position;
+			light.range		= sinf( coin.timeToLife ) * 10.0f;
+			light.color		= TIKI_COLOR_YELLOW;
+
+			coin.timeToLife -= timeDelta * 6.0f;
+		} 
+
+		for (uint i = 0u; i < m_collectedCoins.getCount(); ++i)
+		{
+			const CollectedCoinState& coin = m_collectedCoins[ i ];
+			if ( coin.timeToLife < 0.0f )
+			{
+				m_collectedCoins.removeUnsortedByIndex( i );
+			}
+		} 
 	}
 
 	void GameState::render() const
@@ -120,8 +128,14 @@ namespace tiki
 		{
 			const EntityId entityId = collectedCoins[ i ];
 
-			const TransformComponentState* pTransformState = (const TransformComponentState*)m_pGameClient->getEntitySystem().getFirstComponentOfEntityAndType( entityId, m_pGameClient->getTransformComponent().getTypeId() );
-			// todo
+			if ( !m_collectedCoins.isFull() )
+			{
+				const TransformComponentState* pTransformState = (const TransformComponentState*)m_pGameClient->getEntitySystem().getFirstComponentOfEntityAndType( entityId, m_pGameClient->getTransformComponent().getTypeId() );
+
+				CollectedCoinState& coin = m_collectedCoins.push();
+				m_pGameClient->getTransformComponent().getPosition( coin.position, pTransformState );
+				coin.timeToLife = f32::pi - 0.001f;
+			}			
 
 			m_pGameClient->getEntitySystem().disposeEntity( entityId );
 		} 
