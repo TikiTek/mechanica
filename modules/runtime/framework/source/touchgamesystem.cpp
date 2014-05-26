@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", true );
+	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", false );
 
 	TouchGameSystem::TouchGameSystem()
 	{
