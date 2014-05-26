@@ -35,7 +35,7 @@ namespace tiki
 
 		m_drawPlayer			= false;
 		m_enableBloom			= true;
-		m_enableAsciiMode		= false;
+		m_enableAsciiMode		= true;
 		m_gbufferIndex			= -1;
 		m_enableFreeCamera		= false;
 		m_enablePhysicsDebug	= false;
