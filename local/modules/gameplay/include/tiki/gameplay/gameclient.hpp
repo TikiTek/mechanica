@@ -2,6 +2,7 @@
 #ifndef TIKI_GAMECLIENT_HPP__INCLUDED
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
+#include "tiki/components/lifetimecomponent.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/physicscollidercomponent.hpp"
@@ -10,6 +11,7 @@
 #include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
+#include "tiki/gamecomponents/coincomponent.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
 namespace tiki
@@ -17,31 +19,49 @@ namespace tiki
 	class Model;
 	struct InputEvent;
 
+	struct GameClientUpdateContext
+	{
+		GameClientUpdateContext( const PhysicsCollisionObject& playerCollider )
+			: playerCollider( playerCollider )
+		{
+		}
+
+		float							totalGameTime;
+		float							timeDelta;
+
+		const PhysicsCollisionObject&	playerCollider;
+
+		CollectedCoinIdArray			collectedCoins;
+	};
+
 	class GameClient
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameClient );
 
 	public:
 
-		bool						create();
-		void						dispose();
+		bool										create();
+		void										dispose();
 
-		EntityId					createPlayerEntity( const Model* pModel, const Vector3& position );
-		EntityId					createModelEntity( const Model* pModel, const Vector3& position );
-		EntityId					createPhysicsBoxEntity( const Model* pModel, const Vector3& position );
-		EntityId					createPlaneEntity( const Model* pModel, const Vector3& position );
+		EntityId									createPlayerEntity( const Model* pModel, const Vector3& position );
+		EntityId									createModelEntity( const Model* pModel, const Vector3& position );
+		EntityId									createBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId									createCoinEntity( const Model* pModel, const Vector3& position );
+		EntityId									createPlaneEntity( const Model* pModel, const Vector3& position );
 
-		void						disposeEntity( EntityId entityId );
+		void										disposeEntity( EntityId entityId );
 
-		void						update( float timeStep );
-		void						render( GameRenderer& gameRenderer );
+		void										update( GameClientUpdateContext& updateContext );
+		void										render( GameRenderer& gameRenderer );
 
-		bool						processInputEvent( const InputEvent& inputEvent );
+		bool										processInputEvent( const InputEvent& inputEvent );
 
-		const EntitySystem&			getEntitySystem() const	{ return m_entitySystem; }
-		PhysicsWorld&				getPhysicsWorld()		{ return m_physicsWorld; }
+		EntitySystem&								getEntitySystem()	{ return m_entitySystem; }
+		PhysicsWorld&								getPhysicsWorld()	{ return m_physicsWorld; }
 
-		const TransformComponent&	getTransformComponent() const { return m_transformComponent; }
+		const PhysicsCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
+		const PlayerControlComponent&				getPlayerControlComponent() const { return m_playerControlComponent; }
+		const TransformComponent&					getTransformComponent() const { return m_transformComponent; }
 
 	private:
 
@@ -56,6 +76,7 @@ namespace tiki
 
 		PhysicsWorld						m_physicsWorld;
 
+		LifeTimeComponent					m_lifeTimeComponent;
 		PhysicsBodyComponent				m_physicsBodyComponent;
 		PhysicsCharacterControllerComponent	m_physicsCharacterControllerComponent;
 		PhysicsColliderComponent			m_physicsColliderComponent;
@@ -63,6 +84,8 @@ namespace tiki
 		SkinnedModelComponent				m_skinnedModelComponent;
 		StaticModelComponent				m_staticModelComponent;
 		TransformComponent					m_transformComponent;
+
+		CoinComponent						m_coinComponent;
 
 	};
 }

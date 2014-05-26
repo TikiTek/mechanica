@@ -46,8 +46,10 @@ namespace tiki
 #endif
 	}
 
-	void TikiArenaGame::initialize()
+	bool TikiArenaGame::initialize()
 	{
+		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
+
 		m_pStates = memory::newAlign< TikiArenaStates >();
 		m_pStates->applicationState.create();
 		m_pStates->introState.create();
@@ -65,10 +67,19 @@ namespace tiki
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
+
+		if ( !m_touchSystem.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	void TikiArenaGame::shutdown()
 	{
+		m_touchSystem.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+
 		if ( m_gameFlow.isCreated() )
 		{
 			while ( m_gameFlow.isInTransition() )
@@ -98,16 +109,29 @@ namespace tiki
 
 	void TikiArenaGame::update()
 	{
+		m_touchSystem.update( float( framework::getFrameTimer().getElapsedTime() ), framework::getGraphicsSystem() );
+		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
+		{
+			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
+		} 
+
 		m_gameFlow.update();
 	}
 
 	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const
 	{
 		m_gameFlow.render( graphicsContext );
+
+		m_touchSystem.render( graphicsContext );
 	}
 
 	bool TikiArenaGame::processInputEvent( const InputEvent& inputEvent )
 	{
+		if ( m_touchSystem.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
 		if ( !m_gameFlow.isInTransition() )
 		{
 			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)

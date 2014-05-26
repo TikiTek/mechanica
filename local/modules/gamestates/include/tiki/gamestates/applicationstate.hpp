@@ -2,7 +2,7 @@
 #ifndef TIKI_APPLICATIONSTATE_HPP__INCLUDED
 #define TIKI_APPLICATIONSTATE_HPP__INCLUDED
 
-#include "tiki/gameflow/gamestate.hpp"
+#include "tiki/gameflow/gameflowstate.hpp"
 
 #include "tiki/renderer/gamerenderer.hpp"
 
@@ -10,13 +10,12 @@ namespace tiki
 {
 	enum ApplicationStateTransitionSteps
 	{
-		ApplicationStateTransitionSteps_RegisterResourceTypes,
 		ApplicationStateTransitionSteps_CreateGameRenderer,
 
 		ApplicationStateTransitionSteps_Count
 	};
 
-	class ApplicationState : public GameState
+	class ApplicationState : public GameFlowState
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ApplicationState );
 

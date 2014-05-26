@@ -2,7 +2,7 @@
 #ifndef TIKI_PLAYSTATE_HPP__INCLUDED
 #define TIKI_PLAYSTATE_HPP__INCLUDED
 
-#include "tiki/gameflow/gamestate.hpp"
+#include "tiki/gameflow/gameflowstate.hpp"
 
 namespace tiki
 {
@@ -20,7 +20,7 @@ namespace tiki
 		PlayStateTransitionSteps_Count
 	};
 
-	class PlayState : public GameState
+	class PlayState : public GameFlowState
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PlayState );
 

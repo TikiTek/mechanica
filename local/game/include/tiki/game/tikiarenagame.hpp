@@ -4,6 +4,8 @@
 
 #include "tiki/framework/gameframework.hpp"
 
+#include "tiki/framework/frameworkfactories.hpp"
+#include "tiki/framework/touchgamesystem.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
 
 namespace tiki
@@ -30,7 +32,7 @@ namespace tiki
 	protected:
 
 		virtual void			fillParameters( GameFrameworkParamters& parameters );
-		virtual void			initialize();
+		virtual bool			initialize();
 		virtual void			shutdown();
 
 		virtual void			update();
@@ -40,8 +42,12 @@ namespace tiki
 
 	private:
 
+		FrameworkFactories		m_factories;
+
 		GameFlowSystem			m_gameFlow;
 		TikiArenaStates*		m_pStates;
+
+		TouchGameSystem			m_touchSystem;
 
 	};
 }

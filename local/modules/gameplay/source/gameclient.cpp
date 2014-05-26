@@ -2,10 +2,12 @@
 #include "tiki/gameplay/gameclient.hpp"
 
 #include "tiki/components/entitytemplate.hpp"
+#include "tiki/components/lifetimecomponent_initdata.hpp"
 #include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent_initdata.hpp"
+#include "tiki/gamecomponents/coincomponent_initdata.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -27,13 +29,13 @@ namespace tiki
 
 		entitySystemParams.entityPools.create( entityPools, TIKI_COUNT( entityPools ) );
 
-		m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
-
 		if ( !m_entitySystem.create( entitySystemParams ) )
 		{
 			dispose();
 			return false;
 		}
+
+		m_physicsWorld.create( vector::create( 0.0f, -9.81f, 0.0f ) );
 
 		TIKI_VERIFY( m_transformComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
@@ -56,11 +58,21 @@ namespace tiki
 		TIKI_VERIFY( m_playerControlComponent.create( m_transformComponent, m_physicsCharacterControllerComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerControlComponent ) );
 
+		TIKI_VERIFY( m_lifeTimeComponent.create() );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
+
+		TIKI_VERIFY( m_coinComponent.create( m_transformComponent, m_physicsBodyComponent, m_lifeTimeComponent, m_physicsWorld ) );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_coinComponent ) );
+
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
+		m_entitySystem.update(); // to dispose all entities
+
+		m_entitySystem.unregisterComponentType( &m_coinComponent );
+		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
 		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsCharacterControllerComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
@@ -69,6 +81,8 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_staticModelComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_coinComponent.dispose();
+		m_lifeTimeComponent.dispose();
 		m_playerControlComponent.dispose();
 		m_physicsCharacterControllerComponent.dispose();
 		m_physicsColliderComponent.dispose();
@@ -77,9 +91,9 @@ namespace tiki
 		m_staticModelComponent.dispose();
 		m_transformComponent.dispose();
 
-		m_entitySystem.dispose();
-
 		m_physicsWorld.dispose();
+
+		m_entitySystem.dispose();
 	}
 	
 	EntityId GameClient::createPlayerEntity( const Model* pModel, const Vector3& position )
@@ -113,7 +127,7 @@ namespace tiki
 		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
 		entityTemplate.pComponents		= entityComponents;
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		return m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
 	}
 
 	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
@@ -139,7 +153,7 @@ namespace tiki
 		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
 	}
 	
-	EntityId GameClient::createPhysicsBoxEntity( const Model* pModel, const Vector3& position )
+	EntityId GameClient::createBoxEntity( const Model* pModel, const Vector3& position )
 	{
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
@@ -156,11 +170,54 @@ namespace tiki
 		bodyInitData.shape.shapeType = ShapeType_Box;
 		createFloat3( bodyInitData.shape.shapeBoxSize, 1.0f, 1.0f, 1.0f );
 
+		LifeTimeComponentInitData lifeTimeInitData;
+		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
+
 		EntityTemplateComponent entityComponents[] =
 		{
-			{ m_transformComponent.getTypeCrc(), &transformInitData },
-			{ m_physicsBodyComponent.getTypeCrc(), &bodyInitData },
-			{ m_staticModelComponent.getTypeCrc(), &modelInitData }
+			{ m_transformComponent.getTypeCrc(),	&transformInitData },
+			{ m_physicsBodyComponent.getTypeCrc(),	&bodyInitData },
+			{ m_staticModelComponent.getTypeCrc(),	&modelInitData },
+			{ m_lifeTimeComponent.getTypeCrc(),		&lifeTimeInitData }
+		};
+
+		EntityTemplate entityTemplate;
+		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
+		entityTemplate.pComponents		= entityComponents;
+
+		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+	}
+	
+	EntityId GameClient::createCoinEntity( const Model* pModel, const Vector3& position )
+	{
+		TransformComponentInitData transformInitData;
+		createFloat3( transformInitData.position, position.x, position.y, position.z );
+		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
+		createFloat3( transformInitData.scale, 0.5f, 0.5f, 0.5f );
+
+		StaticModelComponentInitData modelInitData;
+		modelInitData.model = pModel;
+
+		PhysicsBodyComponentInitData bodyInitData;
+		createFloat3( bodyInitData.position, position.x, position.y, position.z );
+		bodyInitData.mass			= 100.0f;
+		bodyInitData.freeRotation	= true;
+		bodyInitData.shape.shapeType = ShapeType_Box;
+		createFloat3( bodyInitData.shape.shapeBoxSize, 0.5f, 0.5f, 0.5f );
+
+		LifeTimeComponentInitData lifeTimeInitData;
+		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
+
+		CoinComponentInitData coinInitData;
+		coinInitData.value = 1.0f;
+
+		EntityTemplateComponent entityComponents[] =
+		{
+			{ m_transformComponent.getTypeCrc(),	&transformInitData },
+			{ m_physicsBodyComponent.getTypeCrc(),	&bodyInitData },
+			{ m_staticModelComponent.getTypeCrc(),	&modelInitData },
+			{ m_lifeTimeComponent.getTypeCrc(),		&lifeTimeInitData },
+			{ m_coinComponent.getTypeCrc(),			&coinInitData }
 		};
 
 		EntityTemplate entityTemplate;
@@ -204,14 +261,19 @@ namespace tiki
 		m_entitySystem.disposeEntity( entityId );
 	}
 
-	void GameClient::update( float timeStep )
+	void GameClient::update( GameClientUpdateContext& updateContext )
 	{
-		m_physicsWorld.update( timeStep );
+		m_entitySystem.update();
+
+		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
+		m_playerControlComponent.update( updateContext.timeDelta );
+		m_lifeTimeComponent.update( m_entitySystem, updateContext.timeDelta );
+		m_coinComponent.update( updateContext.playerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
+
 		m_transformComponent.update();
-		m_playerControlComponent.update( timeStep );
 	}
 
 	void GameClient::render( GameRenderer& gameRenderer )

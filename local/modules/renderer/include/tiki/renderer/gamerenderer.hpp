@@ -46,8 +46,8 @@ namespace tiki
 			nearPlane	= 0.001f;
 			farPlane	= 100.0f;
 
-			maxSeqeuenceCount		= 100u;
-			maxRenderCommandCount	= 500u;
+			maxSeqeuenceCount		= 256u;
+			maxRenderCommandCount	= 1024u;
 		}
 
 		uint	rendererWidth;
