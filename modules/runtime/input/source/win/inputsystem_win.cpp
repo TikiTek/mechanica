@@ -362,7 +362,7 @@ namespace tiki
 
 		// touch
 		const int touchMask = GetSystemMetrics( SM_DIGITIZER );
-		m_platformData.isTouchInputReady= isBitSet( touchMask, NID_READY );
+		m_platformData.isTouchInputReady = isBitSet( touchMask, NID_READY );
 
 		if ( m_platformData.isTouchInputReady )
 		{
