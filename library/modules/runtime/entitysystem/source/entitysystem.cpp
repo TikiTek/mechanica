@@ -274,6 +274,17 @@ namespace tiki
 		pEntityData->pFirstComponent	= nullptr;
 	}
 
+	ComponentState* EntitySystem::getFirstComponentOfEntity( EntityId entityId )
+	{
+		EntityData* pEntityData = findEntityData( entityId );
+		if ( pEntityData == nullptr )
+		{
+			return nullptr;
+		}
+
+		return pEntityData->pFirstComponent;
+	}
+
 	const ComponentState* EntitySystem::getFirstComponentOfEntity( EntityId entityId ) const
 	{
 		const EntityData* pEntityData = findEntityData( entityId );
@@ -283,6 +294,22 @@ namespace tiki
 		}
 
 		return pEntityData->pFirstComponent;
+	}
+
+	ComponentState* EntitySystem::getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId )
+	{
+		ComponentState* pComponentState = getFirstComponentOfEntity( entityId );
+		while ( pComponentState != nullptr )
+		{
+			if ( pComponentState->typeId == typeId )
+			{
+				return pComponentState;
+			}
+
+			pComponentState = pComponentState->pNextComponentOfSameEntity;
+		}
+
+		return nullptr;
 	}
 
 	const ComponentState* EntitySystem::getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId ) const

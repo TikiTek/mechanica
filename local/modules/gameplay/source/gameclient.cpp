@@ -61,7 +61,7 @@ namespace tiki
 		TIKI_VERIFY( m_lifeTimeComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
 
-		TIKI_VERIFY( m_coinComponent.create( m_transformComponent, m_lifeTimeComponent ) );
+		TIKI_VERIFY( m_coinComponent.create( m_transformComponent, m_physicsBodyComponent, m_lifeTimeComponent, m_physicsWorld ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_coinComponent ) );
 
 		return true;
@@ -261,17 +261,17 @@ namespace tiki
 		m_entitySystem.disposeEntity( entityId );
 	}
 
-	void GameClient::update( float totalGameTime, float timeDelta )
+	void GameClient::update( GameClientUpdateContext& updateContext )
 	{
 		m_entitySystem.update();
 
-		m_physicsWorld.update( timeDelta );
+		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
-		m_playerControlComponent.update( timeDelta );
-		m_lifeTimeComponent.update( m_entitySystem, timeDelta );
-		m_coinComponent.update( totalGameTime );
+		m_playerControlComponent.update( updateContext.timeDelta );
+		m_lifeTimeComponent.update( m_entitySystem, updateContext.timeDelta );
+		m_coinComponent.update( updateContext.playerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
 
 		m_transformComponent.update();
 	}

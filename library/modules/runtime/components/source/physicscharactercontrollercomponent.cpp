@@ -105,6 +105,13 @@ namespace tiki
 		pState->controller.setRotation( rotation );
 	}
 
+	const PhysicsCollisionObject& PhysicsCharacterControllerComponent::getPhysicsObject( const PhysicsCharacterControllerComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		return pState->controller;
+	}
+
 	crc32 PhysicsCharacterControllerComponent::getTypeCrc() const
 	{
 		return crcString( "PhysicsCharacterControllerComponent" );

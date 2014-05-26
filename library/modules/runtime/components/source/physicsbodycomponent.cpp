@@ -93,6 +93,13 @@ namespace tiki
 		pState->body.getRotation( targetRotation );
 	}
 
+	const PhysicsCollisionObject& PhysicsBodyComponent::getPhysicsObject( const PhysicsBodyComponentState* pState ) const
+	{
+		TIKI_ASSERT( pState != nullptr );
+
+		return pState->body;
+	}
+
 	crc32 PhysicsBodyComponent::getTypeCrc() const
 	{
 		return crcString( "PhysicsBodyComponent" );

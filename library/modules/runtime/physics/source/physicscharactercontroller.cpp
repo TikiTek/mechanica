@@ -55,4 +55,9 @@ namespace tiki
 	{
 		m_ghostObject.getWorldTransform().setRotation( toBulletQuaternion( rotation ) );
 	}
+
+	void* PhysicsCharacterController::getNativeObject() const
+	{
+		return (void*)&m_ghostObject;
+	}
 }

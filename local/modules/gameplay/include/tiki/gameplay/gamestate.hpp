@@ -28,6 +28,8 @@ namespace tiki
 		void		update( float totalGameTime );
 		void		render() const;
 
+		void		processCollectedCoins( const CollectedCoinIdArray& collectedCoins );
+
 		EntityId	getPlayerEntityId() const { return m_playerEntityId; }
 
 	private:

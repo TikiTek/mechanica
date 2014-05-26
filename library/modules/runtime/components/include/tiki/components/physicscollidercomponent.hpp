@@ -6,6 +6,7 @@
 
 namespace tiki
 {
+	class PhysicsCollisionObject;
 	class PhysicsWorld;
 	struct PhysicsColliderComponentInitData;
 	struct PhysicsColliderComponentState;
@@ -16,24 +17,26 @@ namespace tiki
 
 	public:
 
-		explicit			PhysicsColliderComponent();
-		virtual				~PhysicsColliderComponent();
+		explicit						PhysicsColliderComponent();
+		virtual							~PhysicsColliderComponent();
 
-		bool				create( PhysicsWorld& physicsWorld );
-		void				dispose();
+		bool							create( PhysicsWorld& physicsWorld );
+		void							dispose();
 
-		virtual crc32		getTypeCrc() const;
-		virtual uint32		getStateSize() const;
-		virtual const char*	getTypeName() const;
+		const PhysicsCollisionObject&	getPhysicsObject( const PhysicsColliderComponentState* pState ) const;
+
+		virtual crc32					getTypeCrc() const;
+		virtual uint32					getStateSize() const;
+		virtual const char*				getTypeName() const;
 
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsColliderComponentState* pComponentState, const PhysicsColliderComponentInitData* pComponentInitData );
-		virtual void		internalDisposeState( PhysicsColliderComponentState* pComponentState );
+		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsColliderComponentState* pComponentState, const PhysicsColliderComponentInitData* pComponentInitData );
+		virtual void					internalDisposeState( PhysicsColliderComponentState* pComponentState );
 
 	private:
 
-		PhysicsWorld*		m_pWorld;
+		PhysicsWorld*	m_pWorld;
 
 	};
 }

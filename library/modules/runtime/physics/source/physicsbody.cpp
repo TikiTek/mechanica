@@ -69,4 +69,9 @@ namespace tiki
 	{
 		rotation = toTikiQuaternion( m_ridgidBody.getWorldTransform().getRotation() );
 	}
+
+	void* PhysicsBody::getNativeObject() const
+	{
+		return (void*)&m_ridgidBody;
+	}
 }
