@@ -34,13 +34,15 @@ namespace tiki
 
 		enum
 		{
+			PadCount					= 2u,
+
 			MaxTouchInputEventsPerFrame = 16u
 		};
 
 		struct TouchPoint
 		{
 			bool		isDown;
-			bool		isOnPad;
+			bool		isOnPad[ PadCount ];
 			Vector2		position;
 			float		scale;
 		};
@@ -48,21 +50,23 @@ namespace tiki
 		typedef FixedArray< TouchPoint, MaxInputTouchPoints > TouchPointArray;
 		typedef FixedSizedArray< InputEvent, MaxTouchInputEventsPerFrame > InputEventArray;
 
-		bool				m_isEnabled;
+		bool					m_isEnabled;
 
-		TouchPointArray		m_touchPoints;
-		InputEventArray		m_inputEvents;
+		const GraphicsSystem*	m_pGraphicsSystem;
 
-		const Texture*		m_pPadTexture;
-		const Texture*		m_pPadPointTexture;
-		const Texture*		m_pPointTexture;
+		TouchPointArray			m_touchPoints;
+		InputEventArray			m_inputEvents;
 
-		Vector2				m_pointSize;
-		Vector2				m_halfPointSize;
-		Vector2				m_padSize;
-		Vector2				m_halfPadSize;
+		const Texture*			m_pPadTexture;
+		const Texture*			m_pPadPointTexture;
+		const Texture*			m_pPointTexture;
 
-		ImmediateRenderer	m_renderer;
+		Vector2					m_pointSize;
+		Vector2					m_halfPointSize;
+		Vector2					m_padSize;
+		Vector2					m_halfPadSize;
+
+		ImmediateRenderer		m_renderer;
 
 	};
 }
