@@ -34,4 +34,9 @@ namespace tiki
 	{
 		m_collitionObject.setUserPointer( nullptr );
 	}
+
+	void* PhysicsCollider::getNativeObject() const
+	{
+		return (void*)&m_collitionObject;
+	}
 }
