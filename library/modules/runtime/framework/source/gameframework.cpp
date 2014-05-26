@@ -23,6 +23,13 @@ namespace tiki
 
 		if ( internInitialize() )
 		{
+			// HACK: to handle device connect events
+			InputEvent inputEvent;
+			while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )
+			{
+				processInputEvent( inputEvent );
+			}
+
 			while ( frame() ) { }
 		}
 		else
