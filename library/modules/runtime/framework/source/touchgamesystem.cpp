@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", false );
+	TIKI_DEBUGPROP_BOOL( s_convertMouseToTouchEvents, "ConvertMouseToTouchEvents", true );
 
 	TouchGameSystem::TouchGameSystem()
 	{
@@ -27,6 +27,8 @@ namespace tiki
 	bool TouchGameSystem::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		m_isEnabled = false;
+
+		m_pGraphicsSystem = &graphicsSystem;
 
 		m_pPadTexture		= resourceManager.loadResource< Texture >( "touch_dpad.texture" );
 		m_pPadPointTexture	= resourceManager.loadResource< Texture >( "touch_dpad_point.texture" );
@@ -56,9 +58,10 @@ namespace tiki
 		{
 			TouchPoint& point = m_touchPoints[ i ];
 
-			point.isDown	= false;
-			point.isOnPad	= false;
-			point.scale		= 0.0f;
+			point.isDown		= false;
+			point.isOnPad[ 0u ]	= false;
+			point.isOnPad[ 1u ]	= false;
+			point.scale			= 0.0f;
 			vector::clear( point.position );
 		}
 
@@ -81,7 +84,7 @@ namespace tiki
 	{
 		m_inputEvents.clear();
 
-		if ( !m_isEnabled || s_convertMouseToTouchEvents )
+		if ( !m_isEnabled && !s_convertMouseToTouchEvents )
 		{
 			return;
 		}
@@ -103,29 +106,38 @@ namespace tiki
 			{
 				point.scale -= halfTimeDelta;
 
-				if ( point.isOnPad )
+				if ( point.isOnPad[ 0u ] || point.isOnPad[ 1u ] )
 				{
-					needToReset = true;
+					for (uint i = 0u; i < PadCount; ++i)
+					{
+						if ( m_inputEvents.isFull() )
+						{
+							continue;
+						}
+
+						InputEvent& inputEvent = m_inputEvents.push();
+						inputEvent.eventType	= InputEventType_Controller_StickChanged;
+						inputEvent.deviceType	= InputDeviceType_Controller;
+						inputEvent.deviceId		= 0u;
+						inputEvent.data.controllerStick.stickIndex		= i;
+						inputEvent.data.controllerStick.xState			= 0u;
+						inputEvent.data.controllerStick.yState			= 0u;
+					}
 				}
 			}
 			else
 			{
-				const bool lastPadState = point.isOnPad;
-				point.isOnPad = false;
-
 				Vector2 aDistances[] = { leftPadPos, rightPadPos };
 				for (uint i = 0u; i < TIKI_COUNT( aDistances ); ++i)
 				{
-					Vector2 distance = aDistances[ i ];
-					vector::sub( distance, point.position );
-
-					const bool isOnPad	= ( vector::length( distance ) < m_halfPadSize.x * 1.25f * globalScale );
-					point.isOnPad |= isOnPad;
-
-					if ( isOnPad && !m_inputEvents.isFull() )
+					if ( point.isOnPad[ i ] && !m_inputEvents.isFull() )
 					{
-						vector::scale( distance, 0.8f );
-						vector::div( distance, m_halfPadSize );
+						Vector2 distance = aDistances[ i ];
+						vector::sub( distance, point.position );
+
+						vector::scale( distance, 1.0f / globalScale );
+						vector::div( distance, m_padSize );
+						vector::clamp( distance, vector::create( -1.0f, -1.0f ), Vector2::one );
 						TIKI_ASSERT( distance.x >= -1.0f && distance.x <= 1.0f );
 						TIKI_ASSERT( distance.y >= -1.0f && distance.y <= 1.0f );
 
@@ -138,36 +150,13 @@ namespace tiki
 						inputEvent.data.controllerStick.yState			= distance.y;
 					}
 				}
-
-				needToReset = ( lastPadState && !point.isOnPad );
-			}
-
-			if ( needToReset )
-			{
-				for (uint i = 0u; i < 2u; ++i)
-				{
-					if ( m_inputEvents.isFull() )
-					{
-						continue;
-					}
-
-					InputEvent& inputEvent = m_inputEvents.push();
-					inputEvent.eventType	= InputEventType_Controller_StickChanged;
-					inputEvent.deviceType	= InputDeviceType_Controller;
-					inputEvent.deviceId		= 0u;
-					inputEvent.data.controllerStick.stickIndex		= i;
-					inputEvent.data.controllerStick.xState			= 0u;
-					inputEvent.data.controllerStick.yState			= 0u;
-				}
-
-				point.isOnPad = m_inputEvents.isFull();
 			}
 		} 
 	}
 
 	void TouchGameSystem::render( GraphicsContext& graphicsContext ) const
 	{
-		if ( !m_isEnabled || s_convertMouseToTouchEvents )
+		if ( !m_isEnabled && !s_convertMouseToTouchEvents )
 		{
 			return;
 		}
@@ -213,7 +202,7 @@ namespace tiki
 
 				const Color color = color::fromFloatRGBA( 1.0f, 1.0f, 1.0f, point.scale * point.scale );
 				m_renderer.drawTexturedRectangle(
-					( point.isOnPad ? m_pPadPointTexture : m_pPointTexture )->getTextureData(),
+					( point.isOnPad[ 0u ] || point.isOnPad[ 1u ] ? m_pPadPointTexture : m_pPointTexture )->getTextureData(),
 					destinationRectangle,
 					color
 				);
@@ -233,8 +222,10 @@ namespace tiki
 				switch ( inputEvent.eventType )
 				{
 				case InputEventType_Mouse_ButtonDown:
-					m_touchPoints[ 0u ].isDown	= true;
-					m_touchPoints[ 0u ].scale	= 1.0f;
+					m_touchPoints[ 0u ].isDown			= true;
+					m_touchPoints[ 0u ].scale			= 1.0f;
+					m_touchPoints[ 0u ].isOnPad[ 0u ]	= false; // todo
+					m_touchPoints[ 0u ].isOnPad[ 1u ]	= false; // todo
 					break;
 
 				case InputEventType_Mouse_ButtonUp:
@@ -271,8 +262,29 @@ namespace tiki
 		switch ( inputEvent.eventType )
 		{
 		case InputEventType_Touch_PointDown:
-			m_touchPoints[ data.pointIndex ].isDown = true;
-			m_touchPoints[ data.pointIndex ].scale = 1.0f;
+			{
+				TouchPoint& point = m_touchPoints[ data.pointIndex ];
+
+				m_touchPoints[ data.pointIndex ].isDown = true;
+				m_touchPoints[ data.pointIndex ].scale = 1.0f;
+
+				const float width = float( m_pGraphicsSystem->getBackBuffer().getWidth() );
+				const float height = float( m_pGraphicsSystem->getBackBuffer().getHeight() );
+				const float globalScale = width / 4096.0f;
+
+				const Vector2 leftPadPos = { m_padSize.x * globalScale, height - ( m_padSize.y * globalScale ) };
+				const Vector2 rightPadPos = { width - ( m_padSize.x * globalScale ), height - ( m_padSize.y * globalScale ) };
+
+				Vector2 aDistances[] = { leftPadPos, rightPadPos };
+				for (uint i = 0u; i < TIKI_COUNT( aDistances ); ++i)
+				{
+					Vector2 distance = aDistances[ i ];
+					vector::sub( distance, point.position );
+
+					const bool isOnPad	= ( vector::length( distance ) < m_halfPadSize.x * 1.25f * globalScale );
+					point.isOnPad[ i ] |= isOnPad;
+				}
+			}
 			break;
 
 		case InputEventType_Touch_PointUp:
