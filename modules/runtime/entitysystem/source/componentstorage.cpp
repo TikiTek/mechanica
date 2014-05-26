@@ -205,6 +205,11 @@ namespace tiki
 			pState->pPrevComponentOfSameType->pNextComponentOfSameType = pState->pNextComponentOfSameType;
 		}
 
+		if ( pState->pNextComponentOfSameType != nullptr )
+		{
+			pState->pNextComponentOfSameType->pPrevComponentOfSameType = pState->pPrevComponentOfSameType;
+		}
+
 		const uint chunkIndex = (uint)( ( (size_t)pState - (size_t)m_pMemory ) / m_chunkSize );
 		ComponentChunk& chunk = m_chunks[ chunkIndex ];
 		TIKI_ASSERT( chunk.typeId == pState->typeId );
@@ -231,6 +236,10 @@ namespace tiki
 			chunk.pLastFreeState->pNextComponentOfSameType = pState;
 			chunk.pLastFreeState = pState;
 		}
+
+		pState->entityId					= InvalidEntityId;
+		pState->typeId						= InvalidComponentTypeId;
+		pState->pNextComponentOfSameEntity	= nullptr;
 				
 		chunk.usedCount--;
 	}

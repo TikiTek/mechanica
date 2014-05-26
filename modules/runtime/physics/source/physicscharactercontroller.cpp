@@ -12,7 +12,7 @@ namespace tiki
 	{
 	}
 
-	void PhysicsCharacterController::create( PhysicsShape& shape, const Vector3& position )
+	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position )
 	{
 		btConvexShape* pShape = static_cast< btConvexShape* >( static_cast< void* >( shape.getNativeShape() ) );
 
@@ -49,5 +49,15 @@ namespace tiki
 	void PhysicsCharacterController::getRotation( Quaternion& targetRotation ) const
 	{
 		targetRotation = toTikiQuaternion( m_ghostObject.getWorldTransform().getRotation() );
+	}
+
+	void PhysicsCharacterController::setRotation( const Quaternion& rotation )
+	{
+		m_ghostObject.getWorldTransform().setRotation( toBulletQuaternion( rotation ) );
+	}
+
+	void* PhysicsCharacterController::getNativeObject() const
+	{
+		return (void*)&m_ghostObject;
 	}
 }

@@ -121,6 +121,8 @@ namespace tiki
 		vector::set( pState->scale, pInitData->scale );
 		pState->needUpdate = true;
 
+		checkAndUpdateWorldTransform( pState );
+
 		return true;
 	}
 

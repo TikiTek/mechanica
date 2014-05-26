@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_GAMESTATE_HPP__INCLUDED
-#define TIKI_GAMESTATE_HPP__INCLUDED
+#ifndef __TIKI_GAMEFLOAWSTATE_HPP_INCLUDED__
+#define __TIKI_GAMEFLOAWSTATE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
 
@@ -11,9 +11,9 @@ namespace tiki
 	class GraphicsContext;
 	struct InputEvent;
 
-	class GameState
+	class GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameState );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameFlowState );
 
 	public:
 
@@ -27,4 +27,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_GAMESTATE_HPP__INCLUDED
+#endif // __TIKI_GAMEFLOAWSTATE_HPP_INCLUDED__

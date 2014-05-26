@@ -32,10 +32,7 @@ namespace tiki
 
 		virtual	btScalar addSingleResult( btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap, int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1 )
 		{
-			TIKI_TRACE( "test\n" );
-
 			m_collides = true;
-
 			return 0.0f;
 		}
 
@@ -119,8 +116,7 @@ namespace tiki
 
 		m_pPhysicWorld->removeCollisionObject( &collider.m_collitionObject );
 	}
-
-
+	
 	void PhysicsWorld::addCharacterController( PhysicsCharacterController& controller )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
@@ -137,7 +133,7 @@ namespace tiki
 		m_pPhysicWorld->removeCollisionObject( &controller.m_ghostObject );
 	}
 
-	bool PhysicsWorld::checkIntersection( PhysicsShape& physicsShape, const Vector3& position )
+	bool PhysicsWorld::checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const
 	{
 		btCollisionShape* pShape = static_cast< btCollisionShape* >( physicsShape.getNativeShape() );
 
@@ -152,6 +148,17 @@ namespace tiki
 		PhysicsCollisionCallback callback;
 
 		m_pPhysicWorld->contactTest( &object, callback );
+		
+		return callback.getCollides();
+	}
+
+	bool PhysicsWorld::checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const
+	{
+		btCollisionObject* pCollisionObject1 = (btCollisionObject*)physicsObject1.getNativeObject();
+		btCollisionObject* pCollisionObject2 = (btCollisionObject*)physicsObject2.getNativeObject();
+
+		PhysicsCollisionCallback callback;
+		m_pPhysicWorld->contactPairTest( pCollisionObject1, pCollisionObject2, callback );
 
 		return callback.getCollides();
 	}

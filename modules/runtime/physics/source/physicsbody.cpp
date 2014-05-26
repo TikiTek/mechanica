@@ -20,7 +20,7 @@ namespace tiki
 		TIKI_ASSERT( m_ridgidBody.getUserPointer() == nullptr );
 	}
 
-	void PhysicsBody::create( PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
+	void PhysicsBody::create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
 	{
 		dispose();
 
@@ -68,5 +68,10 @@ namespace tiki
 	void PhysicsBody::getRotation( Quaternion& rotation ) const
 	{
 		rotation = toTikiQuaternion( m_ridgidBody.getWorldTransform().getRotation() );
+	}
+
+	void* PhysicsBody::getNativeObject() const
+	{
+		return (void*)&m_ridgidBody;
 	}
 }

@@ -3,6 +3,7 @@
 #define __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/base/sizedarray.hpp"
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/entitysystem/componentstorage.hpp"
 #include "tiki/entitysystem/componenttyperegister.hpp"
@@ -13,7 +14,8 @@ namespace tiki
 
 	enum
 	{
-		EntitySystemLimits_MaxEntityPoolCount	= 8u
+		EntitySystemLimits_MaxEntityPoolCount			= 8u,
+		EntitySystemLimits_MaxEntitiesDeletePerFrame	= 64u
 	};
 
 	struct EntityPool
@@ -44,6 +46,8 @@ namespace tiki
 
 		bool					create( const EntitySystemParameters& parameters );
 		void					dispose();
+
+		void					update();
 
 		bool					registerComponentType( ComponentBase* pComponent );
 		void					unregisterComponentType( ComponentBase* pComponent );
@@ -84,8 +88,18 @@ namespace tiki
 		Array< EntityPoolInfo >		m_pools;
 		Array< EntityData >			m_entities;
 
-		EntityData*					getEntityData( EntityId entityId );
-		const EntityData*			getEntityData( EntityId entityId ) const;
+		SizedArray< EntityId >		m_entitiesToDeletion;
+
+		EntityPoolInfo*				findEntityPool( EntityId entityId );
+		const EntityPoolInfo*		findEntityPool( EntityId entityId ) const;
+
+		EntityData*					findEntityData( EntityId entityId );
+		const EntityData*			findEntityData( EntityId entityId ) const;
+
+		EntityData*					getEntityDataInPool( const EntityPoolInfo* pEntityPool, EntityId entityId );
+		const EntityData*			getEntityDataInPool( const EntityPoolInfo* pEntityPool, EntityId entityId ) const;
+
+		void						disposeEntityFinally( EntityId entityId );
 
 	};
 }

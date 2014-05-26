@@ -19,32 +19,24 @@ namespace tiki
 
 	StaticModelComponent::StaticModelComponent()
 	{
-		m_pTransformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
+		m_pTransformComponent = nullptr;
 	}
 
 	StaticModelComponent::~StaticModelComponent()
 	{
-		TIKI_ASSERT( m_pTransformComponent		== nullptr );
-		TIKI_ASSERT( m_transformComponentTypeId	== InvalidComponentTypeId );
+		TIKI_ASSERT( m_pTransformComponent == nullptr );
 	}
 
 	bool StaticModelComponent::create( TransformComponent& transformComponent )
 	{
-		m_pTransformComponent		= &transformComponent;
-		m_transformComponentTypeId	= transformComponent.getTypeId();
-		if ( m_transformComponentTypeId == InvalidComponentTypeId )
-		{
-			return false;
-		}
+		m_pTransformComponent = &transformComponent;
 
 		return true;
 	}
 
 	void StaticModelComponent::dispose()
 	{
-		m_pTransformComponent		= nullptr;
-		m_transformComponentTypeId	= InvalidComponentTypeId;
+		m_pTransformComponent = nullptr;
 	}
 
 	void StaticModelComponent::render( GameRenderer& gameRenderer ) const
@@ -78,8 +70,17 @@ namespace tiki
 
 	bool StaticModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
-		pState->pTransform	= static_cast< TransformComponentState* >( static_cast< void* >( componentIterator.getFirstOfType( m_transformComponentTypeId ) ) );
-		pState->pModel		= pInitData->model.getData();
+		pState->pTransform = (const TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		if ( pState->pTransform == nullptr )
+		{
+			return false;
+		}
+
+		pState->pModel = pInitData->model.getData();
+		if ( pState->pModel == nullptr )
+		{
+			return false;
+		}
 
 		return true;
 	}
