@@ -286,16 +286,24 @@ namespace tiki
 		//	m_pGameRenderer->queueModel( m_pModelBox, &mtx );
 		//}
 
-		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
+		//TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 
-		Quaternion rotation;
-		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
-		m_gameClient.getTransformComponent().setRotation( pState, rotation );
+		//Quaternion rotation;
+		//quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
+		//m_gameClient.getTransformComponent().setRotation( pState, rotation );
 
 		m_debugGui.update();
 
+		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
+		
+		GameClientUpdateContext gameClientUpdateContext( m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState ) );
+		gameClientUpdateContext.timeDelta		= timeDelta;
+		gameClientUpdateContext.totalGameTime	= totalGameTime;		
+		m_gameClient.update( gameClientUpdateContext );
+
+		m_gameState.processCollectedCoins( gameClientUpdateContext.collectedCoins );
 		m_gameState.update( totalGameTime );
-		m_gameClient.update( totalGameTime, timeDelta );
+
 		m_gameClient.render( *m_pGameRenderer );
 
 		if ( m_enableFreeCamera )

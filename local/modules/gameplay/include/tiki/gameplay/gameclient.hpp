@@ -19,33 +19,49 @@ namespace tiki
 	class Model;
 	struct InputEvent;
 
+	struct GameClientUpdateContext
+	{
+		GameClientUpdateContext( const PhysicsCollisionObject& playerCollider )
+			: playerCollider( playerCollider )
+		{
+		}
+
+		float							totalGameTime;
+		float							timeDelta;
+
+		const PhysicsCollisionObject&	playerCollider;
+
+		CollectedCoinIdArray			collectedCoins;
+	};
+
 	class GameClient
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameClient );
 
 	public:
 
-		bool							create();
-		void							dispose();
+		bool										create();
+		void										dispose();
 
-		EntityId						createPlayerEntity( const Model* pModel, const Vector3& position );
-		EntityId						createModelEntity( const Model* pModel, const Vector3& position );
-		EntityId						createBoxEntity( const Model* pModel, const Vector3& position );
-		EntityId						createCoinEntity( const Model* pModel, const Vector3& position );
-		EntityId						createPlaneEntity( const Model* pModel, const Vector3& position );
+		EntityId									createPlayerEntity( const Model* pModel, const Vector3& position );
+		EntityId									createModelEntity( const Model* pModel, const Vector3& position );
+		EntityId									createBoxEntity( const Model* pModel, const Vector3& position );
+		EntityId									createCoinEntity( const Model* pModel, const Vector3& position );
+		EntityId									createPlaneEntity( const Model* pModel, const Vector3& position );
 
-		void							disposeEntity( EntityId entityId );
+		void										disposeEntity( EntityId entityId );
 
-		void							update( float totalGameTime, float timeDelta );
-		void							render( GameRenderer& gameRenderer );
+		void										update( GameClientUpdateContext& updateContext );
+		void										render( GameRenderer& gameRenderer );
 
-		bool							processInputEvent( const InputEvent& inputEvent );
+		bool										processInputEvent( const InputEvent& inputEvent );
 
-		const EntitySystem&				getEntitySystem() const	{ return m_entitySystem; }
-		PhysicsWorld&					getPhysicsWorld()		{ return m_physicsWorld; }
+		EntitySystem&								getEntitySystem()	{ return m_entitySystem; }
+		PhysicsWorld&								getPhysicsWorld()	{ return m_physicsWorld; }
 
-		const PlayerControlComponent&	getPlayerControlComponent() const { return m_playerControlComponent; }
-		const TransformComponent&		getTransformComponent() const { return m_transformComponent; }
+		const PhysicsCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
+		const PlayerControlComponent&				getPlayerControlComponent() const { return m_playerControlComponent; }
+		const TransformComponent&					getTransformComponent() const { return m_transformComponent; }
 
 	private:
 

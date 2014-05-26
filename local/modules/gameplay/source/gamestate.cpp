@@ -114,6 +114,19 @@ namespace tiki
 		// remove this?
 	}
 
+	void GameState::processCollectedCoins( const CollectedCoinIdArray& collectedCoins )
+	{
+		for (uint i = 0u; i < collectedCoins.getCount(); ++i)
+		{
+			const EntityId entityId = collectedCoins[ i ];
+
+			const TransformComponentState* pTransformState = (const TransformComponentState*)m_pGameClient->getEntitySystem().getFirstComponentOfEntityAndType( entityId, m_pGameClient->getTransformComponent().getTypeId() );
+			// todo
+
+			m_pGameClient->getEntitySystem().disposeEntity( entityId );
+		} 
+	}
+
 	bool GameState::findPositionForShape( Vector3& position, float y, const PhysicsShape& shape )
 	{
 		const PhysicsWorld& world = m_pGameClient->getPhysicsWorld();
