@@ -6,9 +6,9 @@
 
 namespace tiki
 {
-	struct TextureDataPlatform
+	struct TextureDataPlatformData
 	{
-		TextureDataPlatform()
+		TextureDataPlatformData()
 		{
 			pResource	= nullptr;
 			pShaderView	= nullptr;

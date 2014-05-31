@@ -6,9 +6,9 @@
 #include "tiki/graphics/color.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "win_d3d11/graphicsstatesplatformdata_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphicsstates_d3d11.hpp"
 #elif  TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#	include "global_opengl4/graphicsstatesplatformdata_opengl4.hpp"
+#	include "../../../source/global_opengl4/graphicsstates_opengl4.hpp"
 #else
 #	error Platform not supported
 #endif
