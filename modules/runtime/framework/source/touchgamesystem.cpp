@@ -281,7 +281,7 @@ namespace tiki
 					Vector2 distance = aDistances[ i ];
 					vector::sub( distance, point.position );
 
-					const bool isOnPad	= ( vector::length( distance ) < m_halfPadSize.x * 1.25f * globalScale );
+					const bool isOnPad = ( vector::length( distance ) < m_halfPadSize.x * 1.25f * globalScale );
 					point.isOnPad[ i ] = isOnPad;
 				}
 			}
