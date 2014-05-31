@@ -2,6 +2,7 @@
 #include "tiki/game/tikiarenagame.hpp"
 
 #include "tiki/gamestates/applicationstate.hpp"
+#include "tiki/gamestates/basicstate.hpp"
 #include "tiki/gamestates/introstate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
@@ -12,8 +13,9 @@ namespace tiki
 {
 	struct TikiArenaStates
 	{
-		IntroState			introState;
 		ApplicationState	applicationState;
+		BasicTestState		basicTestState;
+		IntroState			introState;
 		PlayState			playState;
 		TestState			testState;
 	};
@@ -28,7 +30,7 @@ namespace tiki
 
 		if ( userName == "Tim" || userName == "tim.boden" )
 		{
-			return TikiArenaGameStates_Test;
+			return TikiArenaGameStates_Basic;
 		}
 
 		return TikiArenaGameStates_Play;
@@ -55,6 +57,7 @@ namespace tiki
 		m_pStates->introState.create();
 		m_pStates->playState.create( &m_pStates->applicationState );
 		m_pStates->testState.create( &m_pStates->applicationState );
+		m_pStates->basicTestState.create();
 
 		GameStateDefinition gameDefinition[] =
 		{
@@ -62,8 +65,10 @@ namespace tiki
 				{ &m_pStates->introState,			0u,	IntroStateTransitionSteps_Count,		"IntroState" },			// F5
 				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },	// F6
 					{ &m_pStates->playState,		2u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F7
-					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count,			"TestState" }			// F8
+					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count,			"TestState" },			// F8
+				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" }		// F9
 		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == TikiArenaGameStates_Count );
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
