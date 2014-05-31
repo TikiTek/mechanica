@@ -18,7 +18,10 @@ namespace tiki
 		TikiArenaGameStates_Intro,
 		TikiArenaGameStates_Application,
 		TikiArenaGameStates_Play,
-		TikiArenaGameStates_Test
+		TikiArenaGameStates_Test,
+		TikiArenaGameStates_Basic,
+
+		TikiArenaGameStates_Count
 	};
 
 	class TikiArenaGame : public GameFramework
