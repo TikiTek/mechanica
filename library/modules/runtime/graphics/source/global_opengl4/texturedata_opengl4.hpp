@@ -2,14 +2,20 @@
 #ifndef TIKI_TEXTUREDATA_OPENGL4_HPP__INCLUDED
 #define TIKI_TEXTUREDATA_OPENGL4_HPP__INCLUDED
 
-#include "../../../../source/win_d3d11/graphicstypes_d3d11.hpp"
+#include "graphicstypes_opengl4.hpp"
 
 namespace tiki
 {
 	struct TextureDataPlatform
 	{
-		int resourceId;
+		GLuint	textureId;
 	};
+
+	namespace graphics
+	{
+		GLenum	getGlFormat( PixelFormat pixelFormat );
+		GLenum	getGlChannelType( PixelFormat pixelFormat );
+	}
 }
 
 #endif // TIKI_TEXTUREDATA_OPENGL4_HPP__INCLUDED

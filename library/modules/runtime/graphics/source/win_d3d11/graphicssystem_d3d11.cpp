@@ -1,7 +1,4 @@
 
-#pragma comment(lib, "d3d10.lib")
-#pragma comment(lib, "d3d11.lib")
-
 #include "tiki/graphics/graphicssystem.hpp"
 
 #include "tiki/base/assert.hpp"

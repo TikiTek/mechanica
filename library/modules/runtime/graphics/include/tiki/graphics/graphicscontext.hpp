@@ -10,9 +10,9 @@
 #include "tiki/graphics/primitivetopologies.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "win_d3d11/graphicscontext_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphicscontext_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#	include "global_opengl4/graphicscontext_d3d11.hpp"
+#	include "../../../source/global_opengl4/graphicscontext_opengl4.hpp"
 #else
 #	error Platform not supported
 #endif
