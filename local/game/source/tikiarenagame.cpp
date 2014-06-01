@@ -2,7 +2,7 @@
 #include "tiki/game/tikiarenagame.hpp"
 
 #include "tiki/gamestates/applicationstate.hpp"
-#include "tiki/gamestates/basicstate.hpp"
+#include "tiki/gamestates/basicteststate.hpp"
 #include "tiki/gamestates/introstate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
