@@ -109,24 +109,25 @@ namespace tiki
 
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
-		class_name ( const class_name & );			\
-		void operator=( const class_name & )
+		class_name ## ( const class_name ## & );	\
+		void operator=( const class_name ## & )
 
-#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name ) public:	\
-		class_name () {}										\
-		~ class_name() {}										\
-																\
-	private:													\
-		class_name ( const class_name & );						\
-		void operator=( const class_name & )
+#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
+	 public:											\
+		class_name ## () { }							\
+		~ ## class_name ## () { }						\
+														\
+	private:											\
+		class_name ## ( const class_name ## & );		\
+		void operator=( const class_name ## & )
 
-#define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name ) public:	\
-	private:													\
-	class_name ( const class_name & );							\
-	void operator=( const class_name & );						\
-	public:														\
-	class_name () {}											\
-	~ class_name() {}											\
+#define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
+	public:												\
+		class_name ## () {}								\
+		~ ## class_name ## () {}						\
+	private:											\
+		class_name ## ( const class_name ## & );		\
+		void operator=( const class_name ## & )
 
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\
