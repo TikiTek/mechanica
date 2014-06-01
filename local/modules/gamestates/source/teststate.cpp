@@ -35,9 +35,7 @@ namespace tiki
 
 		m_drawPlayer			= false;
 		m_enableBloom			= true;
-		m_enableAsciiMode		= true;
 		m_gbufferIndex			= -1;
-		m_enableFreeCamera		= false;
 		m_enablePhysicsDebug	= false;
 	}
 
@@ -53,13 +51,6 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
-				PostProcessAsciiParameters asciiParameters;	
-				TIKI_VERIFY( m_ascii.create(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager(),
-					asciiParameters
-				) );
-
 				PostProcessBloomParameters bloomParameters;	
 				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
 				bloomParameters.height		= framework::getGraphicsSystem().getBackBuffer().getHeight() / 2u;
@@ -70,16 +61,15 @@ namespace tiki
 					bloomParameters
 				) );
 
+				m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
+
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_bloom.dispose(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager()
-				);
+				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
-				m_ascii.dispose(
+				m_bloom.dispose(
 					framework::getGraphicsSystem(),
 					framework::getResourceManager()
 				);
@@ -111,8 +101,6 @@ namespace tiki
 					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
 					m_skinningData.matrices.create( framework::getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
 
-					m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
-
 					return TransitionState_Finish;
 				}
 				else
@@ -137,8 +125,6 @@ namespace tiki
 				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
 				m_animationData.dispose();
 
-				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-
 				return TransitionState_Finish;
 			}
 			//break;
@@ -147,17 +133,17 @@ namespace tiki
 			if ( isCreating )
 			{
 				TIKI_VERIFY( m_gameClient.create() );
-				TIKI_VERIFY( m_gameState.create( m_gameClient, framework::getResourceManager() ) );
 
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
+				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
 
 				return TransitionState_Finish;
 			}
 			else
 			{
 				m_gameClient.disposeEntity( m_boxesEntityId );
+				m_gameClient.disposeEntity( m_planeEntityId );
 
-				m_gameState.dispose( framework::getResourceManager() );
 				m_gameClient.dispose();
 
 				return TransitionState_Finish;
@@ -176,19 +162,7 @@ namespace tiki
 					frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
-					m_playerCamera.create(
-						m_gameState.getPlayerEntityId(),
-						(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPlayerControlComponent().getTypeId() ),
-						m_gameClient.getPlayerControlComponent()
-					);
 					
-					RendererContext& rendererContext = m_pGameRenderer->getRendererContext();
-					m_fallbackRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
-					m_sceneRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
-
-					m_pGameRenderer->registerRenderEffect( &m_fallbackRenderEffect );
-					m_pGameRenderer->registerRenderEffect( &m_sceneRenderEffect );
-
 					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
 					m_testWindow.create( m_debugGui );
 					m_lightingWindow.create( m_debugGui );
@@ -204,12 +178,6 @@ namespace tiki
 					m_testWindow.dispose();
 					m_debugGui.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
-					m_pGameRenderer->unregisterRenderEffect( &m_sceneRenderEffect );
-					m_pGameRenderer->unregisterRenderEffect( &m_fallbackRenderEffect );
-					m_sceneRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-
-					m_playerCamera.dispose();
 					m_freeCamera.dispose();
 
 					return TransitionState_Finish;
@@ -289,40 +257,25 @@ namespace tiki
 		//	m_pGameRenderer->queueModel( m_pModelBox, &mtx );
 		//}
 
-		//TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
+		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 
-		//Quaternion rotation;
-		//quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
-		//m_gameClient.getTransformComponent().setRotation( pState, rotation );
+		Quaternion rotation;
+		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
+		m_gameClient.getTransformComponent().setRotation( pState, rotation );
 
 		m_debugGui.update();
 
-		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
-		
-		GameClientUpdateContext gameClientUpdateContext( m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState ) );
+		GameClientUpdateContext gameClientUpdateContext;
 		gameClientUpdateContext.timeDelta		= timeDelta;
 		gameClientUpdateContext.totalGameTime	= totalGameTime;		
 		m_gameClient.update( gameClientUpdateContext );
-
-		m_gameState.processCollectedCoins( gameClientUpdateContext.collectedCoins );
-		m_gameState.update( frameData, timeDelta, totalGameTime );
-
 		m_gameClient.render( *m_pGameRenderer );
 
-		if ( m_enableFreeCamera )
-		{
-			m_freeCamera.update( frameData.mainCamera, timeDelta );
-		}
-		else
-		{
-			m_playerCamera.update( frameData.mainCamera );
-		}
+		m_freeCamera.update( frameData.mainCamera, timeDelta );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		m_immediateRenderer.beginRendering( graphicsContext );
-
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
 		//AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
@@ -334,26 +287,18 @@ namespace tiki
 		//} 
 		//graphicsContext.unmapBuffer( m_skinningData.matrices );
 
-		m_ascii.render( graphicsContext, m_pGameRenderer->getFrameData(), m_pGameRenderer->getRendererContext() );
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
+		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
 			
-		if ( m_enableAsciiMode )
+		if ( m_gbufferIndex != -1 )
 		{
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-			m_immediateRenderer.drawTexturedRectangle( m_ascii.getResultData(), rect );
-		}
-		else if ( m_gbufferIndex != -1 )
-		{
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getDownSampleData().getWidth()*5, (float)m_ascii.getDownSampleData().getHeight()*5 );
-			m_immediateRenderer.drawTexturedRectangle( m_ascii.getDownSampleData(), rect );
-
-			//const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
-			//const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			//m_immediateRenderer.drawTexturedRectangle( &texture, rect );
+			const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			m_immediateRenderer.drawTexturedRectangle( texture, rect );
 		}
 		else
 		{
@@ -395,7 +340,7 @@ namespace tiki
 			return true;
 		}
 
-		if ( m_enableFreeCamera && m_freeCamera.processInputEvent( inputEvent ) )
+		if ( m_freeCamera.processInputEvent( inputEvent ) )
 		{
 			return true;
 		}
@@ -431,10 +376,6 @@ namespace tiki
 				if ( m_gbufferIndex > 2 ) m_gbufferIndex = -1;
 				return true;
 
-			case KeyboardKey_X:
-				m_enableAsciiMode = !m_enableAsciiMode;
-				return true;
-
 			case KeyboardKey_B:
 				m_enableBloom = !m_enableBloom;
 				return true;
@@ -456,10 +397,6 @@ namespace tiki
 
 					shape.dispose();
 				}
-				break;
-
-			case KeyboardKey_C:
-				m_enableFreeCamera = !m_enableFreeCamera;
 				break;
 
 			default:

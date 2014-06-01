@@ -120,7 +120,12 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) PhysicsBodyComponentState;
-		pState->pTransform	= (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
+
+		pState->pTransform = (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
+		if ( pState->pTransform == nullptr )
+		{
+			return false;
+		}
 
 		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )

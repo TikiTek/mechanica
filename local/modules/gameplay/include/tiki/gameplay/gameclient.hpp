@@ -21,15 +21,15 @@ namespace tiki
 
 	struct GameClientUpdateContext
 	{
-		GameClientUpdateContext( const PhysicsCollisionObject& playerCollider )
-			: playerCollider( playerCollider )
+		GameClientUpdateContext()
 		{
+			pPlayerCollider = nullptr;
 		}
 
 		float							totalGameTime;
 		float							timeDelta;
 
-		const PhysicsCollisionObject&	playerCollider;
+		const PhysicsCollisionObject*	pPlayerCollider;
 
 		CollectedCoinIdArray			collectedCoins;
 	};

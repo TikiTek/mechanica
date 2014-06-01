@@ -4,7 +4,9 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
+#include "tiki/renderer/fallbackrendereffect.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
+#include "tiki/renderer/scenerendereffect.hpp"
 
 namespace tiki
 {
@@ -36,6 +38,9 @@ namespace tiki
 	private:
 
 		GameRenderer			m_renderer;
+
+		FallbackRenderEffect	m_fallbackRenderEffect;
+		SceneRenderEffect		m_sceneRenderEffect;
 
 	};
 }
