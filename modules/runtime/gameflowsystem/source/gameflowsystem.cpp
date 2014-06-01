@@ -12,7 +12,7 @@ namespace tiki
 
 	void GameFlowSystem::create( const GameStateDefinition* pDefinition, uint definitionCount )
 	{
-		StateDefinition stateTreeDefinitions[ StateTree_MaxStateCount ];
+		StateDefinition stateTreeDefinitions[ StateTreeLimits_MaxStateCount ];
 
 		m_stateCount		= definitionCount;
 		m_activeStateCount	= 0u;
@@ -31,16 +31,16 @@ namespace tiki
 				index = pDefinition[ index ].parentStateIndex;
 				count++;
 			}
-			TIKI_ASSERT( count <= StateTree_MaxHierarchyDepth );
+			TIKI_ASSERT( count <= StateTreeLimits_MaxHierarchyDepth );
 
 			index = i;
 			for (uint j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
 			{
-				targetDef.stateHierarchy[ j ] = int( index );
+				targetDef.stateHierarchy[ j ] = index;
 				index = pDefinition[ index ].parentStateIndex;
 			}
 
-			targetDef.transitionStepCount	= int( def.transitionStepCount );
+			targetDef.transitionStepCount	= def.transitionStepCount;
 			targetDef.hierarchyLength		= count;
 			targetDef.pName					= def.pName;
 		}
@@ -77,24 +77,7 @@ namespace tiki
 
 			m_stateTree.updateTree( result );
 
-			const StateDefinition& currentState = m_stateTree.getCurrentStateDefinition();
-			m_activeStateCount = 0u;
-			for (uint i = 1u; i < currentState.hierarchyLength; ++i)
-			{
-				const uint stateIndex = currentState.stateHierarchy[ i ];
-
-				if ( m_stateTree.isInTransition() )
-				{
-					const uint transitionIndex = ( m_stateTree.isCreating() ? m_stateTree.getTransitionState() : m_stateTree.getCurrentState() );
-
-					if ( stateIndex == transitionIndex )
-					{
-						continue;
-					}
-				}
-
-				m_activeStates[ m_activeStateCount++ ] = int( stateIndex );
-			}
+			m_activeStateCount = m_stateTree.getActiveStates( m_activeStates, TIKI_COUNT( m_activeStates ) );
 		}
 		
 		for (uint i = 0u; i < m_activeStateCount; ++i)
