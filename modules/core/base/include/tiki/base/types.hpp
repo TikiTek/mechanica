@@ -1,26 +1,8 @@
 #pragma once
-#ifndef TIKI_TYPES_HPP
-#define TIKI_TYPES_HPP
+#ifndef __TIKI_TYPES_HPP_INCLUDED__
+#define __TIKI_TYPES_HPP_INCLUDED__
 
-#ifndef TIKI_ON
-#	define TIKI_ON 2-
-#endif
-
-#ifndef TIKI_OFF
-#	define TIKI_OFF 1-
-#endif
-
-#ifndef TIKI_BUILD_DEBUG
-#	define TIKI_BUILD_DEBUG TIKI_OFF
-#endif
-
-#ifndef TIKI_BUILD_RELEASE
-#	define TIKI_BUILD_RELEASE TIKI_OFF
-#endif
-
-#ifndef TIKI_BUILD_MASTER
-#	define TIKI_BUILD_MASTER TIKI_OFF
-#endif
+#include "tiki/base/defines.hpp"
 
 #define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )
 #define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )
@@ -59,7 +41,13 @@ namespace tiki
 
 #endif
 
-#	if TIKI_ENABLED( TIKI_BUILD_64BIT )
+#	if TIKI_ENABLED( TIKI_BUILD_32BIT )
+
+	typedef sint32			sint;
+	typedef uint32			uint;
+	typedef uint32			size_t;
+
+#	elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 
 	typedef sint64			sint;
 	typedef uint64			uint;
@@ -67,9 +55,7 @@ namespace tiki
 
 #	else
 
-	typedef sint32			sint;
-	typedef uint32			uint;
-	typedef uint32			size_t;
+#	error Platform not suppored
 
 #	endif
 
@@ -83,8 +69,8 @@ namespace tiki
 	typedef const char*		cstring;
 }
 
-#define TIKI_COUNT( var )					(sizeof(var) / sizeof(*var))
-#define TIKI_OFFSETOF( type, member )		((uint)&reinterpret_cast<const volatile char&>((((type*)0)->member)))
+#define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
+#define TIKI_OFFSETOF( type, member )		( (uint)&reinterpret_cast< const volatile char& >( ( ((type*)nullptr)->member ) ) )
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
@@ -158,4 +144,4 @@ namespace tiki
 
 #endif
 
-#endif // TIKI_TYPES_HPP
+#endif // __TIKI_TYPES_HPP_INCLUDED__
