@@ -4,41 +4,57 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
+#include "tiki/gameplay/gameclient.hpp"
+#include "tiki/gameplay/gamestate.hpp"
+#include "tiki/gameplay/playercamera.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/renderer/postascii.hpp"
+#include "tiki/renderer/postbloom.hpp"
+
 namespace tiki
 {
 	class ApplicationState;
 
 	enum PlayStateTransitionSteps
 	{
-		PlayStateTransitionSteps_InitializeBase,
-		PlayStateTransitionSteps_LoadResources,
-		PlayStateTransitionSteps_CreateComponents,
-		PlayStateTransitionSteps_InitializeComponents,
-		PlayStateTransitionSteps_CreateEntities,
-		PlayStateTransitionSteps_CreateLevel,
+		PlayStateTransitionSteps_InitializeGraphics,
+		PlayStateTransitionSteps_CreateClientSystems,
+		PlayStateTransitionSteps_SetRendererData,
 
 		PlayStateTransitionSteps_Count
 	};
 
 	class PlayState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PlayState );
+		TIKI_NONCOPYABLE_CLASS( PlayState );
 
 	public:
 
-		void							create( ApplicationState* pParentState );
-		void							dispose();
+									PlayState();
+		virtual						~PlayState();
 
-		virtual TransitionState			processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
+		void						create( ApplicationState* pParentState );
+		void						dispose();
 
-		virtual void					update();
-		virtual void					render( GraphicsContext& graphicsContext );
+		virtual TransitionState		processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
 
-		virtual bool					processInputEvent( const InputEvent& inputEvent );
+		virtual void				update();
+		virtual void				render( GraphicsContext& graphicsContext );
+
+		virtual bool				processInputEvent( const InputEvent& inputEvent );
 
 	private:
 		
-		ApplicationState*				m_pParentState;
+		ApplicationState*			m_pParentState;
+
+		GameRenderer*				m_pGameRenderer;
+		ImmediateRenderer			m_immediateRenderer;
+		PostProcessAscii			m_ascii;
+		PostProcessBloom			m_bloom;
+
+		PlayerCamera				m_playerCamera;
+		GameClient					m_gameClient;
+		GameState					m_gameState;
 
 	};
 }
