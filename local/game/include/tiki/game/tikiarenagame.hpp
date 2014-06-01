@@ -19,7 +19,7 @@ namespace tiki
 		TikiArenaGameStates_Application,
 		TikiArenaGameStates_Play,
 		TikiArenaGameStates_Test,
-		TikiArenaGameStates_Basic,
+		TikiArenaGameStates_BasicTest,
 
 		TikiArenaGameStates_Count
 	};

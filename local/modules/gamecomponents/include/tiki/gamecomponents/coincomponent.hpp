@@ -30,7 +30,7 @@ namespace tiki
 		bool				create( const TransformComponent& transformComponent, const PhysicsBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const PhysicsWorld& physicsWorld );
 		void				dispose();
 
-		void				update( const PhysicsCollisionObject& playerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime );
+		void				update( const PhysicsCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime );
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
