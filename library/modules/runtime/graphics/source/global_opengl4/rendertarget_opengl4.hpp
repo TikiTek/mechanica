@@ -13,16 +13,10 @@ namespace tiki
 	{
 		RenderTargetPlatformData()
 		{
-			//for (uint i = 0u; i < TIKI_COUNT( pColorViews ); ++i)
-			//{
-			//	pColorViews[ i ] = nullptr;
-			//}
-
-			//pDepthView = nullptr;
+			frameBufferId = 0u;
 		}
 
-		//TGRenderTargetView*		pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];
-		//TGDepthStencilView*		pDepthView;
+		GLuint		frameBufferId;
 	};
 }
 

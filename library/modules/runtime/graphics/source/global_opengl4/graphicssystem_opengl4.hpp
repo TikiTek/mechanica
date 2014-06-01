@@ -2,6 +2,8 @@
 #ifndef __TIKI_GRAPHICSSYSTEM_OPENGL4_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSYSTEM_OPENGL4_HPP_INCLUDED__
 
+#include "tiki/graphics/texturedata.hpp"
+
 #include "../../../source/global_opengl4/graphicstypes_opengl4.hpp"
 
 namespace tiki
@@ -20,7 +22,8 @@ namespace tiki
 
 		GLuint				frameBufferId;
 		GLuint				depthBufferId;
-		GLuint				backBufferId;
+		TextureData			backBufferData;
+
 	};
 }
 

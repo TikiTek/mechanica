@@ -18,7 +18,6 @@ namespace tiki
 		static bool initOpenGL( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
 		static bool initBackBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
-		static void initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
 		//static void resetDeviceState( TGContext* pContext );
 
@@ -55,6 +54,31 @@ namespace tiki
 			return false;
 		}
 
+		// back buffer
+		{
+			glGenFramebuffers( 1, &m_platformData.frameBufferId );
+			glBindFramebuffer( GL_FRAMEBUFFER, m_platformData.frameBufferId );
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_platformData.backBufferData.m_platformData.textureId, 0 );
+			glDrawBuffer( GL_COLOR_ATTACHMENT0 );
+
+			glGenRenderbuffers( 1, &m_platformData.depthBufferId );
+			glBindRenderbuffer( GL_RENDERBUFFER, m_platformData.depthBufferId );
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, backBufferSize.x, backBufferSize.y );
+			glBindRenderbuffer( GL_RENDERBUFFER, 0u );
+			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_platformData.depthBufferId );
+
+			if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+			{
+				return false;
+			}
+
+			m_backBufferTarget.m_width				= backBufferSize.x;
+			m_backBufferTarget.m_height				= backBufferSize.y;
+			m_backBufferTarget.m_colorBufferCount	= 1u;			
+			//m_backBufferTarget.m_platformData.frameBufferId = m_platformData.frameBufferId;
+		}
+
 		if( !graphics::initBackBuffer( m_platformData, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
@@ -67,7 +91,7 @@ namespace tiki
 			return false;
 		}
 
-		graphics::initViewPort( m_platformData, backBufferSize );
+		glViewport( 0, 0, backBufferSize.x, backBufferSize.y );
 
 		// create back buffer target
 		{
@@ -161,6 +185,8 @@ namespace tiki
 		//SwapBuffers( m_platformData.deviceContextHandle );
 		
 		//graphics::resetDeviceState( m_platformData.pContext );
+
+		SwapBuffers( (HDC)m_platformData.deviceContextHandle );
 	}
 
 	static bool graphics::initOpenGL( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
@@ -209,33 +235,16 @@ namespace tiki
 		//glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_ALPHA_TEST);
 
-		//// Back face culling
-		//glFrontFace(GL_CW);
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
+		// Back face culling
+		glFrontFace(GL_CW);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 
 		return true;
 	}
 
 	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
 	{
-		glGenFramebuffers( 1, &data.frameBufferId );
-		glBindFramebuffer( GL_FRAMEBUFFER, data.frameBufferId );
-
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0 );
-		glDrawBuffer( GL_COLOR_ATTACHMENT0 );
-
-		glGenRenderbuffers( 1, &data.depthBufferId );
-		glBindRenderbuffer( GL_RENDERBUFFER, data.depthBufferId );
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, backBufferSize.x, backBufferSize.y );
-		glBindRenderbuffer( GL_RENDERBUFFER, 0u );
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, data.depthBufferId );
-
-		if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-		{
-			return false;
-		}
-
 		return true;
 	}
 
@@ -268,18 +277,6 @@ namespace tiki
 		//data.pContext->OMSetRenderTargets( 1, &data.pBackBufferTargetView, data.pDepthStencilView );
 
 		return true;
-	}
-
-	static void graphics::initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
-	{
-		//TIKI_DECLARE_STACKANDZERO( D3D11_VIEWPORT, viewPort );
-		//viewPort.MinDepth	= 0.0f;
-		//viewPort.MaxDepth	= 1.0f;
-		//viewPort.TopLeftX	= 0;
-		//viewPort.TopLeftY	= 0;
-		//viewPort.Width		= (float)backBufferSize.x;
-		//viewPort.Height		= (float)backBufferSize.y;
-		//data.pContext->RSSetViewports( 1, &viewPort );
 	}
 
 	//void graphics::resetDeviceState( TGContext* pContext )

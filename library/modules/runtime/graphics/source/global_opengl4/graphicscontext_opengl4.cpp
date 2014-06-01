@@ -63,9 +63,33 @@ namespace tiki
 		m_immediateVertexData.dispose( graphicsSystem );
 	}
 
-	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
+	void GraphicsContext::clear( const RenderTarget& renderTarget, Color clearColor /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
 	{
+		glBindFramebuffer( GL_FRAMEBUFFER, renderTarget.m_platformData.frameBufferId );
 
+		float4 floatColor;
+		color::toFloat4( floatColor, clearColor );
+		glClearColor( floatColor.x, floatColor.y, floatColor.z, floatColor.w );
+		glClearDepth( depthValue );
+		glClearStencil( stencilValue );
+
+		GLbitfield glClearMask = 0u;
+		if ( isBitSet( clearMask, ClearMask_Color ) )
+		{
+			glClearMask |= GL_COLOR_BUFFER_BIT;
+		}
+
+		if ( isBitSet( clearMask, ClearMask_Depth ) )
+		{
+			glClearMask |= GL_DEPTH_BUFFER_BIT;
+		}
+
+		if ( isBitSet( clearMask, ClearMask_Stencil ) )
+		{
+			glClearMask |= GL_STENCIL_BUFFER_BIT;
+		}
+
+		glClear( glClearMask );
 	}
 
 	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
