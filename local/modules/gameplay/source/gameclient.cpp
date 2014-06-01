@@ -271,7 +271,7 @@ namespace tiki
 		m_physicsBodyComponent.update();
 		m_playerControlComponent.update( updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, updateContext.timeDelta );
-		m_coinComponent.update( updateContext.playerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
+		m_coinComponent.update( updateContext.pPlayerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
 
 		m_transformComponent.update();
 	}

@@ -26,10 +26,24 @@ namespace tiki
 	RenderTarget::RenderTarget()
 		: m_width( 0u ), m_height( 0u ), m_colorBufferCount( 0u )
 	{
+		for (uint i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
+		{
+			m_platformData.pColorViews[ i ] = nullptr;
+		} 
+
+		m_platformData.pDepthView = nullptr;
 	}
 
 	RenderTarget::~RenderTarget()
 	{
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		for (uint i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
+		{
+			TIKI_ASSERT( m_platformData.pColorViews[ i ] == nullptr );
+		} 
+
+		TIKI_ASSERT( m_platformData.pDepthView == nullptr );
+#endif
 	}
 
 	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
@@ -118,5 +132,9 @@ namespace tiki
 			m_platformData.pDepthView->Release();
 			m_platformData.pDepthView = nullptr;
 		}
+
+		m_colorBufferCount	= 0u;
+		m_width				= 0u;
+		m_height			= 0u;
 	}
 }

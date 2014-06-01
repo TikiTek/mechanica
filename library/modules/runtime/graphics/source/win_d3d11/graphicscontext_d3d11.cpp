@@ -90,6 +90,7 @@ namespace tiki
 
 		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthView != nullptr )
 		{
+			TIKI_ASSERT( renderTarget.m_platformData.pDepthView != nullptr );
 			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.pDepthView, depthClearFlags, depthValue, stencilValue );
 		}
 
@@ -104,6 +105,7 @@ namespace tiki
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
 			{
+				TIKI_ASSERT( renderTarget.m_platformData.pColorViews[ i ] != nullptr );
 				m_platformData.pContext->ClearRenderTargetView( renderTarget.m_platformData.pColorViews[ i ], &floatColor.x );
 			}
 		}

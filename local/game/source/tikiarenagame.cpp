@@ -30,7 +30,7 @@ namespace tiki
 
 		if ( userName == "Tim" || userName == "tim.boden" )
 		{
-			return TikiArenaGameStates_Basic;
+			return TikiArenaGameStates_Test;
 		}
 
 		return TikiArenaGameStates_Play;
@@ -54,10 +54,10 @@ namespace tiki
 
 		m_pStates = memory::newAlign< TikiArenaStates >();
 		m_pStates->applicationState.create();
+		m_pStates->basicTestState.create();
 		m_pStates->introState.create();
 		m_pStates->playState.create( &m_pStates->applicationState );
 		m_pStates->testState.create( &m_pStates->applicationState );
-		m_pStates->basicTestState.create();
 
 		GameStateDefinition gameDefinition[] =
 		{
@@ -97,6 +97,7 @@ namespace tiki
 			while ( m_gameFlow.isInTransition() )
 			{
 				m_gameFlow.update();
+				Sleep( 50 );
 			}
 
 			m_gameFlow.dispose();
@@ -105,9 +106,11 @@ namespace tiki
 		if ( m_pStates != nullptr )
 		{
 			m_pStates->applicationState.dispose();
+			m_pStates->basicTestState.dispose();
 			m_pStates->introState.dispose();
 			m_pStates->playState.dispose();
 			m_pStates->testState.dispose();
+
 			memory::deleteAlign( m_pStates );
 		}
 	}

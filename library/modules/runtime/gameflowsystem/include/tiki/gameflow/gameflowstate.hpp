@@ -13,9 +13,12 @@ namespace tiki
 
 	class GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameFlowState );
+		TIKI_NONCOPYABLE_CLASS( GameFlowState );
 
 	public:
+
+								GameFlowState()		{ }
+		virtual					~GameFlowState()	{ }
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) = 0;
 

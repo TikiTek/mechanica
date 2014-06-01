@@ -8,14 +8,9 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/framework/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/gameplay/gamestate.hpp"
-#include "tiki/gameplay/playercamera.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
-#include "tiki/renderer/fallbackrendereffect.hpp"
-#include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
-#include "tiki/renderer/scenerendereffect.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -72,14 +67,8 @@ namespace tiki
 		SkinningData				m_skinningData;
 
 		GameRenderer*				m_pGameRenderer;
-		FallbackRenderEffect		m_fallbackRenderEffect;
-		SceneRenderEffect			m_sceneRenderEffect;
-
 		ImmediateRenderer			m_immediateRenderer;
-		
-		bool						m_enableFreeCamera;
 		FreeCamera					m_freeCamera;
-		PlayerCamera				m_playerCamera;
 
 		DebugGui					m_debugGui;
 		DebugGuiTestWindow			m_testWindow;
@@ -88,15 +77,13 @@ namespace tiki
 		int							m_gbufferIndex;
 
 		bool						m_enablePhysicsDebug;
-		bool						m_enableAsciiMode;
 		bool						m_enableBloom;
-		PostProcessAscii			m_ascii;
 		PostProcessBloom			m_bloom;
 
 		GameClient					m_gameClient;
-		GameState					m_gameState;
 
 		EntityId					m_boxesEntityId;
+		EntityId					m_planeEntityId;
 
 	};
 }

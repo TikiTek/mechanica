@@ -60,7 +60,7 @@ namespace tiki
 		m_pPhysicsWorld			= nullptr;
 	}
 
-	void CoinComponent::update( const PhysicsCollisionObject& playerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime )
+	void CoinComponent::update( const PhysicsCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime )
 	{
 		Iterator componentStates = getIterator();
 
@@ -72,7 +72,7 @@ namespace tiki
 
 			m_pTransformComponent->setRotation( pState->pTransform, rotation );
 
-			if ( m_pPhysicsWorld->checkIntersection( playerCollider, m_pPhysicsBodyComponent->getPhysicsObject( pState->pPhysicsBody ) ) )
+			if ( pPlayerCollider != nullptr && m_pPhysicsWorld->checkIntersection( *pPlayerCollider, m_pPhysicsBodyComponent->getPhysicsObject( pState->pPhysicsBody ) ) )
 			{
 				collectedCoins.push( pState->entityId );
 			}
