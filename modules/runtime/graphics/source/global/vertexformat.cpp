@@ -26,6 +26,8 @@ namespace tiki
 
 	void VertexFormat::dispose()
 	{
+		m_attributes.clear();
+
 		GraphicsStateObject::dispose();
 	}
 

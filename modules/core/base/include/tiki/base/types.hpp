@@ -101,13 +101,19 @@ namespace tiki
 		class_name ## ( const class_name ## & );		\
 		void operator=( const class_name ## & )
 
+#define TIKI_NONCOPYABLE_STRUCT( class_name )		\
+	private:										\
+		class_name ## ( const class_name ## & );	\
+		void operator=( const class_name ## & );	\
+	public:
+
 #define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
-	public:												\
-		class_name ## () {}								\
-		~ ## class_name ## () {}						\
 	private:											\
 		class_name ## ( const class_name ## & );		\
-		void operator=( const class_name ## & )
+		void operator=( const class_name ## & );		\
+	public:												\
+		class_name ## ()		{ }						\
+		~ ## class_name ## ()	{ }
 
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\

@@ -54,11 +54,11 @@ namespace tiki
 		bool				m_isCreated;
 
 		StateTree			m_stateTree;
-		int					m_activeStates[ StateTree_MaxStateCount ];
+		uint				m_activeStates[ StateTreeLimits_MaxStateCount ];
 		uint				m_activeStateCount;
 
 		uint				m_stateCount;
-		GameStateDefinition	m_states[ StateTree_MaxStateCount ];
+		GameStateDefinition	m_states[ StateTreeLimits_MaxStateCount ];
 		
 	};
 }

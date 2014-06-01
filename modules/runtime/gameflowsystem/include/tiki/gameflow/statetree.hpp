@@ -3,16 +3,22 @@
 #define TIKI_STATETREE_HPP__INCLUDED
 
 #include "tiki/base/array.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
 	enum
 	{
-		StateTree_MaxStateCount			= 16u,
-		StateTree_MaxHierarchyDepth		= 8u,
-		StateTree_MaxTransitionPathSize	= 16u * 2u,
-		StateTree_InvalidTransitionStep	= TIKI_SIZE_T_MAX
+		StateTreeLimits_MaxStateCount			= 16u,
+		StateTreeLimits_MaxHierarchyDepth		= 8u,
+		StateTreeLimits_MaxTransitionPathSize	= 16u * 2u
+	};
+
+	enum
+	{
+		InvalidTransitionStep	= TIKI_SIZE_T_MAX,
+		InvalidStateIndex		= TIKI_SIZE_T_MAX
 	};
 
 	enum TransitionState
@@ -27,10 +33,10 @@ namespace tiki
 
 	struct StateDefinition
 	{
-		int			stateHierarchy[ StateTree_MaxHierarchyDepth ];
+		uint		stateHierarchy[ StateTreeLimits_MaxHierarchyDepth ];
 		uint		hierarchyLength;
 
-		int			transitionStepCount;
+		uint		transitionStepCount;
 
 		const char*	pName;
 	};
@@ -46,35 +52,73 @@ namespace tiki
 		void						create( StateDefinition* pStateDefinitions, uint stateCount );
 		void						dispose();
 
-		void						startTransition( int stateIndex );
+		void						startTransition( uint stateIndex );
 
 		void						updateTree( TransitionState newState );
 
-		const StateDefinition&		getCurrentStateDefinition() const	{ return m_stateDefinition[ m_currentState ]; }
-		int							getCurrentState() const				{ return m_currentState; }
-		int							getTransitionState() const			{ return m_transitionNextState; }
-		bool						isInTransition() const				{ return m_transitionCurrentPathIndex != TIKI_SIZE_T_MAX; }
+		uint						getActiveStates( uint* pTargetActiveStates, uint capacity ) const;
 
-		int							getCurrentStep() const	{ return m_currentStep; }
-		bool						isCreating() const		{ return m_isCreating; }
+		uint						getCurrentState() const				{ return ( isInTransition() ? m_transition.currentState : m_currentState ); }
+		uint						getTransitionState() const			{ return m_transition.getCurrentTransitionState(); }
+		bool						isInTransition() const				{ return m_currentState == InvalidStateIndex; }
+
+		int							getCurrentStep() const	{ return m_transition.currentStep; }
+		bool						isCreating() const		{ return m_transition.isInForwardTransition(); }
 		bool						isInitial() const		{ return m_isInitial; }
 
 	private:
 
+		struct StateTreeTransition
+		{
+			TIKI_NONCOPYABLE_STRUCT( StateTreeTransition );
+
+			StateTreeTransition()
+			{
+				clear();
+			}
+			
+			typedef FixedSizedArray< uint, StateTreeLimits_MaxTransitionPathSize > TransitionPathArray;
+
+			uint				sourceState;
+			uint				destinationState;
+			uint				currentState;
+
+			TransitionPathArray	path;
+			uint				pathIndex;
+
+			uint				targetStep;
+			uint				currentStep;
+
+			bool				isInForwardTransition() const		{ return currentState < path[ pathIndex ] && currentState != path[ pathIndex ]; }
+			uint				getCurrentTransitionState() const	{ return isInForwardTransition() ? path[ pathIndex ] : currentState; }
+
+			void				clear()
+			{
+				sourceState			= 0u;
+				destinationState	= 0u;
+				currentState		= TIKI_SIZE_T_MAX;
+
+				path.clear();
+				pathIndex			= TIKI_SIZE_T_MAX;
+
+				targetStep			= 0u;
+				currentStep			= 0u;
+			}
+		};
+
 		Array< StateDefinition >	m_stateDefinition;
 
-		int							m_currentState;
+		//int							m_transitionSourceState;
+		//int							m_transitionNextState;
+		//int							m_transitionPathDirection;
+		//uint						m_transitionCurrentPathIndex;
+		//int							m_transitionPath[ StateTree_MaxTransitionPathSize ];
+		//uint						m_transitionPathSize;
 
-		int							m_transitionSourceState;
-		int							m_transitionNextState;
-		int							m_transitionPathDirection;
-		uint						m_transitionCurrentPathIndex;
-		int							m_transitionPath[ StateTree_MaxTransitionPathSize ];
-		uint						m_transitionPathSize;
-
-		int							m_currentStep;
-		bool						m_isCreating;
+		uint						m_currentState;
 		bool						m_isInitial;
+
+		StateTreeTransition			m_transition;
 
 	};
 }
