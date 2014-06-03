@@ -254,7 +254,7 @@ namespace tiki
 					} 
 
 					Array< uint8 > variantData;
-					if ( compilePlatformShader( variantData, args, GraphicsApi_D3D11 ) )
+					if ( compilePlatformShader( variantData, args, GraphicsApi_OpenGL4 ) )
 					{
 						uint32 keyData[] = { type, variant.bitMask };
 
@@ -383,6 +383,8 @@ namespace tiki
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
+
+		// ^[ ]*#[ ]*include[ ]+[\"<](.*)[\">].*
 		return false;
 	}
 }
