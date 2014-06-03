@@ -36,6 +36,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
 	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
 
+	module:set_define( "WIN_NT" );
 	module:set_define( "WIN32" );
 	module:set_define( "_WIN32" );
 	module:set_define( "_WIN64", nil, nil, "x64" );
