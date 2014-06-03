@@ -30,93 +30,100 @@ namespace tiki
 
 	RenderTarget::~RenderTarget()
 	{
+		TIKI_ASSERT( m_platformData.frameBufferId == 0u );
 	}
 
 	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
 		TIKI_ASSERT( colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
 
-		//m_colorBufferCount	= colorBufferCount;
-		//m_width				= width;
-		//m_height			= height;
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT0  == GL_COLOR_ATTACHMENT0 + 0u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT1  == GL_COLOR_ATTACHMENT0 + 1u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT2  == GL_COLOR_ATTACHMENT0 + 2u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT3  == GL_COLOR_ATTACHMENT0 + 3u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT4  == GL_COLOR_ATTACHMENT0 + 4u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT5  == GL_COLOR_ATTACHMENT0 + 5u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT6  == GL_COLOR_ATTACHMENT0 + 6u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT7  == GL_COLOR_ATTACHMENT0 + 7u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT8  == GL_COLOR_ATTACHMENT0 + 8u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT9  == GL_COLOR_ATTACHMENT0 + 9u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT10 == GL_COLOR_ATTACHMENT0 + 10u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT11 == GL_COLOR_ATTACHMENT0 + 11u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT12 == GL_COLOR_ATTACHMENT0 + 12u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT13 == GL_COLOR_ATTACHMENT0 + 13u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT14 == GL_COLOR_ATTACHMENT0 + 14u );
+		TIKI_COMPILETIME_ASSERT( GL_COLOR_ATTACHMENT15 == GL_COLOR_ATTACHMENT0 + 15u );
 
-		//TIKI_ASSERT( pColorBuffers != nullptr ||colorBufferCount == 0u );
-		//for (size_t i = 0u; i < m_colorBufferCount; ++i)
-		//{
-		//	m_colorBuffers[ i ] = pColorBuffers[ i ];
-		//	TIKI_ASSERT( pColorBuffers[ i ].pDataBuffer != nullptr );
+		m_colorBufferCount	= colorBufferCount;
+		m_width				= width;
+		m_height			= height;
 
-		//	checkSize( m_width, m_height, pColorBuffers[ i ].pDataBuffer->getWidth(), pColorBuffers[ i ].pDataBuffer->getHeight() );
+		glGenFramebuffers( 1, &m_platformData.frameBufferId );
+		glBindFramebuffer( GL_FRAMEBUFFER, m_platformData.frameBufferId );
 
-		//	TGRenderTargetDescription renderTargetDesc;
-		//	renderTargetDesc.Format				= graphics::getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDescription().format, TextureFlags_RenderTarget );
-		//	renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
-		//	renderTargetDesc.Texture2D.MipSlice	= 0;
+		TIKI_ASSERT( pColorBuffers != nullptr || colorBufferCount == 0u );
+		for (size_t i = 0u; i < m_colorBufferCount; ++i)
+		{
+			TIKI_ASSERT( pColorBuffers[ i ].pDataBuffer != nullptr );
+			m_colorBuffers[ i ] = pColorBuffers[ i ];
 
-		//	const HRESULT result = graphics::getDevice( graphicsSystem )->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &renderTargetDesc, &m_platformData.pColorViews[ i ] );
-		//	if ( FAILED( result ) || m_platformData.pColorViews[ i ] == nullptr )
-		//	{
-		//		dispose( graphicsSystem );
-		//		return false;
-		//	}
-		//}
+			checkSize( m_width, m_height, pColorBuffers[ i ].pDataBuffer->getWidth(), pColorBuffers[ i ].pDataBuffer->getHeight() );
 
-		//for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
-		//{
-		//	m_colorBuffers[ i ].format		= PixelFormat_Invalid;
-		//	m_colorBuffers[ i ].pDataBuffer	= nullptr;
+			const GLuint colorBufferId = pColorBuffers[ i ].pDataBuffer->m_platformData.textureId;
+			m_platformData.aColorBufferIds[ i ] = colorBufferId;
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBufferId, 0 );
+		}
 
-		//	m_platformData.pColorViews[ i ] = nullptr;
-		//}
+		for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
+		{
+			m_colorBuffers[ i ].clear();
+			m_platformData.aColorBufferIds[ i ] = 0u;
+		}
 
-		//if ( pDepthBuffer != nullptr )
-		//{
-		//	m_depthBuffer = *pDepthBuffer;
+		if ( pDepthBuffer != nullptr )
+		{
+			TIKI_ASSERT( pDepthBuffer->pDataBuffer != nullptr );
+			m_depthBuffer = *pDepthBuffer;
 
-		//	checkSize( m_width, m_height, pDepthBuffer->pDataBuffer->getWidth(), pDepthBuffer->pDataBuffer->getHeight() );
+			checkSize( m_width, m_height, pDepthBuffer->pDataBuffer->getWidth(), pDepthBuffer->pDataBuffer->getHeight() );
 
-		//	TGDepthStencilDescription depthDesc;
-		//	depthDesc.Format				= graphics::getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDescription().format, TextureFlags_DepthStencil );
-		//	depthDesc.ViewDimension			= D3D11_DSV_DIMENSION_TEXTURE2D;
-		//	depthDesc.Texture2D.MipSlice	= 0u;
-		//	depthDesc.Flags					= 0u;
+			const GLuint depthBufferId = pDepthBuffer->pDataBuffer->m_platformData.textureId;
+			m_platformData.depthBufferId = depthBufferId;
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBufferId, 0 );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBufferId, 0 );
+		}
+		else
+		{
+			m_depthBuffer.clear();
+			m_platformData.depthBufferId = 0u;
+		}
 
-		//	const HRESULT result = graphics::getDevice( graphicsSystem )->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &depthDesc, &m_platformData.pDepthView );
-		//	if ( FAILED( result ) || m_platformData.pDepthView == nullptr )
-		//	{
-		//		dispose( graphicsSystem );
-		//		return false;
-		//	}
-		//}
-		//else
-		//{
-		//	m_depthBuffer.format		= PixelFormat_Invalid;
-		//	m_depthBuffer.pDataBuffer	= nullptr;
-
-		//	m_platformData.pDepthView	= nullptr;
-		//}
+		if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+		{
+			return false;
+		}
+		glBindFramebuffer( GL_FRAMEBUFFER, 0u );
 
 		return true;
 	}
 
 	void RenderTarget::dispose( GraphicsSystem& graphicsSystem )
 	{
-		//for (size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i)
-		//{
-		//	m_colorBuffers[ i ].format		= PixelFormat_Invalid;
-		//	m_colorBuffers[ i ].pDataBuffer	= nullptr;
+		m_width		= 0u;
+		m_height	= 0u;
 
-		//	if ( m_platformData.pColorViews[ i ] != nullptr )
-		//	{
-		//		m_platformData.pColorViews[ i ]->Release();
-		//		m_platformData.pColorViews[ i ] = nullptr;
-		//	}
-		//}
+		for (size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i)
+		{
+			m_colorBuffers[ i ].clear();
+		}
+		m_colorBufferCount = 0u;
 
-		//if ( m_platformData.pDepthView != nullptr )
-		//{
-		//	m_platformData.pDepthView->Release();
-		//	m_platformData.pDepthView = nullptr;
-		//}
+		m_depthBuffer.clear();
+
+		if ( m_platformData.frameBufferId != 0u )
+		{
+			glDeleteFramebuffers( 1u, &m_platformData.frameBufferId );
+			m_platformData.frameBufferId = 0u;
+		}
 	}
 }

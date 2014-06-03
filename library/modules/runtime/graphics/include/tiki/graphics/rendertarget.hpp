@@ -21,8 +21,7 @@ namespace tiki
 	{
 		RenderTargetBuffer()
 		{
-			format		= PixelFormat_Invalid;
-			pDataBuffer	= nullptr;
+			clear();
 		}
 
 		RenderTargetBuffer( const TextureData& dataBuffer, PixelFormat pixelFormat = PixelFormat_Invalid )
@@ -33,6 +32,12 @@ namespace tiki
 
 		PixelFormat			format;
 		const TextureData*	pDataBuffer;
+
+		TIKI_FORCE_INLINE void clear()
+		{
+			format		= PixelFormat_Invalid;
+			pDataBuffer	= nullptr;
+		}
 	};
 
 	class RenderTarget
@@ -52,7 +57,7 @@ namespace tiki
 		uint						getWidth() const	{ return m_width; }
 		uint						getHeight() const	{ return m_height; }
 
-		const TextureData*			getColorTextureData( uint index ) const	{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
+		const TextureData*			getColorTextureData( uint index ) const		{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
 		uint						getColorBufferCount() const					{ return m_colorBufferCount; }
 
 		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }

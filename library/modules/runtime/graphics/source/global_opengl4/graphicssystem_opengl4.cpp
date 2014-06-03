@@ -54,37 +54,6 @@ namespace tiki
 			return false;
 		}
 
-		// back buffer
-		{
-			glGenFramebuffers( 1, &m_platformData.frameBufferId );
-			glBindFramebuffer( GL_FRAMEBUFFER, m_platformData.frameBufferId );
-
-			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_platformData.backBufferData.m_platformData.textureId, 0 );
-			glDrawBuffer( GL_COLOR_ATTACHMENT0 );
-
-			glGenRenderbuffers( 1, &m_platformData.depthBufferId );
-			glBindRenderbuffer( GL_RENDERBUFFER, m_platformData.depthBufferId );
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, backBufferSize.x, backBufferSize.y );
-			glBindRenderbuffer( GL_RENDERBUFFER, 0u );
-			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_platformData.depthBufferId );
-
-			if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-			{
-				return false;
-			}
-
-			m_backBufferTarget.m_width				= backBufferSize.x;
-			m_backBufferTarget.m_height				= backBufferSize.y;
-			m_backBufferTarget.m_colorBufferCount	= 1u;			
-			//m_backBufferTarget.m_platformData.frameBufferId = m_platformData.frameBufferId;
-		}
-
-		if( !graphics::initBackBuffer( m_platformData, backBufferSize ) )
-		{
-			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
-			return false;
-		}
-
 		if( !graphics::initDepthStencilBuffer( m_platformData, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
@@ -95,17 +64,17 @@ namespace tiki
 
 		// create back buffer target
 		{
-			m_backBufferTarget.m_width	= params.backBufferWidth;
-			m_backBufferTarget.m_height	= params.backBufferHeight;
+			m_backBufferTarget.m_width						= backBufferSize.x;
+			m_backBufferTarget.m_height						= backBufferSize.y;
 
 			m_backBufferTarget.m_colorBuffers[ 0u ].format		= PixelFormat_R8G8B8A8_Gamma;
 			m_backBufferTarget.m_colorBuffers[ 0u ].pDataBuffer = nullptr;
-			//m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
 			m_backBufferTarget.m_colorBufferCount = 1u;
 
 			m_backBufferTarget.m_depthBuffer.format			= PixelFormat_Depth24Stencil8;
 			m_backBufferTarget.m_depthBuffer.pDataBuffer	= nullptr;
-			//m_backBufferTarget.m_platformData.pDepthView	= m_platformData.pDepthStencilView;
+
+			m_backBufferTarget.m_platformData.frameBufferId	= 0u;
 		}
 
 		if ( !m_commandBuffer.create( *this ) )

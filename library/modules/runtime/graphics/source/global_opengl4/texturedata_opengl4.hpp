@@ -8,6 +8,11 @@ namespace tiki
 {
 	struct TextureDataPlatform
 	{
+		TextureDataPlatform()
+		{
+			textureId = 0u;
+		}
+
 		GLuint	textureId;
 	};
 
@@ -15,6 +20,7 @@ namespace tiki
 	{
 		GLenum	getGlFormat( PixelFormat pixelFormat );
 		GLenum	getGlChannelType( PixelFormat pixelFormat );
+		GLenum	getGlTextureType( TextureType type );
 	}
 }
 

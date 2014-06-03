@@ -51,7 +51,7 @@ namespace tiki
 		return s_typeMapping[ pixelFormat ];
 	}
 
-	static GLenum getGlTextureType( TextureType type )
+	static GLenum graphics::getGlTextureType( TextureType type )
 	{
 		TIKI_ASSERT( type < TextureType_Count );
 
@@ -89,49 +89,25 @@ namespace tiki
 		}		
 	}
 
-	//static UINT getD3dFlags( TextureFlags flags )
-	//{
-	//	UINT result = 0u;
-
-	//	if ( isBitSet( flags, TextureFlags_RenderTarget ) )
-	//	{
-	//		result |= D3D11_BIND_RENDER_TARGET;
-	//	}
-
-	//	if ( isBitSet( flags, TextureFlags_DepthStencil ) )
-	//	{
-	//		result |= D3D11_BIND_DEPTH_STENCIL;
-	//	}
-
-	//	if ( isBitSet( flags, TextureFlags_ShaderInput ) )
-	//	{
-	//		result |= D3D11_BIND_SHADER_RESOURCE;
-	//	}
-
-	//	return result;
-	//}
-
 	TextureData::TextureData()
 	{
 	}
 
 	TextureData::~TextureData()
 	{
-		//TIKI_ASSERT( m_platformData.pResource == nullptr );
-		//TIKI_ASSERT( m_platformData.pShaderView == nullptr );
+		TIKI_ASSERT( m_platformData.textureId == 0u );
 	}
 
 	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /*= nullptr*/ )
 	{
-		//TIKI_ASSERT( m_platformData.pResource == nullptr );
-		//TIKI_ASSERT( m_platformData.pShaderView == nullptr );
+		TIKI_ASSERT( m_platformData.textureId == 0u );
 		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
 
 		m_description = description;
 
 		const GLenum glFormat = graphics::getGlFormat( (PixelFormat)description.format );
 		const GLenum glChannelType = graphics::getGlChannelType( (PixelFormat)description.format );
-		const GLenum glTextureType = getGlTextureType( (TextureType)description.type );
+		const GLenum glTextureType = graphics::getGlTextureType( (TextureType)description.type );
 
 		glGenTextures( 1, &m_platformData.textureId );
 		glBindTexture( glTextureType, m_platformData.textureId );

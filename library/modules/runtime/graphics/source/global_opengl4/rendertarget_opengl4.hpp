@@ -14,7 +14,17 @@ namespace tiki
 		RenderTargetPlatformData()
 		{
 			frameBufferId = 0u;
+
+			for (uint i = 0u; i < TIKI_COUNT( aColorBufferIds ); ++i)
+			{
+				aColorBufferIds[ i ] = 0u;
+			}
+
+			depthBufferId = 0u;
 		}
+
+		GLuint		aColorBufferIds[ GraphicsSystemLimits_RenderTargetSlots ];
+		GLuint		depthBufferId;
 
 		GLuint		frameBufferId;
 	};
