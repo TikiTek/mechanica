@@ -18,6 +18,9 @@
 #	include <d3dcompiler.h>
 #endif
 
+#include "gpp.h"
+#include "trexpp.h"
+
 namespace tiki
 {
 	struct ShaderVariantData
@@ -383,8 +386,70 @@ namespace tiki
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
+		string sourceCode = args.defineCode + formatString( "\n#include \"%s\"\n", args.fileName.cStr() );
 
-		// ^[ ]*#[ ]*include[ ]+[\"<](.*)[\">].*
-		return false;
+		//symset*	pDefs	= initsymset();    
+		//symset*	pUndefs	= initsymset();    
+
+		//ppproc* pParserState = initppproc( pDefs, pUndefs );
+
+		TRexpp regex;
+		regex.Compile( "#[ ]*include[ ]+[\"<](.*)[\">]" );
+
+		const char* pSearchBegin;
+		const char* pSearchEnd;
+		while ( regex.Search( sourceCode.cStr(), &pSearchBegin, &pSearchEnd ) )
+		{
+			const uint includeStartIndex = pSearchBegin - sourceCode.cStr();
+			const uint includeLength = pSearchEnd - pSearchBegin;
+			//const string includeString = string( pSearchBegin, pSearchEnd - pSearchBegin );
+
+			int length;
+			regex.GetSubExp( 1, &pSearchBegin, &length );
+			const string includeFileName = string( pSearchBegin, length );
+			
+			string includeContent = "";
+			{
+				const char* pIncludeContent = nullptr;
+				UINT includeSize;
+				if ( m_pIncludeHandler->Open( D3D_INCLUDE_LOCAL, includeFileName.cStr(), nullptr, (LPCVOID*)&pIncludeContent, &includeSize ) == S_OK )
+				{
+					includeContent = string( pIncludeContent, includeSize );
+					m_pIncludeHandler->Close( pIncludeContent );
+				}
+			}
+
+			sourceCode = sourceCode.remove( includeStartIndex, includeLength );
+			sourceCode = sourceCode.insert( includeContent, includeStartIndex );
+			//sourceCode = sourceCode.replace( includeString, includeContent );
+
+			//BufferedStream sourceStream;
+			//sourceStream.pBuffer		= (char*)sourceCode.cStr();
+			//sourceStream.bufferSize		= sourceCode.getLength();
+			//sourceStream.bufferPosition	= 0u;
+
+			//BufferedStream targetStream;
+			//targetStream.pBuffer		= (char*)TIKI_MEMORY_ALLOC( sourceCode.getLength() );
+			//targetStream.bufferSize		= sourceCode.getLength();
+			//targetStream.bufferPosition	= 0u;
+
+			//partialpreprocess( pParserState, &sourceStream, &targetStream );
+			//targetStream.pBuffer[ targetStream.bufferPosition ] = '\0';
+			//const char* pShaderCode = targetStream.pBuffer;
+			//
+			//sourceCode = pShaderCode;
+		}
+				
+		//freeppproc( pParserState );
+
+		//freesymset( pDefs );
+		//freesymset( pUndefs );
+
+		targetData.create(
+			(const uint8*)sourceCode.cStr(),
+			sourceCode.getLength()
+		);
+
+		return true;
 	}
 }
