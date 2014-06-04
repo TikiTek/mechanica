@@ -18,7 +18,7 @@ namespace tiki
 
 	protected:
 
-		virtual uint16			getConverterRevision() const { return 8u; }
+		virtual uint16			getConverterRevision() const { return 9u; }
 
 		virtual crc32			getInputType() const;
 		virtual crc32			getOutputType() const;
