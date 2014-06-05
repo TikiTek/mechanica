@@ -2786,6 +2786,10 @@ void construct_include_directive_marker(char **include_directive_marker,
   *(*include_directive_marker+out_idx) = '\0';
 }
 
+int preprocessText( const PreprocessParameters* pParameters )
+{
+	return 0;
+}
 
 //int main(int argc,char **argv)
 //{

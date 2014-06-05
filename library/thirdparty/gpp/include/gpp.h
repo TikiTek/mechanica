@@ -10,7 +10,31 @@ extern "C"
 {
 #endif
 
-static void getDirname(const char *fname, char *dirname);
+typedef struct _ReadBuffer
+{
+	const char*	pData;
+	int			dataSize;
+} ReadBuffer;
+
+typedef struct _WriteBuffer
+{
+	char*	pData;
+	int		dataCapacity;
+} WriteBuffer;
+
+typedef int (*OpenFileFunc)( ReadBuffer*, const char* );
+typedef void (*CloseFileFunc)( const ReadBuffer* );
+
+typedef struct _PreprocessParameters
+{
+	ReadBuffer		inputData;
+	WriteBuffer		outputData;
+
+	OpenFileFunc	pOpenFileFunc;
+	CloseFileFunc	pCloseFileFunc;
+} PreprocessParameters;
+
+int preprocessText( const PreprocessParameters* pParameters );
 
 #ifdef __cplusplus
 };

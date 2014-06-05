@@ -388,57 +388,75 @@ namespace tiki
 	{
 		string sourceCode = args.defineCode + formatString( "\n#include \"%s\"\n", args.fileName.cStr() );
 
+		{
+			PreprocessParameters parameters;
+			parameters.inputData.pData			= sourceCode.cStr();
+			parameters.inputData.dataSize		= sourceCode.getLength();
+			parameters.outputData.pData			= static_cast< char* >( TIKI_MEMORY_ALLOC( 1024u * 1024u ) );
+			parameters.outputData.dataCapacity	= 1024u * 1024u;
+			parameters.pOpenFileFunc			= nullptr;
+			parameters.pCloseFileFunc			= nullptr;
+
+			if ( !preprocessText( &parameters ) )
+			{
+				return false;
+			}
+
+			sourceCode = parameters.outputData.pData;
+			TIKI_MEMORY_FREE( parameters.outputData.pData );
+		}
+
 		//symset*	pDefs	= initsymset();    
 		//symset*	pUndefs	= initsymset();    
 
 		//ppproc* pParserState = initppproc( pDefs, pUndefs );
 
-		TRexpp regex;
-		regex.Compile( "#[ ]*include[ ]+[\"<](.*)[\">]" );
+		//TRexpp regex;
+		//regex.Compile( "#[ ]*include[ ]+[\"<](.*)[\">]" );
 
-		const char* pSearchBegin;
-		const char* pSearchEnd;
-		while ( regex.Search( sourceCode.cStr(), &pSearchBegin, &pSearchEnd ) )
-		{
-			const uint includeStartIndex = pSearchBegin - sourceCode.cStr();
-			const uint includeLength = pSearchEnd - pSearchBegin;
-			//const string includeString = string( pSearchBegin, pSearchEnd - pSearchBegin );
+		//const char* pSearchBegin;
+		//const char* pSearchEnd;
+		//while ( regex.Search( sourceCode.cStr(), &pSearchBegin, &pSearchEnd ) )
+		//{
+		//	const uint includeStartIndex = pSearchBegin - sourceCode.cStr();
+		//	const uint includeLength = pSearchEnd - pSearchBegin;
+		//	//const string includeString = string( pSearchBegin, pSearchEnd - pSearchBegin );
 
-			int length;
-			regex.GetSubExp( 1, &pSearchBegin, &length );
-			const string includeFileName = string( pSearchBegin, length );
-			
-			string includeContent = "";
-			{
-				const char* pIncludeContent = nullptr;
-				UINT includeSize;
-				if ( m_pIncludeHandler->Open( D3D_INCLUDE_LOCAL, includeFileName.cStr(), nullptr, (LPCVOID*)&pIncludeContent, &includeSize ) == S_OK )
-				{
-					includeContent = string( pIncludeContent, includeSize );
-					m_pIncludeHandler->Close( pIncludeContent );
-				}
-			}
+		//	int length;
+		//	regex.GetSubExp( 1, &pSearchBegin, &length );
+		//	const string includeFileName = string( pSearchBegin, length );
+		//	
+		//	string includeContent = "";
+		//	{
+		//		const char* pIncludeContent = nullptr;
+		//		UINT includeSize;
+		//		if ( m_pIncludeHandler->Open( D3D_INCLUDE_LOCAL, includeFileName.cStr(), nullptr, (LPCVOID*)&pIncludeContent, &includeSize ) == S_OK )
+		//		{
+		//			includeContent = string( pIncludeContent, includeSize );
+		//			m_pIncludeHandler->Close( pIncludeContent );
+		//		}
+		//	}
 
-			sourceCode = sourceCode.remove( includeStartIndex, includeLength );
-			sourceCode = sourceCode.insert( includeContent, includeStartIndex );
-			//sourceCode = sourceCode.replace( includeString, includeContent );
+		//	sourceCode = sourceCode.remove( includeStartIndex, includeLength );
+		//	sourceCode = sourceCode.insert( includeContent, includeStartIndex );
+		//	sourceCode = sourceCode.replace( includeString, includeContent );
 
-			//BufferedStream sourceStream;
-			//sourceStream.pBuffer		= (char*)sourceCode.cStr();
-			//sourceStream.bufferSize		= sourceCode.getLength();
-			//sourceStream.bufferPosition	= 0u;
+		//	BufferedStream sourceStream;
+		//	sourceStream.pBuffer		= (char*)sourceCode.cStr();
+		//	sourceStream.bufferSize		= sourceCode.getLength();
+		//	sourceStream.bufferPosition	= 0u;
 
-			//BufferedStream targetStream;
-			//targetStream.pBuffer		= (char*)TIKI_MEMORY_ALLOC( sourceCode.getLength() );
-			//targetStream.bufferSize		= sourceCode.getLength();
-			//targetStream.bufferPosition	= 0u;
+		//	BufferedStream targetStream;
+		//	targetStream.pBuffer		= (char*)TIKI_MEMORY_ALLOC( sourceCode.getLength() );
+		//	targetStream.bufferSize		= sourceCode.getLength();
+		//	targetStream.bufferPosition	= 0u;
 
-			//partialpreprocess( pParserState, &sourceStream, &targetStream );
-			//targetStream.pBuffer[ targetStream.bufferPosition ] = '\0';
-			//const char* pShaderCode = targetStream.pBuffer;
-			//
-			//sourceCode = pShaderCode;
-		}
+		//	partialpreprocess( pParserState, &sourceStream, &targetStream );
+		//	targetStream.pBuffer[ targetStream.bufferPosition ] = '\0';
+		//	const char* pShaderCode = targetStream.pBuffer;
+
+		//	sourceCode = pShaderCode;
+		//}
 				
 		//freeppproc( pParserState );
 
