@@ -41,7 +41,7 @@ namespace tiki
 		m_shaderConverter.create( &m_manager );
 		m_textureConverter.create( &m_manager );
 
-		TIKI_TRACE( "AssetConverter: started\n" );
+		TIKI_TRACE_INFO( "AssetConverter: started\n" );
 	}
 
 	void AssetConverter::dispose()
@@ -57,7 +57,7 @@ namespace tiki
 		m_manager.dispose();
 		m_converterMutex.dispose();
 
-		TIKI_TRACE( "AssetConverter: finish\n" );
+		TIKI_TRACE_INFO( "AssetConverter: finish\n" );
 	}
 
 	int AssetConverter::convertAll()
