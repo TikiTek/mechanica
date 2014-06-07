@@ -194,13 +194,25 @@ short WarningLevel = 2;
 int NoStdInc        = 0;
 int NoCurIncFirst   = 0;
 int CurDirIncLast   = 0;
-int file_and_stdout = 0;
 char *IncludeFile   = NULL;
 
+typedef struct _ReadStream
+{
+	const ReadBuffer*	pBuffer;
+	int					position;
+} ReadStream;
+
+typedef struct _WriteStream
+{
+	const WriteBuffer*	pBuffer;
+	int					position;
+} WriteStream;
+
 typedef struct OUTPUTCONTEXT {
-  char *buf;
-  int len,bufsize;
-  FILE *f;
+	char*		buf;
+	int			len;
+	int			bufsize;
+	WriteStream	fs;
 } OUTPUTCONTEXT;
 
 typedef struct INPUTCONTEXT {
@@ -220,7 +232,8 @@ typedef struct INPUTCONTEXT {
   int may_have_args;
 } INPUTCONTEXT;
 
-struct INPUTCONTEXT *C;
+struct INPUTCONTEXT*		C;
+const PreprocessParameters*	pParameters;
   
 int commented[STACKDEPTH],iflevel;
 /* commented = 0: output, 1: not output, 
@@ -233,20 +246,22 @@ int findIdent(const char *b,int l);
 void delete_macro(int i);
 
 /* various recent additions */
-void usage(void);
-void display_version(void);
-void bug(const char *s);
-void warning(const char *s);
-static void getDirname(const char *fname, char *dirname);
-static FILE *openInCurrentDir(const char *incfile);
-char *ArithmEval(int pos1,int pos2);
-void replace_definition_with_blank_lines(const char *start, const char *end, int skip);
-void replace_directive_with_blank_line(FILE *file);
-void write_include_marker(FILE *f, int lineno, char *filename, const char *marker);
-void construct_include_directive_marker(char **include_directive_marker,
-					const char *includemarker_input);
-void escape_backslashes(const char *instr, char **outstr);
-static void DoInclude(char *file_name);
+void			usage(void);
+void			display_version(void);
+void			bug(const char *s);
+void			warning(const char *s);
+static void		getDirname(const char *fname, char *dirname);
+static FILE*	openInCurrentDir(const char *incfile);
+char*			ArithmEval(int pos1,int pos2);
+void			replace_definition_with_blank_lines(const char *start, const char *end, int skip);
+void			replace_directive_with_blank_line(WriteBuffer* fs);
+void			write_include_marker(WriteStream* fs, int lineno, char *filename, const char *marker);
+void			construct_include_directive_marker(char **include_directive_marker, const char *includemarker_input);
+void			escape_backslashes(const char *instr, char **outstr);
+static void		DoInclude(char *file_name);
+
+static char		readChar( ReadStream* pStream );
+static void		writeChar( char c, WriteStream* pStream );
 
 /*
 ** strdup() and my_strcasecmp() are not ANSI C, so here we define our own
@@ -695,14 +710,10 @@ void outchar(char c)
   }
   else {
     if (dosmode&&(c==10)) {
-      fputc(13,C->out->f);
-      if (file_and_stdout)
-        fputc(13,stdout);
+      writeChar(13,&C->out->fs);
     }
     if (c!=13) {
-      fputc(c,C->out->f);
-      if (file_and_stdout)
-        fputc(c,stdout);
+      writeChar(c,&C->out->fs);
     }
   }
 }
@@ -1063,7 +1074,7 @@ void initthings(int argc, char **argv)
   C->argv=NULL;
   C->filename=my_strdup("stdin");
   C->out=malloc(sizeof *(C->out));
-  C->out->f=stdout;
+  C->out->fs.pBuffer=0;
   C->out->bufsize=0;
   C->lineno=1;
   isinput=isoutput=ismode=ishelp=hasmeta=usrmode=0;
@@ -1245,15 +1256,6 @@ void initthings(int argc, char **argv)
       if (!readModeDescription(arg,&(S->Meta),1))
 	  {usage(); exit(EXIT_FAILURE);}
       arg+=7;
-      break;
-    case 'O':
-      file_and_stdout = 1;
-    case 'o':
-      if (!(*(++arg)))
-	  {usage(); exit(EXIT_FAILURE);}
-      ishelp|=isoutput; isoutput=1;
-      C->out->f=fopen(*arg,"w");
-      if (C->out->f==NULL) bug("Cannot create output file");
       break;
     case 'D':
       if ((*arg)[2]==0) {
@@ -1494,7 +1496,7 @@ char *ProcessText(const char *buf,int l,int ambience)
   C->out->buf=malloc(80);
   C->out->len=0;
   C->out->bufsize=80;
-  C->out->f=NULL;
+  C->out->fs.pBuffer=NULL;
   C->lineno=T->lineno;
   C->bufsize=l+2;
   C->len=l+1;
@@ -2070,12 +2072,12 @@ static void DoInclude(char *file_name)
   }
 
   /* Include marker before the included contents */
-  write_include_marker(N->out->f, 1, C->filename, "1");
+  write_include_marker(&N->out->fs, 1, C->filename, "1");
   ProcessContext();
   /* Include marker after the included contents */
-  write_include_marker(N->out->f, N->lineno, N->filename, "2");
+  write_include_marker(&N->out->fs, N->lineno, N->filename, "2");
   /* Need to leave the blank line in lieu of #include, like cpp does */
-  replace_directive_with_blank_line(N->out->f);
+  replace_directive_with_blank_line(&N->out->fs);
   free(C);
   PopSpecs();
   C=N;
@@ -2187,11 +2189,11 @@ int ParsePossibleMeta(void)
       }
       lookupArgRefs(nmacros++);
     } else
-      replace_directive_with_blank_line(C->out->f);
+      replace_directive_with_blank_line(&C->out->fs);
     break;
      
   case 2: /* UNDEF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (!commented[iflevel]) {
       if (nparam==2 && WarningLevel > 0)
 	warning("Extra argument to #undef ignored");
@@ -2204,7 +2206,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 3: /* IFDEF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     iflevel++;
     if (iflevel==STACKDEPTH) bug("Too many nested #ifdefs");
     commented[iflevel]=commented[iflevel-1];
@@ -2221,7 +2223,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 4: /* IFNDEF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     iflevel++;
     if (iflevel==STACKDEPTH) bug("Too many nested #ifdefs");
     commented[iflevel]=commented[iflevel-1];
@@ -2237,7 +2239,7 @@ int ParsePossibleMeta(void)
     break;
     
   case 5: /* ELSE */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (!commented[iflevel] && (nparam>0) && WarningLevel > 0)
       warning("Extra argument to #else ignored");
     if (iflevel==0) bug("#else without #if");
@@ -2246,7 +2248,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 6: /* ENDIF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (!commented[iflevel] && (nparam>0) && WarningLevel > 0)
       warning("Extra argument to #endif ignored");
     if (iflevel==0) bug("#endif without #if");
@@ -2273,7 +2275,7 @@ int ParsePossibleMeta(void)
 
       DoInclude(incfile_name);
     } else
-      replace_directive_with_blank_line(C->out->f);
+      replace_directive_with_blank_line(&C->out->fs);
     break;
 
   case 8: /* EXEC */
@@ -2336,11 +2338,11 @@ int ParsePossibleMeta(void)
       }
       lookupArgRefs(nmacros++);
     } else
-      replace_directive_with_blank_line(C->out->f);
+      replace_directive_with_blank_line(&C->out->fs);
     break;
      
   case 10: /* IFEQ */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     iflevel++;
     if (iflevel==STACKDEPTH) bug("Too many nested #ifeqs");
     commented[iflevel]=commented[iflevel-1];
@@ -2355,7 +2357,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 11: /* IFNEQ */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     iflevel++;
     if (iflevel==STACKDEPTH) bug("Too many nested #ifeqs");
     commented[iflevel]=commented[iflevel-1];
@@ -2380,7 +2382,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 13: /* IF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     iflevel++;
     if (iflevel==STACKDEPTH) bug("Too many nested #ifs");
     commented[iflevel]=commented[iflevel-1];
@@ -2394,7 +2396,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 14: /* MODE */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (nparam==1) p2start=-1;
     if (!commented[iflevel])
       ProcessModeCommand(p1start,p1end,p2start,p2end);
@@ -2404,18 +2406,18 @@ int ParsePossibleMeta(void)
   case 15: { /* LINE */ 
     char buf[MAX_GPP_NUM_SIZE];
     sprintf(buf, "%d", C->lineno);
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     sendout(buf, strlen(buf), 0);
   }
     break;
 
   case 16: /* FILE */ 
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     sendout(C->filename, strlen(C->filename), 0);
     break;
 
   case 17: /* ELIF */
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (iflevel==0) bug("#elif without #if");
     if (!commented[iflevel-1]) {
       if (commented[iflevel]!=1) commented[iflevel]=2;
@@ -2431,7 +2433,7 @@ int ParsePossibleMeta(void)
     break;
      
   case 18: /* ERROR */ 
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (!commented[iflevel])
       bug(ProcessText(C->buf + p1start,
 		      (nparam == 2 ? p2end : p1end) - p1start,
@@ -2439,7 +2441,7 @@ int ParsePossibleMeta(void)
     break;
 
   case 19: /* WARNING */ 
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     if (!commented[iflevel]) {
       char *s;
       s=ProcessText(C->buf + p1start,
@@ -2459,7 +2461,7 @@ int ParsePossibleMeta(void)
 		    FLAG_META);
     if (!strftime(buf, MAX_GPP_DATE_SIZE, fmt, localtime(&now)))
       bug("date buffer exceeded");
-    replace_directive_with_blank_line(C->out->f);
+    replace_directive_with_blank_line(&C->out->fs);
     sendout(buf, strlen(buf), 0);
     free(fmt);
   }
@@ -2670,24 +2672,35 @@ static FILE *openInCurrentDir(const char *incfile)
 /* skip = # of \n's already output by other mechanisms, to be skipped */
 void replace_definition_with_blank_lines(const char *start, const char *end, int skip)
 {
-  if ((include_directive_marker != NULL) && (C->out->f != NULL)) {
-    while (start <= end) {
-      if (*start == '\n') {
-	if (skip) skip--; else fprintf(C->out->f,"\n");
-      }
-      start++;
-    }
-  }
+	if ((include_directive_marker != NULL) && (C->out->fs.pBuffer != NULL))
+	{
+		while (start <= end)
+		{
+			if (*start == '\n')
+			{
+				if (skip)
+				{
+					skip--; 
+				}
+				else
+				{
+					writeChar('\n', &C->out->fs);
+				}
+			}
+
+			start++;
+		}
+	}
 }
 
 /* insert blank line where the metas IFDEF,ELSE,INCLUDE, etc., stood in the
    input text
 */
-void replace_directive_with_blank_line(FILE *f)
+void replace_directive_with_blank_line(WriteBuffer* fs)
 {
-  if ((include_directive_marker != NULL) && (f != NULL)
-      && (!S->preservelf) && (S->Meta.mArgE[0]=='\n')) {
-    fprintf(f,"\n");
+  if ((include_directive_marker != NULL) && (fs->pData != NULL) && (!S->preservelf) && (S->Meta.mArgE[0]=='\n'))
+  {
+	  writeChar('\n', fs);
   }
 }
 
@@ -2786,10 +2799,43 @@ void construct_include_directive_marker(char **include_directive_marker,
   *(*include_directive_marker+out_idx) = '\0';
 }
 
-int preprocessText( const PreprocessParameters* pParameters )
+int preprocessText( const PreprocessParameters* pParams )
 {
-	return 0;
+	pParameters = pParams;
+
+	//initthings( argc,argv );
+	if (IncludeFile)
+	{
+		DoInclude( IncludeFile );
+	}
+
+	write_include_marker( &C->out->fs, 1, C->filename, "" );
+	ProcessContext();
+	
+	return EXIT_SUCCESS;
 }
+
+char readChar( ReadStream* pStream )
+{
+	if ( pStream->position == pStream->pBuffer->dataSize )
+	{
+		return EOF;
+	}
+
+	return pStream->pBuffer->pData[ pStream->position++ ];
+}
+
+void writeChar( char c, WriteStream* pStream )
+{
+	if ( pStream->position == pStream->pBuffer->dataCapacity )
+	{
+		return;
+	}
+
+	pStream->pBuffer->pData[ pStream->position++ ] = c;
+}
+
+
 
 //int main(int argc,char **argv)
 //{
