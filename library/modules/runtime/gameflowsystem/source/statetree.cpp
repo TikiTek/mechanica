@@ -93,12 +93,12 @@ namespace tiki
 			m_transition.path.push( destinationDefinition.stateHierarchy[ i ] );
 		}
 
-		TIKI_TRACE( "[statetree] start transition to: %i -> %i, path:", m_currentState, targetStateIndex );
+		TIKI_TRACE_DEBUG( "[statetree] start transition to: %i -> %i, path:", m_currentState, targetStateIndex );
 		for (uint i = 0u; i < m_transition.path.getCount(); ++i)
 		{
-			TIKI_TRACE( " %i", m_transition.path[ i ] );
+			TIKI_TRACE_DEBUG( " %i", m_transition.path[ i ] );
 		}
-		TIKI_TRACE( "\n" );
+		TIKI_TRACE_DEBUG( "\n" );
 
 		m_transition.pathIndex		= 0u;
 		m_transition.currentState	= m_currentState;
@@ -115,7 +115,7 @@ namespace tiki
 	{
 		m_isInitial = false;
 
-		TIKI_TRACE( "[statetree] state: %s(%u), step: %i, status: %i\n", m_stateDefinition[ m_transition.getCurrentTransitionState() ].pName, m_transition.getCurrentTransitionState(), m_transition.currentStep, newState );
+		TIKI_TRACE_DEBUG( "[statetree] state: %s(%u), step: %i, status: %i\n", m_stateDefinition[ m_transition.getCurrentTransitionState() ].pName, m_transition.getCurrentTransitionState(), m_transition.currentStep, newState );
 
 		switch ( newState )
 		{

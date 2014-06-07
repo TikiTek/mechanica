@@ -14,23 +14,26 @@ namespace tiki
 		TraceLevel_Error
 	};
 
+	typedef char* VA_ArgList;
+
 	namespace debug
 	{
 		typedef void(*TraceCallback)(cstring, TraceLevel);
 
-		bool	isDebuggerActive();
-
-		void	trace( cstring format, ... );
-		void	traceInfo( cstring format, ... );
-		void	traceWarning( cstring format, ... );
-		void	traceError( cstring format, ... );
-		void	traceDebug( cstring format, ... );
+		void	trace( const char* pFormat, TraceLevel level, VA_ArgList pArgs );
+		void	traceInfo( const char* pFormat, ... );
+		void	traceWarning( const char* pFormat, ... );
+		void	traceError( const char* pFormat, ... );
+		void	traceDebug( const char* pFormat, ... );
 		void	setTraceCallback( TraceCallback pCallback );
 
+		bool	isDebuggerActive();
 		void	breakPoint();
 
 		void	breakOnAlloc( int number );
 		void	dumpMemoryStats();
+
+		void	nativeTrace( const char* pText );
 	}
 }
 

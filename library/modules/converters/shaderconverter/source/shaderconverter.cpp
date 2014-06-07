@@ -18,7 +18,7 @@
 #	include <d3dcompiler.h>
 #endif
 
-#include "gpp.h"
+#include "fpp.h"
 #include "trexpp.h"
 
 namespace tiki
@@ -146,6 +146,11 @@ namespace tiki
 			return S_FALSE;
 		}
 
+		const List< string > getIncludeDirs() const
+		{
+			return m_includeDirs;
+		}
+
 	private:
 
 		enum
@@ -160,13 +165,27 @@ namespace tiki
 
 	};
 
+	struct FppContext
+	{
+		const char* pSourceData;
+		uint		sourceLength;
+		uint		sourcePosition;
 
-	tiki::crc32 ShaderConverter::getInputType() const
+		char*		pTargetData;
+		uint		targetLength;
+		uint		targetPosition;
+	};
+
+	static char*	fppRead( char* pBuffer, int size, void* pUserData );
+	static void		fppWrite( int c, void* pUserData );
+	static void		fppError( void* pUserData, char* pFormatString, va_list data );
+
+	crc32 ShaderConverter::getInputType() const
 	{
 		return crcString( "shader" );
 	}
 
-	tiki::crc32 ShaderConverter::getOutputType() const
+	crc32 ShaderConverter::getOutputType() const
 	{
 		return crcString( "shader" );
 	}
@@ -389,79 +408,65 @@ namespace tiki
 		string sourceCode = args.defineCode + formatString( "\n#include \"%s\"\n", args.fileName.cStr() );
 
 		{
-			PreprocessParameters parameters;
-			parameters.inputData.pData			= sourceCode.cStr();
-			parameters.inputData.dataSize		= sourceCode.getLength();
-			parameters.outputData.pData			= static_cast< char* >( TIKI_MEMORY_ALLOC( 1024u * 1024u ) );
-			parameters.outputData.dataCapacity	= 1024u * 1024u;
-			parameters.pOpenFileFunc			= nullptr;
-			parameters.pCloseFileFunc			= nullptr;
+			fppTag aTags[ 64u ];
+			fppTag* pCurrentTag = aTags;
 
-			if ( !preprocessText( &parameters ) )
+			FppContext context;
+			context.pSourceData		= sourceCode.cStr();
+			context.sourceLength	= sourceCode.getLength();
+			context.sourcePosition	= 0;
+			context.pTargetData		= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
+			context.targetLength	= 1024u * 1024u;
+			context.targetPosition	= 0u;
+
+			for (uint i = 0u; i < m_pIncludeHandler->getIncludeDirs().getCount(); ++i)
 			{
-				return false;
+				pCurrentTag->tag	= FPPTAG_INCLUDE_DIR;
+				pCurrentTag->data	= (void*)m_pIncludeHandler->getIncludeDirs()[ i ].cStr();
+				pCurrentTag++;
 			}
 
-			sourceCode = parameters.outputData.pData;
-			TIKI_MEMORY_FREE( parameters.outputData.pData );
+			const string fileName = path::getFilename( args.fileName );
+			pCurrentTag->tag	= FPPTAG_INPUT_NAME;
+			pCurrentTag->data	= (void*)fileName.cStr();
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_INPUT;
+			pCurrentTag->data	= (void*)fppRead;
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_OUTPUT;
+			pCurrentTag->data	= (void*)fppWrite;
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_ERROR;
+			pCurrentTag->data	= (void*)fppError;
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_USERDATA;
+			pCurrentTag->data	= (void*)&context;
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_LINE;
+			pCurrentTag->data	= (void*)FALSE;
+			pCurrentTag++;
+						
+			pCurrentTag->tag	= FPPTAG_IGNOREVERSION;
+			pCurrentTag->data	= (void*)FALSE;
+			pCurrentTag++;
+
+			pCurrentTag->tag	= FPPTAG_END;
+			pCurrentTag->data	= nullptr;
+			pCurrentTag++;
+
+			if ( fppPreProcess( aTags ) != 0 )
+			{
+				TIKI_TRACE_ERROR( "[shaderconverter] preprocessor failed.\n" );
+			}
+
+			context.pTargetData[ context.targetPosition ] = '\0';
+			sourceCode = context.pTargetData;
 		}
-
-		//symset*	pDefs	= initsymset();    
-		//symset*	pUndefs	= initsymset();    
-
-		//ppproc* pParserState = initppproc( pDefs, pUndefs );
-
-		//TRexpp regex;
-		//regex.Compile( "#[ ]*include[ ]+[\"<](.*)[\">]" );
-
-		//const char* pSearchBegin;
-		//const char* pSearchEnd;
-		//while ( regex.Search( sourceCode.cStr(), &pSearchBegin, &pSearchEnd ) )
-		//{
-		//	const uint includeStartIndex = pSearchBegin - sourceCode.cStr();
-		//	const uint includeLength = pSearchEnd - pSearchBegin;
-		//	//const string includeString = string( pSearchBegin, pSearchEnd - pSearchBegin );
-
-		//	int length;
-		//	regex.GetSubExp( 1, &pSearchBegin, &length );
-		//	const string includeFileName = string( pSearchBegin, length );
-		//	
-		//	string includeContent = "";
-		//	{
-		//		const char* pIncludeContent = nullptr;
-		//		UINT includeSize;
-		//		if ( m_pIncludeHandler->Open( D3D_INCLUDE_LOCAL, includeFileName.cStr(), nullptr, (LPCVOID*)&pIncludeContent, &includeSize ) == S_OK )
-		//		{
-		//			includeContent = string( pIncludeContent, includeSize );
-		//			m_pIncludeHandler->Close( pIncludeContent );
-		//		}
-		//	}
-
-		//	sourceCode = sourceCode.remove( includeStartIndex, includeLength );
-		//	sourceCode = sourceCode.insert( includeContent, includeStartIndex );
-		//	sourceCode = sourceCode.replace( includeString, includeContent );
-
-		//	BufferedStream sourceStream;
-		//	sourceStream.pBuffer		= (char*)sourceCode.cStr();
-		//	sourceStream.bufferSize		= sourceCode.getLength();
-		//	sourceStream.bufferPosition	= 0u;
-
-		//	BufferedStream targetStream;
-		//	targetStream.pBuffer		= (char*)TIKI_MEMORY_ALLOC( sourceCode.getLength() );
-		//	targetStream.bufferSize		= sourceCode.getLength();
-		//	targetStream.bufferPosition	= 0u;
-
-		//	partialpreprocess( pParserState, &sourceStream, &targetStream );
-		//	targetStream.pBuffer[ targetStream.bufferPosition ] = '\0';
-		//	const char* pShaderCode = targetStream.pBuffer;
-
-		//	sourceCode = pShaderCode;
-		//}
-				
-		//freeppproc( pParserState );
-
-		//freesymset( pDefs );
-		//freesymset( pUndefs );
 
 		targetData.create(
 			(const uint8*)sourceCode.cStr(),
@@ -469,5 +474,51 @@ namespace tiki
 		);
 
 		return true;
+	}
+
+	char* fppRead( char* pBuffer, int size, void* pUserData )
+	{
+		TIKI_ASSERT( pBuffer != nullptr );
+		TIKI_ASSERT( pUserData != nullptr );
+
+		FppContext* pContext = (FppContext*)pUserData;
+		
+		if ( pContext->sourcePosition == pContext->sourceLength )
+		{
+			return nullptr;
+		}
+
+		int bufferPosition = 0;
+		char c = 0;
+		do
+		{
+			c = pContext->pSourceData[ pContext->sourcePosition++ ];
+			pBuffer[ bufferPosition++ ] = c;
+		}
+		while ( c != '\n' && bufferPosition < size - 1 && pContext->sourcePosition < pContext->sourceLength );
+
+		pBuffer[ bufferPosition ] = '\0';
+		return pBuffer;
+	}
+
+	void fppWrite( int c, void* pUserData )
+	{
+		TIKI_ASSERT( pUserData != nullptr );
+
+		FppContext* pContext = (FppContext*)pUserData;
+		if ( pContext->targetPosition == pContext->targetLength )
+		{
+			TIKI_TRACE_ERROR( "[shaderconverter] Target Buffer is too small.\n" );
+			return;
+		}
+
+		pContext->pTargetData[ pContext->targetPosition++ ] = c;
+	}
+
+	void fppError( void* /*pUserData*/, char* pFormatString, va_list data )
+	{
+		TIKI_ASSERT( pFormatString != nullptr );
+
+		debug::trace( pFormatString, TraceLevel_None, data );
 	}
 }

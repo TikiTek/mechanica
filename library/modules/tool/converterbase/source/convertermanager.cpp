@@ -85,12 +85,12 @@ namespace tiki
 		s_pInstance = this;
 		debug::setTraceCallback( globalTraceCallback );
 
-		TIKI_TRACE( "ConverterManager: started\n" );
+		TIKI_TRACE_INFO( "ConverterManager: started\n" );
 	}
 
 	void ConverterManager::dispose()
 	{
-		TIKI_TRACE( "ConverterManager: shutdown\n" );
+		TIKI_TRACE_INFO( "ConverterManager: shutdown\n" );
 
 		debug::setTraceCallback( nullptr );
 
@@ -429,7 +429,7 @@ namespace tiki
 			pConversionMutex->lock();
 		}
 
-		TIKI_TRACE( "Building asset: %s\n", path::getFilename( params.sourceFile ).cStr() );
+		TIKI_TRACE_INFO( "Building asset: %s\n", path::getFilename( params.sourceFile ).cStr() );
 		
 		ConversionResult result;
 		result.addDependency( ConversionResult::DependencyType_Converter, "", "", pConverter->getConverterRevision() );

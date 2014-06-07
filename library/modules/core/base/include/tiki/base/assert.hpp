@@ -29,19 +29,17 @@
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	define TIKI_TRACE			::tiki::debug::trace
 #	define TIKI_TRACE_INFO		::tiki::debug::traceInfo
 #	define TIKI_TRACE_WARNING	::tiki::debug::traceWarning
 #	define TIKI_TRACE_ERROR		::tiki::debug::traceError
 #else
-#	define TIKI_TRACE( format, ... )
 #	define TIKI_TRACE_INFO( format, ... )
 #	define TIKI_TRACE_WARNING( format, ... )
 #	define TIKI_TRACE_ERROR( format, ... )
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-#	define TIKI_TRACE_DEBUG		::tiki::debug::trace
+#	define TIKI_TRACE_DEBUG		::tiki::debug::traceDebug
 #else
 #	define TIKI_TRACE_DEBUG( format, ... )
 #endif
