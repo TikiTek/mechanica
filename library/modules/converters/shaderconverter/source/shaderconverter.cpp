@@ -349,7 +349,7 @@ namespace tiki
 			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
-		const string sourceCode = args.defineCode + formatString( "\n#include \"%s\"", args.fileName.cStr() );
+		const string sourceCode = args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_ON\n#define TIKI_OPENGL4 TIKI_OFF\n#include \"%s\"", args.fileName.cStr() );
 
 		HRESULT result = D3DCompile(
 			sourceCode.cStr(),
@@ -405,7 +405,7 @@ namespace tiki
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
-		string sourceCode = args.defineCode + formatString( "\n#include \"%s\"\n", args.fileName.cStr() );
+		string sourceCode = args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 
 		{
 			fppTag aTags[ 64u ];
@@ -466,6 +466,8 @@ namespace tiki
 
 			context.pTargetData[ context.targetPosition ] = '\0';
 			sourceCode = context.pTargetData;
+
+			TIKI_MEMORY_FREE( context.pTargetData );
 		}
 
 		targetData.create(
