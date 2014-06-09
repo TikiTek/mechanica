@@ -13,78 +13,78 @@ struct GeometryBufferSample
 
 GeometryBufferSample createGeometryBufferSample( float3 diffuseColor, float3 selfIlluminationColor, float selfIlluminationFactor, float2 normal, float specluarBrightness, float specluarIntensity, float specluarPower )
 {
-	GeometryBufferSample sample;
-	sample.buffer0Sample.rgb	= diffuseColor;
-	sample.buffer0Sample.a		= specluarBrightness;
-	sample.buffer1Sample.rgb	= selfIlluminationColor;
-	sample.buffer1Sample.a		= selfIlluminationFactor / 32.0f;
-	sample.buffer2Sample.xy		= normal;
-	sample.buffer2Sample.z		= specluarIntensity;
-	sample.buffer2Sample.w		= specluarPower;
-	return sample;
+	GeometryBufferSample gSample;
+	gSample.buffer0Sample.rgb	= diffuseColor;
+	gSample.buffer0Sample.a		= specluarBrightness;
+	gSample.buffer1Sample.rgb	= selfIlluminationColor;
+	gSample.buffer1Sample.a		= selfIlluminationFactor / 32.0;
+	gSample.buffer2Sample.xy		= normal;
+	gSample.buffer2Sample.z		= specluarIntensity;
+	gSample.buffer2Sample.w		= specluarPower;
+	return gSample;
 }
 
-float3 getDiffuseColor( GeometryBufferSample sample )
+float3 getDiffuseColor( GeometryBufferSample gSample )
 {
-	return sample.buffer0Sample.rgb;
+	return gSample.buffer0Sample.rgb;
 }
 
-float3 getSelfIlluminationColor( GeometryBufferSample sample )
+float3 getSelfIlluminationColor( GeometryBufferSample gSample )
 {
-	return sample.buffer1Sample.rgb;
+	return gSample.buffer1Sample.rgb;
 }
 
-float getSelfIlluminationFactor( GeometryBufferSample sample )
+float getSelfIlluminationFactor( GeometryBufferSample gSample )
 {
-	return sample.buffer1Sample.a * 32.0f;
+	return gSample.buffer1Sample.a * 32.0;
 }
 
-float2 getCompressedNormal( GeometryBufferSample sample )
+float2 getCompressedNormal( GeometryBufferSample gSample )
 {
-	return sample.buffer2Sample.xy;
+	return gSample.buffer2Sample.xy;
 }
 
-float3 getNormal( GeometryBufferSample sample )
+float3 getNormal( GeometryBufferSample gSample )
 {
-	return decodeNormal( getCompressedNormal( sample ) );
+	return decodeNormal( getCompressedNormal( gSample ) );
 }
 
-float getSpecluarBrightness( GeometryBufferSample sample )
+float getSpecluarBrightness( GeometryBufferSample gSample )
 {
-	return sample.buffer0Sample.a;
+	return gSample.buffer0Sample.a;
 }
 
-float getSpecluarIntensity( GeometryBufferSample sample )
+float getSpecluarIntensity( GeometryBufferSample gSample )
 {
-	return sample.buffer2Sample.z;
+	return gSample.buffer2Sample.z;
 }
 
-float getSpecluarPower( GeometryBufferSample sample )
+float getSpecluarPower( GeometryBufferSample gSample )
 {
-	return sample.buffer2Sample.a;
+	return gSample.buffer2Sample.a;
 }
 
-GeometryBufferSample sampleGeometryBuffer( TIKI_TEXTURE2D gBuffer0, TIKI_TEXTURE2D gBuffer1, TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )
+GeometryBufferSample gSampleGeometryBuffer( TIKI_TEXTURE2D gBuffer0, TIKI_TEXTURE2D gBuffer1, TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )
 {
-	GeometryBufferSample sample;
-	sample.buffer0Sample = TIKI_TEX2D( gBuffer0, sam, texCoord );
-	sample.buffer1Sample = TIKI_TEX2D( gBuffer1, sam, texCoord );
-	sample.buffer2Sample = TIKI_TEX2D( gBuffer2, sam, texCoord );
+	GeometryBufferSample gSample;
+	gSample.buffer0Sample = TIKI_TEX2D( gBuffer0, sam, texCoord );
+	gSample.buffer1Sample = TIKI_TEX2D( gBuffer1, sam, texCoord );
+	gSample.buffer2Sample = TIKI_TEX2D( gBuffer2, sam, texCoord );
 
-	return sample;
+	return gSample;
 }
 
-float3 sampleDiffuseColor( TIKI_TEXTURE2D gBuffer0, TIKI_SAMPLER sam, float2 texCoord )
+float3 gSampleDiffuseColor( TIKI_TEXTURE2D gBuffer0, TIKI_SAMPLER sam, float2 texCoord )
 {
 	return TIKI_TEX2D( gBuffer0, sam, texCoord ).rgb;
 }
 
-float3 sampleSelfIlluminationColor( TIKI_TEXTURE2D gBuffer1, TIKI_SAMPLER sam, float2 texCoord )
+float3 gSampleSelfIlluminationColor( TIKI_TEXTURE2D gBuffer1, TIKI_SAMPLER sam, float2 texCoord )
 {
 	return TIKI_TEX2D( gBuffer1, sam, texCoord ).rgb;
 }
 
-float3 sampleNormal( TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )
+float3 gSampleNormal( TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )
 {
 	return decodeNormal( TIKI_TEX2D( gBuffer2, sam, texCoord ).xy );
 }

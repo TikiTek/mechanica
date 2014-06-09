@@ -10,7 +10,7 @@ module:add_dependency( "converterbase" );
 module:add_dependency( "graphicsbase" );
 module:add_dependency( "trex" );
 module:add_dependency( "fcpp" );
-module:add_dependency( "hlslang" );
+module:add_dependency( "glslang" );
 module:add_dependency( "dlls" );
 
 module:add_library_file( "d3dcompiler" );

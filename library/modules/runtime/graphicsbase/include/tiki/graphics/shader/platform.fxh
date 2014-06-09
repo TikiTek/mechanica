@@ -103,7 +103,7 @@
 
 // types
 
-#define TIKI_SAMPLER		sampler1D // todo
+#define TIKI_SAMPLER		float
 #define TIKI_TEXTURE1D		sampler1D
 #define TIKI_TEXTURE2D		sampler2D
 #define TIKI_TEXTURE3D		sampler3D
@@ -113,6 +113,12 @@
 #define float2		vec2
 #define float3		vec3
 #define float4		vec4
+
+#define half		float
+#define half1		float
+#define half2		vec2
+#define half3		vec3
+#define half4		vec4
 
 #define float3x3	mat3x3
 #define float4x4	mat4x4
@@ -126,14 +132,14 @@
 #define TIKI_DEFINE_TEXTURE3D( slot, name )		uniform sampler3D name : register( TIKI_CONCAT( t, slot ) )
 #define TIKI_DEFINE_TEXTURECUBE( slot, name )	uniform samplerCube name : register( TIKI_CONCAT( t, slot ) )
 
-#define TIKI_DEFINE_SAMPLER( slot, name ) struct name { float _unused; }
+#define TIKI_DEFINE_SAMPLER( slot, name ) float name = 43.0
 
 // functions
 
-#define TIKI_TEX1D( tex, sam, u )		tex1D( tex, u.x )
-#define TIKI_TEX2D( tex, sam, uv )		tex2D( tex, uv.xy )
-#define TIKI_TEX3D( tex, sam, uvw )		tex3D( tex, uvw.xyz )
-#define TIKI_TEXCUBE( tex, sam, uvw )	texCUBE( tex, uvw.xyz )
+#define TIKI_TEX1D( tex, sam, u )		texture( tex, u )
+#define TIKI_TEX2D( tex, sam, uv )		texture( tex, uv )
+#define TIKI_TEX3D( tex, sam, uvw )		texture( tex, uvw )
+#define TIKI_TEXCUBE( tex, sam, uvw )	texture( tex, uvw )
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
