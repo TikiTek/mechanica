@@ -18,7 +18,7 @@
 #	include <d3dcompiler.h>
 #endif
 
-#include "HLSL2GLSL.h"
+#include "ShaderLang.h"
 #include "fpp.h"
 #include "trexpp.h"
 
@@ -472,42 +472,24 @@ namespace tiki
 			TIKI_MEMORY_FREE( context.pTargetData );
 		}
 
-		// hlsl2glsl
+		// parse code
 		{
-			TIKI_TRACE_INFO( sourceCode.cStr() );
+			ShInitialize();
 
-			Hlsl2Glsl_Initialize();
+			glslang::TShader shaderTest( EShLanguage::EShLangVertex );
 
-			const ShHandle compilerHandle = Hlsl2Glsl_ConstructCompiler( args.type == ShaderType_VertexShader ? EShLangVertex : EShLangFragment );
-			if ( compilerHandle != nullptr )
+			const char* pSourceCodeString = sourceCode.cStr();
+			shaderTest.setStrings( &pSourceCodeString, 1u );
+
+			TBuiltInResource shaderResources = { 0 };
+			if ( !shaderTest.parse( &shaderResources, 330, true, EShMsgDefault ) )
 			{
-				if ( Hlsl2Glsl_Parse( compilerHandle, sourceCode.cStr(), ETargetGLSL_ES_300, 0u ) )
-				{
-					if ( Hlsl2Glsl_Translate( compilerHandle, args.entryPoint.cStr(), ETargetGLSL_ES_300, 0u )  )
-					{
-						sourceCode = Hlsl2Glsl_GetShader( compilerHandle );
-					}
-					else
-					{
-						TIKI_TRACE_ERROR( "[shaderconverter] Translation has failed.\n" );
-						TIKI_TRACE_INFO( Hlsl2Glsl_GetInfoLog( compilerHandle ) );
-						TIKI_TRACE_INFO( sourceCode.cStr() );
-					}
-				}
-				else
-				{
-					TIKI_TRACE_ERROR( "[shaderconverter] HLSL parser has return an error.\n" );
-					TIKI_TRACE_INFO( sourceCode.cStr() );
-				}
+				TIKI_TRACE_ERROR( "[shaderconverter] parser has return an error.\n" );
+				TIKI_TRACE_INFO( sourceCode.cStr() );
+				TIKI_TRACE_INFO( shaderTest.getInfoLog() );
 			}
 
-			if ( compilerHandle != nullptr )
-			{
-				Hlsl2Glsl_DestructCompiler( compilerHandle );
-			}
-
-			Hlsl2Glsl_Shutdown();
-
+			ShFinalize();
 		}
 
 		targetData.create(

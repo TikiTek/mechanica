@@ -5,19 +5,19 @@
 
 float2 encodeNormal( float3 normal )
 {
-	float p = sqrt( normal.z * 8.0f + 8.0f );
-    return normal.xy / p + 0.5f;
+	float p = sqrt( normal.z * 8.0 + 8.0 );
+    return normal.xy / p + 0.5;
 }
 
 float3 decodeNormal( float2 compressedNormal )
 {
-	half2 fenc	= compressedNormal * 4.0f - 2.0f;
+	half2 fenc	= compressedNormal * 4.0 - 2.0;
     half f		= dot( fenc, fenc );
-    half g		= sqrt( 1.0f - f / 4.0f );
+    half g		= sqrt( 1.0 - f / 4.0 );
 
     half3 normal;
     normal.xy	= fenc * g;
-    normal.z	= 1 - f / 2.0f;
+    normal.z	= 1.0 - f / 2.0;
 
     return normal;
 }
