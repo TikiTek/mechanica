@@ -23,19 +23,19 @@
 // constants
 #define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
 
-#define TIKI_DEFINE_TEXTURE1D( slot, name ); Texture1D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE2D( slot, name ); Texture2D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE3D( slot, name ); Texture3D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURECUBE( slot, name ); TextureCube name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE1D( slot, name )		Texture1D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE2D( slot, name )		Texture2D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE3D( slot, name )		Texture3D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURECUBE( slot, name )	TextureCube name : register( TIKI_CONCAT( t, slot ) )
 
-#define TIKI_DEFINE_SAMPLER( slot, name ); SamplerState name : register( TIKI_CONCAT( s, slot ) )
+#define TIKI_DEFINE_SAMPLER( slot, name )		SamplerState name : register( TIKI_CONCAT( s, slot ) )
 
 // functions
 
-#define TIKI_TEX1D( tex, sam, u ) tex.Sample( sam, u.x )
-#define TIKI_TEX2D( tex, sam, uv ) tex.Sample( sam, uv.xy )
-#define TIKI_TEX3D( tex, sam, uvw ) tex.Sample( sam, uvw.xyz )
-#define TIKI_TEXCUBE( tex, sam, uvw ) tex.Sample( sam, uvw.xyz )
+#define TIKI_TEX1D( tex, sam, u )		tex.Sample( sam, u.x )
+#define TIKI_TEX2D( tex, sam, uv )		tex.Sample( sam, uv.xy )
+#define TIKI_TEX3D( tex, sam, uvw )		tex.Sample( sam, uvw.xyz )
+#define TIKI_TEXCUBE( tex, sam, uvw )	tex.Sample( sam, uvw.xyz )
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
@@ -103,33 +103,37 @@
 
 // types
 
-#define TIKI_SAMPLER		SamplerState
-#define TIKI_TEXTURE1D		Texture1D
-#define TIKI_TEXTURE2D		Texture2D
-#define TIKI_TEXTURE3D		Texture3D
-#define TIKI_TEXTURECUBE	TextureCube
+#define TIKI_SAMPLER		sampler1D // todo
+#define TIKI_TEXTURE1D		sampler1D
+#define TIKI_TEXTURE2D		sampler2D
+#define TIKI_TEXTURE3D		sampler3D
+#define TIKI_TEXTURECUBE	samplerCube
 
 #define float1		float
 #define float2		vec2
 #define float3		vec3
 #define float4		vec4
 
+#define float3x3	mat3x3
+#define float4x4	mat4x4
+
 // constants
-#define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
+#define TIKI_DEFINE_CONSTANT( slot, type, name ) layout(location = slot) uniform type ## name { type name; }
+//cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
 
-#define TIKI_DEFINE_TEXTURE1D( slot, name ); Texture1D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE2D( slot, name ); Texture2D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE3D( slot, name ); Texture3D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURECUBE( slot, name ); TextureCube name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE1D( slot, name )		uniform sampler1D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE2D( slot, name )		uniform sampler2D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE3D( slot, name )		uniform sampler3D name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURECUBE( slot, name )	uniform samplerCube name : register( TIKI_CONCAT( t, slot ) )
 
-#define TIKI_DEFINE_SAMPLER( slot, name ); SamplerState name : register( TIKI_CONCAT( s, slot ) )
+#define TIKI_DEFINE_SAMPLER( slot, name ) struct name { float _unused; }
 
 // functions
 
-#define TIKI_TEX1D( tex, sam, u ) tex.Sample( sam, u.x )
-#define TIKI_TEX2D( tex, sam, uv ) tex.Sample( sam, uv.xy )
-#define TIKI_TEX3D( tex, sam, uvw ) tex.Sample( sam, uvw.xyz )
-#define TIKI_TEXCUBE( tex, sam, uvw ) tex.Sample( sam, uvw.xyz )
+#define TIKI_TEX1D( tex, sam, u )		tex1D( tex, u.x )
+#define TIKI_TEX2D( tex, sam, uv )		tex2D( tex, uv.xy )
+#define TIKI_TEX3D( tex, sam, uvw )		tex3D( tex, uvw.xyz )
+#define TIKI_TEXCUBE( tex, sam, uvw )	texCUBE( tex, uvw.xyz )
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
@@ -137,10 +141,10 @@
 #define TIKI_INPUT_POSITION2	POSITION2
 #define TIKI_INPUT_POSITION3	POSITION3
 
-#define TIKI_OUTPUT_POSITION0	SV_POSITION0
-#define TIKI_OUTPUT_POSITION1	SV_POSITION1
-#define TIKI_OUTPUT_POSITION2	SV_POSITION2
-#define TIKI_OUTPUT_POSITION3	SV_POSITION3
+#define TIKI_OUTPUT_POSITION0	POSITION0
+#define TIKI_OUTPUT_POSITION1	POSITION1
+#define TIKI_OUTPUT_POSITION2	POSITION2
+#define TIKI_OUTPUT_POSITION3	POSITION3
 
 #define TIKI_TEXCOORD0			TEXCOORD0
 #define TIKI_TEXCOORD1			TEXCOORD1
@@ -182,16 +186,16 @@
 #define TIKI_JOINTWEIGHTS3		BLENDWEIGHT3
 
 // semantics output
-#define TIKI_OUTPUT_COLOR0		SV_TARGET0
-#define TIKI_OUTPUT_COLOR1		SV_TARGET1
-#define TIKI_OUTPUT_COLOR2		SV_TARGET2
-#define TIKI_OUTPUT_COLOR3		SV_TARGET3
-#define TIKI_OUTPUT_COLOR4		SV_TARGET4
-#define TIKI_OUTPUT_COLOR5		SV_TARGET5
-#define TIKI_OUTPUT_COLOR6		SV_TARGET6
-#define TIKI_OUTPUT_COLOR7		SV_TARGET7
+#define TIKI_OUTPUT_COLOR0		COLOR0
+#define TIKI_OUTPUT_COLOR1		COLOR1
+#define TIKI_OUTPUT_COLOR2		COLOR2
+#define TIKI_OUTPUT_COLOR3		COLOR3
+#define TIKI_OUTPUT_COLOR4		COLOR4
+#define TIKI_OUTPUT_COLOR5		COLOR5
+#define TIKI_OUTPUT_COLOR6		COLOR6
+#define TIKI_OUTPUT_COLOR7		COLOR7
 
-#define TIKI_OUTPUT_DEPTH		SV_DEPTH
+#define TIKI_OUTPUT_DEPTH		DEPTH
 
 #endif
 

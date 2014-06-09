@@ -79,8 +79,17 @@ namespace tiki
 #define TIKI_GRAPHICS_NAMESPACE_BEGIN
 #define TIKI_GRAPHICS_NAMESPACE_END
 
+#if TIKI_ENABLED( TIKI_HLSL4 )
+
 typedef float3x3 GraphicsMatrix33;
 typedef float4x4 GraphicsMatrix44;
+
+#elif TIKI_ENABLED( TIKI_OPENGL4 )
+
+#define GraphicsMatrix33 mat3x3
+#define GraphicsMatrix44 mat4x4
+
+#endif
 
 #endif
 
