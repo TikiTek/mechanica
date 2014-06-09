@@ -5,11 +5,16 @@
 #include "shader/platform.fxh"
 #include "shader/geometrybuffer.fxh"
 
-struct VertexToPixel
-{
-	float4 position	: TIKI_OUTPUT_POSITION0;
-	float2 texCoord	: TIKI_TEXCOORD;
-};
+TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel )
+	TIKI_VERTEX_TO_PIXEL( float4, position, TIKI_OUTPUT_POSITION )
+	TIKI_VERTEX_TO_PIXEL( float2, texCoord, TIKI_TEXCOORD )
+TIKI_VERTEX_TO_PIXEL_END( VertexToPixel )
+
+//struct VertexToPixel
+//{
+//	float4 position	: TIKI_OUTPUT_POSITION0;
+//	float2 texCoord	: TIKI_TEXCOORD;
+//};
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,20 +22,28 @@ struct VertexToPixel
 ////////////////////////////////////////////////////////////////////////////////
 
 // types
-struct VertexInput
-{
-	float2 position	: TIKI_INPUT_POSITION0;
-	float2 texCoord	: TIKI_TEXCOORD;
-};
+TIKI_VERTEX_INPUT_BEGIN( VertexInput )
+	TIKI_VERTEX_INPUT( 0, float2, position, TIKI_INPUT_POSITION )
+	TIKI_VERTEX_INPUT( 1, float2, texCoord, TIKI_TEXCOORD )
+TIKI_VERTEX_INPUT_END( VertexInput )
 
-VertexToPixel main( VertexInput input )
-{
-    VertexToPixel output;
+//struct VertexInput
+//{
+//	float2 position	: TIKI_INPUT_POSITION0;
+//	float2 texCoord	: TIKI_TEXCOORD;
+//};
 
-    output.position = float4( input.position, 0.0f, 1.0f );
-	output.texCoord = input.texCoord;
-    
-    return output;
+TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
+{
+	TIKI_VERTEX_OUTPUT_BEGIN( VertexToPixel );
+
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 0.0f, 1.0f );
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
+
+	TIKI_VERTEX_OUTPUT_SET_POSITION( position, position );
+	TIKI_VERTEX_OUTPUT_SET( texCoord, texCoord );
+
+	TIKI_VERTEX_OUTPUT_END( VertexToPixel );
 }
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
