@@ -125,7 +125,6 @@
 
 // constants
 #define TIKI_DEFINE_CONSTANT( slot, type, name ) layout(location = slot) uniform type ## name { type name; }
-//cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
 
 #define TIKI_DEFINE_TEXTURE1D( slot, name )		uniform sampler1D name : register( TIKI_CONCAT( t, slot ) )
 #define TIKI_DEFINE_TEXTURE2D( slot, name )		uniform sampler2D name : register( TIKI_CONCAT( t, slot ) )
@@ -140,6 +139,68 @@
 #define TIKI_TEX2D( tex, sam, uv )		texture( tex, uv )
 #define TIKI_TEX3D( tex, sam, uvw )		texture( tex, uvw )
 #define TIKI_TEXCUBE( tex, sam, uvw )	texture( tex, uvw )
+
+// entry point
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#define TIKI_ENTRY_POINT( inputType, outputType, name ) void name()
+
+#endif
+
+// vertex input
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#	define TIKI_VERTEX_INPUT_BEGIN( name )
+#	define TIKI_VERTEX_INPUT_END( name )
+#	define TIKI_VERTEX_INPUT( slot, type, name, semantic )	layout(location = slot) in type in ## name;
+#	define TIKI_VERTEX_INPUT_GET( name ) in ## name
+
+#else
+
+#	define TIKI_VERTEX_INPUT_BEGIN( name )
+#	define TIKI_VERTEX_INPUT_END( name )
+#	define TIKI_VERTEX_INPUT( slot, type, name, semantic )
+#	define TIKI_VERTEX_INPUT_GET( name )
+
+#endif
+
+// vertex output
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#	define TIKI_VERTEX_OUTPUT_BEGIN( type )
+#	define TIKI_VERTEX_OUTPUT_END( type )
+#	define TIKI_VERTEX_OUTPUT_SET_POSITION( name, value ) gl_Position = value
+#	define TIKI_VERTEX_OUTPUT_SET( name, value ) out ## name = value
+
+#else
+
+#	define TIKI_VERTEX_OUTPUT_BEGIN( type )
+#	define TIKI_VERTEX_OUTPUT_END( type )
+#	define TIKI_VERTEX_OUTPUT_SET_POSITION( name, value )
+#	define TIKI_VERTEX_OUTPUT_SET( name, value )
+
+#endif
+
+// vertex to pixel
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#	define TIKI_VERTEX_TO_PIXEL_BEGIN( name )
+#	define TIKI_VERTEX_TO_PIXEL_END( name )
+#	define TIKI_VERTEX_TO_PIXEL( type, name, semantic ) out type out ## name;
+
+#elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
+
+#	define TIKI_VERTEX_TO_PIXEL_BEGIN( name )
+#	define TIKI_VERTEX_TO_PIXEL_END( name )
+#	define TIKI_VERTEX_TO_PIXEL( type, name, semantic ) in type in ## name;
+
+#else
+
+#	define TIKI_VERTEX_TO_PIXEL_BEGIN( name )
+#	define TIKI_VERTEX_TO_PIXEL_END( name )
+#	define TIKI_VERTEX_TO_PIXEL( type, name, semantic )
+
+#endif
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
