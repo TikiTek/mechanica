@@ -16,12 +16,12 @@ float reconstructLinearDepth( TIKI_TEXTURE2D tex, TIKI_SAMPLER sam, float2 scree
 
 float2 reconstructClipSpacePosition( float2 screenSpacePosition )
 {
-	return screenSpacePosition * float2( 2.0f, -2.0f ) - float2( 1.0f, -1.0f );
+	return screenSpacePosition * float2( 2.0, -2.0 ) - float2( 1.0, -1.0 );
 }
 
 float4 reconstructProjectionSpacePosition( float2 screenSpacePosition, float depth )
 {
-	return float4( screenSpacePosition * float2( 2.0f, -2.0f ) - float2( 1.0f, -1.0f ), depth, 1.0f );
+	return float4( screenSpacePosition * float2( 2.0, -2.0 ) - float2( 1.0, -1.0 ), depth, 1.0 );
 }
 
 float3 reconstructViewSpacePosition( float2 clipSpacePosition, float linearDepth, CameraParameter camera )
