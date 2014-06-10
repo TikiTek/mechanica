@@ -476,7 +476,19 @@ namespace tiki
 		{
 			ShInitialize();
 
-			glslang::TShader shaderTest( EShLanguage::EShLangVertex );
+			const EShLanguage s_aLanguageMapping[] =
+			{
+				EShLangCount,			// ShaderType_Effect
+				EShLangVertex,			// ShaderType_VertexShader
+				EShLangFragment,		// ShaderType_PixelShader
+				EShLangGeometry,		// ShaderType_GeometrieShader
+				EShLangTessControl,		// ShaderType_HullShader
+				EShLangTessEvaluation,	// ShaderType_DomainShader
+				EShLangCompute			// ShaderType_ComputeShader
+			};
+			TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aLanguageMapping ) == ShaderType_Count );
+
+			glslang::TShader shaderTest( s_aLanguageMapping[ args.type ] );
 
 			const char* pSourceCodeString = sourceCode.cStr();
 			shaderTest.setStrings( &pSourceCodeString, 1u );
