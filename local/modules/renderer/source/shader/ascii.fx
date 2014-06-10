@@ -5,10 +5,10 @@
 #include "shader/platform.fxh"
 #include "shader/geometrybuffer.fxh"
 
-TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel )
-	TIKI_VERTEX_TO_PIXEL( float4, position, TIKI_OUTPUT_POSITION )
-	TIKI_VERTEX_TO_PIXEL( float2, texCoord, TIKI_TEXCOORD )
-TIKI_VERTEX_TO_PIXEL_END( VertexToPixel )
+TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position, TIKI_OUTPUT_POSITION )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord, TIKI_TEXCOORD )
+TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
 
 //struct VertexToPixel
 //{
@@ -22,10 +22,10 @@ TIKI_VERTEX_TO_PIXEL_END( VertexToPixel )
 ////////////////////////////////////////////////////////////////////////////////
 
 // types
-TIKI_VERTEX_INPUT_BEGIN( VertexInput )
-	TIKI_VERTEX_INPUT( 0, float2, position, TIKI_INPUT_POSITION )
-	TIKI_VERTEX_INPUT( 1, float2, texCoord, TIKI_TEXCOORD )
-TIKI_VERTEX_INPUT_END( VertexInput )
+TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float2, position, TIKI_INPUT_POSITION )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float2, texCoord, TIKI_TEXCOORD )
+TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
 
 //struct VertexInput
 //{
@@ -35,15 +35,15 @@ TIKI_VERTEX_INPUT_END( VertexInput )
 
 TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
-	TIKI_VERTEX_OUTPUT_BEGIN( VertexToPixel );
+	TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 0.0f, 1.0f );
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 0.0, 1.0 );
 	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
 
-	TIKI_VERTEX_OUTPUT_SET_POSITION( position, position );
-	TIKI_VERTEX_OUTPUT_SET( texCoord, texCoord );
+	TIKI_VERTEX_TO_PIXEL_SET_POSITION( position, position );
+	TIKI_VERTEX_TO_PIXEL_SET( texCoord, texCoord );
 
-	TIKI_VERTEX_OUTPUT_END( VertexToPixel );
+	TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
@@ -72,20 +72,26 @@ TIKI_DEFINE_TEXTURE3D( 1, t_ascii );
 
 #endif
 
-float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
+TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
+	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
+TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
+
+TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
+	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
+
 #if TIKI_DOWNSAMPLE
-	float4 projectedPosition = float4( reconstructClipSpacePosition( input.texCoord ), t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r, 1.0f );
+	float4 projectedPosition = float4( reconstructClipSpacePosition( input.texCoord ), t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r, 1.0 );
 	float4 viewPosition2 = mul( projectedPosition, c_pixelData.inverseProjection );
 	float3 viewPosition = viewPosition2.xyz / viewPosition2.w;
 
 	float2 screenSize = getScreenSize( c_pixelData );
 	
     // directional search matrix.
-    float3x3 GX = float3x3( -1.0f, 0.0f, 1.0f, -2.0f, 0.0f, 2.0f, -1.0f,  0.0f,  1.0f );
-    float3x3 GY = float3x3(  1.0f, 2.0f, 1.0f,  0.0f, 0.0f, 0.0f, -1.0f, -2.0f, -1.0f );
+    float3x3 GX = float3x3( -1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0,  0.0,  1.0 );
+    float3x3 GY = float3x3(  1.0, 2.0, 1.0,  0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
 
-    float4 fTotalSum	= float4( 0.0f, 0.0f, 0.0f, 0.0f );
+    float4 fTotalSum	= float4( 0.0, 0.0, 0.0, 0.0 );
 	
     // Findout X , Y index of incoming pixel
 	float fWidth = screenSize.x / 4;
@@ -96,12 +102,12 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
     float fYIndex = input.texCoord.y * fHeight;
     if( !( fYIndex < 1.0 || fYIndex > fHeight - 1.0 || fXIndex < 1.0 || fXIndex > fWidth - 1.0 ) )
     {
-		float4 sumX		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
-		float4 sumY		= float4( 0.0f, 0.0f, 0.0f, 0.0f );
+		float4 sumX		= float4( 0.0, 0.0, 0.0, 0.0 );
+		float4 sumY		= float4( 0.0, 0.0, 0.0, 0.0 );
 
-	    for(float I=-1.0; I <= 1.0f; I = I + 1.0f)
+	    for(float I=-1.0; I <= 1.0; I = I + 1.0)
         {
-            for(float J=-1.0; J <= 1.0f; J = J + 1.0f)
+            for(float J=-1.0; J <= 1.0; J = J + 1.0)
             {
                 float texCoordX = ( fXIndex + I + 0.5f ) / fWidth;
                 float texCoordY = ( fYIndex + J + 0.5f ) / fHeight;
@@ -119,22 +125,24 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
         fTotalSum = sqrt( fTem );
     }
 	
-	float edgeAlpha = dot( fTotalSum, 1.0f ) / 8.0f;
+	float edgeAlpha = dot( fTotalSum, 1.0 ) / 8.0;
 	float4 color = TIKI_TEX2D( t_accumulationBuffer, s_samplerLinear, input.texCoord );
-	color.a = ( viewPosition.z / 10.0f ) + ( edgeAlpha * 2.0f );
+	color.a = ( viewPosition.z / 10.0 ) + ( edgeAlpha * 2.0 );
 #else
-	float4 color = TIKI_TEX2D( t_downsample, s_samplerNearst, input.texCoord );
+	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
+	float4 color = TIKI_TEX2D( t_downsample, s_samplerNearst, texCoord );
 
-	float3 uvw = float3( input.texCoord, 0.0f );
-	uvw.x *= 105.0f;
-	uvw.y *= 60.0f;
+	float3 uvw = float3( texCoord, 0.0 );
+	uvw.x *= 105.0;
+	uvw.y *= 60.0;
 	uvw.z = color.a;
 
 	float ascii = TIKI_TEX3D( t_ascii, s_samplerLinear, uvw ).r;
-	color = float4( color.rgb * ascii.rrr, 1.0f);
+	color = float4( color.xyz * ascii.rrr, 1.0 );
 #endif
 
-	return color;
+	TIKI_PIXEL_OUTPUT_SET( color, color );
+	TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else
