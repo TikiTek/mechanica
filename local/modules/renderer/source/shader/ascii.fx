@@ -1,6 +1,7 @@
 // vs-features= ps-features=TIKI_DOWNSAMPLE
 
-#version 300 es
+#version 400
+//300 es
 
 #include "shader/platform.fxh"
 #include "shader/geometrybuffer.fxh"

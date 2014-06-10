@@ -494,7 +494,7 @@ namespace tiki
 			shaderTest.setStrings( &pSourceCodeString, 1u );
 
 			TBuiltInResource shaderResources = { 0 };
-			if ( !shaderTest.parse( &shaderResources, 330, true, EShMsgDefault ) )
+			if ( !shaderTest.parse( &shaderResources, 400, true, EShMsgDefault ) )
 			{
 				TIKI_TRACE_ERROR( "[shaderconverter] parser has return an error.\n" );
 				TIKI_TRACE_INFO( sourceCode.cStr() );
