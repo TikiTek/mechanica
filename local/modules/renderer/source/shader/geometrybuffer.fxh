@@ -14,9 +14,9 @@ struct GeometryBufferSample
 GeometryBufferSample createGeometryBufferSample( float3 diffuseColor, float3 selfIlluminationColor, float selfIlluminationFactor, float2 normal, float specluarBrightness, float specluarIntensity, float specluarPower )
 {
 	GeometryBufferSample gSample;
-	gSample.buffer0Sample.rgb	= diffuseColor;
+	gSample.buffer0Sample.xyz	= diffuseColor;
 	gSample.buffer0Sample.a		= specluarBrightness;
-	gSample.buffer1Sample.rgb	= selfIlluminationColor;
+	gSample.buffer1Sample.xyz	= selfIlluminationColor;
 	gSample.buffer1Sample.a		= selfIlluminationFactor / 32.0;
 	gSample.buffer2Sample.xy		= normal;
 	gSample.buffer2Sample.z		= specluarIntensity;
@@ -26,12 +26,12 @@ GeometryBufferSample createGeometryBufferSample( float3 diffuseColor, float3 sel
 
 float3 getDiffuseColor( GeometryBufferSample gSample )
 {
-	return gSample.buffer0Sample.rgb;
+	return gSample.buffer0Sample.xyz;
 }
 
 float3 getSelfIlluminationColor( GeometryBufferSample gSample )
 {
-	return gSample.buffer1Sample.rgb;
+	return gSample.buffer1Sample.xyz;
 }
 
 float getSelfIlluminationFactor( GeometryBufferSample gSample )
@@ -76,12 +76,12 @@ GeometryBufferSample gSampleGeometryBuffer( TIKI_TEXTURE2D gBuffer0, TIKI_TEXTUR
 
 float3 gSampleDiffuseColor( TIKI_TEXTURE2D gBuffer0, TIKI_SAMPLER sam, float2 texCoord )
 {
-	return TIKI_TEX2D( gBuffer0, sam, texCoord ).rgb;
+	return TIKI_TEX2D( gBuffer0, sam, texCoord ).xyz;
 }
 
 float3 gSampleSelfIlluminationColor( TIKI_TEXTURE2D gBuffer1, TIKI_SAMPLER sam, float2 texCoord )
 {
-	return TIKI_TEX2D( gBuffer1, sam, texCoord ).rgb;
+	return TIKI_TEX2D( gBuffer1, sam, texCoord ).xyz;
 }
 
 float3 gSampleNormal( TIKI_TEXTURE2D gBuffer2, TIKI_SAMPLER sam, float2 texCoord )
