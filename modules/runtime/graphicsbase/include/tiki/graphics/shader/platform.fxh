@@ -135,10 +135,10 @@
 
 // functions
 
-#define TIKI_TEX1D( tex, sam, u )		texture1D( tex, u )
-#define TIKI_TEX2D( tex, sam, uv )		texture2D( tex, uv )
-#define TIKI_TEX3D( tex, sam, uvw )		texture3D( tex, uvw )
-#define TIKI_TEXCUBE( tex, sam, uvw )	textureCube( tex, uvw )
+#define TIKI_TEX1D( tex, sam, u )		texture( tex, u )
+#define TIKI_TEX2D( tex, sam, uv )		texture( tex, uv )
+#define TIKI_TEX3D( tex, sam, uvw )		texture( tex, uvw )
+#define TIKI_TEXCUBE( tex, sam, uvw )	texture( tex, uvw )
 
 // entry point
 #define TIKI_ENTRY_POINT( inputType, outputType, name ) void name()
