@@ -1,10 +1,6 @@
 // vs-features= ps-features=TIKI_DOWNSAMPLE
 
-#version 400
-//300 es
-
 #include "shader/platform.fxh"
-#include "shader/geometrybuffer.fxh"
 
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
 	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position, TIKI_OUTPUT_POSITION )
@@ -52,38 +48,39 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "shader/positionspace.fxh"
-#include "shader/ascii_shader.hpp"
-
-// constants
-TIKI_DEFINE_SAMPLER( 0, s_samplerLinear );
-TIKI_DEFINE_SAMPLER( 1, s_samplerNearst );
-
-#if TIKI_DOWNSAMPLE
-
-TIKI_DEFINE_TEXTURE2D( 0, t_accumulationBuffer );
-TIKI_DEFINE_TEXTURE2D( 1, t_depthBuffer );
-
-TIKI_DEFINE_CONSTANT( 0, AsciiPixelConstantData, c_pixelData );
-
-#else
-
-TIKI_DEFINE_TEXTURE2D( 0, t_downsample );
-TIKI_DEFINE_TEXTURE3D( 1, t_ascii );
-
-#endif
-
 TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
 	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
 TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
+//#include "shader/positionspace.fxh"
+//#include "shader/geometrybuffer.fxh"
+//#include "shader/ascii_shader.hpp"
+
+// constants
+TIKI_DEFINE_SAMPLER( 0, s_samplerLinear )
+TIKI_DEFINE_SAMPLER( 1, s_samplerNearst )
+
+#if TIKI_DOWNSAMPLE
+
+TIKI_DEFINE_TEXTURE2D( 0, t_accumulationBuffer )
+TIKI_DEFINE_TEXTURE2D( 1, t_depthBuffer )
+
+TIKI_DEFINE_CONSTANT( 0, AsciiPixelConstantData, c_pixelData )
+
+#else
+
+TIKI_DEFINE_TEXTURE2D( 0, t_downsample )
+TIKI_DEFINE_TEXTURE3D( 1, t_ascii )
+
+#endif
+
 TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
-	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
+	//TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
 
 #if TIKI_DOWNSAMPLE
 	float4 projectedPosition = float4( reconstructClipSpacePosition( input.texCoord ), t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r, 1.0 );
-	float4 viewPosition2 = mul( projectedPosition, c_pixelData.inverseProjection );
+	float4 viewPosition2 = TIKI_MUL( projectedPosition, c_pixelData.inverseProjection );
 	float3 viewPosition = viewPosition2.xyz / viewPosition2.w;
 
 	float2 screenSize = getScreenSize( c_pixelData );
@@ -131,19 +128,19 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	color.a = ( viewPosition.z / 10.0 ) + ( edgeAlpha * 2.0 );
 #else
 	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
-	float4 color = TIKI_TEX2D( t_downsample, s_samplerNearst, texCoord );
+	float4 color = float4( TIKI_TEX2D( t_downsample, s_samplerNearst, texCoord.st ) );
 
-	float3 uvw = float3( texCoord, 0.0 );
-	uvw.x *= 105.0;
-	uvw.y *= 60.0;
-	uvw.z = color.a;
+	//float3 uvw = float3( texCoord, 0.0 );
+	//uvw.x *= 105.0;
+	//uvw.y *= 60.0;
+	//uvw.z = color.a;
 
-	float ascii = TIKI_TEX3D( t_ascii, s_samplerLinear, uvw ).r;
-	color = float4( color.xyz * ascii.rrr, 1.0 );
+	float ascii = 1.0; // TIKI_TEX3D( t_ascii, s_samplerLinear, uvw.xyz ).r;
+	color = float4( color.xyz * ascii, 1.0 );
 #endif
 
 	TIKI_PIXEL_OUTPUT_SET( color, color );
-	TIKI_PIXEL_OUTPUT_END( PixelOutput );
+	//TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else
