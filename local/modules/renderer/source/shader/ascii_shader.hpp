@@ -13,12 +13,12 @@ struct AsciiPixelConstantData
 
 #ifndef __cplusplus
 
-float getFarPlane( AsciiPixelConstantData data )
+float getFarPlane( TIKI_IN AsciiPixelConstantData data )
 {
 	return data.param0.x;
 }
 
-float2 getScreenSize( AsciiPixelConstantData data )
+float2 getScreenSize( TIKI_IN AsciiPixelConstantData data )
 {
 	return data.param0.yz;
 }

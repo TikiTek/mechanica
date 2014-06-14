@@ -3,39 +3,59 @@
 #include "shader/platform.fxh"
 #include "tiki/graphics/immediaterenderer_shader.hpp"
 
-struct VertexToPixel
-{
-	float4 position	: TIKI_OUTPUT_POSITION0;
-	float2 texcoord	: TIKI_TEXCOORD;
-	float4 color	: TIKI_COLOR;
-};
+TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position,	TIKI_OUTPUT_POSITION )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord,	TIKI_TEXCOORD )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, color,		TIKI_COLOR )
+TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
+
+//struct VertexToPixel
+//{
+//	float4 position	: TIKI_OUTPUT_POSITION0;
+//	float2 texcoord	: TIKI_TEXCOORD;
+//	float4 color	: TIKI_COLOR;
+//};
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// types
-struct VertexInput
+TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float3, position,	TIKI_INPUT_POSITION )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float2, texCoord,	TIKI_TEXCOORD )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 3, float4, color,		TIKI_COLOR )
+TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
+
+//struct VertexInput
+//{
+//	float3 position	: TIKI_INPUT_POSITION0;
+//	float2 texcoord	: TIKI_TEXCOORD;
+//	float4 color	: TIKI_COLOR;
+//};
+
+TIKI_DEFINE_CONSTANT( 0, ImmediateRendererConstantData, s_constantData )
+
+TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
-	float3 position	: TIKI_INPUT_POSITION0;
-	float2 texcoord	: TIKI_TEXCOORD;
-	float4 color	: TIKI_COLOR;
-};
+    TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-TIKI_DEFINE_CONSTANT( 0, ImmediateRendererConstantData, s_constantData );
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 1.0 );
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
+	float4 color	= TIKI_VERTEX_INPUT_GET( color );
 
-VertexToPixel main( VertexInput input )
-{
-    VertexToPixel output;
+	position = TIKI_MUL( position, s_constantData.projection );
+	
+	TIKI_VERTEX_TO_PIXEL_SET_POSITION( position, position );
+	TIKI_VERTEX_TO_PIXEL_SET( texCoord, texCoord );
+	TIKI_VERTEX_TO_PIXEL_SET( color, color );
 
-	//float2 clipPosition = input.position.xy * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f );	
-    output.position = float4( input.position, 1.0f );
-	output.position = mul( output.position, s_constantData.projection );
-	output.texcoord = input.texcoord;
-	output.color	= input.color;
+ //   output.position = float4( input.position, 1.0f );
+	//output.position = mul( output.position, s_constantData.projection );
+	//output.texcoord = input.texcoord;
+	//output.color	= input.color;
     
-    return output;
+    TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
@@ -43,26 +63,36 @@ VertexToPixel main( VertexInput input )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// constants
-TIKI_DEFINE_TEXTURE2D( 0, t_texture );
-TIKI_DEFINE_SAMPLER( 0, s_sampler );
+TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
+	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
+TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
-float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
+// constants
+TIKI_DEFINE_TEXTURE2D( 0, t_texture )
+TIKI_DEFINE_SAMPLER( 0, s_sampler )
+
+TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
+	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
+
 #if TIKI_COLOR_MODE == 0
-	float4 color = t_texture.Sample( s_sampler, input.texcoord );
+	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
+	float4 color = TIKI_TEX2D( t_texture, s_sampler, texCoord );
 #else
-	float4 color = input.color;
+	float4 color = TIKI_VERTEX_TO_PIXEL_GET( color );
 #endif
 	
 #if TIKI_FONT_MODE
-	color.a		= color.r * input.color.a;
-	color.rgb	= input.color.rgb;
+	float4 inputColor = TIKI_VERTEX_TO_PIXEL_GET( color );
+
+	color.a		= color.r * inputColor.a;
+	color.rgb	= inputColor.rgb;
 #elif TIKI_COLOR_MODE == 0
-	color *= input.color;
+	color *= TIKI_VERTEX_TO_PIXEL_GET( color );
 #endif
 
-	return color;
+	TIKI_PIXEL_OUTPUT_SET( color, color );
+	TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else

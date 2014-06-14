@@ -111,8 +111,7 @@ namespace tiki
 
 		glGenTextures( 1, &m_platformData.textureId );
 		glBindTexture( glTextureType, m_platformData.textureId );
-
-
+		
 		if ( pTextureData != nullptr )
 		{
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;

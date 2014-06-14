@@ -204,11 +204,15 @@ namespace tiki
 
 		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler( getManager() );
 
+		ShInitialize();
+
 		return true;
 	}
 
 	void ShaderConverter::disposeConverter()
 	{
+		ShFinalize();
+
 		TIKI_DEL m_pIncludeHandler;
 	}
 	
@@ -406,7 +410,7 @@ namespace tiki
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
-		string sourceCode = args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
+		string sourceCode = "#version 440\n" + args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 
 		// preprocessor
 		{
@@ -463,7 +467,7 @@ namespace tiki
 
 			if ( fppPreProcess( aTags ) != 0 )
 			{
-				TIKI_TRACE_ERROR( "[shaderconverter] preprocessor failed.\n" );
+				TIKI_TRACE_INFO( "[shaderconverter] preprocessor failed.\n" );
 			}
 
 			context.pTargetData[ context.targetPosition ] = '\0';
@@ -474,8 +478,6 @@ namespace tiki
 
 		// parse code
 		{
-			ShInitialize();
-
 			const EShLanguage s_aLanguageMapping[] =
 			{
 				EShLangCount,			// ShaderType_Effect
@@ -496,17 +498,15 @@ namespace tiki
 			TBuiltInResource shaderResources = { 0 };
 			if ( !shaderTest.parse( &shaderResources, 400, true, EShMsgDefault ) )
 			{
-				TIKI_TRACE_ERROR( "[shaderconverter] parser has return an error.\n" );
-				TIKI_TRACE_INFO( sourceCode.cStr() );
-				TIKI_TRACE_INFO( shaderTest.getInfoLog() );
+				TIKI_TRACE_INFO( "[shaderconverter] parser has return an error.\n" );
+				//TIKI_TRACE_INFO( sourceCode.cStr() );
+				//TIKI_TRACE_INFO( shaderTest.getInfoLog() );
 			}
-
-			ShFinalize();
 		}
 
 		targetData.create(
 			(const uint8*)sourceCode.cStr(),
-			sourceCode.getLength()
+			sourceCode.getLength() + 1u
 		);
 
 		return true;

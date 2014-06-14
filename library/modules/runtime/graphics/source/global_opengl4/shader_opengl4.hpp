@@ -8,6 +8,7 @@ namespace tiki
 {
 	struct ShaderPlatformData
 	{
+		GLuint		shaderId;
 	};
 }
 
