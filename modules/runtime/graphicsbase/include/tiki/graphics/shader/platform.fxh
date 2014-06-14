@@ -12,6 +12,12 @@
 
 #if TIKI_ENABLED( TIKI_HLSL4 )
 
+// parameters
+
+#define TIKI_IN
+#define TIKI_OUT
+#define TIKI_INOUT
+
 // types
 
 #define TIKI_SAMPLER		SamplerState
@@ -21,14 +27,14 @@
 #define TIKI_TEXTURECUBE	TextureCube
 
 // constants
-#define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; }
+#define TIKI_DEFINE_CONSTANT( slot, type, name ) cbuffer constant_var ## name : register( TIKI_CONCAT( b, slot ) ) { type name; };
 
-#define TIKI_DEFINE_TEXTURE1D( slot, name )		Texture1D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE2D( slot, name )		Texture2D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE3D( slot, name )		Texture3D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURECUBE( slot, name )	TextureCube name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE1D( slot, name )		Texture1D name : register( TIKI_CONCAT( t, slot ) );
+#define TIKI_DEFINE_TEXTURE2D( slot, name )		Texture2D name : register( TIKI_CONCAT( t, slot ) );
+#define TIKI_DEFINE_TEXTURE3D( slot, name )		Texture3D name : register( TIKI_CONCAT( t, slot ) );
+#define TIKI_DEFINE_TEXTURECUBE( slot, name )	TextureCube name : register( TIKI_CONCAT( t, slot ) );
 
-#define TIKI_DEFINE_SAMPLER( slot, name )		SamplerState name : register( TIKI_CONCAT( s, slot ) )
+#define TIKI_DEFINE_SAMPLER( slot, name )		SamplerState name : register( TIKI_CONCAT( s, slot ) );
 
 // functions
 
@@ -36,6 +42,8 @@
 #define TIKI_TEX2D( tex, sam, uv )		tex.Sample( sam, uv.xy )
 #define TIKI_TEX3D( tex, sam, uvw )		tex.Sample( sam, uvw.xyz )
 #define TIKI_TEXCUBE( tex, sam, uvw )	tex.Sample( sam, uvw.xyz )
+
+#define TIKI_MUL( a, b )				mul( a, b )
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
@@ -101,6 +109,12 @@
 
 #elif TIKI_ENABLED( TIKI_OPENGL4 )
 
+// parameters
+
+#define TIKI_IN				in
+#define TIKI_OUT			out
+#define TIKI_INOUT			inout
+
 // types
 
 #define TIKI_SAMPLER		float
@@ -124,14 +138,14 @@
 #define float4x4	mat4x4
 
 // constants
-#define TIKI_DEFINE_CONSTANT( slot, type, name ) layout(location = slot) uniform type ## name { type name; }
+#define TIKI_DEFINE_CONSTANT( slot, type, name ) layout(location = slot) uniform type ## name { type name; };
 
-#define TIKI_DEFINE_TEXTURE1D( slot, name )		uniform sampler1D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE2D( slot, name )		uniform sampler2D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURE3D( slot, name )		uniform sampler3D name : register( TIKI_CONCAT( t, slot ) )
-#define TIKI_DEFINE_TEXTURECUBE( slot, name )	uniform samplerCube name : register( TIKI_CONCAT( t, slot ) )
+#define TIKI_DEFINE_TEXTURE1D( slot, name )		uniform sampler1D name;
+#define TIKI_DEFINE_TEXTURE2D( slot, name )		uniform sampler2D name;
+#define TIKI_DEFINE_TEXTURE3D( slot, name )		uniform sampler3D name;
+#define TIKI_DEFINE_TEXTURECUBE( slot, name )	uniform samplerCube name;
 
-#define TIKI_DEFINE_SAMPLER( slot, name ) float name = 43.0
+#define TIKI_DEFINE_SAMPLER( slot, name )
 
 // functions
 
@@ -139,6 +153,8 @@
 #define TIKI_TEX2D( tex, sam, uv )		texture( tex, uv )
 #define TIKI_TEX3D( tex, sam, uvw )		texture( tex, uvw )
 #define TIKI_TEXCUBE( tex, sam, uvw )	texture( tex, uvw )
+
+#define TIKI_MUL( a, b )				a * b
 
 // entry point
 #define TIKI_ENTRY_POINT( inputType, outputType, name ) void name()
@@ -180,7 +196,7 @@
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, name, semantic ) in type in ## name;
 
-#	define TIKI_VERTEX_TO_PIXEL_GET( type, name, semantic ) in ## name;
+#	define TIKI_VERTEX_TO_PIXEL_GET( name ) in ## name
 
 #else
 

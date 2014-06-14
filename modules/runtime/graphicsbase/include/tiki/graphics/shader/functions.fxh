@@ -3,13 +3,13 @@
 
 #include "tiki/graphics/graphicstypes.hpp"
 
-float2 encodeNormal( float3 normal )
+float2 encodeNormal( TIKI_IN float3 normal )
 {
 	float p = sqrt( normal.z * 8.0 + 8.0 );
     return normal.xy / p + 0.5;
 }
 
-float3 decodeNormal( float2 compressedNormal )
+float3 decodeNormal( TIKI_IN float2 compressedNormal )
 {
 	half2 fenc	= compressedNormal * 4.0 - 2.0;
     half f		= dot( fenc, fenc );
