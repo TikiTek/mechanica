@@ -66,7 +66,7 @@ namespace tiki
 	private: // friends
 
 		bool						create( GraphicsSystem& graphicsSystem, const RasterizerStateParamters& creationParamter );
-		void						dispose();
+		void						dispose( GraphicsSystem& graphicsSystem );
 
 	private:
 
