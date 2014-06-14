@@ -121,8 +121,27 @@ namespace tiki
 
 		if ( m_pBlendState != pBlendState )
 		{
-			//static const float s_aBlendFactor[ 4u ] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			//m_platformData.pContext->OMSetBlendState( pBlendState->m_platformData.pBlendState, s_aBlendFactor, 0xffffffffu );
+			if ( pBlendState->m_platformData.blendEnabled )
+			{
+				glEnable( GL_BLEND );
+			}
+			else
+			{
+				glDisable( GL_BLEND );
+			}
+
+			glBlendEquation( pBlendState->m_platformData.blendOperation );
+			glBlendFunc(
+				pBlendState->m_platformData.sourceBlend,
+				pBlendState->m_platformData.destinationBlend
+			);
+			glColorMask(
+				pBlendState->m_platformData.colorWriteMask[ 0u ],
+				pBlendState->m_platformData.colorWriteMask[ 1u ],
+				pBlendState->m_platformData.colorWriteMask[ 2u ],
+				pBlendState->m_platformData.colorWriteMask[ 3u ]
+			);
+
 			m_pBlendState = pBlendState;
 		}		
 	}
@@ -144,7 +163,19 @@ namespace tiki
 
 		if ( m_pRasterizerState != pRasterizerState )
 		{
-			//m_platformData.pContext->RSSetState( pRasterizerState->m_platformData.pRasterizerState );
+			if ( pRasterizerState->m_platformData.cullEnabled )
+			{
+				glEnable( GL_CULL_FACE );
+			}
+			else
+			{
+				glDisable( GL_CULL_FACE );
+			}
+
+			glCullFace( pRasterizerState->m_platformData.cullMode );
+			glPolygonMode( pRasterizerState->m_platformData.fillMode );
+			glFrontFace( pRasterizerState->m_platformData.windingOrder );
+
 			m_pRasterizerState = pRasterizerState;
 		}
 	}
@@ -255,11 +286,11 @@ namespace tiki
 
 			if ( pSampler == nullptr )
 			{
-				//m_platformData.pContext->PSSetSamplers( d3dSlot, 1u, nullptr );
+				glBindSampler( slot, 0u );
 			}
 			else
 			{
-				//m_platformData.pContext->PSSetSamplers( d3dSlot, 1u, &pSampler->m_platformData.pSamplerState );
+				glBindSampler( slot, pSampler->m_platformData.samplerId );
 			}
 
 			m_pPixelSamplerStates[ slot ] = pSampler;

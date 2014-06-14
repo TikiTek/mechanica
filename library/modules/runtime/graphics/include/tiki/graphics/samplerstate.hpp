@@ -68,12 +68,12 @@ namespace tiki
 
 	public:
 
-		bool						isCreated() const;
+		bool				isCreated() const;
 
 	private: // friends
 
-		bool						create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter );
-		void						dispose();
+		bool				create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter );
+		void				dispose( GraphicsSystem& graphicsSystem );
 
 	private:
 

@@ -478,7 +478,7 @@ namespace tiki
 
 		// parse code
 		{
-			const EShLanguage s_aLanguageMapping[] =
+			static const EShLanguage s_aLanguageMapping[] =
 			{
 				EShLangCount,			// ShaderType_Effect
 				EShLangVertex,			// ShaderType_VertexShader
@@ -500,7 +500,7 @@ namespace tiki
 			{
 				TIKI_TRACE_INFO( "[shaderconverter] parser has return an error.\n" );
 				//TIKI_TRACE_INFO( sourceCode.cStr() );
-				//TIKI_TRACE_INFO( shaderTest.getInfoLog() );
+				//TIKI_TRACE_INFO( shaderTest.getInfoLog() );				
 			}
 		}
 

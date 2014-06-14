@@ -1,4 +1,4 @@
-
+﻿
 #include "tiki/graphics/samplerstate.hpp"
 
 #include "tiki/base/assert.hpp"
@@ -10,90 +10,107 @@
 
 namespace tiki
 {
-	//static const D3D11_TEXTURE_ADDRESS_MODE s_aAddressModeMapping[ AddressMode_Count ] =
-	//{
-	//	D3D11_TEXTURE_ADDRESS_WRAP,		// AddressMode_Wrap
-	//	D3D11_TEXTURE_ADDRESS_MIRROR,	// AddressMode_Mirror
-	//	D3D11_TEXTURE_ADDRESS_CLAMP,	// AddressMode_Clamp
-	//	D3D11_TEXTURE_ADDRESS_BORDER,	// AddressMode_Border
-	//};
+	static const GLenum s_aAddressModeMapping[] =
+	{
+		GL_REPEAT​,			// AddressMode_Wrap
+		GL_MIRRORED_REPEAT,	// AddressMode_Mirror
+		GL_CLAMP_TO_EDGE​,	// AddressMode_Clamp
+		GL_CLAMP_TO_BORDER​,	// AddressMode_Border
+	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aAddressModeMapping ) == AddressMode_Count );
 
-	//static D3D11_FILTER getFilter( FilterMode mag, FilterMode mip )
-	//{
-	//	switch ( mag )
-	//	{
-	//	case FilterMode_Anisotropic:
-	//		TIKI_ASSERT( mip == FilterMode_Anisotropic );
-	//		return D3D11_FILTER_ANISOTROPIC;
-	//	case FilterMode_Linear:
-	//		{
-	//			TIKI_ASSERT( mip != FilterMode_Anisotropic );
-	//			switch ( mip )
-	//			{
-	//			case FilterMode_Linear:
-	//				return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//			case FilterMode_Nearest:
-	//				return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-	//			}
-	//		}
-	//		break;
-	//	case FilterMode_Nearest:
-	//		{
-	//			TIKI_ASSERT( mip != FilterMode_Anisotropic );
-	//			switch ( mip )
-	//			{
-	//			case FilterMode_Linear:
-	//				return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-	//			case  FilterMode_Nearest:
-	//				return D3D11_FILTER_MIN_MAG_MIP_POINT;
-	//			}
-	//		}
-	//		break;
-	//	}
+	static bool getFilter( GLenum& targetMinFilter, GLenum& targetMagFilter, FilterMode minMag, FilterMode mip )
+	{
+		switch ( minMag )
+		{
+		case FilterMode_Anisotropic:
+			TIKI_ASSERT( mip == FilterMode_Anisotropic );
+			
+			targetMinFilter = GL_LINEAR;
+			targetMagFilter = GL_LINEAR;
+			break;
 
-	//	TIKI_BREAK( "[graphics] wrong FilterMode.\n" );
-	//	return D3D11_FILTER_COMPARISON_ANISOTROPIC;
-	//}
+		case FilterMode_Linear:
+			{
+				targetMagFilter = GL_LINEAR;
+
+				switch ( mip )
+				{
+				case FilterMode_Linear:
+					targetMinFilter = GL_LINEAR_MIPMAP_LINEAR;
+					break;
+
+				case FilterMode_Nearest:
+					targetMinFilter = GL_LINEAR_MIPMAP_NEAREST;
+					break;
+
+				default:
+					return false;
+				}
+			}
+			break;
+		case FilterMode_Nearest:
+			{
+				targetMagFilter = GL_NEAREST;
+
+				switch ( mip )
+				{
+				case FilterMode_Linear:
+					targetMinFilter = GL_NEAREST_MIPMAP_LINEAR;
+					break;
+
+				case  FilterMode_Nearest:
+					targetMinFilter = GL_NEAREST_MIPMAP_NEAREST;
+					break;
+
+				default:
+					return false;
+				}
+			}
+			break;
+
+		default:
+			return false;
+		}
+
+		return true;
+	}
 
 	bool SamplerState::isCreated() const
 	{
-		return false;
+		return m_platformData.samplerId != GL_INVALID_ENUM;
 	}
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
-		//TIKI_DECLARE_STACKANDZERO( D3D11_SAMPLER_DESC, stateDesc );
-		//stateDesc.Filter			= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
-		//stateDesc.AddressU			= s_aAddressModeMapping[ creationParamter.addressU ];
-		//stateDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
-		//stateDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
-		//stateDesc.MipLODBias		= 0.0f;
-		//stateDesc.MaxAnisotropy		= uint32( creationParamter.maxAnisotropy );
-		//stateDesc.ComparisonFunc	= D3D11_COMPARISON_ALWAYS;
-		//stateDesc.BorderColor[0]	= color::getFloatChannelR( creationParamter.borderColor );
-		//stateDesc.BorderColor[1]	= color::getFloatChannelG( creationParamter.borderColor );
-		//stateDesc.BorderColor[2]	= color::getFloatChannelB( creationParamter.borderColor );
-		//stateDesc.BorderColor[3]	= color::getFloatChannelA( creationParamter.borderColor );
-		//stateDesc.MinLOD			= 0;
-		//stateDesc.MaxLOD			= D3D11_FLOAT32_MAX;
+		glGenSamplers( 1u, &m_platformData.samplerId );
 
-		//HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &stateDesc, &m_platformData.pSamplerState );
-		//if( FAILED( result ) )
-		//{
-		//	dispose();
-		//	return false;
-		//}
+		GLenum minFilter;
+		GLenum magFilter;
+		if ( !getFilter( minFilter, magFilter, creationParamter.magFilter, creationParamter.mipFilter ) )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
 
-		return false;
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_MIN_FILTER,			minFilter );
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_MAG_FILTER,			magFilter );
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_S,				s_aAddressModeMapping[ creationParamter.addressU ] );
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_T,				s_aAddressModeMapping[ creationParamter.addressV ] );
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_R,				s_aAddressModeMapping[ creationParamter.addressW ] );
+		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_BORDER_COLOR,			creationParamter.borderColor );
+		glSamplerParameterf( m_platformData.samplerId, GL_TEXTURE_MAX_ANISOTROPY_EXT,	(float)creationParamter.maxAnisotropy );
+		
+		return true;
 	}
 
-	void SamplerState::dispose()
+	void SamplerState::dispose( GraphicsSystem& graphicsSystem )
 	{
-		//if ( m_platformData.pSamplerState != nullptr )
-		//{
-		//	m_platformData.pSamplerState->Release();
-		//	m_platformData.pSamplerState = nullptr;
-		//}
+		if ( m_platformData.samplerId != GL_INVALID_ENUM )
+		{
+			glDeleteSamplers( 1u, &m_platformData.samplerId );
+			m_platformData.samplerId = GL_INVALID_ENUM;
+		}
 
 		GraphicsStateObject::dispose();
 	}
