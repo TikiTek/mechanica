@@ -6,13 +6,13 @@
 
 namespace tiki
 {
-	GraphicsStateObject::GraphicsStateObject()
+	TIKI_FORCE_INLINE GraphicsStateObject::GraphicsStateObject()
 	{
 		m_refCount = 0u;
 		m_hashValue = 0u;
 	}
 
-	GraphicsStateObject::~GraphicsStateObject()
+	TIKI_FORCE_INLINE GraphicsStateObject::~GraphicsStateObject()
 	{
 		TIKI_ASSERT( m_refCount == 0u );
 		TIKI_ASSERT( m_hashValue == 0u );

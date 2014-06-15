@@ -204,15 +204,11 @@ namespace tiki
 
 		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler( getManager() );
 
-		ShInitialize();
-
 		return true;
 	}
 
 	void ShaderConverter::disposeConverter()
 	{
-		ShFinalize();
-
 		TIKI_DEL m_pIncludeHandler;
 	}
 	

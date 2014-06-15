@@ -7,7 +7,7 @@
 namespace tiki
 {
 	template<typename T>
-	TIKI_FORCE_INLINE void GraphicsStateObjectCollection::create( size_t count )
+	TIKI_FORCE_INLINE void GraphicsStateObjectCollection< T >::create( size_t count )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_maxCount = 0u;
@@ -17,7 +17,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void GraphicsStateObjectCollection::dispose()
+	TIKI_FORCE_INLINE void GraphicsStateObjectCollection< T >::dispose()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		TIKI_TRACE_INFO( "[GraphicsStateObjectCollection] Max usage (%u / %u)\n", m_maxCount, m_data.getCapacity() );
@@ -27,7 +27,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* GraphicsStateObjectCollection::findOrAllocate( crc32 hashValue )
+	TIKI_FORCE_INLINE T* GraphicsStateObjectCollection< T >::findOrAllocate( crc32 hashValue )
 	{
 		T* pFirst = nullptr;
 

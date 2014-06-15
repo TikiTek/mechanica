@@ -28,15 +28,15 @@ CameraParameter fillCameraParameter( const Camera& camera )
 	createGraphicsMatrix44( data.inverseViewProjection, inverseViewProjection );
 
 	const Matrix44& projection = camera.getProjection().getMatrix();
-	const float near = camera.getProjection().getNearPlane();
-	const float far = camera.getProjection().getFarPlane();
+	const float nearPlane	= camera.getProjection().getNearPlane();
+	const float farPlane	= camera.getProjection().getFarPlane();
 
-	const float bottom = near * ( projection.y.z - 1.0f ) / projection.y.y;
-	const float top    = near * ( projection.y.z + 1.0f ) / projection.y.y;
-	const float left   = near * ( projection.x.z - 1.0f ) / projection.x.x;
-	const float right  = near * ( projection.x.z + 1.0f ) / projection.x.x;
+	const float bottom = nearPlane * ( projection.y.z - 1.0f ) / projection.y.y;
+	const float top    = nearPlane * ( projection.y.z + 1.0f ) / projection.y.y;
+	const float left   = nearPlane * ( projection.x.z - 1.0f ) / projection.x.x;
+	const float right  = nearPlane * ( projection.x.z + 1.0f ) / projection.x.x;
 
-	createFloat4( data.param0, near * far, far - near, far, 2.0f * near );
+	createFloat4( data.param0, nearPlane * farPlane, farPlane - nearPlane, farPlane, 2.0f * nearPlane );
 	createFloat4( data.param1, right-left, right+left, top-bottom, top+bottom );
 
 	return data;
