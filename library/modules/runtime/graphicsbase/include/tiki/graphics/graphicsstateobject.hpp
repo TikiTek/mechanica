@@ -23,8 +23,8 @@ namespace tiki
 
 	protected:
 
-									GraphicsStateObject();
-		virtual						~GraphicsStateObject();
+		TIKI_FORCE_INLINE 			GraphicsStateObject();
+		TIKI_FORCE_INLINE virtual	~GraphicsStateObject();
 
 		TIKI_FORCE_INLINE void		create( crc32 hashValue );
 		TIKI_FORCE_INLINE void		dispose();

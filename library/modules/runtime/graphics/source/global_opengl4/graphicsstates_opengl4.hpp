@@ -29,9 +29,48 @@ namespace tiki
 
 	struct DepthStencilStatePlatformData
 	{
+		struct StencilPlatformData
+		{
+			StencilPlatformData()
+			{
+				stencilFunction			= GL_INVALID_ENUM;
+
+				depthFailOperation		= GL_INVALID_ENUM;
+				stencilFailOperation	= GL_INVALID_ENUM;
+				stencilPassOperation	= GL_INVALID_ENUM;
+			}
+
+			GLenum	stencilFunction;
+
+			GLenum	depthFailOperation;
+			GLenum	stencilFailOperation;
+			GLenum	stencilPassOperation;
+		};
+
 		DepthStencilStatePlatformData()
 		{
+			depthEnabled		= GL_FALSE;
+			depthWriteEnabled	= GL_FALSE;
+			stencilEnabled		= GL_FALSE;
+
+			depthFunction		= GL_INVALID_ENUM;
+
+			stencilReadMask		= GL_INVALID_ENUM;
+			stencilWriteMask	= GL_INVALID_ENUM;
+			stencilRefernce		= GL_INVALID_ENUM;
 		}
+
+		GLboolean				depthEnabled;
+		GLboolean				depthWriteEnabled;
+		GLboolean				stencilEnabled;
+
+		GLenum					depthFunction;
+
+		GLuint					stencilReadMask;
+		GLuint					stencilWriteMask;
+		GLuint					stencilRefernce;
+		StencilPlatformData		frontFace;
+		StencilPlatformData		backFace;
 	};
 
 	struct RasterizerStatePlatformData

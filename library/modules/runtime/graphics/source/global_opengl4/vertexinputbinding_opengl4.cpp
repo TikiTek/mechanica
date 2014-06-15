@@ -95,7 +95,7 @@ namespace tiki
 		return true;
 	}
 
-	void VertexInputBinding::dispose()
+	void VertexInputBinding::dispose( GraphicsSystem& graphicsSystem )
 	{
 		//m_pVertexFormat	= nullptr;
 		//m_pShader		= nullptr;

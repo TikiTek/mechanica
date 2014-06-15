@@ -2,19 +2,19 @@
 #ifndef TIKI_GRAPHICSYSTEM_HPP
 #define TIKI_GRAPHICSYSTEM_HPP
 
-#include "tiki/base/poolallocator.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/graphicsstateobject.hpp"
+#include "tiki/graphics/graphicsstateobjectcollection.hpp"
 #include "tiki/graphics/rasterizerstate.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
-#include "tiki/graphics/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/graphicssystem_d3d11.hpp"

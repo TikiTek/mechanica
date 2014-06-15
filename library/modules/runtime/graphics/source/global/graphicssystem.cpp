@@ -157,7 +157,7 @@ namespace tiki
 		DepthStencilState* pNonConstState = const_cast< DepthStencilState* >( pDepthStencilState );
 		if ( pNonConstState->releaseRef() == false )
 		{
-			pNonConstState->dispose();
+			pNonConstState->dispose( *this );
 		}
 	}
 
@@ -195,7 +195,7 @@ namespace tiki
 		RasterizerState* pNonConstState = const_cast< RasterizerState* >( pRasterizerState );
 		if ( pNonConstState->releaseRef() == false )
 		{
-			pNonConstState->dispose();
+			pNonConstState->dispose( *this );
 		}
 	}
 
@@ -237,7 +237,7 @@ namespace tiki
 		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
 		if ( pNonConstState->releaseRef() == false )
 		{
-			pNonConstState->dispose();
+			pNonConstState->dispose( *this );
 		}
 	}
 
@@ -320,7 +320,7 @@ namespace tiki
 		VertexInputBinding* pNonConst = const_cast< VertexInputBinding* >( pVertexInputBinding );
 		if ( pNonConst->releaseRef() == false )
 		{
-			pNonConst->dispose();
+			pNonConst->dispose( *this );
 		}
 	}
 

@@ -1,6 +1,8 @@
 
 #include "tiki/graphics/blendstate.hpp"
 
+#include "tiki/base/types.hpp"
+
 #include "graphicssystem_internal_opengl4.hpp"
 
 namespace tiki
@@ -18,6 +20,7 @@ namespace tiki
 		GL_DST_ALPHA,				// Blend_DestinationAlpha
 		GL_ONE_MINUS_DST_ALPHA		// Blend_InverseDestinationAlpha
 	};
+
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aBlendModeMapping ) == Blend_Count );
 
 	static const GLenum s_aBlendOperationMapping[] =
@@ -50,14 +53,7 @@ namespace tiki
 
 	void BlendState::dispose()
 	{
-		m_platformData.blendEnabled			= GL_FALSE;
-		m_platformData.sourceBlend			= GL_INVALID_ENUM;
-		m_platformData.destinationBlend		= GL_INVALID_ENUM;
-		m_platformData.blendOperation		= GL_INVALID_ENUM;
-		m_platformData.colorWriteMask[ 0u ]	= GL_FALSE;
-		m_platformData.colorWriteMask[ 1u ]	= GL_FALSE;
-		m_platformData.colorWriteMask[ 2u ]	= GL_FALSE;
-		m_platformData.colorWriteMask[ 3u ]	= GL_FALSE;
+		m_platformData = BlendStatePlatformData();
 
 		GraphicsStateObject::dispose();
 	}

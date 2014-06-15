@@ -24,6 +24,11 @@
 
 namespace tiki
 {
+	static void setGlMode( GLenum mode, GLboolean enable )
+	{
+		( enable ? glEnable : glDisable )( mode );
+	}
+
 	GraphicsContext::GraphicsContext()
 	{
 		m_pGraphicsSystem = nullptr;
@@ -121,14 +126,7 @@ namespace tiki
 
 		if ( m_pBlendState != pBlendState )
 		{
-			if ( pBlendState->m_platformData.blendEnabled )
-			{
-				glEnable( GL_BLEND );
-			}
-			else
-			{
-				glDisable( GL_BLEND );
-			}
+			setGlMode( GL_BLEND, pBlendState->m_platformData.blendEnabled );
 
 			glBlendEquation( pBlendState->m_platformData.blendOperation );
 			glBlendFunc(
@@ -152,7 +150,40 @@ namespace tiki
 
 		if ( m_pDepthStencilState != pDepthStencilState )
 		{
-			//m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, UINT( pDepthStencilState->m_platformData.stencilRef ) );
+			setGlMode( GL_DEPTH_TEST, pDepthStencilState->m_platformData.depthEnabled );
+			setGlMode( GL_STENCIL_TEST, pDepthStencilState->m_platformData.stencilEnabled );
+			glDepthMask( pDepthStencilState->m_platformData.depthWriteEnabled );
+
+			glDepthFunc( pDepthStencilState->m_platformData.depthFunction );
+
+			glStencilMask( pDepthStencilState->m_platformData.stencilWriteMask );
+
+			glStencilFuncSeparate(
+				GL_FRONT,
+				pDepthStencilState->m_platformData.frontFace.stencilFunction,
+				pDepthStencilState->m_platformData.stencilRefernce,
+				pDepthStencilState->m_platformData.stencilReadMask
+			);
+			glStencilOpSeparate(
+				GL_FRONT,
+				pDepthStencilState->m_platformData.frontFace.stencilFailOperation,
+				pDepthStencilState->m_platformData.frontFace.depthFailOperation,
+				pDepthStencilState->m_platformData.frontFace.stencilPassOperation
+			);
+
+			glStencilFuncSeparate(
+				GL_BACK,
+				pDepthStencilState->m_platformData.backFace.stencilFunction,
+				pDepthStencilState->m_platformData.stencilRefernce,
+				pDepthStencilState->m_platformData.stencilReadMask
+			);
+			glStencilOpSeparate(
+				GL_BACK,
+				pDepthStencilState->m_platformData.backFace.stencilFailOperation,
+				pDepthStencilState->m_platformData.backFace.depthFailOperation,
+				pDepthStencilState->m_platformData.backFace.stencilPassOperation
+			);
+
 			m_pDepthStencilState = pDepthStencilState;
 		}		
 	}
@@ -163,17 +194,10 @@ namespace tiki
 
 		if ( m_pRasterizerState != pRasterizerState )
 		{
-			if ( pRasterizerState->m_platformData.cullEnabled )
-			{
-				glEnable( GL_CULL_FACE );
-			}
-			else
-			{
-				glDisable( GL_CULL_FACE );
-			}
+			setGlMode( GL_CULL_FACE, pRasterizerState->m_platformData.cullEnabled );
 
 			glCullFace( pRasterizerState->m_platformData.cullMode );
-			glPolygonMode( pRasterizerState->m_platformData.fillMode );
+			glPolygonMode( GL_FRONT_AND_BACK, pRasterizerState->m_platformData.fillMode );
 			glFrontFace( pRasterizerState->m_platformData.windingOrder );
 
 			m_pRasterizerState = pRasterizerState;

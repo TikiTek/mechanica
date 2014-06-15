@@ -12,10 +12,10 @@ namespace tiki
 {
 	static const GLenum s_aAddressModeMapping[] =
 	{
-		GL_REPEAT​,			// AddressMode_Wrap
+		0x2901,		//GL_REPEAT​,			// AddressMode_Wrap
 		GL_MIRRORED_REPEAT,	// AddressMode_Mirror
-		GL_CLAMP_TO_EDGE​,	// AddressMode_Clamp
-		GL_CLAMP_TO_BORDER​,	// AddressMode_Border
+		0x812F,		//GL_CLAMP_TO_EDGE​,	// AddressMode_Clamp
+		0x812D,		//GL_CLAMP_TO_BORDER​	// AddressMode_Border
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aAddressModeMapping ) == AddressMode_Count );
 

@@ -1,6 +1,8 @@
 
 #include "tiki/graphics/rasterizerstate.hpp"
 
+#include "tiki/base/types.hpp"
+
 #include "graphicssystem_internal_opengl4.hpp"
 
 namespace tiki
@@ -16,7 +18,7 @@ namespace tiki
 	{
 		GL_BACK,	// CullMode_None
 		GL_FRONT,	// CullMode_Front
-		GL_BACK,	// CullMode_Back
+		GL_BACK		// CullMode_Back
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aCullModeMapping ) == CullMode_Count );
 
@@ -44,10 +46,7 @@ namespace tiki
 
 	void RasterizerState::dispose( GraphicsSystem& graphicsSystem )
 	{
-		m_platformData.fillMode		= GL_FALSE;
-		m_platformData.fillMode		= GL_INVALID_ENUM;
-		m_platformData.cullMode		= GL_INVALID_ENUM;
-		m_platformData.windingOrder	= GL_INVALID_ENUM;
+		m_platformData = RasterizerStatePlatformData();
 
 		GraphicsStateObject::dispose();
 	}

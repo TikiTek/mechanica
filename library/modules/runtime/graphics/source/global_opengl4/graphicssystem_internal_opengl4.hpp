@@ -11,13 +11,7 @@
 
 namespace tiki
 {
-	//class GraphicsSystem;
 
-	namespace graphics
-	{
-		//TGDevice*	getDevice( GraphicsSystem& graphicsSystem );
-		//TGContext*	getContext( GraphicsSystem& graphicsSystem );
-	}
 }
 
 #endif // __TIKI_GRAPHICSSYSTEM_INTERNAL_OPENGL4_HPP_INCLUDED__
