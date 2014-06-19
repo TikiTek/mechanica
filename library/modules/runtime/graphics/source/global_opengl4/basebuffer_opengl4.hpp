@@ -26,7 +26,8 @@ namespace tiki
 	private:
 
 		GLuint					m_bufferId;
-		bool					m_dynamic;
+		GLenum					m_bufferType;
+		GLenum					m_bufferUsage;
 
 	};
 }
