@@ -32,6 +32,7 @@ elseif use_opengl then
 	module:add_dependency( "glew" );
 	
 	module:add_library_file( "opengl32" );
+	module:add_library_file( "glu32" );
 else
 	throw( "Graphics API not implemented" );
 end

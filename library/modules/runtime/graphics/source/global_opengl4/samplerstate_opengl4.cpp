@@ -83,6 +83,11 @@ namespace tiki
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
+		if ( !glGenSamplers )
+		{
+			return true;
+		}
+
 		glGenSamplers( 1u, &m_platformData.samplerId );
 
 		GLenum minFilter;

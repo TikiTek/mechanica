@@ -44,6 +44,6 @@
 #	define TIKI_TRACE_DEBUG( format, ... )
 #endif
 
-#define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __LINE__ )
+#define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __COUNTER__ )
 
 #endif // TIKI_ASSERT_HPP

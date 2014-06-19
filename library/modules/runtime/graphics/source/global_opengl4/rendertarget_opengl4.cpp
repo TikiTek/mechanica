@@ -7,6 +7,18 @@
 
 namespace tiki
 {
+	static struct { GLenum status; const char* pString; } s_aStatusStrings[] =
+	{
+		{ GL_FRAMEBUFFER_UNDEFINED,							"GL_FRAMEBUFFER_UNDEFINED"						},
+		{ GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT,				"GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"			},
+		{ GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,		"GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"	},
+		{ GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER,			"GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER"			},
+		{ GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER,			"GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER"			},
+		{ GL_FRAMEBUFFER_UNSUPPORTED,						"GL_FRAMEBUFFER_UNSUPPORTED"					},
+		{ GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE,			"GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"			},
+		{ GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS,			"GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"		}
+	};
+
 	static void checkSize( uint& targetWidth, uint& targetHeight, uint width, uint height )
 	{
 		if ( targetWidth == 0u )
@@ -98,8 +110,20 @@ namespace tiki
 			m_platformData.depthBufferId = 0u;
 		}
 
-		if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+		const GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
+			uint statusIndex = 0u;
+			for (uint i = 0u; i < TIKI_COUNT( s_aStatusStrings ); ++i)
+			{
+				if ( s_aStatusStrings[ i ].status == status )
+				{
+					statusIndex = i;
+					break;
+				}
+			} 
+
+			TIKI_TRACE_ERROR( "[graphics] Could not create RenderTarget. Status: %s\n", s_aStatusStrings[ statusIndex ].pString );
 			return false;
 		}
 		glBindFramebuffer( GL_FRAMEBUFFER, 0u );
