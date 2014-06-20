@@ -10,8 +10,12 @@ namespace tiki
 	enum IndexType
 	{		
 		IndexType_Invalid	= 0u,
-		IndexType_Uint16	= 2u,
-		IndexType_Uint32	= 4u
+
+		IndexType_UInt8		= 1u,
+		IndexType_UInt16	= 2u,
+		IndexType_UInt32	= 4u,
+
+		IndexType_MaxSize	= IndexType_UInt32
 	};
 
 	class IndexBuffer : public BaseBuffer

@@ -135,6 +135,16 @@
 #define half3		vec3
 #define half4		vec4
 
+#define int1		int
+#define int2		ivec2
+#define int3		ivec3
+#define int4		ivec4
+
+#define uint1		uint
+#define uint2		uvec2
+#define uint3		uvec3
+#define uint4		uvec4
+
 #define float3x3	mat3x3
 #define float4x4	mat4x4
 

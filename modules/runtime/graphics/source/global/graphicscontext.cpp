@@ -16,36 +16,36 @@ namespace tiki
 		m_pVertexShader			= nullptr;
 		m_pVertexInputBinding	= nullptr;
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexSamplerStates ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i)
 		{
-			m_pVertexSamplerStates[ i ] = nullptr;
+			m_apVertexSamplerStates[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexTextures ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexTextures ); ++i)
 		{
-			m_pVertexTextures[ i ] = nullptr;
+			m_apVertexTextures[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pVertexConstants ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexConstants ); ++i)
 		{
-			m_pVertexConstants[ i ] = nullptr;
+			m_apVertexConstants[ i ] = nullptr;
 		}
 
 		m_pPixelShader = nullptr;
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelSamplerStates ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelSamplerStates ); ++i)
 		{
-			m_pPixelSamplerStates[ i ] = nullptr;
+			m_apPixelSamplerStates[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelTextures ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelTextures ); ++i)
 		{
-			m_pPixelTextures[ i ] = nullptr;
+			m_apPixelTextures[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_pPixelConstants ); ++i)
+		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelConstants ); ++i)
 		{
-			m_pPixelConstants[ i ] = nullptr;
+			m_apPixelConstants[ i ] = nullptr;
 		}
 	}
 	
@@ -75,10 +75,17 @@ namespace tiki
 
 		StockVertexPos2* pVertices = static_cast< StockVertexPos2* >( beginImmediateGeometry( sizeof( StockVertexPos2 ), 4u ) );
 
-		createFloat2( pVertices[ 0u ].position, -1.0f, -1.0f );
-		createFloat2( pVertices[ 1u ].position, -1.0f, 1.0f );
-		createFloat2( pVertices[ 2u ].position, 1.0f, -1.0f );
-		createFloat2( pVertices[ 3u ].position, 1.0f, 1.0f );
+		static const StockVertexPos2 s_aVertices[] =
+		{
+			{ -1.0f, -1.0f },
+			{ -1.0f,  1.0f },
+			{  1.0f, -1.0f },
+			{  1.0f,  1.0f }
+		};
+		pVertices[ 0u ] = s_aVertices[ 0u ];
+		pVertices[ 1u ] = s_aVertices[ 1u ];
+		pVertices[ 2u ] = s_aVertices[ 2u ];
+		pVertices[ 3u ] = s_aVertices[ 3u ];
 
 		endImmediateGeometry();
 	}
@@ -114,10 +121,17 @@ namespace tiki
 
 		StockVertexPos3* pVertices = static_cast< StockVertexPos3* >( beginImmediateGeometry( sizeof( StockVertexPos3 ), 4u ) );
 
-		createFloat3( pVertices[ 0u ].position, -1.0f, -1.0f, 0.0f );
-		createFloat3( pVertices[ 1u ].position, -1.0f, 1.0f, 0.0f );
-		createFloat3( pVertices[ 2u ].position, 1.0f, -1.0f, 0.0f );
-		createFloat3( pVertices[ 3u ].position, 1.0f, 1.0f, 0.0f );
+		static const StockVertexPos3 s_aVertices[] =
+		{
+			{ -1.0f, -1.0f, 0.0f },
+			{ -1.0f,  1.0f, 0.0f },
+			{  1.0f, -1.0f, 0.0f },
+			{  1.0f,  1.0f, 0.0f }
+		};
+		pVertices[ 0u ] = s_aVertices[ 0u ];
+		pVertices[ 1u ] = s_aVertices[ 1u ];
+		pVertices[ 2u ] = s_aVertices[ 2u ];
+		pVertices[ 3u ] = s_aVertices[ 3u ];
 
 		endImmediateGeometry();
 	}
