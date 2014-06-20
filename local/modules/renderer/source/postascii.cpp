@@ -116,9 +116,10 @@ namespace tiki
 			Matrix44 inverseProjection;
 			matrix::invert( inverseProjection, frameData.mainCamera.getProjection().getMatrix() );
 
-			AsciiPixelConstantData* pPixelConstantData = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
-			createFloat4( pPixelConstantData->param0, frameData.farPlane, (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
-			createGraphicsMatrix44( pPixelConstantData->inverseProjection, inverseProjection );
+			AsciiPixelConstantData* pPixelConstants = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
+			TIKI_ASSERT( pPixelConstants != nullptr );
+			createFloat4( pPixelConstants->param0, frameData.farPlane, (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
+			createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 			graphicsContext.unmapBuffer( m_pixelConstants );
 		}
 

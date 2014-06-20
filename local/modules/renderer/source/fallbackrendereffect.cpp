@@ -123,6 +123,7 @@ namespace tiki
 				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
 
 				FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
+				TIKI_ASSERT( pVertexConstants != nullptr );
 				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
 				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, mvMtx );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	

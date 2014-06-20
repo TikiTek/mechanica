@@ -136,8 +136,9 @@ namespace tiki
 		{
 			graphicsContext.beginRenderPass( *apTarget[ passIndex ], &viewport );
 
-			BlurPixelConstantData* pPixelData = static_cast< BlurPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
-			pPixelData->param0 = aPixelData[ passIndex ];
+			BlurPixelConstantData* pPixelConstants = static_cast< BlurPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
+			TIKI_ASSERT( pPixelConstants != nullptr );
+			pPixelConstants->param0 = aPixelData[ passIndex ];
 			graphicsContext.unmapBuffer( m_pixelConstants );
 
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );

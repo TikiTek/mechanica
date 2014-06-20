@@ -191,11 +191,13 @@ namespace tiki
 				matrix::transpose( modelInverseTranspose );
 
 				SceneVertexConstantData* pVertexConstants = static_cast< SceneVertexConstantData* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
+				TIKI_ASSERT( pVertexConstants != nullptr );
 				createGraphicsMatrix44( pVertexConstants->mvpMatrix, mvpMtx );
 				createGraphicsMatrix44( pVertexConstants->modelViewMatrix, modelInverseTranspose );
 				graphicsContext.unmapBuffer( m_vertexConstantBuffer );	
 
 				ScenePixelConstantData* pPixelConstants = static_cast< ScenePixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstantBuffer ) );
+				TIKI_ASSERT( pPixelConstants != nullptr );
 				pPixelConstants->selfIlluminationFactor = pRenderEffectData->selfIlluminationFactor;
 				pPixelConstants->specluarBrightness		= pRenderEffectData->specluarBrightness;
 				pPixelConstants->specluarIntensity		= pRenderEffectData->specluarIntensity;

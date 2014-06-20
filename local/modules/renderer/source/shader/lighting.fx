@@ -2,32 +2,34 @@
 
 #include "shader/platform.fxh"
 
-struct VertexToPixel
-{
-	float4 position	: TIKI_OUTPUT_POSITION;
-	float2 texCoord	: TIKI_TEXCOORD;
-};
+// vertex to pixel
+TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position,	TIKI_OUTPUT_POSITION )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord,	TIKI_TEXCOORD )
+TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// types
-struct VertexInput
-{
-	float2 position	: TIKI_INPUT_POSITION;
-	float2 texCoord	: TIKI_TEXCOORD;
-};
+// vertex input
+TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float2, position,	TIKI_INPUT_POSITION )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float2, texCoord,	TIKI_TEXCOORD )
+TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
 
-VertexToPixel main( VertexInput input )
+TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
-    VertexToPixel output;
+    TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-    output.position = float4( input.position, 0.0f, 1.0f );
-	output.texCoord = input.texCoord;
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 0.0, 1.0 );
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
+
+	TIKI_VERTEX_TO_PIXEL_SET_POSITION( position, position );
+	TIKI_VERTEX_TO_PIXEL_SET( texCoord, texCoord );
     
-    return output;
+    TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
@@ -42,6 +44,11 @@ VertexToPixel main( VertexInput input )
 #include "shader/lighting_shader.hpp"
 #include "shader/cameraparameter.hpp"
 
+// pixel output
+TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
+	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
+TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
+
 // constants
 TIKI_DEFINE_SAMPLER( 0, s_samplerNearst );
 
@@ -55,20 +62,20 @@ TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter );
 
 //float GGX_V1(in float m2, in float nDotX)
 //{
-//    return 1.0f / (nDotX + sqrt(m2 + (1 - m2) * nDotX * nDotX));
+//    return 1.0 / (nDotX + sqrt(m2 + (1 - m2) * nDotX * nDotX));
 //}
 //
 //float GGX_Specular(in float m, in float3 n, in float3 h, in float3 v, in float3 l)
 //{
-//    float nDotH = saturate(dot(n, h));
-//    float nDotL = saturate(dot(n, l));
-//    float nDotV = saturate(dot(n, v));
+//    float nDotH = TIKI_SATURATE(dot(n, h));
+//    float nDotL = TIKI_SATURATE(dot(n, l));
+//    float nDotV = TIKI_SATURATE(dot(n, v));
 //
 //    float nDotH2 = nDotH * nDotH;
 //    float m2 = m * m;
 //
 //    // Calculate the distribution term
-//    float d = m2 / (3.14159f * pow(nDotH * nDotH * (m2 - 1) + 1, 2.0f));
+//    float d = m2 / (3.14159f * pow(nDotH * nDotH * (m2 - 1) + 1, 2.0));
 //
 //    // Calculate the matching visibility term
 //    float v1i = GGX_V1(m2, nDotL);
@@ -78,21 +85,25 @@ TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter );
 //    return d * vis;
 //}
 
-float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
+TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
-	GeometryBufferSample sample = sampleGeometryBuffer( t_gBuffer0, t_gBuffer1, t_gBuffer2, s_samplerNearst, input.texCoord );
-	float3 diffuseColor			= getDiffuseColor( sample );
-	float3 normal				= getNormal( sample );
+	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
 
-	float nonLinearDepth		= TIKI_TEX2D( t_depthBuffer, s_samplerNearst, input.texCoord ).x;
-	float4 projectionPosition	= reconstructProjectionSpacePosition( input.texCoord, nonLinearDepth );
+	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
+
+	GeometryBufferSample gSample	= sampleGeometryBuffer( t_gBuffer0, t_gBuffer1, t_gBuffer2, s_samplerNearst, texCoord );
+	float3 diffuseColor				= getDiffuseColor( gSample );
+	float3 normal					= getNormal( gSample );
+
+	float nonLinearDepth		= TIKI_TEX2D( t_depthBuffer, s_samplerNearst, texCoord ).x;
+	float4 projectionPosition	= reconstructProjectionSpacePosition( texCoord, nonLinearDepth );
 	float3 worldPosition		= reconstructWorldSpacePosition( projectionPosition, c_cameraParameter );
 	float3 viewDirection		= normalize( getCameraWorldPosition( c_pixelData ) - worldPosition );
 
-	float4 viewPosition2 = mul( projectionPosition, c_pixelData.inverseProjection );
+	float4 viewPosition2 = TIKI_MUL( projectionPosition, c_pixelData.inverseProjection );
 	float3 viewPosition = viewPosition2.xyz / viewPosition2.w;
 
-	float3 color = float3( 0.0f, 0.0f, 0.0f );
+	float3 color = float3( 0.0, 0.0, 0.0 );
 
 	// directional
 	for (int i = 0; i < TIKI_DIRECTION_LIGHT_COUNT; i++)
@@ -100,15 +111,15 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 		float3 lightDirection	= getDirectionalLightDirection( c_pixelData.directionalLights[ i ] );
 		float lightIntensity	= max( dot( normal, lightDirection ), 0 );
 		float3 lightColor		= lightIntensity * getDirectionalLightColor( c_pixelData.directionalLights[ i ] );
-		float3 ambientColor		= ( 1 - lightIntensity ) * float3( 0.5f, 0.25f, 0.25f );
+		float3 ambientColor		= ( 1 - lightIntensity ) * float3( 0.5, 0.25, 0.25 );
 		float ambientIntensity	= 0.1f;
   
-		float3 specularColor	= getSpecluarBrightness( sample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( sample );
-		float specularPower		= getSpecluarPower( sample );
+		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
+		float specularIntensity	= getSpecluarIntensity( gSample );
+		float specularPower		= getSpecluarPower( gSample );
 
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0f, 0.0f, 0.0f ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( diffuseColor * lightColor ) + specularLight;
 		color += diffuseColor * ambientColor * ambientIntensity;
@@ -123,13 +134,13 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 		float lightIntensity	= max( dot( normal, lightDirection ), 0 );
 		float3 lightColor		= lightIntensity * getPointLightColor( c_pixelData.pointLights[ i ] );
   
-		float3 specularColor	= getSpecluarBrightness( sample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( sample );
-		float specularPower		= getSpecluarPower( sample );
+		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
+		float specularIntensity	= getSpecluarIntensity( gSample );
+		float specularPower		= getSpecluarPower( gSample );
 
-		float attenuation		= 1.0f - saturate( length( lightDistance ) * getPointLightInverseRange( c_pixelData.pointLights[ i ] ) );
+		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getPointLightInverseRange( c_pixelData.pointLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0f, 0.0f, 0.0f ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( ( diffuseColor * lightColor ) + specularLight ) * attenuation;
 	}
@@ -140,24 +151,25 @@ float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
 		float3 lightPosition	= getSpotLightPosition( c_pixelData.spotLights[ i ] );
 		float3 lightDistance	= lightPosition - worldPosition;
 		float3 lightDirection	= normalize( lightDistance );
-		float lightIntensity	= max( dot( normal, lightDirection ), 0 );
+		float lightIntensity	= max( dot( normal, lightDirection ), 0.0 );
 		float3 lightColor		= lightIntensity * getSpotLightColor( c_pixelData.spotLights[ i ] );
 
 		float angle				= acos( dot( lightDirection, normalize( getSpotLightDirection( c_pixelData.spotLights[ i ] ) ) ) );
-		float lightSpot			= saturate( smoothstep( getSpotLightPhi( c_pixelData.spotLights[ i ] ), getSpotLightTheta( c_pixelData.spotLights[ i ] ), angle ) );
+		float lightSpot			= TIKI_SATURATE( smoothstep( getSpotLightPhi( c_pixelData.spotLights[ i ] ), getSpotLightTheta( c_pixelData.spotLights[ i ] ), angle ) );
   
-		float3 specularColor	= getSpecluarBrightness( sample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( sample );
-		float specularPower		= getSpecluarPower( sample );
+		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
+		float specularIntensity	= getSpecluarIntensity( gSample );
+		float specularPower		= getSpecluarPower( gSample );
 
-		float attenuation		= 1.0f - saturate( length( lightDistance ) * getSpotLightInverseRange( c_pixelData.spotLights[ i ] ) );
+		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getSpotLightInverseRange( c_pixelData.spotLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0f, 0.0f, 0.0f ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot * attenuation;
 	}
 
-	return float4( color, 1.0f );
+	TIKI_PIXEL_OUTPUT_SET( color, float4( color, 1.0 ) );
+	TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else

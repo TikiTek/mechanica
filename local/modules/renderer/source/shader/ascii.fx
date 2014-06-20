@@ -130,12 +130,12 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
 	float4 color = float4( TIKI_TEX2D( t_downsample, s_samplerNearst, texCoord.st ) );
 
-	//float3 uvw = float3( texCoord, 0.0 );
-	//uvw.x *= 105.0;
-	//uvw.y *= 60.0;
-	//uvw.z = color.a;
+	float3 uvw = float3( texCoord, 0.0 );
+	uvw.x *= 105.0;
+	uvw.y *= 60.0;
+	uvw.z = color.a;
 
-	float ascii = 1.0; // TIKI_TEX3D( t_ascii, s_samplerLinear, uvw.xyz ).r;
+	float ascii = TIKI_TEX3D( t_ascii, s_samplerLinear, uvw.xyz ).r;
 	color = float4( color.xyz * ascii, 1.0 );
 #endif
 

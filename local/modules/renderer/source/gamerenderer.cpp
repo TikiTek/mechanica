@@ -369,10 +369,12 @@ namespace tiki
 		//matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
 
 		CameraParameter* pCameraConstants = static_cast< CameraParameter* >( graphicsContext.mapBuffer( m_cameraParameterConstants ) );
+		TIKI_ASSERT( pCameraConstants != nullptr );
 		*pCameraConstants = fillCameraParameter( m_frameData.mainCamera );
 		graphicsContext.unmapBuffer( m_cameraParameterConstants );
 
 		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
+		TIKI_ASSERT( pPixelConstants != nullptr );
 
 		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
