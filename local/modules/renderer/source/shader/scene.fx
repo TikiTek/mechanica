@@ -5,24 +5,24 @@
 
 // vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
-	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position,	TIKI_OUTPUT_POSITION )
-	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, tangent,	TIKI_TANGENT )
-	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, binormal,	TIKI_BINORMAL )
-	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, normal,	TIKI_NORMAL )
-	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord,	TIKI_TEXCOORD )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, TIKI_OUTPUT_POSITION0 )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, TIKI_TANGENT0 )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, TIKI_BINORMAL0 )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, TIKI_NORMAL0 )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, TIKI_TEXCOORD0 )
 TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 
 // vertex input
 TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float3, position,		TIKI_INPUT_POSITION )
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float3, normal,		TIKI_NORMAL )
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 2, float4, tangentFlip,	TIKI_TANGENT )
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 3, float2, texCoord,		TIKI_TEXCOORD )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float3, TIKI_INPUT_POSITION0 )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float3, TIKI_NORMAL0 )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 2, float4, TIKI_TANGENT0 )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 3, float2, TIKI_TEXCOORD0 )
 #if TIKI_ENABLE_SKINNING
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 4, uint4,  skinIndices,	TIKI_JOINTINDICES )
-	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 5, float4, skinWeights,	TIKI_JOINTWEIGHTS )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 4, uint4,  TIKI_JOINTINDICES0 )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 5, float4, TIKI_JOINTWEIGHTS0 )
 #endif
 TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
 
@@ -37,10 +37,10 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
     TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 1.0 );
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( TIKI_INPUT_POSITION0 ), 1.0 );
 #if TIKI_ENABLE_SKINNING
-	uint4 skinIndices = TIKI_VERTEX_INPUT_GET( skinIndices );
-	float4 skinWeights = TIKI_VERTEX_INPUT_GET( skinWeights );
+	uint4 skinIndices = TIKI_VERTEX_INPUT_GET( TIKI_JOINTINDICES0 );
+	float4 skinWeights = TIKI_VERTEX_INPUT_GET( TIKI_JOINTWEIGHTS0 );
 
 	float4x4 skinMatrix = float4x4( 0.0 );
 	for(int i = 0; i < 4; i++)	
@@ -58,21 +58,21 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 #endif
 	position = TIKI_MUL( position, c_instanceData.mvpMatrix );
 
-	float3 normal = TIKI_VERTEX_INPUT_GET( normal );
+	float3 normal = TIKI_VERTEX_INPUT_GET( TIKI_NORMAL0 );
 	normal = TIKI_MUL( normal, normalMatrix );
 
-	float3 tangent = TIKI_VERTEX_INPUT_GET( tangentFlip ).xyz;
+	float3 tangent = TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).xyz;
 	tangent = TIKI_MUL( tangent.xyz, normalMatrix );
 
-	float3 binormal = cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( tangentFlip ).w;
+	float3 binormal = cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w;
 
-	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD0 );
 
-	TIKI_VERTEX_TO_PIXEL_SET_POSITION( position, position );
-	TIKI_VERTEX_TO_PIXEL_SET( normal, normal );
-	TIKI_VERTEX_TO_PIXEL_SET( tangent, tangent );
-	TIKI_VERTEX_TO_PIXEL_SET( binormal, binormal );
-	TIKI_VERTEX_TO_PIXEL_SET( texCoord, texCoord );
+	TIKI_VERTEX_TO_PIXEL_SET_POSITION( TIKI_OUTPUT_POSITION0, position );
+	TIKI_VERTEX_TO_PIXEL_SET( TIKI_NORMAL0,		normal );
+	TIKI_VERTEX_TO_PIXEL_SET( TIKI_TANGENT0,	tangent );
+	TIKI_VERTEX_TO_PIXEL_SET( TIKI_BINORMAL0,	binormal );
+	TIKI_VERTEX_TO_PIXEL_SET( TIKI_TEXCOORD0,	texCoord );
 
     TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
@@ -102,10 +102,10 @@ TIKI_ENTRY_POINT( VertexToPixel, GeometryBufferPixelOutput, main )
 {
 	TIKI_PIXEL_OUTPUT_BEGIN( GeometryBufferPixelOutput );
 
-	float3 normal	= TIKI_VERTEX_TO_PIXEL_GET( normal );
-	float3 tangent	= TIKI_VERTEX_TO_PIXEL_GET( tangent );
-	float3 binormal	= TIKI_VERTEX_TO_PIXEL_GET( binormal );
-	float2 texCoord	= TIKI_VERTEX_TO_PIXEL_GET( texCoord );
+	float3 normal	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_NORMAL0 );
+	float3 tangent	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_TANGENT0 );
+	float3 binormal	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_BINORMAL0 );
+	float2 texCoord	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_TEXCOORD0 );
 
 	float3 diffuseColor = TIKI_TEX2D( t_diffuseMap, s_linear, texCoord ).rgb;
 	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, texCoord ).rgb * 2.0 - 1.0;
@@ -115,9 +115,9 @@ TIKI_ENTRY_POINT( VertexToPixel, GeometryBufferPixelOutput, main )
 	float3 finalNormal = normalize( TIKI_MUL( normalSample, tangentSpaceNormalMatrix ) );
 	float2 packedNormal = encodeNormal( finalNormal );
 
-	TIKI_PIXEL_OUTPUT_SET( buffer0Sample, createGeometryBuffer0Sample( diffuseColor, c_instanceData.specluarBrightness ) );
-	TIKI_PIXEL_OUTPUT_SET( buffer1Sample, createGeometryBuffer1Sample( selfIlluminationColor, c_instanceData.selfIlluminationFactor ) );
-	TIKI_PIXEL_OUTPUT_SET( buffer2Sample, createGeometryBuffer2Sample( packedNormal, c_instanceData.specluarIntensity, c_instanceData.specluarPower ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, createGeometryBuffer0Color( diffuseColor, c_instanceData.specluarBrightness ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR1, createGeometryBuffer1Color( selfIlluminationColor, c_instanceData.selfIlluminationFactor ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR2, createGeometryBuffer2Color( packedNormal, c_instanceData.specluarIntensity, c_instanceData.specluarPower ) );
 	
 	TIKI_PIXEL_OUTPUT_END( GeometryBufferPixelOutput );
 }

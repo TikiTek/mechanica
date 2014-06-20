@@ -11,24 +11,24 @@ struct GeometryBufferSample
 	float4	buffer2Sample;
 };
 
-#define TIKI_GEOMETRYBUFFER_PIXEL_OUTPUT														\
-	TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( GeometryBufferPixelOutput )								\
-		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, buffer0Sample, TIKI_OUTPUT_COLOR0 )	\
-		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 1, float4, buffer1Sample, TIKI_OUTPUT_COLOR1 )	\
-		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 2, float4, buffer2Sample, TIKI_OUTPUT_COLOR2 )	\
+#define TIKI_GEOMETRYBUFFER_PIXEL_OUTPUT										\
+	TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( GeometryBufferPixelOutput )				\
+		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, TIKI_OUTPUT_COLOR0 )	\
+		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 1, float4, TIKI_OUTPUT_COLOR1 )	\
+		TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 2, float4, TIKI_OUTPUT_COLOR2 )	\
 	TIKI_PIXEL_OUTPUT_DEFINITION_END( GeometryBufferPixelOutput )
 
-float4 createGeometryBuffer0Sample( TIKI_IN float3 diffuseColor, TIKI_IN float specluarBrightness )
+float4 createGeometryBuffer0Color( TIKI_IN float3 diffuseColor, TIKI_IN float specluarBrightness )
 {
 	return float4( diffuseColor, specluarBrightness );
 }
 
-float4 createGeometryBuffer1Sample( TIKI_IN float3 selfIlluminationColor, TIKI_IN float selfIlluminationFactor )
+float4 createGeometryBuffer1Color( TIKI_IN float3 selfIlluminationColor, TIKI_IN float selfIlluminationFactor )
 {
 	return float4( selfIlluminationColor, selfIlluminationFactor / 32.0 );
 }
 
-float4 createGeometryBuffer2Sample( TIKI_IN float2 normal, TIKI_IN float specluarIntensity, TIKI_IN float specluarPower )
+float4 createGeometryBuffer2Color( TIKI_IN float2 normal, TIKI_IN float specluarIntensity, TIKI_IN float specluarPower )
 {
 	return float4( normal, specluarIntensity, specluarPower );
 }
