@@ -106,7 +106,21 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
 
+		m_pRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
+		m_currentRenderPassDepth++;
 
+		glBindFramebuffer( GL_FRAMEBUFFER, renderTarget.m_platformData.frameBufferId );
+
+		if ( pViewport == nullptr )
+		{
+			glViewport( 0, 0, renderTarget.getWidth(), renderTarget.getHeight() );
+		}
+		else
+		{
+			glViewport( (GLint)pViewport->x, (GLint)pViewport->y, (GLsizei)pViewport->width, (GLsizei)pViewport->height );
+			//viewPort.MinDepth	= pViewport->minDepth;
+			//viewPort.MaxDepth	= pViewport->maxDepth;
+		}
 
 		invalidateState();
 	}
@@ -115,6 +129,18 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth != 0u );
 
+		m_currentRenderPassDepth--;
+		m_pRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
+
+		if ( m_currentRenderPassDepth != 0u )
+		{
+			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
+			glBindFramebuffer( GL_FRAMEBUFFER, renderTarget.m_platformData.frameBufferId );
+		}
+		else
+		{
+			glBindFramebuffer( GL_FRAMEBUFFER, 0u );
+		}
 
 		invalidateState();
 	}
@@ -215,7 +241,7 @@ namespace tiki
 		//};
 
 		if ( m_primitiveTopology != topology )
-		{
+		{			
 			//m_platformData.pContext->IASetPrimitiveTopology( s_aTopologies[ topology ] );
 			m_primitiveTopology = topology;
 		}
@@ -352,18 +378,18 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		//m_platformData.pContext->IASetIndexBuffer( 
-		//	indexBuffer.m_pBuffer,
-		//	( indexBuffer.m_indexType == IndexType_Uint32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
-		//	0u
-		//);
+		TIKI_ASSERT( indexBuffer.m_bufferId != GL_INVALID_ENUM );
+		TIKI_ASSERT( indexBuffer.m_bufferType == GL_ELEMENT_ARRAY_BUFFER );
+
+		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer.m_bufferId );
 	}
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& buffer )
 	{
-		//const UINT offset = 0u;
-		//const UINT vertexStride = static_cast< UINT >( buffer.m_stride );
-		//m_platformData.pContext->IASetVertexBuffers( (UINT)slot, 1u, &buffer.m_pBuffer, &vertexStride, &offset );
+		TIKI_ASSERT( buffer.m_bufferId != GL_INVALID_ENUM );
+		TIKI_ASSERT( buffer.m_bufferType == GL_ARRAY_BUFFER );
+
+		glBindBuffer( GL_ARRAY_BUFFER, buffer.m_bufferId );
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
@@ -373,7 +399,9 @@ namespace tiki
 		m_immediateVertexStride	= vertexStride;
 		m_immediateVertexCount	= vertexCount;
 
-		return mapBuffer( m_immediateVertexData );
+		void* pData = mapBuffer( m_immediateVertexData );
+		TIKI_ASSERT( pData != nullptr );
+		return pData;
 	}
 
 	void GraphicsContext::endImmediateGeometry()
@@ -384,36 +412,41 @@ namespace tiki
 		//const UINT offset = 0u;
 		//const UINT vertexStride = static_cast< UINT >( m_immediateVertexStride );
 		//m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &vertexStride, &offset );
+		//glBindBuffer( GL_ARRAY_BUFFER, m_immediateVertexData.m_bufferId );
 
-		//m_platformData.pContext->Draw( (UINT)m_immediateVertexCount, 0u );
+		//glDrawArrays( todo, 0u, m_immediateVertexCount );
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		//m_platformData.pContext->Draw( (UINT)vertexCount, (UINT)baseVertexOffset );
+		//glDrawArrays( todo, baseVertexOffset, vertexCount );
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		//m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
+		//glDrawElementsBaseVertex( todo, indexCount, indexBuffer.m_indexType, nullptr, baseVertexOffset );
 	}
 
 	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
-		//TIKI_ASSERT( buffer.m_pBuffer != nullptr );
+		TIKI_ASSERT( buffer.m_bufferId != GL_INVALID_ENUM );
 
-		//D3D11_MAPPED_SUBRESOURCE mapped;
-		//m_platformData.pContext->Map( buffer.m_pBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped );
+		glBindBuffer( buffer.m_bufferType, buffer.m_bufferId );
+		void* pData = glMapBuffer( buffer.m_bufferType, GL_WRITE_ONLY );
+		if ( pData == nullptr )
+		{
+			graphics::checkError();
+		}
 
-		//return mapped.pData;
-		return nullptr;
+		return pData;
 	}
 
 	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
-		//m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
+		glUnmapBuffer( buffer.m_bufferType );
+		glBindBuffer( buffer.m_bufferType, 0u );
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const

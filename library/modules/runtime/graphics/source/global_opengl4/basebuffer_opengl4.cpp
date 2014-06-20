@@ -33,12 +33,9 @@ namespace tiki
 		m_bufferType	= s_aBufferTypeMapping[ binding ];
 		m_bufferUsage	= ( dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW );
 
-		if ( pInitData != nullptr )
-		{
-			glBindBuffer( m_bufferType, m_bufferId );
-			glBufferData( m_bufferType, size, pInitData, m_bufferUsage );
-			glBindBuffer( m_bufferType, 0u );
-		}
+		glBindBuffer( m_bufferType, m_bufferId );
+		glBufferData( m_bufferType, size, pInitData, m_bufferUsage );
+		glBindBuffer( m_bufferType, 0u );
 
 		//// Allocate an OpenGL vertex array object.
 		//glGenVertexArrays(1, &m_vertexArrayId);
@@ -72,7 +69,7 @@ namespace tiki
 		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId);
 		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexCount* sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-		return true;
+		return graphics::checkError();
 	}
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )

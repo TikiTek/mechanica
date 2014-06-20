@@ -75,7 +75,7 @@ namespace tiki
 		return s_aTypeMapping[ type ];
 	}
 
-	static void initTextureLevelData( TextureType type, GLint level, GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat, GLenum format, GLenum channelType, const void* pData )
+	static bool initTextureLevelData( TextureType type, GLint level, GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat, GLenum format, GLenum channelType, const void* pData )
 	{
 		switch ( type )
 		{
@@ -99,14 +99,8 @@ namespace tiki
 			TIKI_BREAK( "[graphics] TextureType not supported.\n" );
 			break;
 		}
-		
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		const GLenum error = glGetError();
-		if ( error != GL_NO_ERROR )
-		{
-			TIKI_TRACE_ERROR( "[graphics] Could not set Texture data. Error: %s\n", gluErrorString( error ) );
-		}
-#endif
+
+		return graphics::checkError();
 	}
 
 	TextureData::TextureData()
@@ -141,6 +135,7 @@ namespace tiki
 			glTexParameteri( glTextureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		}
 		
+		bool success = true;
 		if ( pTextureData != nullptr )
 		{
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
@@ -155,7 +150,7 @@ namespace tiki
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
 
-				initTextureLevelData(
+				success &= initTextureLevelData(
 					(TextureType)description.type,
 					mipLevel,
 					width,
@@ -181,7 +176,7 @@ namespace tiki
 
 			for (uint mipLevel = 0u; mipLevel <= description.mipCount; ++mipLevel)
 			{
-				initTextureLevelData(
+				success &= initTextureLevelData(
 					(TextureType)description.type,
 					mipLevel,
 					width,
@@ -201,15 +196,20 @@ namespace tiki
 
 		glBindTexture( glTextureType, 0u );
 
-		return true;
+		if ( !success )
+		{
+			dispose( graphicsSystem );
+		}
+
+		return success;
 	}
 
 	void TextureData::dispose( GraphicsSystem& graphicsSystem )
 	{
-		if ( m_platformData.textureId != 0u )
+		if ( m_platformData.textureId != GL_INVALID_ENUM )
 		{
 			glDeleteTextures( 1, &m_platformData.textureId );
-			m_platformData.textureId = 0u;
+			m_platformData.textureId = GL_INVALID_ENUM;
 		}
 	}
 }

@@ -103,8 +103,11 @@ namespace tiki
 		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_S,				s_aAddressModeMapping[ creationParamter.addressU ] );
 		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_T,				s_aAddressModeMapping[ creationParamter.addressV ] );
 		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_WRAP_R,				s_aAddressModeMapping[ creationParamter.addressW ] );
-		glSamplerParameteri( m_platformData.samplerId, GL_TEXTURE_BORDER_COLOR,			creationParamter.borderColor );
 		glSamplerParameterf( m_platformData.samplerId, GL_TEXTURE_MAX_ANISOTROPY_EXT,	(float)creationParamter.maxAnisotropy );
+
+		float4 borderColor;
+		color::toFloat4( borderColor, creationParamter.borderColor );
+		glSamplerParameterfv( m_platformData.samplerId, GL_TEXTURE_BORDER_COLOR, &borderColor.x );
 		
 		return true;
 	}

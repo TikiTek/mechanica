@@ -473,6 +473,7 @@ namespace tiki
 		}
 
 		// parse code
+		if ( false )
 		{
 			static const EShLanguage s_aLanguageMapping[] =
 			{

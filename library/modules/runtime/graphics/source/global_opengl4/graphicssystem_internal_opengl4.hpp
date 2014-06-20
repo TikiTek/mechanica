@@ -11,7 +11,10 @@
 
 namespace tiki
 {
-
+	namespace graphics
+	{
+		bool	checkError();
+	}
 }
 
 #endif // __TIKI_GRAPHICSSYSTEM_INTERNAL_OPENGL4_HPP_INCLUDED__

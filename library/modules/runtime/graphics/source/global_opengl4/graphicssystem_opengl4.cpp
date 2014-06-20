@@ -266,4 +266,17 @@ namespace tiki
 	//	pContext->IASetVertexBuffers( 0u, GraphicsSystemLimits_MaxInputStreams, reinterpret_cast< ID3D11Buffer** >( pNullPointers ), reinterpret_cast< UINT* >( pNullPointers ), reinterpret_cast< UINT* >( pNullPointers ) );
 	//	pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
 	//}
+
+	bool graphics::checkError()
+	{
+		const GLenum error = glGetError();
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		if ( error != GL_NO_ERROR )
+		{
+			TIKI_TRACE_ERROR( "[graphics] An error has occured. Error: %s\n", gluErrorString( error ) );
+			return false;
+		}
+#endif
+		return true;
+	}
 }
