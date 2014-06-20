@@ -176,6 +176,7 @@ namespace tiki
 		}
 
 		ImmediateRendererConstantData* pConstantData = static_cast< ImmediateRendererConstantData* >( m_pContext->mapBuffer( m_vertexConstantBuffer ) );
+		TIKI_ASSERT( pConstantData != nullptr );
 		createGraphicsMatrix44( pConstantData->projection, transformMatrix );
 		m_pContext->unmapBuffer( m_vertexConstantBuffer );
 

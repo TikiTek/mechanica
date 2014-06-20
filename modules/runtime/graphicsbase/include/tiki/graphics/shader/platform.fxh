@@ -44,6 +44,7 @@
 #define TIKI_TEXCUBE( tex, sam, uvw )	tex.Sample( sam, uvw.xyz )
 
 #define TIKI_MUL( a, b )				mul( a, b )
+#define TIKI_SATURATE( a )				saturate( a )
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
@@ -145,7 +146,7 @@
 #define TIKI_DEFINE_TEXTURE3D( slot, name )		uniform sampler3D name;
 #define TIKI_DEFINE_TEXTURECUBE( slot, name )	uniform samplerCube name;
 
-#define TIKI_DEFINE_SAMPLER( slot, name )
+#define TIKI_DEFINE_SAMPLER( slot, name )		const float name = 42.0;
 
 // functions
 
@@ -155,6 +156,7 @@
 #define TIKI_TEXCUBE( tex, sam, uvw )	texture( tex, uvw )
 
 #define TIKI_MUL( a, b )				a * b
+#define TIKI_SATURATE( a )				clamp( a, 0.0, 1.0 )
 
 // entry point
 #define TIKI_ENTRY_POINT( inputType, outputType, name ) void name()
