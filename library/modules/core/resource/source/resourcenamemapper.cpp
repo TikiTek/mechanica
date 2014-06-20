@@ -56,8 +56,11 @@ namespace tiki
 	{
 		m_map.dispose();
 
-		memory::freeAlign( m_pStringData );
-		m_pStringData = nullptr;
+		if ( m_pStringData != nullptr )
+		{
+			memory::freeAlign( m_pStringData );
+			m_pStringData = nullptr;
+		}
 	}
 
 	const char* ResourceNameMapper::getResourceName( crc32 crcName ) const

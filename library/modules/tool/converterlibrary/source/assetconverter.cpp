@@ -40,8 +40,13 @@ namespace tiki
 		m_modelConverter.create( &m_manager );
 		m_shaderConverter.create( &m_manager );
 		m_textureConverter.create( &m_manager );
-
+		
 		TIKI_TRACE_INFO( "AssetConverter: started\n" );
+
+		if ( m_manager.isNewDatabase() )
+		{
+			convertAll();
+		}
 	}
 
 	void AssetConverter::dispose()

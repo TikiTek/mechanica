@@ -9,7 +9,6 @@
 #define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
 #define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )
 
-
 #if TIKI_ENABLED( TIKI_HLSL4 )
 
 // parameters
@@ -116,6 +115,9 @@
 #define TIKI_OUT			out
 #define TIKI_INOUT			inout
 
+#define TIKI_VAR_IN( name )		TIKI_CONCAT( in, name )
+#define TIKI_VAR_OUT( name )	TIKI_CONCAT( out, name )
+
 // types
 
 #define TIKI_SAMPLER		float
@@ -176,17 +178,9 @@
 
 #	define TIKI_VERTEX_INPUT_DEFINITION_BEGIN( typeName )
 #	define TIKI_VERTEX_INPUT_DEFINITION_END( typeName )
-#	define TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( slot, type, name, semantic )	layout(location = slot) in type in ## name;
+#	define TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( slot, type, semantic )	layout(location = slot) in type TIKI_VAR_IN(  semantic );
 
-#	define TIKI_VERTEX_INPUT_GET( name ) in ## name
-
-#else
-
-#	define TIKI_VERTEX_INPUT_DEFINITION_BEGIN( typeName )
-#	define TIKI_VERTEX_INPUT_DEFINITION_END( typeName )
-#	define TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( slot, type, name, semantic )
-
-#	define TIKI_VERTEX_INPUT_GET( name )
+#	define TIKI_VERTEX_INPUT_GET( semantic ) TIKI_VAR_IN( semantic )
 
 #endif
 
@@ -195,26 +189,20 @@
 
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( name )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, name, semantic ) out type out ## name;
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) out type TIKI_VAR_OUT( semantic );
 
 #	define TIKI_VERTEX_TO_PIXEL_BEGIN( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_END( typeName )
-#	define TIKI_VERTEX_TO_PIXEL_SET_POSITION( name, value ) gl_Position = value
-#	define TIKI_VERTEX_TO_PIXEL_SET( name, value ) out ## name = value
+#	define TIKI_VERTEX_TO_PIXEL_SET_POSITION( semantic, value ) gl_Position = value
+#	define TIKI_VERTEX_TO_PIXEL_SET( semantic, value ) TIKI_VAR_OUT( semantic ) = value
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
 
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( name )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, name, semantic ) in type in ## name;
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) in type TIKI_VAR_IN( semantic );
 
-#	define TIKI_VERTEX_TO_PIXEL_GET( name ) in ## name
-
-#else
-
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, name, semantic )
+#	define TIKI_VERTEX_TO_PIXEL_GET( semantic ) TIKI_VAR_IN( semantic )
 
 #endif
 
@@ -223,101 +211,76 @@
 
 #	define TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( typeName )
 #	define TIKI_PIXEL_OUTPUT_DEFINITION_END( typeName )
-#	define TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( slot, type, name, semantic ) layout(location = slot) out type out ## name;
+#	define TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( slot, type, semantic ) layout(location = slot) out type TIKI_VAR_OUT( semantic );
 
 #	define TIKI_PIXEL_OUTPUT_BEGIN( typeName )
 #	define TIKI_PIXEL_OUTPUT_END( typeName )
-#	define TIKI_PIXEL_OUTPUT_SET( name, value ) out ## name = value
-
-#else
-
-#	define TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( name )
-#	define TIKI_PIXEL_OUTPUT_DEFINITION_END( name )
-#	define TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( slot, type, name, semantic )
-
-#	define TIKI_PIXEL_OUTPUT_BEGIN( typeName )
-#	define TIKI_PIXEL_OUTPUT_END( typeName )
-#	define TIKI_PIXEL_OUTPUT_SET( name, value )
+#	define TIKI_PIXEL_OUTPUT_SET( semantic, value ) TIKI_VAR_OUT( semantic ) = value
 
 #endif
-
 
 // semantics input
-#define TIKI_INPUT_POSITION0	POSITION0
-#define TIKI_INPUT_POSITION1	POSITION1
-#define TIKI_INPUT_POSITION2	POSITION2
-#define TIKI_INPUT_POSITION3	POSITION3
+#define TIKI_INPUT_POSITION0
+#define TIKI_INPUT_POSITION1
+#define TIKI_INPUT_POSITION2
+#define TIKI_INPUT_POSITION3
 
-#define TIKI_OUTPUT_POSITION0	POSITION0
-#define TIKI_OUTPUT_POSITION1	POSITION1
-#define TIKI_OUTPUT_POSITION2	POSITION2
-#define TIKI_OUTPUT_POSITION3	POSITION3
+#define TIKI_OUTPUT_POSITION0
+#define TIKI_OUTPUT_POSITION1
+#define TIKI_OUTPUT_POSITION2
+#define TIKI_OUTPUT_POSITION3
 
-#define TIKI_TEXCOORD0			TEXCOORD0
-#define TIKI_TEXCOORD1			TEXCOORD1
-#define TIKI_TEXCOORD2			TEXCOORD2
-#define TIKI_TEXCOORD3			TEXCOORD3
-#define TIKI_TEXCOORD4			TEXCOORD4
-#define TIKI_TEXCOORD5			TEXCOORD5
-#define TIKI_TEXCOORD6			TEXCOORD6
-#define TIKI_TEXCOORD7			TEXCOORD7
+#define TIKI_TEXCOORD0
+#define TIKI_TEXCOORD1
+#define TIKI_TEXCOORD2
+#define TIKI_TEXCOORD3
+#define TIKI_TEXCOORD4
+#define TIKI_TEXCOORD5
+#define TIKI_TEXCOORD6
+#define TIKI_TEXCOORD7
 
-#define TIKI_COLOR0				COLOR0
-#define TIKI_COLOR1				COLOR1
-#define TIKI_COLOR2				COLOR2
-#define TIKI_COLOR3				COLOR3
+#define TIKI_COLOR0
+#define TIKI_COLOR1
+#define TIKI_COLOR2
+#define TIKI_COLOR3
 
-#define TIKI_NORMAL0			NORMAL0
-#define TIKI_NORMAL1			NORMAL1
-#define TIKI_NORMAL2			NORMAL2
-#define TIKI_NORMAL3			NORMAL3
+#define TIKI_NORMAL0
+#define TIKI_NORMAL1
+#define TIKI_NORMAL2
+#define TIKI_NORMAL3
 
-#define TIKI_BINORMAL0			BINORMAL0
-#define TIKI_BINORMAL1			BINORMAL1
-#define TIKI_BINORMAL2			BINORMAL2
-#define TIKI_BINORMAL3			BINORMAL3
+#define TIKI_BINORMAL0
+#define TIKI_BINORMAL1
+#define TIKI_BINORMAL2
+#define TIKI_BINORMAL3
 
-#define TIKI_TANGENT0			TANGENT0
-#define TIKI_TANGENT1			TANGENT1
-#define TIKI_TANGENT2			TANGENT2
-#define TIKI_TANGENT3			TANGENT3
+#define TIKI_TANGENT0
+#define TIKI_TANGENT1
+#define TIKI_TANGENT2
+#define TIKI_TANGENT3
 
-#define TIKI_JOINTINDICES0		BLENDINDICES0
-#define TIKI_JOINTINDICES1		BLENDINDICES1
-#define TIKI_JOINTINDICES2		BLENDINDICES2
-#define TIKI_JOINTINDICES3		BLENDINDICES3
+#define TIKI_JOINTINDICES0
+#define TIKI_JOINTINDICES1
+#define TIKI_JOINTINDICES2
+#define TIKI_JOINTINDICES3
 
-#define TIKI_JOINTWEIGHTS0		BLENDWEIGHT0
-#define TIKI_JOINTWEIGHTS1		BLENDWEIGHT1
-#define TIKI_JOINTWEIGHTS2		BLENDWEIGHT2
-#define TIKI_JOINTWEIGHTS3		BLENDWEIGHT3
+#define TIKI_JOINTWEIGHTS0
+#define TIKI_JOINTWEIGHTS1
+#define TIKI_JOINTWEIGHTS2
+#define TIKI_JOINTWEIGHTS3
 
 // semantics output
-#define TIKI_OUTPUT_COLOR0		COLOR0
-#define TIKI_OUTPUT_COLOR1		COLOR1
-#define TIKI_OUTPUT_COLOR2		COLOR2
-#define TIKI_OUTPUT_COLOR3		COLOR3
-#define TIKI_OUTPUT_COLOR4		COLOR4
-#define TIKI_OUTPUT_COLOR5		COLOR5
-#define TIKI_OUTPUT_COLOR6		COLOR6
-#define TIKI_OUTPUT_COLOR7		COLOR7
+#define TIKI_OUTPUT_COLOR0
+#define TIKI_OUTPUT_COLOR1
+#define TIKI_OUTPUT_COLOR2
+#define TIKI_OUTPUT_COLOR3
+#define TIKI_OUTPUT_COLOR4
+#define TIKI_OUTPUT_COLOR5
+#define TIKI_OUTPUT_COLOR6
+#define TIKI_OUTPUT_COLOR7
 
-#define TIKI_OUTPUT_DEPTH		DEPTH
+#define TIKI_OUTPUT_DEPTH
 
-#endif
-
-// default semantics
-#define TIKI_INPUT_POSITION		TIKI_INPUT_POSITION0
-#define TIKI_OUTPUT_POSITION	TIKI_OUTPUT_POSITION0
-
-#define TIKI_TEXCOORD			TIKI_TEXCOORD0
-#define TIKI_COLOR				TIKI_COLOR0
-#define TIKI_NORMAL				TIKI_NORMAL0
-#define TIKI_BINORMAL			TIKI_BINORMAL0
-#define TIKI_TANGENT			TIKI_TANGENT0
-#define TIKI_JOINTINDICES		TIKI_JOINTINDICES0
-#define TIKI_JOINTWEIGHTS		TIKI_JOINTWEIGHTS0
-
-#define TIKI_OUTPUT_COLOR		TIKI_OUTPUT_COLOR0
+#endif // TIKI_ENABLED( TIKI_OPENGL4 )
 
 #endif // __TIKI_PLATFORM_FXH_INCLUDED__

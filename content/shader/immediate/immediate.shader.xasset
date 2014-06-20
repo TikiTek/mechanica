@@ -1,4 +1,0 @@
-<tikiasset>
-  <input file="immediate.fx" type="shader" />
-  <param key="compile_debug" value="true" />  
-<tikiasset>

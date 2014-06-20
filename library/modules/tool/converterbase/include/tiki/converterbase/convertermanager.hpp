@@ -63,6 +63,7 @@ namespace tiki
 
 		// misc
 		const string&			getOutputPath() const { return m_outputPath; }
+		bool					isNewDatabase() const { return m_isNewDatabase; }
 
 	private:
 
@@ -88,6 +89,7 @@ namespace tiki
 
 		SqliteDatabase				m_dataBase;
 		bool						m_rebuildForced;
+		bool						m_isNewDatabase;
 
 		mutable Mutex				m_loggingMutex;
 		mutable FileStream			m_loggingStream;
