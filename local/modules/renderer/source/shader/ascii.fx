@@ -2,6 +2,7 @@
 
 #include "shader/platform.fxh"
 
+// vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
 	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position, TIKI_OUTPUT_POSITION )
 	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord, TIKI_TEXCOORD )
@@ -18,7 +19,7 @@ TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// types
+// vertex input
 TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
 	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float2, position, TIKI_INPUT_POSITION )
 	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float2, texCoord, TIKI_TEXCOORD )
@@ -48,6 +49,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
+// pixel output
 TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
 	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
 TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
@@ -76,7 +78,7 @@ TIKI_DEFINE_TEXTURE3D( 1, t_ascii )
 
 TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
-	//TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
+	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
 
 #if TIKI_DOWNSAMPLE
 	float4 projectedPosition = float4( reconstructClipSpacePosition( input.texCoord ), t_depthBuffer.Sample( s_samplerNearst, input.texCoord ).r, 1.0 );
@@ -140,7 +142,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 #endif
 
 	TIKI_PIXEL_OUTPUT_SET( color, color );
-	//TIKI_PIXEL_OUTPUT_END( PixelOutput );
+	TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else

@@ -24,13 +24,10 @@ namespace tiki
 		static GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 	}
 
-	//static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
-	//{
-	//	return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
-	//}
-
-	//TGDevice*	graphics::getDevice( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pDevice; }
-	//TGContext*	graphics::getContext( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pContext; }
+	static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
+	{
+		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
+	}
 
 	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
 	{
@@ -83,11 +80,19 @@ namespace tiki
 			return false;
 		}
 
+		if ( !m_platformData.shaderLinker.create( GraphicsSystemLimits_MaxProgramCount ) )
+		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create ShaderLinker.\n" );
+			return false;
+		}
+
 		return true;
 	}
 
 	void GraphicsSystem::disposePlatform()
 	{
+		m_platformData.shaderLinker.dispose();
+
 		m_commandBuffer.dispose( *this );
 		
 		//if( m_platformData.pSwapChain != nullptr )
@@ -151,8 +156,6 @@ namespace tiki
 
 	void GraphicsSystem::endFrame()
 	{
-		//SwapBuffers( m_platformData.deviceContextHandle );
-		
 		//graphics::resetDeviceState( m_platformData.pContext );
 
 		SwapBuffers( (HDC)m_platformData.deviceContextHandle );
@@ -278,5 +281,10 @@ namespace tiki
 		}
 #endif
 		return true;
+	}
+
+	ShaderLinker& graphics::getShaderLinker( GraphicsSystem& graphicsSystem )
+	{
+		return graphics::getPlatformData( graphicsSystem ).shaderLinker;
 	}
 }

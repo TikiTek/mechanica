@@ -128,7 +128,7 @@ namespace tiki
 
 		const RenderTarget*			m_pRenderTarget;
 
-		const RenderTarget*			m_pRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
+		const RenderTarget*			m_apRenderPassesStack[ GraphicsSystemLimits_RenderPassStackDepth ];
 		uint						m_currentRenderPassDepth;
 
 		PrimitiveTopology			m_primitiveTopology;
@@ -139,14 +139,14 @@ namespace tiki
 
 		const Shader*				m_pVertexShader;
 		const VertexInputBinding*	m_pVertexInputBinding;
-		const SamplerState*			m_pVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
-		const TextureData*			m_pVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
-		const ConstantBuffer*		m_pVertexConstants[ GraphicsSystemLimits_VertexShaderConstantSlots ];
+		const SamplerState*			m_apVertexSamplerStates[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const TextureData*			m_apVertexTextures[ GraphicsSystemLimits_VertexShaderTextureSlots ];
+		const ConstantBuffer*		m_apVertexConstants[ GraphicsSystemLimits_VertexShaderConstantSlots ];
 
 		const Shader*				m_pPixelShader;
-		const SamplerState*			m_pPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
-		const TextureData*			m_pPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
-		const ConstantBuffer*		m_pPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
+		const SamplerState*			m_apPixelSamplerStates[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const TextureData*			m_apPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
+		const ConstantBuffer*		m_apPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 
 		BaseBuffer					m_immediateVertexData;
 		uint						m_immediateVertexStride;

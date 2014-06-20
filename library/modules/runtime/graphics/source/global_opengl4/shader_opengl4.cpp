@@ -1,4 +1,4 @@
-
+﻿
 #include "tiki/graphics/shader.hpp"
 
 #include "tiki/base/assert.hpp"
@@ -53,19 +53,24 @@ namespace tiki
 		glShaderSource( m_platformData.shaderId, 1, &pSourceCode, nullptr );
 		glCompileShader( m_platformData.shaderId );
 
-		int lenght = 0;
-		glGetShaderiv( m_platformData.shaderId, GL_INFO_LOG_LENGTH, &lenght );
-
-		if ( lenght > 1 )
+		GLint status = 0;
+		glGetShaderiv( m_platformData.shaderId, GL_COMPILE_STATUS, &status );
+		if ( status == GL_FALSE )
 		{
-			int charsWritten  = 0;
-			char buffer[ 4096u ];
-			glGetShaderInfoLog( m_platformData.shaderId, sizeof( buffer ), &charsWritten, buffer );
+			GLint lenght = 0;
+			glGetShaderiv( m_platformData.shaderId, GL_INFO_LOG_LENGTH, &lenght );
+			if ( lenght > 1 )
+			{
+				int charsWritten  = 0;
+				char aBuffer[ 4096u ];
+				glGetShaderInfoLog( m_platformData.shaderId, sizeof( aBuffer ), &charsWritten, aBuffer );
+				aBuffer[ charsWritten ] = '\0';
 
-			TIKI_TRACE_ERROR( pSourceCode );
-			TIKI_TRACE_ERROR( buffer );
+				TIKI_TRACE_ERROR( "Cound not compile Shader. Source Code:\n%s\nErrors:\n%s\n", pSourceCode, aBuffer );
+			}
 
-			return true; // todo
+			dispose( graphicsSystem );
+			return false;
 		}
 
 		return true;
@@ -77,6 +82,8 @@ namespace tiki
 
 		if ( m_platformData.shaderId != GL_INVALID_ENUM )
 		{
+			graphics::getShaderLinker( graphicsSystem ).freeShader( m_type, m_platformData.shaderId );
+
 			glDeleteShader( m_platformData.shaderId );
 			m_platformData.shaderId = GL_INVALID_ENUM;
 		}

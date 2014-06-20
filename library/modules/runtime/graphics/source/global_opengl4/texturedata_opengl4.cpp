@@ -118,21 +118,21 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.textureId == GL_INVALID_ENUM );
 		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
 
-		m_description = description;
+		m_description				= description;
+		m_platformData.textureType	= graphics::getGlTextureType( (TextureType)description.type );
 
-		const GLenum glFormat = graphics::getGlFormat( (PixelFormat)description.format );
-		const GLenum glChannelType = graphics::getGlChannelType( (PixelFormat)description.format );
-		const GLenum glTextureType = graphics::getGlTextureType( (TextureType)description.type );
+		const GLenum glFormat		= graphics::getGlFormat( (PixelFormat)description.format );
+		const GLenum glChannelType	= graphics::getGlChannelType( (PixelFormat)description.format );
 
 		glGenTextures( 1, &m_platformData.textureId );
-		glBindTexture( glTextureType, m_platformData.textureId );
+		glBindTexture( m_platformData.textureType, m_platformData.textureId );
 
 		if ( description.format != PixelFormat_Depth24Stencil8 )
 		{
-			glTexParameteri( glTextureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			glTexParameteri( glTextureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-			glTexParameteri( glTextureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( glTextureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			glTexParameteri( m_platformData.textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( m_platformData.textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+			glTexParameteri( m_platformData.textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( m_platformData.textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		}
 		
 		bool success = true;
@@ -194,7 +194,7 @@ namespace tiki
 			}
 		}
 
-		glBindTexture( glTextureType, 0u );
+		glBindTexture( m_platformData.textureType, 0u );
 
 		if ( !success )
 		{

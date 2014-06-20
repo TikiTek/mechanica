@@ -4,10 +4,16 @@
 
 #include "tiki/graphics/texturedata.hpp"
 
-#include "../../../source/global_opengl4/graphicstypes_opengl4.hpp"
+#include "graphicstypes_opengl4.hpp"
+#include "shaderlinker_opengl4.hpp"
 
 namespace tiki
 {
+	enum
+	{
+		GraphicsSystemLimits_MaxProgramCount = 1024u
+	};
+
 	struct GraphicsSystemPlatformData
 	{
 		GraphicsSystemPlatformData()
@@ -24,6 +30,7 @@ namespace tiki
 		GLuint				depthBufferId;
 		TextureData			backBufferData;
 
+		ShaderLinker		shaderLinker;
 	};
 }
 

@@ -14,6 +14,7 @@ namespace tiki
 		}
 
 		GLuint	textureId;
+		GLenum	textureType;
 	};
 
 	namespace graphics

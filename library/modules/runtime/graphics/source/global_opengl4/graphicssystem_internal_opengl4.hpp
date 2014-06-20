@@ -11,9 +11,13 @@
 
 namespace tiki
 {
+	class ShaderLinker;
+
 	namespace graphics
 	{
-		bool	checkError();
+		bool			checkError();
+
+		ShaderLinker&	getShaderLinker( GraphicsSystem& graphicsSystem );
 	}
 }
 

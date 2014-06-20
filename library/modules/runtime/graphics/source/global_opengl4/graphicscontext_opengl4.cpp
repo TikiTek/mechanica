@@ -21,12 +21,15 @@
 #include "tiki/graphics/viewport.hpp"
 
 #include "graphicssystem_internal_opengl4.hpp"
+#include "shaderlinker_opengl4.hpp"
 
 namespace tiki
 {
-	static void setGlMode( GLenum mode, GLboolean enable )
+	namespace graphics
 	{
-		( enable ? glEnable : glDisable )( mode );
+		static void setGlMode( GLenum mode, GLboolean enable );
+
+		static void setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId );
 	}
 
 	GraphicsContext::GraphicsContext()
@@ -46,9 +49,9 @@ namespace tiki
 
 		m_pRenderTarget = nullptr;
 
-		for (uint i = 0u; i < TIKI_COUNT( m_pRenderPassesStack ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( m_apRenderPassesStack ); ++i)
 		{
-			m_pRenderPassesStack[ i ] = nullptr;
+			m_apRenderPassesStack[ i ] = nullptr;
 		}
 		m_currentRenderPassDepth = 0u;
 
@@ -57,6 +60,7 @@ namespace tiki
 		m_immediateVertexStride	= 0u;
 
 		invalidateState();
+		TIKI_CHECK_GRAPHICS;
 
 		return true;
 	}
@@ -95,6 +99,7 @@ namespace tiki
 		}
 
 		glClear( glClearMask );
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
@@ -106,7 +111,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
 
-		m_pRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
+		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 
 		glBindFramebuffer( GL_FRAMEBUFFER, renderTarget.m_platformData.frameBufferId );
@@ -123,6 +128,7 @@ namespace tiki
 		}
 
 		invalidateState();
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void GraphicsContext::endRenderPass()
@@ -130,11 +136,11 @@ namespace tiki
 		TIKI_ASSERT( m_currentRenderPassDepth != 0u );
 
 		m_currentRenderPassDepth--;
-		m_pRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
+		m_apRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
 
 		if ( m_currentRenderPassDepth != 0u )
 		{
-			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
+			const RenderTarget& renderTarget = *m_apRenderPassesStack[ m_currentRenderPassDepth - 1u ];
 			glBindFramebuffer( GL_FRAMEBUFFER, renderTarget.m_platformData.frameBufferId );
 		}
 		else
@@ -143,8 +149,8 @@ namespace tiki
 		}
 
 		invalidateState();
+		TIKI_CHECK_GRAPHICS;
 	}
-
 
 	void GraphicsContext::setBlendState( const BlendState* pBlendState )
 	{
@@ -152,7 +158,7 @@ namespace tiki
 
 		if ( m_pBlendState != pBlendState )
 		{
-			setGlMode( GL_BLEND, pBlendState->m_platformData.blendEnabled );
+			graphics::setGlMode( GL_BLEND, pBlendState->m_platformData.blendEnabled );
 
 			glBlendEquation( pBlendState->m_platformData.blendOperation );
 			glBlendFunc(
@@ -167,6 +173,7 @@ namespace tiki
 			);
 
 			m_pBlendState = pBlendState;
+			TIKI_CHECK_GRAPHICS;
 		}		
 	}
 
@@ -176,8 +183,8 @@ namespace tiki
 
 		if ( m_pDepthStencilState != pDepthStencilState )
 		{
-			setGlMode( GL_DEPTH_TEST, pDepthStencilState->m_platformData.depthEnabled );
-			setGlMode( GL_STENCIL_TEST, pDepthStencilState->m_platformData.stencilEnabled );
+			graphics::setGlMode( GL_DEPTH_TEST, pDepthStencilState->m_platformData.depthEnabled );
+			graphics::setGlMode( GL_STENCIL_TEST, pDepthStencilState->m_platformData.stencilEnabled );
 			glDepthMask( pDepthStencilState->m_platformData.depthWriteEnabled );
 
 			glDepthFunc( pDepthStencilState->m_platformData.depthFunction );
@@ -211,6 +218,7 @@ namespace tiki
 			);
 
 			m_pDepthStencilState = pDepthStencilState;
+			TIKI_CHECK_GRAPHICS;
 		}		
 	}
 
@@ -220,31 +228,30 @@ namespace tiki
 
 		if ( m_pRasterizerState != pRasterizerState )
 		{
-			setGlMode( GL_CULL_FACE, pRasterizerState->m_platformData.cullEnabled );
+			graphics::setGlMode( GL_CULL_FACE, pRasterizerState->m_platformData.cullEnabled );
 
 			glCullFace( pRasterizerState->m_platformData.cullMode );
 			glPolygonMode( GL_FRONT_AND_BACK, pRasterizerState->m_platformData.fillMode );
 			glFrontFace( pRasterizerState->m_platformData.windingOrder );
 
 			m_pRasterizerState = pRasterizerState;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
 	{
-		//static const D3D11_PRIMITIVE_TOPOLOGY s_aTopologies[ PrimitiveTopology_Count ] =
-		//{
-		//	D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
-		//	D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
-		//	D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		//	D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
-		//};
+		static const GLenum s_aTopologies[] =
+		{
+			GL_POINTS,			// PrimitiveTopology_PointList
+			GL_LINES,			// PrimitiveTopology_LineList
+			GL_TRIANGLES,		// PrimitiveTopology_TriangleList
+			GL_TRIANGLE_STRIP	// PrimitiveTopology_TriangleStrip
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aTopologies ) == PrimitiveTopology_Count );
 
-		if ( m_primitiveTopology != topology )
-		{			
-			//m_platformData.pContext->IASetPrimitiveTopology( s_aTopologies[ topology ] );
-			m_primitiveTopology = topology;
-		}
+		m_platformData.primitiveTopology = s_aTopologies[ topology ];
+		m_primitiveTopology = topology;
 	}
 
 	void GraphicsContext::setVertexShader( const Shader* pShader )
@@ -254,7 +261,15 @@ namespace tiki
 
 		if ( m_pVertexShader != pShader )
 		{
-			//m_platformData.pContext->VSSetShader( pShader->m_platformData.pVertexShader, nullptr, 0 );
+			if ( pShader != nullptr )
+			{
+				m_platformData.vertexShaderId = pShader->m_platformData.shaderId;
+			}
+			else
+			{
+				m_platformData.vertexShaderId = 0u;
+			}
+
 			m_pVertexShader = pShader;
 		}
 	}
@@ -266,12 +281,13 @@ namespace tiki
 		{
 			//m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
 			m_pVertexInputBinding = pVertexInputBinding;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
 	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
 	{
-		if ( m_pVertexSamplerStates[ slot ] != pSampler )
+		if ( m_apVertexSamplerStates[ slot ] != pSampler )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -284,13 +300,14 @@ namespace tiki
 				//m_platformData.pContext->VSSetSamplers( d3dSlot, 1u, &pSampler->m_platformData.pSamplerState );
 			}
 
-			m_pVertexSamplerStates[ slot ] = pSampler;
+			m_apVertexSamplerStates[ slot ] = pSampler;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
 	void GraphicsContext::setVertexShaderTexture( uint slot, const TextureData* pTextureData )
 	{
-		if ( m_pVertexTextures[ slot ] != pTextureData )
+		if ( m_apVertexTextures[ slot ] != pTextureData )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -303,16 +320,20 @@ namespace tiki
 				//m_platformData.pContext->VSSetShaderResources( d3dSlot, 1, &pTextureData->m_platformData.pShaderView );
 			}
 
-			m_pVertexTextures[ slot ] = pTextureData;
+			m_apVertexTextures[ slot ] = pTextureData;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
 	void GraphicsContext::setVertexShaderConstant( uint slot, const ConstantBuffer& buffer )
 	{
-		if ( m_pVertexConstants[ slot ] != &buffer )
+		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
 			//m_platformData.pContext->VSSetConstantBuffers( (UINT)slot, 1u, &buffer.m_pBuffer );
-			m_pVertexConstants[ slot ] = &buffer;
+			//glGetUniformBlockIndex();
+			//glUniformBlockBinding();
+			m_apVertexConstants[ slot ] = &buffer;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
@@ -323,14 +344,22 @@ namespace tiki
 
 		if ( m_pPixelShader != pShader )
 		{
-			//m_platformData.pContext->PSSetShader( pShader->m_platformData.pPixelShader, nullptr, 0 );
+			if ( pShader != nullptr )
+			{
+				m_platformData.pixelShaderId = pShader->m_platformData.shaderId;
+			}
+			else
+			{
+				m_platformData.pixelShaderId = 0u;
+			}
+
 			m_pPixelShader = pShader;
 		}
 	}
 
 	void GraphicsContext::setPixelShaderSamplerState( uint slot, const SamplerState* pSampler )
 	{
-		if ( m_pPixelSamplerStates[ slot ] != pSampler )
+		if ( m_apPixelSamplerStates[ slot ] != pSampler )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -343,36 +372,38 @@ namespace tiki
 				glBindSampler( slot, pSampler->m_platformData.samplerId );
 			}
 
-			m_pPixelSamplerStates[ slot ] = pSampler;
+			m_apPixelSamplerStates[ slot ] = pSampler;
+			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
 	void GraphicsContext::setPixelShaderTexture( uint slot, const TextureData* pTextureData )
 	{
-		if ( m_pPixelTextures[ slot ] != pTextureData )
+		if ( m_apPixelTextures[ slot ] != pTextureData )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
+			glActiveTexture( GL_TEXTURE0 + slot );
 			if ( pTextureData == nullptr )
 			{
-				//ID3D11ShaderResourceView* pNullResourceView = nullptr;
-				//m_platformData.pContext->PSSetShaderResources( d3dSlot, 1u, &pNullResourceView );
+				glBindTexture( m_apPixelTextures[ slot ]->m_platformData.textureType, 0u );
 			}
 			else
 			{
-				//m_platformData.pContext->PSSetShaderResources( d3dSlot, 1u, &pTextureData->m_platformData.pShaderView );
+				glBindTexture( pTextureData->m_platformData.textureType, pTextureData->m_platformData.textureId );
 			}
 
-			m_pPixelTextures[ slot ] = pTextureData;
+			m_apPixelTextures[ slot ] = pTextureData;
 		}
 	}
 
 	void GraphicsContext::setPixelShaderConstant( uint slot, const ConstantBuffer& buffer )
 	{
-		if ( m_pPixelConstants[ slot ] != &buffer)
+		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
+			//glUniformBufferEXT();
 			//m_platformData.pContext->PSSetConstantBuffers( (UINT)slot, 1u, &buffer.m_pBuffer );
-			m_pPixelConstants[ slot ] = &buffer;
+			m_apPixelConstants[ slot ] = &buffer;
 		}
 	}
 
@@ -382,6 +413,19 @@ namespace tiki
 		TIKI_ASSERT( indexBuffer.m_bufferType == GL_ELEMENT_ARRAY_BUFFER );
 
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer.m_bufferId );
+
+		static const GLenum s_aIndexTypeMapping[] =
+		{
+			GL_INVALID_ENUM,	// IndexType_Invalid
+			GL_UNSIGNED_BYTE,	// IndexType_UInt8
+			GL_UNSIGNED_SHORT,	// IndexType_UInt16
+			GL_INVALID_ENUM,
+			GL_UNSIGNED_INT		// IndexType_UInt32
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aIndexTypeMapping ) == IndexType_MaxSize + 1u );
+		m_platformData.indexType = s_aIndexTypeMapping[ indexBuffer.m_indexType ];
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& buffer )
@@ -390,6 +434,8 @@ namespace tiki
 		TIKI_ASSERT( buffer.m_bufferType == GL_ARRAY_BUFFER );
 
 		glBindBuffer( GL_ARRAY_BUFFER, buffer.m_bufferId );
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
@@ -412,21 +458,32 @@ namespace tiki
 		//const UINT offset = 0u;
 		//const UINT vertexStride = static_cast< UINT >( m_immediateVertexStride );
 		//m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &vertexStride, &offset );
-		//glBindBuffer( GL_ARRAY_BUFFER, m_immediateVertexData.m_bufferId );
+		glBindBuffer( GL_ARRAY_BUFFER, m_immediateVertexData.m_bufferId );
 
-		//glDrawArrays( todo, 0u, m_immediateVertexCount );
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
+		glDrawArrays( m_platformData.primitiveTopology, 0u, m_immediateVertexCount );
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		//glDrawArrays( todo, baseVertexOffset, vertexCount );
+
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
+		glDrawArrays( m_platformData.primitiveTopology, baseVertexOffset, vertexCount );
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		//glDrawElementsBaseVertex( todo, indexCount, indexBuffer.m_indexType, nullptr, baseVertexOffset );
+
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
+		glDrawElementsBaseVertex( m_platformData.primitiveTopology, indexCount, m_platformData.indexType, nullptr, baseVertexOffset );
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
@@ -435,10 +492,7 @@ namespace tiki
 
 		glBindBuffer( buffer.m_bufferType, buffer.m_bufferId );
 		void* pData = glMapBuffer( buffer.m_bufferType, GL_WRITE_ONLY );
-		if ( pData == nullptr )
-		{
-			graphics::checkError();
-		}
+		TIKI_CHECK_GRAPHICS;
 
 		return pData;
 	}
@@ -447,10 +501,28 @@ namespace tiki
 	{
 		glUnmapBuffer( buffer.m_bufferType );
 		glBindBuffer( buffer.m_bufferType, 0u );
+
+		TIKI_CHECK_GRAPHICS;
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const
 	{
 		return m_pGraphicsSystem->getBackBuffer();
+	}
+
+	static void graphics::setGlMode( GLenum mode, GLboolean enable )
+	{
+		( enable ? glEnable : glDisable )( mode );
+	}
+
+	void graphics::setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId )
+	{
+		ShaderLinker& shaderLinker = graphics::getShaderLinker( graphicsSystem );
+
+		GLuint programId = shaderLinker.findOrCreateProgram( vertexShaderId, pixelShaderId );
+		if ( programId != 0u )
+		{
+			glUseProgram( programId );
+		}
 	}
 }

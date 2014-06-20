@@ -2,51 +2,61 @@
 
 #include "shader/platform.fxh"
 
-struct VertexToPixel
-{
-	float4	position	: TIKI_OUTPUT_POSITION;
-	float3	tangent		: TIKI_TANGENT;
-	float3	binormal	: TIKI_BINORMAL;
-	float3	normal		: TIKI_NORMAL;
-	float2	texCoord	: TIKI_TEXCOORD;
-};
+// vertex to pixel
+TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, position,	TIKI_OUTPUT_POSITION )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, tangent,	TIKI_TANGENT )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, binormal,	TIKI_BINORMAL )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float3, normal,	TIKI_NORMAL )
+	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float2, texCoord,	TIKI_TEXCOORD )
+TIKI_VERTEX_TO_PIXEL_DEFINITION_END( VertexToPixel )
 
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 
-// types
-struct VertexInput
-{
-	float3	position	: TIKI_INPUT_POSITION;
-	float3	normal		: TIKI_NORMAL;
-	float4	tangentFlip	: TIKI_TANGENT;
-	float2	texCoord	: TIKI_TEXCOORD;
-};
+// vertex input
+TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 0, float3, position,		TIKI_INPUT_POSITION )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 1, float3, normal,		TIKI_NORMAL )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 2, float4, tangentFlip,	TIKI_TANGENT )
+	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 3, float2, texCoord,		TIKI_TEXCOORD )
+TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
 
 struct VertexConstants
 {
-	matrix	mvpMatrix;
-	matrix	modelMatrix;
-	matrix	modelViewMatrix;
+	float4x4	mvpMatrix;
+	float4x4	modelMatrix;
+	float4x4	modelViewMatrix;
 };
 
 // constants
-TIKI_DEFINE_CONSTANT( 0, VertexConstants, c_instanceData );
+TIKI_DEFINE_CONSTANT( 0, VertexConstants, c_instanceData )
 
-VertexToPixel main( VertexInput input )
+TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
-	VertexToPixel output = (VertexToPixel)0;
+    TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-	output.position = float4( input.position, 1.0f );
-	output.position = mul( output.position, c_instanceData.mvpMatrix );
+	float3x3 normalMatrix = float3x3( c_instanceData.modelMatrix );
 
-	float3x3 normalMatrix = (float3x3)c_instanceData.modelMatrix;
-	output.normal	= mul( input.normal, normalMatrix );
-	output.tangent	= mul( input.tangentFlip.xyz, normalMatrix );
-	output.binormal	= cross( output.normal, output.tangent ) * input.tangentFlip.w;
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( position ), 1.0 );
+	position = TIKI_MUL( position, c_instanceData.mvpMatrix );
 
-	output.texCoord	= input.texCoord;
+	float3 normal = TIKI_VERTEX_INPUT_GET( normal );
+	normal = TIKI_MUL( normal, normalMatrix );
 
-	return output;
+	float3 tangent = TIKI_VERTEX_INPUT_GET( tangentFlip ).xyz;
+	tangent = TIKI_MUL( tangent.xyz, normalMatrix );
+
+	float3 binormal = cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( tangentFlip ).w;
+
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( texCoord );
+
+	TIKI_VERTEX_TO_PIXEL_SET_POSITION( position, position );
+	TIKI_VERTEX_TO_PIXEL_SET( normal, normal );
+	TIKI_VERTEX_TO_PIXEL_SET( tangent, tangent );
+	TIKI_VERTEX_TO_PIXEL_SET( binormal, binormal );
+	TIKI_VERTEX_TO_PIXEL_SET( texCoord, texCoord );
+
+    TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
@@ -55,21 +65,28 @@ VertexToPixel main( VertexInput input )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-// types
-//struct PixelConstants
-//{
-//	float4 vertexColor;
-//};
+// pixel output
+TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
+	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, color, TIKI_OUTPUT_COLOR )
+TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
 // constants
-//TIKI_DEFINE_CONSTANT( 0, PixelConstants, c_instanceData );
-TIKI_DEFINE_TEXTURE2D( 0, t_diffuseMap );
-TIKI_DEFINE_SAMPLER( 0, s_linear );
+//TIKI_DEFINE_CONSTANT( 0, PixelConstants, c_instanceData )
 
-float4 main( VertexToPixel input ) : TIKI_OUTPUT_COLOR
+TIKI_DEFINE_TEXTURE2D( 0, t_diffuseMap )
+TIKI_DEFINE_SAMPLER( 0, s_linear )
+
+TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
-	float4 output = TIKI_TEX2D( t_diffuseMap, s_linear, input.texCoord );
-	return saturate( output );
+	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
+
+	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( texCoord );
+
+	float4 color = TIKI_TEX2D( t_diffuseMap, s_linear, texCoord );
+	color = TIKI_SATURATE( color );
+
+	TIKI_PIXEL_OUTPUT_SET( color, color );
+	TIKI_PIXEL_OUTPUT_END( PixelOutput );
 }
 
 #else
