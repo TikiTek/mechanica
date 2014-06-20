@@ -37,7 +37,7 @@ namespace tiki
 		m_pAssetConverter = createAssetConverter();
 		m_pAssetConverter->create( converterParameters );
 
-		//m_pAssetConverter->convertAll();
+		m_resourceLoader.reloadResourceMapping();
 
 		if ( s_enableAssetConverterWatch )
 		{

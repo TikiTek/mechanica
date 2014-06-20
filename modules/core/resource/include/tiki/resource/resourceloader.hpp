@@ -50,6 +50,7 @@ namespace tiki
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 
 			ResourceLoaderResult	reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
+			void					reloadResourceMapping();
 			
 	private:
 
