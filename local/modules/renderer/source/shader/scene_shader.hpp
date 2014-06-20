@@ -8,7 +8,7 @@ TIKI_GRAPHICS_NAMESPACE_BEGIN
 struct SceneVertexConstantData
 {
 	GraphicsMatrix44	mvpMatrix;
-	GraphicsMatrix44	modelViewMatrix;
+	GraphicsMatrix33	modelNormalMatrix;
 };
 
 struct SceneSkinningVertexConstantData
