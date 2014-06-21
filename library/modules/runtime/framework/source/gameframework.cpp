@@ -64,8 +64,8 @@ namespace tiki
 		graphicParams.rendererMode		= m_parameters.graphicsMode;
 
 		const uint2 windowSize			= m_frameworkData.mainWindow.getClientSize();
-		graphicParams.backBufferWidth	= windowSize.x;
-		graphicParams.backBufferHeight	= windowSize.y;
+		graphicParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );
+		graphicParams.backBufferHeight	= TIKI_MAX( windowSize.y, 480u );
 
 		if ( !m_frameworkData.graphicSystem.create( graphicParams ) )
 		{

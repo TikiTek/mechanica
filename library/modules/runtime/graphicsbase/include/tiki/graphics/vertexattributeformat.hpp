@@ -33,82 +33,56 @@ namespace tiki
 		VertexAttributeFormat_Count
 	};
 
-	TIKI_FORCE_INLINE uint32 getVertexAttributeFormatSize( VertexAttributeFormat format )
+	TIKI_FORCE_INLINE uint getVertexAttributeFormatSize( VertexAttributeFormat format )
 	{
-		switch ( format )
+		static const uint s_aVertexAttributeFormatSizeMapping[] =
 		{
-		case VertexAttributeFormat_x32y32z32w32_float:
-			return 16u;
-		case VertexAttributeFormat_x32y32z32_float:
-			return 12u;
-		case VertexAttributeFormat_x32y32_float:
-			return 8u;
-		case VertexAttributeFormat_x32_float:
-			return 4u;
+			16u,	// VertexAttributeFormat_x32y32z32w32_float
+			12u,	// VertexAttributeFormat_x32y32z32_float
+			8u,		// VertexAttributeFormat_x32y32_float
+			4u,		// VertexAttributeFormat_x32_float
+			8u,		// VertexAttributeFormat_x16y16z16w16_float
+			8u,		// VertexAttributeFormat_x16y16z16w16_snorm
+			8u,		// VertexAttributeFormat_x16y16z16w16_unorm
+			4u,		// VertexAttributeFormat_x16y16_float
+			4u,		// VertexAttributeFormat_x16y16_snorm
+			4u,		// VertexAttributeFormat_x16y16_unorm
+			2u,		// VertexAttributeFormat_x16_float
+			2u,		// VertexAttributeFormat_x16_snorm
+			2u,		// VertexAttributeFormat_x16_unorm
+			4u,		// VertexAttributeFormat_x8y8z8w8
+			4u,		// VertexAttributeFormat_x8y8z8w8_snorm
+			4u		// VertexAttributeFormat_x8y8z8w8_unorm
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aVertexAttributeFormatSizeMapping ) == VertexAttributeFormat_Count );
 
-		case VertexAttributeFormat_x16y16z16w16_float:
-		case VertexAttributeFormat_x16y16z16w16_snorm:
-		case VertexAttributeFormat_x16y16z16w16_unorm:
-			return 8u;
-		case VertexAttributeFormat_x16y16_float:
-		case VertexAttributeFormat_x16y16_snorm:
-		case VertexAttributeFormat_x16y16_unorm:
-			return 4u;
-		case VertexAttributeFormat_x16_float:
-		case VertexAttributeFormat_x16_snorm:
-		case VertexAttributeFormat_x16_unorm:
-			return 2u;
-
-		case VertexAttributeFormat_x8y8z8w8:
-		case VertexAttributeFormat_x8y8z8w8_snorm:
-		case VertexAttributeFormat_x8y8z8w8_unorm:
-			return 4u;
-
-		default:
-			TIKI_BREAK( "[graphics] vertex attribute format not spported.\n" );
-			break;
-		}
-
-		return 0u;
+		return s_aVertexAttributeFormatSizeMapping[ format ];
 	}
 
 	TIKI_FORCE_INLINE uint getVertexAttributeFormatElementCount( VertexAttributeFormat format )
 	{
-		switch ( format )
+		static const uint s_aVertexAttributeFormatElementCountMapping[] =
 		{
-		case VertexAttributeFormat_x32y32z32w32_float:
-			return 4u;
-		case VertexAttributeFormat_x32y32z32_float:
-			return 3u;
-		case VertexAttributeFormat_x32y32_float:
-			return 2u;
-		case VertexAttributeFormat_x32_float:
-			return 1u;
+			4u,		// VertexAttributeFormat_x32y32z32w32_float
+			3u,		// VertexAttributeFormat_x32y32z32_float
+			2u,		// VertexAttributeFormat_x32y32_float
+			1u,		// VertexAttributeFormat_x32_float
+			4u,		// VertexAttributeFormat_x16y16z16w16_float
+			4u,		// VertexAttributeFormat_x16y16z16w16_snorm
+			4u,		// VertexAttributeFormat_x16y16z16w16_unorm
+			2u,		// VertexAttributeFormat_x16y16_float
+			2u,		// VertexAttributeFormat_x16y16_snorm
+			2u,		// VertexAttributeFormat_x16y16_unorm
+			1u,		// VertexAttributeFormat_x16_float
+			1u,		// VertexAttributeFormat_x16_snorm
+			1u,		// VertexAttributeFormat_x16_unorm
+			4u,		// VertexAttributeFormat_x8y8z8w8
+			4u,		// VertexAttributeFormat_x8y8z8w8_snorm
+			4u		// VertexAttributeFormat_x8y8z8w8_unorm			
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aVertexAttributeFormatElementCountMapping ) == VertexAttributeFormat_Count );
 
-		case VertexAttributeFormat_x16y16z16w16_float:
-		case VertexAttributeFormat_x16y16z16w16_snorm:
-		case VertexAttributeFormat_x16y16z16w16_unorm:
-			return 4u;
-		case VertexAttributeFormat_x16y16_float:
-		case VertexAttributeFormat_x16y16_snorm:
-		case VertexAttributeFormat_x16y16_unorm:
-			return 2u;
-		case VertexAttributeFormat_x16_float:
-		case VertexAttributeFormat_x16_snorm:
-		case VertexAttributeFormat_x16_unorm:
-			return 1u;
-
-		case VertexAttributeFormat_x8y8z8w8:
-		case VertexAttributeFormat_x8y8z8w8_snorm:
-		case VertexAttributeFormat_x8y8z8w8_unorm:
-			return 4u;
-
-		default:
-			TIKI_BREAK( "[graphics] vertex attribute format not spported.\n" );
-			break;
-		}
-
-		return TIKI_SIZE_T_MAX;
+		return s_aVertexAttributeFormatElementCountMapping[ format ];
 	}
 }
 

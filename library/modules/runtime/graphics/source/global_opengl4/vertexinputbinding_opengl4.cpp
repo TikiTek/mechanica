@@ -15,16 +15,58 @@ namespace tiki
 	static const char* s_apSemanticNames[] =
 	{
 		"ERROR",
-		"TIKI_INPUT_POSITION0",
-		"TIKI_NORMAL0",
-		"TIKI_TANGENT0",
-		"TIKI_BINORMAL0",
-		"TIKI_COLOR0",
-		"TIKI_TEXCOORD0",
-		"TIKI_BLENDINDICES0",
-		"TIKI_BLENDWEIGHT0"
+		"inTIKI_INPUT_POSITION0",
+		"inTIKI_NORMAL0",
+		"inTIKI_TANGENT0",
+		"inTIKI_BINORMAL0",
+		"inTIKI_COLOR0",
+		"inTIKI_TEXCOORD0",
+		"inTIKI_BLENDINDICES0",
+		"inTIKI_BLENDWEIGHT0"
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_apSemanticNames ) == VertexSementic_Count );
+
+	static const GLenum s_aVertexAttributeFormatTypeMapping[] =
+	{
+		GL_FLOAT,			// VertexAttributeFormat_x32y32z32w32_float
+		GL_FLOAT,			// VertexAttributeFormat_x32y32z32_float
+		GL_FLOAT,			// VertexAttributeFormat_x32y32_float
+		GL_FLOAT,			// VertexAttributeFormat_x32_float
+		GL_HALF_FLOAT,		// VertexAttributeFormat_x16y16z16w16_float
+		GL_SHORT,			// VertexAttributeFormat_x16y16z16w16_snorm
+		GL_UNSIGNED_SHORT,	// VertexAttributeFormat_x16y16z16w16_unorm
+		GL_HALF_FLOAT,		// VertexAttributeFormat_x16y16_float
+		GL_SHORT,			// VertexAttributeFormat_x16y16_snorm
+		GL_UNSIGNED_SHORT,	// VertexAttributeFormat_x16y16_unorm
+		GL_HALF_FLOAT,		// VertexAttributeFormat_x16_float
+		GL_SHORT,			// VertexAttributeFormat_x16_snorm
+		GL_UNSIGNED_SHORT,	// VertexAttributeFormat_x16_unorm
+		GL_BYTE,			// VertexAttributeFormat_x8y8z8w8
+		GL_BYTE,			// VertexAttributeFormat_x8y8z8w8_snorm
+		GL_UNSIGNED_BYTE	// VertexAttributeFormat_x8y8z8w8_unorm
+	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aVertexAttributeFormatTypeMapping ) == VertexAttributeFormat_Count );
+
+	static const GLboolean s_aVertexAttributeFormatNormalizedMapping[] =
+	{
+		GL_FALSE,	// VertexAttributeFormat_x32y32z32w32_float
+		GL_FALSE,	// VertexAttributeFormat_x32y32z32_float
+		GL_FALSE,	// VertexAttributeFormat_x32y32_float
+		GL_FALSE,	// VertexAttributeFormat_x32_float
+		GL_FALSE,	// VertexAttributeFormat_x16y16z16w16_float
+		GL_TRUE,	// VertexAttributeFormat_x16y16z16w16_snorm
+		GL_TRUE,	// VertexAttributeFormat_x16y16z16w16_unorm
+		GL_FALSE,	// VertexAttributeFormat_x16y16_float
+		GL_TRUE,	// VertexAttributeFormat_x16y16_snorm
+		GL_TRUE,	// VertexAttributeFormat_x16y16_unorm
+		GL_FALSE,	// VertexAttributeFormat_x16_float
+		GL_TRUE,	// VertexAttributeFormat_x16_snorm
+		GL_TRUE,	// VertexAttributeFormat_x16_unorm
+		GL_FALSE,	// VertexAttributeFormat_x8y8z8w8
+		GL_TRUE,	// VertexAttributeFormat_x8y8z8w8_snorm
+		GL_TRUE		// VertexAttributeFormat_x8y8z8w8_unorm
+	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aVertexAttributeFormatNormalizedMapping ) == VertexAttributeFormat_Count );
 
 	//static const DXGI_FORMAT s_d3dFormat[] =
 	//{
@@ -51,14 +93,12 @@ namespace tiki
 	{
 		m_pShader						= nullptr;
 		m_pVertexFormat					= nullptr;
-		m_platformData.locationCount	= 0u;
 	}
 
 	VertexInputBinding::~VertexInputBinding()
 	{
 		m_pShader						= nullptr;
 		m_pVertexFormat					= nullptr;
-		m_platformData.locationCount	= 0u;
 	}
 
 	bool VertexInputBinding::create( GraphicsSystem& graphicsSystem, const VertexInputBindingParameters& creationParameters )
@@ -70,18 +110,22 @@ namespace tiki
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 
-		m_platformData.locationCount = m_pVertexFormat->getAttributeCount();
+		uint currentOffset = 0u;
 		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
 		{
 			const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
-			VertexInputBindingPlatformData::AttributeLocation& location = m_platformData.aLocations[ i ];
+			VertexInputBindingPlatformData::VertexAttribute& attribute = m_platformData.aAttributes[ i ];
 
-			copyString( location.aName, sizeof( location.aName ), s_apSemanticNames[ att.semantic ] );
-			const uint stringLength = getStringLength( location.aName );
-			location.aName[ stringLength - 1u ] = '0' + att.semanticIndex;
+			attribute.elementCount		= getVertexAttributeFormatElementCount( att.format );
+			attribute.elementType		= s_aVertexAttributeFormatTypeMapping[ att.format ];
+			attribute.elementNormalized	= s_aVertexAttributeFormatNormalizedMapping[ att.format ];
+			attribute.elementOffset		= currentOffset;
 
-			location.index = i;
+			currentOffset += getVertexAttributeFormatSize( att.format );
 		}
+		
+		m_platformData.attributeCount	= m_pVertexFormat->getAttributeCount();
+		m_platformData.vertexStride		= currentOffset;
 
 		return true;
 	}
@@ -91,7 +135,8 @@ namespace tiki
 		m_pVertexFormat	= nullptr;
 		m_pShader		= nullptr;
 
-		m_platformData.locationCount = 0u;
+		m_platformData.attributeCount	= 0u;
+		m_platformData.vertexStride		= 0u;
 
 		GraphicsStateObject::dispose();
 	}

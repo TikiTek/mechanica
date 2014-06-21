@@ -6,22 +6,23 @@
 
 #include "graphicssystem_internal_opengl4.hpp"
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	define TIKI_CHECK_GRAPHICS graphics::checkError()
-#else
-#	define TIKI_CHECK_GRAPHICS
-#endif
-
 namespace tiki
 {
 	struct GraphicsContextPlatformData
 	{
 		GraphicsContextPlatformData()
 		{
-			primitiveTopology	= GL_INVALID_ENUM;
+			maxVertexAttributeCount	= 0;
 
-			indexType			= GL_INVALID_ENUM;
+			primitiveTopology		= GL_INVALID_ENUM;
+
+			vertexShaderId			= GL_INVALID_ENUM;
+			pixelShaderId			= GL_INVALID_ENUM;
+
+			indexType				= GL_INVALID_ENUM;
 		}
+
+		GLint		maxVertexAttributeCount;
 
 		GLenum		primitiveTopology;
 

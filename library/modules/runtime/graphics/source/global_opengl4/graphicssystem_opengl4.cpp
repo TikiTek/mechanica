@@ -94,25 +94,19 @@ namespace tiki
 		m_platformData.shaderLinker.dispose();
 
 		m_commandBuffer.dispose( *this );
-		
-		//if( m_platformData.pSwapChain != nullptr )
-		//{
-		//	m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
-		//}
 
-		//if ( m_platformData.pContext != nullptr )
-		//{
-		//	m_platformData.pContext->ClearState();
-		//	m_platformData.pContext->Flush();
-		//}
+		if( m_platformData.renderContextHandle != nullptr )
+		{
+			wglMakeCurrent( nullptr, nullptr );
+			wglDeleteContext( (HGLRC)m_platformData.renderContextHandle );
+			m_platformData.renderContextHandle = nullptr;
+		}
 
-		//safeRelease( &m_platformData.pDepthStencilView );
-		//safeRelease( &m_platformData.pDepthStencilBuffer );
-		//safeRelease( &m_platformData.pBackBufferTargetView);
-
-		//safeRelease( &m_platformData.pContext );
-		//safeRelease( &m_platformData.pSwapChain );
-		//safeRelease( &m_platformData.pDevice );
+		if( m_platformData.deviceContextHandle != nullptr )
+		{
+			ReleaseDC( (HWND)m_platformData.windowHandle, (HDC)m_platformData.deviceContextHandle );
+			m_platformData.deviceContextHandle = nullptr;
+		}
 	}
 
 	bool GraphicsSystem::resize( uint width, uint height )
@@ -200,17 +194,6 @@ namespace tiki
 		{
 			return false;
 		}
-
-		//// Depth Buffer
-		//glClearDepth(1.0f);
-		//glDepthFunc(GL_LEQUAL);	
-		//glEnable(GL_DEPTH_TEST);
-		//glDisable(GL_ALPHA_TEST);
-
-		// Back face culling
-		glFrontFace(GL_CW);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
 
 		return true;
 	}

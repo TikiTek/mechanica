@@ -23,13 +23,19 @@
 #include "graphicssystem_internal_opengl4.hpp"
 #include "shaderlinker_opengl4.hpp"
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#	define TIKI_CHECK_GRAPHICS graphics::checkError()
+#else
+#	define TIKI_CHECK_GRAPHICS
+#endif
+
 namespace tiki
 {
 	namespace graphics
 	{
 		static void setGlMode( GLenum mode, GLboolean enable );
 
-		static void setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId, const VertexInputBindingPlatformData& vertexInputBinding );
+		static void setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId );
 	}
 
 	GraphicsContext::GraphicsContext()
@@ -44,8 +50,7 @@ namespace tiki
 	bool GraphicsContext::create( GraphicsSystem& graphicsSystem )
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-
-		m_pGraphicsSystem		= &graphicsSystem;
+		m_pGraphicsSystem = &graphicsSystem;
 
 		m_pRenderTarget = nullptr;
 
@@ -58,6 +63,8 @@ namespace tiki
 		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize, true, GraphicsBufferType_VertexBuffer, nullptr );
 		m_immediateVertexCount	= 0u;
 		m_immediateVertexStride	= 0u;
+
+		glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &m_platformData.maxVertexAttributeCount );
 
 		invalidateState();
 		TIKI_CHECK_GRAPHICS;
@@ -279,8 +286,36 @@ namespace tiki
 		TIKI_ASSERT( pVertexInputBinding != nullptr );
 		if ( m_pVertexInputBinding != pVertexInputBinding )
 		{
+			for (uint i = 0u; i < pVertexInputBinding->m_platformData.attributeCount; ++i)
+			{
+				const VertexInputBindingPlatformData::VertexAttribute& attribute = pVertexInputBinding->m_platformData.aAttributes[ i ];
+
+				glEnableVertexAttribArray( i );
+				glVertexAttribPointer(
+					i,
+					attribute.elementCount,
+					attribute.elementType,
+					attribute.elementNormalized,
+					0u, //pVertexInputBinding->m_platformData.vertexStride,
+					0u //(GLvoid*)attribute.elementOffset
+				);
+				TIKI_CHECK_GRAPHICS;
+			}
+
+			for (uint i = pVertexInputBinding->m_platformData.attributeCount; i < (uint)m_platformData.maxVertexAttributeCount; ++i)
+			{
+				GLint isActive;
+				glGetVertexAttribiv( i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &isActive );
+				if ( !isActive )
+				{
+					break;
+				}
+
+				glDisableVertexAttribArray( i );
+				TIKI_CHECK_GRAPHICS;
+			}
+
 			m_pVertexInputBinding = pVertexInputBinding;
-			TIKI_CHECK_GRAPHICS;
 		}
 	}
 
@@ -459,7 +494,7 @@ namespace tiki
 		//m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &vertexStride, &offset );
 		glBindBuffer( GL_ARRAY_BUFFER, m_immediateVertexData.m_bufferId );
 
-		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId, m_pVertexInputBinding->m_platformData );
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
 		glDrawArrays( m_platformData.primitiveTopology, 0u, m_immediateVertexCount );
 
 		TIKI_CHECK_GRAPHICS;
@@ -469,7 +504,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( validateDrawCall() );
 
-		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId, m_pVertexInputBinding->m_platformData );
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
 		glDrawArrays( m_platformData.primitiveTopology, baseVertexOffset, vertexCount );
 
 		TIKI_CHECK_GRAPHICS;
@@ -479,7 +514,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( validateDrawCall() );
 
-		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId, m_pVertexInputBinding->m_platformData );
+		graphics::setLinkedShaderProgram( *m_pGraphicsSystem, m_platformData.pixelShaderId, m_platformData.vertexShaderId );
 		glDrawElementsBaseVertex( m_platformData.primitiveTopology, indexCount, m_platformData.indexType, nullptr, baseVertexOffset );
 
 		TIKI_CHECK_GRAPHICS;
@@ -514,7 +549,7 @@ namespace tiki
 		( enable ? glEnable : glDisable )( mode );
 	}
 
-	void graphics::setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId, const VertexInputBindingPlatformData& vertexInputBinding )
+	void graphics::setLinkedShaderProgram( GraphicsSystem& graphicsSystem, GLuint vertexShaderId, GLuint pixelShaderId )
 	{
 		ShaderLinker& shaderLinker = graphics::getShaderLinker( graphicsSystem );
 
@@ -522,15 +557,6 @@ namespace tiki
 		if ( programId != 0u )
 		{
 			glUseProgram( programId );
-
-			for (uint i = 0u; i < vertexInputBinding.locationCount; ++i)
-			{
-				const VertexInputBindingPlatformData::AttributeLocation& location = vertexInputBinding.aLocations[ i ];
-				glBindAttribLocation( programId, location.index, location.aName );
-			}
-
-			glLinkProgram( programId );
-
 			TIKI_CHECK_GRAPHICS;
 		}
 	}

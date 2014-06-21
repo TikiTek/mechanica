@@ -103,19 +103,23 @@ namespace tiki
 
 	struct VertexInputBindingPlatformData
 	{
-		struct AttributeLocation
+		struct VertexAttribute
 		{
-			GLint	index;
-			char	aName[ 24u ];
+			GLuint		elementCount;
+			GLenum		elementType;
+			GLuint		elementOffset;
+			GLboolean	elementNormalized;
 		};
 
 		VertexInputBindingPlatformData()
 		{
-			locationCount = 0u;
+			attributeCount = 0u;
 		}
 
-		AttributeLocation	aLocations[ GraphicsSystemLimits_MaxVertexAttributes ];
-		uint				locationCount;
+		VertexAttribute		aAttributes[ GraphicsSystemLimits_MaxVertexAttributes ];
+		uint				attributeCount;
+
+		GLuint				vertexStride;
 	};
 }
 

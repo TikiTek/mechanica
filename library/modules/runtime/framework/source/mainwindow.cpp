@@ -136,7 +136,7 @@ namespace tiki
 		win.lpfnWndProc		= &windowProc;
 		win.lpszClassName	= params.pClassName;
 		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
-		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
+		win.hCursor			= LoadCursor( NULL, IDC_ARROW );		
 
 		HRESULT r = RegisterClassExA( &win );
 		if (FAILED(r))
@@ -169,7 +169,12 @@ namespace tiki
 		}
 		m_pHandle = WindowHandle( hWnd );
 		
-		ShowWindow( hWnd, 1 );
+		TIKI_DECLARE_STACKANDZERO( STARTUPINFO, startupInfo );
+		startupInfo.cb			= sizeof(startupInfo);
+		startupInfo.dwFlags		= STARTF_USESHOWWINDOW;
+		startupInfo.wShowWindow	= SW_SHOWMINNOACTIVE;
+
+		ShowWindow( hWnd, SW_SHOWNORMAL );
 		UpdateWindow( hWnd );
 
 		return true;

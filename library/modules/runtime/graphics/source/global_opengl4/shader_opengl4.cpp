@@ -69,8 +69,8 @@ namespace tiki
 				TIKI_TRACE_ERROR( "Cound not compile Shader. Source Code:\n%s\nErrors:\n%s\n", pSourceCode, aBuffer );
 			}
 
-			//dispose( graphicsSystem );
-			return true;
+			dispose( graphicsSystem );
+			return false;
 		}
 
 		return true;
