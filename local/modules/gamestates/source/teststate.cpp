@@ -327,10 +327,12 @@ namespace tiki
 
 		m_debugGui.render( graphicsContext );
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_enablePhysicsDebug )
 		{
 			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
 		}
+#endif
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )

@@ -46,6 +46,11 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
 		parameters.pGamebuildPath = "./gamebuild/";
+#elif TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		if ( !debug::isDebuggerActive() )
+		{
+			parameters.pGamebuildPath = "../../../gamebuild/";
+		}
 #endif
 	}
 
