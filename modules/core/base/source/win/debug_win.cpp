@@ -5,13 +5,15 @@ namespace tiki
 {
 	void debug::nativeTrace( const char* pText )
 	{
-		if ( debug::isDebuggerActive() )
-		{
-			OutputDebugStringA( pText );
-		}
-		else
+		OutputDebugStringA( pText );
+
+		if ( !debug::isDebuggerActive() )
 		{
 			printf( pText );
+
+			FILE* pFile = fopen( "debug.log", "a" );
+			fwrite( pText, strlen( pText ), 1u, pFile );
+			fclose( pFile );
 		}
 	}
 
