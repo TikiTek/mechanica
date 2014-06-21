@@ -51,14 +51,16 @@ namespace tiki
 		}
 
 		const string databaseFileName = path::combine( m_outputPath, "build.sqlite" );
-		const bool newDatabase = !file::exists( databaseFileName );
+		m_isNewDatabase = !file::exists( databaseFileName );
 		if ( m_dataBase.create( databaseFileName ) == false )
 		{
 			TIKI_TRACE_ERROR( "[convertermanager] database intialization failed.\n" );
 		}
 
-		if ( newDatabase )
+		if ( m_isNewDatabase )
 		{
+			TIKI_TRACE_INFO( "[convertermanager] Database not found. Create new Database.\n" );
+
 			cstring pCreateTableSql[] =
 			{
 				"CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, filename TEXT NOT NULL, path TEXT NOT NULL, type INTEGER NOT NULL, has_error BOOL);",

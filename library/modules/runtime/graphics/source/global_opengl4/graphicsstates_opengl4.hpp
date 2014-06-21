@@ -2,6 +2,8 @@
 #ifndef __TIKI_GRAPHICSSTATES_OPENGL4_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSTATES_OPENGL4_HPP_INCLUDED__
 
+#include "tiki/graphics/graphissystemlimits.hpp"
+
 #include "graphicssystem_internal_opengl4.hpp"
 
 namespace tiki
@@ -101,9 +103,19 @@ namespace tiki
 
 	struct VertexInputBindingPlatformData
 	{
+		struct AttributeLocation
+		{
+			GLint	index;
+			char	aName[ 24u ];
+		};
+
 		VertexInputBindingPlatformData()
 		{
+			locationCount = 0u;
 		}
+
+		AttributeLocation	aLocations[ GraphicsSystemLimits_MaxVertexAttributes ];
+		uint				locationCount;
 	};
 }
 

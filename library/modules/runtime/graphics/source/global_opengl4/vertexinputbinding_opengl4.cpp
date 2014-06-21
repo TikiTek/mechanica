@@ -12,19 +12,19 @@
 
 namespace tiki
 {
-	//static const char* s_semanticNames[] =
-	//{
-	//	"ERROR",
-	//	"POSITION",
-	//	"NORMAL",
-	//	"TANGENT",
-	//	"BINORMAL",
-	//	"COLOR",
-	//	"TEXCOORD",
-	//	"BLENDINDICES",
-	//	"BLENDWEIGHT"
-	//};
-	//TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_semanticNames ) == VertexSementic_Count );
+	static const char* s_apSemanticNames[] =
+	{
+		"ERROR",
+		"TIKI_INPUT_POSITION0",
+		"TIKI_NORMAL0",
+		"TIKI_TANGENT0",
+		"TIKI_BINORMAL0",
+		"TIKI_COLOR0",
+		"TIKI_TEXCOORD0",
+		"TIKI_BLENDINDICES0",
+		"TIKI_BLENDWEIGHT0"
+	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_apSemanticNames ) == VertexSementic_Count );
 
 	//static const DXGI_FORMAT s_d3dFormat[] =
 	//{
@@ -49,16 +49,16 @@ namespace tiki
 
 	VertexInputBinding::VertexInputBinding()
 	{
-		m_pShader					= nullptr;
-		m_pVertexFormat				= nullptr;
-		//m_platformData.pInputLayout	= nullptr;
+		m_pShader						= nullptr;
+		m_pVertexFormat					= nullptr;
+		m_platformData.locationCount	= 0u;
 	}
 
 	VertexInputBinding::~VertexInputBinding()
 	{
-		m_pShader					= nullptr;
-		m_pVertexFormat				= nullptr;
-		//m_platformData.pInputLayout	= nullptr;
+		m_pShader						= nullptr;
+		m_pVertexFormat					= nullptr;
+		m_platformData.locationCount	= 0u;
 	}
 
 	bool VertexInputBinding::create( GraphicsSystem& graphicsSystem, const VertexInputBindingParameters& creationParameters )
@@ -70,41 +70,28 @@ namespace tiki
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 
-		//TGInputElementDesc desc[ GraphicsSystemLimits_MaxVertexAttributes ];
+		m_platformData.locationCount = m_pVertexFormat->getAttributeCount();
+		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
+		{
+			const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
+			VertexInputBindingPlatformData::AttributeLocation& location = m_platformData.aLocations[ i ];
 
-		//for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
-		//{
-		//	const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
+			copyString( location.aName, sizeof( location.aName ), s_apSemanticNames[ att.semantic ] );
+			const uint stringLength = getStringLength( location.aName );
+			location.aName[ stringLength - 1u ] = '0' + att.semanticIndex;
 
-		//	desc[ i ].SemanticName			= s_semanticNames[ att.semantic ];
-		//	desc[ i ].SemanticIndex			= att.semanticIndex;
-		//	desc[ i ].Format				= s_d3dFormat[ att.format ];
-		//	desc[ i ].InputSlot				= att.streamIndex;
-		//	desc[ i ].AlignedByteOffset		= D3D11_APPEND_ALIGNED_ELEMENT;
-		//	desc[ i ].InputSlotClass		= ( att.inputType == VertexInputType_PerVertex ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA );
-		//	desc[ i ].InstanceDataStepRate	= 0;
-		//}
-		//
-		//m_platformData.pInputLayout = graphics::createVertexInputLayout( graphicsSystem, m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
-		//if ( m_platformData.pInputLayout == nullptr )
-		//{
-		//	dispose();
-		//	return false;
-		//}
+			location.index = i;
+		}
 
 		return true;
 	}
 
 	void VertexInputBinding::dispose( GraphicsSystem& graphicsSystem )
 	{
-		//m_pVertexFormat	= nullptr;
-		//m_pShader		= nullptr;
+		m_pVertexFormat	= nullptr;
+		m_pShader		= nullptr;
 
-		//if ( m_platformData.pInputLayout != nullptr )
-		//{
-		//	m_platformData.pInputLayout->Release();
-		//	m_platformData.pInputLayout = nullptr;
-		//}
+		m_platformData.locationCount = 0u;
 
 		GraphicsStateObject::dispose();
 	}
