@@ -8,28 +8,32 @@
 
 namespace tiki
 {
+	class VertexInputBinding;
+
 	struct GraphicsContextPlatformData
 	{
 		GraphicsContextPlatformData()
 		{
 			maxVertexAttributeCount	= 0;
 
-			primitiveTopology		= GL_INVALID_ENUM;
+			indexType					= GL_INVALID_ENUM;
+			primitiveTopology			= GL_INVALID_ENUM;
 
-			vertexShaderId			= GL_INVALID_ENUM;
-			pixelShaderId			= GL_INVALID_ENUM;
+			vertexShaderId				= GL_INVALID_ENUM;
+			pixelShaderId				= GL_INVALID_ENUM;
 
-			indexType				= GL_INVALID_ENUM;
+			pApplyedVertexInutBinding	= nullptr;
 		}
 
-		GLint		maxVertexAttributeCount;
+		GLint						maxVertexAttributeCount;
 
-		GLenum		primitiveTopology;
+		GLenum						indexType;
+		GLenum						primitiveTopology;
 
-		GLuint		vertexShaderId;
-		GLuint		pixelShaderId;
+		GLuint						vertexShaderId;
+		GLuint						pixelShaderId;
 
-		GLenum		indexType;
+		const VertexInputBinding*	pApplyedVertexInutBinding;
 	};
 }
 
