@@ -30,6 +30,12 @@ namespace tiki
 			GammaType_Linear
 		};
 
+		enum FlipDirection
+		{
+			FlipDirection_Horizontal,
+			FlipDirection_Vertical
+		};
+
 		void			create( const size_t width, const size_t height, GammaType gamma = GammaType_Linear );
 		bool			createFromFile( const string& fileName );
 		void			createFromImage( const HdrImage& imageToCopy );
@@ -46,6 +52,7 @@ namespace tiki
 		void			resizeImage( const uint2& size );
 		void			cropImage( const uint4& rect );
 		void			covertGamma( GammaType gammaType );
+		void			flipImage( FlipDirection direction );
 
 		void			convertTo( Array< uint8 >& target, PixelFormat targetFormat ) const;
 

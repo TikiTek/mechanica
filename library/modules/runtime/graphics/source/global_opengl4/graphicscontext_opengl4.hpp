@@ -9,6 +9,7 @@
 namespace tiki
 {
 	class VertexInputBinding;
+	struct ShaderPlatformData;
 
 	struct GraphicsContextPlatformData
 	{
@@ -19,21 +20,28 @@ namespace tiki
 			indexType					= GL_INVALID_ENUM;
 			primitiveTopology			= GL_INVALID_ENUM;
 
-			vertexShaderId				= GL_INVALID_ENUM;
-			pixelShaderId				= GL_INVALID_ENUM;
+			pVertexShaderData			= nullptr;
+			pPixelShaderData			= nullptr;
 
 			pApplyedVertexInutBinding	= nullptr;
+
+			programCrc					= InvalidCrc32;
 		}
 
-		GLint						maxVertexAttributeCount;
+		uint						maxVertexAttributeCount;
 
 		GLenum						indexType;
 		GLenum						primitiveTopology;
 
-		GLuint						vertexShaderId;
-		GLuint						pixelShaderId;
+		const ShaderPlatformData*	pVertexShaderData;
+		const ShaderPlatformData*	pPixelShaderData;
 
+		GLuint						aVertexConstantBufferIds[ GraphicsSystemLimits_VertexShaderConstantSlots ];
+		GLuint						aPixelConstantBufferIds[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 		const VertexInputBinding*	pApplyedVertexInutBinding;
+
+		GLuint						programId;
+		crc32						programCrc;
 	};
 }
 

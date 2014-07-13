@@ -319,6 +319,47 @@ namespace tiki
 		}
 	}
 
+	void HdrImage::flipImage( FlipDirection direction )
+	{
+		SizedArray< float > tempImage;
+		tempImage.create( m_data.getCount() );
+
+		switch ( direction )
+		{
+		case FlipDirection_Horizontal:
+			{
+				const uint lineSize = m_width * ChannelCount;
+				for (uint y = 0u; y < m_height; ++y)
+				{
+					for (uint x = m_width - 1u; x < m_width; --x)
+					{
+						const uint lineOffset = x * ChannelCount;
+						tempImage.pushRange( &m_data[ y * lineSize + lineOffset ], ChannelCount );
+					}
+				}
+			}
+			break;
+
+		case FlipDirection_Vertical:
+			{
+				const uint lineSize = m_width * ChannelCount;
+				for (uint y = m_height - 1u; y < m_height; --y)
+				{
+					tempImage.pushRange( &m_data[ y * lineSize ], lineSize );
+				}
+			}
+			break;
+
+		default:
+			TIKI_BREAK( "case not supported" );
+			break;
+		}
+
+		m_data.dispose();
+		m_data.create( tempImage.getBegin(), tempImage.getCount() );
+		tempImage.dispose();
+	}
+
 	void HdrImage::convertTo( Array< uint8 >& target, const PixelFormat targetFormat ) const
 	{
 		switch ( targetFormat )

@@ -12,6 +12,12 @@
 
 namespace tiki
 {
+	struct ShaderInitializationData
+	{
+		uint32				constantCount;
+		ShaderConstantInfo	constantInfo[ 1u ];
+	};
+
 	static const GLenum s_aShaderTypeMapping[] =
 	{
 		GL_INVALID_ENUM,			// ShaderType_Effect
@@ -28,7 +34,13 @@ namespace tiki
 	{
 		m_type = ShaderType_Invalid;
 
-		m_platformData.shaderId = GL_INVALID_ENUM;
+		m_platformData.shaderId			= GL_INVALID_ENUM;
+		m_platformData.constantCount	= 0u;
+
+		for (uint i = 0u; i < TIKI_COUNT( m_platformData.apConstants ); ++i)
+		{
+			m_platformData.apConstants[ i ] = nullptr;
+		}
 	}
 
 	Shader::~Shader()
@@ -46,10 +58,27 @@ namespace tiki
 
 		m_type	= type;
 		m_hash	= crcBytes( pInitData, dataSize );
+
+		const ShaderInitializationData* pTypedInitData = static_cast< const ShaderInitializationData* >( pInitData );
+		const void* pSourceCodeData = pInitData;
+
+		m_platformData.constantCount = pTypedInitData->constantCount;
+		if ( m_platformData.constantCount < TIKI_COUNT( m_platformData.apConstants ) )
+		{
+			const ShaderConstantInfo* pConatantInfo = pTypedInitData->constantInfo;
+			for (uint i = 0u; i < m_platformData.constantCount; ++i)
+			{
+				m_platformData.apConstants[ i ] = pConatantInfo;
+
+				pConatantInfo = addPtr( pConatantInfo, sizeof( pConatantInfo->slotIndex ) + sizeof( pConatantInfo->nameLenght ) + pConatantInfo->nameLenght + 1u );
+			}
+
+			pSourceCodeData = pConatantInfo;
+		}
 		
 		m_platformData.shaderId = glCreateShader( s_aShaderTypeMapping[ type ] );
 		
-		const char* pSourceCode = static_cast< const char* >( pInitData );
+		const char* pSourceCode = static_cast< const char* >( pSourceCodeData );
 		glShaderSource( m_platformData.shaderId, 1, &pSourceCode, nullptr );
 		glCompileShader( m_platformData.shaderId );
 
@@ -87,5 +116,18 @@ namespace tiki
 			glDeleteShader( m_platformData.shaderId );
 			m_platformData.shaderId = GL_INVALID_ENUM;
 		}
+	}
+
+	void graphics::fillShaderConstantMapping( GLuint* pMapping, uint capacity, GLuint programId, const ShaderPlatformData& platformData )
+	{
+		for (uint i = 0u; i < platformData.constantCount; ++i)
+		{
+			const ShaderConstantInfo* pInfo = platformData.apConstants[ i ];
+			TIKI_ASSERT( pInfo != nullptr );
+			TIKI_ASSERT( pInfo->slotIndex < capacity );
+			
+			pMapping[ pInfo->slotIndex ] = glGetUniformBlockIndex( programId, pInfo->aName );
+			TIKI_ASSERT( pMapping[ pInfo->slotIndex ] != GL_INVALID_INDEX );
+		}		
 	}
 }

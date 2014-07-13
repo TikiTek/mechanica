@@ -15,6 +15,8 @@ namespace tiki
 		bool		create( uint maxProgrammCount );
 		void		dispose();
 
+		crc32		getProgramCrc( GLuint vertexShaderId, GLuint pixelShaderId ) const;
+
 		GLuint		findOrCreateProgram( GLuint vertexShaderId, GLuint pixelShaderId );
 		void		freeShader( ShaderType type, GLuint shaderId );
 

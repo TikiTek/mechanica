@@ -120,7 +120,8 @@ namespace tiki
 			}
 
 			TextureWriterParameters writerParameters;
-			writerParameters.targetFormat = PixelFormat_R8G8B8A8;
+			writerParameters.targetFormat	= PixelFormat_R8G8B8A8;
+			writerParameters.targetApi		= params.targetApi;
 				
 			writerParameters.mipMapCount = 1u;
 			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )

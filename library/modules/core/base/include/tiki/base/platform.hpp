@@ -23,6 +23,8 @@ namespace tiki
 
 	enum GraphicsApi
 	{
+		GraphicsApi_Invalid = -1,
+
 		GraphicsApi_D3D11,
 		GraphicsApi_OpenGL4,
 

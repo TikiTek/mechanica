@@ -24,10 +24,17 @@ namespace tiki
 		m_programs.dispose();
 	}
 
-	GLuint ShaderLinker::findOrCreateProgram( GLuint vertexShaderId, GLuint pixelShaderId )
+	crc32 ShaderLinker::getProgramCrc( GLuint vertexShaderId, GLuint pixelShaderId ) const
 	{
 		const GLuint aShaderIds[] = { vertexShaderId, pixelShaderId };
 		const crc32 key = crcBytes( aShaderIds, sizeof( aShaderIds ) );
+
+		return key;
+	}
+
+	GLuint ShaderLinker::findOrCreateProgram( GLuint vertexShaderId, GLuint pixelShaderId )
+	{
+		const crc32 key = getProgramCrc( pixelShaderId, vertexShaderId );
 
 		LinkedProgram program;
 		if ( m_programs.findValue( &program, key ) )

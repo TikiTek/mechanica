@@ -24,38 +24,36 @@ namespace tiki
 	namespace memory
 	{
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		void*					allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+		void*					allocAlign( uint size, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 #else
-		void*					allocAlign( size_t size, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+		void*					allocAlign( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 #endif
 
-		//void*					allocAlign( size_t size, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
 		void					freeAlign( void* pPtr );
 
-		int						cmp ( void* ptr1, void* ptr2, size_t bytes );
-		void					set( void* p, size_t size, uint8 value );
-		void					copy( void* pTarget, const void* pSource, size_t length );
+		int						compare ( const void* pData1, const void* pData2, uint sizeInBytes );
+		void					copy( void* pTargetData, const void* pSourceData, uint sizeInBytes );
+		void					set8( void* pTargetData, uint size, uint8 value );
+		void					set16( void* pTargetData, uint size, uint16 value );
+		void					set32( void* pTargetData, uint size, uint32 value );
+		void					set64( void* pTargetData, uint size, uint64 value );
 		
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newAlign( size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE T*	newAlign( uint alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		template<typename T>
-		TIKI_FORCE_INLINE void	deleteAlign( T* p );
+		TIKI_FORCE_INLINE void	deleteAlign( T* pPtr );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newArray( size_t count, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE T*	newArray( uint count, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		template<typename T>
-		TIKI_FORCE_INLINE void	deleteArray( T* pArray, size_t arraySize );
+		TIKI_FORCE_INLINE void	deleteArray( T* pArray, uint count );
 
 		template<typename T>
-		TIKI_FORCE_INLINE void	set( T* p, uint8 value );
+		TIKI_FORCE_INLINE void	zero( T& pTargetData );
 
-		template<typename T>
-		TIKI_FORCE_INLINE void	zero( T& p );
-
-		TIKI_FORCE_INLINE void	zero( void* p, size_t size );
-
+		TIKI_FORCE_INLINE void	zero( void* pTargetData, uint sizeInBytes );
 	}
 }
 
