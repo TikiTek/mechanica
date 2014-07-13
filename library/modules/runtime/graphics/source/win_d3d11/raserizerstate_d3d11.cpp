@@ -40,14 +40,14 @@ namespace tiki
 		HRESULT result = graphics::getDevice( graphicsSystem )->CreateRasterizerState( &stateDesc, &m_platformData.pRasterizerState );
 		if( FAILED( result ) )
 		{
-			dispose();
+			dispose( graphicsSystem );
 			return false;
 		}
 
 		return m_platformData.pRasterizerState != nullptr;
 	}
 
-	void RasterizerState::dispose()
+	void RasterizerState::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
 		if ( m_platformData.pRasterizerState != nullptr )
 		{

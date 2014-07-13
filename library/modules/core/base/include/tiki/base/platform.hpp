@@ -32,6 +32,7 @@ namespace tiki
 	};
 
 	PlatformType			getHostPlatform();
+	GraphicsApi				getHostGraphicsApi();
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 	InstanceHandle			getInstanceHandle();

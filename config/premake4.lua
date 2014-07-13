@@ -31,39 +31,38 @@ module:set_flag( "NoRTTI", "Master" );
 module:set_flag( "OptimizeSpeed", "Master" );
 --module:set_flag( "FatalWarnings", "Master" );
 
-if _ACTION == "vs2010" or _ACTION == "vs2012" then
-	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_ON" );
-	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
-	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
+is_windows	= false;
+is_linux	= false;
+is_apple	= false;
 
+use_d3d11	= false;
+use_opengl	= false;
+
+if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "WIN_NT" );
 	module:set_define( "WIN32" );
 	module:set_define( "_WIN32" );
 	module:set_define( "_WIN64", nil, nil, "x64" );
 
-	is_windows	= true;
-	is_linux	= false;
-	is_apple	= false;
+	is_windows	= true;	
+	use_d3d11	= true;
 elseif _ACTION == "gmake" then
-	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_OFF" );
-	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_ON" );
-	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_OFF" );
-
-	is_windows	= false;
 	is_linux	= true;
-	is_apple	= false;
+	use_opengl	= true;
 elseif _ACTION == "xcode" then
-	module:set_define( "TIKI_PLATFORM_WIN", "TIKI_OFF" );
-	module:set_define( "TIKI_PLATFORM_LINUX", "TIKI_OFF" );
-	module:set_define( "TIKI_PLATFORM_APPLE", "TIKI_ON" );
-
-	is_windows	= false;
-	is_linux	= false;
 	is_apple	= true;
+	use_opengl	= true;
 end
+
+module:set_define( "TIKI_PLATFORM_WIN", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_PLATFORM_LINUX", iff( is_linux, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_PLATFORM_APPLE", iff( is_apple, "TIKI_ON", "TIKI_OFF" ) );
 
 module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", nil, "x32" );
 module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", nil, "x32" );
 
 module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", nil, "x64" );
 module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
+
+module:set_define( "TIKI_GRAPHICS_D3D11", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );

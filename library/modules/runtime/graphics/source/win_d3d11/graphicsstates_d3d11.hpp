@@ -2,7 +2,7 @@
 #ifndef __TIKI_GRAPHICSSTATES_D3D11_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSTATES_D3D11_HPP_INCLUDED__
 
-#include "../../../../source/win_d3d11/graphicstypes_d3d11.hpp"
+#include "graphicstypes_d3d11.hpp"
 
 namespace tiki
 {

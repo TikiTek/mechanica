@@ -11,6 +11,17 @@ namespace tiki
 #	error not supported
 #endif
 	}
+
+	GraphicsApi getHostGraphicsApi()
+	{
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+		return GraphicsApi_D3D11;
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+		return GraphicsApi_OpenGL4;
+#else
+#	error not supported
+#endif
+	}
 }
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )

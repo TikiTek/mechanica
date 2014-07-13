@@ -48,9 +48,9 @@ namespace tiki
 
 		m_pRenderTarget = nullptr;
 
-		for (uint i = 0u; i < TIKI_COUNT( m_pRenderPassesStack ); ++i)
+		for (uint i = 0u; i < TIKI_COUNT( m_apRenderPassesStack ); ++i)
 		{
-			m_pRenderPassesStack[ i ] = nullptr;
+			m_apRenderPassesStack[ i ] = nullptr;
 		}
 		m_currentRenderPassDepth = 0u;
 
@@ -123,7 +123,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_currentRenderPassDepth < GraphicsSystemLimits_RenderPassStackDepth );
 
-		m_pRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
+		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 		
 		TGShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
@@ -163,11 +163,11 @@ namespace tiki
 		TIKI_ASSERT( m_currentRenderPassDepth != 0u );
 
 		m_currentRenderPassDepth--;
-		m_pRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
+		m_apRenderPassesStack[ m_currentRenderPassDepth ] = nullptr;
 
 		if ( m_currentRenderPassDepth != 0u )
 		{
-			const RenderTarget& renderTarget = *m_pRenderPassesStack[ m_currentRenderPassDepth - 1u ];
+			const RenderTarget& renderTarget = *m_apRenderPassesStack[ m_currentRenderPassDepth - 1u ];
 			m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 		}
 		else
@@ -260,7 +260,7 @@ namespace tiki
 
 	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
 	{
-		if ( m_pVertexSamplerStates[ slot ] != pSampler )
+		if ( m_apVertexSamplerStates[ slot ] != pSampler )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -273,13 +273,13 @@ namespace tiki
 				m_platformData.pContext->VSSetSamplers( d3dSlot, 1u, &pSampler->m_platformData.pSamplerState );
 			}
 
-			m_pVertexSamplerStates[ slot ] = pSampler;
+			m_apVertexSamplerStates[ slot ] = pSampler;
 		}
 	}
 
 	void GraphicsContext::setVertexShaderTexture( uint slot, const TextureData* pTextureData )
 	{
-		if ( m_pVertexTextures[ slot ] != pTextureData )
+		if ( m_apVertexTextures[ slot ] != pTextureData )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -292,16 +292,16 @@ namespace tiki
 				m_platformData.pContext->VSSetShaderResources( d3dSlot, 1, &pTextureData->m_platformData.pShaderView );
 			}
 
-			m_pVertexTextures[ slot ] = pTextureData;
+			m_apVertexTextures[ slot ] = pTextureData;
 		}
 	}
 
 	void GraphicsContext::setVertexShaderConstant( uint slot, const ConstantBuffer& buffer )
 	{
-		if ( m_pVertexConstants[ slot ] != &buffer )
+		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
 			m_platformData.pContext->VSSetConstantBuffers( (UINT)slot, 1u, &buffer.m_pBuffer );
-			m_pVertexConstants[ slot ] = &buffer;
+			m_apVertexConstants[ slot ] = &buffer;
 		}
 	}
 
@@ -319,7 +319,7 @@ namespace tiki
 
 	void GraphicsContext::setPixelShaderSamplerState( uint slot, const SamplerState* pSampler )
 	{
-		if ( m_pPixelSamplerStates[ slot ] != pSampler )
+		if ( m_apPixelSamplerStates[ slot ] != pSampler )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -332,13 +332,13 @@ namespace tiki
 				m_platformData.pContext->PSSetSamplers( d3dSlot, 1u, &pSampler->m_platformData.pSamplerState );
 			}
 
-			m_pPixelSamplerStates[ slot ] = pSampler;
+			m_apPixelSamplerStates[ slot ] = pSampler;
 		}
 	}
 
 	void GraphicsContext::setPixelShaderTexture( uint slot, const TextureData* pTextureData )
 	{
-		if ( m_pPixelTextures[ slot ] != pTextureData )
+		if ( m_apPixelTextures[ slot ] != pTextureData )
 		{
 			const UINT d3dSlot = (UINT)slot;
 
@@ -352,16 +352,16 @@ namespace tiki
 				m_platformData.pContext->PSSetShaderResources( d3dSlot, 1u, &pTextureData->m_platformData.pShaderView );
 			}
 
-			m_pPixelTextures[ slot ] = pTextureData;
+			m_apPixelTextures[ slot ] = pTextureData;
 		}
 	}
 
 	void GraphicsContext::setPixelShaderConstant( uint slot, const ConstantBuffer& buffer )
 	{
-		if ( m_pPixelConstants[ slot ] != &buffer)
+		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
 			m_platformData.pContext->PSSetConstantBuffers( (UINT)slot, 1u, &buffer.m_pBuffer );
-			m_pPixelConstants[ slot ] = &buffer;
+			m_apPixelConstants[ slot ] = &buffer;
 		}
 	}
 
@@ -369,7 +369,7 @@ namespace tiki
 	{
 		m_platformData.pContext->IASetIndexBuffer( 
 			indexBuffer.m_pBuffer,
-			( indexBuffer.m_indexType == IndexType_Uint32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
+			( indexBuffer.m_indexType == IndexType_UInt32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
 			0u
 		);
 	}
