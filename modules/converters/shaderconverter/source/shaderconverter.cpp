@@ -7,6 +7,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/iopath.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
@@ -30,6 +31,12 @@ namespace tiki
 		crc32			variantKey;
 		uint32			codeLength;
 		ReferenceKey	key;
+	};
+
+	struct ShaderConstantInfo
+	{
+		uint32	slotIndex;
+		string	name;
 	};
 
 	class ShaderIncludeHandler : public ID3DInclude
@@ -277,7 +284,7 @@ namespace tiki
 					} 
 
 					Array< uint8 > variantData;
-					if ( compilePlatformShader( variantData, args, GraphicsApi_OpenGL4 ) )
+					if ( compilePlatformShader( variantData, args, params.targetApi ) )
 					{
 						uint32 keyData[] = { type, variant.bitMask };
 
@@ -407,6 +414,7 @@ namespace tiki
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
 		string sourceCode = "#version 440\n" + args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
+		List< ShaderConstantInfo > constants;
 
 		// preprocessor
 		{
@@ -414,12 +422,13 @@ namespace tiki
 			fppTag* pCurrentTag = aTags;
 
 			FppContext context;
-			context.pSourceData		= sourceCode.cStr();
-			context.sourceLength	= sourceCode.getLength();
-			context.sourcePosition	= 0;
-			context.pTargetData		= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
-			context.targetLength	= 1024u * 1024u;
-			context.targetPosition	= 0u;
+			context.pSourceData			= sourceCode.cStr();
+			context.sourceLength		= sourceCode.getLength();
+			context.sourcePosition		= 0;
+			context.pTargetData			= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
+			context.pTargetData[ 0u ]	= '\0';
+			context.targetLength		= 1024u * 1024u;
+			context.targetPosition		= 0u;
 
 			for (uint i = 0u; i < m_pIncludeHandler->getIncludeDirs().getCount(); ++i)
 			{
@@ -463,13 +472,43 @@ namespace tiki
 
 			if ( fppPreProcess( aTags ) != 0 )
 			{
-				TIKI_TRACE_INFO( "[shaderconverter] preprocessor failed.\n" );
+				TIKI_TRACE_ERROR( "[shaderconverter] preprocessor failed.\n" );
 			}
 
 			context.pTargetData[ context.targetPosition ] = '\0';
 			sourceCode = context.pTargetData;
 
 			TIKI_MEMORY_FREE( context.pTargetData );
+		}
+
+		// parse uniforms
+		{
+			TRexpp regex;
+			regex.Compile( "[\\s]*layout\\([\\s]*location[\\s]*=[\\s]*([0-9]+[\\s]*)\\)[\\s]*uniform[\\s]+([\\w]+)" );
+
+			const char* pSearchBegin	= nullptr;
+			const char* pSearchEnd		= nullptr;
+			while ( regex.Search( sourceCode.cStr(), &pSearchBegin, &pSearchEnd ) )
+			{
+				int length;
+				const char* pArgumentBegin;
+				regex.GetSubExp( 1, &pArgumentBegin, &length );
+				const string slotIndex = string( pArgumentBegin, length );
+
+				regex.GetSubExp( 2, &pArgumentBegin, &length );
+				const string name = string( pArgumentBegin, length );
+
+				ShaderConstantInfo& info = constants.add();
+				info.slotIndex	= ParseString::parseInt32( slotIndex );
+				info.name		= name;
+
+				const uint startIndex	= pSearchBegin - sourceCode.cStr();
+				const uint length2		= pSearchEnd - pSearchBegin;
+				sourceCode = sourceCode.remove( startIndex, length2 );
+
+				const string newCode = formatString( "layout(shared) uniform %s", name.cStr() );
+				sourceCode = sourceCode.insert( newCode, startIndex );
+			}
 		}
 
 		// parse code
@@ -501,12 +540,25 @@ namespace tiki
 			}
 		}
 
-		targetData.create(
-			(const uint8*)sourceCode.cStr(),
-			sourceCode.getLength() + 1u
-		);
+		MemoryStream stream;
+		stream.create( sourceCode.getLength() );
 
-		return true;
+		const uint32 constantCount = constants.getCount();
+		stream.write( &constantCount, sizeof( constantCount ) );
+
+		for (uint i = 0u; i < constantCount; ++i)
+		{
+			const ShaderConstantInfo& info = constants[ i ];
+			const uint32 nameLength = info.name.getLength();
+
+			stream.write( &info.slotIndex, sizeof( info.slotIndex ) );
+			stream.write( &nameLength, sizeof( nameLength ) );
+			stream.write( info.name.cStr(), nameLength + 1u );
+		}
+
+		stream.write( sourceCode.cStr(), sourceCode.getLength() + 1u );
+
+		return targetData.create( static_cast< const uint8* >( stream.getData() ), stream.getLength() );
 	}
 
 	char* fppRead( char* pBuffer, int size, void* pUserData )

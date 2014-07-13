@@ -160,6 +160,7 @@ namespace tiki
 			TextureWriterParameters writerParameters;
 			writerParameters.targetFormat	= PixelFormat_R8;
 			writerParameters.targetType		= (mode3D ? TextureType_3d : TextureType_2d );
+			writerParameters.targetApi		= params.targetApi;
 			writerParameters.mipMapCount	= 1u;
 			writerParameters.data.texture3d.sliceSize = fontSize;
 

@@ -1,7 +1,6 @@
 
 #include "tiki/base/memory.hpp"
 
-#include <memory>
 #include <malloc.h>
 
 #if TIKI_ENABLED( TIKI_PLATFORM_LINUX )
@@ -51,18 +50,58 @@ namespace tiki
 	}
 #endif
 
-	int	memory::cmp( void* ptr1, void* ptr2, size_t bytes )
+	int	memory::compare( const void* pData1, const void* pData2, uint sizeInBytes )
 	{
-		return memcmp( ptr1, ptr2, bytes );
+		return memcmp( pData1, pData2, sizeInBytes );
 	}
 
-	void memory::set( void* p, size_t size, uint8 value )
+	//void memory::set( void* p, size_t size, uint8 value )
+	//{
+	//	memset( p, value, size );
+	//}
+
+	void memory::copy( void* pTargetData, const void* pSourceData, uint sizeInBytes )
 	{
-		memset( p, value, size );
+		memcpy( pTargetData, pSourceData, sizeInBytes );
 	}
 
-	void memory::copy( void* pTarget, const void* pSource, size_t length )
+	void memory::set8( void* pTargetData, uint size, uint8 value )
 	{
-		memcpy( pTarget, pSource, length );
+		register uint count = size;
+		register uint8* pData = static_cast< uint8* >( pTargetData );
+		while ( count-- > 0u )
+		{
+			*pData++ = value;
+		}
+	}
+
+	void memory::set16( void* pTargetData, uint size, uint16 value )
+	{
+		register uint count = size;
+		register uint16* pData = static_cast< uint16* >( pTargetData );
+		while ( count-- > 0u )
+		{
+			*pData++ = value;
+		}
+	}
+
+	void memory::set32( void* pTargetData, uint size, uint32 value )
+	{
+		register uint count = size;
+		register uint32* pData = static_cast< uint32* >( pTargetData );
+		while ( count-- > 0u )
+		{
+			*pData++ = value;
+		}
+	}
+
+	void memory::set64( void* pTargetData, uint size, uint64 value )
+	{
+		register uint count = size;
+		register uint64* pData = static_cast< uint64* >( pTargetData );
+		while ( count-- > 0u )
+		{
+			*pData++ = value;
+		}
 	}
 }

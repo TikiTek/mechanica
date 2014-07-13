@@ -307,6 +307,7 @@ namespace tiki
 
 		
 		params.targetPlatform	= PlatformType_Win;
+		params.targetApi		= GraphicsApi_OpenGL4;
 		params.sourceFile		= file.fullFileName;
 		params.typeCrc			= pConverter->getInputType();
 

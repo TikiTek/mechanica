@@ -67,6 +67,27 @@ namespace tiki
 	typedef double			float64;
 	
 	typedef const char*		cstring;
+
+	enum
+	{
+		InvalidCrc32	= 0xffffffffu,
+
+#if TIKI_ENABLED( TIKI_BUILD_32BIT )
+
+		MaxPointer		= 0xffffffffu,
+		PointerBits		= 32u
+
+#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
+
+		MaxPointer		= 0xffffffffffffffffu,
+		PointerBits		= 64u
+
+#else
+
+#	error Platform not suppored
+
+#endif
+	};
 }
 
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )

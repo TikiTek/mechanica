@@ -34,12 +34,14 @@ namespace tiki
 		{
 			targetType		= TextureType_Invalid;
 			targetFormat	= PixelFormat_Invalid;
+			targetApi		= GraphicsApi_Invalid;
 
 			mipMapCount		= 0u;
 		}
 
 		TextureType targetType;
 		PixelFormat targetFormat;
+		GraphicsApi	targetApi;
 		
 		uint mipMapCount;
 

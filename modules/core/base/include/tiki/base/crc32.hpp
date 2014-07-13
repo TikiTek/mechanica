@@ -8,11 +8,6 @@
 
 namespace tiki
 {
-	enum
-	{
-		InvalidCrc32	= 0xffffffffu
-	};
-
 	 TIKI_FORCE_INLINE crc32 crcAddBytes( crc32 currentValue, const void* pBytes, size_t len )
 	 {
 		 /* CRC polynomial 0xedb88320 */

@@ -157,6 +157,7 @@ namespace tiki
 		bool						validateDrawCall() const;
 #endif
 
+		void						prepareDrawCall();
 	};
 }
 
