@@ -50,15 +50,15 @@ TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
 TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
 // constants
-TIKI_DEFINE_SAMPLER( 0, s_samplerNearst );
+TIKI_DEFINE_SAMPLER( 0, s_samplerNearst )
 
-TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer0 );
-TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer1 );
-TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer2 );
-TIKI_DEFINE_TEXTURE2D( 3, t_depthBuffer );
+TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer0 )
+TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer1 )
+TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer2 )
+TIKI_DEFINE_TEXTURE2D( 3, t_depthBuffer )
 
-TIKI_DEFINE_CONSTANT( 0, LightingPixelConstantData, c_pixelData );
-TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter );
+TIKI_DEFINE_CONSTANT( 0, LightingPixelConstantData, c_pixelData )
+TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter )
 
 //float GGX_V1(in float m2, in float nDotX)
 //{
