@@ -88,14 +88,14 @@ namespace tiki
 		m_platformData.pInputLayout = graphics::createVertexInputLayout( graphicsSystem, m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
 		if ( m_platformData.pInputLayout == nullptr )
 		{
-			dispose();
+			dispose( graphicsSystem );
 			return false;
 		}
 
 		return true;
 	}
 
-	void VertexInputBinding::dispose()
+	void VertexInputBinding::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
 		m_pVertexFormat	= nullptr;
 		m_pShader		= nullptr;

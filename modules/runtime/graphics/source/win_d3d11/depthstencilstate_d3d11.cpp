@@ -58,14 +58,14 @@ namespace tiki
 		HRESULT result = graphics::getDevice( graphicsSystem )->CreateDepthStencilState( &stateDesc, &m_platformData.pDepthStencilState );
 		if( FAILED( result ) )
 		{
-			dispose();
+			dispose( graphicsSystem );
 			return false;
 		}
 
 		return m_platformData.pDepthStencilState != nullptr;
 	}
 
-	void DepthStencilState::dispose()
+	void DepthStencilState::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
 		m_platformData.stencilRef = 0u;
 

@@ -4,7 +4,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphissystemlimits.hpp"
 
-#include "../../../../source/win_d3d11/graphicstypes_d3d11.hpp"
+#include "graphicstypes_d3d11.hpp"
 
 namespace tiki
 {

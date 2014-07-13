@@ -80,14 +80,14 @@ namespace tiki
 		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &stateDesc, &m_platformData.pSamplerState );
 		if( FAILED( result ) )
 		{
-			dispose();
+			dispose( graphicsSystem );
 			return false;
 		}
 
 		return m_platformData.pSamplerState != nullptr;
 	}
 
-	void SamplerState::dispose()
+	void SamplerState::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
 		if ( m_platformData.pSamplerState != nullptr )
 		{

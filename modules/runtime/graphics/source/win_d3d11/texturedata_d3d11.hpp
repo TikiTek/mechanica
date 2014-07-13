@@ -2,7 +2,7 @@
 #ifndef TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
 #define TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
 
-#include "../../../../source/win_d3d11/graphicstypes_d3d11.hpp"
+#include "graphicstypes_d3d11.hpp"
 
 namespace tiki
 {

@@ -13,6 +13,14 @@ function throw( text )
 	error();
 end
 
+function iff( expr, when_true, when_false )
+	if expr then
+		return when_true
+	else
+		return when_false
+	end
+end
+
 function vardump(value, depth, key)
   local linePrefix = ""
   local spaces = ""
