@@ -42,16 +42,16 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 	uint4 skinIndices = TIKI_VERTEX_INPUT_GET( TIKI_JOINTINDICES0 );
 	float4 skinWeights = TIKI_VERTEX_INPUT_GET( TIKI_JOINTWEIGHTS0 );
 
-	float4x4 skinMatrix = float4x4( 0.0 );
+	float4x4 skinMatrix = TIKI_CAST( float4x4, 0.0 );
 	for(int i = 0; i < 4; i++)	
 	{
 		skinMatrix += c_skinningData.matrices[ skinIndices[ i ] ] * skinWeights[ i ];
 	}
-	skinMatrix /= dot( skinWeights, float4( 1.0 ) );
+	skinMatrix /= dot( skinWeights, float4( 1.0, 1.0, 1.0, 1.0 ) );
 
 	position = TIKI_MUL( position, skinMatrix );
 
-	float3x3 normalMatrix = float3x3( skinMatrix );
+	float3x3 normalMatrix = TIKI_CAST( float3x3, skinMatrix );
 	normalMatrix = TIKI_MUL( normalMatrix, c_instanceData.modelNormalMatrix );
 #else
 	float3x3 normalMatrix = c_instanceData.modelNormalMatrix;

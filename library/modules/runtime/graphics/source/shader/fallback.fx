@@ -35,7 +35,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
     TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-	float3x3 normalMatrix = float3x3( c_instanceData.modelMatrix );
+	float3x3 normalMatrix = TIKI_CAST( float3x3, c_instanceData.modelMatrix );
 
 	float4 position = float4( TIKI_VERTEX_INPUT_GET( TIKI_INPUT_POSITION0 ), 1.0 );
 	position = TIKI_MUL( position, c_instanceData.mvpMatrix );

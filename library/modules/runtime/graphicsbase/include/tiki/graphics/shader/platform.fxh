@@ -9,6 +9,9 @@
 #define TIKI_CONCAT_HELPER( x1, x2 ) x1 ## x2
 #define TIKI_CONCAT( x1, x2 ) TIKI_CONCAT_HELPER( x1, x2 )
 
+#define TIKI_VAR_IN( name )		TIKI_CONCAT( in, name )
+#define TIKI_VAR_OUT( name )	TIKI_CONCAT( out, name )
+
 #if TIKI_ENABLED( TIKI_HLSL4 )
 
 // parameters
@@ -44,6 +47,56 @@
 
 #define TIKI_MUL( a, b )				mul( a, b )
 #define TIKI_SATURATE( a )				saturate( a )
+#define TIKI_CAST( targetType, a )		(targetType)( a )
+
+// entry point
+#define TIKI_ENTRY_POINT( inputType, outputType, name ) outputType name( inputType input )
+
+// vertex input
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#	define TIKI_VERTEX_INPUT_DEFINITION_BEGIN( typeName ) struct typeName {
+#	define TIKI_VERTEX_INPUT_DEFINITION_END( typeName ) };
+#	define TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( slot, type, semantic )	type TIKI_VAR_IN( semantic ) : semantic;
+
+#	define TIKI_VERTEX_INPUT_GET( semantic ) input. ## TIKI_VAR_IN( semantic )
+
+#endif
+
+// vertex to pixel
+#if TIKI_ENABLED( TIKI_VERTEX_SHADER )
+
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName ) struct typeName {
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName ) };
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) type TIKI_VAR_OUT( semantic ) : semantic;
+
+#	define TIKI_VERTEX_TO_PIXEL_BEGIN( typeName ) typeName output = (typeName)0
+#	define TIKI_VERTEX_TO_PIXEL_END( typeName ) return output
+#	define TIKI_VERTEX_TO_PIXEL_SET_POSITION( semantic, value ) TIKI_CONCAT( output., TIKI_VAR_OUT( semantic ) ) = value
+#	define TIKI_VERTEX_TO_PIXEL_SET( semantic, value ) TIKI_CONCAT( output., TIKI_VAR_OUT( semantic ) ) = value
+
+#elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
+
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName ) struct typeName {
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName ) };
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) type TIKI_VAR_IN( semantic ) : semantic;
+
+#	define TIKI_VERTEX_TO_PIXEL_GET( semantic ) TIKI_CONCAT( input., TIKI_VAR_IN( semantic ) )
+
+#endif
+
+// pixel output
+#if TIKI_ENABLED( TIKI_PIXEL_SHADER )
+
+#	define TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( typeName ) struct typeName {
+#	define TIKI_PIXEL_OUTPUT_DEFINITION_END( typeName ) };
+#	define TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( slot, type, semantic ) type TIKI_VAR_OUT( semantic ) : semantic;
+
+#	define TIKI_PIXEL_OUTPUT_BEGIN( typeName ) typeName output = (typeName)0
+#	define TIKI_PIXEL_OUTPUT_END( typeName ) return output
+#	define TIKI_PIXEL_OUTPUT_SET( semantic, value ) TIKI_CONCAT( output., TIKI_VAR_OUT( semantic ) ) = value
+
+#endif
 
 // semantics input
 #define TIKI_INPUT_POSITION0	POSITION0
@@ -115,9 +168,6 @@
 #define TIKI_OUT			out
 #define TIKI_INOUT			inout
 
-#define TIKI_VAR_IN( name )		TIKI_CONCAT( in, name )
-#define TIKI_VAR_OUT( name )	TIKI_CONCAT( out, name )
-
 // types
 
 #define TIKI_SAMPLER		float
@@ -169,6 +219,7 @@
 
 #define TIKI_MUL( a, b )				a * b
 #define TIKI_SATURATE( a )				clamp( a, 0.0, 1.0 )
+#define TIKI_CAST( targetType, a )		targetType( a )
 
 // entry point
 #define TIKI_ENTRY_POINT( inputType, outputType, name ) void name()
@@ -187,8 +238,8 @@
 // vertex to pixel
 #if TIKI_ENABLED( TIKI_VERTEX_SHADER )
 
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName )
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) out type TIKI_VAR_OUT( semantic );
 
 #	define TIKI_VERTEX_TO_PIXEL_BEGIN( typeName )
@@ -198,8 +249,8 @@
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
 
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( name )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( name )
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName )
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) in type TIKI_VAR_IN( semantic );
 
 #	define TIKI_VERTEX_TO_PIXEL_GET( semantic ) TIKI_VAR_IN( semantic )
