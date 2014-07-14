@@ -103,6 +103,19 @@ namespace tiki
 
 	void GraphicsSystem::disposePlatform()
 	{
+		// dispose back buffer target
+		{
+			m_backBufferTarget.m_width	= 0u;
+			m_backBufferTarget.m_height	= 0u;
+
+			m_backBufferTarget.m_colorBuffers[ 0u ].clear();
+			m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= nullptr;
+			m_backBufferTarget.m_colorBufferCount = 0u;
+
+			m_backBufferTarget.m_depthBuffer.clear();
+			m_backBufferTarget.m_platformData.pDepthView = nullptr;
+		}
+
 		m_commandBuffer.dispose( *this );
 		
 		if( m_platformData.pSwapChain != nullptr )
