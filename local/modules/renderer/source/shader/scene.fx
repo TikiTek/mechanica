@@ -52,19 +52,19 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 	position = TIKI_MUL( position, skinMatrix );
 
 	float3x3 normalMatrix = TIKI_CAST( float3x3, skinMatrix );
-	normalMatrix = TIKI_MUL( normalMatrix, c_instanceData.modelNormalMatrix );
+	normalMatrix = TIKI_MUL( normalMatrix, TIKI_CAST( float3x3, c_instanceData.modelNormalMatrix ) );
 #else
-	float3x3 normalMatrix = c_instanceData.modelNormalMatrix;
+	float3x3 normalMatrix = TIKI_CAST( float3x3, c_instanceData.modelNormalMatrix );
 #endif
 	position = TIKI_MUL( position, c_instanceData.mvpMatrix );
 
-	float3 normal = TIKI_VERTEX_INPUT_GET( TIKI_NORMAL0 );
-	normal = TIKI_MUL( normal, normalMatrix );
+	float3 normal = normalize( TIKI_VERTEX_INPUT_GET( TIKI_NORMAL0 ) );
+	normal = normalize( TIKI_MUL( normal, normalMatrix ) );
 
-	float3 tangent = TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).xyz;
-	tangent = TIKI_MUL( tangent.xyz, normalMatrix );
+	float3 tangent = normalize( TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).xyz );
+	tangent = normalize( TIKI_MUL( tangent.xyz, normalMatrix ) );
 
-	float3 binormal = cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w;
+	float3 binormal = normalize( cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w );
 
 	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD0 );
 
