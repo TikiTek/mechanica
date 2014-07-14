@@ -64,5 +64,5 @@ module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", nil, "x32" );
 module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", nil, "x64" );
 module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
 
-module:set_define( "TIKI_GRAPHICS_D3D11", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );
-module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_D3D11", iff( use_d3d11, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OFF" ) );

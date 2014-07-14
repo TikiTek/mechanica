@@ -23,8 +23,8 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {
 	TIKI_VERTEX_TO_PIXEL_BEGIN( VertexToPixel );
 
-	float4 position = float4( TIKI_VERTEX_INPUT_GET( TIKI_INPUT_POSITION ), 0.0, 1.0 );
-	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD );
+	float4 position = float4( TIKI_VERTEX_INPUT_GET( TIKI_INPUT_POSITION0 ), 0.0, 1.0 );
+	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD0 );
 
 	TIKI_VERTEX_TO_PIXEL_SET_POSITION( TIKI_OUTPUT_POSITION0, position );
 	TIKI_VERTEX_TO_PIXEL_SET( TIKI_TEXCOORD0, texCoord );
@@ -42,9 +42,9 @@ TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )
 	TIKI_PIXEL_OUTPUT_DEFINITION_ELEMENT( 0, float4, TIKI_OUTPUT_COLOR0 )
 TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
-//#include "shader/positionspace.fxh"
-//#include "shader/geometrybuffer.fxh"
-//#include "shader/ascii_shader.hpp"
+#include "shader/positionspace.fxh"
+#include "shader/geometrybuffer.fxh"
+#include "shader/ascii_shader.hpp"
 
 // constants
 TIKI_DEFINE_SAMPLER( 0, s_samplerLinear )
