@@ -16,6 +16,9 @@ end
 
 module:add_dependency( "base" );
 
+module:add_library_dir( "$(DXSDK_DIR)Lib\x86", nil, "x32" );
+module:add_library_dir( "$(DXSDK_DIR)Lib\x64", nil, "x64" );
+
 module:add_library_file( "dxguid" );
 module:add_library_file( "dinput8" );
 module:add_library_file( "xinput" );
