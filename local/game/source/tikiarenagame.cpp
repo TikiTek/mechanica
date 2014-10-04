@@ -30,8 +30,8 @@ namespace tiki
 
 		if ( userName == "Tim" || userName == "tim.boden" )
 		{
-			//return TikiArenaGameStates_BasicTest;
-			return TikiArenaGameStates_Test;
+			return TikiArenaGameStates_BasicTest;
+			//return TikiArenaGameStates_Test;
 		}
 
 		return TikiArenaGameStates_Play;

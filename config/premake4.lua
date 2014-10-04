@@ -45,7 +45,8 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "_WIN64", nil, nil, "x64" );
 
 	is_windows	= true;	
-	use_d3d11	= true;
+	--use_d3d11	= true;
+	use_opengl	= true;
 elseif _ACTION == "gmake" then
 	is_linux	= true;
 	use_opengl	= true;
