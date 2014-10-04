@@ -126,7 +126,7 @@ namespace tiki
 			writerParameters.mipMapCount = 1u;
 			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )
 			{
-				writerParameters.mipMapCount = 63u - countLeadingZeros64( TIKI_MIN( image.getWidth(), image.getHeight() ) );
+				writerParameters.mipMapCount = ( 63u - countLeadingZeros64( TIKI_MIN( image.getWidth(), image.getHeight() ) ) ) + 1u;
 			}
 
 			const string dimentionsString = params.arguments.getOptionalString( "type" , "2d" ).toLower();
@@ -153,7 +153,10 @@ namespace tiki
 			}
 
 			TextureWriter textureWriter;
-			textureWriter.create( image, writerParameters );
+			if ( !textureWriter.create( image, writerParameters ) )
+			{
+				continue;
+			}
 
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "texture", params.targetPlatform );

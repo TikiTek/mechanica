@@ -36,8 +36,8 @@ namespace tiki
 
 	private:
 
-		TextureDescription		m_description;
-		TextureDataPlatformData	m_platformData;
+		TextureDescription			m_description;
+		TextureDataPlatformData		m_platformData;
 
 	};
 }

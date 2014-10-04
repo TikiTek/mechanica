@@ -240,20 +240,20 @@
 
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) out type TIKI_VAR_OUT( semantic );
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) out type TIKI_CONCAT( vtp, semantic );
 
 #	define TIKI_VERTEX_TO_PIXEL_BEGIN( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_END( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_SET_POSITION( semantic, value ) gl_Position = value
-#	define TIKI_VERTEX_TO_PIXEL_SET( semantic, value ) TIKI_VAR_OUT( semantic ) = value
+#	define TIKI_VERTEX_TO_PIXEL_SET( semantic, value ) TIKI_CONCAT( vtp, semantic ) = value
 
 #elif TIKI_ENABLED( TIKI_PIXEL_SHADER )
 
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( typeName )
 #	define TIKI_VERTEX_TO_PIXEL_DEFINITION_END( typeName )
-#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) in type TIKI_VAR_IN( semantic );
+#	define TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( type, semantic ) in type TIKI_CONCAT( vtp, semantic );
 
-#	define TIKI_VERTEX_TO_PIXEL_GET( semantic ) TIKI_VAR_IN( semantic )
+#	define TIKI_VERTEX_TO_PIXEL_GET( semantic ) TIKI_CONCAT( vtp, semantic )
 
 #endif
 
