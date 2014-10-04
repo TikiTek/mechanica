@@ -165,7 +165,10 @@ namespace tiki
 			writerParameters.data.texture3d.sliceSize = fontSize;
 
 			TextureWriter textureWriter;
-			textureWriter.create( image, writerParameters );
+			if ( !textureWriter.create( image, writerParameters ) )
+			{
+				continue;
+			}
 			
 			ResourceWriter writer;
 			openResourceWriter( writer, params.outputName, "font", params.targetPlatform );

@@ -5,9 +5,13 @@
 #include "tiki/gameflow/gameflowstate.hpp"
 
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 
 namespace tiki
 {
+	class Font;
+	class Texture;
+
 	enum BasicTestStateTransitionSteps
 	{
 		BasicTestStateTransitionSteps_Count
@@ -28,6 +32,13 @@ namespace tiki
 		virtual void			render( GraphicsContext& graphicsContext );
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent );
+
+	private:
+
+		 ImmediateRenderer		m_renderer;
+
+		 const Texture*			m_pTestTexture;
+		 const Font*			m_pTestFont;
 
 	};
 }

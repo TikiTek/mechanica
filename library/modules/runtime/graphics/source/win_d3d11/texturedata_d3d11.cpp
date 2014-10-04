@@ -103,7 +103,7 @@ namespace tiki
 			uint depth	= TIKI_MAX( description.depth, 1u );
 			const uint8* pLevelData	= static_cast< const uint8* >( pTextureData );
 
-			for (uint mipLevel = 0u; mipLevel <= description.mipCount; ++mipLevel)
+			for (uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel)
 			{
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
@@ -113,8 +113,8 @@ namespace tiki
 				initData[ mipLevel ].SysMemSlicePitch	= UINT( depthPitch );
 
 				pLevelData	+= depthPitch * depth;
-				width		/= 2u;
-				height		/= 2u;
+				width		= TIKI_MAX( width / 2u, 1u );
+				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			} 
 
@@ -132,7 +132,7 @@ namespace tiki
 				desc.Format				= dxFormat;
 				desc.Width				= description.width;
 				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount + 1u;
+				desc.MipLevels			= description.mipCount;
 				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
 
 				result = pDevice->CreateTexture1D( &desc, pD3dInitData, &m_platformData.pTexture1d );
@@ -146,7 +146,7 @@ namespace tiki
 				desc.Width				= description.width;
 				desc.Height				= description.height;
 				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount + 1u;
+				desc.MipLevels			= description.mipCount;
 				desc.ArraySize			= description.arrayCount;
 				desc.SampleDesc.Count	= 1u;
 				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
@@ -163,7 +163,7 @@ namespace tiki
 				desc.Height				= description.height;
 				desc.Depth				= description.depth;
 				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount + 1u;
+				desc.MipLevels			= description.mipCount;
 				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
 
 				result = pDevice->CreateTexture3D( &desc, pD3dInitData, &m_platformData.pTexture3d );
@@ -185,7 +185,7 @@ namespace tiki
 			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 			srvDesc.Format						= dxFormat;
 			srvDesc.ViewDimension				= getViewDimentions( (TextureType)description.type );
-			srvDesc.Texture2D.MipLevels			= description.mipCount + 1u;
+			srvDesc.Texture2D.MipLevels			= description.mipCount;
 			srvDesc.Texture2D.MostDetailedMip	= 0u;
 
 			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )

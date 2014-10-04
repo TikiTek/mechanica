@@ -74,7 +74,7 @@ namespace tiki
 
 		TextureWriterParameters	m_parameters;
 		TextureDescription		m_description;
-
+		
 		const HdrImage*			m_pImage;
 
 	};

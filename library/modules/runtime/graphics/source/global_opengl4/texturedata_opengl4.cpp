@@ -40,7 +40,7 @@ namespace tiki
 		GL_UNSIGNED_BYTE,		// PixelFormat_R8,
 		GL_UNSIGNED_BYTE,		// PixelFormat_R8G8B8A8
 		GL_UNSIGNED_BYTE,		// PixelFormat_R8G8B8A8_Gamma
-		GL_SHORT,				// PixelFormat_R16G16B16A16_Float
+		GL_HALF_FLOAT,			// PixelFormat_R16G16B16A16_Float
 		GL_FLOAT,				// PixelFormat_R32_Float
 		GL_FLOAT,				// PixelFormat_R32G32B32_Float
 		GL_FLOAT,				// PixelFormat_R32G32B32A32_Float
@@ -130,9 +130,17 @@ namespace tiki
 		if ( description.format != PixelFormat_Depth24Stencil8 )
 		{
 			glTexParameteri( m_platformData.textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			glTexParameteri( m_platformData.textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 			glTexParameteri( m_platformData.textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 			glTexParameteri( m_platformData.textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+			if ( description.mipCount > 1u )
+			{
+				glTexParameteri( m_platformData.textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+			}
+			else
+			{
+				glTexParameteri( m_platformData.textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			}
 		}
 		
 		bool success = true;
@@ -144,8 +152,9 @@ namespace tiki
 			uint height	= description.height;
 			uint depth	= TIKI_MAX( description.depth, 1u );
 			const uint8* pLevelData	= static_cast< const uint8* >( pTextureData );
+			TIKI_ASSERT( description.mipCount > 0u );
 
-			for (uint mipLevel = 0u; mipLevel <= description.mipCount; ++mipLevel)
+			for (uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel)
 			{
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
@@ -163,8 +172,8 @@ namespace tiki
 				);
 				
 				pLevelData	+= depthPitch * depth;
-				width		/= 2u;
-				height		/= 2u;
+				width		= TIKI_MAX( width / 2u, 1u );
+				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			} 
 		}

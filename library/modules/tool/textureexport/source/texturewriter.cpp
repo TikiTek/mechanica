@@ -18,7 +18,7 @@ namespace tiki
 	}
 
 	bool TextureWriter::create( const HdrImage& image, const TextureWriterParameters& parameters )
-	{
+	{		
 		m_pImage					= &image;
 		m_parameters				= parameters;
 
@@ -36,6 +36,12 @@ namespace tiki
 		{
 			m_description.width = uint16( parameters.data.texture3d.sliceSize );
 			m_description.depth	= uint16( m_pImage->getWidth() / m_description.width );
+		}
+
+		if ( parameters.mipMapCount == 0u )
+		{
+			TIKI_TRACE_ERROR( "[TextureWriter] MipMapCount == 0 is not allowed.\n" );
+			return false;
 		}
 
 		return true;
@@ -65,7 +71,7 @@ namespace tiki
 			sliceSize = m_parameters.data.texture3d.sliceSize;
 		}
 
-		for (uint mipLevel = 0u; mipLevel <= m_description.mipCount; ++mipLevel)
+		for (uint mipLevel = 0u; mipLevel < m_description.mipCount; ++mipLevel)
 		{
 			for (uint depthLevel = 0u; depthLevel < depth; ++depthLevel)
 			{
@@ -89,14 +95,33 @@ namespace tiki
 				Array< uint8 > bitmap;
 				mipImage.convertTo( bitmap, format );
 
-				writer.writeData( bitmap.getBegin(), bitmap.getCount() );
+				switch ( m_parameters.targetApi )
+				{
+				case GraphicsApi_D3D11:
+					writer.writeData( bitmap.getBegin(), bitmap.getCount() );
+					break;
+
+				case GraphicsApi_OpenGL4:
+					{
+						const uint bytesPerPixel = getBitsPerPixel( format ) / 8u;
+						const uint bytesPerLine = bytesPerPixel * width;
+																		
+						for (uint y = height - 1u; y < height; --y)
+						{
+							const uint8* pSourceData = bitmap.getBegin() + (bytesPerLine * y);
+							writer.writeData( pSourceData, bytesPerLine );
+						}
+					}
+					break;
+				}
+				
 
 				bitmap.dispose();
 				mipImage.dispose();
 			} 
 
-			width	/= 2u;
-			height	/= 2u;
+			width	= TIKI_MAX( width / 2u, 1u );
+			height	= TIKI_MAX( height / 2u, 1u );
 			depth	= TIKI_MAX( depth / 2u, 1u );
 		}
 

@@ -21,6 +21,8 @@ namespace tiki
 
 	static bool getFilter( GLenum& targetMinFilter, GLenum& targetMagFilter, FilterMode minMag, FilterMode mip )
 	{
+		TIKI_TRACE_WARNING( "[SamplerState] MipMap filtering not implemented.\n" );
+
 		switch ( minMag )
 		{
 		case FilterMode_Anisotropic:
@@ -37,11 +39,11 @@ namespace tiki
 				switch ( mip )
 				{
 				case FilterMode_Linear:
-					targetMinFilter = GL_LINEAR_MIPMAP_LINEAR;
+					targetMinFilter = GL_LINEAR; //_MIPMAP_LINEAR;
 					break;
 
 				case FilterMode_Nearest:
-					targetMinFilter = GL_LINEAR_MIPMAP_NEAREST;
+					targetMinFilter = GL_LINEAR; //_MIPMAP_NEAREST;
 					break;
 
 				default:
@@ -56,11 +58,11 @@ namespace tiki
 				switch ( mip )
 				{
 				case FilterMode_Linear:
-					targetMinFilter = GL_NEAREST_MIPMAP_LINEAR;
+					targetMinFilter = GL_NEAREST; //_MIPMAP_LINEAR;
 					break;
 
 				case  FilterMode_Nearest:
-					targetMinFilter = GL_NEAREST_MIPMAP_NEAREST;
+					targetMinFilter = GL_NEAREST; //_MIPMAP_NEAREST;
 					break;
 
 				default:

@@ -9,8 +9,8 @@ namespace tiki
 {
 	static const GLenum s_aFillModeMapping[] =
 	{
-		GL_FILL,	// FillMode_Wireframe
-		GL_LINE		// FillMode_Solid
+		GL_LINE,	// FillMode_Wireframe
+		GL_FILL		// FillMode_Solid
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aFillModeMapping ) == FillMode_Count );
 

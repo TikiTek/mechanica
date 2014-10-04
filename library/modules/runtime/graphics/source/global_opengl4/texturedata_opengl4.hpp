@@ -6,9 +6,9 @@
 
 namespace tiki
 {
-	struct TextureDataPlatform
+	struct TextureDataPlatformData
 	{
-		TextureDataPlatform()
+		TextureDataPlatformData()
 		{
 			textureId = 0u;
 		}

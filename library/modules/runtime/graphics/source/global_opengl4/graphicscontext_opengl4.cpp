@@ -363,8 +363,6 @@ namespace tiki
 	{
 		if ( m_apPixelSamplerStates[ slot ] != pSampler )
 		{
-			const UINT d3dSlot = (UINT)slot;
-
 			if ( pSampler == nullptr )
 			{
 				glBindSampler( slot, 0u );
@@ -383,8 +381,6 @@ namespace tiki
 	{
 		if ( m_apPixelTextures[ slot ] != pTextureData )
 		{
-			const UINT d3dSlot = (UINT)slot;
-
 			glActiveTexture( GL_TEXTURE0 + slot );
 			if ( pTextureData == nullptr )
 			{
@@ -579,7 +575,7 @@ namespace tiki
 			{
 				glUniformBlockBinding( m_platformData.programId, aBindingUniformIndex[ bindingIndex ], bindingIndex );
 				TIKI_CHECK_GRAPHICS;
-			}			
+			}
 		}
 
 		if ( m_platformData.pApplyedVertexInutBinding != m_pVertexInputBinding )
@@ -590,6 +586,7 @@ namespace tiki
 			{
 				const VertexInputBindingPlatformData::VertexAttribute& attribute = vertexInputData.aAttributes[ i ];
 
+				glEnableVertexAttribArray( i );
 				glVertexAttribPointer(
 					i,
 					attribute.elementCount,
@@ -598,7 +595,6 @@ namespace tiki
 					vertexInputData.vertexStride,
 					(GLvoid*)attribute.elementOffset
 				);
-				glEnableVertexAttribArray( i );
 
 				TIKI_CHECK_GRAPHICS;
 			}
