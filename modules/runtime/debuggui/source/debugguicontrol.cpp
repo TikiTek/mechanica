@@ -1,6 +1,8 @@
 
 #include "tiki/debuggui/debugguicontrol.hpp"
 
+#include "tiki/debuggui/debuggui.hpp"
+
 namespace tiki
 {
 	const Font* DebugGuiControl::s_pDefaultFont	= nullptr;

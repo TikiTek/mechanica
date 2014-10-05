@@ -2,6 +2,7 @@ newoption { trigger = "outpath", description = "Location for generated project f
 newoption { trigger = "unity_dir", description = "" }
 
 file_actions = {};
+global_configuration = { enable_unity_builds = false };
 
 if not _OPTIONS["outpath"] then
 	error("No outpath specified.")

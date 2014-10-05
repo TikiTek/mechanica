@@ -1,6 +1,13 @@
 
 #include "tiki/debuggui/debugguicheckbox.hpp"
 
+#include "tiki/base/string.hpp"
+#include "tiki/graphics/font.hpp"
+#include "tiki/debuggui/debuggui.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputevent.hpp"
+
 namespace tiki
 {
 	void DebugGuiCheckBox::create( const char* pText, bool value )

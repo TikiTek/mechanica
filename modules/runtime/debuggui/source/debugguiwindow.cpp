@@ -3,6 +3,7 @@
 
 #include "tiki/base/string.hpp"
 #include "tiki/debuggui/debuggui.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/input/inputevent.hpp"
 
 namespace tiki
@@ -180,7 +181,7 @@ namespace tiki
 				const InputEventMouseMovedData& moveData = inputEvent.data.mouseMoved;
 
 				Rectangle rectangle = getRectangle();
-				
+
 				if ( isBitSet( m_resizeMode, WindowResizeMask_Left ) )
 				{
 					if ( getMinimumSize().x >= rectangle.width - moveData.xOffset )

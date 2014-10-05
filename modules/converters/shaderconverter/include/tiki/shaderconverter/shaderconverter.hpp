@@ -4,12 +4,14 @@
 
 #include "tiki/converterbase/converterbase.hpp"
 
+#include "tiki/base/platform.hpp"
+#include "tiki/graphics/shadertype.hpp"
+
 namespace tiki
 {
 	enum GraphicsApi;
-	enum ShaderType;
 	class ShaderIncludeHandler;
-	
+
 	class ShaderConverter : public ConverterBase
 	{
 	public:
@@ -44,7 +46,7 @@ namespace tiki
 
 			bool			debugMode;
 		};
-		
+
 		string					m_baseSourceCode;
 		ShaderIncludeHandler*	m_pIncludeHandler;
 

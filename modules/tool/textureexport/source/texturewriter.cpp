@@ -1,6 +1,7 @@
 
 #include "tiki/textureexport/texturewriter.hpp"
 
+#include "tiki/base/structs.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphics/texturedescription.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
@@ -18,7 +19,7 @@ namespace tiki
 	}
 
 	bool TextureWriter::create( const HdrImage& image, const TextureWriterParameters& parameters )
-	{		
+	{
 		m_pImage					= &image;
 		m_parameters				= parameters;
 
@@ -55,7 +56,7 @@ namespace tiki
 	ReferenceKey TextureWriter::writeTextureData( ResourceWriter& writer )
 	{
 		TIKI_ASSERT( m_pImage != nullptr );
-		
+
 		const PixelFormat format = (PixelFormat)m_description.format;
 
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
@@ -66,7 +67,7 @@ namespace tiki
 		uint depth	= TIKI_MAX( m_description.depth, 1u );
 
 		uint sliceSize = m_description.width;
-		if ( m_parameters.targetType == TextureType_3d ) 
+		if ( m_parameters.targetType == TextureType_3d )
 		{
 			sliceSize = m_parameters.data.texture3d.sliceSize;
 		}
@@ -105,7 +106,7 @@ namespace tiki
 					{
 						const uint bytesPerPixel = getBitsPerPixel( format ) / 8u;
 						const uint bytesPerLine = bytesPerPixel * width;
-																		
+
 						for (uint y = height - 1u; y < height; --y)
 						{
 							const uint8* pSourceData = bitmap.getBegin() + (bytesPerLine * y);
@@ -114,11 +115,11 @@ namespace tiki
 					}
 					break;
 				}
-				
+
 
 				bitmap.dispose();
 				mipImage.dispose();
-			} 
+			}
 
 			width	= TIKI_MAX( width / 2u, 1u );
 			height	= TIKI_MAX( height / 2u, 1u );

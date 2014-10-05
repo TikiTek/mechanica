@@ -18,7 +18,7 @@ namespace tiki
 		static const Matrix33 one;
 		static const Matrix33 identity;
 	}
-	TIKI_POST_ALIGN( 16);
+	TIKI_POST_ALIGN( 16 );
 
 	TIKI_PRE_ALIGN( 16 ) struct Matrix43
 	{
@@ -29,7 +29,7 @@ namespace tiki
 		static const Matrix43 one;
 		static const Matrix43 identity;
 	}
-	TIKI_POST_ALIGN( 16);
+	TIKI_POST_ALIGN( 16 );
 
 	TIKI_PRE_ALIGN( 16 ) struct Matrix44
 	{
@@ -42,14 +42,14 @@ namespace tiki
 		static const Matrix44 one;
 		static const Matrix44 identity;
 	}
-	TIKI_POST_ALIGN( 16);
+	TIKI_POST_ALIGN( 16 );
 
 	namespace matrix
 	{
 		TIKI_FORCE_INLINE bool		isEquals( const Matrix33& lhs, const Matrix33& rhs, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isEquals( const Matrix43& lhs, const Matrix43& rhs, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isEquals( const Matrix44& lhs, const Matrix44& rhs, float epsilon = f32::epsilon );
-		
+
 		TIKI_FORCE_INLINE bool		isIdentity( const Matrix33& mtx, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isIdentity( const Matrix43& mtx, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isIdentity( const Matrix44& mtx, float epsilon = f32::epsilon );

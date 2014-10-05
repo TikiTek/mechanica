@@ -3,13 +3,14 @@
 
 #include <malloc.h>
 
-#if TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+#if TIKI_ENABLED( TIKI_BUILD_MINGW )
 #	include <string.h>
 #endif
 
 namespace tiki
 {
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
 #else
@@ -36,18 +37,29 @@ namespace tiki
 		_aligned_free_dbg( pPtr );
 #endif
 	}
-#else
+
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+
 #	warning "TODO: findout how align malloc works on linux"
 
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
+#else
 	void* memory::allocAlign( size_t size, size_t alignment )
+#endif
 	{
 		return malloc( size );
 	}
-	
+
 	void memory::freeAlign( void* pPtr )
 	{
 		free( pPtr );
 	}
+
+#else
+
+#   error Platform not supported
+
 #endif
 
 	int	memory::compare( const void* pData1, const void* pData2, uint sizeInBytes )

@@ -27,7 +27,7 @@ namespace tiki
 		const uint8* pBinaryData = static_cast< const uint8* >( pData );
 		const FILE_NOTIFY_INFORMATION* pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
 
-		do 
+		do
 		{
 			const string fileName = path::combine( basePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
 			if ( file::exists( fileName ) )
@@ -60,7 +60,7 @@ namespace tiki
 
 			pBinaryData += pNotifyInfo->NextEntryOffset;
 			pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
-		} 
+		}
 		while ( pNotifyInfo->NextEntryOffset );
 	}
 
@@ -87,7 +87,7 @@ namespace tiki
 			FILE_LIST_DIRECTORY,
 			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 			NULL,
-			OPEN_EXISTING,                      
+			OPEN_EXISTING,
 			FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
 			NULL
 		);
@@ -128,7 +128,7 @@ namespace tiki
 
 		m_events.dispose();
 
-		m_platformData.basePath = nullptr;
+		m_platformData.basePath = "";
 	}
 
 	bool FileWatcher::popEvent( FileWatcherEvent& fileEvent )
@@ -156,7 +156,7 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[io] ReadDirectoryChangesW in FileWatcher has returned an error code: %u\n", lastError );
 			}
 		}
-		
+
 		if ( m_platformData.running )
 		{
 			waitForEvent( 1u );

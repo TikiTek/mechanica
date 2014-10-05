@@ -17,7 +17,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool Array< T >::create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT )
+	TIKI_FORCE_INLINE bool Array< T >::create( uint capacity, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -28,7 +28,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool Array< T >::create( const T* pInitData, uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT )
+	TIKI_FORCE_INLINE bool Array< T >::create( const T* pInitData, uint capacity, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
 		if ( create( capacity, aligment ) == false )
 		{
@@ -54,7 +54,7 @@ namespace tiki
 		m_capacity	= 0u;
 		m_pData		= nullptr;
 	}
-	
+
 	template< typename T >
 	TIKI_FORCE_INLINE uint tiki::Array<T>::getIndexOf( ConstIterator pValue ) const
 	{

@@ -8,6 +8,7 @@
 
 namespace tiki
 {
+    class DebugGui;
 	class Font;
 	class ImmediateRenderer;
 	struct DebugGuiEvent;

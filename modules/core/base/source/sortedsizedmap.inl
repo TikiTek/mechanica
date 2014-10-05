@@ -3,6 +3,7 @@
 #define __TIKI_SORTEDSIZEDMAP_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/memory.hpp"
 
 namespace tiki
 {
@@ -123,7 +124,7 @@ namespace tiki
 			{
 				break;
 			}
-		} 
+		}
 
 		for (uint i = m_count; i > pos; --i)
 		{
@@ -134,7 +135,7 @@ namespace tiki
 		m_pData[ pos ].value	= value;
 		m_count++;
 	}
-	
+
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::remove( const TKey& key )
 	{
@@ -172,7 +173,7 @@ namespace tiki
 			if(m_pData[ imid ].key == key)
 			{
 				// key found at index imid
-				return imid; 
+				return imid;
 			}
 			// determine which sub array to search
 			else if (m_pData[ imid ].key < key)

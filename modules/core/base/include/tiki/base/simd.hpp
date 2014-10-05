@@ -5,9 +5,10 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/inline.hpp"
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#	include <emmintrin.h>
-#	include <xmmintrin.h>
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) || (defined( __MMX__ ) && defined( __SSE__ ))
+#	include "../../../source/win/simd_types_win.hpp"
+#else
+#	include "../../../source/simd_floatemulation_types.hpp"
 #endif
 
 #define TIKI_USE_SIMDINLINE TIKI_ON
@@ -21,14 +22,6 @@
 
 namespace tiki
 {
-	typedef __m128	vf32;
-	typedef __m128i	vi8;
-	typedef __m128i	vi16;
-	typedef __m128i	vi32;
-	typedef __m128i	vu8;
-	typedef __m128i	vu16;
-	typedef __m128i	vu32;
-
 	namespace simd
 	{
 		//////////////////////////////////////////////////////////////////////////
@@ -206,8 +199,10 @@ namespace tiki
 	}
 }
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#	include "../../../source/simd_win.inl"
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) || (defined( __MMX__ ) && defined( __SSE__ ))
+#	include "../../../source/win/simd_win.inl"
+#else
+#	include "../../../source/simd_floatemulation.inl"
 #endif
 
 #endif // TIKI_SIMD_HPP

@@ -66,7 +66,7 @@ namespace tiki
 	TIKI_FORCE_INLINE T* FixedSizedArray< T, TCapacity >::pushRange( uint count )
 	{
 		TIKI_ASSERT( count >= 1u );
-		TIKI_ASSERT( m_count + count <= m_capacity );
+		TIKI_ASSERT( m_count + count <= TCapacity );
 
 		const uint currentCount = m_count;
 		m_count += count;
@@ -78,7 +78,7 @@ namespace tiki
 	TIKI_FORCE_INLINE T* FixedSizedArray< T, TCapacity >::pushRange( const T* pData, uint count )
 	{
 		TIKI_ASSERT( count >= 1u );
-		TIKI_ASSERT( m_count + count <= m_capacity );
+		TIKI_ASSERT( m_count + count <= TCapacity );
 
 		const uint currentCount = m_count;
 		for (uint i = 0u; i < count; ++i)
@@ -107,7 +107,7 @@ namespace tiki
 		TIKI_ASSERT( index < m_count );
 		m_aData[ index ] = m_aData[ --m_count ];
 	}
-	
+
 	template< typename T, uint TCapacity >
 	TIKI_FORCE_INLINE bool FixedSizedArray< T, TCapacity >::removeUnsortedByValue( ConstReference value )
 	{

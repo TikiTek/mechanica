@@ -1,6 +1,11 @@
 
 #include "tiki/debuggui/debugguislider.hpp"
 
+#include "tiki/debuggui/debuggui.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputevent.hpp"
+
 namespace tiki
 {
 	void DebugGuiSlider::create( float minValue, float maxValue, float defaultValue )

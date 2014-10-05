@@ -3,6 +3,8 @@
 
 #include "tiki/toolbase/list.hpp"
 
+#include <math.h>
+
 namespace tiki
 {
 	void SplineKey::sampleHermite( float* pTarget, uint targetCapacity, const SplineKey& leftKey, const SplineKey& rightKey, float t )
@@ -64,7 +66,7 @@ namespace tiki
 		uint count = 0u;
 		uint lenCount = lengthInFrames / 2u;
 		float maxError = 0.0f;
-		do 
+		do
 		{
 			maxError = 0.0f;
 
@@ -85,7 +87,7 @@ namespace tiki
 					const float* pSourceValue = pSource + time * dimensions;
 					for (uint j = 0; j < dimensions; ++j)
 					{
-						const float dimError = abs( currentValue[ j ] - pSourceValue[ j ] );
+						const float dimError = fabsf( currentValue[ j ] - pSourceValue[ j ] );
 						localError = TIKI_MAX(localError, dimError);
 					}
 
@@ -121,7 +123,7 @@ namespace tiki
 		TIKI_ASSERT( pTarget != nullptr );
 		TIKI_ASSERT( m_keys.getCount() != 0u );
 		TIKI_ASSERT( targetCapacity <= m_dimensions );
-		
+
 		const float frame		= 60u * sampleTime;
 		const uint32 exactFrame	= (uint32)frame;
 		TIKI_ASSERT( m_keys.getLast()->time >= exactFrame );

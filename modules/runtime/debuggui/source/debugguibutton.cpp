@@ -1,6 +1,12 @@
 
 #include "tiki/debuggui/debugguibutton.hpp"
 
+#include "tiki/base/string.hpp"
+#include "tiki/debuggui/debuggui.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputevent.hpp"
+
 namespace tiki
 {
 	void DebugGuiButton::create( const char* pText )
@@ -34,7 +40,8 @@ namespace tiki
 		const Color color = ( m_mouseOver ? ( m_mouseDown ? TIKI_COLOR( 164, 164, 255, 224 ) : TIKI_COLOR( 164, 164, 255, 196 ) ) : TIKI_COLOR( 194, 194, 255, 164 ) );
 
 		renderer.drawRectangle( getRectangle(), color );
-		renderer.drawText( vector::add( vector::create( DebugGui_DefaultMargin, DebugGui_DefaultMargin ), getRectangle().xy() ), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
+		Vector2 position = vector::create( DebugGui_DefaultMargin, DebugGui_DefaultMargin );
+		renderer.drawText( vector::add( position, getRectangle().xy() ), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
 	}
 
 	bool DebugGuiButton::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

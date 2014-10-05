@@ -5,7 +5,7 @@
 
 namespace tiki
 {
-	SqliteDatabase::SqliteDatabase() 
+	SqliteDatabase::SqliteDatabase()
 	{
 		m_pDatabase = nullptr;
 	}
@@ -35,17 +35,15 @@ namespace tiki
 	}
 
 	bool SqliteDatabase::executeCommand( const string& sql )
-	{ 
+	{
 		TIKI_ASSERT( m_pDatabase != nullptr );
 
 		char* pErrorMessage = nullptr;
-		TIKI_ASSERT( _heapchk() == _HEAPOK );
 		if ( sqlite3_exec( m_pDatabase, sql.cStr(), nullptr, nullptr, &pErrorMessage ) != SQLITE_OK )
 		{
 			m_lastError = pErrorMessage;
 			return false;
 		}
-		TIKI_ASSERT( _heapchk() == _HEAPOK );
 
 		return true;
 	}
@@ -84,7 +82,7 @@ namespace tiki
 		{
 			const string fieldName = sqlite3_column_name( m_pQuery, i );
 			m_colunmNames[ i ] = fieldName;
-		} 
+		}
 
 		return true;
 	}

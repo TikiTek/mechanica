@@ -10,38 +10,6 @@
 namespace tiki
 {
 	template<typename T>
-	TIKI_FORCE_INLINE T alignValue( T value, T alignment )
-	{
-		TIKI_ASSERT( isPowerOfTwo( alignment ) );
-		return ( value + alignment - 1 ) & ( 0 - alignment );
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE bool isValueAligned( T value, T alignment )
-	{
-		return alignValue( value, alignment ) == value;
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
-	{
-		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
-		return T( 1 ) << shift;
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE T* alignPtr( T* pPtr, uint alignment )
-	{
-		return (T*)alignValue( (uint)pPtr, alignment );
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE const T* alignPtr( const T* pPtr, uint alignment )
-	{
-		return (const T*)alignValue( (uint)pPtr, alignment );
-	}
-
-	template<typename T>
 	TIKI_FORCE_INLINE T* addPtr( T* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< T* >( (void*)( (uint8*)pPtr + byteCountToAdd ) );
@@ -81,6 +49,31 @@ namespace tiki
 		return ( x & ( x - 1 ) ) == 0;
 	}
 
+	template<typename T>
+	TIKI_FORCE_INLINE T alignValue( T value, T alignment )
+	{
+		TIKI_ASSERT( isPowerOfTwo( alignment ) );
+		return ( value + alignment - 1 ) & ( 0 - alignment );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE bool isValueAligned( T value, T alignment )
+	{
+		return alignValue( value, alignment ) == value;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T* alignPtr( T* pPtr, uint alignment )
+	{
+		return (T*)alignValue( (uint)pPtr, alignment );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE const T* alignPtr( const T* pPtr, uint alignment )
+	{
+		return (const T*)alignValue( (uint)pPtr, alignment );
+	}
+
 	TIKI_FORCE_INLINE uint countPopulation64( uint64 w )
 	{
 		uint64 w1 = (w & 0x2222222222222222) + ((w+w) & 0x2222222222222222);
@@ -105,6 +98,13 @@ namespace tiki
 	TIKI_FORCE_INLINE uint clamp( uint value, uint min, uint max )
 	{
 		return ( value < min ? min : value > max ? max : value );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
+	{
+		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
+		return T( 1 ) << shift;
 	}
 }
 

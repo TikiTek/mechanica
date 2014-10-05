@@ -53,7 +53,7 @@ namespace tiki
 			for (uint i = 0u; i < parameters.entityPools.getCount(); ++i)
 			{
 				const EntityPool& pool = parameters.entityPools[ i ];
-				
+
 				EntityPoolInfo& targetPool = m_pools[ i + 1u ];
 				targetPool.firstId		= pool.firstId;
 				targetPool.firstFreeId	= pool.firstId;
@@ -61,7 +61,7 @@ namespace tiki
 				targetPool.offset		= entityCapacity;
 
 				entityCapacity += pool.poolSize;
-			} 
+			}
 		}
 		else
 		{
@@ -142,7 +142,7 @@ namespace tiki
 			m_typeMapping.remove( componentTypeCrc );
 		}
 	}
-	
+
 	bool EntitySystem::getComponentTypeIdByCrc( ComponentTypeId& targetTypeId, crc32 componentTypeCrc ) const
 	{
 		return m_typeMapping.findValue( &targetTypeId, componentTypeCrc );
@@ -197,7 +197,8 @@ namespace tiki
 
 			// initialize state
 			ComponentBase* pComponent = m_typeRegister.getTypeComponent( typeId );
-			if ( !pComponent->initializeState( ComponentEntityIterator( pFirstState ), pComponentState, entityComponent.pInitData ) )
+			ComponentEntityIterator iterator = ComponentEntityIterator( pFirstState );
+			if ( !pComponent->initializeState( iterator, pComponentState, entityComponent.pInitData ) )
 			{
 				TIKI_TRACE_ERROR( "[entitysystem] Cound initialize component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
 				m_storage.freeState( pComponentState );
@@ -208,7 +209,7 @@ namespace tiki
 			{
 				pLastState->pNextComponentOfSameEntity = pComponentState;
 			}
-			
+
 			if ( pFirstState == nullptr )
 			{
 				pFirstState = pComponentState;
@@ -327,7 +328,7 @@ namespace tiki
 
 		return nullptr;
 	}
-	
+
 	EntitySystem::EntityPoolInfo* EntitySystem::findEntityPool( EntityId entityId )
 	{
 		if ( entityId == InvalidEntityId )

@@ -19,7 +19,7 @@ namespace tiki
 		AutoDispose( const T& value )
 		{
 			TIKI_ASSERT( m_value.isCreated() == false );
-			m_value = >m_value;
+			m_value = m_value;
 		}
 
 		AutoDispose( const AutoDispose< T >& ad )
