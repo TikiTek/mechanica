@@ -5,7 +5,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphissystemlimits.hpp"
 
-#include "../../../source/global_opengl4/graphicstypes_opengl4.hpp"
+#include "graphicstypes_opengl4.hpp"
 
 namespace tiki
 {

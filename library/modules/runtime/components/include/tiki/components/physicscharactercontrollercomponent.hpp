@@ -6,6 +6,7 @@
 
 namespace tiki
 {
+	class PhysicsCollisionObject;
 	class PhysicsWorld;
 	class TransformComponent;
 	struct PhysicsCharacterControllerComponentInitData;

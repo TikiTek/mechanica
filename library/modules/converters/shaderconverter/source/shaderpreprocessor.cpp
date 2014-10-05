@@ -18,7 +18,7 @@ namespace tiki
 		uint32	startBit;
 		uint32	bitCount;
 
-		uint32	maxValue;			
+		uint32	maxValue;
 	};
 
 	static void addFeature( List< ShaderFeature >& features, const string& name, uint32 maxValue )
@@ -113,7 +113,7 @@ namespace tiki
 		while ( regex.Search( resultCode.cStr(), &beginPath, &endPath ) )
 		{
 			string path = string( beginPath, endPath - beginPath );
-			
+
 			for (uint i = 0u; i < includeDirs.getCount(); ++i)
 			{
 				const string fullPath = path::combine( includeDirs[ i ], path );
@@ -128,17 +128,17 @@ namespace tiki
 			if ( !file::exists( path ) )
 			{
 				TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
-				return nullptr;
+				return "";
 			}
 
 			Array< uint8 > fileData;
 			if ( !file::readAllBytes( path, fileData ) )
 			{
 				TIKI_TRACE_ERROR( "open include file failed: %s\n", path.cStr() );
-				return nullptr;
+				return "";
 			}
 
-			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ) );			
+			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ) );
 			resultCode = resultCode.replace( path, fileText );
 		}
 
@@ -153,7 +153,7 @@ namespace tiki
 		{
 			const ShaderFeature& feature = features[ i ];
 			const uint value = getBitValue( bitMask, feature.startBit, feature.bitCount );
-			
+
 			defineString += formatString( "#define %s %u\n", feature.name.cStr(), value );
 		}
 
@@ -164,7 +164,7 @@ namespace tiki
 	{
 		// resolve includes
 		List< string > includeDirs;
-		
+
 		includeDirs.add( "../../../../../../library/modules/runtime/graphics/include/tiki/graphics/shader" );
 
 		m_sourceCode = resolveIncludes( shaderText, includeDirs );
@@ -177,7 +177,7 @@ namespace tiki
 			TIKI_TRACE_ERROR( "no feature list found. shader can't converted.\n" );
 			return;
 		}
-		
+
 		const cstring shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		bool shaderEnabled[ TIKI_COUNT( shaderStart ) ];
 		List< ShaderFeature > shaderFeatures[ TIKI_COUNT( shaderStart ) ];
@@ -218,7 +218,7 @@ namespace tiki
 							{
 								ShaderVariant variant;
 								variant.bitMask		= variants[ k ].bitMask | bitMask;
-								variant.defineCode	= createDefineString( shaderFeatures[ typeIndex ], variant.bitMask );							
+								variant.defineCode	= createDefineString( shaderFeatures[ typeIndex ], variant.bitMask );
 								featureVariants.add( variant );
 							}
 						}

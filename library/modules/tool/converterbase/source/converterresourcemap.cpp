@@ -23,12 +23,12 @@ namespace tiki
 			mapper.create( binaryData.getBegin() );
 
 			const ResourceNameMapper::NameMap& map = mapper.getMap();
-			
+
 			for (uint i = 0u; i < map.getCount(); ++i)
 			{
 				const KeyValuePair< crc32, const char* >& kvp = map.getPairAt( i );
 				m_map[ kvp.key ] = kvp.value;
-			} 
+			}
 
 			mapper.dispose();
 			binaryData.dispose();
@@ -37,7 +37,7 @@ namespace tiki
 
 	void ConverterResourceMap::dispose()
 	{
-		m_fileName = nullptr;
+		m_fileName = "";
 		m_map.clear();
 	}
 
@@ -57,7 +57,7 @@ namespace tiki
 		offsetData.create( m_map.size() );
 
 		uint index = 0u;
-		for (ResourceMap::const_iterator it = m_map.cbegin(); it != m_map.cend(); it++)
+		for (ResourceMap::const_iterator it = m_map.begin(); it != m_map.end(); it++)
 		{
 			crcData[ index ]	= it->first;
 			offsetData[ index ]	= uint32( stringData.getCount() );

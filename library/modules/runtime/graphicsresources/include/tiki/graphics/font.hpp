@@ -10,6 +10,8 @@
 
 namespace tiki
 {
+    class ResourceManager;
+
 	struct Vector2;
 
 	class Font : public Resource
@@ -28,7 +30,7 @@ namespace tiki
 		void					fillVertices( FontChar* pChars, uint capacity, const char* pText, uint textLength ) const;
 
 	protected:
-		
+
 		virtual bool			createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext );
 		virtual void			disposeInternal( const FactoryContext& factoryContext );
 

@@ -11,6 +11,7 @@ namespace tiki
 {
 	class GraphicsSystem;
 	class ModelFactory;
+	class ResourceManager;
 
 	class Model : public Resource
 	{
@@ -43,7 +44,7 @@ namespace tiki
 		ModelHierarchy*						m_pHierarchy;
 
 		Array< ModelGeometry >				m_geometries;
-	
+
 	};
 }
 

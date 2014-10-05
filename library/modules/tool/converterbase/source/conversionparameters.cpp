@@ -74,8 +74,7 @@ namespace tiki
 
 	bool ConversionArguments::getArgument( string& value, const string& key ) const
 	{
-		auto arg = m_arguments.find( key );
-
+		std::map< string, string >::const_iterator arg = m_arguments.find( key );
 		if ( arg == m_arguments.end() )
 		{
 			value = "";

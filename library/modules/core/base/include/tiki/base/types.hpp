@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 	typedef unsigned __int8		uint8;
 	typedef unsigned __int16	uint16;
@@ -21,7 +21,7 @@ namespace tiki
 	typedef __int32				sint32;
 	typedef __int64				sint64;
 
-#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
 	typedef unsigned char			uint8;
 	typedef unsigned short			uint16;
@@ -65,7 +65,7 @@ namespace tiki
 	typedef uint16			float16;
 	typedef float			float32;
 	typedef double			float64;
-	
+
 	typedef const char*		cstring;
 
 	enum
@@ -111,36 +111,36 @@ namespace tiki
 
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
-		class_name ## ( const class_name ## & );	\
-		void operator=( const class_name ## & )
+		class_name ( const class_name & );	\
+		void operator=( const class_name & )
 
 #define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
 	 public:											\
-		class_name ## () { }							\
-		~ ## class_name ## () { }						\
+		class_name () { }			    				\
+		~ class_name () { }				        		\
 	private:											\
-		class_name ## ( const class_name ## & );		\
-		void operator=( const class_name ## & )
+		class_name ( const class_name & );	        	\
+		void operator=( const class_name & )
 
-#define TIKI_NONCOPYABLE_STRUCT( class_name )		\
-	private:										\
-		class_name ## ( const class_name ## & );	\
-		void operator=( const class_name ## & );	\
+#define TIKI_NONCOPYABLE_STRUCT( class_name )	\
+	private:									\
+		class_name ( const class_name & );	    \
+		void operator=( const class_name & );	\
 	public:
 
 #define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
 	private:											\
-		class_name ## ( const class_name ## & );		\
-		void operator=( const class_name ## & );		\
+		class_name ( const class_name & );	    	    \
+		void operator=( const class_name & );	    	\
 	public:												\
-		class_name ## ()		{ }						\
-		~ ## class_name ## ()	{ }
+		class_name () { }						        \
+		~ class_name () { }
 
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	include <crtdbg.h>
 #	define TIKI_NEW		new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #	define TIKI_DEL		delete

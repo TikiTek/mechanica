@@ -77,7 +77,7 @@ namespace tiki
 			return false;
 		}
 
-		pState->collider.create( *pShape, vector::set( Vector3(), pInitData->position ) );
+		pState->collider.create( *pShape, vector::create( pInitData->position ) );
 		m_pWorld->addCollider( pState->collider );
 
 		return true;

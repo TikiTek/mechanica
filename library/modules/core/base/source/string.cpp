@@ -31,17 +31,17 @@ namespace tiki
 	template<> const wchar_t BasicString<wchar_t>::whiteSpaces[ 4u ]	= { L' ', L'\t', L'\r', L'\n' };
 	template<> StringRefData<wchar_t> BasicString<wchar_t>::emptyData	= StringRefData<wchar_t>();
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 	string formatString( cstring format, ... )
 	{
 		va_list argptr;
 		va_start( argptr, format );
-		
+
 #pragma warning( disable : 4996 )
 		const size_t len = _vsnprintf( nullptr, 0u, format, argptr );
 #pragma warning( default : 4996 )
-		
+
 		string str( len );
 
 		_vsprintf_s_l(
@@ -57,7 +57,7 @@ namespace tiki
 		return str;
 	}
 
-#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
 	string formatString( cstring format, ... )
 	{

@@ -4,6 +4,8 @@
 
 #include "tiki/components/physicscomponents_initdata.hpp"
 
+#include "tiki/math/vector.hpp"
+
 namespace tiki
 {
 	struct PhysicsComponentShape
@@ -23,7 +25,7 @@ namespace tiki
 		switch ( shape.shapeType )
 		{
 		case ShapeType_Box:
-			shape.boxShape.create( vector::set( Vector3(), initData.shapeBoxSize ) );
+			shape.boxShape.create( vector::create( initData.shapeBoxSize ) );
 			pShape = &shape.boxShape;
 			break;
 
@@ -64,7 +66,7 @@ namespace tiki
 		default:
 			TIKI_TRACE_ERROR( "[PhysicsCharacterControllerComponent] Could not dispose State, because of unsupported ShapeType.\n" );
 			break;
-		}	
+		}
 	}
 }
 

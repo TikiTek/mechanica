@@ -15,11 +15,11 @@
 #include "tiki/io/filestream.hpp"
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	include <d3dcompiler.h>
 #endif
 
-#include "ShaderLang.h"
+//#include "ShaderLang.h"
 #include "fpp.h"
 #include "trexpp.h"
 
@@ -38,14 +38,14 @@ namespace tiki
 		uint32	slotIndex;
 		string	name;
 	};
-	
-	class ShaderIncludeHandler : public ID3DInclude
+
+	class BasicIncludeHandler
 	{
-		TIKI_NONCOPYABLE_CLASS( ShaderIncludeHandler );
+        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
 
-	public:
+    public:
 
-		ShaderIncludeHandler( ConverterManager* pManager )
+        BasicIncludeHandler( ConverterManager* pManager )
 		{
 			TIKI_ASSERT( pManager != nullptr );
 			m_pManager = pManager;
@@ -61,13 +61,13 @@ namespace tiki
 				for (uint i = 0u; i < dirs.getCount(); ++i)
 				{
 					m_includeDirs.add( dirs[ i ].trim() );
-				} 
-				
+				}
+
 				dirs.dispose();
 			}
 		}
 
-		~ShaderIncludeHandler()
+		virtual ~BasicIncludeHandler()
 		{
 			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
 			{
@@ -80,11 +80,13 @@ namespace tiki
 			m_includeDirs.dispose();
 		}
 
-		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
+		bool loadFile( const char* pFileName, void** ppData, uint* pSizeInBytes )
 		{
-			const string inputFilename = pFileName;
+		    TIKI_ASSERT( ppData != nullptr );
+		    TIKI_ASSERT( pSizeInBytes != nullptr );
 
 			bool found = false;
+			const string inputFilename = pFileName;
 			string fullName = inputFilename;
 
 			if ( file::exists( fullName ) )
@@ -102,11 +104,11 @@ namespace tiki
 						found = true;
 						break;
 					}
-				} 
+				}
 			}
-			
+
 			if ( found )
-			{	
+			{
 				m_pManager->addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
 
 				uint freeStreamIndex = TIKI_SIZE_T_MAX;
@@ -117,44 +119,46 @@ namespace tiki
 						freeStreamIndex = j;
 						break;
 					}
-				} 
+				}
 
 				if ( freeStreamIndex == TIKI_SIZE_T_MAX )
 				{
-					TIKI_TRACE_ERROR( "No free Filestream.\n" );
-					return S_FALSE;
+					TIKI_TRACE_ERROR( "No free file stream.\n" );
+					return false;
 				}
 
 				if ( file::readAllBytes( fullName, m_fileData[ freeStreamIndex ] ) == false )
 				{
 					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
-					return S_FALSE;
+					return false;
 				}
 
 				*ppData = m_fileData[ freeStreamIndex ].getBegin();
-				*pBytes	= UINT( m_fileData[ freeStreamIndex ].getCount() );
-				return S_OK;
+				*pSizeInBytes = m_fileData[ freeStreamIndex ].getCount();
+				return true;
 			}
 
 			TIKI_TRACE_ERROR( "Could find File: %s.\n", pFileName );
-			return S_FALSE;
+			return false;
 		}
 
-		virtual HRESULT	STDMETHODCALLTYPE Close( LPCVOID pData )
+		bool freeFile( const void* pData )
 		{
+		    TIKI_ASSERT( pData != nullptr );
+
 			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
 			{
 				if ( m_fileData[ i ].getBegin() == pData )
 				{
 					m_fileData[ i ].dispose();
-					return S_OK;
+					return true;
 				}
-			} 
+			}
 
-			return S_FALSE;
+			return false;
 		}
 
-		const List< string > getIncludeDirs() const
+		const List< string >& getIncludeDirs() const
 		{
 			return m_includeDirs;
 		}
@@ -172,6 +176,58 @@ namespace tiki
 		Array< uint8 >		m_fileData[ MaxFileStreams ];
 
 	};
+
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+	class ShaderIncludeHandler : public ID3DInclude, public BasicIncludeHandler
+	{
+		TIKI_NONCOPYABLE_CLASS( ShaderIncludeHandler );
+
+	public:
+
+		ShaderIncludeHandler( ConverterManager* pManager )
+            : BasicIncludeHandler( pManager )
+		{
+		}
+
+		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
+		{
+		    void* pData = nullptr;
+		    uint dataSize = 0u;
+		    if ( loadFile( pFileName, &pData, &dataSize ) )
+            {
+                *ppData = pData;
+                *pBytes = (UINT)dataSize;
+
+                return S_OK;
+            }
+
+            return S_FALSE;
+		}
+
+		virtual HRESULT	STDMETHODCALLTYPE Close( LPCVOID pData )
+		{
+			if ( freeFile( pData ) )
+			{
+				return S_OK;
+			}
+
+			return S_FALSE;
+		}
+
+	};
+#else
+	class ShaderIncludeHandler : public BasicIncludeHandler
+	{
+		TIKI_NONCOPYABLE_CLASS( ShaderIncludeHandler );
+
+	public:
+
+		ShaderIncludeHandler( ConverterManager* pManager )
+            : BasicIncludeHandler( pManager )
+		{
+		}
+	};
+#endif
 
 	struct FppContext
 	{
@@ -220,18 +276,18 @@ namespace tiki
 	{
 		TIKI_DEL m_pIncludeHandler;
 	}
-	
+
 	bool ShaderConverter::startConversionJob( const ConversionParameters& params ) const
 	{
 		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
-		const string shaderDefine[]	= { nullptr, "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
+		const string shaderDefine[]	= { "", "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
 
 		string functionNames[ ShaderType_Count ];
 		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
 			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
-		
+
 		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
 		{
 			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
@@ -283,7 +339,7 @@ namespace tiki
 					for (uint k = 1u; k < ShaderType_Count; ++k)
 					{
 						args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ k ].cStr(), ( i == k ? "TIKI_ON" : "TIKI_OFF" ) );
-					} 
+					}
 
 					Array< uint8 > variantData;
 					if ( compilePlatformShader( variantData, args, params.targetApi ) )
@@ -302,7 +358,7 @@ namespace tiki
 
 						variantData.dispose();
 					}
-				} 
+				}
 			}
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
@@ -350,6 +406,7 @@ namespace tiki
 
 	bool ShaderConverter::compileD3d11Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		ID3D10Blob* pBlob		= nullptr;
 		ID3D10Blob* pErrorBlob	= nullptr;
 
@@ -364,7 +421,7 @@ namespace tiki
 		HRESULT result = D3DCompile(
 			sourceCode.cStr(),
 			SIZE_T( sourceCode.getLength() ),
-			args.fileName.cStr(), 
+			args.fileName.cStr(),
 			nullptr,
 			m_pIncludeHandler,
 			args.entryPoint.cStr(),
@@ -374,7 +431,7 @@ namespace tiki
 			&pBlob,
 			&pErrorBlob
 		);
-		
+
 		if ( FAILED( result ) )
 		{
 			if ( result == ERROR_FILE_NOT_FOUND )
@@ -411,6 +468,9 @@ namespace tiki
 		}
 
 		return true;
+#else
+        return false;
+#endif
 	}
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
@@ -451,34 +511,34 @@ namespace tiki
 			}
 		}
 
-		// parse code
-		if ( false )
-		{
-			static const EShLanguage s_aLanguageMapping[] =
-			{
-				EShLangCount,			// ShaderType_Effect
-				EShLangVertex,			// ShaderType_VertexShader
-				EShLangFragment,		// ShaderType_PixelShader
-				EShLangGeometry,		// ShaderType_GeometrieShader
-				EShLangTessControl,		// ShaderType_HullShader
-				EShLangTessEvaluation,	// ShaderType_DomainShader
-				EShLangCompute			// ShaderType_ComputeShader
-			};
-			TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aLanguageMapping ) == ShaderType_Count );
+		//// parse code
+		//if ( false )
+		//{
+		//	static const EShLanguage s_aLanguageMapping[] =
+		//	{
+		//		EShLangCount,			// ShaderType_Effect
+		//		EShLangVertex,			// ShaderType_VertexShader
+		//		EShLangFragment,		// ShaderType_PixelShader
+		//		EShLangGeometry,		// ShaderType_GeometrieShader
+		//		EShLangTessControl,		// ShaderType_HullShader
+		//		EShLangTessEvaluation,	// ShaderType_DomainShader
+		//		EShLangCompute			// ShaderType_ComputeShader
+		//	};
+		//	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aLanguageMapping ) == ShaderType_Count );
 
-			glslang::TShader shaderTest( s_aLanguageMapping[ args.type ] );
+		//	glslang::TShader shaderTest( s_aLanguageMapping[ args.type ] );
 
-			const char* pSourceCodeString = sourceCode.cStr();
-			shaderTest.setStrings( &pSourceCodeString, 1u );
+		//	const char* pSourceCodeString = sourceCode.cStr();
+		//	shaderTest.setStrings( &pSourceCodeString, 1u );
 
-			TBuiltInResource shaderResources = { 0 };
-			if ( !shaderTest.parse( &shaderResources, 400, true, EShMsgDefault ) )
-			{
-				TIKI_TRACE_INFO( "[shaderconverter] parser has return an error.\n" );
-				//TIKI_TRACE_INFO( sourceCode.cStr() );
-				//TIKI_TRACE_INFO( shaderTest.getInfoLog() );				
-			}
-		}
+		//	TBuiltInResource shaderResources = { 0 };
+		//	if ( !shaderTest.parse( &shaderResources, 400, true, EShMsgDefault ) )
+		//	{
+		//		TIKI_TRACE_INFO( "[shaderconverter] parser has return an error.\n" );
+		//		//TIKI_TRACE_INFO( sourceCode.cStr() );
+		//		//TIKI_TRACE_INFO( shaderTest.getInfoLog() );
+		//	}
+		//}
 
 		MemoryStream stream;
 		stream.create( sourceCode.getLength() );
@@ -507,7 +567,7 @@ namespace tiki
 		TIKI_ASSERT( pUserData != nullptr );
 
 		FppContext* pContext = (FppContext*)pUserData;
-		
+
 		if ( pContext->sourcePosition == pContext->sourceLength )
 		{
 			return nullptr;

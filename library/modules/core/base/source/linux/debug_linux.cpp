@@ -1,9 +1,22 @@
 
 #include "tiki/base/debug.hpp"
 
+#include <string.h>
+#include <stdio.h>
+
 namespace tiki
 {
-#pragma warning(default: 4996)
+	void debug::nativeTrace( const char* pText )
+	{
+		printf( pText );
+
+		if ( !debug::isDebuggerActive() )
+		{
+			FILE* pFile = fopen( "debug.log", "a" );
+			fwrite( pText, strlen( pText ), 1u, pFile );
+			fclose( pFile );
+		}
+	}
 
 	bool debug::isDebuggerActive()
 	{
@@ -18,7 +31,7 @@ namespace tiki
 		}
 		else
 		{
-			trace( "Breakpoint has triggered.\n" );
+			nativeTrace( "Breakpoint has triggered.\n" );
 			while (true);
 		}
 	}
@@ -30,5 +43,5 @@ namespace tiki
 
 	void debug::dumpMemoryStats()
 	{
-	}	
+	}
 }

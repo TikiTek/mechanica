@@ -35,6 +35,9 @@ is_windows	= false;
 is_linux	= false;
 is_apple	= false;
 
+use_msvc	= false;
+use_mingw	= false;
+
 use_d3d11	= false;
 use_opengl	= false;
 
@@ -44,15 +47,27 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "_WIN32" );
 	module:set_define( "_WIN64", nil, nil, "x64" );
 
-	is_windows	= true;	
-	--use_d3d11	= true;
+	use_msvc	= true;
 	use_opengl	= true;
-elseif _ACTION == "gmake" then
-	is_linux	= true;
+	
+	global_configuration.enable_unity_builds = true
+elseif _ACTION == "gmake" or _ACTION == "codeblocks" then
+	use_mingw	= true;
 	use_opengl	= true;
 elseif _ACTION == "xcode" then
-	is_apple	= true;
 	use_opengl	= true;
+else
+	throw("Build action not supported.");
+end
+
+if os.get() == "windows" then
+	is_windows = true;
+elseif os.get() == "bsd" or os.get() == "linux" or os.get() == "solaris" then
+	is_linux = true;
+elseif os.get() == "macosx" then
+	is_apple = true;
+else
+	throw("Operating System not supported.");
 end
 
 module:set_define( "TIKI_PLATFORM_WIN", iff( is_windows, "TIKI_ON", "TIKI_OFF" ) );
@@ -67,3 +82,6 @@ module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
 
 module:set_define( "TIKI_GRAPHICS_D3D11", iff( use_d3d11, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OFF" ) );
+
+module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) );

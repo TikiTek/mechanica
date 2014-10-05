@@ -5,8 +5,9 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	include <crtdbg.h>
 #	include <windows.h>
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
@@ -34,6 +35,7 @@ namespace tiki
 		string message( prefixStringLength + formattedStringLength );
 		copyString( (char*)message.cStr(), prefixStringLength + 1u, s_aTracePrefix[ level ] );
 
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_vsprintf_s_l(
 			(char*)( message.cStr() + prefixStringLength ),
 			formattedStringLength + 1u,
@@ -41,6 +43,14 @@ namespace tiki
 			nullptr,
 			pArgs
 		);
+#else
+        vsnprintf(
+            (char*)( message.cStr() + prefixStringLength ),
+            formattedStringLength + 1u,
+            pFormat,
+            pArgs
+        );
+#endif // TIKI_ENABLED
 
 		debug::nativeTrace( message.cStr() );
 

@@ -4,6 +4,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
+#include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/input/inputevent.hpp"
@@ -13,6 +14,8 @@
 
 namespace tiki
 {
+    struct PhysicsCharacterControllerComponentState;
+
 	struct PlayerControlComponentState : public ComponentState
 	{
 		TransformComponentState*					pTransform;
@@ -139,7 +142,7 @@ namespace tiki
 
 		quaternion::fromYawPitchRoll( rTargetState.eyeDirection, pState->rotation.x, pState->rotation.y, 0.0f );
 
-		Vector3 basePosition = { 0.0f, 0.25f, -0.15f };		
+		Vector3 basePosition = { 0.0f, 0.25f, -0.15f };
 		quaternion::transform( basePosition, pState->positionRotation );
 		m_pTransformComponent->getPosition( rTargetState.eyePosition, pState->pTransform );
 		vector::add( rTargetState.eyePosition, basePosition );

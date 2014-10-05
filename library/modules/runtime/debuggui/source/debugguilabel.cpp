@@ -1,6 +1,10 @@
 
 #include "tiki/debuggui/debugguilabel.hpp"
 
+#include "tiki/base/string.hpp"
+#include "tiki/graphics/font.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+
 namespace tiki
 {
 	void DebugGuiLabel::create( const char* pText )

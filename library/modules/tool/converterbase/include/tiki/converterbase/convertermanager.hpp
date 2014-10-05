@@ -34,7 +34,7 @@ namespace tiki
 
 		bool	forceRebuild;
 	};
-	
+
 	class ConverterManager
 	{
 		friend void globalTraceCallback( cstring message, TraceLevel level );

@@ -1,6 +1,7 @@
 
 #include "tiki/framework/freecamera.hpp"
 
+#include "tiki/input/inputevent.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/quaternion.hpp"
 
@@ -11,7 +12,7 @@ namespace tiki
 		m_enableMouse	= false;
 		m_speed			= 1.0f;
 		m_position		= position;
-		
+
 		Vector3 yprRotation;
 		quaternion::toYawPitchRoll( yprRotation, rotation );
 		m_rotation = vector::create( yprRotation.x, yprRotation.y );

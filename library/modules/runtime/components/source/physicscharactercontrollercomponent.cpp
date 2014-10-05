@@ -13,6 +13,8 @@
 #include "tiki/physics/physicssphereshape.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
+#include "physicscomponents_shared.hpp"
+
 namespace tiki
 {
 	struct PhysicsCharacterControllerComponentState : public ComponentState
@@ -61,7 +63,7 @@ namespace tiki
 		while ( pState = componentStates.getNext() )
 		{
 			Vector3 position;
-			Quaternion rotation;			
+			Quaternion rotation;
 			pState->controller.getPosition( position );
 			pState->controller.getRotation( rotation );
 
@@ -140,7 +142,7 @@ namespace tiki
 			return false;
 		}
 
-		pState->controller.create( *pShape, vector::set( Vector3(), pInitData->position ) );
+		pState->controller.create( *pShape, vector::create( pInitData->position ) );
 		m_pPhysicsWorld->addCharacterController( pState->controller );
 
 		return true;

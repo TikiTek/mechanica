@@ -104,7 +104,7 @@ end
 
 function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform )
 	if ( configuration_obj == nil and platform == nil ) then
-		if self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule then
+		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then
 			local all_files = {};
 		
 			for i,pattern in pairs( self.source_files ) do

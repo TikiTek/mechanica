@@ -9,10 +9,10 @@
 #	include "tiki/base/string.hpp"
 #	include "tiki/toolbase/list.hpp"
 
-#	define TIKI_REFLECTION_STRUCT( name, ... ) struct name													\
+#	define TIKI_REFLECTION_STRUCT( name, code ) struct name													\
 	{																										\
 	public:																									\
-		__VA_ARGS__																							\
+		code																							    \
 		const ::tiki::reflection::StructType*			getType() const { return s_typeDefinition.pType; }	\
 		static const ::tiki::reflection::StructType*	getStaticType()	{ return s_typeDefinition.pType; }	\
 	private:																								\
@@ -23,7 +23,7 @@
 				pType = ::tiki::reflection::registerStructType(												\
 					#name,																					\
 					nullptr,																				\
-					TIKI_STRING( __VA_ARGS__ )																\
+					TIKI_STRING( code )            															\
 				);																							\
 			}																								\
 			const ::tiki::reflection::StructType* pType;													\
@@ -100,11 +100,11 @@ namespace tiki
 			TypeMemberFlag_Public		= 1u << 0u,
 			TypeMemberFlag_Const		= 1u << 1u,
 			TypeMemberFlag_Volatile		= 1u << 2u,
-			TypeMemberFlag_Mutable		= 1u << 3u,			
+			TypeMemberFlag_Mutable		= 1u << 3u,
 			TypeMemberFlag_Pointer		= 1u << 4u,
 			TypeMemberFlag_Reference	= 1u << 5u
 		};
-		
+
 		enum ValueTypeVariant
 		{
 			ValueTypeVariant_Void,
@@ -145,7 +145,7 @@ namespace tiki
 		{
 		public:
 
-										TypeBase( const string& name );
+										TypeBase( const char* pName );
 			virtual						~TypeBase();
 
 			const string&				getName() const { return m_name; }
@@ -188,7 +188,7 @@ namespace tiki
 		{
 		public:
 
-										MemberBase( const string& name, const TypeBase* pContainingType );
+										MemberBase( const char* pName, const TypeBase* pContainingType );
 			virtual						~MemberBase();
 
 			const string&				getName() const				{ return m_name; }
@@ -207,15 +207,15 @@ namespace tiki
 		{
 		public:
 
-			FieldMember( const string& name, const TypeBase* pContainingType, const TypeMemberInfo& type, uint offset );
-			
+			FieldMember( const char* pName, const TypeBase* pContainingType, const TypeMemberInfo& type, uint offset );
+
 			const TypeMemberInfo&	getTypeInfo() const						{ return m_type; }
 			uint					getOffset() const						{ return m_offset; }
 			virtual MemberType		getMemberType() const					{ return MemberType_Field; }
 
 			void*					getValue( void* pObject ) const			{ return addPtr( pObject, m_offset ); }
 			const void*				getValue( const void* pObject ) const	{ return addPtr( pObject, m_offset ); }
-			
+
 			void					setValue( void* pObject, const void* pValue ) const;
 
 		private:
@@ -228,7 +228,7 @@ namespace tiki
 		{
 		public:
 
-			MethodMember( const string& name, const TypeBase* pContainingType, const TypeMemberInfo* returnType );
+			MethodMember( const char* pName, const TypeBase* pContainingType, const TypeMemberInfo* returnType );
 
 			virtual MemberType	getMemberType() const	{ return MemberType_Method; }
 
@@ -244,7 +244,7 @@ namespace tiki
 		{
 		public:
 
-			ValueType( const string& name, uint size, ValueTypeVariant variant );
+			ValueType( const char *pName, uint size, ValueTypeVariant variant );
 
 			virtual TypeBaseLeaf		getLeaf() const			{ return TypeBaseLeaf_ValueType; }
 			virtual uint				getAlignment() const	{ return m_size; }
@@ -262,7 +262,7 @@ namespace tiki
 		{
 		public:
 
-			StructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor );
+			StructType( const char* pName, const char* pBaseName, const char* pCode, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor );
 			~StructType();
 
 			void						initialize();
@@ -303,8 +303,8 @@ namespace tiki
 		void				initialize();
 		void				shutdown();
 
-		const ValueType*	registerValueType( const string& name, uint size, ValueTypeVariant variant );
-		const StructType*	registerStructType( const string& name, const string& baseName, const string& code, TypeConstructor pFuncConstructor = nullptr, TypeDestructor pFuncDestructor = nullptr );
+		const ValueType*	registerValueType( const char* pName, uint size, ValueTypeVariant variant );
+		const StructType*	registerStructType( const char* pName, const char* pBaseName, const char* pCode, TypeConstructor pFuncConstructor = nullptr, TypeDestructor pFuncDestructor = nullptr );
 
 		const TypeBase*		getTypeOf( const string& typeName );
 	}

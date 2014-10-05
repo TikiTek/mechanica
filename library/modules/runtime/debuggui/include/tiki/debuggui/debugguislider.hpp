@@ -2,7 +2,7 @@
 #ifndef __TIKI_DEBUGGUISLIDER_HPP_INCLUDED__
 #define __TIKI_DEBUGGUISLIDER_HPP_INCLUDED__
 
-#include "tiki/debuggui/debugguislider.hpp"
+#include "tiki/debuggui/debugguicontrol.hpp"
 
 namespace tiki
 {

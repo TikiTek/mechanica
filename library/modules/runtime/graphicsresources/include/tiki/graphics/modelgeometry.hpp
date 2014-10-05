@@ -10,6 +10,7 @@
 
 namespace tiki
 {
+	class GraphicsContext;
 	class Material;
 	class VertexFormat;
 
@@ -19,7 +20,7 @@ namespace tiki
 		uint16	indexCount;
 
 		bool	isSkinned;
-		uint8	vertexStride; 
+		uint8	vertexStride;
 		uint8	indexType;		// see IndexType
 		uint8	vertexAttributeCount;
 	};
@@ -45,7 +46,7 @@ namespace tiki
 		bool						isSkinned() const		{ return m_desc.isSkinned; }
 		const ModelGeometryDesc&	getDescription() const	{ return m_desc; }
 		//void						getBoundingBox( Vector3& min, Vector3& max ) const;
-		
+
 		const VertexFormat*			getVertexFormat() const	{ return m_pVertexFormat; }
 
 		const uint8*				getVertexData() const	{ return m_vertexData.getData(); }

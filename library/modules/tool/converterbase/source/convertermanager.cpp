@@ -14,11 +14,11 @@
 #include "sqlite/sqlite3.h"
 
 namespace tiki
-{	
+{
 	static ConverterManager*	s_pInstance			= nullptr;
 	static ConversionResult*	s_pCurrentResult	= nullptr;
 
-	static void globalTraceCallback( cstring message, TraceLevel level )
+	void globalTraceCallback( cstring message, TraceLevel level )
 	{
 		s_pInstance->traceCallback( message, level );
 
@@ -78,7 +78,7 @@ namespace tiki
 					m_dataBase.dispose();
 					break;
 				}
-			} 
+			}
 		}
 
 		m_loggingMutex.create();
@@ -122,7 +122,7 @@ namespace tiki
 		TemplateDescription desc;
 		desc.fullFileName	= path::getAbsolutePath( fileName );
 		desc.name			= pAttName->content;
-		
+
 		// parse arguments
 		parseParams( xmlFile, pRoot, desc.arguments );
 
@@ -139,7 +139,7 @@ namespace tiki
 		file.fullFileName	= path::getAbsolutePath( fileName );
 		file.fileType		= crcString( path::getExtension( nameData ).subString( 1u ) );
 	}
-	
+
 	int ConverterManager::startConversion( Mutex* pConversionMutex /*= nullptr*/ )
 	{
 		m_returnValue = 0;
@@ -155,7 +155,7 @@ namespace tiki
 
 		return m_returnValue;
 	}
-	
+
 	bool ConverterManager::startConvertFile( const string& fileName, List< string >& outputFiles, Mutex* pConversionMutex /*= nullptr*/ )
 	{
 		string absoluteFileName	= path::getAbsolutePath( fileName );
@@ -210,7 +210,7 @@ namespace tiki
 	{
 		m_converters.remove( pConverter );
 	}
-	
+
 	void ConverterManager::registerResource( const string& resourceName )
 	{
 		if ( s_pCurrentResult != nullptr )
@@ -227,7 +227,7 @@ namespace tiki
 	{
 		s_pCurrentResult->addDependency( type, identifier, valueText, valueInt );
 	}
-	
+
 	void ConverterManager::writeResourceMap()
 	{
 		m_resourceMap.writeToFile();
@@ -249,7 +249,7 @@ namespace tiki
 			m_returnValue = 1;
 		}
 
-		m_loggingMutex.unlock();			
+		m_loggingMutex.unlock();
 	}
 
 	void ConverterManager::parseParams( const TikiXml& xmlFile, const XmlElement* pRoot, std::map< string, string >& arguments ) const
@@ -305,7 +305,7 @@ namespace tiki
 			return false;
 		}
 
-		
+
 		params.targetPlatform	= getHostPlatform();
 		params.targetApi		= getHostGraphicsApi();
 		params.sourceFile		= file.fullFileName;
@@ -387,20 +387,19 @@ namespace tiki
 		const XmlAttribute* pTemplate = xmlFile.findAttributeByName( "template", pRoot );
 		if ( pTemplate != nullptr )
 		{
-			auto temp = m_templates.find( pTemplate->content );
-
+			TemplateMap::iterator temp = m_templates.find( pTemplate->content );
 			if ( temp != m_templates.end() )
 			{
 				const TemplateDescription& desc = temp->second;
 
-				for (auto it = desc.arguments.begin(); it != desc.arguments.end(); it++)
+				for (std::map< string, string >::const_iterator it = desc.arguments.begin(); it != desc.arguments.end(); it++)
 				{
 					params.arguments.getMap()[ it->first ] = it->second;
 				}
 			}
 		}
 
-		xmlFile.dispose();	
+		xmlFile.dispose();
 
 		params.assetId = 0u;
 		if ( writeConvertInput( params.assetId, params ) == false )
@@ -433,7 +432,7 @@ namespace tiki
 		}
 
 		TIKI_TRACE_INFO( "Building asset: %s\n", path::getFilename( params.sourceFile ).cStr() );
-		
+
 		ConversionResult result;
 		result.addDependency( ConversionResult::DependencyType_Converter, "", "", pConverter->getConverterRevision() );
 		result.addDependency( ConversionResult::DependencyType_File, params.sourceFile, "", 0u );
@@ -451,8 +450,8 @@ namespace tiki
 		for (uint i = 0u; i < resultOutputFiles.getCount(); ++i)
 		{
 			outputFiles.add( resultOutputFiles[ i ].fileName );
-		} 
-		
+		}
+
 		bool hasError = false;
 		const List< ConversionResult::TraceInfo >& traceInfos = result.getTraceInfos();
 		for (uint i = 0u; i < traceInfos.getCount(); ++i)
@@ -633,7 +632,7 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 				return false;
 			}
-		} 
+		}
 
 		return true;
 	}
@@ -682,7 +681,7 @@ namespace tiki
 					TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 					return false;
 				}
-			} 
+			}
 		}
 
 		// traces
@@ -741,7 +740,7 @@ namespace tiki
 			{
 				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 				return false;
-			}			
+			}
 		}
 
 		return true;

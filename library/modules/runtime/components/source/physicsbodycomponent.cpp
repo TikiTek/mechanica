@@ -63,7 +63,7 @@ namespace tiki
 		while ( pState = componentStates.getNext() )
 		{
 			Vector3 position;
-			Quaternion rotation;			
+			Quaternion rotation;
 			pState->body.getPosition( position );
 			pState->body.getRotation( rotation );
 
@@ -133,7 +133,7 @@ namespace tiki
 			return false;
 		}
 
-		pState->body.create( *pShape, vector::set( Vector3(), pInitData->position ), pInitData->mass, pInitData->freeRotation );
+		pState->body.create( *pShape, vector::create( pInitData->position ), pInitData->mass, pInitData->freeRotation );
 		m_pPhysicsWorld->addBody( pState->body );
 
 		return true;
