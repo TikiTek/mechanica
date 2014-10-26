@@ -391,7 +391,8 @@ namespace tiki
 		switch ( targetApi )
 		{
 		case GraphicsApi_D3D11:
-			return compileD3d11Shader( targetData, args );
+		case GraphicsApi_D3D12:
+			return compileD3dShader( targetData, args );
 
 		case GraphicsApi_OpenGL4:
 			return compileOpenGl4Shader( targetData, args );
@@ -404,7 +405,7 @@ namespace tiki
 		return false;
 	}
 
-	bool ShaderConverter::compileD3d11Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
+	bool ShaderConverter::compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args ) const
 	{
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		ID3D10Blob* pBlob		= nullptr;
@@ -543,13 +544,13 @@ namespace tiki
 		MemoryStream stream;
 		stream.create( sourceCode.getLength() );
 
-		const uint32 constantCount = constants.getCount();
+		const uint32 constantCount = (uint32)constants.getCount();
 		stream.write( &constantCount, sizeof( constantCount ) );
 
 		for (uint i = 0u; i < constantCount; ++i)
 		{
 			const ShaderConstantInfo& info = constants[ i ];
-			const uint32 nameLength = info.name.getLength();
+			const uint32 nameLength = (uint32)info.name.getLength();
 
 			stream.write( &info.slotIndex, sizeof( info.slotIndex ) );
 			stream.write( &nameLength, sizeof( nameLength ) );

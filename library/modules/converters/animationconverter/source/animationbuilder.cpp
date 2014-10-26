@@ -120,8 +120,8 @@ namespace tiki
 
 			for (uint j = 0; j < 3u; ++j)
 			{
-				m_maxPositionValue		= TIKI_MAX( m_maxPositionValue, abs( position.getKeyByIndex( i ).aValues[ j ] ) );
-				m_maxPositionTangent	= TIKI_MAX( m_maxPositionTangent, abs( position.getKeyByIndex( i ).aControls[ j ] ) );
+				m_maxPositionValue		= TIKI_MAX( m_maxPositionValue, fabsf( position.getKeyByIndex( i ).aValues[ j ] ) );
+				m_maxPositionTangent	= TIKI_MAX( m_maxPositionTangent, fabsf( position.getKeyByIndex( i ).aControls[ j ] ) );
 			}
 		}
 
@@ -132,8 +132,8 @@ namespace tiki
 
 			for (uint j = 0; j < 3u; ++j)
 			{
-				m_maxScaleValue		= TIKI_MAX( m_maxScaleValue, abs( scale.getKeyByIndex( i ).aValues[ j ] ) );
-				m_maxScaleTangent	= TIKI_MAX( m_maxScaleTangent, abs( scale.getKeyByIndex( i ).aControls[ j ] ) );
+				m_maxScaleValue		= TIKI_MAX( m_maxScaleValue, fabsf( scale.getKeyByIndex( i ).aValues[ j ] ) );
+				m_maxScaleTangent	= TIKI_MAX( m_maxScaleTangent, fabsf( scale.getKeyByIndex( i ).aControls[ j ] ) );
 			}
 		}
 	}
@@ -436,7 +436,7 @@ namespace tiki
 			{
 				lengthSquad += key.aValues[ i ] * key.aValues[ i ];
 			}
-			const float length = 1.0f / sqrt( lengthSquad );
+			const float length = 1.0f / (float)sqrt( lengthSquad );
 
 			for (uint i = 0; i < dimensions; ++i)
 			{

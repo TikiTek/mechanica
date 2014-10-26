@@ -18,7 +18,12 @@ namespace tiki
 {
 	debug::TraceCallback s_pGlobalTraceCallback = nullptr;
 
-	void debug::trace( const char* pFormat, TraceLevel level, va_list pArgs )
+	namespace debug
+	{
+		void traceInternal( const char* pFormat, TraceLevel level, va_list pArgs );
+	}
+
+	void debug::traceInternal( const char* pFormat, TraceLevel level, va_list pArgs )
 	{
 #pragma warning(disable: 4996)
 		static cstring s_aTracePrefix[] =
@@ -50,7 +55,7 @@ namespace tiki
             pFormat,
             pArgs
         );
-#endif // TIKI_ENABLED
+#endif
 
 		debug::nativeTrace( message.cStr() );
 
@@ -61,11 +66,19 @@ namespace tiki
 #pragma warning(default: 4996)
 	}
 
+	void debug::trace( const char* pFormat, ... )
+	{
+		va_list argptr;
+		va_start( argptr, pFormat );
+		debug::traceInternal( pFormat, TraceLevel_None, argptr );
+		va_end( argptr );
+	}
+
 	void debug::traceInfo( const char* pFormat, ... )
 	{
 		va_list argptr;
 		va_start( argptr, pFormat );
-		debug::trace( pFormat, TraceLevel_Info, argptr );
+		debug::traceInternal( pFormat, TraceLevel_Info, argptr );
 		va_end( argptr );
 	}
 
@@ -73,7 +86,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pFormat );
-		debug::trace( pFormat, TraceLevel_Warning, argptr );
+		debug::traceInternal( pFormat, TraceLevel_Warning, argptr );
 		va_end( argptr );
 	}
 
@@ -81,7 +94,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pFormat );
-		debug::trace( pFormat, TraceLevel_Error, argptr );
+		debug::traceInternal( pFormat, TraceLevel_Error, argptr );
 		va_end( argptr );
 	}
 
@@ -91,7 +104,7 @@ namespace tiki
 		va_start( argptr, pFormat );
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		debug::trace( pFormat, TraceLevel_None, argptr );
+		debug::traceInternal( pFormat, TraceLevel_None, argptr );
 #endif
 
 		va_end( argptr );

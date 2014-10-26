@@ -86,6 +86,6 @@ namespace tiki
 		target.streamIndex		= streamIndex;
 		target.inputType		= VertexInputType_PerVertex;
 
-		m_vertexStrides[ streamIndex ] += getVertexAttributeFormatSize( format );
+		m_vertexStrides[ streamIndex ] += (uint32)getVertexAttributeFormatSize( format );
 	}
 }

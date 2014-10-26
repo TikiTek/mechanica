@@ -20,7 +20,7 @@ namespace tiki
 	{
 		typedef void(*TraceCallback)(cstring, TraceLevel);
 
-		void	trace( const char* pFormat, TraceLevel level, VA_ArgList pArgs );
+		void	trace( const char* pFormat, ... );
 		void	traceInfo( const char* pFormat, ... );
 		void	traceWarning( const char* pFormat, ... );
 		void	traceError( const char* pFormat, ... );

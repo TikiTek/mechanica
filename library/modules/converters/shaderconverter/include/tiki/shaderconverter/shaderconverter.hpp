@@ -52,7 +52,7 @@ namespace tiki
 
 		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, GraphicsApi targetApi ) const;
 
-		bool					compileD3d11Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
+		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
 		bool					compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
 
 	};
