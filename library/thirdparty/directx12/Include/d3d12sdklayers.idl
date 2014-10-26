@@ -1,0 +1,44 @@
+/*-------------------------------------------------------------------------------------
+ *
+ * Copyright (c) Microsoft Corporation
+ *
+ *-------------------------------------------------------------------------------------*/
+import "oaidl.idl";
+import "ocidl.idl";
+
+import "d3d12.idl";
+
+[ uuid( 3febd6dd-4973-4787-8194-e45f9e28923e ), object, local, pointer_default( unique ) ] interface ID3D12Debug : IUnknown{}
+
+cpp_quote("DEFINE_GUID(DXGI_DEBUG_D3D12, 0xcf59a98c, 0xa950, 0x4326, 0x91, 0xef, 0x9b, 0xba, 0xa1, 0x7b, 0xfd, 0x95);")
+
+[ uuid( 09e0bf36-54ac-484f-8847-4baeeab6053a ), object, local, pointer_default( unique ) ]
+interface ID3D12DebugCommandQueue
+    : IUnknown
+{
+    BOOL AssertResourceState( [annotation("_In_")] ID3D12Resource* pResource, UINT Subresource, UINT State );
+//  TODO: Stale  BOOL AssertResourceStateThroughView( [annotation("_In_")] ID3D12View* pView, UINT State );
+};
+
+typedef enum D3D12_DEBUG_FEATURE
+{
+    D3D12_DEBUG_FEATURE_TREAT_BUNDLE_AS_DRAW = 0x1,
+    D3D12_DEBUG_FEATURE_TREAT_BUNDLE_AS_DISPATCH = 0x2,
+
+} D3D12_DEBUG_FEATURE;
+cpp_quote( "DEFINE_ENUM_FLAG_OPERATORS( D3D12_DEBUG_FEATURE );" )
+
+[ uuid( 09e0bf36-54ac-484f-8847-4baeeab6053f ), object, local, pointer_default( unique ) ]
+interface ID3D12DebugCommandList
+    : IUnknown
+{
+    BOOL AssertResourceState( [annotation("_In_")] ID3D12Resource* pResource, UINT Subresource, UINT State );
+//  TODO: Stale  BOOL AssertResourceStateThroughView( [annotation("_In_")] ID3D12View* pView, UINT State );
+//  TODO: Stale  BOOL AssertResourceStateThroughDescriptor( D3D12_DESCRIPTOR_TYPE DescriptorType, UINT StartSlot, UINT Slots, UINT State );
+    HRESULT SetFeatureMask( D3D12_DEBUG_FEATURE Mask );
+    D3D12_DEBUG_FEATURE GetFeatureMask();
+};
+
+cpp_quote( "DEFINE_GUID(IID_ID3D12Debug,0x3febd6dd,0x4973,0x4787,0x81,0x94,0xe4,0x5f,0x9e,0x28,0x92,0x3e);" )
+cpp_quote( "DEFINE_GUID(IID_ID3D12DebugCommandQueue,0x09e0bf36,0x54ac,0x484f,0x88,0x47,0x4b,0xae,0xea,0xb6,0x05,0x3a);" )
+cpp_quote( "DEFINE_GUID(IID_ID3D12DebugCommandList,0x09e0bf36,0x54ac,0x484f,0x88,0x47,0x4b,0xae,0xea,0xb6,0x05,0x3f);" )
