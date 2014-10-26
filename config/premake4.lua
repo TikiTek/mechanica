@@ -39,6 +39,7 @@ use_msvc	= false;
 use_mingw	= false;
 
 use_d3d11	= false;
+use_d3d12	= false;
 use_opengl	= false;
 
 if _ACTION == "vs2010" or _ACTION == "vs2012" then
@@ -48,7 +49,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "_WIN64", nil, nil, "x64" );
 
 	use_msvc	= true;
-	use_opengl	= true;
+	use_d3d12	= true;
 	
 	global_configuration.enable_unity_builds = true
 elseif _ACTION == "gmake" or _ACTION == "codeblocks" then
@@ -81,6 +82,7 @@ module:set_define( "TIKI_BUILD_32BIT", "TIKI_OFF", nil, "x64" );
 module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
 
 module:set_define( "TIKI_GRAPHICS_D3D11", iff( use_d3d11, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_D3D12", iff( use_d3d12, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OFF" ) );
 
 module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
