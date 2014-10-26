@@ -6,6 +6,8 @@
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/texturedata_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
+#	include "../../../source/win_d3d12/texturedata_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
 #	include "../../../source/global_opengl4/texturedata_opengl4.hpp"
 #endif

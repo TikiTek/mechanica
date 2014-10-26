@@ -18,6 +18,8 @@
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/graphicssystem_d3d11.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
+#	include "../../../source/win_d3d12/graphicssystem_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
 #	include "../../../source/global_opengl4/graphicssystem_opengl4.hpp"
 #else

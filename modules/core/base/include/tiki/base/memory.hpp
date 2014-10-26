@@ -6,8 +6,11 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/assert.hpp"
 
-#define TIKI_DECLARE_STACKANDZERO( type, name ) type name; \
-	memory::zero( &name, sizeof( type ) )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	define TIKI_DECLARE_STACKANDZERO( type, name ) type name = { }
+#else
+#	define TIKI_DECLARE_STACKANDZERO( type, name ) type name; memory::zero( &name, sizeof( type ) )
+#endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 #	define TIKI_MEMORY_ALLOC( size ) ::tiki::memory::allocAlign( size, __FILE__, __LINE__, TIKI_DEFAULT_ALIGNMENT )

@@ -17,6 +17,11 @@ if use_d3d11 then
 	
 	module:add_library_file( "d3d10" );
 	module:add_library_file( "d3d11" );
+elseif use_d3d12 then
+	module:add_files( "source/win_d3d12/*.*" );
+	
+	module:add_dependency( "directx12" );
+	module:add_library_file( "d3d12" );
 elseif use_opengl then
 	module:add_files( "source/global_opengl4/*.*" );
 	

@@ -29,19 +29,31 @@
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
+
 #	define TIKI_TRACE_INFO		::tiki::debug::traceInfo
 #	define TIKI_TRACE_WARNING	::tiki::debug::traceWarning
 #	define TIKI_TRACE_ERROR		::tiki::debug::traceError
+
+#	define TIKI_NOT_IMPLEMENTED	::tiki::debug::trace( "%s(%u): not implemented", ::tiki::TraceLevel_None, __FILE__, __LINE__ )
+
 #else
+
 #	define TIKI_TRACE_INFO( format, ... )
 #	define TIKI_TRACE_WARNING( format, ... )
 #	define TIKI_TRACE_ERROR( format, ... )
+
+#	define TIKI_NOT_IMPLEMENTED	TIKI_NOT_IMPLEMENTED_BARRIER
+
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+
 #	define TIKI_TRACE_DEBUG		::tiki::debug::traceDebug
+
 #else
+
 #	define TIKI_TRACE_DEBUG( format, ... )
+
 #endif
 
 #define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __COUNTER__ )

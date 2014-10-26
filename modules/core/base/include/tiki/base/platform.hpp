@@ -26,6 +26,7 @@ namespace tiki
 		GraphicsApi_Invalid = -1,
 
 		GraphicsApi_D3D11,
+		GraphicsApi_D3D12,
 		GraphicsApi_OpenGL4,
 
 		GraphicsApi_Count

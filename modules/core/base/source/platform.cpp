@@ -16,6 +16,8 @@ namespace tiki
 	{
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 		return GraphicsApi_D3D11;
+#elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
+		return GraphicsApi_D3D12;
 #elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
 		return GraphicsApi_OpenGL4;
 #else
