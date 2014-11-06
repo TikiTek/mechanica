@@ -1,7 +1,7 @@
 #ifndef TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 #define TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 
-#include "graphicstypes_d3d12.hpp"
+#include <d3d12.h>
 
 namespace tiki
 {
@@ -9,52 +9,57 @@ namespace tiki
 	{
 		BlendStatePlatformData()
 		{
-			pBlendState = nullptr;
+			isCreated = false;
 		}
 
-		void*	pBlendState;
+		bool				isCreated;
+		D3D12_BLEND_DESC	blendDesc;
 	};
 
 	struct DepthStencilStatePlatformData
 	{
 		DepthStencilStatePlatformData()
 		{
-			stencilRef = 0u;
-			pDepthStencilState = nullptr;
+			isCreated	= false;
+			stencilRef	= 0u;
 		}
 
-		uint					stencilRef;
-		TGDepthStencilState*	pDepthStencilState;
+		bool						isCreated;
+		uint						stencilRef;
+		D3D12_DEPTH_STENCIL_DESC	depthStencilDesc;
 	};
 
 	struct RasterizerStatePlatformData
 	{
 		RasterizerStatePlatformData()
 		{
-			pRasterizerState = nullptr;
+			isCreated = false;
 		}
 
-		TGRasterizerState*	pRasterizerState;
+		bool					isCreated;
+		D3D12_RASTERIZER_DESC	rasterizerDesc;
 	};
 
 	struct SamplerStatePlatformData
 	{
 		SamplerStatePlatformData()
 		{
-			pSamplerState = nullptr;
+			isCreated = false;
 		}
 
-		TGSamplerState* pSamplerState;
+		bool				isCreated;
+		D3D12_SAMPLER_DESC	samplerDesc;
 	};
 
 	struct VertexInputBindingPlatformData
 	{
 		VertexInputBindingPlatformData()
 		{
-			pInputLayout = nullptr;
+			isCreated = false;
 		}
 
-		TGInputLayout*	pInputLayout;
+		bool					isCreated;
+		D3D12_INPUT_LAYOUT_DESC	inputLayoutDesc;
 	};
 }
 

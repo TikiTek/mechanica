@@ -24,7 +24,7 @@ namespace tiki
 		
 	private:
 
-		void*					m_pBuffer;
+		ID3D12Resource*			m_pBuffer;
 		bool					m_dynamic;
 
 	};

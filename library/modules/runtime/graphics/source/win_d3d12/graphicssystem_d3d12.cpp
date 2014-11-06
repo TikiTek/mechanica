@@ -18,19 +18,16 @@ namespace tiki
 		static bool initBackBuffer( GraphicsSystemPlatformData& data );
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
-		static void setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
 		static void resetDeviceState( const GraphicsSystemPlatformData& data );
-
-		static GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 	}
 
-	static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
+	GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
 	{
 		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
 	}
 
 	ID3D12Device*		graphics::getDevice( GraphicsSystem& graphicsSystem )		{ return getPlatformData( graphicsSystem ).pDevice; }
-	ID3D12CommandQueue*	graphics::getCommandQueue( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pCommandQueue; }
+	ID3D12CommandList*	graphics::getCommandList( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pCommandList; }
 
 	template<class T>
 	TIKI_FORCE_INLINE void safeRelease( T** ppObject )
@@ -117,24 +114,36 @@ namespace tiki
 
 		m_commandBuffer.dispose( *this );
 		
+		if ( m_platformData.pCommandQueue != nullptr )
+		{
+			HANDLE eventHandle = CreateEventEx( nullptr, FALSE, FALSE, EVENT_ALL_ACCESS );
+
+			const UINT64 fence = m_platformData.pCommandQueue->AdvanceFence();
+			if( m_platformData.pCommandQueue->GetLastCompletedFence( ) < fence )
+			{
+				TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandQueue->SetEventOnFenceCompletion( fence, eventHandle ) ) );
+				WaitForSingleObject( eventHandle, INFINITE );
+			}
+
+			CloseHandle( eventHandle );
+		}
+
 		if( m_platformData.pSwapChain != nullptr )
 		{
 			m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
 		}
 
-		if ( m_platformData.pContext != nullptr )
-		{
-			m_platformData.pContext->ClearState();
-			m_platformData.pContext->Flush();
-		}
+		safeRelease( &m_platformData.pBackBufferDepth );
+		safeRelease( &m_platformData.pBackBufferColor );
 
-		safeRelease( &m_platformData.pDepthStencilView );
-		safeRelease( &m_platformData.pDepthStencilBuffer );
-		safeRelease( &m_platformData.pBackBufferTargetView);
-
-		safeRelease( &m_platformData.pContext );
-		safeRelease( &m_platformData.pSwapChain );
+		safeRelease( &m_platformData.pPipelineState );
+		safeRelease( &m_platformData.pCommandList );
+		safeRelease( &m_platformData.pDescriptionHeap );
+		safeRelease( &m_platformData.pRootSignature );
+		safeRelease( &m_platformData.pCommandAllocator );
+		safeRelease( &m_platformData.pCommandQueue );
 		safeRelease( &m_platformData.pDevice );
+		safeRelease( &m_platformData.pSwapChain );
 	}
 
 	bool GraphicsSystem::resize( uint width, uint height )
@@ -144,11 +153,10 @@ namespace tiki
 			return false;
 		}
 
-		m_platformData.pContext->OMSetRenderTargets( 0u, nullptr, nullptr );
+		m_platformData.pCommandList->SetRenderTargets( nullptr, false, 0u, nullptr );
 
-		safeRelease( &m_platformData.pDepthStencilView );
-		safeRelease( &m_platformData.pDepthStencilBuffer );
-		safeRelease( &m_platformData.pBackBufferTargetView);
+		safeRelease( &m_platformData.pBackBufferDepth );
+		safeRelease( &m_platformData.pBackBufferColor );
 
 		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, UINT( width ), UINT( height ), DXGI_FORMAT_UNKNOWN, 0 );
 		if ( FAILED( result ) )
@@ -163,8 +171,8 @@ namespace tiki
 
 		m_backBufferTarget.m_width	= width;
 		m_backBufferTarget.m_height	= height;
-		m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
-		m_backBufferTarget.m_platformData.pDepthView		= m_platformData.pDepthStencilView;
+		m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferColor;
+		m_backBufferTarget.m_platformData.pDepthView		= m_platformData.pBackBufferDepth;
 
 		return true;
 	}
@@ -204,7 +212,7 @@ namespace tiki
 
 		m_platformData.pBackBufferColor->Release();
 		m_platformData.pSwapChain->GetBuffer( m_platformData.currentSwapBufferIndex, IID_PPV_ARGS( &m_platformData.pBackBufferColor ) );
-		m_platformData.pDevice->CreateRenderTargetView( m_platformData.pBackBufferColor, nullptr, m_platformData.pDescriptionHeap.GetCPUDescriptorHandleForHeapStart() );
+		m_platformData.pDevice->CreateRenderTargetView( m_platformData.pBackBufferColor, nullptr, m_platformData.pDescriptionHeap->GetCPUDescriptorHandleForHeapStart() );
 		
 		graphics::resetDeviceState( m_platformData );
 	}

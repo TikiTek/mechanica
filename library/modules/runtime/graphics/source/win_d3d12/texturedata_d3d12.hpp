@@ -1,8 +1,7 @@
-#pragma once
-#ifndef TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
-#define TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
+#ifndef TIKI_TEXTUREDATA_D3D12_HPP__INCLUDED__
+#define TIKI_TEXTUREDATA_D3D12_HPP__INCLUDED__
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphicstypes_d3d12.hpp"
 
 namespace tiki
 {
@@ -11,23 +10,15 @@ namespace tiki
 		TextureDataPlatformData()
 		{
 			pResource	= nullptr;
-			pShaderView	= nullptr;
 		}
 
-		union
-		{
-			TGResource*			pResource;
-			TGTexture1D*		pTexture1d;
-			TGTexture2D*		pTexture2d;
-			TGTexture3D*		pTexture3d;
-		};
-		TGShaderResourceView*	pShaderView;		
+		ID3D12Resource*	pResource;
 	};
 
 	namespace graphics
 	{
-		TGFormat getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
+		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
 	}
 }
 
-#endif // TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
+#endif // TIKI_TEXTUREDATA_D3D12_HPP__INCLUDED__

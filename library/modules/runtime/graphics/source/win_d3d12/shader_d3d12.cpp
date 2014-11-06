@@ -34,7 +34,7 @@ namespace tiki
 		m_platformData.shaderCode.BytecodeLength	= dataSize;
 
 		m_type	= type;
-		m_hash	= crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
+		m_hash	= crcBytes( m_platformData.shaderCode.pShaderBytecode, m_platformData.shaderCode.BytecodeLength );
 
 		return true;
 	}
@@ -45,10 +45,5 @@ namespace tiki
 
 		m_platformData.shaderCode.pShaderBytecode	= nullptr;
 		m_platformData.shaderCode.BytecodeLength	= 0u;
-	}
-
-	ID3D12RootSignature* graphics::createRootSignature( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const D3D12_INPUT_ELEMENT_DESC* pElements, uint elementCount )
-	{
-
 	}
 }

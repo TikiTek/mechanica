@@ -32,19 +32,20 @@ namespace tiki
 	GraphicsContext::~GraphicsContext()
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-		TIKI_ASSERT( m_platformData.pDevice == nullptr );
-		TIKI_ASSERT( m_platformData.pContext == nullptr );
+		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
+		TIKI_ASSERT( m_platformData.pDescriptionHeap == nullptr );
 	}
 
 	bool GraphicsContext::create( GraphicsSystem& graphicsSystem )
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
-		TIKI_ASSERT( m_platformData.pDevice == nullptr );
-		TIKI_ASSERT( m_platformData.pContext == nullptr );
+		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
+		TIKI_ASSERT( m_platformData.pDescriptionHeap == nullptr );
 
-		m_pGraphicsSystem		= &graphicsSystem;
-		m_platformData.pDevice	= graphics::getDevice( graphicsSystem );
-		m_platformData.pContext	= graphics::getContext( graphicsSystem );
+		m_pGraphicsSystem				= &graphicsSystem;
+		m_platformData.pDevice			= graphics::getDevice( graphicsSystem );
+		m_platformData.pCommandList		= graphics::getCommandList( graphicsSystem );
+		m_platformData.pRootSignature	= graphics::getPlatformData( graphicsSystem ).pRootSignature;
 
 		m_pRenderTarget = nullptr;
 
@@ -65,9 +66,9 @@ namespace tiki
 
 	void GraphicsContext::dispose( GraphicsSystem& graphicsSystem )
 	{
-		m_pGraphicsSystem		= nullptr;
-		m_platformData.pDevice	= nullptr;
-		m_platformData.pContext	= nullptr;
+		m_pGraphicsSystem				= nullptr;
+		m_platformData.pCommandList		= nullptr;
+		m_platformData.pDescriptionHeap	= nullptr;
 
 		m_immediateVertexData.dispose( graphicsSystem );
 	}
@@ -88,10 +89,9 @@ namespace tiki
 			depthClearFlags |= D3D10_CLEAR_STENCIL;
 		}
 
-		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthView != nullptr )
+		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthHandle != nullptr )
 		{
-			TIKI_ASSERT( renderTarget.m_platformData.pDepthView != nullptr );
-			m_platformData.pContext->ClearDepthStencilView( renderTarget.m_platformData.pDepthView, depthClearFlags, depthValue, stencilValue );
+			m_platformData.pCommandList->ClearDepthStencilView( *renderTarget.m_platformData.pDepthHandle, depthClearFlags, depthValue, stencilValue, nullptr, 0u );
 		}
 
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
@@ -105,15 +105,15 @@ namespace tiki
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
 			{
-				TIKI_ASSERT( renderTarget.m_platformData.pColorViews[ i ] != nullptr );
-				m_platformData.pContext->ClearRenderTargetView( renderTarget.m_platformData.pColorViews[ i ], &floatColor.x );
+				TIKI_ASSERT( renderTarget.m_platformData.pColorHandle != nullptr );
+				m_platformData.pCommandList->ClearRenderTargetView( *renderTarget.m_platformData.pColorHandle, &floatColor.x, nullptr, 0u );
 			}
 		}
 	}
 
 	void GraphicsContext::copyTextureData( const TextureData& sourceData, const TextureData& targetData )
 	{
-		m_platformData.pContext->CopyResource(
+		m_platformData.pCommandList->CopyResource(
 			targetData.m_platformData.pResource,
 			sourceData.m_platformData.pResource
 		);
@@ -130,11 +130,11 @@ namespace tiki
 		{
 			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 		};
-		m_platformData.pContext->PSSetShaderResources( 0u, TIKI_COUNT( apShaderResources ), apShaderResources );
+		m_platformData.pCommandList->PSSetShaderResources( 0u, TIKI_COUNT( apShaderResources ), apShaderResources );
 
-		m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+		m_platformData.pCommandList->SetRenderTargets( renderTarget.m_platformData.pColorHandle, TRUE, (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pDepthHandle );
 
-		D3D11_VIEWPORT viewPort;
+		D3D12_VIEWPORT viewPort;
 		if ( pViewport == nullptr )
 		{
 			viewPort.TopLeftX	= 0.0f;
@@ -153,7 +153,7 @@ namespace tiki
 			viewPort.MinDepth	= pViewport->minDepth;
 			viewPort.MaxDepth	= pViewport->maxDepth;
 		}
-		m_platformData.pContext->RSSetViewports( 1u, &viewPort );
+		m_platformData.pCommandList->RSSetViewports( 1u, &viewPort );
 
 		invalidateState();
 	}
@@ -168,16 +168,11 @@ namespace tiki
 		if ( m_currentRenderPassDepth != 0u )
 		{
 			const RenderTarget& renderTarget = *m_apRenderPassesStack[ m_currentRenderPassDepth - 1u ];
-			m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+			m_platformData.pCommandList->SetRenderTargets( renderTarget.m_platformData.pColorHandle, TRUE, (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pDepthHandle );
 		}
 		else
 		{
-			TGRenderTargetView* apRenderTargetViews[ GraphicsSystemLimits_RenderTargetSlots ] =
-			{
-				nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
-			};
-
-			m_platformData.pContext->OMSetRenderTargets( GraphicsSystemLimits_RenderTargetSlots, apRenderTargetViews, nullptr );
+			m_platformData.pCommandList->SetRenderTargets( nullptr, FALSE, 0u, nullptr );
 		}
 
 		invalidateState();
@@ -190,9 +185,6 @@ namespace tiki
 
 		if ( m_pBlendState != pBlendState )
 		{
-			static const float s_aBlendFactor[ 4u ] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-			m_platformData.pContext->OMSetBlendState( pBlendState->m_platformData.pBlendState, s_aBlendFactor, 0xffffffffu );
 			m_pBlendState = pBlendState;
 		}		
 	}
@@ -200,62 +192,31 @@ namespace tiki
 	void GraphicsContext::setDepthStencilState( const DepthStencilState* pDepthStencilState )
 	{
 		TIKI_ASSERT( pDepthStencilState != nullptr );
-
-		if ( m_pDepthStencilState != pDepthStencilState )
-		{
-			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, UINT( pDepthStencilState->m_platformData.stencilRef ) );
-			m_pDepthStencilState = pDepthStencilState;
-		}		
+		m_pDepthStencilState = pDepthStencilState;
 	}
 
 	void GraphicsContext::setRasterizerState( const RasterizerState* pRasterizerState )
 	{
 		TIKI_ASSERT( pRasterizerState != nullptr );
-
-		if ( m_pRasterizerState != pRasterizerState )
-		{
-			m_platformData.pContext->RSSetState( pRasterizerState->m_platformData.pRasterizerState );
-			m_pRasterizerState = pRasterizerState;
-		}
+		m_pRasterizerState = pRasterizerState;
 	}
 
 	void GraphicsContext::setPrimitiveTopology( PrimitiveTopology topology )
 	{
-		static const D3D11_PRIMITIVE_TOPOLOGY s_aTopologies[ PrimitiveTopology_Count ] =
-		{
-			D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
-			D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
-			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-			D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
-		};
-
-		if ( m_primitiveTopology != topology )
-		{
-			m_platformData.pContext->IASetPrimitiveTopology( s_aTopologies[ topology ] );
-			m_primitiveTopology = topology;
-		}
+		m_primitiveTopology = topology;
 	}
 
 	void GraphicsContext::setVertexShader( const Shader* pShader )
 	{
 		TIKI_ASSERT( pShader != nullptr );
 		TIKI_ASSERT( pShader->getShaderType() == ShaderType_VertexShader );
-
-		if ( m_pVertexShader != pShader )
-		{
-			m_platformData.pContext->VSSetShader( pShader->m_platformData.pVertexShader, nullptr, 0 );
-			m_pVertexShader = pShader;
-		}
+		m_pVertexShader = pShader;
 	}
 
 	void GraphicsContext::setVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
 	{
 		TIKI_ASSERT( pVertexInputBinding != nullptr );
-		if ( m_pVertexInputBinding != pVertexInputBinding )
-		{
-			m_platformData.pContext->IASetInputLayout( pVertexInputBinding->m_platformData.pInputLayout );
-			m_pVertexInputBinding = pVertexInputBinding;
-		}
+		m_pVertexInputBinding = pVertexInputBinding;
 	}
 
 	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
@@ -309,12 +270,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pShader != nullptr );
 		TIKI_ASSERT( pShader->getShaderType() == ShaderType_PixelShader );
-
-		if ( m_pPixelShader != pShader )
-		{
-			m_platformData.pContext->PSSetShader( pShader->m_platformData.pPixelShader, nullptr, 0 );
-			m_pPixelShader = pShader;
-		}
+		m_pPixelShader = pShader;
 	}
 
 	void GraphicsContext::setPixelShaderSamplerState( uint slot, const SamplerState* pSampler )
@@ -367,18 +323,12 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		m_platformData.pContext->IASetIndexBuffer( 
-			indexBuffer.m_pBuffer,
-			( indexBuffer.m_indexType == IndexType_UInt32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
-			0u
-		);
+		m_platformData.pCommandList->SetIndexBuffer( &indexBuffer.m_pBuffer );
 	}
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& buffer )
 	{
-		const UINT offset = 0u;
-		const UINT vertexStride = static_cast< UINT >( buffer.m_stride );
-		m_platformData.pContext->IASetVertexBuffers( (UINT)slot, 1u, &buffer.m_pBuffer, &vertexStride, &offset );
+		m_platformData.pCommandList->SetVertexBuffers( (UINT)slot, &buffer.m_pBuffer, FALSE, 1u );
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
@@ -400,38 +350,98 @@ namespace tiki
 		const UINT vertexStride = static_cast< UINT >( m_immediateVertexStride );
 		m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &vertexStride, &offset );
 
-		m_platformData.pContext->Draw( (UINT)m_immediateVertexCount, 0u );
+		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		m_platformData.pContext->Draw( (UINT)vertexCount, (UINT)baseVertexOffset );
+		m_platformData.pCommandList->DrawInstanced( (UINT)vertexCount, 1u, (UINT)baseVertexOffset, 0u );
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
-		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
+		m_platformData.pCommandList->DrawIndexedInstanced( (UINT)indexCount, 1u, (UINT)baseIndexOffset, (UINT)baseVertexOffset, 0u );
 	}
 
 	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
 		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
 
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		m_platformData.pContext->Map( buffer.m_pBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapped );
+		void* pData;
+		buffer.m_pBuffer->Map( nullptr, &pData );
 
-		return mapped.pData;
+		return pData;
 	}
 
 	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
-		m_platformData.pContext->Unmap( buffer.m_pBuffer, 0u );
+		buffer.m_pBuffer->Unmap( nullptr );
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const
 	{
 		return m_pGraphicsSystem->getBackBuffer();
+	}
+
+	void GraphicsContext::prepareDrawCall()
+	{
+		const uint64 aRelevantStates[] =
+		{
+			(uint64)m_pBlendState,
+			(uint64)m_pDepthStencilState,
+			(uint64)m_pVertexInputBinding,
+			(uint64)m_pRenderTarget,
+			(uint64)m_primitiveTopology,
+			(uint64)m_platformData.pRootSignature,
+			(uint64)m_pPixelShader,
+			(uint64)m_pRasterizerState,
+			(uint64)m_pVertexShader
+		};
+		const crc32 crc = crcBytes( aRelevantStates, sizeof(aRelevantStates) );
+
+		ID3D12PipelineState* pPipelineState = nullptr;
+		for (uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i)
+		{
+			const GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates[ i ];
+
+			if( pipelineState.crc == crc )
+			{
+				pPipelineState = pipelineState.pPpielineState;
+				break;
+			}
+		}
+
+		static const D3D12_PRIMITIVE_TOPOLOGY_TYPE s_aTopologies[ PrimitiveTopology_Count ] =
+		{
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+		};
+
+		if( pPipelineState == nullptr )
+		{
+			TIKI_DECLARE_STACKANDZERO( D3D12_GRAPHICS_PIPELINE_STATE_DESC, pipelineDesc );
+			pipelineDesc.BlendState				= m_pBlendState->m_platformData.blendDesc;
+			pipelineDesc.DepthStencilState		= m_pDepthStencilState->m_platformData.depthStencilDesc;
+			//pipelineDesc.DSVFormat
+			pipelineDesc.InputLayout			= m_pVertexInputBinding->m_platformData.inputLayoutDesc;
+			pipelineDesc.NumRenderTargets		= (UINT)m_pRenderTarget->m_colorBufferCount;
+			pipelineDesc.PrimitiveTopologyType	= s_aTopologies[ m_primitiveTopology ];
+			pipelineDesc.pRootSignature			= m_platformData.pRootSignature;
+			pipelineDesc.PS						= m_pPixelShader->m_platformData.shaderCode;
+			pipelineDesc.RasterizerState		= m_pRasterizerState->m_platformData.rasterizerDesc;
+			//pipelineDesc.RTVFormats
+			pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
+			TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, &pPipelineState ) ) );
+
+			GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates.push();
+			pipelineState.crc				= crc;
+			pipelineState.pPpielineState	= pPipelineState;
+		}
+
+		m_platformData.pCommandList->SetPipelineState( pPipelineState );
 	}
 }
