@@ -12,16 +12,12 @@ namespace tiki
 	{
 		RenderTargetPlatformData()
 		{
-			for (uint i = 0u; i < TIKI_COUNT( pColorViews ); ++i)
-			{
-				pColorViews[ i ] = nullptr;
-			}
-
-			pDepthView = nullptr;
+			pColorHandle = nullptr;
+			pDepthHandle = nullptr;
 		}
 
-		ID3D12Resource*		pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];
-		ID3D12Resource*		pDepthView;
+		const D3D12_CPU_DESCRIPTOR_HANDLE*	pColorHandle;
+		const D3D12_CPU_DESCRIPTOR_HANDLE*	pDepthHandle;
 	};
 }
 

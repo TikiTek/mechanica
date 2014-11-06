@@ -5,11 +5,11 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include "graphicssystem_internal_d3d12.hpp"
 
 namespace tiki
 {
-	TGFormat graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
+	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
 	{
 		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
 
@@ -40,32 +40,32 @@ namespace tiki
 
 		if ( isBitSet( flags, TextureFlags_RenderTarget ) )
 		{
-			result |= D3D11_BIND_RENDER_TARGET;
+			result |= D3D12_BIND_RENDER_TARGET;
 		}
 
 		if ( isBitSet( flags, TextureFlags_DepthStencil ) )
 		{
-			result |= D3D11_BIND_DEPTH_STENCIL;
+			result |= D3D12_BIND_DEPTH_STENCIL;
 		}
 
 		if ( isBitSet( flags, TextureFlags_ShaderInput ) )
 		{
-			result |= D3D11_BIND_SHADER_RESOURCE;
+			result |= D3D12_BIND_SHADER_RESOURCE;
 		}
 
 		return result;
 	}
 
-	static D3D11_SRV_DIMENSION getViewDimentions( TextureType type )
+	static D3D12_SRV_DIMENSION getViewDimentions( TextureType type )
 	{
 		TIKI_ASSERT( type < TextureType_Count );
 
-		static D3D11_SRV_DIMENSION s_typeLookup[] =
+		static D3D12_SRV_DIMENSION s_typeLookup[] =
 		{
-			D3D11_SRV_DIMENSION_TEXTURE1D,		// TextureType_1d
-			D3D11_SRV_DIMENSION_TEXTURE2D,		// TextureType_2d
-			D3D11_SRV_DIMENSION_TEXTURE3D,		// TextureType_3d
-			D3D11_SRV_DIMENSION_TEXTURECUBE,	// TextureType_Cube
+			D3D12_SRV_DIMENSION_TEXTURE1D,		// TextureType_1d
+			D3D12_SRV_DIMENSION_TEXTURE2D,		// TextureType_2d
+			D3D12_SRV_DIMENSION_TEXTURE3D,		// TextureType_3d
+			D3D12_SRV_DIMENSION_TEXTURECUBE,	// TextureType_Cube
 		};
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_typeLookup ) == TextureType_Count );
 
@@ -79,13 +79,11 @@ namespace tiki
 	TextureData::~TextureData()
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
-		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 	}
 
 	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
-		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
 
 		m_description = description;
@@ -122,7 +120,7 @@ namespace tiki
 		}
 
 		const DXGI_FORMAT dxFormat = graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags );
-		ID3D11Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
 		HRESULT result = S_FALSE;
 		switch ( m_description.type )
 		{

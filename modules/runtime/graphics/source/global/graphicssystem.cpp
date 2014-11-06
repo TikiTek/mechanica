@@ -7,7 +7,7 @@ namespace tiki
 {
 	GraphicsSystem::GraphicsSystem()
 	{
-		TIKI_COMPILETIME_ASSERT( (size_t)&m_platformData == (size_t)this + sizeof(uint) );
+		TIKI_COMPILETIME_ASSERT( TIKI_OFFSETOF( GraphicsSystem, m_platformData ) == sizeof(uint) );
 
 		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
 		{

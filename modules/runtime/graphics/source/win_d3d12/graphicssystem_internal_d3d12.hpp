@@ -12,8 +12,11 @@ namespace tiki
 
 	namespace graphics
 	{
-		ID3D12Device*			getDevice( GraphicsSystem& graphicsSystem );
-		ID3D12CommandQueue*		getCommandQueue( GraphicsSystem& graphicsSystem );
+		GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
+		ID3D12Device*				getDevice( GraphicsSystem& graphicsSystem );
+		ID3D12CommandList*			getCommandList( GraphicsSystem& graphicsSystem );
+
+		void						setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
 	}
 }
 

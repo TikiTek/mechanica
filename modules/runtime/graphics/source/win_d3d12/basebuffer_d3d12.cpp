@@ -8,20 +8,54 @@
 
 namespace tiki
 {
-	D3D11_BIND_FLAG getD3dBinding( GraphicsBufferType binding )
+	D3D12_HEAP_TYPE getD3dHeapType( GraphicsBufferType binding, bool dynamic )
 	{
+		if( dynamic )
+		{
+			return D3D12_HEAP_TYPE_UPLOAD;
+		}
+
 		switch ( binding )
 		{
 		case GraphicsBufferType_ConstantBuffer:
-			return D3D11_BIND_CONSTANT_BUFFER;
+			return D3D12_HEAP_TYPE_UPLOAD;
+
 		case GraphicsBufferType_IndexBuffer:
-			return D3D11_BIND_INDEX_BUFFER;
 		case GraphicsBufferType_VertexBuffer:
-			return D3D11_BIND_VERTEX_BUFFER;
+			return D3D12_HEAP_TYPE_DEFAULT;
+			return D3D12_HEAP_TYPE_DEFAULT;
+
+		default:
+			break;
 		}
 
 		TIKI_BREAK( "[graphics] wrong GraphicsBufferType.\n" );
-		return D3D11_BIND_UNORDERED_ACCESS;
+		return (D3D12_HEAP_TYPE)0;
+	}
+
+	D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
+	{
+		if( dynamic )
+		{
+			return D3D12_RESOURCE_USAGE_GENERIC_READ;
+		}
+
+		switch( binding )
+		{
+		case GraphicsBufferType_ConstantBuffer:
+			return D3D12_RESOURCE_USAGE_GENERIC_READ;
+
+		case GraphicsBufferType_IndexBuffer:
+		case GraphicsBufferType_VertexBuffer:
+			return D3D12_RESOURCE_USAGE_INITIAL;
+			return D3D12_RESOURCE_USAGE_INITIAL;
+
+		default:
+			break;
+		}
+
+		TIKI_BREAK( "[graphics] wrong GraphicsBufferType.\n" );
+		return (D3D12_RESOURCE_USAGE)0;
 	}
 
 	BaseBuffer::BaseBuffer()
@@ -40,23 +74,57 @@ namespace tiki
 
 		m_dynamic = dynamic;
 
-		D3D11_BUFFER_DESC desc;
-		desc.Usage					= ( dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT );
-		desc.CPUAccessFlags			= ( dynamic ? D3D11_CPU_ACCESS_WRITE : 0u );
-		desc.StructureByteStride	= 0;
-		desc.BindFlags				= getD3dBinding( binding );
-		desc.ByteWidth				= UINT( size );
-		desc.MiscFlags				= 0;
+		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
 
-		TIKI_DECLARE_STACKANDZERO( D3D11_SUBRESOURCE_DATA, initData );
-		initData.pSysMem = pInitData;
-		const D3D11_SUBRESOURCE_DATA* pD3dInitData = ( pInitData != nullptr ? &initData : nullptr );
+		const D3D12_HEAP_TYPE heapType				= getD3dHeapType( binding, dynamic );
+		const D3D12_RESOURCE_USAGE resourceUsage	= getD3dResourceUsage( binding, dynamic );
 
-		const HRESULT result = graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer );
-		if ( FAILED( result ) )
+		HRESULT result = pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES( heapType ),
+			D3D12_HEAP_MISC_NONE,
+			&CD3D12_RESOURCE_DESC::Buffer( size ),
+			resourceUsage,
+			IID_PPV_ARGS( &m_pBuffer )
+		);
+
+		if( FAILED( result ) )
 		{
-			dispose( graphicsSystem );
 			return false;
+		}
+
+		if( pInitData != nullptr )
+		{
+			if( heapType != D3D12_HEAP_TYPE_UPLOAD )
+			{
+				ID3D12Resource* pUploadBuffer = nullptr;
+				result = pDevice->CreateCommittedResource(
+					&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+					D3D12_HEAP_MISC_NONE,
+					&CD3D12_RESOURCE_DESC::Buffer( size ),
+					D3D12_RESOURCE_USAGE_GENERIC_READ,
+					IID_PPV_ARGS( &pUploadBuffer )
+				);
+
+				TIKI_DECLARE_STACKANDZERO( D3D12_SUBRESOURCE_DATA, initData );
+				initData.pData		= pInitData;
+				initData.RowPitch	= size;
+				initData.SlicePitch	= size;
+
+				ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
+				UpdateSubresources<1>( pCommandList, m_pBuffer, pUploadBuffer, 0, 0, 1, &initData );
+				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_GENERIC_READ );
+
+				pUploadBuffer->Release();
+				pUploadBuffer = nullptr;
+			}
+			else
+			{
+				void* pTargetData = nullptr;
+				m_pBuffer->Map( nullptr, &pTargetData );
+				memory::copy( pTargetData, pInitData, size );
+				m_pBuffer->Unmap( nullptr );
+			}
 		}
 
 		return true;
