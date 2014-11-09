@@ -3,69 +3,87 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/indexbuffer.hpp"
+#include "tiki/graphics/vertexbuffer.hpp"
 
 #include "graphicssystem_internal_d3d12.hpp"
 
 namespace tiki
 {
-	D3D12_HEAP_TYPE getD3dHeapType( GraphicsBufferType binding, bool dynamic )
+	static D3D12_HEAP_TYPE getD3dHeapType( GraphicsBufferType binding, bool dynamic )
 	{
 		if( dynamic )
 		{
 			return D3D12_HEAP_TYPE_UPLOAD;
 		}
 
-		switch ( binding )
+		static const D3D12_HEAP_TYPE s_aD3dHeapType[ ] =
 		{
-		case GraphicsBufferType_ConstantBuffer:
-			return D3D12_HEAP_TYPE_UPLOAD;
+			D3D12_HEAP_TYPE_UPLOAD,
+			D3D12_HEAP_TYPE_DEFAULT,
+			D3D12_HEAP_TYPE_DEFAULT
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dHeapType ) == GraphicsBufferType_Count );
 
-		case GraphicsBufferType_IndexBuffer:
-		case GraphicsBufferType_VertexBuffer:
-			return D3D12_HEAP_TYPE_DEFAULT;
-			return D3D12_HEAP_TYPE_DEFAULT;
-
-		default:
-			break;
-		}
-
-		TIKI_BREAK( "[graphics] wrong GraphicsBufferType.\n" );
-		return (D3D12_HEAP_TYPE)0;
+		TIKI_ASSERT( binding < GraphicsBufferType_Count );
+		return s_aD3dHeapType[ binding ];
 	}
 
-	D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
+	static D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
 	{
 		if( dynamic )
 		{
 			return D3D12_RESOURCE_USAGE_GENERIC_READ;
 		}
 
-		switch( binding )
+		static const D3D12_RESOURCE_USAGE s_aD3dResourceUsage[] =
 		{
-		case GraphicsBufferType_ConstantBuffer:
-			return D3D12_RESOURCE_USAGE_GENERIC_READ;
+			D3D12_RESOURCE_USAGE_GENERIC_READ,
+			D3D12_RESOURCE_USAGE_INITIAL,
+			D3D12_RESOURCE_USAGE_INITIAL
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dResourceUsage ) == GraphicsBufferType_Count );
 
-		case GraphicsBufferType_IndexBuffer:
-		case GraphicsBufferType_VertexBuffer:
-			return D3D12_RESOURCE_USAGE_INITIAL;
-			return D3D12_RESOURCE_USAGE_INITIAL;
+		TIKI_ASSERT( binding < GraphicsBufferType_Count );
+		return s_aD3dResourceUsage[ binding ];
+	}
 
-		default:
-			break;
+	static D3D12_DESCRIPTOR_HEAP_TYPE getD3dDescriptorHeapType( GraphicsBufferType binding  )
+	{
+		static const D3D12_DESCRIPTOR_HEAP_TYPE s_aD3dDescriptorHeapType[ ] =
+		{
+			D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP,
+			D3D12_IBV_DESCRIPTOR_HEAP,
+			D3D12_VBV_DESCRIPTOR_HEAP
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dDescriptorHeapType ) == GraphicsBufferType_Count );
+
+		TIKI_ASSERT( binding < GraphicsBufferType_Count );
+		return s_aD3dDescriptorHeapType[ binding ];
+	}
+
+	static DXGI_FORMAT getD3dIndexFormat( IndexType type )
+	{
+		if( type == IndexType_UInt16 )
+		{
+			return DXGI_FORMAT_R16_UINT;
 		}
-
-		TIKI_BREAK( "[graphics] wrong GraphicsBufferType.\n" );
-		return (D3D12_RESOURCE_USAGE)0;
+		else
+		{
+			return DXGI_FORMAT_R32_UINT;
+		}
 	}
 
 	BaseBuffer::BaseBuffer()
 	{
-		m_pBuffer = nullptr;
+		m_pBuffer			= nullptr;
+		m_pDescriptorHeap	= nullptr;
 	}
 
 	BaseBuffer::~BaseBuffer()
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
+		TIKI_ASSERT( m_pDescriptorHeap == nullptr );
 	}
 
 	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
@@ -89,6 +107,7 @@ namespace tiki
 
 		if( FAILED( result ) )
 		{
+			dispose( graphicsSystem );
 			return false;
 		}
 
@@ -104,6 +123,12 @@ namespace tiki
 					D3D12_RESOURCE_USAGE_GENERIC_READ,
 					IID_PPV_ARGS( &pUploadBuffer )
 				);
+
+				if( FAILED( result ) )
+				{
+					dispose( graphicsSystem );
+					return false;
+				}
 
 				TIKI_DECLARE_STACKANDZERO( D3D12_SUBRESOURCE_DATA, initData );
 				initData.pData		= pInitData;
@@ -127,15 +152,65 @@ namespace tiki
 			}
 		}
 
+		// create descriptor heap
+		{
+			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
+			heapDesc.Type	= getD3dDescriptorHeapType( binding );
+
+			if( binding == GraphicsBufferType_ConstantBuffer )
+			{
+				heapDesc.Flags	= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+			}
+
+			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_pDescriptorHeap ) ) )
+			{
+				dispose( graphicsSystem );
+				return false;
+			}
+		}
+
+		switch( binding )
+		{
+		case GraphicsBufferType_ConstantBuffer:
+			{
+				TIKI_DECLARE_STACKANDZERO( D3D12_CONSTANT_BUFFER_VIEW_DESC, viewDesc );
+				viewDesc.SizeInBytes = size;
+
+				pDevice->CreateConstantBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+			}
+			break;
+
+		case GraphicsBufferType_IndexBuffer:
+			{
+				IndexBuffer* pBuffer = static_cast<IndexBuffer*>(this);
+
+				TIKI_DECLARE_STACKANDZERO( D3D12_INDEX_BUFFER_VIEW_DESC, viewDesc );
+				viewDesc.Format			= getD3dIndexFormat( pBuffer->getIndexType() );
+				viewDesc.SizeInBytes	= size;
+
+				pDevice->CreateIndexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+			}
+			break;
+
+		case GraphicsBufferType_VertexBuffer:
+			{
+				VertexBuffer* pBuffer = static_cast<VertexBuffer*>(this);
+
+				TIKI_DECLARE_STACKANDZERO( D3D12_VERTEX_BUFFER_VIEW_DESC, viewDesc );
+				viewDesc.SizeInBytes	= size;
+				viewDesc.StrideInBytes	= pBuffer->getStride();
+
+				pDevice->CreateVertexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+			}
+			break;
+		}		
+
 		return true;
 	}
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )
 	{
-		if ( m_pBuffer != nullptr )
-		{
-			m_pBuffer->Release();
-			m_pBuffer = nullptr;
-		}
+		graphics::safeRelease( &m_pDescriptorHeap );
+		graphics::safeRelease( &m_pBuffer );
 	}
 }

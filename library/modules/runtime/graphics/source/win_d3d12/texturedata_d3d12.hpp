@@ -9,10 +9,12 @@ namespace tiki
 	{
 		TextureDataPlatformData()
 		{
-			pResource	= nullptr;
+			pResource		= nullptr;
+			pDescriptorHeap	= nullptr;
 		}
 
-		ID3D12Resource*	pResource;
+		ID3D12Resource*			pResource;
+		ID3D12DescriptorHeap*	pDescriptorHeap;
 	};
 
 	namespace graphics

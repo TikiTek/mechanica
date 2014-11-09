@@ -10,7 +10,9 @@ namespace tiki
 	{
 		GraphicsBufferType_ConstantBuffer,
 		GraphicsBufferType_IndexBuffer,
-		GraphicsBufferType_VertexBuffer
+		GraphicsBufferType_VertexBuffer,
+
+		GraphicsBufferType_Count
 	};
 }
 

@@ -1,6 +1,8 @@
 #ifndef TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 #define TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 
+#include "tiki/graphics/graphissystemlimits.hpp"
+
 #include <d3d12.h>
 
 namespace tiki
@@ -56,10 +58,16 @@ namespace tiki
 		VertexInputBindingPlatformData()
 		{
 			isCreated = false;
+
+			memory::zero( aInputElements, sizeof(aInputElements) );
+
+			inputLayoutDesc.NumElements			= 0u;
+			inputLayoutDesc.pInputElementDescs	= nullptr;
 		}
 
-		bool					isCreated;
-		D3D12_INPUT_LAYOUT_DESC	inputLayoutDesc;
+		bool						isCreated;
+		D3D12_INPUT_ELEMENT_DESC	aInputElements[ GraphicsSystemLimits_MaxVertexAttributes ];
+		D3D12_INPUT_LAYOUT_DESC		inputLayoutDesc;
 	};
 }
 

@@ -25,6 +25,7 @@ namespace tiki
 	private:
 
 		ID3D12Resource*			m_pBuffer;
+		ID3D12DescriptorHeap*	m_pDescriptorHeap;
 		bool					m_dynamic;
 
 	};

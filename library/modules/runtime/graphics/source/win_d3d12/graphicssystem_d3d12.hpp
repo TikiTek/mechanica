@@ -12,14 +12,15 @@ namespace tiki
 		{
 			pCommandAllocator			= nullptr;
 			pCommandQueue				= nullptr;
-			pDescriptionHeap			= nullptr;
 			pDevice						= nullptr;
 			pPipelineState				= nullptr;
 			pRootSignature				= nullptr;
 			pSwapChain					= nullptr;
 
-			pBackBufferColor			= nullptr;
-			pBackBufferDepth			= nullptr;
+			pBackBufferColor					= nullptr;
+			pBackBufferColorDescriptionHeap		= nullptr;
+			pBackBufferDepth					= nullptr;
+			pBackBufferDepthDescriptionHeap		= nullptr;
 
 			swapBufferCount				= 0u;
 			currentSwapBufferIndex		= 0u;
@@ -28,14 +29,15 @@ namespace tiki
 		ID3D12CommandAllocator*		pCommandAllocator;
 		ID3D12CommandList*			pCommandList;
 		ID3D12CommandQueue*			pCommandQueue;
-		ID3D12DescriptorHeap*		pDescriptionHeap;
 		ID3D12Device*				pDevice;
 		ID3D12PipelineState*		pPipelineState;
 		ID3D12RootSignature*		pRootSignature;
 		IDXGISwapChain*				pSwapChain;
 
 		ID3D12Resource*				pBackBufferColor;
+		ID3D12DescriptorHeap*		pBackBufferColorDescriptionHeap;
 		ID3D12Resource*				pBackBufferDepth;
+		ID3D12DescriptorHeap*		pBackBufferDepthDescriptionHeap;
 
 		uint						swapBufferCount;
 		uint						currentSwapBufferIndex;

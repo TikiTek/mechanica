@@ -89,25 +89,28 @@ namespace tiki
 			depthClearFlags |= D3D10_CLEAR_STENCIL;
 		}
 
-		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthHandle != nullptr )
+		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthHeap != nullptr )
 		{
-			m_platformData.pCommandList->ClearDepthStencilView( *renderTarget.m_platformData.pDepthHandle, depthClearFlags, depthValue, stencilValue, nullptr, 0u );
+			m_platformData.pCommandList->ClearDepthStencilView( renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(), depthClearFlags, depthValue, stencilValue, nullptr, 0u );
 		}
 
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color2 == ClearMask_Color0 << 2u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color3 == ClearMask_Color0 << 3u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color4 == ClearMask_Color0 << 4u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color5 == ClearMask_Color0 << 5u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color6 == ClearMask_Color0 << 6u );
-		TIKI_COMPILETIME_ASSERT( ClearMask_Color7 == ClearMask_Color0 << 7u );
-		for (uint i = 0u; i < renderTarget.m_colorBufferCount; ++i)
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color2 == ClearMask_Color0 << 2u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color3 == ClearMask_Color0 << 3u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color4 == ClearMask_Color0 << 4u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color5 == ClearMask_Color0 << 5u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color6 == ClearMask_Color0 << 6u );
+		//TIKI_COMPILETIME_ASSERT( ClearMask_Color7 == ClearMask_Color0 << 7u );
+		//for (uint i = 0u; i < renderTarget.m_colorBufferCount; ++i)
+		//{
+		//	if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
+		//	{
+		//	}
+		//}
+
+		if( renderTarget.m_platformData.pColorHeap != nullptr )
 		{
-			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
-			{
-				TIKI_ASSERT( renderTarget.m_platformData.pColorHandle != nullptr );
-				m_platformData.pCommandList->ClearRenderTargetView( *renderTarget.m_platformData.pColorHandle, &floatColor.x, nullptr, 0u );
-			}
+			m_platformData.pCommandList->ClearRenderTargetView( renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(), &floatColor.x, nullptr, 0u );
 		}
 	}
 
@@ -126,12 +129,6 @@ namespace tiki
 		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 		
-		TGShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
-		{
-			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
-		};
-		m_platformData.pCommandList->PSSetShaderResources( 0u, TIKI_COUNT( apShaderResources ), apShaderResources );
-
 		m_platformData.pCommandList->SetRenderTargets( renderTarget.m_platformData.pColorHandle, TRUE, (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pDepthHandle );
 
 		D3D12_VIEWPORT viewPort;
