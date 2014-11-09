@@ -12,12 +12,12 @@ namespace tiki
 	{
 		RenderTargetPlatformData()
 		{
-			pColorHandle = nullptr;
-			pDepthHandle = nullptr;
+			pColorHeap = nullptr;
+			pDepthHeap = nullptr;
 		}
 
-		const D3D12_CPU_DESCRIPTOR_HANDLE*	pColorHandle;
-		const D3D12_CPU_DESCRIPTOR_HANDLE*	pDepthHandle;
+		ID3D12DescriptorHeap*		pColorHeap;
+		ID3D12DescriptorHeap*		pDepthHeap;
 	};
 }
 

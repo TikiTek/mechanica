@@ -13,7 +13,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
 
-		static TGFormat s_formatLookup[] =
+		static DXGI_FORMAT s_formatLookup[] =
 		{
 			DXGI_FORMAT_R8_UNORM,				// PixelFormat_R8,
 			DXGI_FORMAT_R8G8B8A8_UNORM,			// PixelFormat_R8G8B8A8
@@ -34,29 +34,29 @@ namespace tiki
 		return s_formatLookup[ pixelFormat ];
 	}
 
-	static UINT getD3dFlags( TextureFlags flags )
+	static D3D12_RESOURCE_MISC_FLAG getD3dFlags( TextureFlags flags )
 	{
-		UINT result = 0u;
+		D3D12_RESOURCE_MISC_FLAG result = D3D12_RESOURCE_MISC_NONE;
 
 		if ( isBitSet( flags, TextureFlags_RenderTarget ) )
 		{
-			result |= D3D12_BIND_RENDER_TARGET;
+			result |= D3D12_RESOURCE_MISC_RENDER_TARGET;
 		}
 
 		if ( isBitSet( flags, TextureFlags_DepthStencil ) )
 		{
-			result |= D3D12_BIND_DEPTH_STENCIL;
+			result |= D3D12_RESOURCE_MISC_DEPTH_STENCIL;
 		}
 
-		if ( isBitSet( flags, TextureFlags_ShaderInput ) )
+		if ( !isBitSet( flags, TextureFlags_ShaderInput ) )
 		{
-			result |= D3D12_BIND_SHADER_RESOURCE;
+			result |= D3D12_RESOURCE_MISC_NO_SHADER_RESOURCE;
 		}
 
 		return result;
 	}
 
-	static D3D12_SRV_DIMENSION getViewDimentions( TextureType type )
+	static D3D12_SRV_DIMENSION getD3dViewDimentions( TextureType type )
 	{
 		TIKI_ASSERT( type < TextureType_Count );
 
@@ -88,126 +88,165 @@ namespace tiki
 
 		m_description = description;
 
-		D3D11_SUBRESOURCE_DATA initData[ 32u ];
-		memory::zero( initData, sizeof( initData ) );
+		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
 
-		const D3D11_SUBRESOURCE_DATA* pD3dInitData = nullptr;
-		if ( pTextureData != nullptr )
+		const PixelFormat format	= (PixelFormat)description.format;
+		const TextureFlags flags	= (TextureFlags)description.flags;
+		const DXGI_FORMAT dxFormat	= graphics::getD3dFormat( format, flags );
+
+		D3D12_RESOURCE_DESC resourceDesc;
+		switch( description.type )
 		{
+		case TextureType_1d:
+			resourceDesc = CD3D12_RESOURCE_DESC::Tex1D(
+				dxFormat,
+				description.width,
+				description.arrayCount,
+				description.mipCount,
+				getD3dFlags( flags )
+			);
+			break;
+
+		case TextureType_2d:
+			resourceDesc = CD3D12_RESOURCE_DESC::Tex2D(
+				dxFormat,
+				description.width,
+				description.height,
+				description.arrayCount,
+				description.mipCount,
+				1u,
+				0u,
+				getD3dFlags( flags )
+			);
+			break;
+
+		case TextureType_3d:
+			resourceDesc = CD3D12_RESOURCE_DESC::Tex3D(
+				dxFormat,
+				description.width,
+				description.height,
+				description.depth,
+				description.mipCount,
+				getD3dFlags( flags )
+			);
+			break;
+
+		case TextureType_Cube:
+			TIKI_TRACE_ERROR( "[TextureData::create] not implemented\n" );
+			break;
+		}
+
+		HRESULT result = pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
+			D3D12_HEAP_MISC_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_USAGE_GENERIC_READ,
+			IID_PPV_ARGS( &m_platformData.pResource )
+		);
+
+		if( FAILED( result ) )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
+
+		if( pTextureData != nullptr )
+		{
+			ID3D12Resource* pUploadResource = nullptr;
+
+			result = pDevice->CreateCommittedResource(
+				&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+				D3D12_HEAP_MISC_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_USAGE_GENERIC_READ,
+				IID_PPV_ARGS( &pUploadResource )
+			);
+
+			if( FAILED( result ) )
+			{
+				dispose( graphicsSystem );
+				return false;
+			}
+
+			D3D12_SUBRESOURCE_DATA initData[ 32u ];
+			memory::zero( initData, sizeof(initData) );
+
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
 			uint width	= description.width;
 			uint height	= description.height;
 			uint depth	= TIKI_MAX( description.depth, 1u );
-			const uint8* pLevelData	= static_cast< const uint8* >( pTextureData );
+			const uint8* pLevelData	= static_cast<const uint8*>(pTextureData);
 
-			for (uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel)
+			for( uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel )
 			{
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
 
-				initData[ mipLevel ].pSysMem			= pLevelData;
-				initData[ mipLevel ].SysMemPitch		= UINT( rowPitch );
-				initData[ mipLevel ].SysMemSlicePitch	= UINT( depthPitch );
+				initData[ mipLevel ].pData			= pLevelData;
+				initData[ mipLevel ].RowPitch		= UINT( rowPitch );
+				initData[ mipLevel ].SlicePitch		= UINT( depthPitch );
 
 				pLevelData	+= depthPitch * depth;
 				width		= TIKI_MAX( width / 2u, 1u );
 				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
-			} 
+			}
 
-			pD3dInitData = initData;
+			ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
+			UpdateSubresources<32>( pCommandList, m_platformData.pResource, pUploadResource, 0, 0, description.mipCount, initData );
+			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_GENERIC_READ );
+
+			pUploadResource->Release( );
+			pUploadResource = nullptr;
 		}
 
-		const DXGI_FORMAT dxFormat = graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags );
-		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
-		HRESULT result = S_FALSE;
-		switch ( m_description.type )
+		// create descriptor heap
 		{
-		case TextureType_1d:
+			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
+			heapDesc.Type	= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
+			heapDesc.Flags	= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+
+			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pDescriptorHeap ) ) )
 			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture1DDesc, desc );
-				desc.Format				= dxFormat;
-				desc.Width				= description.width;
-				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount;
-				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
-
-				result = pDevice->CreateTexture1D( &desc, pD3dInitData, &m_platformData.pTexture1d );
-			}
-			break;
-
-		case TextureType_2d:
-			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
-				desc.Format				= dxFormat;
-				desc.Width				= description.width;
-				desc.Height				= description.height;
-				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount;
-				desc.ArraySize			= description.arrayCount;
-				desc.SampleDesc.Count	= 1u;
-				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
-
-				result = pDevice->CreateTexture2D( &desc, pD3dInitData, &m_platformData.pTexture2d );
-			}
-			break;
-
-		case TextureType_3d:
-			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture3DDesc, desc );
-				desc.Format				= dxFormat;
-				desc.Width				= description.width;
-				desc.Height				= description.height;
-				desc.Depth				= description.depth;
-				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount;
-				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
-
-				result = pDevice->CreateTexture3D( &desc, pD3dInitData, &m_platformData.pTexture3d );
-			}
-			break;
-
-		case TextureType_Cube:
-			break;
-
-		}
-		if ( FAILED( result ) )
-		{
-			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
-			return false;
-		}
-
-		if ( isBitSet( description.flags, TextureFlags_ShaderInput ) )
-		{
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-			srvDesc.Format						= dxFormat;
-			srvDesc.ViewDimension				= getViewDimentions( (TextureType)description.type );
-			srvDesc.Texture2D.MipLevels			= description.mipCount;
-			srvDesc.Texture2D.MostDetailedMip	= 0u;
-
-			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
-			{
-				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );
+				dispose( graphicsSystem );
 				return false;
 			}
 		}
+
+		TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
+		viewDesc.ViewDimension		= getD3dViewDimentions( (TextureType)description.type );
+		viewDesc.Format				= dxFormat;
+
+		switch ( m_description.type )
+		{
+		case TextureType_1d:
+			viewDesc.Texture1D.MipLevels	= description.mipCount;
+			break;
+
+		case TextureType_2d:
+			viewDesc.Texture2D.MipLevels	= description.mipCount;
+			break;
+
+		case TextureType_3d:
+			viewDesc.Texture3D.MipLevels	= description.mipCount;
+			break;
+
+		case TextureType_Cube:
+			viewDesc.TextureCube.MipLevels	= description.mipCount;
+			break;
+
+		}
+
+		pDevice->CreateShaderResourceView( m_platformData.pResource, &viewDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 
 		return true;
 	}
 
 	void TextureData::dispose( GraphicsSystem& graphicsSystem )
 	{
-		if ( m_platformData.pShaderView != nullptr )
-		{
-			m_platformData.pShaderView->Release();
-			m_platformData.pShaderView = nullptr;
-		}
-
-		if ( m_platformData.pResource != nullptr )
-		{
-			m_platformData.pResource->Release();
-			m_platformData.pResource = nullptr;
-		}
+		graphics::safeRelease( &m_platformData.pDescriptorHeap );
+		graphics::safeRelease( &m_platformData.pResource );
 	}
 }

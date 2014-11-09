@@ -17,6 +17,16 @@ namespace tiki
 		ID3D12CommandList*			getCommandList( GraphicsSystem& graphicsSystem );
 
 		void						setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
+
+		template<class T>
+		TIKI_FORCE_INLINE void safeRelease( T** ppObject )
+		{
+			if( *ppObject != nullptr )
+			{
+				(*ppObject)->Release();
+				*ppObject = nullptr;
+			}
+		}
 	}
 }
 

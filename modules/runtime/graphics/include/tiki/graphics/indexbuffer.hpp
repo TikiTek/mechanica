@@ -11,7 +11,6 @@ namespace tiki
 	{		
 		IndexType_Invalid	= 0u,
 
-		IndexType_UInt8		= 1u,
 		IndexType_UInt16	= 2u,
 		IndexType_UInt32	= 4u,
 

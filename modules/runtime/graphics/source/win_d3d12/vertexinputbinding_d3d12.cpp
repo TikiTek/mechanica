@@ -51,14 +51,14 @@ namespace tiki
 	{
 		m_pShader					= nullptr;
 		m_pVertexFormat				= nullptr;
-		m_platformData.pInputLayout	= nullptr;
+		m_platformData				= VertexInputBindingPlatformData();
 	}
 
 	VertexInputBinding::~VertexInputBinding()
 	{
 		m_pShader					= nullptr;
 		m_pVertexFormat				= nullptr;
-		m_platformData.pInputLayout	= nullptr;
+		m_platformData				= VertexInputBindingPlatformData();
 	}
 
 	bool VertexInputBinding::create( GraphicsSystem& graphicsSystem, const VertexInputBindingParameters& creationParameters )
@@ -70,27 +70,22 @@ namespace tiki
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 
-		TGInputElementDesc desc[ GraphicsSystemLimits_MaxVertexAttributes ];
-
 		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
 		{
 			const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
+			D3D12_INPUT_ELEMENT_DESC& desc = m_platformData.aInputElements[ i ];
 
-			desc[ i ].SemanticName			= s_semanticNames[ att.semantic ];
-			desc[ i ].SemanticIndex			= att.semanticIndex;
-			desc[ i ].Format				= s_d3dFormat[ att.format ];
-			desc[ i ].InputSlot				= att.streamIndex;
-			desc[ i ].AlignedByteOffset		= D3D11_APPEND_ALIGNED_ELEMENT;
-			desc[ i ].InputSlotClass		= ( att.inputType == VertexInputType_PerVertex ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA );
-			desc[ i ].InstanceDataStepRate	= 0;
+			desc.SemanticName			= s_semanticNames[ att.semantic ];
+			desc.SemanticIndex			= att.semanticIndex;
+			desc.Format					= s_d3dFormat[ att.format ];
+			desc.InputSlot				= att.streamIndex;
+			desc.AlignedByteOffset		= D3D12_APPEND_ALIGNED_ELEMENT;
+			desc.InputSlotClass			= ( att.inputType == VertexInputType_PerVertex ? D3D12_INPUT_PER_VERTEX_DATA : D3D12_INPUT_PER_INSTANCE_DATA );
+			desc.InstanceDataStepRate	= 0;
 		}
 		
-		m_platformData.pInputLayout = graphics::createVertexInputLayout( graphicsSystem, m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
-		if ( m_platformData.pInputLayout == nullptr )
-		{
-			dispose( graphicsSystem );
-			return false;
-		}
+		m_platformData.inputLayoutDesc.NumElements			= m_pVertexFormat->getAttributeCount();
+		m_platformData.inputLayoutDesc.pInputElementDescs	= m_platformData.aInputElements;
 
 		return true;
 	}
@@ -99,12 +94,7 @@ namespace tiki
 	{
 		m_pVertexFormat	= nullptr;
 		m_pShader		= nullptr;
-
-		if ( m_platformData.pInputLayout != nullptr )
-		{
-			m_platformData.pInputLayout->Release();
-			m_platformData.pInputLayout = nullptr;
-		}
+		m_platformData	= VertexInputBindingPlatformData();
 
 		GraphicsStateObject::dispose();
 	}
