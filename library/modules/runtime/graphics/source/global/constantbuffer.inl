@@ -16,14 +16,15 @@ namespace tiki
 
 	TIKI_FORCE_INLINE bool ConstantBuffer::create( GraphicsSystem& graphicsSystem, uint bufferSize )
 	{
-		if ( BaseBuffer::create( graphicsSystem, bufferSize, true, GraphicsBufferType_ConstantBuffer ) )
-		{
-			m_size = bufferSize;
+		m_size = bufferSize;
 
-			return true;
+		if( !BaseBuffer::create( graphicsSystem, bufferSize, true, GraphicsBufferType_ConstantBuffer ) )
+		{
+			dispose( graphicsSystem );
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	TIKI_FORCE_INLINE void ConstantBuffer::dispose( GraphicsSystem& graphicsSystem )

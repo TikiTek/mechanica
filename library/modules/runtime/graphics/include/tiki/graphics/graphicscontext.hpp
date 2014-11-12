@@ -4,10 +4,10 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/basebuffer.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/graphissystemlimits.hpp"
 #include "tiki/graphics/primitivetopologies.hpp"
+#include "tiki/graphics/vertexbuffer.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/graphicscontext_d3d11.hpp"
@@ -150,7 +150,7 @@ namespace tiki
 		const TextureData*			m_apPixelTextures[ GraphicsSystemLimits_PixelShaderTextureSlots ];
 		const ConstantBuffer*		m_apPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 
-		BaseBuffer					m_immediateVertexData;
+		VertexBuffer				m_immediateVertexData;
 		uint						m_immediateVertexStride;
 		uint						m_immediateVertexCount;
 

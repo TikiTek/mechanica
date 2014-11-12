@@ -86,11 +86,16 @@ namespace tiki
 		TIKI_ASSERT( m_pDescriptorHeap == nullptr );
 	}
 
-	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
 
 		m_dynamic = dynamic;
+
+		if( binding == GraphicsBufferType_ConstantBuffer )
+		{
+			size = alignValue< uint >( size, 256u );
+		}
 
 		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
 
@@ -155,14 +160,15 @@ namespace tiki
 		// create descriptor heap
 		{
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
-			heapDesc.Type	= getD3dDescriptorHeapType( binding );
+			heapDesc.NumDescriptors	= 1u;
+			heapDesc.Type			= getD3dDescriptorHeapType( binding );
 
 			if( binding == GraphicsBufferType_ConstantBuffer )
 			{
-				heapDesc.Flags	= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+				heapDesc.Flags		= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
 			}
 
-			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_pDescriptorHeap ) ) )
+			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_pDescriptorHeap ) ) ) )
 			{
 				dispose( graphicsSystem );
 				return false;
@@ -174,7 +180,7 @@ namespace tiki
 		case GraphicsBufferType_ConstantBuffer:
 			{
 				TIKI_DECLARE_STACKANDZERO( D3D12_CONSTANT_BUFFER_VIEW_DESC, viewDesc );
-				viewDesc.SizeInBytes = size;
+				viewDesc.SizeInBytes = (UINT)size;
 
 				pDevice->CreateConstantBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 			}
@@ -186,7 +192,7 @@ namespace tiki
 
 				TIKI_DECLARE_STACKANDZERO( D3D12_INDEX_BUFFER_VIEW_DESC, viewDesc );
 				viewDesc.Format			= getD3dIndexFormat( pBuffer->getIndexType() );
-				viewDesc.SizeInBytes	= size;
+				viewDesc.SizeInBytes	= (UINT)size;
 
 				pDevice->CreateIndexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 			}
@@ -197,8 +203,8 @@ namespace tiki
 				VertexBuffer* pBuffer = static_cast<VertexBuffer*>(this);
 
 				TIKI_DECLARE_STACKANDZERO( D3D12_VERTEX_BUFFER_VIEW_DESC, viewDesc );
-				viewDesc.SizeInBytes	= size;
-				viewDesc.StrideInBytes	= pBuffer->getStride();
+				viewDesc.SizeInBytes	= (UINT)size;
+				viewDesc.StrideInBytes	= (UINT)pBuffer->getStride( );
 
 				pDevice->CreateVertexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 			}

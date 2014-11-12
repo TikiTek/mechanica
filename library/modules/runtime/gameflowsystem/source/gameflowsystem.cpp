@@ -65,7 +65,7 @@ namespace tiki
 			GameFlowState* pState = m_states[ m_stateTree.getTransitionState() ].pState;
 			if ( pState != nullptr )
 			{
-				const int step			= m_stateTree.getCurrentStep();
+				const uint step			= m_stateTree.getCurrentStep();
 				const bool isCreateing	= m_stateTree.isCreating();
 				const bool isInital		= m_stateTree.isInitial();
 				result					= pState->processTransitionStep( step, isCreateing, isInital );

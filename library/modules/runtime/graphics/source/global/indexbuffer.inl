@@ -16,12 +16,18 @@ namespace tiki
 		TIKI_ASSERT( m_indexType == IndexType_Invalid );
 	}
 
-	TIKI_FORCE_INLINE void IndexBuffer::create( GraphicsSystem& graphicsSystem, size_t indexCount, IndexType type, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/ )
+	TIKI_FORCE_INLINE bool IndexBuffer::create( GraphicsSystem& graphicsSystem, size_t indexCount, IndexType type, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/ )
 	{
 		m_indexType	= type;
 		m_count		= indexCount;
 
-		BaseBuffer::create( graphicsSystem, indexCount * (size_t)type, dynamic, GraphicsBufferType_IndexBuffer, pInitData );
+		if( !BaseBuffer::create( graphicsSystem, indexCount * (size_t)type, dynamic, GraphicsBufferType_IndexBuffer, pInitData ) )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
+
+		return true;
 	}
 
 	TIKI_FORCE_INLINE void IndexBuffer::dispose( GraphicsSystem& graphicsSystem )

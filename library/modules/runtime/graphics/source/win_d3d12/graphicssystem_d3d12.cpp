@@ -48,18 +48,28 @@ namespace tiki
 		if( !graphics::initSwapChain( m_platformData, params, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create SwapChain.\n" );
+			disposePlatform();
+			return false;
+		}
+
+		if( !graphics::initObjects( m_platformData, params ) )
+		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create D3D Objects.\n" );
+			disposePlatform();
 			return false;
 		}
 
 		if( !graphics::initBackBuffer( m_platformData ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 
 		if( !graphics::initDepthStencilBuffer( m_platformData, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 
@@ -81,6 +91,7 @@ namespace tiki
 		if ( !m_commandBuffer.create( *this ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create CommandBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 
@@ -202,7 +213,7 @@ namespace tiki
 		m_platformData.currentSwapBufferIndex = (m_platformData.currentSwapBufferIndex + 1u) % m_platformData.swapBufferCount;
 
 		m_platformData.pBackBufferColor->Release();
-		m_platformData.pSwapChain->GetBuffer( m_platformData.currentSwapBufferIndex, IID_PPV_ARGS( &m_platformData.pBackBufferColor ) );
+		m_platformData.pSwapChain->GetBuffer( (UINT)m_platformData.currentSwapBufferIndex, IID_PPV_ARGS( &m_platformData.pBackBufferColor ) );
 		m_platformData.pDevice->CreateRenderTargetView( m_platformData.pBackBufferColor, nullptr, m_platformData.pBackBufferColorDescriptionHeap->GetCPUDescriptorHandleForHeapStart() );
 		
 		graphics::resetDeviceState( m_platformData );
@@ -266,7 +277,7 @@ namespace tiki
 	
 	static bool graphics::initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
 	{
-		if( !data.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, &data.pCommandAllocator ) )
+		if( FAILED( data.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, &data.pCommandAllocator ) ) )
 		{
 			return false;
 		}
@@ -302,7 +313,7 @@ namespace tiki
 			{
 				TIKI_TRACE_ERROR( "Failed to serialize RootSignature. Error: %s", (const char*)pErrorBlob->GetBufferPointer() );
 				pErrorBlob->Release();
-				pErrorBlob == nullptr;
+				pErrorBlob = nullptr;
 			}
 
 			return false;

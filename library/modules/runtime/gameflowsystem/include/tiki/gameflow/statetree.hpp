@@ -62,7 +62,7 @@ namespace tiki
 		uint						getTransitionState() const			{ return m_transition.getCurrentTransitionState(); }
 		bool						isInTransition() const				{ return m_currentState == InvalidStateIndex; }
 
-		int							getCurrentStep() const	{ return m_transition.currentStep; }
+		uint						getCurrentStep() const	{ return m_transition.currentStep; }
 		bool						isCreating() const		{ return m_transition.isInForwardTransition(); }
 		bool						isInitial() const		{ return m_isInitial; }
 
