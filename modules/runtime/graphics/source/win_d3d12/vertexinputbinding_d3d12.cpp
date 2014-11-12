@@ -84,7 +84,7 @@ namespace tiki
 			desc.InstanceDataStepRate	= 0;
 		}
 		
-		m_platformData.inputLayoutDesc.NumElements			= m_pVertexFormat->getAttributeCount();
+		m_platformData.inputLayoutDesc.NumElements			= (UINT)m_pVertexFormat->getAttributeCount();
 		m_platformData.inputLayoutDesc.pInputElementDescs	= m_platformData.aInputElements;
 
 		return true;

@@ -58,34 +58,49 @@ namespace tiki
 
 	bool SamplerState::isCreated() const
 	{
-		return m_platformData.isCreated;
+		return m_platformData.pDescriptorHeap != nullptr;
 	}
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
-		memory::zero( m_platformData.samplerDesc );
-		m_platformData.samplerDesc.Filter			= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
-		m_platformData.samplerDesc.AddressU			= s_aAddressModeMapping[ creationParamter.addressU ];
-		m_platformData.samplerDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
-		m_platformData.samplerDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
-		m_platformData.samplerDesc.MipLODBias		= 0.0f;
-		m_platformData.samplerDesc.MaxAnisotropy	= uint32( creationParamter.maxAnisotropy );
-		m_platformData.samplerDesc.ComparisonFunc	= D3D12_COMPARISON_ALWAYS;
-		m_platformData.samplerDesc.BorderColor[ 0 ]	= color::getFloatChannelR( creationParamter.borderColor );
-		m_platformData.samplerDesc.BorderColor[ 1 ]	= color::getFloatChannelG( creationParamter.borderColor );
-		m_platformData.samplerDesc.BorderColor[ 2 ]	= color::getFloatChannelB( creationParamter.borderColor );
-		m_platformData.samplerDesc.BorderColor[ 3 ]	= color::getFloatChannelA( creationParamter.borderColor );
-		m_platformData.samplerDesc.MinLOD			= 0;
-		m_platformData.samplerDesc.MaxLOD			= D3D11_FLOAT32_MAX;
+		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
 
-		m_platformData.isCreated = true;
+		TIKI_DECLARE_STACKANDZERO( D3D12_SAMPLER_DESC, samplerDesc );
+		samplerDesc.Filter				= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
+		samplerDesc.AddressU			= s_aAddressModeMapping[ creationParamter.addressU ];
+		samplerDesc.AddressV			= s_aAddressModeMapping[ creationParamter.addressV ];
+		samplerDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
+		samplerDesc.MipLODBias			= 0.0f;
+		samplerDesc.MaxAnisotropy		= uint32( creationParamter.maxAnisotropy );
+		samplerDesc.ComparisonFunc		= D3D12_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[ 0 ]	= color::getFloatChannelR( creationParamter.borderColor );
+		samplerDesc.BorderColor[ 1 ]	= color::getFloatChannelG( creationParamter.borderColor );
+		samplerDesc.BorderColor[ 2 ]	= color::getFloatChannelB( creationParamter.borderColor );
+		samplerDesc.BorderColor[ 3 ]	= color::getFloatChannelA( creationParamter.borderColor );
+		samplerDesc.MinLOD				= 0;
+		samplerDesc.MaxLOD				= D3D11_FLOAT32_MAX;
+
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc;
+		heapDesc.NumDescriptors	= 1u;
+		heapDesc.Type			= D3D12_SAMPLER_DESCRIPTOR_HEAP;
+		heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+
+		const HRESULT result = pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_platformData.pDescriptorHeap ) );
+		if( FAILED( result ) )
+		{
+			dispose( graphicsSystem );
+			return false;
+		}
+
+		pDevice->CreateSampler( &samplerDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 
 		return true;
 	}
 
 	void SamplerState::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
-		m_platformData.isCreated = false;
+		graphics::safeRelease( &m_platformData.pDescriptorHeap );
+		
 		GraphicsStateObject::dispose();
 	}
 }

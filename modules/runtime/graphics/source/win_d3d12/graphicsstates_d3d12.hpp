@@ -46,11 +46,10 @@ namespace tiki
 	{
 		SamplerStatePlatformData()
 		{
-			isCreated = false;
+			pDescriptorHeap = nullptr;
 		}
 
-		bool				isCreated;
-		D3D12_SAMPLER_DESC	samplerDesc;
+		ID3D12DescriptorHeap*	pDescriptorHeap;
 	};
 
 	struct VertexInputBindingPlatformData

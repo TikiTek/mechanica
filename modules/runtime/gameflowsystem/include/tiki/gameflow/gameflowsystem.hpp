@@ -43,7 +43,7 @@ namespace tiki
 		const StateTree&	getStateTree() const	{ return m_stateTree; }
 
 		bool				isInTransition() const	{ return m_stateTree.isInTransition(); }
-		int					getCurrentState() const	{ return m_stateTree.getCurrentState(); }
+		uint				getCurrentState() const	{ return m_stateTree.getCurrentState(); }
 
 		uint				getStateCount() const	{ return m_stateCount; }
 

@@ -610,7 +610,7 @@ namespace tiki
 
 				const HTOUCHINPUT touchHandle = (HTOUCHINPUT)windowEvent.data.touch.handle;
 				const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), windowEvent.data.touch.pointCount );
-				if ( GetTouchInputInfo( touchHandle, touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
+				if ( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
 				{
 					for (uint i=0; i < touchInputCount; i++)
 					{
@@ -650,7 +650,7 @@ namespace tiki
 						inputEvent.eventType	= eventType;
 						inputEvent.deviceType	= InputDeviceType_Touch;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.touch.pointIndex	= state.index;
+						inputEvent.data.touch.pointIndex	= (uint16)state.index;
 						inputEvent.data.touch.xState		= uint16( touchPoint.x );
 						inputEvent.data.touch.yState		= uint16( touchPoint.y );
 					}

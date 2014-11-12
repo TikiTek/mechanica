@@ -119,7 +119,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Controller_StickChanged;
 						inputEvent.deviceType	= InputDeviceType_Controller;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.controllerStick.stickIndex		= i;
+						inputEvent.data.controllerStick.stickIndex		= (uint32)i;
 						inputEvent.data.controllerStick.xState			= 0u;
 						inputEvent.data.controllerStick.yState			= 0u;
 					}
@@ -145,7 +145,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Controller_StickChanged;
 						inputEvent.deviceType	= InputDeviceType_Controller;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.controllerStick.stickIndex		= i;
+						inputEvent.data.controllerStick.stickIndex		= (uint32)i;
 						inputEvent.data.controllerStick.xState			= -distance.x;
 						inputEvent.data.controllerStick.yState			= distance.y;
 					}

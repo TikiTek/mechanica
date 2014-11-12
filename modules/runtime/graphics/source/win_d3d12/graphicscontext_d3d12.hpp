@@ -9,7 +9,8 @@ namespace tiki
 {
 	enum MyEnum
 	{
-		GraphicsSystemLimits_MaxPipelineStates	= 128u
+		GraphicsSystemLimits_MaxPipelineStates	= 128u,
+		GraphicsSystemLimits_MaxDescriptorHeaps	= (GraphicsSystemLimits_VertexShaderTextureSlots * 2u) + (GraphicsSystemLimits_PixelShaderTextureSlots * 2u) + GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots
 	};
 
 	struct GraphicsContextPipelineState
