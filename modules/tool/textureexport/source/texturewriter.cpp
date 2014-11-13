@@ -99,6 +99,7 @@ namespace tiki
 				switch ( m_parameters.targetApi )
 				{
 				case GraphicsApi_D3D11:
+				case GraphicsApi_D3D12:
 					writer.writeData( bitmap.getBegin(), bitmap.getCount() );
 					break;
 
@@ -113,6 +114,10 @@ namespace tiki
 							writer.writeData( pSourceData, bytesPerLine );
 						}
 					}
+					break;
+
+				default:
+					TIKI_TRACE_ERROR( "[TextureWriter] Graphics API not supported.\n" );
 					break;
 				}
 

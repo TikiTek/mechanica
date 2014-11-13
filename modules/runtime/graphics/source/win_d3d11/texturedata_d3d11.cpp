@@ -87,6 +87,8 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
+		TIKI_ASSERT( description.mipCount > 0u );
+		TIKI_ASSERT( description.arrayCount > 0u );
 
 		m_description = description;
 
@@ -177,6 +179,7 @@ namespace tiki
 		if ( FAILED( result ) )
 		{
 			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
+			dispose( graphicsSystem );
 			return false;
 		}
 
@@ -191,6 +194,7 @@ namespace tiki
 			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
 			{
 				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );
+				dispose( graphicsSystem );
 				return false;
 			}
 		}

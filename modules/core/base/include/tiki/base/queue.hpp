@@ -34,10 +34,12 @@ namespace tiki
 		Reference		push( ConstReference value );
 
 		bool			pop( Reference target );
+
 		Reference		getTop();
 		ConstReference	getTop() const;
-
-
+		Reference		getBottom();
+		ConstReference	getBottom() const;
+		
 		uint			getCount() const;
 		uint			getCapacity() const;
 

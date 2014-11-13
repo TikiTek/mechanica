@@ -38,7 +38,7 @@ namespace tiki
 			height		= 0u;
 			depth		= 0u;
 			arrayCount	= 1u;
-			mipCount	= 0u;
+			mipCount	= 1u;
 
 			flags		= (uint16)TextureFlags_None;
 			format		= (uint16)PixelFormat_Invalid;

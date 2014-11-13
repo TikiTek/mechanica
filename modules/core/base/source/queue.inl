@@ -99,17 +99,45 @@ namespace tiki
 	}
 
 	template<typename T>
-	Reference Queue<T>::getTop()
+	T& Queue<T>::getTop()
 	{
 		TIKI_ASSERT( !isEmpty() );
 		return m_pData[ m_top ];
 	}
 
 	template<typename T>
-	ConstReference Queue<T>::getTop() const
+	const T& Queue<T>::getTop() const
 	{
 		TIKI_ASSERT( !isEmpty() );
 		return m_pData[ m_top ];
+	}
+
+	template<typename T>
+	T& Queue<T>::getBottom()
+	{
+		TIKI_ASSERT( !isEmpty() );
+		if( m_bottom == 0u )
+		{
+			return m_pData[ m_capacity - 1u ];
+		}
+		else
+		{
+			return m_pData[ m_bottom - 1u ];
+		}
+	}
+
+	template<typename T>
+	const T& Queue<T>::getBottom() const
+	{
+		TIKI_ASSERT( !isEmpty() );
+		if( m_bottom == 0u )
+		{
+			return m_pData[ m_capacity - 1u ];
+		}
+		else
+		{
+			return m_pData[ m_bottom - 1u ];
+		}
 	}
 
 	template<typename T>
