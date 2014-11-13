@@ -6,6 +6,11 @@
 
 namespace tiki
 {
+	enum
+	{
+		GraphicsSystemLimits_MaxUploadHeapSize	= 8u * 1024u * 1024u
+	};
+
 	struct GraphicsSystemPlatformData
 	{
 		GraphicsSystemPlatformData()
@@ -21,6 +26,9 @@ namespace tiki
 			pBackBufferColorDescriptionHeap		= nullptr;
 			pBackBufferDepth					= nullptr;
 			pBackBufferDepthDescriptionHeap		= nullptr;
+
+			pUploadHeap							= nullptr;
+			pUploadData							= nullptr;
 
 			swapBufferCount				= 0u;
 			currentSwapBufferIndex		= 0u;
@@ -38,6 +46,9 @@ namespace tiki
 		ID3D12DescriptorHeap*		pBackBufferColorDescriptionHeap;
 		ID3D12Resource*				pBackBufferDepth;
 		ID3D12DescriptorHeap*		pBackBufferDepthDescriptionHeap;
+
+		ID3D12Resource*				pUploadHeap;
+		void*						pUploadData;
 
 		uint						swapBufferCount;
 		uint						currentSwapBufferIndex;

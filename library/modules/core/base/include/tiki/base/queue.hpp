@@ -24,18 +24,22 @@ namespace tiki
 		Queue();
 		~Queue();
 
-		bool		create( uint capacity, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-		void		dispose();
+		bool			create( uint capacity, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void			dispose();
 
-		bool		isEmpty() const;
-		bool		isFull() const;
+		bool			isEmpty() const;
+		bool			isFull() const;
 
-		Reference	push();
-		Reference	push( ConstReference value );
+		Reference		push();
+		Reference		push( ConstReference value );
 
-		bool		pop( Reference target );
+		bool			pop( Reference target );
+		Reference		getTop();
+		ConstReference	getTop() const;
 
-		uint		getCount() const;
+
+		uint			getCount() const;
+		uint			getCapacity() const;
 
 	private:
 
