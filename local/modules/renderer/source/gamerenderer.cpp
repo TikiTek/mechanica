@@ -249,7 +249,7 @@ namespace tiki
 		desc.height		= (uint16)m_context.rendererHeight;
 		desc.depth		= 1u;
 		desc.type		= TextureType_2d;
-		desc.mipCount	= 0u;
+		desc.mipCount	= 1u;
 		desc.arrayCount	= 1u;
 
 		desc.format		= PixelFormat_Depth24Stencil8;

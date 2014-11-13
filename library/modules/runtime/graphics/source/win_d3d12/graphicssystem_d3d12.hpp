@@ -3,6 +3,7 @@
 #define TIKI_GRAPHICSSYSTEM_D3D11_HPP
 
 #include "graphicstypes_d3d12.hpp"
+#include "uploadheap_d3d12.hpp"
 
 namespace tiki
 {
@@ -27,9 +28,6 @@ namespace tiki
 			pBackBufferDepth					= nullptr;
 			pBackBufferDepthDescriptionHeap		= nullptr;
 
-			pUploadHeap							= nullptr;
-			pUploadData							= nullptr;
-
 			swapBufferCount				= 0u;
 			currentSwapBufferIndex		= 0u;
 		}
@@ -47,8 +45,7 @@ namespace tiki
 		ID3D12Resource*				pBackBufferDepth;
 		ID3D12DescriptorHeap*		pBackBufferDepthDescriptionHeap;
 
-		ID3D12Resource*				pUploadHeap;
-		void*						pUploadData;
+		UploadHeapD3d12				uploadHeap;
 
 		uint						swapBufferCount;
 		uint						currentSwapBufferIndex;

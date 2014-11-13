@@ -60,18 +60,21 @@ namespace tiki
 		if( !graphics::initSwapChain( m_platformData, params, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create SwapChain.\n" );
+			disposePlatform();
 			return false;
 		}
 
 		if( !graphics::initBackBuffer( m_platformData ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 
 		if( !graphics::initDepthStencilBuffer( m_platformData, backBufferSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 
@@ -95,6 +98,7 @@ namespace tiki
 		if ( !m_commandBuffer.create( *this ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create CommandBuffer.\n" );
+			disposePlatform();
 			return false;
 		}
 

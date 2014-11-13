@@ -28,7 +28,8 @@ namespace tiki
 
 	ID3D12Device*		graphics::getDevice( GraphicsSystem& graphicsSystem )		{ return getPlatformData( graphicsSystem ).pDevice; }
 	ID3D12CommandList*	graphics::getCommandList( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pCommandList; }
-
+	UploadHeapD3d12&	graphics::getUploadHeap( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).uploadHeap; }
+	
 	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
 	{
 		uint2 backBufferSize;
@@ -55,6 +56,13 @@ namespace tiki
 		if( !graphics::initObjects( m_platformData, params ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create D3D Objects.\n" );
+			disposePlatform();
+			return false;
+		}
+
+		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, GraphicsSystemLimits_MaxUploadHeapSize ) )
+		{
+			TIKI_TRACE_ERROR( "[graphics] Could not create UploadHeap.\n" );
 			disposePlatform();
 			return false;
 		}
@@ -134,12 +142,7 @@ namespace tiki
 			m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
 		}
 
-		if( m_platformData.pUploadHeap != nullptr )
-		{
-			m_platformData.pUploadData = nullptr;
-			m_platformData.pUploadHeap->Unmap( nullptr );
-		}
-		graphics::safeRelease( &m_platformData.pUploadHeap );
+		m_platformData.uploadHeap.dispose();
 
 		graphics::safeRelease( &m_platformData.pBackBufferDepth );
 		graphics::safeRelease( &m_platformData.pBackBufferDepthDescriptionHeap );
@@ -214,8 +217,11 @@ namespace tiki
 
 		m_platformData.pCommandList->Close();
 		m_platformData.pCommandQueue->ExecuteCommandList( m_platformData.pCommandList );
+		m_platformData.pCommandQueue->AdvanceFence();
 		
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pSwapChain->Present( 1, 0 ) ) );
+
+		m_platformData.uploadHeap.finalizeFrame( m_platformData.pCommandQueue->GetLastCompletedFence() );
 
 		m_platformData.currentSwapBufferIndex = (m_platformData.currentSwapBufferIndex + 1u) % m_platformData.swapBufferCount;
 
@@ -334,23 +340,6 @@ namespace tiki
 		pOutputBlob = nullptr;
 
 		if( FAILED( result ) )
-		{
-			return false;
-		}
-
-		result = data.pDevice->CreateBuffer(
-			D3D12_HEAP_TYPE_UPLOAD,
-			GraphicsSystemLimits_MaxUploadHeapSize,
-			D3D12_RESOURCE_MISC_NONE,
-			IID_PPV_ARGS( &data.pUploadHeap )
-		);
-
-		if( FAILED( result ) )
-		{
-			return false;
-		}
-
-		if( FAILED( data.pUploadHeap->Map( nullptr, &data.pUploadData ) ) )
 		{
 			return false;
 		}

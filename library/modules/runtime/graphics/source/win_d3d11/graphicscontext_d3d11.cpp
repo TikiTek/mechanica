@@ -54,7 +54,7 @@ namespace tiki
 		}
 		m_currentRenderPassDepth = 0u;
 
-		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize, true, GraphicsBufferType_VertexBuffer, nullptr );
+		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize / 4u, 4u );
 		m_immediateVertexCount	= 0u;
 		m_immediateVertexStride	= 0u;
 

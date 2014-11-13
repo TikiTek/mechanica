@@ -9,15 +9,15 @@
 namespace tiki
 {
 	class GraphicsSystem;
+	class UploadHeapD3d12;
 
 	namespace graphics
 	{
 		GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 		ID3D12Device*				getDevice( GraphicsSystem& graphicsSystem );
 		ID3D12CommandList*			getCommandList( GraphicsSystem& graphicsSystem );
+		UploadHeapD3d12&			getUploadHeap( GraphicsSystem& graphicsSystem );
 
-		void*						allocateUploadData( uint size, uint alignment );
-		void						submitUploadData();
 		void						setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
 
 		template<class T>
