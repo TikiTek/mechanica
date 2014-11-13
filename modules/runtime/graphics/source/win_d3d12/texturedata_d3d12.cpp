@@ -136,42 +136,12 @@ namespace tiki
 			break;
 		}
 
-		HRESULT result = pDevice->CreateCommittedResource(
-			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
-			D3D12_HEAP_MISC_NONE,
-			&resourceDesc,
-			D3D12_RESOURCE_USAGE_INITIAL,
-			IID_PPV_ARGS( &m_platformData.pResource )
-		);
+		const D3D11_SUBRESOURCE_DATA* pD3dInitData = nullptr;
 
-		if( FAILED( result ) )
-		{
-			dispose( graphicsSystem );
-			return false;
-		}
-
-		ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+		D3D11_SUBRESOURCE_DATA initData[ 32u ];
+		memory::zero( initData, sizeof(initData) );
 		if( pTextureData != nullptr )
 		{
-			ID3D12Resource* pUploadResource = nullptr;
-
-			result = pDevice->CreateCommittedResource(
-				&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
-				D3D12_HEAP_MISC_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_USAGE_GENERIC_READ,
-				IID_PPV_ARGS( &pUploadResource )
-			);
-
-			if( FAILED( result ) )
-			{
-				dispose( graphicsSystem );
-				return false;
-			}
-
-			D3D12_SUBRESOURCE_DATA initData[ 32u ];
-			memory::zero( initData, sizeof(initData) );
-
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
 			uint width	= description.width;
@@ -184,9 +154,9 @@ namespace tiki
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
 
-				initData[ mipLevel ].pData			= pLevelData;
-				initData[ mipLevel ].RowPitch		= UINT( rowPitch );
-				initData[ mipLevel ].SlicePitch		= UINT( depthPitch );
+				initData[ mipLevel ].pSysMem			= pLevelData;
+				initData[ mipLevel ].SysMemPitch		= UINT( rowPitch );
+				initData[ mipLevel ].SysMemSlicePitch	= UINT( depthPitch );
 
 				pLevelData	+= depthPitch * depth;
 				width		= TIKI_MAX( width / 2u, 1u );
@@ -194,17 +164,35 @@ namespace tiki
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			}
 
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
-			UpdateSubresources<32>( pCommandList, m_platformData.pResource, pUploadResource, 0, 0, description.mipCount, initData );
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_GENERIC_READ );
+			pD3dInitData = initData;
+		}
 
-			pUploadResource->Release( );
-			pUploadResource = nullptr;
-		}
-		else
+		resourceDesc.MiscFlags |= D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT;
+
+		HRESULT result = pDevice->CreateDefaultResource(
+			&CD3D11_RESOURCE_DESC( resourceDesc ),
+			nullptr,
+			IID_PPV_ARGS( &m_platformData.pResource )
+		);
+
+		if( FAILED( result ) )
 		{
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_GENERIC_READ );
+			dispose( graphicsSystem );
+			return false;
 		}
+
+		ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+
+		TIKI_DECLARE_STACKANDZERO( D3D12_SELECT_SUBRESOURCE, subResource );
+		pCommandList->CopySubresourceRegion(
+			m_platformData.pResource,
+			D3D12_SUBRESOURCE_VIEW_SELECT_SUBRESOURCE,
+			&subResource,
+			0u,
+			0u,
+			0u,
+
+		)
 
 		// create descriptor heap
 		{

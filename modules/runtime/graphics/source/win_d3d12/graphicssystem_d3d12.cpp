@@ -134,6 +134,13 @@ namespace tiki
 			m_platformData.pSwapChain->SetFullscreenState( false, nullptr );
 		}
 
+		if( m_platformData.pUploadHeap != nullptr )
+		{
+			m_platformData.pUploadData = nullptr;
+			m_platformData.pUploadHeap->Unmap( nullptr );
+		}
+		graphics::safeRelease( &m_platformData.pUploadHeap );
+
 		graphics::safeRelease( &m_platformData.pBackBufferDepth );
 		graphics::safeRelease( &m_platformData.pBackBufferDepthDescriptionHeap );
 		graphics::safeRelease( &m_platformData.pBackBufferColor );
@@ -327,6 +334,23 @@ namespace tiki
 		pOutputBlob = nullptr;
 
 		if( FAILED( result ) )
+		{
+			return false;
+		}
+
+		result = data.pDevice->CreateBuffer(
+			D3D12_HEAP_TYPE_UPLOAD,
+			GraphicsSystemLimits_MaxUploadHeapSize,
+			D3D12_RESOURCE_MISC_NONE,
+			IID_PPV_ARGS( &data.pUploadHeap )
+		);
+
+		if( FAILED( result ) )
+		{
+			return false;
+		}
+
+		if( FAILED( data.pUploadHeap->Map( nullptr, &data.pUploadData ) ) )
 		{
 			return false;
 		}
