@@ -171,10 +171,7 @@ namespace tiki
 
 		TextureDescription description;
 		description.type		= TextureType_2d;
-		description.arrayCount	= 1u;
-		description.depth		= 0u;
 		description.format		= PixelFormat_R16G16B16A16_Float;
-		description.mipCount	= 0u;
 		description.flags		= TextureFlags_ShaderInput | TextureFlags_RenderTarget;
 
 		uint16 passWidth	= uint16( m_width );
