@@ -46,9 +46,9 @@ namespace tiki
 
 	bool ModelConverter::startConversionJob( const ConversionParameters& params ) const
 	{
-		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
+		for( uint fileIndex = 0u; fileIndex < params.inputFiles.getCount(); ++fileIndex )
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = params.inputFiles[ fileIndex ];
 
 			const string material	= params.arguments.getOptionalString( "material", "" );
 			const float scale		= params.arguments.getOptionalFloat( "scale", 1.0f );
@@ -76,14 +76,14 @@ namespace tiki
 			List< ReferenceKey > geometryKeys;
 
 			bool wrongSkinned = false;
-			for (uint j = 0u; j < model.getGeometyCount(); ++j)
+			for (uint geometryIndex = 0u; geometryIndex < model.getGeometyCount(); ++geometryIndex )
 			{
-				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( j ) );
+				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( geometryIndex ) );
 				geometryKeys.add( key );
 
 				for (uint k = 0u; k < model.getGeometyCount(); ++k)
 				{
-					if ( model.getGeometryByIndex( j ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
+					if ( model.getGeometryByIndex( geometryIndex ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
 					{
 						wrongSkinned = true;
 					}
@@ -99,9 +99,9 @@ namespace tiki
 			writeResourceReference( writer, material );
 			writer.writeReference( pHierarchyKey );
 			writer.writeUInt32( uint32( model.getGeometyCount() ) );
-			for (uint i = 0u; i < geometryKeys.getCount(); ++i)
+			for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
 			{
-				writer.writeReference( &geometryKeys[ i ] );
+				writer.writeReference( &geometryKeys[ geometryIndex ] );
 			}			
 			writer.closeDataSection();
 

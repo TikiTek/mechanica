@@ -206,44 +206,51 @@ namespace tiki
 			}
 		}
 		
-		// create descriptor heap
+		if( isBitSet( description.flags, TextureFlags_ShaderInput ) )
 		{
-			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
-			heapDesc.Type	= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
-			heapDesc.Flags	= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
-
-			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pDescriptorHeap ) ) )
+			// create descriptor heap
 			{
-				dispose( graphicsSystem );
-				return false;
+				TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
+				heapDesc.NumDescriptors = 1u;
+				heapDesc.Type			= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
+				heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+
+				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof( ID3D12DescriptorHeap ), (void**)&m_platformData.pDescriptorHeap ) ) )
+				{
+					dispose( graphicsSystem );
+					return false;
+				}
+			}
+
+			// create shader resource view
+			{
+				TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
+				viewDesc.ViewDimension = getD3dViewDimentions( (TextureType)description.type );
+				viewDesc.Format = dxFormat;
+
+				switch (m_description.type)
+				{
+				case TextureType_1d:
+					viewDesc.Texture1D.MipLevels = description.mipCount;
+					break;
+
+				case TextureType_2d:
+					viewDesc.Texture2D.MipLevels = description.mipCount;
+					break;
+
+				case TextureType_3d:
+					viewDesc.Texture3D.MipLevels = description.mipCount;
+					break;
+
+				case TextureType_Cube:
+					viewDesc.TextureCube.MipLevels = description.mipCount;
+					break;
+
+				}
+
+				pDevice->CreateShaderResourceView( m_platformData.pResource, &viewDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 			}
 		}
-
-		TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
-		viewDesc.ViewDimension		= getD3dViewDimentions( (TextureType)description.type );
-		viewDesc.Format				= dxFormat;
-
-		switch ( m_description.type )
-		{
-		case TextureType_1d:
-			viewDesc.Texture1D.MipLevels	= description.mipCount;
-			break;
-
-		case TextureType_2d:
-			viewDesc.Texture2D.MipLevels	= description.mipCount;
-			break;
-
-		case TextureType_3d:
-			viewDesc.Texture3D.MipLevels	= description.mipCount;
-			break;
-
-		case TextureType_Cube:
-			viewDesc.TextureCube.MipLevels	= description.mipCount;
-			break;
-
-		}
-
-		pDevice->CreateShaderResourceView( m_platformData.pResource, &viewDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 
 		return true;
 	}

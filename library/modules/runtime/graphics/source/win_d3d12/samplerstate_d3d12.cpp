@@ -80,7 +80,7 @@ namespace tiki
 		samplerDesc.MinLOD				= 0;
 		samplerDesc.MaxLOD				= D3D11_FLOAT32_MAX;
 
-		D3D12_DESCRIPTOR_HEAP_DESC heapDesc;
+		TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 		heapDesc.NumDescriptors	= 1u;
 		heapDesc.Type			= D3D12_SAMPLER_DESCRIPTOR_HEAP;
 		heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;

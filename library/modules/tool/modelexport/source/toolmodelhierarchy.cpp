@@ -59,8 +59,8 @@ namespace tiki
 					const XmlElement* pGeometrieNode = pXml->findFirstChild( "geometry", pGeometriesNode );
 					while ( pGeometrieNode != nullptr )
 					{
-						const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", pGeometrieNode );
-						if ( pIdAtt != nullptr && geometryId == pIdAtt->content )
+						const XmlAttribute* pGeometrieNodeIdAtt = pXml->findAttributeByName( "id", pGeometrieNode );
+						if ( pGeometrieNodeIdAtt != nullptr && geometryId == pGeometrieNodeIdAtt->content )
 						{
 							ToolModelGeometryInstance& instance = instances.add();
 							instance.pNode			= pGeometrieNode;

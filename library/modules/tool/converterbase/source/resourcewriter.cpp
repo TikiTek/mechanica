@@ -65,13 +65,12 @@ namespace tiki
 			{
 				const SectionData& sectionData = resource.sections[ j ];
 
-				SectionHeader& header = sectionHeaders.add();
-				header.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
-				header.allocatorType_allocatorId	= uint8( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
-				header.referenceCount				= uint16( sectionData.references.getCount() );
-				header.sizeInBytes					= uint32( sectionData.binaryData.getLength() );
-
-				header.offsetInResource				= 0u;
+				SectionHeader& sectionHeader = sectionHeaders.add();
+				sectionHeader.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
+				sectionHeader.allocatorType_allocatorId	= uint8( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
+				sectionHeader.referenceCount			= uint16( sectionData.references.getCount() );
+				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getLength() );
+				sectionHeader.offsetInResource			= 0u;
 			} 
 			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
 			

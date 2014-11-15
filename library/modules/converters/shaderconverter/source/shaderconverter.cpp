@@ -288,9 +288,9 @@ namespace tiki
 			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
 
-		for (uint i = 0u; i < params.inputFiles.getCount(); ++i)
+		for( uint fileIndex = 0u; fileIndex < params.inputFiles.getCount(); ++fileIndex )
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = params.inputFiles[ fileIndex ];
 
 			string sourceCode;
 			if ( file::readAllText( file.fileName, sourceCode ) == false )
@@ -309,9 +309,9 @@ namespace tiki
 			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
 
 			List< ShaderVariantData > shaderVariants;
-			for (uint i = 1u; i < ShaderType_Count; ++i)
+			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
 			{
-				const ShaderType type = (ShaderType)i;
+				const ShaderType type = (ShaderType)typeIndex;
 
 				if ( preprocessor.isTypeEnabled( type ) == false )
 				{
@@ -319,9 +319,9 @@ namespace tiki
 				}
 
 				const uint variantCount = preprocessor.getVariantCount( type );
-				for (uint j = 0u; j < variantCount; ++j)
+				for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
 				{
-					const ShaderVariant& variant = preprocessor.getVariantByIndex( type, j );
+					const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
 
 					ShaderArguments args;
 					args.type		= type;
@@ -336,15 +336,15 @@ namespace tiki
 					args.defineCode = m_baseSourceCode;
 					args.defineCode += variant.defineCode;
 
-					for (uint k = 1u; k < ShaderType_Count; ++k)
+					for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
 					{
-						args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ k ].cStr(), ( i == k ? "TIKI_ON" : "TIKI_OFF" ) );
+						args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
 					}
 
 					Array< uint8 > variantData;
 					if ( compilePlatformShader( variantData, args, params.targetApi ) )
 					{
-						uint32 keyData[] = { type, variant.bitMask };
+						uint32 keyData[] = { (uint32)type, variant.bitMask };
 
 						ShaderVariantData& variantVarName = shaderVariants.add();
 						variantVarName.type			= type;
@@ -366,9 +366,10 @@ namespace tiki
 			writer.writeUInt32( uint32( shaderVariants.getCount() ) );
 			writer.writeAlignment( 8u );
 
-			for (uint i = 0u; i < shaderVariants.getCount(); ++i)
+			for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
 			{
-				const ShaderVariantData& shaderVarName = shaderVariants[ i ];
+				const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
+
 				writer.writeUInt32( shaderVarName.type );
 				writer.writeUInt32( shaderVarName.codeLength );
 				writer.writeUInt32( shaderVarName.variantKey );

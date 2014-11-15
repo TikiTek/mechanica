@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_ASSERT( m_pDataEnd == nullptr );
 	}
 
-	bool UploadHeapD3d12::create( ID3D12Device* pDevice, uint size, uint maxAllocationCount /*= 32u*/ )
+	bool UploadHeapD3d12::create( ID3D12Device* pDevice, uint size, uint maxAllocationCount /*= 128u*/ )
 	{
 		HRESULT result = pDevice->CreateBuffer(
 			D3D12_HEAP_TYPE_UPLOAD,
@@ -96,7 +96,7 @@ namespace tiki
 			{
 				useEnd = false;
 			}
-			else
+			else if (endSpace < requiredSpace && startSpace < requiredSpace)
 			{
 				return false;
 			}
