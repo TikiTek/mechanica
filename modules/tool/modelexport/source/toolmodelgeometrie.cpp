@@ -153,8 +153,8 @@ namespace tiki
 
 			while ( pVertices != nullptr )
 			{
-				const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", pVertices );
-				TIKI_ASSERT( pIdAtt );
+				//const XmlAttribute* pIdAtt = pXml->findAttributeByName( "id", pVertices );
+				//TIKI_ASSERT( pIdAtt != nullptr );
 
 				const XmlElement* pInput = pXml->findFirstChild( "input", pVertices );
 
@@ -298,9 +298,9 @@ namespace tiki
 						}
 					}
 
-					const sint index = indicesCrcIndex.indexOf( indexCrc );
-					TIKI_ASSERT( index >= 0 );
-					indicesIndex.add( uint32( index ) );
+					const sint crcIndex = indicesCrcIndex.indexOf( indexCrc );
+					TIKI_ASSERT( crcIndex >= 0 );
+					indicesIndex.add( uint32( crcIndex ) );
 				}
 
 				List< uint > indicesSkinningData;
@@ -583,10 +583,10 @@ namespace tiki
 					{
 						uint32* pIndices = &vertex.jointIndices.x;
 
-						const uint32 index = jointIndices[ value ];
-						TIKI_ASSERT( index < hierarchy.getJointCount() );
+						const uint32 jointIndex = jointIndices[ value ];
+						TIKI_ASSERT( jointIndex < hierarchy.getJointCount() );
 
-						pIndices[ c ] = index;
+						pIndices[ c ] = jointIndex;
 					}
 					else if ( sourceIndex == 1u )
 					{

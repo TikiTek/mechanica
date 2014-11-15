@@ -155,10 +155,10 @@ namespace tiki
 
 			// float array
 			{
-				const XmlAttribute* pIdAtt	= pXml->findAttributeByName( "id", pArrayNode );
+				const XmlAttribute* pArrayIdAtt	= pXml->findAttributeByName( "id", pArrayNode );
 				const XmlAttribute* pCountAtt	= pXml->findAttributeByName( "count", pArrayNode );
 
-				arrayId = pIdAtt->content;
+				arrayId = pArrayIdAtt->content;
 
 				if ( techniqueSource != arrayId )
 				{

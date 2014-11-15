@@ -221,7 +221,7 @@ namespace tiki
 		
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pSwapChain->Present( 1, 0 ) ) );
 
-		m_platformData.uploadHeap.finalizeFrame( m_platformData.pCommandQueue->GetLastCompletedFence() );
+		m_platformData.uploadHeap.finalizeFrame( (uint)m_platformData.pCommandQueue->GetLastCompletedFence() );
 
 		m_platformData.currentSwapBufferIndex = (m_platformData.currentSwapBufferIndex + 1u) % m_platformData.swapBufferCount;
 
@@ -350,7 +350,7 @@ namespace tiki
 	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data )
 	{		
 		TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, descHeap );
-		descHeap.NumDescriptors	= 1;
+		descHeap.NumDescriptors	= 1u;
 		descHeap.Type			= D3D12_RTV_DESCRIPTOR_HEAP;
 
 		if( FAILED( data.pDevice->CreateDescriptorHeap( &descHeap, __uuidof(ID3D12DescriptorHeap), (void**)&data.pBackBufferColorDescriptionHeap ) ) )
@@ -365,42 +365,52 @@ namespace tiki
 		}
 		data.pDevice->CreateRenderTargetView( data.pBackBufferColor, nullptr, data.pBackBufferColorDescriptionHeap->GetCPUDescriptorHandleForHeapStart( ) );
 
-		result = data.pCommandList->Close();
-		if( FAILED( result ) )
-		{
-			return false;
-		}
-	
 		return true;
 	}
 
 	static bool graphics::initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
 	{
-		//TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, depthDesc );
-		//depthDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-		//depthDesc.Usage					= D3D11_USAGE_DEFAULT;
-		//depthDesc.BindFlags				= D3D11_BIND_DEPTH_STENCIL;
-		//depthDesc.Width					= backBufferSize.x;
-		//depthDesc.Height				= backBufferSize.y;
-		//depthDesc.MipLevels				= 1;
-		//depthDesc.ArraySize				= 1;
-		//depthDesc.SampleDesc.Count		= 1;
-		//depthDesc.SampleDesc.Quality	= 0;
-		//depthDesc.CPUAccessFlags		= 0;
-		//depthDesc.MiscFlags				= 0;
+		HRESULT result = data.pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
+			D3D12_HEAP_MISC_NONE,
+			&CD3D12_RESOURCE_DESC::Tex2D( DXGI_FORMAT_D24_UNORM_S8_UINT, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT | D3D12_RESOURCE_MISC_DEPTH_STENCIL ),
+			D3D12_RESOURCE_USAGE_INITIAL,
+			IID_PPV_ARGS( &data.pBackBufferDepth )
+		);
 
-		//HRESULT r = data.pDevice->CreateTexture2D( &depthDesc, nullptr, &data.pDepthStencilBuffer );
-		//if (FAILED(r)) { return false; }
+		if( FAILED( result ) )
+		{
+			return false;
+		}
 
-		//TIKI_DECLARE_STACKANDZERO( D3D11_DEPTH_STENCIL_VIEW_DESC, depthStencilViewDesc );
-		//depthStencilViewDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-		//depthStencilViewDesc.ViewDimension		= D3D11_DSV_DIMENSION_TEXTURE2D;
-		//depthStencilViewDesc.Texture2D.MipSlice	= 0;
+		graphics::setResourceBarrier( data.pCommandList, data.pBackBufferDepth, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_DEPTH );
 
-		//r = data.pDevice->CreateDepthStencilView( data.pDepthStencilBuffer, &depthStencilViewDesc, &data.pDepthStencilView );
-		//if (FAILED(r)) { return false; }
+		// create descriptor heap
+		{
+			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
+			heapDesc.NumDescriptors = 1u;
+			heapDesc.Type			= D3D12_DSV_DESCRIPTOR_HEAP;
+			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
 
-		//data.pContext->OMSetRenderTargets( 1, &data.pBackBufferTargetView, data.pDepthStencilView );
+			result = data.pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &data.pBackBufferDepthDescriptionHeap ) );
+			if( FAILED( result ) )
+			{
+				return false;
+			}
+		}
+
+		TIKI_DECLARE_STACKANDZERO( D3D12_DEPTH_STENCIL_VIEW_DESC, depthStencilViewDesc );
+		depthStencilViewDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilViewDesc.ViewDimension		= D3D12_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDesc.Texture2D.MipSlice	= 0u;
+
+		data.pDevice->CreateDepthStencilView( data.pBackBufferDepth, &depthStencilViewDesc, data.pBackBufferDepthDescriptionHeap->GetCPUDescriptorHandleForHeapStart() );
+
+		result = data.pCommandList->Close();
+		if( FAILED( result ) )
+		{
+			return false;
+		}
 
 		return true;
 	}

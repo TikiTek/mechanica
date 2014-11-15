@@ -36,7 +36,7 @@ namespace tiki
 		UploadHeapD3d12();
 		~UploadHeapD3d12();
 
-		bool	create( ID3D12Device* pDevice, uint size, uint maxAllocationCount = 32u );
+		bool	create( ID3D12Device* pDevice, uint size, uint maxAllocationCount = 128u );
 		void	dispose();
 
 		void	finalizeFrame( uint currentFrameIndex );

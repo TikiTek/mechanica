@@ -9,7 +9,7 @@ namespace tiki
 {
 	enum
 	{
-		GraphicsSystemLimits_MaxUploadHeapSize	= 8u * 1024u * 1024u
+		GraphicsSystemLimits_MaxUploadHeapSize	= 32u * 1024u * 1024u
 	};
 
 	struct GraphicsSystemPlatformData
