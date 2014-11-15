@@ -19,7 +19,6 @@ namespace tiki
 			pCommandAllocator			= nullptr;
 			pCommandQueue				= nullptr;
 			pDevice						= nullptr;
-			pPipelineState				= nullptr;
 			pRootSignature				= nullptr;
 			pSwapChain					= nullptr;
 
@@ -36,7 +35,6 @@ namespace tiki
 		ID3D12CommandList*			pCommandList;
 		ID3D12CommandQueue*			pCommandQueue;
 		ID3D12Device*				pDevice;
-		ID3D12PipelineState*		pPipelineState;
 		ID3D12RootSignature*		pRootSignature;
 		IDXGISwapChain*				pSwapChain;
 

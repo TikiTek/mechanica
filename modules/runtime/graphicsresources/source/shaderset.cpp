@@ -45,7 +45,7 @@ namespace tiki
 
 	const Shader* ShaderSet::getShader( ShaderType type, crc32 variantKey ) const
 	{
-		const uint32 shaderData[] = { type, variantKey };
+		const uint32 shaderData[] = { (uint32)type, variantKey };
 		const crc32 shaderCrc = crcBytes( shaderData, sizeof( shaderData ) );
 
 		const Shader* pShader = nullptr;

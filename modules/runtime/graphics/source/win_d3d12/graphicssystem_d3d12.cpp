@@ -149,7 +149,6 @@ namespace tiki
 		graphics::safeRelease( &m_platformData.pBackBufferColor );
 		graphics::safeRelease( &m_platformData.pBackBufferColorDescriptionHeap );
 
-		graphics::safeRelease( &m_platformData.pPipelineState );
 		graphics::safeRelease( &m_platformData.pCommandList );
 		graphics::safeRelease( &m_platformData.pRootSignature );
 		graphics::safeRelease( &m_platformData.pCommandAllocator );
@@ -193,8 +192,8 @@ namespace tiki
 	{	
 		m_frameNumber++;
 
-		m_platformData.pCommandAllocator->Reset();
-		m_platformData.pCommandList->Reset( m_platformData.pCommandAllocator, m_platformData.pPipelineState );
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandAllocator->Reset() ) );
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Reset( m_platformData.pCommandAllocator, nullptr ) ) );
 
 		graphics::setResourceBarrier(
 			m_platformData.pCommandList,
@@ -370,11 +369,9 @@ namespace tiki
 
 	static bool graphics::initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
 	{
-		HRESULT result = data.pDevice->CreateCommittedResource(
-			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
-			D3D12_HEAP_MISC_NONE,
-			&CD3D12_RESOURCE_DESC::Tex2D( DXGI_FORMAT_D24_UNORM_S8_UINT, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT | D3D12_RESOURCE_MISC_DEPTH_STENCIL ),
-			D3D12_RESOURCE_USAGE_INITIAL,
+		HRESULT result = data.pDevice->CreateDefaultResource(
+			&CD3D11_RESOURCE_DESC( CD3D12_RESOURCE_DESC::Tex2D( DXGI_FORMAT_R24G8_TYPELESS, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT | D3D12_RESOURCE_MISC_NO_UNORDERED_ACCESS | D3D12_RESOURCE_MISC_DEPTH_STENCIL ) ),
+			nullptr,
 			IID_PPV_ARGS( &data.pBackBufferDepth )
 		);
 
@@ -383,14 +380,12 @@ namespace tiki
 			return false;
 		}
 
-		graphics::setResourceBarrier( data.pCommandList, data.pBackBufferDepth, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_DEPTH );
-
 		// create descriptor heap
 		{
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 			heapDesc.NumDescriptors = 1u;
 			heapDesc.Type			= D3D12_DSV_DESCRIPTOR_HEAP;
-			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+			heapDesc.Flags			= 0u;
 
 			result = data.pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &data.pBackBufferDepthDescriptionHeap ) );
 			if( FAILED( result ) )

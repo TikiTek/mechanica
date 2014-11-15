@@ -388,15 +388,20 @@ namespace tiki
 			TIKI_DECLARE_STACKANDZERO( D3D12_GRAPHICS_PIPELINE_STATE_DESC, pipelineDesc );
 			pipelineDesc.BlendState				= m_pBlendState->m_platformData.blendDesc;
 			pipelineDesc.DepthStencilState		= m_pDepthStencilState->m_platformData.depthStencilDesc;
-			//pipelineDesc.DSVFormat
+			pipelineDesc.DSVFormat				= graphics::getD3dFormat( m_pRenderTarget->m_depthBuffer.format, TextureFlags_DepthStencil );
 			pipelineDesc.InputLayout			= m_pVertexInputBinding->m_platformData.inputLayoutDesc;
 			pipelineDesc.NumRenderTargets		= (UINT)m_pRenderTarget->m_colorBufferCount;
 			pipelineDesc.PrimitiveTopologyType	= s_aTopologies[ m_primitiveTopology ];
 			pipelineDesc.pRootSignature			= m_platformData.pRootSignature;
 			pipelineDesc.PS						= m_pPixelShader->m_platformData.shaderCode;
 			pipelineDesc.RasterizerState		= m_pRasterizerState->m_platformData.rasterizerDesc;
-			//pipelineDesc.RTVFormats
 			pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
+
+			for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
+			{
+				pipelineDesc.RTVFormats[ i ] = graphics::getD3dFormat( m_pRenderTarget->m_colorBuffers[ i ].format, TextureFlags_RenderTarget );
+			}
+
 			TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, &pPipelineState ) ) );
 
 			GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates.push();
