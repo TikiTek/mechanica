@@ -218,8 +218,8 @@ namespace tiki
 
 		uint2 size =
 		{
-			rect.right - rect.left,
-			rect.bottom - rect.top
+			uint32( rect.right - rect.left ),
+			uint32( rect.bottom - rect.top )
 		};
 
 		return size;
