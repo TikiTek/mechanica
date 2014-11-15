@@ -33,14 +33,12 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
 		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
-		TIKI_ASSERT( m_platformData.pDescriptionHeap == nullptr );
 	}
 
 	bool GraphicsContext::create( GraphicsSystem& graphicsSystem )
 	{
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
 		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
-		TIKI_ASSERT( m_platformData.pDescriptionHeap == nullptr );
 
 		m_pGraphicsSystem				= &graphicsSystem;
 		m_platformData.pDevice			= graphics::getDevice( graphicsSystem );
@@ -68,7 +66,6 @@ namespace tiki
 	{
 		m_pGraphicsSystem				= nullptr;
 		m_platformData.pCommandList		= nullptr;
-		m_platformData.pDescriptionHeap	= nullptr;
 
 		m_immediateVertexData.dispose( graphicsSystem );
 	}
@@ -137,6 +134,7 @@ namespace tiki
 		);
 
 		D3D12_VIEWPORT viewPort;
+		D3D12_RECT scissorRect;
 		if ( pViewport == nullptr )
 		{
 			viewPort.TopLeftX	= 0.0f;
@@ -145,6 +143,11 @@ namespace tiki
 			viewPort.Height		= (float)renderTarget.getHeight();
 			viewPort.MinDepth	= 0.0f;
 			viewPort.MaxDepth	= 1.0f;
+
+			scissorRect.left	= 0u;
+			scissorRect.top		= 0u;
+			scissorRect.right	= LONG( renderTarget.getWidth() );
+			scissorRect.bottom	= LONG( renderTarget.getHeight() );
 		}
 		else
 		{
@@ -154,8 +157,16 @@ namespace tiki
 			viewPort.Height		= pViewport->height;
 			viewPort.MinDepth	= pViewport->minDepth;
 			viewPort.MaxDepth	= pViewport->maxDepth;
+
+			scissorRect.left	= LONG( pViewport->x );
+			scissorRect.top		= LONG( pViewport->y );
+			scissorRect.right	= LONG( pViewport->x + pViewport->width );
+			scissorRect.bottom	= LONG( pViewport->y + pViewport->height );
 		}
 		m_platformData.pCommandList->RSSetViewports( 1u, &viewPort );
+		m_platformData.pCommandList->RSSetScissorRects( 1u, &scissorRect );
+
+		m_pRenderTarget = &renderTarget;
 
 		invalidateState();
 	}
@@ -176,9 +187,12 @@ namespace tiki
 				(UINT)renderTarget.m_colorBufferCount,
 				&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart()
 			);
+
+			m_pRenderTarget = &renderTarget;
 		}
 		else
 		{
+			m_pRenderTarget = nullptr;
 			m_platformData.pCommandList->SetRenderTargets( nullptr, FALSE, 0u, nullptr );
 		}
 
@@ -312,18 +326,23 @@ namespace tiki
 		viewDesc.StrideInBytes	= (UINT)m_immediateVertexStride;
 		m_platformData.pCommandList->SetVertexBuffersSingleUse( 0u, &m_immediateVertexData.m_pBuffer, &viewDesc, 1u );
 
+		prepareDrawCall();
 		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
+
+		prepareDrawCall();
 		m_platformData.pCommandList->DrawInstanced( (UINT)vertexCount, 1u, (UINT)baseVertexOffset, 0u );
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
+
+		prepareDrawCall();
 		m_platformData.pCommandList->DrawIndexedInstanced( (UINT)indexCount, 1u, (UINT)baseIndexOffset, (UINT)baseVertexOffset, 0u );
 	}
 
@@ -349,66 +368,172 @@ namespace tiki
 
 	void GraphicsContext::prepareDrawCall()
 	{
-		const uint64 aRelevantStates[] =
+		// pipeline state
 		{
-			(uint64)m_pBlendState,
-			(uint64)m_pDepthStencilState,
-			(uint64)m_pVertexInputBinding,
-			(uint64)m_pRenderTarget,
-			(uint64)m_primitiveTopology,
-			(uint64)m_platformData.pRootSignature,
-			(uint64)m_pPixelShader,
-			(uint64)m_pRasterizerState,
-			(uint64)m_pVertexShader
-		};
-		const crc32 crc = crcBytes( aRelevantStates, sizeof(aRelevantStates) );
-
-		ID3D12PipelineState* pPipelineState = nullptr;
-		for (uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i)
-		{
-			const GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates[ i ];
-
-			if( pipelineState.crc == crc )
+			const uint64 aRelevantStates[] =
 			{
-				pPipelineState = pipelineState.pPpielineState;
-				break;
-			}
-		}
+				(uint64)m_pBlendState,
+				(uint64)m_pDepthStencilState,
+				(uint64)m_pVertexInputBinding,
+				(uint64)m_pRenderTarget,
+				(uint64)m_primitiveTopology,
+				(uint64)m_platformData.pRootSignature,
+				(uint64)m_pPixelShader,
+				(uint64)m_pRasterizerState,
+				(uint64)m_pVertexShader
+			};
+			const crc32 crc = crcBytes( aRelevantStates, sizeof( aRelevantStates ) );
 
-		static const D3D12_PRIMITIVE_TOPOLOGY_TYPE s_aTopologies[ PrimitiveTopology_Count ] =
-		{
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-			D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
-		};
-
-		if( pPipelineState == nullptr )
-		{
-			TIKI_DECLARE_STACKANDZERO( D3D12_GRAPHICS_PIPELINE_STATE_DESC, pipelineDesc );
-			pipelineDesc.BlendState				= m_pBlendState->m_platformData.blendDesc;
-			pipelineDesc.DepthStencilState		= m_pDepthStencilState->m_platformData.depthStencilDesc;
-			pipelineDesc.DSVFormat				= graphics::getD3dFormat( m_pRenderTarget->m_depthBuffer.format, TextureFlags_DepthStencil );
-			pipelineDesc.InputLayout			= m_pVertexInputBinding->m_platformData.inputLayoutDesc;
-			pipelineDesc.NumRenderTargets		= (UINT)m_pRenderTarget->m_colorBufferCount;
-			pipelineDesc.PrimitiveTopologyType	= s_aTopologies[ m_primitiveTopology ];
-			pipelineDesc.pRootSignature			= m_platformData.pRootSignature;
-			pipelineDesc.PS						= m_pPixelShader->m_platformData.shaderCode;
-			pipelineDesc.RasterizerState		= m_pRasterizerState->m_platformData.rasterizerDesc;
-			pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
-
-			for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
+			ID3D12PipelineState* pPipelineState = nullptr;
+			for( uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
 			{
-				pipelineDesc.RTVFormats[ i ] = graphics::getD3dFormat( m_pRenderTarget->m_colorBuffers[ i ].format, TextureFlags_RenderTarget );
+				const GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates[ i ];
+
+				if( pipelineState.crc == crc )
+				{
+					pPipelineState = pipelineState.pPpielineState;
+					break;
+				}
 			}
 
-			TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, &pPipelineState ) ) );
+			static const D3D12_PRIMITIVE_TOPOLOGY_TYPE s_aTopologies[ PrimitiveTopology_Count ] =
+			{
+				D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
+				D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+				D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+				D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE
+			};
 
-			GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates.push();
-			pipelineState.crc				= crc;
-			pipelineState.pPpielineState	= pPipelineState;
+			if( pPipelineState == nullptr )
+			{
+				TIKI_DECLARE_STACKANDZERO( D3D12_GRAPHICS_PIPELINE_STATE_DESC, pipelineDesc );
+				pipelineDesc.BlendState				= m_pBlendState->m_platformData.blendDesc;
+				pipelineDesc.DepthStencilState		= m_pDepthStencilState->m_platformData.depthStencilDesc;
+				pipelineDesc.DSVFormat				= graphics::getD3dFormat( m_pRenderTarget->m_depthBuffer.format, TextureFlags_DepthStencil );
+				pipelineDesc.InputLayout			= m_pVertexInputBinding->m_platformData.inputLayoutDesc;
+				pipelineDesc.NumRenderTargets		= (UINT)m_pRenderTarget->m_colorBufferCount;
+				pipelineDesc.PrimitiveTopologyType	= s_aTopologies[ m_primitiveTopology ];
+				pipelineDesc.pRootSignature			= m_platformData.pRootSignature;
+				pipelineDesc.PS						= m_pPixelShader->m_platformData.shaderCode;
+				pipelineDesc.RasterizerState		= m_pRasterizerState->m_platformData.rasterizerDesc;
+				pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
+
+				for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
+				{
+					pipelineDesc.RTVFormats[ i ] = graphics::getD3dFormat( m_pRenderTarget->m_colorBuffers[ i ].format, TextureFlags_RenderTarget );
+				}
+
+				TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, &pPipelineState ) ) );
+
+				GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates.push();
+				pipelineState.crc				= crc;
+				pipelineState.pPpielineState	= pPipelineState;
+			}
+
+			m_platformData.pCommandList->SetPipelineState( pPipelineState );
 		}
 
-		m_platformData.pCommandList->SetPipelineState( pPipelineState );
+		// set descriptors
+		{
+			struct ViewData
+			{
+				UINT						slot;
+				D3D12_CPU_DESCRIPTOR_HANDLE	handle;
+			};
+
+			FixedSizedArray< ID3D12DescriptorHeap*, GraphicsSystemLimits_MaxDescriptorHeaps > heaps;
+
+			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > samplerViews;
+			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > textureViews;
+			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots > constantViews;
+
+			// vertex
+			for( uint i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i )
+			{
+				if( m_apVertexSamplerStates[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexSamplerStates[ i ]->m_platformData.pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					samplerViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+
+			for( uint i = 0u; i < TIKI_COUNT( m_apVertexTextures ); ++i )
+			{
+				if( m_apVertexTextures[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexTextures[ i ]->m_platformData.pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					textureViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+
+			for( uint i = 0u; i < TIKI_COUNT( m_apVertexConstants ); ++i )
+			{
+				if( m_apVertexConstants[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexConstants[ i ]->m_pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					constantViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+			
+			// pixel
+			for( uint i = 0u; i < TIKI_COUNT( m_apPixelSamplerStates ); ++i )
+			{
+				if( m_apPixelSamplerStates[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelSamplerStates[ i ]->m_platformData.pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					samplerViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+
+			for( uint i = 0u; i < TIKI_COUNT( m_apPixelTextures ); ++i )
+			{
+				if( m_apPixelTextures[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelTextures[ i ]->m_platformData.pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					textureViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+
+			for( uint i = 0u; i < TIKI_COUNT( m_apPixelConstants ); ++i )
+			{
+				if( m_apPixelConstants[ i ] != nullptr )
+				{
+					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelConstants[ i ]->m_pDescriptorHeap;
+
+					heaps.push( pDescriptorHeap );
+					constantViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+				}
+			}
+
+			m_platformData.pCommandList->SetDescriptorHeaps( heaps.getBegin(), (UINT)heaps.getCount() );
+
+			//for( uint i = 0u; i < samplerViews.getCount(); ++i )
+			//{
+			//	const ViewData& viewData = samplerViews[ i ];
+			//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
+			//}
+
+			for( uint i = 0u; i < textureViews.getCount(); ++i )
+			{
+				const ViewData& viewData = textureViews[ i ];
+				m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
+			}
+
+			for( uint i = 0u; i < constantViews.getCount(); ++i )
+			{
+				const ViewData& viewData = constantViews[ i ];
+				m_platformData.pCommandList->SetGraphicsRootConstantBufferView( viewData.slot, viewData.handle );
+			}
+		}
 	}
 }

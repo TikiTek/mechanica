@@ -25,7 +25,6 @@ namespace tiki
 		{
 			pDevice				= nullptr;
 			pCommandList		= nullptr;
-			pDescriptionHeap	= nullptr;
 			pRootSignature		= nullptr;
 		}
 
@@ -33,7 +32,6 @@ namespace tiki
 
 		ID3D12Device*			pDevice;
 		ID3D12CommandList*		pCommandList;
-		ID3D12DescriptorHeap*	pDescriptionHeap;
 		ID3D12RootSignature*	pRootSignature;
 
 		PipelineStateArray		pipelineStates;

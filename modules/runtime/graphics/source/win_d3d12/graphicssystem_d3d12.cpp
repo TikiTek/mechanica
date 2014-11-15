@@ -202,6 +202,8 @@ namespace tiki
 			D3D12_RESOURCE_USAGE_RENDER_TARGET
 		);
 
+		m_platformData.pCommandList->SetGraphicsRootSignature( m_platformData.pRootSignature );
+
 		return m_commandBuffer;
 	}
 
