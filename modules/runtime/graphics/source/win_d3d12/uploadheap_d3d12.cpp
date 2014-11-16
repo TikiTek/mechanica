@@ -17,12 +17,9 @@ namespace tiki
 		TIKI_ASSERT( m_pDataEnd == nullptr );
 	}
 
-	bool UploadHeapD3d12::create( ID3D12Device* pDevice, ID3D12CommandList* pCommandList, uint size, uint maxAllocationCount /*= 128u*/ )
+	bool UploadHeapD3d12::create( ID3D12Device* pDevice, uint size, uint maxAllocationCount /*= 128u*/ )
 	{
 		TIKI_ASSERT( pDevice != nullptr );
-		TIKI_ASSERT( pCommandList != nullptr );
-
-		m_pCommandList = pCommandList;
 
 		HRESULT result = pDevice->CreateBuffer(
 			D3D12_HEAP_TYPE_UPLOAD,
@@ -35,8 +32,6 @@ namespace tiki
 		{
 			return false;
 		}
-
-		//graphics::setResourceBarrier( m_pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_GENERIC_READ );
 
 		if( FAILED( m_pBuffer->Map( nullptr, (void**)&m_pDataStart ) ) )
 		{
@@ -129,17 +124,5 @@ namespace tiki
 		result.offset		= allocation.pData - m_pDataStart;
 
 		return true;
-	}
-
-	ID3D12Resource* UploadHeapD3d12::beginReading()
-	{
-		graphics::setResourceBarrier( m_pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_COPY_SOURCE );
-
-		return m_pBuffer;
-	}
-
-	void UploadHeapD3d12::endReading()
-	{
-		graphics::setResourceBarrier( m_pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
 	}
 }

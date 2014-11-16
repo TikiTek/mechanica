@@ -60,7 +60,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, m_platformData.pCommandList, GraphicsSystemLimits_MaxUploadHeapSize ) )
+		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, GraphicsSystemLimits_MaxUploadHeapSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create UploadHeap.\n" );
 			disposePlatform();
