@@ -60,7 +60,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, GraphicsSystemLimits_MaxUploadHeapSize ) )
+		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, m_platformData.pCommandList, GraphicsSystemLimits_MaxUploadHeapSize ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create UploadHeap.\n" );
 			disposePlatform();
@@ -191,6 +191,9 @@ namespace tiki
 	GraphicsContext& GraphicsSystem::beginFrame()
 	{	
 		m_frameNumber++;
+		
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
+		m_platformData.pCommandQueue->ExecuteCommandList( m_platformData.pCommandList );
 
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandAllocator->Reset() ) );
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Reset( m_platformData.pCommandAllocator, nullptr ) ) );
@@ -216,7 +219,7 @@ namespace tiki
 			D3D12_RESOURCE_USAGE_PRESENT
 		);
 
-		m_platformData.pCommandList->Close();
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
 		m_platformData.pCommandQueue->ExecuteCommandList( m_platformData.pCommandList );
 		m_platformData.pCommandQueue->AdvanceFence();
 		
@@ -307,15 +310,18 @@ namespace tiki
 			return false;
 		}
 
-		D3D12_DESCRIPTOR_RANGE descRange;
-		D3D12_ROOT_PARAMETER slotRootParameter;
-		slotRootParameter.InitAsDescriptorTable( 1, &descRange, D3D12_SHADER_VISIBILITY_ALL );
-		descRange.Init( D3D12_DESCRIPTOR_RANGE_CBV, 1, 0 );
+		D3D12_DESCRIPTOR_RANGE descRanges[ 3u ];
+		descRanges[ 0u ].Init( D3D12_DESCRIPTOR_RANGE_SRV, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
+		descRanges[ 1u ].Init( D3D12_DESCRIPTOR_RANGE_SAMPLER, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
+		descRanges[ 2u ].Init( D3D12_DESCRIPTOR_RANGE_CBV, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots, 0 );
+
+		D3D12_ROOT_PARAMETER rootParameters[ 3u ];
+		rootParameters[ 0u ].InitAsDescriptorTable( 1u, &descRanges[ 0u ], D3D12_SHADER_VISIBILITY_ALL );
+		rootParameters[ 1u ].InitAsDescriptorTable( 1u, &descRanges[ 1u ], D3D12_SHADER_VISIBILITY_ALL );
+		rootParameters[ 2u ].InitAsDescriptorTable( 1u, &descRanges[ 2u ], D3D12_SHADER_VISIBILITY_ALL );
 
 		D3D12_ROOT_SIGNATURE descRootSignature;
-		descRootSignature.pParameters	= &slotRootParameter;
-		descRootSignature.Flags			= 0;
-		descRootSignature.NumParameters	= 1;
+		descRootSignature.Init( TIKI_COUNT( rootParameters ), rootParameters, 0u );
 
 		ID3DBlob* pOutputBlob	= nullptr;
 		ID3DBlob* pErrorBlob	= nullptr;
@@ -402,12 +408,6 @@ namespace tiki
 		depthStencilViewDesc.Texture2D.MipSlice	= 0u;
 
 		data.pDevice->CreateDepthStencilView( data.pBackBufferDepth, &depthStencilViewDesc, data.pBackBufferDepthDescriptionHeap->GetCPUDescriptorHandleForHeapStart() );
-
-		result = data.pCommandList->Close();
-		if( FAILED( result ) )
-		{
-			return false;
-		}
 
 		return true;
 	}

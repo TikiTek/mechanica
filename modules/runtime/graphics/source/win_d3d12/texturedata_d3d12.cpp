@@ -136,13 +136,15 @@ namespace tiki
 			break;
 		}
 
-		resourceDesc.MiscFlags |= D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT;
+		resourceDesc.MiscFlags |= D3D12_RESOURCE_MISC_NO_UNORDERED_ACCESS | D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT;
 
-		HRESULT result = pDevice->CreateDefaultResource(
-			&CD3D11_RESOURCE_DESC( resourceDesc ),
-			nullptr,
+		HRESULT result = pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
+			D3D12_HEAP_MISC_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_USAGE_INITIAL,
 			IID_PPV_ARGS( &m_platformData.pResource )
-			);
+		);
 
 		if( FAILED( result ) )
 		{
@@ -152,8 +154,11 @@ namespace tiki
 
 		if( pTextureData != nullptr )
 		{
+
 			UploadHeapD3d12& uploadHeap = graphics::getUploadHeap( graphicsSystem );
 			ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+
+			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
 
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
