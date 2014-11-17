@@ -24,6 +24,22 @@
 
 namespace tiki
 {
+	struct ViewHandleDataD3d12
+	{
+		ViewHandleDataD3d12()
+		{
+		}
+
+		ViewHandleDataD3d12( UINT _slot, D3D12_CPU_DESCRIPTOR_HANDLE _handle )
+		{
+			slot	= _slot;
+			handle	= _handle;
+		}
+
+		UINT						slot;
+		D3D12_CPU_DESCRIPTOR_HANDLE	handle;
+	};
+
 	GraphicsContext::GraphicsContext()
 	{
 		m_pGraphicsSystem = nullptr;
@@ -435,17 +451,11 @@ namespace tiki
 
 		// set descriptors
 		{
-			struct ViewData
-			{
-				UINT						slot;
-				D3D12_CPU_DESCRIPTOR_HANDLE	handle;
-			};
-
 			FixedSizedArray< ID3D12DescriptorHeap*, GraphicsSystemLimits_MaxDescriptorHeaps > heaps;
 
-			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > samplerViews;
-			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > textureViews;
-			FixedSizedArray< ViewData, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots > constantViews;
+			FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > samplerViews;
+			FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > textureViews;
+			FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots > constantViews;
 
 			// vertex
 			for( uint i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i )
@@ -455,7 +465,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexSamplerStates[ i ]->m_platformData.pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					samplerViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					samplerViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 
@@ -466,7 +476,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexTextures[ i ]->m_platformData.pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					textureViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					textureViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 
@@ -477,7 +487,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexConstants[ i ]->m_pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					constantViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					constantViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 			
@@ -489,7 +499,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelSamplerStates[ i ]->m_platformData.pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					samplerViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					samplerViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 
@@ -500,7 +510,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelTextures[ i ]->m_platformData.pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					textureViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					textureViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 
@@ -511,7 +521,7 @@ namespace tiki
 					ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelConstants[ i ]->m_pDescriptorHeap;
 
 					heaps.push( pDescriptorHeap );
-					constantViews.push() = { (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() };
+					constantViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 				}
 			}
 
@@ -525,13 +535,13 @@ namespace tiki
 
 			for( uint i = 0u; i < textureViews.getCount(); ++i )
 			{
-				const ViewData& viewData = textureViews[ i ];
+				const ViewHandleDataD3d12& viewData = textureViews[ i ];
 				m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
 			}
 
 			for( uint i = 0u; i < constantViews.getCount(); ++i )
 			{
-				const ViewData& viewData = constantViews[ i ];
+				const ViewHandleDataD3d12& viewData = constantViews[ i ];
 				m_platformData.pCommandList->SetGraphicsRootConstantBufferView( viewData.slot, viewData.handle );
 			}
 		}
