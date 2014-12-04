@@ -11,6 +11,7 @@
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/sqlite.hpp"
+#include "tiki/tasksystem/tasksystem.hpp"
 
 #include <map>
 
@@ -61,6 +62,10 @@ namespace tiki
 		void					writeResourceMap();
 		void					addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt );
 
+		// task system
+		TaskId					queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId );
+		void					waitForTask( TaskId taskId );
+
 		// misc
 		const string&			getOutputPath() const { return m_outputPath; }
 		bool					isNewDatabase() const { return m_isNewDatabase; }
@@ -100,6 +105,8 @@ namespace tiki
 		ConverterList				m_converters;
 
 		ConverterResourceMap		m_resourceMap;
+
+		TaskSystem					m_taskSystem;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;

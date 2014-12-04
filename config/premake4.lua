@@ -49,7 +49,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" then
 	module:set_define( "_WIN64", nil, nil, "x64" );
 
 	use_msvc	= true;
-	use_d3d12	= true;
+	use_d3d11	= true;
 	
 	global_configuration.enable_unity_builds = true
 elseif _ACTION == "gmake" or _ACTION == "codeblocks" then

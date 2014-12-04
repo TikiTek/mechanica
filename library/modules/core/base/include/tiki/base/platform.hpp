@@ -35,6 +35,8 @@ namespace tiki
 	PlatformType			getHostPlatform();
 	GraphicsApi				getHostGraphicsApi();
 
+	uint					getProcessorCount();
+
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 	InstanceHandle			getInstanceHandle();
 	const Array< string >&	getArguments();

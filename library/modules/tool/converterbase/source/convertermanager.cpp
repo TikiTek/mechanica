@@ -45,6 +45,9 @@ namespace tiki
 		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
+		TaskSystemParameters taskParameters;		
+		m_taskSystem.create( taskParameters );
+
 		if ( !directory::exists( m_outputPath ) )
 		{
 			directory::create( m_outputPath );
@@ -231,6 +234,16 @@ namespace tiki
 	void ConverterManager::writeResourceMap()
 	{
 		m_resourceMap.writeToFile();
+	}
+
+	TaskId ConverterManager::queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId /*= InvalidTaskId */ )
+	{
+		return m_taskSystem.queueTask( pFunc, pData, dependingTaskId );
+	}
+
+	void ConverterManager::waitForTask( TaskId taskId )
+	{
+		m_taskSystem.waitForTask( taskId );
 	}
 
 	void ConverterManager::traceCallback( cstring message, TraceLevel level ) const
