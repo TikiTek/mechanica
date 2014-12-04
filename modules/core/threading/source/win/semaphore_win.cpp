@@ -58,7 +58,7 @@ namespace tiki
 		} 
 	}
 
-	bool Semaphore::tryDecrement( uint count /*= 1u*/, uint timeOut /*= TimeOutInfinity */ )
+	uint Semaphore::tryDecrement( uint count /*= 1u*/, uint timeOut /*= TimeOutInfinity */ )
 	{
 		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
 
@@ -66,10 +66,10 @@ namespace tiki
 		{
 			if ( WaitForSingleObject( m_platformData.semaphoreHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 			{
-				return false;
+				return i;
 			}
 		} 
 
-		return true;
+		return count;
 	}
 }

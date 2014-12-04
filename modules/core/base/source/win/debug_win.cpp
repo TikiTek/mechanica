@@ -11,9 +11,9 @@ namespace tiki
 		{
 			printf( pText );
 
-			FILE* pFile = fopen( "debug.log", "a" );
-			fwrite( pText, strlen( pText ), 1u, pFile );
-			fclose( pFile );
+			//FILE* pFile = fopen( "debug.log", "a" );
+			//fwrite( pText, strlen( pText ), 1u, pFile );
+			//fclose( pFile );
 		}
 	}
 

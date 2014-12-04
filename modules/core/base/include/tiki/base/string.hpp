@@ -96,8 +96,8 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void							allocData( const TChar* string, sint length );
 
-		TIKI_FORCE_INLINE uint						stringLength( const TChar* string ) const;
-		TIKI_FORCE_INLINE uint						calcLength( uint neededLen ) const;
+		TIKI_FORCE_INLINE uint							stringLength( const TChar* string ) const;
+		TIKI_FORCE_INLINE uint							calcLength( uint neededLen ) const;
 
 	};
 
