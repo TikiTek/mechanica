@@ -19,10 +19,10 @@ struct _XmlElement;
 
 namespace tiki
 {
+	class ConversionResult;
 	class ConverterBase;
 	class TikiXml;
 	struct ConversionParameters;
-	struct ConversionResult;
 
 	struct ConverterManagerParameter
 	{
@@ -49,18 +49,12 @@ namespace tiki
 
 		// conversion
 		void					addTemplate( const string& fileName );
-		void					queueFile( const string& fileName );
-		int						startConversion( Mutex* pConversionMutex = nullptr );
-		bool					startConvertFile( const string& fileName, List< string >& outputFiles, Mutex* pConversionMutex = nullptr );
+		bool					queueFile( const string& fileName );
+		bool					startConversion( List< string >* pOutputFiles = nullptr, Mutex* pConversionMutex = nullptr );
 
 		// converter
 		void					registerConverter( const ConverterBase* pConverter );
 		void					unregisterConverter( const ConverterBase* pConverter );
-
-		// resource map
-		void					registerResource( const string& resourceName );
-		void					writeResourceMap();
-		void					addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt );
 
 		// task system
 		TaskId					queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId );
@@ -90,6 +84,17 @@ namespace tiki
 		};
 		typedef std::map< string, TemplateDescription > TemplateMap;
 
+		struct ConversionTask
+		{
+			const ConverterBase*	pConverter;
+
+			ConversionParameters	parameters;
+			ConversionResult		result;
+
+			TaskId					taskId;
+		};
+		typedef List< ConversionTask > ConversionTaskList;
+
 		string						m_outputPath;
 
 		SqliteDatabase				m_dataBase;
@@ -98,26 +103,28 @@ namespace tiki
 
 		mutable Mutex				m_loggingMutex;
 		mutable FileStream			m_loggingStream;
-		mutable int					m_returnValue;
 
-		FileList					m_files;
 		TemplateMap					m_templates;
 		ConverterList				m_converters;
-
 		ConverterResourceMap		m_resourceMap;
 
 		TaskSystem					m_taskSystem;
+		ConversionTaskList			m_tasks;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
 
 		bool						checkChangesAndFillConversionParameters( ConversionParameters& params, const ConverterBase** ppConverter, const FileDescription& file );
-		bool						convertFile( const FileDescription& file, List< string >& outputFiles, Mutex* pConversionMutex );
+		bool						internalQueueFile( const FileDescription& file );
+
+		bool						finalizeFile( List< string >& outputFiles, const ConversionTask& task );
 
 		uint						findAssetIdByName( const string& name );
 		bool						writeConvertInput( uint& assetId, const ConversionParameters& parametes );
 		bool						checkDependencies( uint assetId, const ConverterBase* pConverter );
 		bool						writeConvertResult( uint assetId, const ConversionResult& result, bool hasError );
+
+		static void					taskConvertFile( const TaskContext& context );
 
 	};
 }

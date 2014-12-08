@@ -20,16 +20,16 @@ namespace tiki
 
 	protected:
 
-		virtual uint16			getConverterRevision() const { return 1u; }
+		virtual uint16			getConverterRevision() const TIKI_OVERRIDE;
 
-		virtual crc32			getInputType() const;
-		virtual crc32			getOutputType() const;
-		virtual void			getDependingType( List< crc32 >& types ) const;
+		virtual crc32			getInputType() const TIKI_OVERRIDE;
+		virtual crc32			getOutputType() const TIKI_OVERRIDE;
+		virtual void			getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE;
 
-		virtual bool			initializeConverter();
-		virtual void			disposeConverter();
+		virtual bool			initializeConverter() TIKI_OVERRIDE;
+		virtual void			disposeConverter() TIKI_OVERRIDE;
 
-		virtual bool			startConversionJob( const ConversionParameters& params ) const;
+		virtual bool			startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_OVERRIDE;
 
 	private:
 
@@ -48,12 +48,11 @@ namespace tiki
 		};
 
 		string					m_baseSourceCode;
-		ShaderIncludeHandler*	m_pIncludeHandler;
+		List< string >			m_includeDirs;
 
-		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, GraphicsApi targetApi ) const;
-
-		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
-		bool					compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const;
+		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
+		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
+		bool					compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
 
 	};
 }

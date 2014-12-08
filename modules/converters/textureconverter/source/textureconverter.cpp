@@ -16,6 +16,11 @@
 
 namespace tiki
 {
+	uint16 TextureConverter::getConverterRevision() const
+	{
+		return 1u;
+	}
+
 	crc32 TextureConverter::getInputType() const
 	{
 		return crcString( "texture" );
@@ -39,7 +44,7 @@ namespace tiki
 	{
 	}
 	
-	bool TextureConverter::startConversionJob( const ConversionParameters& params ) const
+	bool TextureConverter::startConversionJob( ConversionResult& result, const ConversionParameters& params ) const
 	{
 		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
 		{			
@@ -159,7 +164,7 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( writer, params.outputName, "texture", params.targetPlatform );
+			openResourceWriter( writer, result, params.outputName, "texture", params.targetPlatform );
 			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
 
 			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );

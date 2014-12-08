@@ -14,7 +14,7 @@ namespace tiki
 {
 	ConverterBase::ConverterBase()
 	{
-		m_pManager			= nullptr;
+		m_pManager = nullptr;
 	}
 
 	ConverterBase::~ConverterBase()
@@ -33,7 +33,7 @@ namespace tiki
 
 	void ConverterBase::dispose()
 	{
-		TIKI_ASSERT( m_pManager );
+		TIKI_ASSERT( m_pManager != nullptr );
 
 		disposeConverter();
 
@@ -45,18 +45,20 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pManager != nullptr );
 		
-		if ( !startConversionJob( params ) )
+		if ( !startConversionJob( result, params ) )
 		{
 			TIKI_TRACE_ERROR( "converter returns an error.\n" );
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter& writer, const string& fileName, const string& extension, PlatformType platform ) const
+	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension, PlatformType platform ) const
 	{
+		TIKI_ASSERT( m_pManager != nullptr );
+
 		const string realName = fileName + "." + extension;
 		const string fullPath = path::getAbsolutePath( path::combine( m_pManager->getOutputPath(), realName ) );
 
-		m_pManager->registerResource( fullPath );
+		result.addOutputFile( fullPath );
 		writer.create( fullPath, platform );
 	}
 
@@ -65,8 +67,17 @@ namespace tiki
 		writer.dispose();
 	}
 
-	void ConverterBase::addDependency( ConversionResult::DependencyType type, const string& identifier, const string& valueText, int valueInt )
+	TaskId ConverterBase::queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId /*= InvalidTaskId */ ) const
 	{
-		m_pManager->addDependency( type, identifier, valueText, valueInt );
+		TIKI_ASSERT( m_pManager != nullptr );
+
+		return m_pManager->queueTask( pFunc, pData, dependingTaskId );
+	}
+
+	void ConverterBase::waitForTask( TaskId taskId ) const
+	{
+		TIKI_ASSERT( m_pManager != nullptr );
+
+		m_pManager->waitForTask( taskId );
 	}
 }

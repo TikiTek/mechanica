@@ -20,13 +20,18 @@ namespace tiki
 	AnimationConverter::~AnimationConverter()
 	{
 	}
+	
+	uint16 AnimationConverter::getConverterRevision() const 
+	{
+		return 1u;
+	}
 
-	tiki::crc32 AnimationConverter::getInputType() const
+	crc32 AnimationConverter::getInputType() const
 	{
 		return crcString( "animation" );
 	}
 
-	tiki::crc32 AnimationConverter::getOutputType() const
+	crc32 AnimationConverter::getOutputType() const
 	{
 		return crcString( "animation" );
 	}
@@ -44,15 +49,15 @@ namespace tiki
 	{
 	}
 
-	bool AnimationConverter::startConversionJob( const ConversionParameters& params ) const
+	bool AnimationConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
-		for (uint k = 0u; k < params.inputFiles.getCount(); ++k)
+		for (uint k = 0u; k < parameters.inputFiles.getCount(); ++k)
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ k ];
+			const ConversionParameters::InputFile& file = parameters.inputFiles[ k ];
 
-			float paramScale = params.arguments.getOptionalFloat( "scale", 1.0f );
+			float paramScale = parameters.arguments.getOptionalFloat( "scale", 1.0f );
 
-			string preboundModelName = params.arguments.getString( "prebound_model" );
+			string preboundModelName = parameters.arguments.getString( "prebound_model" );
 
 			if ( !file::exists( preboundModelName ) )
 			{
@@ -152,8 +157,8 @@ namespace tiki
 			}
 
 			ResourceWriter resourceWriter;
-			openResourceWriter( resourceWriter, params.outputName, "animation", PlatformType_Win );
-			resourceWriter.openResource( params.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), getConverterRevision() );
+			openResourceWriter( resourceWriter, result, parameters.outputName, "animation", PlatformType_Win );
+			resourceWriter.openResource( parameters.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), getConverterRevision() );
 
 			ReferenceKey dataKey;
 			builder.writeToResource( resourceWriter, dataKey );
@@ -172,5 +177,4 @@ namespace tiki
 
 		return true;
 	}
-
 }

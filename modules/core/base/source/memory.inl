@@ -8,6 +8,11 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T* memory::newAlign( uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = TIKI_ALIGNOF( T );
+		}
+
 		void* pNew = TIKI_MEMORY_ALLOCALIGN( sizeof( T ), alignment );
 		return ::new( pNew ) T();
 	}

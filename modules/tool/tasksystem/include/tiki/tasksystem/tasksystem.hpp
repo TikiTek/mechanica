@@ -10,6 +10,7 @@
 #include "tiki/threading/mutex.hpp"
 #include "tiki/threading/semaphore.hpp"
 #include "tiki/threading/thread.hpp"
+#include "tiki/threading/event.hpp"
 
 namespace tiki
 {
@@ -46,21 +47,30 @@ namespace tiki
 
 		TaskId	queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId );
 		void	waitForTask( TaskId taskId );
+		void	waitForAllTasks();
 
 	private:
 
-		Mutex				m_globalMutex;
-		Semaphore			m_taskCountSemaphore;
+		struct ThreadContext
+		{
+			TaskSystem*	pTaskSystem;
 
-		TaskId				m_nextTaskId;
+			Thread		thread;
+			Event		workingEvent;
+		};
 
-		Array< Thread >		m_threads;
-		Queue< Task >		m_tasks;
+		Mutex					m_globalMutex;
+		Semaphore				m_taskCountSemaphore;
 
-		static int			staticThreadEntryPoint( const Thread& thread );
-		void				threadEntryPoint( const Thread& thread );
-		void				threadExecuteTask( const Thread& thread, const Task& task );
-		bool				threadDispatchTask( Task& targetTask );
+		TaskId					m_nextTaskId;
+
+		Array< ThreadContext >	m_threads;
+		Queue< Task >			m_tasks;
+
+		static int				staticThreadEntryPoint( const Thread& thread );
+		void					threadEntryPoint( const Thread& thread, ThreadContext& context );
+		void					threadExecuteTask( const Task& task );
+		bool					threadDispatchTask( Task& targetTask );
 
 	};
 }

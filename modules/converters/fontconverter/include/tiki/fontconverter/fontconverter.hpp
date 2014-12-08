@@ -12,16 +12,16 @@ namespace tiki
 
 	protected:
 
-		virtual uint16			getConverterRevision() const { return 10u; }
+		virtual uint16			getConverterRevision() const TIKI_OVERRIDE;
 
-		virtual crc32			getInputType() const;
-		virtual crc32			getOutputType() const;
-		virtual void			getDependingType( List< crc32 >& types ) const;
+		virtual crc32			getInputType() const TIKI_OVERRIDE;
+		virtual crc32			getOutputType() const TIKI_OVERRIDE;
+		virtual void			getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE;
 
-		virtual bool			initializeConverter();
-		virtual void			disposeConverter();
+		virtual bool			initializeConverter() TIKI_OVERRIDE;
+		virtual void			disposeConverter() TIKI_OVERRIDE;
 
-		virtual bool			startConversionJob( const ConversionParameters& params ) const;
+		virtual bool			startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_OVERRIDE;
 
 	};
 }

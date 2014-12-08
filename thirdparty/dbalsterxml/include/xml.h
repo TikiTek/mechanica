@@ -92,8 +92,8 @@ struct _XmlElement
 };
 
 // error handler
-typedef void(*XmlErrorHandler)(const char* _errorMessage, const char* _begin, const char* _current );
-typedef void*(*XmlAllocator)(size_t _bytes);
+typedef void(*XmlErrorHandler)( const char* _errorMessage, const char* _begin, const char* _current );
+typedef void*(*XmlAllocator)( size_t _bytes, void* pUserData );
 
 // simple string compare. the idea is to have a compare function that supports quoted and unquoted entities (i.e. compare("&gt;",">") == true)
 XML_C_API bool xml_compare( const char* _str, const char* _text );
@@ -135,6 +135,6 @@ XML_C_API XmlAttribute* xml_element_find_attribute_by_name( XmlElement* self, co
 XML_C_API unsigned int xml_element_get_content( XmlElement* _elem, char* _buffer, unsigned int _size );
 
 // you provide the allocator, so you know how to free it.
-XML_C_API XmlElement* xml_create( const char* _begin, const char* _end, XmlErrorHandler _errorHandler, XmlAllocator _allocator, XmlSizeofHint* _sizeofHints);
+XML_C_API XmlElement* xml_create( const char* _begin, const char* _end, XmlErrorHandler _errorHandler, XmlAllocator _allocator, XmlSizeofHint* _sizeofHints, void* pUserData );
 
 #endif

@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.semaphoreHandle == INVALID_HANDLE_VALUE );
 	}
 
-	void Semaphore::create( uint initialCount /*= 0*/, uint maxCount /*= 0x7fffffff*/, const char* pName /*= nullptr*/ )
+	bool Semaphore::create( uint initialCount /*= 0*/, uint maxCount /*= 0x7fffffff*/, const char* pName /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_platformData.semaphoreHandle == INVALID_HANDLE_VALUE );
 		m_platformData.semaphoreHandle = CreateSemaphoreA(
@@ -26,6 +26,14 @@ namespace tiki
 			DWORD( maxCount ),
 			pName
 		);
+
+		if (m_platformData.semaphoreHandle == nullptr)
+		{
+			m_platformData.semaphoreHandle = INVALID_HANDLE_VALUE;
+			return false;
+		}
+
+		return true;
 	}
 
 	void Semaphore::dispose()

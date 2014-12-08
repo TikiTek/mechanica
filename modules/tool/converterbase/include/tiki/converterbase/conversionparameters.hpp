@@ -15,8 +15,6 @@ namespace tiki
 {
 	class ConversionArguments
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ConversionArguments );
-
 	public:
 
 		std::map< string, string >&			getMap();
@@ -61,10 +59,8 @@ namespace tiki
 		ConversionArguments		arguments;
 	};
 
-	struct ConversionResult
+	class ConversionResult
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ConversionResult );
-
 	public:
 
 		enum DependencyType
@@ -82,12 +78,6 @@ namespace tiki
 			string		message;
 		};
 
-		struct OutputFile
-		{
-			fourcc	type;
-			string	fileName;
-		};
-
 		struct Dependency
 		{
 			DependencyType	type;
@@ -99,42 +89,37 @@ namespace tiki
 
 		const List< TraceInfo >& getTraceInfos() const
 		{
-			return traceInfos;
+			return m_traceInfos;
 		}
 
-		const List< OutputFile >& getOutputFiles() const
+		const List< string >& getOutputFiles() const
 		{
-			return outputFiles;
+			return m_outputFiles;
 		}
 
 		const List< Dependency >& getDependencies() const
 		{
-			return dependencies;
+			return m_dependencies;
 		}
 
 		void addTraceInfo( TraceLevel level, const string& message )
 		{
-			TraceInfo& traceInfo = traceInfos.add();
+			TraceInfo& traceInfo = m_traceInfos.add();
 			traceInfo.level		= level;
 			traceInfo.message	= message;
 		}
 
-		void addOutputFile( const string& fileName, fourcc fileType )
+		void addOutputFile( const string& fileName )
 		{
-			for (uint i = 0u; i < outputFiles.getCount(); ++i)
+			for (uint i = 0u; i < m_outputFiles.getCount(); ++i)
 			{
-				OutputFile& file = outputFiles[ i ];
-
-				if ( file.fileName == fileName )
+				if ( m_outputFiles[ i ] == fileName )
 				{
-					TIKI_ASSERT( file.type == fileType );
 					return;
 				}
 			}
 
-			OutputFile& file = outputFiles.add();
-			file.fileName	= fileName;
-			file.type		= fileType;
+			m_outputFiles.add( fileName );
 		}
 
 		void addDependency( DependencyType type, const string& identifier, const string& valueText, int valueInt )
@@ -147,9 +132,9 @@ namespace tiki
 			}
 
 			Dependency* pDependency = nullptr;
-			for (uint i = 0u; i < dependencies.getCount(); ++i)
+			for (uint i = 0u; i < m_dependencies.getCount(); ++i)
 			{
-				Dependency& dep = dependencies[ i ];
+				Dependency& dep = m_dependencies[ i ];
 
 				if ( dep.type == type && dep.identifier == id )
 				{
@@ -160,7 +145,7 @@ namespace tiki
 
 			if ( pDependency == nullptr )
 			{
-				pDependency = &dependencies.add();
+				pDependency = &m_dependencies.add();
 				pDependency->type		= type;
 				pDependency->identifier	= id;
 			}
@@ -171,9 +156,10 @@ namespace tiki
 
 	private:
 
-		List< TraceInfo >	traceInfos;
-		List< OutputFile >	outputFiles;
-		List< Dependency >	dependencies;
+		List< TraceInfo >	m_traceInfos;
+		List< string >		m_outputFiles;
+		List< Dependency >	m_dependencies;
+
 	};
 }
 

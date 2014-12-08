@@ -45,26 +45,10 @@ namespace tiki
 
     public:
 
-        BasicIncludeHandler( ConverterManager* pManager )
+        BasicIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
+			: m_result( result ),
+			m_includeDirs( includeDirs )
 		{
-			TIKI_ASSERT( pManager != nullptr );
-			m_pManager = pManager;
-
-			m_includeDirs.add( "./" );
-
-			string text;
-			if ( file::readAllText( "../../shaderinc.lst", text ) )
-			{
-				Array< string > dirs;
-				text.split( dirs, "\n" );
-
-				for (uint i = 0u; i < dirs.getCount(); ++i)
-				{
-					m_includeDirs.add( dirs[ i ].trim() );
-				}
-
-				dirs.dispose();
-			}
 		}
 
 		virtual ~BasicIncludeHandler()
@@ -109,7 +93,7 @@ namespace tiki
 
 			if ( found )
 			{
-				m_pManager->addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
+				m_result.addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
 
 				uint freeStreamIndex = TIKI_SIZE_T_MAX;
 				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
@@ -170,7 +154,7 @@ namespace tiki
 			MaxFileStreams = 8u
 		};
 
-		ConverterManager*	m_pManager;
+		ConversionResult&	m_result;
 
 		List< string >		m_includeDirs;
 		Array< uint8 >		m_fileData[ MaxFileStreams ];
@@ -184,8 +168,8 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConverterManager* pManager )
-            : BasicIncludeHandler( pManager )
+		ShaderIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
+            : BasicIncludeHandler( result, includeDirs )
 		{
 		}
 
@@ -222,8 +206,8 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConverterManager* pManager )
-            : BasicIncludeHandler( pManager )
+		ShaderIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
+            : BasicIncludeHandler( result, includeDirs )
 		{
 		}
 	};
@@ -246,6 +230,11 @@ namespace tiki
 
 	static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
 
+	uint16 ShaderConverter::getConverterRevision() const
+	{
+		return 1u;
+	}
+
 	crc32 ShaderConverter::getInputType() const
 	{
 		return crcString( "shader" );
@@ -267,30 +256,46 @@ namespace tiki
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
-		m_pIncludeHandler = TIKI_NEW ShaderIncludeHandler( getManager() );
+		m_includeDirs.add( "./" );
+
+		string text;
+		if ( file::readAllText( "../../shaderinc.lst", text ) )
+		{
+			Array< string > dirs;
+			text.split( dirs, "\n" );
+
+			for (uint i = 0u; i < dirs.getCount(); ++i)
+			{
+				m_includeDirs.add( dirs[ i ].trim() );
+			}
+
+			dirs.dispose();
+		}
 
 		return true;
 	}
 
 	void ShaderConverter::disposeConverter()
 	{
-		TIKI_DEL m_pIncludeHandler;
+		m_includeDirs.dispose();
 	}
 
-	bool ShaderConverter::startConversionJob( const ConversionParameters& params ) const
+	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
+		ShaderIncludeHandler includeHandler( result, m_includeDirs );
+
 		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		const string shaderDefine[]	= { "", "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
 
 		string functionNames[ ShaderType_Count ];
 		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
-			functionNames[ i ] = params.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
+			functionNames[ i ] = parameters.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
 
-		for( uint fileIndex = 0u; fileIndex < params.inputFiles.getCount(); ++fileIndex )
+		for( uint fileIndex = 0u; fileIndex < parameters.inputFiles.getCount(); ++fileIndex )
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ fileIndex ];
+			const ConversionParameters::InputFile& file = parameters.inputFiles[ fileIndex ];
 
 			string sourceCode;
 			if ( file::readAllText( file.fileName, sourceCode ) == false )
@@ -299,14 +304,14 @@ namespace tiki
 				continue;
 			}
 
-			const bool debugMode = params.arguments.getOptionalBool( "compile_debug", false );
+			const bool debugMode = parameters.arguments.getOptionalBool( "compile_debug", false );
 
 			ShaderPreprocessor preprocessor;
 			preprocessor.create( sourceCode );
 
 			ResourceWriter writer;
-			openResourceWriter( writer, params.outputName, "shader", params.targetPlatform );
-			writer.openResource( params.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
+			openResourceWriter( writer, result, parameters.outputName, "shader", parameters.targetPlatform );
+			writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
 
 			List< ShaderVariantData > shaderVariants;
 			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
@@ -327,7 +332,7 @@ namespace tiki
 					args.type		= type;
 
 					args.fileName	= file.fileName;
-					args.outputName	= params.outputName;
+					args.outputName	= parameters.outputName;
 
 					args.entryPoint	= functionNames[ type ];
 					args.version	= shaderStart[ type ] + "_4_0";
@@ -342,7 +347,7 @@ namespace tiki
 					}
 
 					Array< uint8 > variantData;
-					if ( compilePlatformShader( variantData, args, params.targetApi ) )
+					if ( compilePlatformShader( variantData, args, includeHandler, parameters.targetApi ) )
 					{
 						uint32 keyData[] = { (uint32)type, variant.bitMask };
 
@@ -387,16 +392,16 @@ namespace tiki
 		return true;
 	}
 
-	bool ShaderConverter::compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, GraphicsApi targetApi ) const
+	bool ShaderConverter::compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const
 	{
 		switch ( targetApi )
 		{
 		case GraphicsApi_D3D11:
 		case GraphicsApi_D3D12:
-			return compileD3dShader( targetData, args );
+			return compileD3dShader( targetData, args, includeHandler );
 
 		case GraphicsApi_OpenGL4:
-			return compileOpenGl4Shader( targetData, args );
+			return compileOpenGl4Shader( targetData, args, includeHandler );
 
 		default:
 			TIKI_TRACE_ERROR( "Graphics API not supported.\n" );
@@ -406,7 +411,7 @@ namespace tiki
 		return false;
 	}
 
-	bool ShaderConverter::compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args ) const
+	bool ShaderConverter::compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const
 	{
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		ID3D10Blob* pBlob		= nullptr;
@@ -425,7 +430,7 @@ namespace tiki
 			SIZE_T( sourceCode.getLength() ),
 			args.fileName.cStr(),
 			nullptr,
-			m_pIncludeHandler,
+			&includeHandler,
 			args.entryPoint.cStr(),
 			args.version.cStr(),
 			shaderFlags,
@@ -475,13 +480,13 @@ namespace tiki
 #endif
 	}
 
-	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args ) const
+	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const
 	{
 		string sourceCode = "#version 440\n" + args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 		List< ShaderConstantInfo > constants;
 
 		// preprocessor
-		sourceCode = preprocessSourceCode( sourceCode, args.fileName, m_pIncludeHandler );
+		sourceCode = preprocessSourceCode( sourceCode, args.fileName, &includeHandler );
 
 		// parse uniforms
 		{

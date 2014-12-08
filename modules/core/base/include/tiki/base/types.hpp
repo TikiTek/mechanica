@@ -163,11 +163,15 @@ namespace tiki
 #	define TIKI_POST_ALIGN( var )
 #	define TIKI_ALIGNOF( type )		( __alignof( type ) )
 
+#	define TIKI_OVERRIDE			override
+
 #else
 
 #	define TIKI_PRE_ALIGN( var )
 #	define TIKI_POST_ALIGN( var )	__attribute__( ( aligned( var ) ) );
 #	define TIKI_ALIGNOF( type )		( __alignof__( type ) )
+
+#	define TIKI_OVERRIDE			override
 
 #endif
 

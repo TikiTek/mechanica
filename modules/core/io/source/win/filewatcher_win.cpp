@@ -162,7 +162,7 @@ namespace tiki
 			waitForEvent( 1u );
 		}
 
-		if ( m_events.isEmpty() == false )
+		if ( !m_events.isEmpty() )
 		{
 			return m_events.pop( fileEvent );
 		}

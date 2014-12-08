@@ -20,12 +20,17 @@ namespace tiki
 	{
 	}
 
-	tiki::crc32 ModelConverter::getInputType() const
+	uint16 ModelConverter::getConverterRevision() const
+	{
+		return 1u;
+	}
+
+	crc32 ModelConverter::getInputType() const
 	{
 		return crcString( "model" );
 	}
 
-	tiki::crc32 ModelConverter::getOutputType() const
+	crc32 ModelConverter::getOutputType() const
 	{
 		return crcString( "model" );
 	}
@@ -44,24 +49,24 @@ namespace tiki
 	{
 	}
 
-	bool ModelConverter::startConversionJob( const ConversionParameters& params ) const
+	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
-		for( uint fileIndex = 0u; fileIndex < params.inputFiles.getCount(); ++fileIndex )
+		for( uint fileIndex = 0u; fileIndex < parameters.inputFiles.getCount(); ++fileIndex )
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ fileIndex ];
+			const ConversionParameters::InputFile& file = parameters.inputFiles[ fileIndex ];
 
-			const string material	= params.arguments.getOptionalString( "material", "" );
-			const float scale		= params.arguments.getOptionalFloat( "scale", 1.0f );
-			const bool calcTangents	= params.arguments.getOptionalBool( "calculate_tangents", true );
+			const string material	= parameters.arguments.getOptionalString( "material", "" );
+			const float scale		= parameters.arguments.getOptionalFloat( "scale", 1.0f );
+			const bool calcTangents	= parameters.arguments.getOptionalBool( "calculate_tangents", true );
 
 			ToolModel model;
 			model.create( file.fileName, scale );
 			model.parseGeometies( calcTangents );
 
 			ResourceWriter writer;
-			openResourceWriter( writer, params.outputName, "model", params.targetPlatform );
+			openResourceWriter( writer, result, parameters.outputName, "model", parameters.targetPlatform );
 			
-			writer.openResource( params.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
+			writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
 
 			// write hierarchy
 			const ReferenceKey* pHierarchyKey = nullptr;
@@ -370,5 +375,4 @@ namespace tiki
 
 		return geometryKey;
 	}
-
 }

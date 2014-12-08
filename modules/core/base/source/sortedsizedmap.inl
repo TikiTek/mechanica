@@ -28,7 +28,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData = static_cast< Pair* >( memory::newArray< Pair >( size ) );
+		m_pData = static_cast< Pair* >( memory::newArray< Pair >( size, alignment ) );
 		if ( m_pData == nullptr )
 		{
 			return false;

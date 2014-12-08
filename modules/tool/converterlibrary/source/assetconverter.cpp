@@ -65,7 +65,7 @@ namespace tiki
 		TIKI_TRACE_INFO( "AssetConverter: finish\n" );
 	}
 
-	int AssetConverter::convertAll()
+	bool AssetConverter::convertAll()
 	{
 		List< string > assetFiles;
 		List< string > templateFiles;
@@ -77,22 +77,15 @@ namespace tiki
 			m_manager.addTemplate( templateFiles[ i ] );
 		}
 
-		int result = 0;
-		List< string > outputFiles;
+		bool result = true;
 		for (size_t i = 0u; i < assetFiles.getCount(); ++i)
 		{
-			if ( !m_manager.startConvertFile( assetFiles[ i ], outputFiles, &m_converterMutex ) )
-			{
-				result = 1;
-			}
-		}
-
-		if ( result == 0 )
-		{
-			m_manager.writeResourceMap();
-		}
-
+			result &= m_manager.queueFile( assetFiles[ i ] );
+		}		
 		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
+
+		result &= m_manager.startConversion( nullptr, &m_converterMutex );
+		TIKI_TRACE_INFO( "[AssetConverter] Conversion finish!\n" );
 
 		return result;
 	}
@@ -123,8 +116,10 @@ namespace tiki
 		{
 			changedFiles.create( m_changedFiles.getData(), m_changedFiles.getCount() );
 			m_changedFiles.clear();
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -145,18 +140,25 @@ namespace tiki
 		while ( thread.isExitRequested() == false )
 		{
 			FileWatcherEvent fileEvent;
-			if ( m_fileWatcher.popEvent( fileEvent ) == true && fileEvent.eventType == FileWatcherEventType_Modified )
+			if ( m_fileWatcher.popEvent( fileEvent ) && fileEvent.eventType == FileWatcherEventType_Modified )
 			{
 				MutexStackLock lock( m_converterMutex );
 
+				if ( !m_manager.queueFile( fileEvent.fileName ) )
+				{
+					continue;
+				}
+
 				List< string > outputFiles;
-				if ( m_manager.startConvertFile( fileEvent.fileName, outputFiles ) )
+				if ( m_manager.startConversion( &outputFiles ) )
 				{
 					m_changedFiles.addRange( outputFiles.getData(), outputFiles.getCount() );
 				}
 			}
-
-			Sleep( 100u );
+			else
+			{
+				Sleep( 10u );
+			}
 		}
 	}
 

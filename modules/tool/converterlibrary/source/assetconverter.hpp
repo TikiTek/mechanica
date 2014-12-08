@@ -27,17 +27,17 @@ namespace tiki
 
 		AssetConverter();
 
-		virtual void	create( const AssetConverterParamter& parameters );
-		virtual void	dispose();
+		virtual void	create( const AssetConverterParamter& parameters ) TIKI_OVERRIDE;
+		virtual void	dispose() TIKI_OVERRIDE;
 
-		virtual int		convertAll();
+		virtual bool	convertAll() TIKI_OVERRIDE;
 
-		virtual void	startWatch();
-		virtual void	stopWatch();
-		virtual bool	getChangedFiles( Array< string >& changedFiles );
+		virtual void	startWatch() TIKI_OVERRIDE;
+		virtual void	stopWatch() TIKI_OVERRIDE;
+		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_OVERRIDE;
 
-		virtual void	lockConversion();
-		virtual void	unlockConversion();
+		virtual void	lockConversion() TIKI_OVERRIDE;
+		virtual void	unlockConversion() TIKI_OVERRIDE;
 
 	private:
 

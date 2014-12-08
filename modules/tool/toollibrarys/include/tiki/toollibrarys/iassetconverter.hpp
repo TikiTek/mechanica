@@ -32,7 +32,7 @@ namespace tiki
 		virtual void	create( const AssetConverterParamter& parameters ) = 0;
 		virtual void	dispose() = 0;
 
-		virtual int		convertAll() = 0;
+		virtual bool	convertAll() = 0;
 
 		virtual void	startWatch() = 0;
 		virtual void	stopWatch() = 0;
