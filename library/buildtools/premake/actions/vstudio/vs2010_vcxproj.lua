@@ -262,6 +262,14 @@
 		end
 	end
 
+	local function multi_processor_compilation(cfg)
+		if cfg.flags.MultiProcessorCompilation then
+			_p(3,'<MultiProcessorCompilation>true</MultiProcessorCompilation>')
+		else
+			_p(3,'<MultiProcessorCompilation>false</MultiProcessorCompilation>')
+		end
+	end
+	
 	local function compile_language(cfg)
 		if cfg.language == "C" then
 			_p(3,'<CompileAs>CompileAsC</CompileAs>')
@@ -281,6 +289,7 @@
 			include_dirs(3,cfg)
 			preprocessor(3,cfg)
 			minimal_build(cfg)
+			multi_processor_compilation(cfg);
 
 		if  not premake.config.isoptimizedbuild(cfg.flags) then
 			if not cfg.flags.Managed then

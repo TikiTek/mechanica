@@ -23,7 +23,7 @@ namespace tiki
 		Semaphore();
 		~Semaphore();
 
-		void	create( uint initialCount = 0, uint maxCount = 0xffffffff, const char* pName = nullptr );
+		bool	create( uint initialCount = 0, uint maxCount = 0x7fffffff, const char* pName = nullptr );
 		void	dispose();
 
 		void	incement( uint count = 1u );

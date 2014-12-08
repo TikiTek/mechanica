@@ -696,7 +696,7 @@ static const char* xml_document_scan( XmlScannerContext* _ctx, XmlElement* _elem
 	return _begin;
 }
 
-XML_C_API XmlElement* xml_create( const char* _begin, const char* _end, XmlErrorHandler _errorHandler, XmlAllocator _allocate, XmlSizeofHint* _sizeofHints )
+XML_C_API XmlElement* xml_create( const char* _begin, const char* _end, XmlErrorHandler _errorHandler, XmlAllocator _allocate, XmlSizeofHint* _sizeofHints, void* pUserData )
 {
 	if (_allocate==0) return 0;
 
@@ -715,7 +715,7 @@ XML_C_API XmlElement* xml_create( const char* _begin, const char* _end, XmlError
 	if (iter != 0)
 	{
 		// phase #2: scan and construct document tree
-		context.pRoot = (XmlElement*) _allocate( context.nChars + context.nBytes );
+		context.pRoot = (XmlElement*) _allocate( context.nChars + context.nBytes, pUserData );
 		memset(context.pRoot,0,context.nChars + context.nBytes);
 		context.pRoot->name = "";
 		context.pRoot->content = "";

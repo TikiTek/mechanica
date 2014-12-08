@@ -19,6 +19,11 @@
 
 namespace tiki
 {
+	uint16 FontConverter::getConverterRevision() const
+	{
+		return 1u;
+	}
+
 	crc32 FontConverter::getInputType() const
 	{
 		return crcString( "font" );
@@ -42,7 +47,7 @@ namespace tiki
 	{
 	}
 
-	bool FontConverter::startConversionJob( const ConversionParameters& params ) const
+	bool FontConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
 		FT_Library library;
 		int error = FT_Init_FreeType( &library );
@@ -53,7 +58,7 @@ namespace tiki
 			return false;
 		}
 
-		string allChars = params.arguments.getOptionalString( "chars", "" );
+		string allChars = parameters.arguments.getOptionalString( "chars", "" );
 		if ( allChars.isEmpty() )
 		{
 			allChars = string( 256u );
@@ -63,12 +68,12 @@ namespace tiki
 			}
 		}
 
-		const bool mode3D	= params.arguments.getOptionalBool( "3d_mode",  false );
-		const int fontSize	= params.arguments.getOptionalInt( "font_size", 16 );
+		const bool mode3D	= parameters.arguments.getOptionalBool( "3d_mode",  false );
+		const int fontSize	= parameters.arguments.getOptionalInt( "font_size", 16 );
 
-		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
+		for (size_t i = 0u; i < parameters.inputFiles.getCount(); ++i)
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
 
 			FT_Face face;
 			error = FT_New_Face( library, file.fileName.cStr(), 0u, &face );
@@ -162,7 +167,7 @@ namespace tiki
 			TextureWriterParameters writerParameters;
 			writerParameters.targetFormat	= PixelFormat_R8;
 			writerParameters.targetType		= (mode3D ? TextureType_3d : TextureType_2d );
-			writerParameters.targetApi		= params.targetApi;
+			writerParameters.targetApi		= parameters.targetApi;
 			writerParameters.mipMapCount	= 1u;
 			writerParameters.data.texture3d.sliceSize = fontSize;
 
@@ -173,8 +178,8 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( writer, params.outputName, "font", params.targetPlatform );
-			writer.openResource( params.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision() );
+			openResourceWriter( writer, result, parameters.outputName, "font", parameters.targetPlatform );
+			writer.openResource( parameters.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision() );
 
 			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
 
@@ -201,5 +206,4 @@ namespace tiki
 
 		return true;
 	}
-
 }

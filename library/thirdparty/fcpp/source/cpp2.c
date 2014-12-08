@@ -628,7 +628,7 @@ ReturnCode openinclude( struct Global *global,
     char **incptr;
     char tmpname[NWORK]; /* Filename work area    */
     int len;
-    ReturnCode ret;
+    ReturnCode ret = FPP_LAST_ERROR;
 
     #if HOST == SYS_AMIGADOS || HOST == SYS_WINDOWS
     if( strchr (filename, ':') != NULL )

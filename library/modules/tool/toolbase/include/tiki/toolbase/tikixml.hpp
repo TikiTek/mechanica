@@ -14,7 +14,7 @@ namespace tiki
 
 	class TikiXml
 	{
-		friend void* xmlAlloc(size_t _bytes);
+		friend void* xmlAlloc(size_t _bytes, void* pUserData);
 
 	public:
 
@@ -39,8 +39,6 @@ namespace tiki
 
 		XmlElement*			m_pNode;
 		void*				m_pData;
-
-		static TikiXml*		s_pAllocInst;
 
 	};
 }

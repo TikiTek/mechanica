@@ -20,7 +20,12 @@ namespace tiki
 		m_nextTaskId = 0u;
 
 		m_globalMutex.create();
-		m_taskCountSemaphore.create();
+		
+		if ( !m_taskCountSemaphore.create() )
+		{
+			dispose();
+			return false;
+		}
 
 		if ( !m_tasks.create( parameters.maxTaskCount ) )
 		{
@@ -35,10 +40,14 @@ namespace tiki
 		}
 
 		for (uint i = 0u; i < m_threads.getCount(); ++i)
-		{			
+		{
+			ThreadContext& context = m_threads[ i ];
+			context.pTaskSystem	= this;
+			context.workingEvent.create();
+
 			const string threadName = formatString( "TaskSystem_%u", i );
-			m_threads[ i ].create( staticThreadEntryPoint, parameters.threadStackSize, threadName.cStr() );
-			m_threads[ i ].start( this );
+			context.thread.create( staticThreadEntryPoint, parameters.threadStackSize, threadName.cStr() );
+			context.thread.start( &context );
 		}
 
 		return true;
@@ -48,13 +57,17 @@ namespace tiki
 	{
 		for (uint i = 0u; i < m_threads.getCount(); ++i)
 		{
-			m_threads[ i ].requestExit();
+			m_threads[ i ].thread.requestExit();
 		}
 
 		for (uint i = 0u; i < m_threads.getCount(); ++i)
 		{
-			m_threads[ i ].waitForExit();
-			m_threads[ i ].dispose();
+			ThreadContext& context = m_threads[ i ];
+
+			context.thread.waitForExit();
+			context.thread.dispose();
+
+			context.workingEvent.dispose();
 		}
 
 		m_threads.dispose();
@@ -83,8 +96,6 @@ namespace tiki
 
 	void TaskSystem::waitForTask( TaskId taskId )
 	{
-		const Thread& thread = *(const Thread*)nullptr;
-
 		Task task;
 		do
 		{
@@ -92,43 +103,72 @@ namespace tiki
 
 			if ( threadDispatchTask( task ) )
 			{
-				threadExecuteTask( thread, task );
+				threadExecuteTask( task );
 			}
 		}
 		while ( task.id <= taskId );
 	}
+	
+	void TaskSystem::waitForAllTasks()
+	{
+		Task task;
+		do
+		{
+			task = Task();
+
+			if ( threadDispatchTask( task ) )
+			{
+				threadExecuteTask( task );
+			}
+		}
+		while ( task.id != InvalidTaskId );
+
+		for (uint i = 0u; i < m_threads.getCount(); ++i)
+		{
+			m_threads[ i ].workingEvent.waitForSignal();
+		}
+	}
 
 	/*static*/ int TaskSystem::staticThreadEntryPoint( const Thread& thread )
 	{
-		TaskSystem* pTaskSystem = static_cast< TaskSystem* >( thread.getArgument() );
-		if ( pTaskSystem != nullptr )
+		void* pArgument = thread.getArgument();
+		if ( pArgument == nullptr )
 		{
-			pTaskSystem->threadEntryPoint( thread );
+			return -1;
 		}
+
+		ThreadContext& context = *static_cast< ThreadContext* >( pArgument );
+		TIKI_ASSERT( &context.thread == &thread );
+
+		context.pTaskSystem->threadEntryPoint( thread, context );
 
 		return 0;
 	}
 
-	void TaskSystem::threadEntryPoint( const Thread& thread )
+	void TaskSystem::threadEntryPoint( const Thread& thread, ThreadContext& context )
 	{
 		Task task;
 		while ( !thread.isExitRequested() )
 		{
+			context.workingEvent.reset();
+
 			if ( threadDispatchTask( task ) )
 			{
-				threadExecuteTask( thread, task );
+				threadExecuteTask( task );
 			}
+
+			context.workingEvent.signal();
 		}
 	}
 
-	void TaskSystem::threadExecuteTask( const Thread& thread, const Task& task )
+	void TaskSystem::threadExecuteTask( const Task& task )
 	{
 		if ( task.dependingTaskId != InvalidTaskId )
 		{
 			waitForTask( task.dependingTaskId );
 		}
 
-		TaskContext context( thread, task.pData );
+		TaskContext context( task.pData );
 		task.pFunc( context );
 	}
 
@@ -139,7 +179,7 @@ namespace tiki
 			bool result = false;
 
 			m_globalMutex.lock();
-			result = m_tasks.pop( targetTask );
+			TIKI_VERIFY( result = m_tasks.pop( targetTask ) );
 			m_globalMutex.unlock();
 
 			return result;

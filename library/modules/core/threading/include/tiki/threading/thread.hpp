@@ -50,6 +50,8 @@ namespace tiki
 
 		volatile bool		m_isExitRequested;
 
+		char				m_name[ 128u ];
+
 	};
 }
 

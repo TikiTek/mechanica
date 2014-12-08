@@ -39,22 +39,26 @@ namespace tiki
 	void Event::signal()
 	{
 		TIKI_ASSERT( m_platformData.eventHandle != INVALID_HANDLE_VALUE );
-		SetEvent( m_platformData.eventHandle );
+
+		TIKI_VERIFY( SetEvent( m_platformData.eventHandle ) );
 	}
 
 	void Event::reset()
 	{
 		TIKI_ASSERT( m_platformData.eventHandle != INVALID_HANDLE_VALUE );
-		ResetEvent( m_platformData.eventHandle );
+
+		TIKI_VERIFY( ResetEvent( m_platformData.eventHandle ) );
 	}
 
 	bool Event::waitForSignal( uint timeOut /*= TimeOutInfinity */ )
 	{
 		TIKI_ASSERT( m_platformData.eventHandle != INVALID_HANDLE_VALUE );
+
 		if ( WaitForSingleObject( m_platformData.eventHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 		{
 			return false;
 		}
+
 		return true;
 	}
 }

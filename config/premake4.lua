@@ -87,3 +87,7 @@ module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OF
 
 module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) );
+
+--module:set_flag("NoExceptions");
+module:set_flag("NoMinimalRebuild");
+module:set_flag("MultiProcessorCompilation");

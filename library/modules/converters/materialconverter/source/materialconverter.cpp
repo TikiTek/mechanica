@@ -17,12 +17,17 @@ namespace tiki
 	{
 	}
 
-	tiki::crc32 MaterialConverter::getInputType() const
+	uint16 MaterialConverter::getConverterRevision() const 
+	{
+		return 1u;
+	}
+
+	crc32 MaterialConverter::getInputType() const
 	{
 		return crcString( "material" ); 
 	}
 
-	tiki::crc32 MaterialConverter::getOutputType() const
+	crc32 MaterialConverter::getOutputType() const
 	{
 		return crcString( "material" );
 	}
@@ -40,11 +45,11 @@ namespace tiki
 	{
 	}
 
-	bool MaterialConverter::startConversionJob( const ConversionParameters& params ) const
+	bool MaterialConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
-		for( size_t i = 0u; i < params.inputFiles.getCount(); ++i )
+		for( size_t i = 0u; i < parameters.inputFiles.getCount(); ++i )
 		{
-			const ConversionParameters::InputFile& file = params.inputFiles[ i ];
+			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
 			
 			ToolMaterial material;			
 			if( !material.create( file.fileName ) )
@@ -54,9 +59,9 @@ namespace tiki
 			}
 
 			ResourceWriter writer;
-			openResourceWriter( writer, params.outputName, "material", PlatformType_Win );
+			openResourceWriter( writer, result, parameters.outputName, "material", PlatformType_Win );
 
-			writer.openResource( params.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
+			writer.openResource( parameters.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
 
 			const ReferenceKey materialDataKey = material.writeResource( writer );
 
@@ -72,5 +77,4 @@ namespace tiki
 		}
 		return true;
 	}
-
 }

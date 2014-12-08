@@ -113,6 +113,7 @@
 					NoIncrementalLink = 1,
 					NoManifest = 1,
 					NoMinimalRebuild = 1,
+					MultiProcessorCompilation = 1,
 					NoNativeWChar = 1,
 					NoPCH = 1,
 					NoRTTI = 1,

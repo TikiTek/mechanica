@@ -5,13 +5,9 @@
 
 namespace tiki
 {
-	TikiXml* TikiXml::s_pAllocInst = nullptr;
-
-	//typedef void(*XmlErrorHandler)(const char* _errorMessage, const char* _begin, const char* _current );
-	
-	void* xmlAlloc(size_t _bytes)
+	void* xmlAlloc(size_t _bytes, void* pUserData)
 	{
-		TikiXml* pXml	= TikiXml::s_pAllocInst;
+		TikiXml* pXml	= static_cast< TikiXml* >( pUserData );
 		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
 
 		return pXml->m_pData;
@@ -39,13 +35,13 @@ namespace tiki
 		Array< uint8 > data;
 		TIKI_VERIFY( file::readAllBytes( fileName, data ) );
 
-		s_pAllocInst = this;
 		m_pNode = xml_create(
 			(const char*)data.getBegin(),
 			(const char*)data.getEnd(),
 			xmlErrorHandler,
 			xmlAlloc,
-			nullptr
+			nullptr,
+			this
 		);
 
 		data.dispose();

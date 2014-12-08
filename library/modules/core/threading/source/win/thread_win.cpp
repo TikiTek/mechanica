@@ -2,6 +2,7 @@
 #include "tiki/threading/thread.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/string.hpp"
 
 #include <windows.h>
 
@@ -37,6 +38,7 @@ namespace tiki
 		m_pEntryFunction	= nullptr;
 		m_pArgument			= nullptr;
 		m_isExitRequested	= false;
+		m_name[ 0u ]		= '\0';
 	}
 
 	Thread::~Thread()
@@ -61,23 +63,11 @@ namespace tiki
 			&m_platformData.threadId
 		);
 
-		if ( m_platformData.threadHandle != INVALID_HANDLE_VALUE && pName != nullptr )
+		if ( pName != nullptr )
 		{
-			THREADNAME_INFO info;
-			info.dwType		= 0x1000;
-			info.szName		= pName;
-			info.dwThreadID = m_platformData.threadId;
-			info.dwFlags	= 0;
-
-			__try
-			{
-				RaiseException( MS_VC_EXCEPTION, 0, sizeof( info ) / sizeof( ULONG_PTR ), (ULONG_PTR*)&info );
-			}
-			__except(EXCEPTION_EXECUTE_HANDLER)
-			{
-			}
+			copyString( m_name, TIKI_COUNT( m_name ), pName );
 		}
-		
+
 		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
 	}
 
@@ -100,6 +90,22 @@ namespace tiki
 
 		m_pArgument = pArgument;
 		ResumeThread( m_platformData.threadHandle );
+
+		{
+			THREADNAME_INFO info;
+			info.dwType		= 0x1000;
+			info.szName		= m_name;
+			info.dwThreadID = m_platformData.threadId;
+			info.dwFlags	= 0;
+
+			__try
+			{
+				RaiseException( MS_VC_EXCEPTION, 0, sizeof( info ) / sizeof( ULONG_PTR ), (ULONG_PTR*)&info );
+			}
+			__except(EXCEPTION_EXECUTE_HANDLER)
+			{
+			}
+		}
 	}
 
 	void Thread::requestExit()
