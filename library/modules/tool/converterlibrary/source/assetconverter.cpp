@@ -43,7 +43,7 @@ namespace tiki
 		
 		TIKI_TRACE_INFO( "AssetConverter: started\n" );
 
-		if ( m_manager.isNewDatabase() )
+		if ( m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase )
 		{
 			convertAll();
 		}
@@ -77,14 +77,13 @@ namespace tiki
 			m_manager.addTemplate( templateFiles[ i ] );
 		}
 
-		bool result = true;
 		for (size_t i = 0u; i < assetFiles.getCount(); ++i)
 		{
-			result &= m_manager.queueFile( assetFiles[ i ] );
+			m_manager.queueFile( assetFiles[ i ] );
 		}		
 		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
-		result &= m_manager.startConversion( nullptr, &m_converterMutex );
+		const bool result = m_manager.startConversion( nullptr, &m_converterMutex );
 		TIKI_TRACE_INFO( "[AssetConverter] Conversion finish!\n" );
 
 		return result;
@@ -144,10 +143,7 @@ namespace tiki
 			{
 				MutexStackLock lock( m_converterMutex );
 
-				if ( !m_manager.queueFile( fileEvent.fileName ) )
-				{
-					continue;
-				}
+				m_manager.queueFile( fileEvent.fileName );
 
 				List< string > outputFiles;
 				if ( m_manager.startConversion( &outputFiles ) )

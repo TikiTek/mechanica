@@ -69,7 +69,7 @@ namespace tiki
 
 		static int				staticThreadEntryPoint( const Thread& thread );
 		void					threadEntryPoint( const Thread& thread, ThreadContext& context );
-		void					threadExecuteTask( const Task& task );
+		void					threadExecuteTask( const Thread& thread, const Task& task );
 		bool					threadDispatchTask( Task& targetTask );
 
 	};

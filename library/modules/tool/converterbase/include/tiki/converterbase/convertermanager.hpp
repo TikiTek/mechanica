@@ -49,7 +49,7 @@ namespace tiki
 
 		// conversion
 		void					addTemplate( const string& fileName );
-		bool					queueFile( const string& fileName );
+		void					queueFile( const string& fileName );
 		bool					startConversion( List< string >* pOutputFiles = nullptr, Mutex* pConversionMutex = nullptr );
 
 		// converter
@@ -86,6 +86,7 @@ namespace tiki
 
 		struct ConversionTask
 		{
+			ConverterManager*		pManager;
 			const ConverterBase*	pConverter;
 
 			ConversionParameters	parameters;
@@ -93,7 +94,8 @@ namespace tiki
 
 			TaskId					taskId;
 		};
-		typedef List< ConversionTask > ConversionTaskList;
+
+		typedef std::map< uint64, ConversionResult* > ThreadResultMap;
 
 		string						m_outputPath;
 
@@ -103,28 +105,31 @@ namespace tiki
 
 		mutable Mutex				m_loggingMutex;
 		mutable FileStream			m_loggingStream;
+		mutable ThreadResultMap		m_loggingThreadResults;
 
 		TemplateMap					m_templates;
 		ConverterList				m_converters;
 		ConverterResourceMap		m_resourceMap;
 
+		List< string >				m_files;
+
 		TaskSystem					m_taskSystem;
-		ConversionTaskList			m_tasks;
+		List< ConversionTask >		m_tasks;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
 		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
 
-		bool						checkChangesAndFillConversionParameters( ConversionParameters& params, const ConverterBase** ppConverter, const FileDescription& file );
-		bool						internalQueueFile( const FileDescription& file );
+		bool						prepareTasks();
+		bool						generateTaskFromFiles( const List< FileDescription >& filesToBuild );
+		bool						readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc );
+		bool						writeConvertInputs( List< ConversionTask >& tasks );
+		bool						checkDependencies( List< ConversionTask >& tasks );
 
-		bool						finalizeFile( List< string >& outputFiles, const ConversionTask& task );
-
-		uint						findAssetIdByName( const string& name );
-		bool						writeConvertInput( uint& assetId, const ConversionParameters& parametes );
-		bool						checkDependencies( uint assetId, const ConverterBase* pConverter );
-		bool						writeConvertResult( uint assetId, const ConversionResult& result, bool hasError );
+		bool						finalizeTasks( List< string >& outputFiles );
 
 		static void					taskConvertFile( const TaskContext& context );
+		void						taskRegisterResult( uint64 threadId, ConversionResult& result );
+		void						taskUnregisterResult( uint64 threadId );
 
 	};
 }

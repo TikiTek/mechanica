@@ -93,7 +93,7 @@ namespace tiki
 
 			if ( found )
 			{
-				m_result.addDependency( ConversionResult::DependencyType_File, fullName, "", 0u );
+				m_result.addDependency( ConversionResult::DependencyType_File, fullName, 0u );
 
 				uint freeStreamIndex = TIKI_SIZE_T_MAX;
 				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)

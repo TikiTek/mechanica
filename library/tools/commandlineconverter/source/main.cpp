@@ -13,6 +13,7 @@ int tiki::mainEntryPoint()
 		parameters.sourcePath	= "../../../../../../content";
 		parameters.outputPath	= "../../../../../../gamebuild";
 		parameters.forceRebuild	= hasArgument( "--rebuild" );
+		parameters.rebuildOnMissingDatabase	= false;
 
 		IAssetConverter* pConverter = createAssetConverter();
 		pConverter->create( parameters );
@@ -22,7 +23,8 @@ int tiki::mainEntryPoint()
 		pConverter->dispose();
 		disposeAssetConverter( pConverter );
 	}		
-	//debug::dumpMemoryStats();
+	
+	debug::dumpMemoryStats();
 
 	return retValue;
 }

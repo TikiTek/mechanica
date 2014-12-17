@@ -15,6 +15,8 @@ namespace tiki
 	{
 		HANDLE	threadHandle;
 		DWORD	threadId;
+
+		char	name[ 128u ];
 	};
 
 	struct MutexPlatformData

@@ -784,7 +784,7 @@ namespace tiki
 	TIKI_FORCE_INLINE uint getStringLength( cstring pSource )
 	{
 		uint length = (uint)-1;		
-		while ( pSource[ ++length ] != 0u );
+		while ( pSource[ ++length ] != '\0' );
 
 		return length;
 	}
