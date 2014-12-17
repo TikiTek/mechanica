@@ -10,6 +10,8 @@ namespace tiki
 	template<typename T>
 	class SizedArray
 	{
+		TIKI_NONCOPYABLE_CLASS( SizedArray );
+
 	public:
 		
 		typedef T			Type;
@@ -50,11 +52,11 @@ namespace tiki
 		TIKI_FORCE_INLINE Iterator			getEnd()			{ return m_pData + m_count; }
 		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return m_pData + m_count; }
 
-		TIKI_FORCE_INLINE Reference			getFirst()			{ return m_pData[ 0u ]; }
-		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return m_pData[ 0u ]; }
+		TIKI_FORCE_INLINE Reference			getFirst()			{ return (*this)[ 0u ]; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return (*this)[ 0u ]; }
 
-		TIKI_FORCE_INLINE Reference			getLast()			{ return m_pData[ m_count - 1u ]; }
-		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_pData[ m_count - 1u ]; }
+		TIKI_FORCE_INLINE Reference			getLast()			{ return (*this)[ m_count - 1u ]; }
+		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return (*this)[ m_count - 1u ]; }
 
 		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
 		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;

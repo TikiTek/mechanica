@@ -96,6 +96,8 @@ namespace tiki
 
 	void TaskSystem::waitForTask( TaskId taskId )
 	{
+		const Thread& thread = Thread::getCurrentThread();
+
 		Task task;
 		do
 		{
@@ -103,7 +105,7 @@ namespace tiki
 
 			if ( threadDispatchTask( task ) )
 			{
-				threadExecuteTask( task );
+				threadExecuteTask( thread, task );
 			}
 		}
 		while ( task.id <= taskId );
@@ -111,6 +113,8 @@ namespace tiki
 	
 	void TaskSystem::waitForAllTasks()
 	{
+		const Thread& thread = Thread::getCurrentThread();
+
 		Task task;
 		do
 		{
@@ -118,7 +122,7 @@ namespace tiki
 
 			if ( threadDispatchTask( task ) )
 			{
-				threadExecuteTask( task );
+				threadExecuteTask( thread, task );
 			}
 		}
 		while ( task.id != InvalidTaskId );
@@ -154,21 +158,21 @@ namespace tiki
 
 			if ( threadDispatchTask( task ) )
 			{
-				threadExecuteTask( task );
+				threadExecuteTask( thread, task );
 			}
 
 			context.workingEvent.signal();
 		}
 	}
 
-	void TaskSystem::threadExecuteTask( const Task& task )
+	void TaskSystem::threadExecuteTask( const Thread& thread, const Task& task )
 	{
 		if ( task.dependingTaskId != InvalidTaskId )
 		{
 			waitForTask( task.dependingTaskId );
 		}
 
-		TaskContext context( task.pData );
+		TaskContext context( thread, task.pData );
 		task.pFunc( context );
 	}
 

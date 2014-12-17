@@ -21,15 +21,10 @@ namespace tiki
 	template<typename T>
 	List< T >::List( const List<T>& copy )
 	{
-		m_count		= copy.m_count;
-		m_capacity		= copy.m_capacity;
-		m_isReadOnly	= copy.m_isReadOnly;
-		m_pData			= memory::newArray<T>( m_capacity );
+		m_pData		= nullptr;
+		m_capacity	= 0u;
 
-		for (uint i = 0u; i < m_count; ++i)
-		{
-			m_pData[ i ] = copy.m_pData[ i ];
-		}
+		*this = copy;
 	}
 
 	template<typename T>
@@ -254,7 +249,16 @@ namespace tiki
 		m_isReadOnly	= copy.m_isReadOnly;
 		m_capacity		= copy.m_capacity;
 		m_count			= copy.m_count;
-		m_pData			= memory::newArray< T >( m_capacity );
+		
+		if ( m_count > 0u )
+		{
+			m_pData = memory::newArray< T >( m_capacity );
+		}
+		else
+		{
+			m_pData		= nullptr;
+			m_capacity	= 0u;
+		}
 
 		for (uint i = 0u; i < m_count; ++i)
 		{

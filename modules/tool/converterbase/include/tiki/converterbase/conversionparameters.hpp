@@ -47,6 +47,7 @@ namespace tiki
 		};
 
 		uint					assetId;
+		bool					isBuildRequired;
 
 		PlatformType			targetPlatform;
 		GraphicsApi				targetApi;
@@ -84,7 +85,6 @@ namespace tiki
 			string			identifier;
 			
 			int				valueInt;
-			string			valueText;
 		};
 
 		const List< TraceInfo >& getTraceInfos() const
@@ -122,7 +122,7 @@ namespace tiki
 			m_outputFiles.add( fileName );
 		}
 
-		void addDependency( DependencyType type, const string& identifier, const string& valueText, int valueInt )
+		void addDependency( DependencyType type, const string& identifier, int valueInt )
 		{
 			string id = identifier;
 			if ( type == DependencyType_File )
@@ -150,7 +150,6 @@ namespace tiki
 				pDependency->identifier	= id;
 			}
 
-			pDependency->valueText	= valueText;
 			pDependency->valueInt	= valueInt;
 		}
 

@@ -13,13 +13,15 @@ namespace tiki
 	{
 		AssetConverterParamter()
 		{
-			forceRebuild = false;
+			forceRebuild				= false;
+			rebuildOnMissingDatabase	= true;
 		}
 
 		string	sourcePath;
 		string	outputPath;
 
 		bool	forceRebuild;
+		bool	rebuildOnMissingDatabase;
 	};
 
 	class IAssetConverter

@@ -3,6 +3,7 @@
 #define __TIKI_THREAD_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/linkedlist.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include "../../../source/win/platformdata_win.hpp"
@@ -18,7 +19,7 @@ namespace tiki
 
 	typedef int(*ThreadEntryFunction)(const Thread&);
 
-	class Thread
+	class Thread : public LinkedItem< Thread >
 	{
 		TIKI_NONCOPYABLE_CLASS( Thread );
 
@@ -27,21 +28,28 @@ namespace tiki
 		Thread();
 		~Thread();
 
-		bool				create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName = nullptr );
-		void				dispose();
+		bool					create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName = nullptr );
+		void					dispose();
 
-		void				start( void* pArgument );
-		void				requestExit();
+		void					start( void* pArgument );
+		void					requestExit();
 
-		bool				waitForExit( uint timeOut = TimeOutInfinity );
+		bool					waitForExit( uint timeOut = TimeOutInfinity );
 
-		void*				getArgument() const			{ return m_pArgument; }
-		ThreadEntryFunction	getEntryFunction() const	{ return m_pEntryFunction; }
-		bool				isExitRequested() const		{ return m_isExitRequested; }
+		void*					getArgument() const			{ return m_pArgument; }
+		ThreadEntryFunction		getEntryFunction() const	{ return m_pEntryFunction; }
+		bool					isExitRequested() const		{ return m_isExitRequested; }
 
-		bool				isCreated() const;
+		uint64					getThreadId() const;
+		bool					isCreated() const;
+
+		static uint64			getCurrentThreadId(); 
+		static const Thread&	getCurrentThread();
+		static const Thread*	getThreadById( uint64 threadId );
 
 	private:
+
+		typedef LinkedList< Thread > ThreadList;
 
 		ThreadPlatformData	m_platformData;
 
@@ -50,7 +58,7 @@ namespace tiki
 
 		volatile bool		m_isExitRequested;
 
-		char				m_name[ 128u ];
+		static ThreadList	s_threadList;
 
 	};
 }
