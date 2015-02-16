@@ -1,6 +1,9 @@
 
 #include "tiki/base/debug.hpp"
 
+#include <stdio.h>
+#include <windows.h>
+
 namespace tiki
 {
 	void debug::nativeTrace( const char* pText )
@@ -24,11 +27,13 @@ namespace tiki
 
 	void debug::breakPoint()
 	{
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		if ( isDebuggerActive() )
 		{
 			__debugbreak();
 		}
 		else
+#endif
 		{
 			debug::nativeTrace( "Breakpoint has triggered.\n" );
 			while (true);
@@ -37,12 +42,14 @@ namespace tiki
 
 	void debug::breakOnAlloc( int number )
 	{
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_CrtSetBreakAlloc( number );
+#endif
 	}
 
 	void debug::dumpMemoryStats()
 	{
-#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG ) && TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_CrtMemState memState;
 		_CrtMemCheckpoint( &memState );
 
@@ -61,5 +68,5 @@ namespace tiki
 		_CrtMemDumpStatistics( &memState );
 		debug::nativeTrace( "\n" );
 #endif
-	}	
+	}
 }

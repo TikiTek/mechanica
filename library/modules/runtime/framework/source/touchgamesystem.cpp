@@ -5,6 +5,7 @@
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/base/debugprop.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
 namespace tiki
 {
@@ -39,7 +40,7 @@ namespace tiki
 			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
-		
+
 		vector::set( m_pointSize, float( m_pPointTexture->getTextureData().getWidth() ), float( m_pPointTexture->getTextureData().getHeight() ) );
 		m_halfPointSize	= m_pointSize;
 		vector::scale( m_halfPointSize, 0.5f );
@@ -151,7 +152,7 @@ namespace tiki
 					}
 				}
 			}
-		} 
+		}
 	}
 
 	void TouchGameSystem::render( GraphicsContext& graphicsContext ) const
@@ -163,7 +164,7 @@ namespace tiki
 
 		m_renderer.beginRendering( graphicsContext );
 		m_renderer.beginRenderPass();
-		
+
 		const float width = float( graphicsContext.getBackBuffer().getWidth() );
 		const float height = float( graphicsContext.getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
@@ -207,7 +208,7 @@ namespace tiki
 					color
 				);
 			}
-		} 
+		}
 
 		m_renderer.endRenderPass();
 		m_renderer.endRendering();

@@ -91,7 +91,7 @@ namespace tiki
 }
 
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
-#define TIKI_OFFSETOF( type, member )		( (uint)&reinterpret_cast< const volatile char& >( ( ((type*)nullptr)->member ) ) )
+#define TIKI_OFFSETOF( type, member )		( (uint)(&((type*)nullptr)->member) )
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
@@ -157,7 +157,7 @@ namespace tiki
 
 #define TIKI_DEFAULT_ALIGNMENT 0xffffffffu
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 #	define TIKI_PRE_ALIGN( var )	__declspec( align( var ) )
 #	define TIKI_POST_ALIGN( var )
@@ -165,13 +165,17 @@ namespace tiki
 
 #	define TIKI_OVERRIDE			override
 
-#else
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
 #	define TIKI_PRE_ALIGN( var )
-#	define TIKI_POST_ALIGN( var )	__attribute__( ( aligned( var ) ) );
+#	define TIKI_POST_ALIGN( var )	__attribute__( ( aligned( var ) ) )
 #	define TIKI_ALIGNOF( type )		( __alignof__( type ) )
 
+#if __cplusplus <= 199711L
 #	define TIKI_OVERRIDE			override
+#else
+#	define TIKI_OVERRIDE
+#endif
 
 #endif
 

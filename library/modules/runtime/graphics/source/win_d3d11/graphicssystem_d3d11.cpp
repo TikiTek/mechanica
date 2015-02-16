@@ -238,7 +238,7 @@ namespace tiki
 			rendererType,
 			nullptr,
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-			D3D11_CREATE_DEVICE_DEBUG,
+			0, //D3D11_CREATE_DEVICE_DEBUG,
 #else
 			D3D11_CREATE_DEVICE_SINGLETHREADED,
 #endif

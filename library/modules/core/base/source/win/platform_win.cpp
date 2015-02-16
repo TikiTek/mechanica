@@ -1,6 +1,8 @@
 
 #include "tiki/base/platform.hpp"
 
+#include <windows.h>
+
 namespace tiki
 {
 	uint getProcessorCount()

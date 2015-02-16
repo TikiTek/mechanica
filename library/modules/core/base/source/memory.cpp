@@ -40,14 +40,17 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
-#	warning "TODO: findout how align malloc works on linux"
-
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
 #else
 	void* memory::allocAlign( size_t size, size_t alignment )
 #endif
 	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = 4u;
+		}
+
 		return malloc( size );
 	}
 

@@ -5,6 +5,8 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputsystem.hpp"
+#include "tiki/base/fixedarray.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 
 namespace tiki
 {

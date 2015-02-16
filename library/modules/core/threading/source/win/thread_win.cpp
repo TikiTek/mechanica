@@ -21,7 +21,7 @@ typedef struct tagTHREADNAME_INFO
 namespace tiki
 {
 	Thread::ThreadList Thread::s_threadList;
-	
+
 	DWORD WINAPI threadEntryPoint( void* pArgument )
 	{
 		TIKI_ASSERT( pArgument != nullptr );
@@ -37,7 +37,7 @@ namespace tiki
 		m_platformData.threadHandle	= INVALID_HANDLE_VALUE;
 		m_platformData.threadId		= 0u;
 		m_platformData.name[ 0u ]	= '\0';
-		
+
 		m_pEntryFunction	= nullptr;
 		m_pArgument			= nullptr;
 		m_isExitRequested	= false;
@@ -85,7 +85,7 @@ namespace tiki
 		}
 		m_platformData.threadHandle = INVALID_HANDLE_VALUE;
 		m_platformData.threadId		= 0u;
-		
+
 		m_pEntryFunction	= nullptr;
 		m_pArgument			= nullptr;
 	}
@@ -105,6 +105,7 @@ namespace tiki
 			info.dwThreadID = m_platformData.threadId;
 			info.dwFlags	= 0;
 
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 			__try
 			{
 				RaiseException( MS_VC_EXCEPTION, 0, sizeof( info ) / sizeof( ULONG_PTR ), (ULONG_PTR*)&info );
@@ -112,6 +113,7 @@ namespace tiki
 			__except(EXCEPTION_EXECUTE_HANDLER)
 			{
 			}
+#endif
 		}
 	}
 
@@ -135,7 +137,7 @@ namespace tiki
 	{
 		return m_platformData.threadId;
 	}
-	
+
 	bool Thread::isCreated() const
 	{
 		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
@@ -165,7 +167,7 @@ namespace tiki
 	{
 		const uint64 currentThreadId = getCurrentThreadId();
 
-		for (auto it = s_threadList.getBegin(); it != s_threadList.getEnd(); ++it)
+		for (LinkedIterator< Thread > it = s_threadList.getBegin(); it != s_threadList.getEnd(); ++it)
 		{
 			if (it->getThreadId() == currentThreadId)
 			{

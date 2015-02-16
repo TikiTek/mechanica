@@ -25,7 +25,7 @@ namespace tiki
 		virtual void			update() = 0;
 		virtual void			render( GraphicsContext& graphicsContext ) = 0;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) = 0u;
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) = 0;
 
 	};
 }

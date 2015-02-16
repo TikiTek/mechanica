@@ -57,5 +57,6 @@ namespace tiki
 		m_baseLayout.removeChildControl( &m_bottomLayout );
 
 		DebugGuiWindow::dispose();
+
 	}
 }

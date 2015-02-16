@@ -110,7 +110,7 @@ TIKI_ENTRY_POINT( VertexToPixel, GeometryBufferPixelOutput, main )
 	float3 diffuseColor = TIKI_TEX2D( t_diffuseMap, s_linear, texCoord ).rgb;
 	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, texCoord ).rgb * 2.0 - 1.0;
 	float3 selfIlluminationColor = TIKI_TEX2D( t_selfilluMap, s_linear, texCoord ).rgb;
-
+		
 	float3x3 tangentSpaceNormalMatrix = float3x3( tangent, binormal, normal );
 	float3 finalNormal = normalize( TIKI_MUL( normalSample, tangentSpaceNormalMatrix ) );
 	float2 packedNormal = encodeNormal( finalNormal );

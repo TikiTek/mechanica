@@ -11,6 +11,7 @@
 
 namespace tiki
 {
+    class GraphicsSystem;
 	class ShaderLinker;
 
 	namespace graphics

@@ -40,22 +40,22 @@ namespace tiki
 		case WM_KEYDOWN:
 			{
 				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
-				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
+				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
 			}
 			break;
 
 		case WM_KEYUP:
 			{
 				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
-				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), MAPVK_VK_TO_VSC );
+				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
 			}
 			break;
 
 		case WM_MOUSEMOVE:
 			{
 				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
-				event.data.mouseMove.position.x	= GET_X_LPARAM( lParam ); 
-				event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam ); 
+				event.data.mouseMove.position.x	= GET_X_LPARAM( lParam );
+				event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam );
 			}
 			break;
 
@@ -101,6 +101,7 @@ namespace tiki
 			}
 			break;
 
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		case WM_TOUCH:
 			{
 				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_Touch );
@@ -108,6 +109,7 @@ namespace tiki
 				event.data.touch.handle			= (TouchInputHandle)lParam;
 			}
 			break;
+#endif
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -136,7 +138,7 @@ namespace tiki
 		win.lpfnWndProc		= &windowProc;
 		win.lpszClassName	= params.pClassName;
 		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
-		win.hCursor			= LoadCursor( NULL, IDC_ARROW );		
+		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
 
 		HRESULT r = RegisterClassExA( &win );
 		if (FAILED(r))
@@ -168,7 +170,7 @@ namespace tiki
 			return false;
 		}
 		m_pHandle = WindowHandle( hWnd );
-		
+
 		TIKI_DECLARE_STACKANDZERO( STARTUPINFO, startupInfo );
 		startupInfo.cb			= sizeof(startupInfo);
 		startupInfo.dwFlags		= STARTF_USESHOWWINDOW;
