@@ -39,7 +39,7 @@ namespace tiki
 		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
-		TaskSystemParameters taskParameters;		
+		TaskSystemParameters taskParameters;
 		m_taskSystem.create( taskParameters );
 
 		if ( !directory::exists( m_outputPath ) )
@@ -90,7 +90,7 @@ namespace tiki
 	void ConverterManager::dispose()
 	{
 		TIKI_TRACE_INFO( "ConverterManager: shutdown\n" );
-		
+
 		debug::setTraceCallback( nullptr );
 
 		m_taskSystem.dispose();
@@ -196,9 +196,9 @@ namespace tiki
 		const uint64 currentThreadId = Thread::getCurrentThreadId();
 
 		m_loggingMutex.lock();
-		
+
 		m_loggingStream.write( line.cStr(), line.getLength() );
-		
+
 		ThreadResultMap::iterator it = m_loggingThreadResults.find( currentThreadId );
 		if ( it != m_loggingThreadResults.end() )
 		{
@@ -283,7 +283,7 @@ namespace tiki
 			}
 
 			{
-				const string sql = formatString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_File, whereFileName );
+				const string sql = formatString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_File, whereFileName.cStr() );
 
 				AutoDispose< SqliteQuery > query;
 				if ( !query->create( m_dataBase, sql ) )
@@ -315,7 +315,7 @@ namespace tiki
 				}
 			}
 		}
-		
+
 		m_files.clear();
 		m_tasks.clear();
 
@@ -353,7 +353,7 @@ namespace tiki
 				result = false;
 				continue;
 			}
-			
+
 			task.parameters.assetId			= TIKI_SIZE_T_MAX;
 			task.parameters.isBuildRequired	= false;
 			task.parameters.targetPlatform	= getHostPlatform();
@@ -402,7 +402,7 @@ namespace tiki
 
 		return result;
 	}
-	
+
 	bool ConverterManager::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
 	{
 		TikiXml xmlFile;
@@ -563,14 +563,14 @@ namespace tiki
 						filePath.cStr(),
 						task.parameters.typeCrc
 					);
-					
+
 					if ( !m_dataBase.executeCommand( sql ) )
 					{
 						TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 						result = false;
 						continue;
 					}
-					
+
 					task.parameters.assetId = m_dataBase.getLastInsertId();
 					task.parameters.isBuildRequired = true;
 				}
@@ -632,7 +632,7 @@ namespace tiki
 		for (uint i = 0u; i < tasks.getCount(); ++i)
 		{
 			ConversionTask& task = tasks[ i ];
-			
+
 			tasksByAssetId[ task.parameters.assetId ] = &task;
 
 			if ( i != 0u )
@@ -719,7 +719,7 @@ namespace tiki
 		for (uint taskIndex = 0u; taskIndex < m_tasks.getCount(); ++taskIndex)
 		{
 			const ConversionTask& task = m_tasks[ taskIndex ];
-			
+
 			// dependencies
 			{
 				const List< ConversionResult::Dependency >& dependencies = task.result.getDependencies();

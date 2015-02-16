@@ -259,7 +259,6 @@ namespace tiki
 
 		if ( header.type != context.resourceType )
 		{
-			cancelOperation( context );
 			return ResourceLoaderResult_WrongResourceType;
 		}
 
