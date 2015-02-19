@@ -47,6 +47,8 @@ namespace tiki
 		static const Thread&	getCurrentThread();
 		static const Thread*	getThreadById( uint64 threadId );
 
+		static void				shutdownSystem();
+
 	private:
 
 		typedef LinkedList< Thread > ThreadList;
