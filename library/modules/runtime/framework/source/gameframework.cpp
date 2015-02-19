@@ -1,6 +1,8 @@
 
 #include "tiki/framework/gameframework.hpp"
 
+#include "tiki/threading/thread.hpp"
+
 namespace tiki
 {
 	FrameworkData& framework::getFrameworkData()
@@ -38,6 +40,8 @@ namespace tiki
 		}
 
 		internShutdown();
+
+		Thread::shutdownSystem();
 
 		return resultValue;
 	}

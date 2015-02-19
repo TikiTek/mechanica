@@ -327,9 +327,9 @@ namespace tiki
 		List< ConversionTask > tasks;
 
 		bool result = true;
-		for (uint i = 0u; i < filesToBuild.getCount(); ++i)
+		for (uint fileIndex = 0u; fileIndex < filesToBuild.getCount(); ++fileIndex )
 		{
-			const FileDescription& fileDesc = filesToBuild[ i ];
+			const FileDescription& fileDesc = filesToBuild[ fileIndex ];
 			ConversionTask task;
 
 			if ( !file::exists( fileDesc.fullFileName ) )
@@ -338,11 +338,11 @@ namespace tiki
 				continue;
 			}
 
-			for (size_t i = 0u; i < m_converters.getCount(); ++i)
+			for (size_t converterIndex = 0u; converterIndex < m_converters.getCount(); ++converterIndex )
 			{
-				if ( m_converters[ i ]->getInputType() == fileDesc.fileType )
+				if ( m_converters[ converterIndex ]->getInputType() == fileDesc.fileType )
 				{
-					task.pConverter = m_converters[ i ];
+					task.pConverter = m_converters[ converterIndex ];
 					break;
 				}
 			}
@@ -371,9 +371,9 @@ namespace tiki
 			task.result.addDependency( ConversionResult::DependencyType_Converter, "", task.pConverter->getConverterRevision() );
 			task.result.addDependency( ConversionResult::DependencyType_File, task.parameters.sourceFile, 0u );
 
-			for (uint i = 0u; i < task.parameters.inputFiles.getCount(); ++i)
+			for (uint inputIndex = 0u; inputIndex < task.parameters.inputFiles.getCount(); ++inputIndex )
 			{
-				const string& inputFileName = task.parameters.inputFiles[ i ].fileName;
+				const string& inputFileName = task.parameters.inputFiles[ inputIndex ].fileName;
 				task.result.addDependency( ConversionResult::DependencyType_File, inputFileName, 0u );
 			}
 

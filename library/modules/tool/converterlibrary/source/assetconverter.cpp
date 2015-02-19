@@ -17,9 +17,14 @@ namespace tiki
 	{
 		TIKI_DEL pObject;
 		reflection::shutdown();
+		Thread::shutdownSystem();
 	}
 
 	AssetConverter::AssetConverter()
+	{
+	}
+
+	AssetConverter::~AssetConverter()
 	{
 	}
 

@@ -177,4 +177,16 @@ namespace tiki
 
 		return nullptr;
 	}
+
+	void Thread::shutdownSystem()
+	{
+		while ( !s_threadList.isEmpty() )
+		{
+			LinkedIterator< Thread > it = s_threadList.getBegin();
+			Thread& thread = *it;
+
+			thread.dispose();
+			TIKI_DEL( &thread  );
+		}
+	}
 }
