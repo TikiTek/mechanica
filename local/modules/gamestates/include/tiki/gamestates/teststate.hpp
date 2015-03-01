@@ -70,7 +70,6 @@ namespace tiki
 		ImmediateRenderer			m_immediateRenderer;
 		FreeCamera					m_freeCamera;
 
-		DebugGui					m_debugGui;
 		DebugGuiTestWindow			m_testWindow;
 		DebugGuiLightingWindow		m_lightingWindow;
 

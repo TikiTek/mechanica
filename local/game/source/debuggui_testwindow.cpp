@@ -54,6 +54,9 @@ namespace tiki
 		}
 
 		m_bottomLayout.removeChildControl( &m_labelLayout );
+		m_bottomLayout.removeChildControl( &m_slider );
+		m_bottomLayout.removeChildControl( &m_checkBox );
+
 		m_baseLayout.removeChildControl( &m_bottomLayout );
 
 		DebugGuiWindow::dispose();
