@@ -139,7 +139,9 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			local unity_file_name = path.join( _OPTIONS[ "unity_dir" ], self.name .. "_unity." .. ext );			
 			local c = {};
 			c[#c+1] = "// Unity file created by Premake";
-			c[#c+1] = "";			
+			c[#c+1] = "";
+			c[#c+1] = "#define TIKI_CURRENT_MODULE \"" .. self.name .. "\"";
+			c[#c+1] = "";
 			for i,file_name in pairs( all_files ) do
 				if path.iscppfile( file_name ) then
 					file_action( path.getrelative( _OPTIONS[ "outpath" ], file_name ), "Header" );

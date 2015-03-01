@@ -4,6 +4,7 @@
 
 #include "tiki/debuggui/debugguilayout.hpp"
 
+#include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/math/rectangle.hpp"
@@ -47,6 +48,8 @@ namespace tiki
 
 		virtual bool	processGuiEvent( const DebugGuiEvent& guiEvent );
 
+		DebugGuiButton&	getMinimizedButton();
+
 	private:
 
 		enum
@@ -68,6 +71,7 @@ namespace tiki
 		DebugGuiLayout*		m_pLayout;
 
 		DebugGuiButton		m_minimizeButton;
+		DebugGuiButton		m_minimizedButton;
 
 		char				m_aTitle[ DebugGui_MaxTextLength ];
 

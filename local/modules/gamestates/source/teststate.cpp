@@ -163,9 +163,8 @@ namespace tiki
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
 					
-					m_debugGui.create( framework::getGraphicsSystem(), framework::getResourceManager(), 16u );
-					m_testWindow.create( m_debugGui );
-					m_lightingWindow.create( m_debugGui );
+					m_testWindow.create( framework::getDebugGui() );
+					m_lightingWindow.create( framework::getDebugGui() );
 
 					m_testWindow.setRectangle( Rectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
 					m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
@@ -176,7 +175,6 @@ namespace tiki
 				{
 					m_lightingWindow.dispose();
 					m_testWindow.dispose();
-					m_debugGui.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 					m_freeCamera.dispose();
 
@@ -263,8 +261,6 @@ namespace tiki
 		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
 		m_gameClient.getTransformComponent().setRotation( pState, rotation );
 
-		m_debugGui.update();
-
 		GameClientUpdateContext gameClientUpdateContext;
 		gameClientUpdateContext.timeDelta		= timeDelta;
 		gameClientUpdateContext.totalGameTime	= totalGameTime;		
@@ -325,8 +321,6 @@ namespace tiki
 		m_immediateRenderer.endRenderPass();
 		m_immediateRenderer.endRendering();
 
-		m_debugGui.render( graphicsContext );
-
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_enablePhysicsDebug )
 		{
@@ -337,10 +331,6 @@ namespace tiki
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
 	{
-		if ( m_debugGui.processInputEvent( inputEvent ) )
-		{
-			return true;
-		}
 
 		if ( m_freeCamera.processInputEvent( inputEvent ) )
 		{
@@ -357,7 +347,7 @@ namespace tiki
 			switch ( inputEvent.data.keybaordKey.key )
 			{
 			case KeyboardKey_F1:
-				m_debugGui.setActive( !m_debugGui.getActive() );
+				framework::getDebugGui().setActive( !framework::getDebugGui().getActive() );
 				return true;
 
 			case KeyboardKey_V:

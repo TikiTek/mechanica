@@ -1,8 +1,11 @@
 #ifndef TIKI_FRAMEWORK_HPP__
 #define TIKI_FRAMEWORK_HPP__
 
+#include "tiki/base/types.hpp"
+
 namespace tiki
 {
+	class DebugGui;
 	class GraphicsSystem;
 	class InputSystem;
 	class MainWindow;
@@ -22,6 +25,10 @@ namespace tiki
 		InputSystem&				getInputSystem();
 		const Timer&				getFrameTimer();
 		const WindowEventBuffer&	getWindowEventBuffer();
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		DebugGui&					getDebugGui();
+#endif
 	}
 }
 

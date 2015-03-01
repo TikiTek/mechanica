@@ -41,4 +41,9 @@ namespace tiki
 	{
 		return getFrameworkData().mainWindow.getEventBuffer();
 	}
+
+	DebugGui& framework::getDebugGui()
+	{
+		return getFrameworkData().debugGui;
+	}
 }

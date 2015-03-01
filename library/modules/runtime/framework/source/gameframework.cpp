@@ -103,8 +103,15 @@ namespace tiki
 		{
 			return false;
 		}
-		m_isInitialized = true;
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		if ( !m_frameworkData.debugGui.create( m_frameworkData.graphicSystem, m_frameworkData.resourceManager ) )
+		{
+			return false;
+		}
+#endif
+
+		m_isInitialized = true;
 		return true;
 	}
 
@@ -116,6 +123,9 @@ namespace tiki
 		}
 		m_isInitialized = false;
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_frameworkData.debugGui.dispose( m_frameworkData.graphicSystem, m_frameworkData.resourceManager );
+#endif
 		m_frameworkData.inputSystem.dispose();
 		m_frameworkData.graphicSystem.dispose();
 		m_frameworkData.resourceManager.dispose();
@@ -129,6 +139,9 @@ namespace tiki
 		m_frameworkData.frameTimer.update();
 		m_frameworkData.mainWindow.update();
 		m_frameworkData.resourceManager.update();
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_frameworkData.debugGui.update();
+#endif
 
 		const WindowEvent* pDestroyEvent = m_frameworkData.mainWindow.getEventBuffer().getEventByType( WindowEventType_Destroy );
 		if ( pDestroyEvent != nullptr )
@@ -146,6 +159,13 @@ namespace tiki
 				return false;
 			}
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			if ( m_frameworkData.debugGui.processInputEvent( inputEvent ) )
+			{
+				continue;
+			}
+#endif
+
 			if ( !processInputEvent( inputEvent ) )
 			{
 				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
@@ -162,9 +182,18 @@ namespace tiki
 
 		update();
 
-		GraphicsContext& graphicsContext = m_frameworkData.graphicSystem.beginFrame();
-		render( graphicsContext );
-		m_frameworkData.graphicSystem.endFrame();
+		// render
+		{
+			GraphicsContext& graphicsContext = m_frameworkData.graphicSystem.beginFrame();
+
+			render( graphicsContext );
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			m_frameworkData.debugGui.render( graphicsContext );
+#endif
+
+			m_frameworkData.graphicSystem.endFrame();
+		}
 
 		return true;
 	}

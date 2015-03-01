@@ -4,7 +4,7 @@
 
 #include "tiki/debuggui/debugguicontrol.hpp"
 
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/base/linkedlist.hpp"
 
 namespace tiki
 {
@@ -14,8 +14,11 @@ namespace tiki
 
 	public:
 
+		void			create();
+		void			dispose();
+
 		virtual void	addChildControl( DebugGuiControl* pChild );
-		virtual bool	removeChildControl( DebugGuiControl* pChild );
+		virtual void	removeChildControl( DebugGuiControl* pChild );
 
 		virtual void	update();
 		virtual void	render( ImmediateRenderer& renderer );
@@ -27,12 +30,14 @@ namespace tiki
 		DebugGuiLayout();
 		~DebugGuiLayout();
 		
-		uint				getChildCount() const;
-		DebugGuiControl*	getChildByIndex( uint index ) const;
+		uint								getChildCount() const;
+
+		LinkedIterator< DebugGuiControl >	getChildrenBegin();
+		LinkedIterator< DebugGuiControl >	getChildrenEnd();
 
 	private:
 
-		SizedArray< DebugGuiControl* >	m_childControls;
+		LinkedList< DebugGuiControl >	m_childControls;
 
 	};
 }

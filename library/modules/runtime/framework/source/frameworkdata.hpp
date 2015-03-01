@@ -2,6 +2,7 @@
 #define TIKI_FRAMEWORKDATA_HPP__
 
 #include "tiki/base/timer.hpp"
+#include "tiki/debuggui/debuggui.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/input/inputsystem.hpp"
@@ -19,6 +20,10 @@ namespace tiki
 		Timer				frameTimer;
 
 		GamebuildFileSystem	gamebuildFileSystem;
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		DebugGui			debugGui;
+#endif
 	};
 
 	namespace framework

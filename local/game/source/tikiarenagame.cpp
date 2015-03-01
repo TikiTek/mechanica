@@ -22,17 +22,18 @@ namespace tiki
 
 	static TikiArenaGameStates getStartState()
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		char buffer[ 32u ];
 		DWORD length = sizeof( buffer );
 		GetUserNameA( buffer, &length );
 
 		const string userName = buffer;
-
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
-			return TikiArenaGameStates_BasicTest;
-			//return TikiArenaGameStates_Test;
+			//return TikiArenaGameStates_BasicTest;
+			return TikiArenaGameStates_Test;
 		}
+#endif
 
 		return TikiArenaGameStates_Play;
 	}

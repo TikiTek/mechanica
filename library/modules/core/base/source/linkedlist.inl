@@ -19,20 +19,6 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE void LinkedList<T>::create()
-	{
-		m_pData = nullptr;
-		m_pLast = nullptr;
-		m_count	= 0u;
-	}
-
-	template< typename T >
-	TIKI_FORCE_INLINE void LinkedList<T>::dispose()
-	{
-		clear();
-	}
-
-	template< typename T >
 	TIKI_FORCE_INLINE void LinkedList<T>::clear()
 	{
 		Item* pItem = m_pData;
@@ -107,7 +93,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE void LinkedList<T>::removeUnsortedByValue( Reference value )
+	TIKI_FORCE_INLINE void LinkedList<T>::removeSortedByValue( Reference value )
 	{
 		TIKI_ASSERT( value.pList == this );
 

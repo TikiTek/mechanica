@@ -4,7 +4,6 @@ local module = Module:new( "config" );
 
 module:set_define( "TIKI_ON", "2-" );
 module:set_define( "TIKI_OFF", "1-" );
-module:set_define( "TIKI_CURRENT_MODULE", "NOT_IMPLEMENTED" );
 
 module:set_define( "DEBUG", nil, "Debug" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_ON", "Debug" );
