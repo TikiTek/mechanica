@@ -12,13 +12,8 @@
 
 namespace tiki
 {
-	bool DebugGui::create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount )
+	bool DebugGui::create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager )
 	{
-		if ( !m_windows.create( maxPageCount ) || !m_minimizedData.create( maxPageCount ) )
-		{
-			return false;
-		}
-
 		if ( !m_renderer.create( grahicsSystem, resourceManager ) )
 		{
 			dispose( grahicsSystem, resourceManager );
@@ -48,8 +43,6 @@ namespace tiki
 	void DebugGui::dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager )
 	{
 		TIKI_ASSERT( m_windows.getCount() == 0u );
-		m_windows.dispose();
-		m_minimizedData.dispose();
 
 		m_renderer.dispose( grahicsSystem, resourceManager );
 
@@ -60,22 +53,17 @@ namespace tiki
 
 	void DebugGui::addWindow( DebugGuiWindow& window )
 	{
-		const uint windowIndex = m_windows.getCount();
-		m_windows.push( &window );
-
-		WindowMinimizedData& data = m_minimizedData[ windowIndex ];
-		data.isVisible = window.getVisibility();
-		data.button.create( window.getTitle() );
+		m_windows.push( window );
 	}
 
 	void DebugGui::removeWindow( DebugGuiWindow& window )
 	{
-		const uint windowIndex = m_windows.getIndexOf( &window );
-		if ( windowIndex != TIKI_SIZE_T_MAX )
+		if ( !window.getVisibility() )
 		{
-			m_windows.removeUnsortedByIndex( windowIndex );
-			m_minimizedData[ windowIndex ].button.dispose();
+			m_minimizedLayout.removeChildControl( &window.getMinimizedButton() );
 		}
+
+		m_windows.removeSortedByValue( window );
 	}
 
 	void DebugGui::setScreenSize( const Vector2& screenSize )
@@ -97,24 +85,9 @@ namespace tiki
 			return;
 		}
 
-		for (uint i = 0u; i < m_windows.getCount(); ++i)
+		for ( LinkedIterator< DebugGuiControl > it = m_windows.getBegin(); it != m_windows.getEnd(); ++it )
 		{
-			m_windows[ i ]->update();
-
-			const bool isVisible = m_windows[ i ]->getVisibility();
-			WindowMinimizedData& data = m_minimizedData[ i ];
-			if ( isVisible != data.isVisible )
-			{
-				if ( isVisible )
-				{
-					m_minimizedLayout.removeChildControl( &data.button );
-				}
-				else
-				{
-					m_minimizedLayout.addChildControl( &data.button );
-				}
-				data.isVisible = isVisible;
-			}
+			it->update();
 		}
 
 		m_minimizedLayout.update();
@@ -130,9 +103,9 @@ namespace tiki
 		m_renderer.beginRendering( graphicsContext );
 		m_renderer.beginRenderPass();
 
-		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		for ( LinkedIterator< DebugGuiControl > it = m_windows.getBegin(); it != m_windows.getEnd(); ++it )
 		{
-			m_windows[ i ]->render( m_renderer );
+			it->render( m_renderer );
 		}
 
 		m_renderer.drawRectangle( m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
@@ -179,9 +152,9 @@ namespace tiki
 			return false;
 		}
 
-		for ( uint i = 0u; i < m_windows.getCount(); ++i )
+		for ( LinkedIterator< DebugGuiControl > it = m_windows.getBegin(); it != m_windows.getEnd(); ++it )
 		{
-			if ( m_windows[ i ]->processInputEvent( inputEvent, m_inputState ) )
+			if ( it->processInputEvent( inputEvent, m_inputState ) )
 			{
 				return true;
 			}
@@ -192,20 +165,27 @@ namespace tiki
 
 	void DebugGui::pushEvent( const DebugGuiEvent& guiEvent )
 	{
-		for (uint i = 0u; i < m_windows.getCount(); ++i)
+		for ( LinkedIterator< DebugGuiControl > it = m_windows.getBegin(); it != m_windows.getEnd(); ++it )
 		{
-			if ( m_windows[ i ]->processGuiEvent( guiEvent ) )
+			DebugGuiWindow& window = static_cast< DebugGuiWindow& >( *it );
+
+			if ( window.processGuiEvent( guiEvent ) )
 			{
 				return;
 			}
 
-			if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &m_minimizedData[ i ].button )
+			if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &window.getMinimizedButton() )
 			{
-				m_windows[ i ]->setVisibility( !m_windows[ i ]->getVisibility() );
+				window.setVisibility( !window.getVisibility() );
+				m_minimizedLayout.removeChildControl( &window.getMinimizedButton() );
 			}
 		}
 		
 		TIKI_TRACE_INFO( "[DebugGui] event of type '%u' was not handled.\n", guiEvent.eventType );
 	}
 
+	void DebugGui::minimizeWindow( DebugGuiWindow& window )
+	{
+		m_minimizedLayout.addChildControl( &window.getMinimizedButton() );
+	}
 }

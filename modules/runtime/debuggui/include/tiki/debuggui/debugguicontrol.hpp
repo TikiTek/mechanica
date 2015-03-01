@@ -2,6 +2,7 @@
 #ifndef __TIKI_DEBUGGUICONTROL_HPP_INCLUDED__
 #define __TIKI_DEBUGGUICONTROL_HPP_INCLUDED__
 
+#include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/math/vector.hpp"
@@ -22,7 +23,7 @@ namespace tiki
 		DebugGui_MaxTextLength = 32u
 	};
 
-	class DebugGuiControl
+	class DebugGuiControl : public LinkedItem< DebugGuiControl >
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiControl );
 		friend class DebugGui;
@@ -40,6 +41,7 @@ namespace tiki
 
 	protected:
 
+		void					refreshRectangle();
 		virtual void			handleRectangleChanged( const Rectangle& boundingRectangle ) = 0;
 
 		static const Font*		getDefaultFont();

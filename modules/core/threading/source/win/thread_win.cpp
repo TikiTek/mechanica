@@ -49,7 +49,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_platformData.threadHandle == INVALID_HANDLE_VALUE );
 
-		s_threadList.removeUnsortedByValue( *this );
+		s_threadList.removeSortedByValue( *this );
 	}
 
 	bool Thread::create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName /*= nullptr*/ )

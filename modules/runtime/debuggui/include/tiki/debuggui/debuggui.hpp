@@ -2,8 +2,7 @@
 #ifndef __TIKI_DEBUGMENU_HPP_INCLUDED__
 #define __TIKI_DEBUGMENU_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguievent.hpp"
@@ -34,7 +33,7 @@ namespace tiki
 
 	public:
 
-		bool		create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager, uint maxPageCount );
+		bool		create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
 		void		dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
 
 		bool		getActive() const			{ return m_isActive; }
@@ -54,19 +53,21 @@ namespace tiki
 
 		void		pushEvent( const DebugGuiEvent& guiEvent );
 
+		void		minimizeWindow( DebugGuiWindow& window );
+
 	private:
 
-		struct WindowMinimizedData
-		{
-			bool			isVisible;
-			DebugGuiButton	button;
-		};
+		//struct WindowMinimizedData
+		//{
+		//	bool			isVisible;
+		//	DebugGuiButton	button;
+		//};
 
 		bool							m_isActive;
 		Vector2							m_screenSize;
 
-		SizedArray< DebugGuiWindow* >	m_windows;
-		Array< WindowMinimizedData >	m_minimizedData;
+		LinkedList< DebugGuiControl >	m_windows;
+		//Array< WindowMinimizedData >	m_minimizedData;
 		DebugGuiVerticalLayout			m_minimizedLayout;
 
 		const Font*						m_pDefaultFont;

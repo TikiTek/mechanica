@@ -135,9 +135,6 @@ namespace tiki
 		TIKI_FORCE_INLINE					LinkedList();
 		TIKI_FORCE_INLINE					~LinkedList();
 
-		TIKI_FORCE_INLINE void				create();
-		TIKI_FORCE_INLINE void				dispose();
-
 		TIKI_FORCE_INLINE void				clear();
 
 		TIKI_FORCE_INLINE bool				isEmpty() const	{ return m_count == 0u; }
@@ -146,7 +143,7 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			push( Pointer value );
 		TIKI_FORCE_INLINE Pointer			pushRange( Pointer pData, uint count );
 
-		TIKI_FORCE_INLINE void				removeUnsortedByValue( Reference value );
+		TIKI_FORCE_INLINE void				removeSortedByValue( Reference value );
 
 		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
 

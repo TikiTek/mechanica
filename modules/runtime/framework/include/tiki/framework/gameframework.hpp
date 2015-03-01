@@ -39,6 +39,7 @@ namespace tiki
 		cstring					pWindowTitle;
 
 		cstring					pGamebuildPath;
+
 	};
 
 	class GameFramework

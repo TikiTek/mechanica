@@ -12,3 +12,4 @@ module:add_dependency( "graphics" );
 module:add_dependency( "resource" );
 module:add_dependency( "input" );
 module:add_dependency( "debuggui" );
+module:add_dependency( "debugguiwindows" );

@@ -30,6 +30,7 @@ namespace tiki
 
 		setTitle( pTitle );
 		m_minimizeButton.create( "_" );
+		m_minimizedButton.create( pTitle );
 
 		m_pDebugGui->addWindow( *this );
 	}
@@ -37,6 +38,9 @@ namespace tiki
 	void DebugGuiWindow::dispose()
 	{
 		m_pDebugGui->removeWindow( *this );
+
+		m_minimizeButton.dispose();
+		m_minimizedButton.dispose();
 
 		m_pDebugGui		= nullptr;
 		m_pLayout		= nullptr;
@@ -229,10 +233,17 @@ namespace tiki
 	{
 		if ( guiEvent.eventType == DebugGuiEventType_Click && guiEvent.pControl == &m_minimizeButton )
 		{
+			m_pDebugGui->minimizeWindow( *this );
+
 			m_isVisible = false;
 			return true;
 		}
 
 		return false;
+	}
+
+	DebugGuiButton& DebugGuiWindow::getMinimizedButton()
+	{
+		return m_minimizedButton;
 	}
 }

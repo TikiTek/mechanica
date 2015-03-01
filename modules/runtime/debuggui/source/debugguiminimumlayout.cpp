@@ -18,30 +18,30 @@ namespace tiki
 	void DebugGuiMinimumLayout::handleRectangleChanged( const Rectangle& boundingRectangle )
 	{
 		const Vector2 minSize = getMinimumSize();
-		for (uint childIndex = 0u; childIndex < getChildCount(); ++childIndex)
-		{
-			DebugGuiControl* pChild = getChildByIndex( childIndex );
 
+		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
+		{
 			Rectangle rectangle;
 			rectangle.x = boundingRectangle.x;
 			rectangle.y = boundingRectangle.y;
 			rectangle.width = minSize.x;
 			rectangle.height = minSize.y;
-			pChild->setRectangle( rectangle );
+			it->setRectangle( rectangle );
 		}
 	}
 
 	Vector2 DebugGuiMinimumLayout::getMinimumSize()
 	{
 		Vector2 minSize = { 0.0f, 0.0f };
-		for (uint childIndex = 0u; childIndex < getChildCount(); ++childIndex)
+
+		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
 		{
-			DebugGuiControl* pChild = getChildByIndex( childIndex );
-			const Vector2 childMinSize = pChild->getMinimumSize();
+			const Vector2 childMinSize = it->getMinimumSize();
 
 			minSize.x = TIKI_MAX( minSize.x, childMinSize.x );
 			minSize.y = TIKI_MAX( minSize.y, childMinSize.y );
 		}
+
 		return minSize;
 	}
 

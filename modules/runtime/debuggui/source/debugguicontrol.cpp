@@ -51,4 +51,9 @@ namespace tiki
 
 		handleRectangleChanged( m_rectangle );
 	}
+
+	void DebugGuiControl::refreshRectangle()
+	{
+		setRectangle( m_rectangle );
+	}
 }

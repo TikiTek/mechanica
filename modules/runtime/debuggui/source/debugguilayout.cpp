@@ -5,48 +5,55 @@ namespace tiki
 {
 	DebugGuiLayout::DebugGuiLayout()
 	{
-		m_childControls.create( 32u );
 	}
 
 	DebugGuiLayout::~DebugGuiLayout()
 	{
-		m_childControls.dispose();
+	}
+
+	void DebugGuiLayout::create()
+	{
+		TIKI_ASSERT( m_childControls.getCount() == 0u );
+	}
+
+	void DebugGuiLayout::dispose()
+	{
+		m_childControls.clear();
 	}
 
 	void DebugGuiLayout::addChildControl( DebugGuiControl* pChild )
 	{
 		m_childControls.push( pChild );
-		setRectangle( getRectangle() );
+		refreshRectangle();
 	}
 
-	bool DebugGuiLayout::removeChildControl( DebugGuiControl* pChild )
+	void DebugGuiLayout::removeChildControl( DebugGuiControl* pChild )
 	{
-		const bool found = m_childControls.removeUnsortedByValue( pChild );
-		setRectangle( getRectangle() );
-		return found;
+		m_childControls.removeSortedByValue( *pChild );
+		refreshRectangle();
 	}
 
 	void DebugGuiLayout::update()
 	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
+		for ( LinkedIterator< DebugGuiControl > it = m_childControls.getBegin(); it != m_childControls.getEnd(); ++it )
 		{
-			m_childControls[ i ]->update();
+			it->update();
 		}
 	}
 
 	void DebugGuiLayout::render( ImmediateRenderer& renderer )
 	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
+		for ( LinkedIterator< DebugGuiControl > it = m_childControls.getBegin(); it != m_childControls.getEnd(); ++it )
 		{
-			m_childControls[ i ]->render( renderer );
+			it->render( renderer );
 		}
 	}
 
 	bool DebugGuiLayout::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
 	{
-		for ( uint i = 0u; i < m_childControls.getCount(); ++i )
+		for ( LinkedIterator< DebugGuiControl > it = m_childControls.getBegin(); it != m_childControls.getEnd(); ++it )
 		{
-			if ( m_childControls[ i ]->processInputEvent( inputEvent, state ) )
+			if ( it->processInputEvent( inputEvent, state ) )
 			{
 				return true;
 			}
@@ -60,8 +67,13 @@ namespace tiki
 		return m_childControls.getCount();
 	}
 
-	DebugGuiControl* DebugGuiLayout::getChildByIndex( uint index ) const
+	LinkedIterator< DebugGuiControl > DebugGuiLayout::getChildrenBegin()
 	{
-		return m_childControls[ index ];
+		return m_childControls.getBegin();
+	}
+
+	LinkedIterator< DebugGuiControl > DebugGuiLayout::getChildrenEnd()
+	{
+		return m_childControls.getEnd();
 	}
 }

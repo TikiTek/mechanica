@@ -2,27 +2,37 @@
 #ifndef TIKI_DEBUGPROP_HPP__INCLUDED
 #define TIKI_DEBUGPROP_HPP__INCLUDED
 
+#include "tiki/base/debugpropmanager.hpp"
+#include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
 
-#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static const bool varname = defaultValue;
-#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static const float varname = defaultValue;
+#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue )						static const bool varname = defaultValue;
+#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue )	static const bool varname = defaultValue;
+#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue )	static const float varname = defaultValue;
+
+#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const bool varname;
+#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const bool varname;
+#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const float varname;
 
 #else
 
 #	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, defaultValue );
+#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropInt varname ( name, defaultValue, minValue, maxValue );
 #	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname ( name, defaultValue, minValue, maxValue );
+
+#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const ::tiki::DebugPropBool varname;
+#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const ::tiki::DebugPropInt varname;
+#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const ::tiki::DebugPropFloat varname;
 
 #endif
 
 namespace tiki
 {
-	class DebugPropManager;
-
-	class DebugProp
+	class DebugProp : public LinkedItem<DebugProp>
 	{
-		friend class DebugPropManager;
+		TIKI_NONCOPYABLE_CLASS( DebugProp );
 
 	public:
 
@@ -52,22 +62,26 @@ namespace tiki
 
 	class DebugPropBool : public DebugProp
 	{
-		friend class DebugPropManager;
+		TIKI_NONCOPYABLE_CLASS( DebugPropBool );
 
 	public:
 
-		DebugPropBool( cstring pName, const bool defaultValue )
-			: DebugProp( pName, "PENIS"/*TIKI_CURRENT_MODULE*/, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
-		{			
+		DebugPropBool( cstring pName, bool defaultValue )
+			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
+		{
+			debugprop::registerProperty( *this );
+		}
+
+		~DebugPropBool()
+		{
+			debugprop::unregisterProperty( *this );
 		}
 
 		bool		getValue() const		{ return m_value; }
 		bool		getDefaultValue() const	{ return m_value; }
 		operator	bool() const			{ return m_value; }
 
-	protected:
-
-		void		setValue( const bool value ) { m_value = value; }
+		void		setValue( bool value )	{ m_value = value; }
 
 	private:
 
@@ -76,14 +90,44 @@ namespace tiki
 
 	};
 
-	class DebugPropFloat : public DebugProp
+	class DebugPropInt : public DebugProp
 	{
-		friend class DebugPropManager;
+		TIKI_NONCOPYABLE_CLASS( DebugPropInt );
 
 	public:
 
-		DebugPropFloat( cstring pName, const float defaultValue, const float minValue, const float maxValue )
-			: DebugProp( pName, "PENIS"/*TIKI_CURRENT_MODULE*/, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
+		DebugPropInt( cstring pName, int defaultValue, int minValue, int maxValue )
+			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Int ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
+		{
+		}
+
+		int			getValue() const		{ return m_value; }
+		int			getDefaultValue() const	{ return m_value; }
+		operator	int() const				{ return m_value; }
+
+		int			getMinValue() const		{ return m_minValue; }
+		int			getMaxValue() const		{ return m_maxValue; }
+			
+		void		setValue( int value )	{ m_value = value; }
+
+	private:
+
+		int			m_value;
+
+		int			m_defaultValue;
+		int			m_minValue;
+		int			m_maxValue;
+
+	};
+
+	class DebugPropFloat : public DebugProp
+	{
+		TIKI_NONCOPYABLE_CLASS( DebugPropFloat );
+
+	public:
+
+		DebugPropFloat( cstring pName, float defaultValue, float minValue, float maxValue )
+			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
 		}
 
@@ -91,9 +135,10 @@ namespace tiki
 		float		getDefaultValue() const	{ return m_value; }
 		operator	float() const			{ return m_value; }
 
-	protected:
+		float		getMinValue() const		{ return m_minValue; }
+		float		getMaxValue() const		{ return m_maxValue; }
 
-		void		setValue( const float value ) { m_value = value; }
+		void		setValue( float value ) { m_value = value; }
 
 	private:
 

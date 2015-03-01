@@ -13,17 +13,16 @@ namespace tiki
 		const float scale = maxWidth / minSize.x;
 
 		float currentX = boundingRectangle.x + DebugGui_DefaultMargin;
-		for (uint childIndex = 0u; childIndex < getChildCount(); ++childIndex)
+		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
 		{
-			DebugGuiControl* pChild = getChildByIndex( childIndex );
-			const Vector2 childMinSize = pChild->getMinimumSize();
+			const Vector2 childMinSize = it->getMinimumSize();
 
 			Rectangle childRect;
 			childRect.x			= currentX;
 			childRect.y			= y;
 			childRect.width		= childMinSize.x * scale;
 			childRect.height	= maxHeight;
-			pChild->setRectangle( childRect );
+			it->setRectangle( childRect );
 
 			currentX += childRect.width + DebugGui_DefaultMargin;
 		} 
@@ -32,10 +31,9 @@ namespace tiki
 	Vector2 DebugGuiVerticalLayout::getMinimumSize()
 	{
 		Vector2 minSize = { DebugGui_DefaultMargin, 0.0f };
-		for (uint childIndex = 0u; childIndex < getChildCount(); ++childIndex)
+		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
 		{
-			DebugGuiControl* pChild = getChildByIndex( childIndex );
-			const Vector2 childMinSize = pChild->getMinimumSize();
+			const Vector2 childMinSize = it->getMinimumSize();
 
 			minSize.x += childMinSize.x + DebugGui_DefaultMargin;
 			minSize.y = TIKI_MAX( minSize.y, childMinSize.y );
