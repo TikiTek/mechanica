@@ -163,10 +163,10 @@ namespace tiki
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
 					
-					//m_testWindow.create( framework::getDebugGui() );
+					m_testWindow.create( framework::getDebugGui() );
 					//m_lightingWindow.create( framework::getDebugGui() );
 
-					//m_testWindow.setRectangle( Rectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
+					m_testWindow.setRectangle( Rectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
 					//m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
 
 					return TransitionState_Finish;
@@ -174,7 +174,7 @@ namespace tiki
 				else
 				{
 					//m_lightingWindow.dispose();
-					//m_testWindow.dispose();
+					m_testWindow.dispose();
 
 					m_freeCamera.dispose();
 

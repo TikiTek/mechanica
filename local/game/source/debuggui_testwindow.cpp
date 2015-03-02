@@ -9,7 +9,7 @@ namespace tiki
 		m_bottomLayout.create();
 		m_labelLayout.create();
 
-		DebugGuiWindow::create( debugGui, "Test Window", m_baseLayout );
+		DebugGuiWindow::create( debugGui, "Test Window", m_bottomLayout );
 		
 		for (uint i = 0u; i < TIKI_COUNT( m_labels ); ++i)
 		{
