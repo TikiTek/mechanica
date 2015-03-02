@@ -68,6 +68,11 @@ namespace tiki
 			return x * rsqrt( x );
 		}
 
+		TIKI_FORCE_INLINE float mod( float value, float divisor )
+		{
+			return fmod( value, divisor );
+		}
+
 		// return random value between 0 and 1
 		TIKI_FORCE_INLINE float random()
 		{

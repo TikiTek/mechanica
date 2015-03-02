@@ -33,7 +33,6 @@ namespace tiki
 
 		enum
 		{
-			BoxSize		= DebugGui_DefaultMargin * 3,
 			CheckerSize	= 9
 		};
 

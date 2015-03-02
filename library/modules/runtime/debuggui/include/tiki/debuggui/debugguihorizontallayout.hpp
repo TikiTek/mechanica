@@ -8,15 +8,24 @@ namespace tiki
 {
 	class DebugGuiHorizontalLayout : public DebugGuiLayout
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiHorizontalLayout );
+		TIKI_NONCOPYABLE_CLASS( DebugGuiHorizontalLayout );
 
 	public:
 
+		DebugGuiHorizontalLayout();
+
 		virtual Vector2	getMinimumSize();
+
+		bool			getExpandChildren() const;
+		void			setExpandChildren( bool value );
 
 	protected:
 
 		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+
+	private:
+
+		bool			m_expandChildren;
 
 	};
 }

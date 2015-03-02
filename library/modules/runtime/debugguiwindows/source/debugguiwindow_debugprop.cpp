@@ -17,7 +17,7 @@ namespace tiki
 	void DebugGuiWindowDebugProp::create( DebugGui& debugGui )
 	{
 		m_baseLayout.create();
-		m_nodesLayout.create();
+		//m_baseLayout.setExpandChildren( )
 
 		DebugGuiWindow::create( debugGui, "Debug Properties", m_baseLayout );
 
@@ -70,6 +70,11 @@ namespace tiki
 			node.spaceLayout.create();
 			node.chilrenLayout.create();
 
+			setLayoutParameters( node.fullLayout );
+			setLayoutParameters( node.nodeLayout );
+			setLayoutParameters( node.spaceLayout );
+			setLayoutParameters( node.chilrenLayout );
+
 			node.expandButton.create( "+" );
 			node.nameLabel.create( nodeName.cStr() );
 
@@ -87,7 +92,7 @@ namespace tiki
 			node.parentIndex = TIKI_SIZE_T_MAX;
 			if ( lastIndex == 0 )
 			{
-				m_nodesLayout.addChildControl( &node.fullLayout );
+				m_baseLayout.addChildControl( &node.fullLayout );
 			}
 			else
 			{
@@ -116,10 +121,14 @@ namespace tiki
 
 			node.nodeLayout.create();
 
+			setLayoutParameters( node.nodeLayout );
+
 			node.nameLabel.create( nodeName.cStr() );
+			node.valueAlignment.create( DebugGuiAlignment::OrientationFlags_X, vector::create( 400.0f, 0.0f ) );
 			node.valueLabel.create( "NI" );
 
 			node.nodeLayout.addChildControl( &node.nameLabel );
+			node.nodeLayout.addChildControl( &node.valueAlignment );
 			node.nodeLayout.addChildControl( &node.valueLabel );
 
 			string pathName;
@@ -144,15 +153,12 @@ namespace tiki
 
 		folderNames.dispose();
 
-		m_baseLayout.addChildControl( &m_nodesLayout );
-
 		setRectangle( Rectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
 	}
 
 	void DebugGuiWindowDebugProp::dispose()
 	{
 		m_baseLayout.dispose();
-		m_nodesLayout.dispose();
 
 		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
 		{
@@ -234,5 +240,17 @@ namespace tiki
 		}
 
 		return DebugGuiWindow::processGuiEvent( guiEvent );
+	}
+
+	void DebugGuiWindowDebugProp::setLayoutParameters( DebugGuiHorizontalLayout& layout )
+	{
+		layout.setPadding( Thickness() );
+		layout.setExpandChildren( false );
+	}
+
+	void DebugGuiWindowDebugProp::setLayoutParameters( DebugGuiVerticalLayout& layout )
+	{
+		layout.setPadding( Thickness() );
+		layout.setExpandChildren( false );
 	}
 }

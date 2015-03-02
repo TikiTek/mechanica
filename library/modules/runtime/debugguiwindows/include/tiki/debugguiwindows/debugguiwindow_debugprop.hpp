@@ -5,6 +5,7 @@
 #include "tiki/debuggui/debugguiwindow.hpp"
 
 #include "tiki/base/array.hpp"
+#include "tiki/debuggui/debugguialignment.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguihorizontallayout.hpp"
 #include "tiki/debuggui/debugguilabel.hpp"
@@ -31,34 +32,37 @@ namespace tiki
 
 		struct TreeFolderNode
 		{
-			DebugGuiHorizontalLayout	fullLayout;
+			DebugGuiVerticalLayout		fullLayout;
 
-			DebugGuiVerticalLayout		nodeLayout;
+			DebugGuiHorizontalLayout	nodeLayout;
 			DebugGuiButton				expandButton;
 			DebugGuiLabel				nameLabel;
 
-			DebugGuiVerticalLayout		spaceLayout;
+			DebugGuiHorizontalLayout	spaceLayout;
 			DebugGuiSpacer				spacer;
 			
-			DebugGuiHorizontalLayout	chilrenLayout;
+			DebugGuiVerticalLayout		chilrenLayout;
 
 			uint						parentIndex;
 		};
 
 		struct TreePropNode
 		{
-			DebugGuiVerticalLayout		nodeLayout;
+			DebugGuiHorizontalLayout	nodeLayout;
 			DebugGuiLabel				nameLabel;
+			DebugGuiAlignment			valueAlignment;
 			DebugGuiLabel				valueLabel;
 
 			uint						parentIndex;
 		};
 
-		DebugGuiMinimumLayout		m_baseLayout;
-		DebugGuiVerticalLayout		m_nodesLayout;
+		DebugGuiHorizontalLayout	m_baseLayout;
 
 		Array< TreeFolderNode >		m_folderNodes;
 		Array< TreePropNode >		m_propNodes;
+
+		void						setLayoutParameters( DebugGuiHorizontalLayout& layout );
+		void						setLayoutParameters( DebugGuiVerticalLayout& layout );
 
 	};
 }

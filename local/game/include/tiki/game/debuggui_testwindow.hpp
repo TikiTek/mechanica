@@ -26,8 +26,8 @@ namespace tiki
 	private:
 
 		DebugGuiMinimumLayout		m_baseLayout;
-		DebugGuiHorizontalLayout	m_bottomLayout;
-		DebugGuiVerticalLayout		m_labelLayout;
+		DebugGuiVerticalLayout		m_bottomLayout;
+		DebugGuiHorizontalLayout	m_labelLayout;
 
 		DebugGuiButton				m_buttons[ 5u ];
 		DebugGuiLabel				m_labels[ 5u ];

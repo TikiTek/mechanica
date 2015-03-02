@@ -73,19 +73,19 @@ namespace tiki
 
 	void DebugGuiWindow::handleRectangleChanged( const Rectangle& boundingRectangle )
 	{
-		m_titleRectangle.x		= boundingRectangle.x + DebugGui_DefaultMargin;
-		m_titleRectangle.y		= boundingRectangle.y + DebugGui_DefaultMargin;
-		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f + 25.0f );
+		m_titleRectangle.x		= boundingRectangle.x + DebugGui_DefaultPadding;
+		m_titleRectangle.y		= boundingRectangle.y + DebugGui_DefaultPadding;
+		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultPadding * 2.0f + 25.0f );
 		m_titleRectangle.height = TitleHeight;
 
-		m_clientRectangle.x			= boundingRectangle.x + DebugGui_DefaultMargin;
-		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + DebugGui_DefaultMargin;
-		m_clientRectangle.width		= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
-		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( DebugGui_DefaultMargin * 3.0f );
+		m_clientRectangle.x			= boundingRectangle.x + DebugGui_DefaultPadding;
+		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + DebugGui_DefaultPadding;
+		m_clientRectangle.width		= boundingRectangle.width - ( DebugGui_DefaultPadding * 2.0f );
+		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( DebugGui_DefaultPadding * 3.0f );
 
 		Rectangle minimizeRect;
-		minimizeRect.x		= boundingRectangle.x + boundingRectangle.width - ( 25.0f + DebugGui_DefaultMargin );
-		minimizeRect.y		= boundingRectangle.y + DebugGui_DefaultMargin;
+		minimizeRect.x		= boundingRectangle.x + boundingRectangle.width - ( 25.0f + DebugGui_DefaultPadding );
+		minimizeRect.y		= boundingRectangle.y + DebugGui_DefaultPadding;
 		minimizeRect.width	= 25.0f;
 		minimizeRect.height	= 25.0f;
 		m_minimizeButton.setRectangle( minimizeRect );
@@ -97,11 +97,11 @@ namespace tiki
 	{
 		Vector2 minSize;
 		getDefaultFont()->calcuateTextSize( minSize, m_aTitle, getStringLength( m_aTitle ) );
-		minSize.y = ( 2.0f * DebugGui_DefaultMargin ) + TitleHeight;
+		minSize.y = ( 2.0f * DebugGui_DefaultPadding ) + TitleHeight;
 
 		const Vector2 layoutMinSize = m_pLayout->getMinimumSize();
 		minSize.x = TIKI_MAX( minSize.x, layoutMinSize.x );
-		minSize.x += 3.0f * DebugGui_DefaultMargin + 25.0f;
+		minSize.x += 3.0f * DebugGui_DefaultPadding + 25.0f;
 		minSize.y += layoutMinSize.y;
 
 		return minSize;
@@ -129,8 +129,8 @@ namespace tiki
 		renderer.drawRectangle( m_titleRectangle, TIKI_COLOR( 128, 128, 128, 196 ) );
 		renderer.drawRectangle( m_clientRectangle, TIKI_COLOR( 196, 196, 196, 128 ) );
 
-		Vector2 textPosition = { DebugGui_DefaultMargin, DebugGui_DefaultMargin };
-		vector::add( textPosition, m_titleRectangle.xy() );
+		Vector2 textPosition = { DebugGui_DefaultPadding, DebugGui_DefaultPadding };
+		vector::add( textPosition, m_titleRectangle.getXY() );
 		renderer.drawText( textPosition, *getDefaultFont(), m_aTitle, TIKI_COLOR_WHITE );
 
 		m_pLayout->render( renderer );
@@ -158,10 +158,10 @@ namespace tiki
 				const float topDistance		= state.mousePosition.y - getRectangle().y;
 				const float bottomDistance	= ( getRectangle().y + getRectangle().height ) - state.mousePosition.y;
 
-				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && leftDistance > 0.0f && leftDistance < DebugGui_DefaultMargin ? WindowResizeMask_Left : WindowResizeMask_None );
-				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && rightDistance > 0.0f && rightDistance < DebugGui_DefaultMargin ? WindowResizeMask_Right : WindowResizeMask_None );
-				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && topDistance > 0.0f && topDistance < DebugGui_DefaultMargin ? WindowResizeMask_Top : WindowResizeMask_None );
-				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && bottomDistance > 0.0f && bottomDistance < DebugGui_DefaultMargin ? WindowResizeMask_Bottom : WindowResizeMask_None );
+				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && leftDistance > 0.0f && leftDistance < DebugGui_DefaultPadding ? WindowResizeMask_Left : WindowResizeMask_None );
+				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && rightDistance > 0.0f && rightDistance < DebugGui_DefaultPadding ? WindowResizeMask_Right : WindowResizeMask_None );
+				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && topDistance > 0.0f && topDistance < DebugGui_DefaultPadding ? WindowResizeMask_Top : WindowResizeMask_None );
+				m_resizeMode |= ( leftDistance > 0.0f && rightDistance > 0.0f && bottomDistance > 0.0f && bottomDistance < DebugGui_DefaultPadding ? WindowResizeMask_Bottom : WindowResizeMask_None );
 			}
 		}
 		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && ( m_isMoving || m_resizeMode != WindowResizeMask_None ) )

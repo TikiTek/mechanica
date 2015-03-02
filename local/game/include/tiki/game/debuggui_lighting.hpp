@@ -5,7 +5,7 @@
 #include "tiki/debuggui/debugguiwindow.hpp"
 
 #include "tiki/debuggui/debugguibutton.hpp"
-#include "tiki/debuggui/debugguihorizontallayout.hpp"
+#include "tiki/debuggui/debugguiverticallayout.hpp"
 #include "tiki/debuggui/debugguicheckbox.hpp"
 #include "tiki/debuggui/debugguilabel.hpp"
 #include "tiki/debuggui/debugguislider.hpp"
@@ -27,7 +27,7 @@ namespace tiki
 
 	private:
 
-		DebugGuiHorizontalLayout	m_layout;
+		DebugGuiVerticalLayout		m_layout;
 
 		DebugGuiSlider				m_positionX;
 		DebugGuiSlider				m_positionY;

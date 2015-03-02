@@ -39,8 +39,8 @@ namespace tiki
 	{
 		Vector2 textSize;
 		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringLength( m_aText ) );
-		textSize.x += ( 3.0f * DebugGui_DefaultMargin ) + BoxSize;
-		textSize.y = ( 2.0f * DebugGui_DefaultMargin ) + BoxSize;
+		textSize.x += ( 5.0f * getPadding().left ) + getPadding().right;
+		textSize.y = ( 4.0f * getPadding().top ) + getPadding().bottom;
 
 		return textSize;
 	}
@@ -62,18 +62,21 @@ namespace tiki
 
 	void DebugGuiCheckBox::handleRectangleChanged( const Rectangle& boundingRectangle )
 	{
-		m_textPosition.x = boundingRectangle.x + ( DebugGui_DefaultMargin * 2.0f ) + BoxSize;
-		m_textPosition.y = boundingRectangle.y + DebugGui_DefaultMargin;
+		const float boxWidth = getPadding().left * 3.0f;
+		const float boxHeight = getPadding().top * 3.0f;
 
-		m_box.x			= boundingRectangle.x + DebugGui_DefaultMargin;
-		m_box.y			= boundingRectangle.y + DebugGui_DefaultMargin;
-		m_box.width		= BoxSize;
-		m_box.height	= BoxSize;
+		m_textPosition.x = boundingRectangle.x + ( 5.0f * getPadding().left );
+		m_textPosition.y = boundingRectangle.y + getPadding().top;
 
-		m_checker.x			= boundingRectangle.x + DebugGui_DefaultMargin + 3.0f;
-		m_checker.y			= boundingRectangle.y + DebugGui_DefaultMargin + 3.0f;
-		m_checker.width		= CheckerSize;
-		m_checker.height	= CheckerSize;
+		m_box.x			= boundingRectangle.x + getPadding().left;
+		m_box.y			= boundingRectangle.y + getPadding().top;
+		m_box.width		= boxWidth;
+		m_box.height	= boxHeight;
+
+		m_checker.width		= boxWidth * 0.6f;
+		m_checker.height	= boxHeight * 0.6f;
+		m_checker.x			= boundingRectangle.x + getPadding().left + ( ( boxWidth - m_checker.width ) / 2.0f );
+		m_checker.y			= boundingRectangle.y + getPadding().top + ( ( boxHeight - m_checker.height ) / 2.0f );
 	}
 
 	bool DebugGuiCheckBox::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

@@ -5,6 +5,7 @@
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/math/thickness.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -19,19 +20,25 @@ namespace tiki
 
 	enum
 	{
-		DebugGui_DefaultMargin = 5u,
+		DebugGui_DefaultPadding = 5u,
 		DebugGui_MaxTextLength = 32u
 	};
 
 	class DebugGuiControl : public LinkedItem< DebugGuiControl >
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiControl );
+		TIKI_NONCOPYABLE_CLASS( DebugGuiControl );
 		friend class DebugGui;
 
 	public:
 
+		DebugGuiControl();
+
+		const Thickness&		getPadding() const;
+		void					setPadding( const Thickness& padding );
+
 		const Rectangle&		getRectangle() const;
 		void					setRectangle( const Rectangle& boundingRectangle );
+		
 		virtual Vector2			getMinimumSize() = 0;
 
 		virtual void			update() = 0;
@@ -57,6 +64,7 @@ namespace tiki
 		static const Font*		s_pDefaultFont;
 		static DebugGui*		s_pDebugGui;
 
+		Thickness				m_padding;
 		Rectangle				m_rectangle;
 
 	};
