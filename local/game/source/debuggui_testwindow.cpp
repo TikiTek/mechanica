@@ -5,6 +5,10 @@ namespace tiki
 {
 	void DebugGuiTestWindow::create( DebugGui& debugGui )
 	{
+		m_baseLayout.create();
+		m_bottomLayout.create();
+		m_labelLayout.create();
+
 		DebugGuiWindow::create( debugGui, "Test Window", m_baseLayout );
 		
 		for (uint i = 0u; i < TIKI_COUNT( m_labels ); ++i)
@@ -41,25 +45,20 @@ namespace tiki
 
 	void DebugGuiTestWindow::dispose()
 	{
+		m_baseLayout.dispose();
+		m_bottomLayout.dispose();
+		m_labelLayout.dispose();
+
 		for (uint i = 0u; i < TIKI_COUNT( m_labels ); ++i)
 		{
-			m_labelLayout.removeChildControl( &m_labels[ i ] );
 			m_labels[ i ].dispose();
 		}
 
 		for (uint i = 0u; i < TIKI_COUNT( m_buttons ); ++i)
 		{
-			m_bottomLayout.removeChildControl( &m_buttons[ i ] );
 			m_buttons[ i ].dispose();
 		}
 
-		m_bottomLayout.removeChildControl( &m_labelLayout );
-		m_bottomLayout.removeChildControl( &m_slider );
-		m_bottomLayout.removeChildControl( &m_checkBox );
-
-		m_baseLayout.removeChildControl( &m_bottomLayout );
-
 		DebugGuiWindow::dispose();
-
 	}
 }

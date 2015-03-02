@@ -10,6 +10,8 @@ module:set_define( "TIKI_BUILD_DEBUG", "TIKI_ON", "Debug" );
 module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Debug" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Debug" );
 module:set_flag( "Symbols", "Debug" );
+module:set_flag( "NoExceptions", "Debug" );
+
 --module:set_flag( "FatalWarnings", "Debug" );
 
 module:set_define( "NDEBUG", nil, "Release" );
