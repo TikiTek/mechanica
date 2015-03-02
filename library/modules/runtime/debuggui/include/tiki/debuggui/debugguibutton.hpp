@@ -15,6 +15,9 @@ namespace tiki
 		void			create( const char* pText );
 		void			dispose();
 
+		const char*		getText() const;
+		void			setText( const char* pText );
+
 		virtual Vector2	getMinimumSize();
 
 		virtual void	update();

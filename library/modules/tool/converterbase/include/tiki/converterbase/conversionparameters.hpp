@@ -8,8 +8,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/list.hpp"
-
-#include <map>
+#include "tiki/toolbase/map.hpp"
 
 namespace tiki
 {
@@ -17,24 +16,24 @@ namespace tiki
 	{
 	public:
 
-		std::map< string, string >&			getMap();
-		const std::map< string, string >&	getMap() const;
+		Map< string, string >&			getMap();
+		const Map< string, string >&	getMap() const;
 
-		string								getString( const string& key ) const;
-		float								getFloat( const string& key ) const;
-		int									getInt( const string& key ) const;
-		bool								getBool( const string& key ) const;
+		string							getString( const string& key ) const;
+		float							getFloat( const string& key ) const;
+		int								getInt( const string& key ) const;
+		bool							getBool( const string& key ) const;
 
-		string								getOptionalString( const string& key, const string& defaultValue ) const;
-		float								getOptionalFloat( const string& key, float defaultValue ) const;
-		int									getOptionalInt( const string& key, int defaultValue ) const;
-		bool								getOptionalBool( const string& key, bool defaultValue ) const;
+		string							getOptionalString( const string& key, const string& defaultValue ) const;
+		float							getOptionalFloat( const string& key, float defaultValue ) const;
+		int								getOptionalInt( const string& key, int defaultValue ) const;
+		bool							getOptionalBool( const string& key, bool defaultValue ) const;
 
 	private:
 
-		std::map< string, string >			m_arguments;
+		Map< string, string >			m_arguments;
 
-		bool								getArgument( string& value, const string& key ) const; 
+		bool							getArgument( string& value, const string& key ) const; 
 
 	};
 

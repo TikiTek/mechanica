@@ -65,6 +65,12 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			operator[]( uint index );
 		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
 
+		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
+
+		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
+
 	private:
 
 		uint	m_count;

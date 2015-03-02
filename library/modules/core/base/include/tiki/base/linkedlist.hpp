@@ -153,6 +153,12 @@ namespace tiki
 		TIKI_FORCE_INLINE Iterator			getEnd()			{ return Iterator( nullptr ); }
 		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return ConstIterator( nullptr ); }
 
+		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
+
+		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
+
 	private:
 
 		Type*		m_pData;

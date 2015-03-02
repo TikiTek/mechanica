@@ -27,7 +27,7 @@ namespace tiki
 			for (uint i = 0u; i < map.getCount(); ++i)
 			{
 				const KeyValuePair< crc32, const char* >& kvp = map.getPairAt( i );
-				m_map[ kvp.key ] = kvp.value;
+				m_map.set( kvp.key, kvp.value );
 			}
 
 			mapper.dispose();
@@ -44,7 +44,7 @@ namespace tiki
 	void ConverterResourceMap::registerResource( const string& fileName )
 	{
 		const crc32 crcName = crcString( fileName );
-		m_map[ crcName ] = fileName;
+		m_map.set( crcName, fileName );
 	}
 
 	void ConverterResourceMap::writeToFile()
@@ -53,16 +53,18 @@ namespace tiki
 		Array< uint32 > offsetData;
 		List< char > stringData;
 
-		crcData.create( m_map.size() );
-		offsetData.create( m_map.size() );
+		crcData.create( m_map.getCount() );
+		offsetData.create( m_map.getCount() );
 
 		uint index = 0u;
-		for (ResourceMap::const_iterator it = m_map.begin(); it != m_map.end(); it++)
+		for (uint i = 0u; i < m_map.getCount(); ++i)
 		{
-			crcData[ index ]	= it->first;
+			const KeyValuePair< crc32, string >& kvp = m_map.getPairAt( i );
+
+			crcData[ index ]	= kvp.key;
 			offsetData[ index ]	= uint32( stringData.getCount() );
 
-			const string& fileName = it->second;
+			const string& fileName = kvp.value;
 			stringData.addRange( fileName.cStr(), fileName.getLength() + 1u );
 
 			index++;
@@ -72,7 +74,7 @@ namespace tiki
 		stream.create();
 
 		const fourcc header			= TIKI_FOURCC( 'T', 'R', 'N', 'M' );
-		const uint32 elementCount	= uint32( m_map.size() );
+		const uint32 elementCount	= uint32( m_map.getCount() );
 		const uint32 stringDataSize	= uint32( stringData.getCount() );
 
 		stream.write( &header, sizeof( header ) );
@@ -87,7 +89,7 @@ namespace tiki
 			m_fileName,
 			static_cast< const uint8* >( stream.getData() ),
 			stream.getLength()
-			);
+		);
 
 		stream.dispose();
 		crcData.dispose();

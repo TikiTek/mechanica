@@ -125,7 +125,7 @@ namespace tiki
 		// parse arguments
 		parseParams( xmlFile, pRoot, desc.arguments );
 
-		m_templates[ desc.name ] = desc;
+		m_templates.set( desc.name, desc );
 
 		xmlFile.dispose();
 	}
@@ -199,19 +199,16 @@ namespace tiki
 
 		m_loggingStream.write( line.cStr(), line.getLength() );
 
-		ThreadResultMap::iterator it = m_loggingThreadResults.find( currentThreadId );
-		if ( it != m_loggingThreadResults.end() )
+		ConversionResult* pResult = nullptr;
+		if ( m_loggingThreadResults.findValue( &pResult, currentThreadId ) && pResult != nullptr )
 		{
-			if ( it->second != nullptr )
-			{
-				it->second->addTraceInfo( level, message );
-			}
+			pResult->addTraceInfo( level, message );
 		}
 
 		m_loggingMutex.unlock();
 	}
 
-	void ConverterManager::parseParams( const TikiXml& xmlFile, const XmlElement* pRoot, std::map< string, string >& arguments ) const
+	void ConverterManager::parseParams( const TikiXml& xmlFile, const XmlElement* pRoot, Map< string, string >& arguments ) const
 	{
 		const XmlElement* pParam = xmlFile.findFirstChild( "param", pRoot );
 		while ( pParam )
@@ -229,11 +226,11 @@ namespace tiki
 			}
 			else if ( pAttValue == nullptr )
 			{
-				arguments[ pAttKey->content ] = pParam->content;
+				arguments.set( pAttKey->content, pParam->content );
 			}
 			else
 			{
-				arguments[ pAttKey->content ] = pAttValue->content;
+				arguments.set( pAttKey->content, pAttValue->content );
 			}
 
 			pParam = xmlFile.findNext( pParam );
@@ -480,14 +477,14 @@ namespace tiki
 		const XmlAttribute* pTemplate = xmlFile.findAttributeByName( "template", pRoot );
 		if ( pTemplate != nullptr )
 		{
-			TemplateMap::iterator temp = m_templates.find( pTemplate->content );
-			if ( temp != m_templates.end() )
+			TemplateDescription desc;
+			if ( m_templates.findValue( &desc, pTemplate->content ) )
 			{
-				const TemplateDescription& desc = temp->second;
-
-				for (std::map< string, string >::const_iterator it = desc.arguments.begin(); it != desc.arguments.end(); it++)
+				for (uint i = 0u; i < desc.arguments.getCount(); ++i)
 				{
-					task.parameters.arguments.getMap()[ it->first ] = it->second;
+					KeyValuePair< string, string >& kvp = desc.arguments.getPairAt( i );
+
+					task.parameters.arguments.getMap().set( kvp.key, kvp.value );
 				}
 			}
 		}
@@ -501,7 +498,7 @@ namespace tiki
 		bool result = true;
 
 		string whereFileName;
-		std::map< string, ConversionTask* > tasksByFileName;
+		Map< string, ConversionTask* > tasksByFileName;
 		for (uint i = 0u; i < tasks.getCount(); ++i)
 		{
 			ConversionTask& task = tasks[ i ];
@@ -515,7 +512,7 @@ namespace tiki
 
 			whereFileName += "filename = '" + fileName + "'";
 
-			tasksByFileName[ fileName ] = &task;
+			tasksByFileName.set( fileName, &task );
 		}
 
 		// read asset ids
@@ -532,19 +529,17 @@ namespace tiki
 			{
 				const string fileName = query->getTextField( "filename" );
 
-				std::map< string, ConversionTask* >::iterator itTask = tasksByFileName.find( fileName );
-				if ( itTask != tasksByFileName.end() )
+				ConversionTask* pTask = nullptr;
+				if ( tasksByFileName.findValue( &pTask, fileName ) && pTask != nullptr )
 				{
-					ConversionTask& task = *itTask->second;
-
-					task.parameters.assetId			= query->getIntegerField( "id" );
-					task.parameters.isBuildRequired	= (query->getIntegerField( "has_error" ) != 0u);
+					pTask->parameters.assetId			= query->getIntegerField( "id" );
+					pTask->parameters.isBuildRequired	= (query->getIntegerField( "has_error" ) != 0u);
 
 					if ( !whereAssetId.isEmpty() )
 					{
 						whereAssetId += " OR ";
 					}
-					whereAssetId += formatString( "asset_id = '%u'", task.parameters.assetId );
+					whereAssetId += formatString( "asset_id = '%u'", pTask->parameters.assetId );
 				}
 			}
 
@@ -628,12 +623,12 @@ namespace tiki
 		}
 
 		string whereAssetId;
-		std::map< uint, ConversionTask* > tasksByAssetId;
+		Map< uint, ConversionTask* > tasksByAssetId;
 		for (uint i = 0u; i < tasks.getCount(); ++i)
 		{
 			ConversionTask& task = tasks[ i ];
 
-			tasksByAssetId[ task.parameters.assetId ] = &task;
+			tasksByAssetId.set( task.parameters.assetId, &task );
 
 			if ( i != 0u )
 			{
@@ -655,14 +650,13 @@ namespace tiki
 			{
 				const uint assetId = query->getIntegerField( "asset_id" );
 
-				std::map< uint, ConversionTask* >::iterator itTask = tasksByAssetId.find( assetId );
-				if ( itTask == tasksByAssetId.end() )
+				ConversionTask* pTask = nullptr;				
+				if ( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
 				{
 					continue;
 				}
 
-				ConversionTask& task = *itTask->second;
-				if ( task.parameters.isBuildRequired )
+				if ( pTask->parameters.isBuildRequired )
 				{
 					continue;
 				}
@@ -675,9 +669,9 @@ namespace tiki
 				{
 				case ConversionResult::DependencyType_Converter:
 					{
-						if ( (uint)valueInt != task.pConverter->getConverterRevision() || task.pConverter->getConverterRevision() == TIKI_SIZE_T_MAX )
+						if ( (uint)valueInt != pTask->pConverter->getConverterRevision() || pTask->pConverter->getConverterRevision() == TIKI_SIZE_T_MAX )
 						{
-							task.parameters.isBuildRequired = true;
+							pTask->parameters.isBuildRequired = true;
 						}
 					}
 					break;
@@ -687,7 +681,7 @@ namespace tiki
 						const crc32 fileChangeCrc = file::getLastChangeCrc( identifier );
 						if ( fileChangeCrc != (crc32)valueInt )
 						{
-							task.parameters.isBuildRequired = true;
+							pTask->parameters.isBuildRequired = true;
 						}
 					}
 					break;
@@ -695,7 +689,7 @@ namespace tiki
 				case ConversionResult::DependencyType_Type:
 					{
 						// TODO
-						task.parameters.isBuildRequired = true;
+						pTask->parameters.isBuildRequired = true;
 					}
 					break;
 
@@ -888,14 +882,14 @@ namespace tiki
 	void ConverterManager::taskRegisterResult( uint64 threadId, ConversionResult& result )
 	{
 		m_loggingMutex.lock();
-		m_loggingThreadResults[ threadId ] = &result;
+		m_loggingThreadResults.set( threadId, &result );
 		m_loggingMutex.unlock();
 	}
 
 	void ConverterManager::taskUnregisterResult( uint64 threadId )
 	{
 		m_loggingMutex.lock();
-		m_loggingThreadResults[ threadId ] = nullptr;
+		m_loggingThreadResults.set( threadId, nullptr );
 		m_loggingMutex.unlock();
 	}
 }

@@ -25,13 +25,13 @@ namespace tiki
 
 		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
 
+		uint			getChildCount() const;
+
 	protected:
 
 		DebugGuiLayout();
 		~DebugGuiLayout();
 		
-		uint								getChildCount() const;
-
 		LinkedIterator< DebugGuiControl >	getChildrenBegin();
 		LinkedIterator< DebugGuiControl >	getChildrenEnd();
 

@@ -10,14 +10,16 @@ namespace tiki
 	template<typename TChar>
 	struct StringRefData
 	{
-		TChar*	pData;
-		uint	dataLength;
-		uint	stringLength;
+		TChar*			pData;
+		uint			dataLength;
+		uint			stringLength;
 
-		sint	refCount;
+		sint			refCount;
+
+		static TChar*	s_pEmptyString;
 
 		StringRefData()
-			: pData( nullptr ), dataLength( 0u ), stringLength( 0u ), refCount( 1 )
+			: pData( s_pEmptyString ), dataLength( 0u ), stringLength( 0u ), refCount( 1 )
 		{
 		}
 
@@ -44,7 +46,7 @@ namespace tiki
 
 		~StringRefData()
 		{
-			if (pData)
+			if ( pData != nullptr && pData != s_pEmptyString )
 			{
 				delete[] pData;
 				pData = nullptr;

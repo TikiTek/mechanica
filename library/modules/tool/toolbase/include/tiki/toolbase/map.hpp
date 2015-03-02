@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
-#define __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
+#ifndef TIKI_MAP_HPP_INCLUDED__
+#define TIKI_MAP_HPP_INCLUDED__
 
 #include "tiki/base/inline.hpp"
 #include "tiki/base/keyvaluepair.hpp"
@@ -9,22 +9,22 @@
 namespace tiki
 {
 	template<typename TKey, typename TValue>
-	class SortedSizedMap
+	class Map
 	{
-		TIKI_NONCOPYABLE_CLASS( SortedSizedMap );
-
 	public:
 
 		typedef KeyValuePair<TKey, TValue> Pair;
 		
-		TIKI_FORCE_INLINE				SortedSizedMap();
-		TIKI_FORCE_INLINE				~SortedSizedMap();
+		TIKI_FORCE_INLINE				Map();
+		TIKI_FORCE_INLINE				Map( const Map< TKey, TValue >& copy );
+		TIKI_FORCE_INLINE				~Map();
 
-		TIKI_FORCE_INLINE bool			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE void			clear();
 		TIKI_FORCE_INLINE void			dispose();
 
 		TIKI_FORCE_INLINE uint			getCount() const;
-		TIKI_FORCE_INLINE uint			getCapacity() const;
+		TIKI_FORCE_INLINE bool			isEmpty() const;
+
 
 		TIKI_FORCE_INLINE TValue&		getValueAt( uint index );
 		TIKI_FORCE_INLINE const TValue&	getValueAt( uint index ) const;
@@ -36,6 +36,8 @@ namespace tiki
 		TIKI_FORCE_INLINE void			set( const TKey& key, const TValue& value );
 		TIKI_FORCE_INLINE bool			remove( const TKey& key );
 
+		TIKI_FORCE_INLINE void			operator=( const Map<TKey, TValue>& copy );
+
 	private:
 
 		Pair*					m_pData;
@@ -44,9 +46,12 @@ namespace tiki
 
 		TIKI_FORCE_INLINE uint	findIndex( const TKey& key ) const;
 
+		TIKI_FORCE_INLINE uint	getNextSize( uint targetSize );
+		TIKI_FORCE_INLINE void	checkArraySize( uint neddedSize );
+
 	};
 }
 
-#include "../../../source/sortedsizedmap.inl"
+#include "../../../source/map.inl"
 
-#endif // __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
+#endif // TIKI_MAP_HPP_INCLUDED__

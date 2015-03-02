@@ -109,6 +109,8 @@ namespace tiki
 		{
 			return false;
 		}
+
+		m_frameworkData.debugGuiWindows.create( m_frameworkData.debugGui );
 #endif
 
 		m_isInitialized = true;
@@ -124,6 +126,7 @@ namespace tiki
 		m_isInitialized = false;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_frameworkData.debugGuiWindows.dispose();
 		m_frameworkData.debugGui.dispose( m_frameworkData.graphicSystem, m_frameworkData.resourceManager );
 #endif
 		m_frameworkData.inputSystem.dispose();

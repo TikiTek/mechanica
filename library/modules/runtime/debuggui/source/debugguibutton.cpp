@@ -22,13 +22,28 @@ namespace tiki
 		m_mouseDown = false;
 	}
 
+	const char* DebugGuiButton::getText() const
+	{
+		return m_aText;
+	}
+
+	void DebugGuiButton::setText( const char* pText )
+	{
+		TIKI_ASSERT( pText != nullptr );
+		copyString( m_aText, TIKI_COUNT( m_aText ), pText );
+		refreshRectangle();
+	}
+
 	void DebugGuiButton::handleRectangleChanged( const Rectangle& /*boundingRectangle*/ )
 	{
 	}
 
 	Vector2 DebugGuiButton::getMinimumSize()
 	{
-		return vector::create( 25, 25 );
+		Vector2 textSize;
+		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringLength( m_aText ) );
+		
+		return vector::add( vector::create( 20, 20 ), textSize );
 	}
 
 	void DebugGuiButton::update()

@@ -4,8 +4,7 @@
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-
-#include <map>
+#include "tiki/toolbase/map.hpp"
 
 namespace tiki
 {
@@ -24,7 +23,7 @@ namespace tiki
 
 	private:
 
-		typedef std::map< crc32, string > ResourceMap;
+		typedef Map< crc32, string > ResourceMap;
 
 		string			m_fileName;
 		ResourceMap		m_map;

@@ -12,7 +12,7 @@ namespace tiki
 
 	class DebugGuiWindows
 	{
-		TIKI_NONCOPYABLE_CLASS( DebugGuiWindows );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiWindows );
 
 	public:
 

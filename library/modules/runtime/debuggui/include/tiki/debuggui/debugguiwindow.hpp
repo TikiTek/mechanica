@@ -44,9 +44,9 @@ namespace tiki
 
 		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
 
-	private: // friend
-
 		virtual bool	processGuiEvent( const DebugGuiEvent& guiEvent );
+
+	private: // friend
 
 		DebugGuiButton&	getMinimizedButton();
 
