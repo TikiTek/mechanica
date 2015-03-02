@@ -25,7 +25,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pText != nullptr );
 		copyString( m_aText, TIKI_COUNT( m_aText ), pText );
-		setRectangle( getRectangle() );
+		refreshRectangle();
 	}
 
 	tiki::Vector2 DebugGuiLabel::getMinimumSize()

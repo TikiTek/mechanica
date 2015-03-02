@@ -8,6 +8,8 @@
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguihorizontallayout.hpp"
 #include "tiki/debuggui/debugguilabel.hpp"
+#include "tiki/debuggui/debugguiminimumlayout.hpp"
+#include "tiki/debuggui/debugguispacer.hpp"
 #include "tiki/debuggui/debugguiverticallayout.hpp"
 
 namespace tiki
@@ -21,21 +23,39 @@ namespace tiki
 		void						create( DebugGui& debugGui );
 		void						dispose();
 
+	protected:
+
+		virtual bool				processGuiEvent( const DebugGuiEvent& guiEvent );
+
 	private:
 
 		struct TreeFolderNode
 		{
-			DebugGuiHorizontalLayout	layout;
+			DebugGuiHorizontalLayout	fullLayout;
+
+			DebugGuiVerticalLayout		nodeLayout;
 			DebugGuiButton				expandButton;
-			DebugGuiLabel				name;
-			DebugGuiVerticalLayout		childrenLayout;
+			DebugGuiLabel				nameLabel;
+
+			DebugGuiVerticalLayout		spaceLayout;
+			DebugGuiSpacer				spacer;
+			
+			DebugGuiHorizontalLayout	chilrenLayout;
+
+			uint						parentIndex;
 		};
 
 		struct TreePropNode
 		{
-			DebugGuiHorizontalLayout	layout;
-			DebugGuiLabel				name;
+			DebugGuiVerticalLayout		nodeLayout;
+			DebugGuiLabel				nameLabel;
+			DebugGuiLabel				valueLabel;
+
+			uint						parentIndex;
 		};
+
+		DebugGuiMinimumLayout		m_baseLayout;
+		DebugGuiVerticalLayout		m_nodesLayout;
 
 		Array< TreeFolderNode >		m_folderNodes;
 		Array< TreePropNode >		m_propNodes;

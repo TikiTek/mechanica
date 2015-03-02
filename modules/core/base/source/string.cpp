@@ -7,6 +7,9 @@
 
 namespace tiki
 {
+	template<> char* tiki::StringRefData<char>::s_pEmptyString			= "";
+	template<> wchar_t* tiki::StringRefData<wchar_t>::s_pEmptyString	= L"";
+
 	template<> const char BasicString<char>::letterBigA				= 'A';
 	template<> const char BasicString<char>::letterBigZ				= 'Z';
 	template<> const char BasicString<char>::letterLittleA			= 'a';

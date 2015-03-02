@@ -8,12 +8,11 @@
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterresourcemap.hpp"
 #include "tiki/io/filestream.hpp"
+#include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/list.hpp"
+#include "tiki/toolbase/map.hpp"
 #include "tiki/toolbase/sqlite.hpp"
-#include "tiki/tasksystem/tasksystem.hpp"
-
-#include <map>
 
 struct _XmlElement;
 
@@ -77,12 +76,12 @@ namespace tiki
 
 		struct TemplateDescription
 		{
-			string						fullFileName;
-			string						name;
+			string					fullFileName;
+			string					name;
 
-			std::map< string, string >	arguments;
+			Map< string, string >	arguments;
 		};
-		typedef std::map< string, TemplateDescription > TemplateMap;
+		typedef Map< string, TemplateDescription > TemplateMap;
 
 		struct ConversionTask
 		{
@@ -95,7 +94,7 @@ namespace tiki
 			TaskId					taskId;
 		};
 
-		typedef std::map< uint64, ConversionResult* > ThreadResultMap;
+		typedef Map< uint64, ConversionResult* > ThreadResultMap;
 
 		string						m_outputPath;
 
@@ -117,7 +116,7 @@ namespace tiki
 		List< ConversionTask >		m_tasks;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
-		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, std::map< string, string >& arguments ) const;
+		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const;
 
 		bool						prepareTasks();
 		bool						generateTaskFromFiles( const List< FileDescription >& filesToBuild );

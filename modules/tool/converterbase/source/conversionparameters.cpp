@@ -5,12 +5,12 @@
 
 namespace tiki
 {
-	std::map< string, string >& ConversionArguments::getMap()
+	Map< string, string >& ConversionArguments::getMap()
 	{
 		return m_arguments;
 	}
 
-	const std::map< string, string >& ConversionArguments::getMap() const
+	const Map< string, string >& ConversionArguments::getMap() const
 	{
 		return m_arguments;
 	}
@@ -74,15 +74,13 @@ namespace tiki
 
 	bool ConversionArguments::getArgument( string& value, const string& key ) const
 	{
-		std::map< string, string >::const_iterator arg = m_arguments.find( key );
-		if ( arg == m_arguments.end() )
+		if ( m_arguments.findValue( &value, key ) )
 		{
-			value = "";
+			return true;
 		}
 		else
 		{
-			value = arg->second;
-			return true;
+			value = "";
 		}
 
 		return false;

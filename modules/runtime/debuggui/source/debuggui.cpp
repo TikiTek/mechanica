@@ -20,7 +20,7 @@ namespace tiki
 			return false;
 		}
 
-		m_isActive = false;
+		m_isActive = true;
 
 		Vector2 screenSize;
 		screenSize.x = (float)grahicsSystem.getBackBuffer().getWidth();
