@@ -6,7 +6,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguievent.hpp"
-#include "tiki/debuggui/debugguiverticallayout.hpp"
+#include "tiki/debuggui/debugguihorizontallayout.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/mousebutton.hpp"
 #include "tiki/math/vector.hpp"
@@ -68,7 +68,7 @@ namespace tiki
 
 		LinkedList< DebugGuiControl >	m_windows;
 		//Array< WindowMinimizedData >	m_minimizedData;
-		DebugGuiVerticalLayout			m_minimizedLayout;
+		DebugGuiHorizontalLayout		m_minimizedLayout;
 
 		const Font*						m_pDefaultFont;
 		ImmediateRenderer				m_renderer;

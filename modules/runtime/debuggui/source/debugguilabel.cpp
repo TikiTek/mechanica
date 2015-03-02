@@ -45,7 +45,7 @@ namespace tiki
 
 	void DebugGuiLabel::render( ImmediateRenderer& renderer )
 	{
-		renderer.drawText( getRectangle().xy(), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
+		renderer.drawText( getRectangle().getXY(), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
 	}
 
 	bool DebugGuiLabel::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

@@ -8,32 +8,20 @@ namespace tiki
 	const Font* DebugGuiControl::s_pDefaultFont	= nullptr;
 	DebugGui* DebugGuiControl::s_pDebugGui		= nullptr;
 
-	const Font* DebugGuiControl::getDefaultFont()
+	DebugGuiControl::DebugGuiControl()
+		: m_padding( DebugGui_DefaultPadding )
 	{
-		TIKI_ASSERT( s_pDefaultFont != nullptr );
-		return s_pDefaultFont;
 	}
 
-	void DebugGuiControl::pushEvent( const DebugGuiEvent& guiEvent )
+	const Thickness& DebugGuiControl::getPadding() const
 	{
-		TIKI_ASSERT( s_pDebugGui != nullptr );
-		s_pDebugGui->pushEvent( guiEvent );
+		return m_padding;
 	}
 
-	void DebugGuiControl::initialize( const Font* pDefaultFont, DebugGui* pDebugGui )
+	void DebugGuiControl::setPadding( const Thickness& padding )
 	{
-		TIKI_ASSERT( s_pDefaultFont == nullptr );
-		TIKI_ASSERT( s_pDebugGui == nullptr );
-		s_pDefaultFont	= pDefaultFont;
-		s_pDebugGui		= pDebugGui;
-	}
-
-	void DebugGuiControl::shutdown()
-	{
-		TIKI_ASSERT( s_pDefaultFont != nullptr );
-		TIKI_ASSERT( s_pDebugGui != nullptr );
-		s_pDefaultFont	= nullptr;
-		s_pDebugGui		= nullptr;
+		m_padding = padding;
+		refreshRectangle();
 	}
 
 	const Rectangle& DebugGuiControl::getRectangle() const
@@ -55,5 +43,33 @@ namespace tiki
 	void DebugGuiControl::refreshRectangle()
 	{
 		setRectangle( m_rectangle );
+	}
+
+	/*static*/ const Font* DebugGuiControl::getDefaultFont()
+	{
+		TIKI_ASSERT( s_pDefaultFont != nullptr );
+		return s_pDefaultFont;
+	}
+
+	/*static*/ void DebugGuiControl::pushEvent( const DebugGuiEvent& guiEvent )
+	{
+		TIKI_ASSERT( s_pDebugGui != nullptr );
+		s_pDebugGui->pushEvent( guiEvent );
+	}
+
+	/*static*/ void DebugGuiControl::initialize( const Font* pDefaultFont, DebugGui* pDebugGui )
+	{
+		TIKI_ASSERT( s_pDefaultFont == nullptr );
+		TIKI_ASSERT( s_pDebugGui == nullptr );
+		s_pDefaultFont	= pDefaultFont;
+		s_pDebugGui		= pDebugGui;
+	}
+
+	/*static*/ void DebugGuiControl::shutdown()
+	{
+		TIKI_ASSERT( s_pDefaultFont != nullptr );
+		TIKI_ASSERT( s_pDebugGui != nullptr );
+		s_pDefaultFont	= nullptr;
+		s_pDebugGui		= nullptr;
 	}
 }

@@ -58,10 +58,10 @@ namespace tiki
 	{
 		const float yMid = boundingRectangle.y + ( boundingRectangle.height / 2.0f );
 
-		m_line.x		= boundingRectangle.x + DebugGui_DefaultMargin;
-		m_line.y		= yMid - ( DebugGui_DefaultMargin / 2.0f );
-		m_line.width	= boundingRectangle.width - ( DebugGui_DefaultMargin * 2.0f );
-		m_line.height	= DebugGui_DefaultMargin;
+		m_line.x		= boundingRectangle.x + getPadding().left;
+		m_line.y		= yMid - ( getPadding().left / 2.0f );
+		m_line.width	= boundingRectangle.width - getPadding().getWidth();
+		m_line.height	= getPadding().top;
 
 		setSliderRectangle();
 	}
@@ -97,11 +97,11 @@ namespace tiki
 	void DebugGuiSlider::setSliderRectangle()
 	{
 		const float yMid = getRectangle().y + ( getRectangle().height / 2.0f );
-		const float xSlider = getRectangle().x + DebugGui_DefaultMargin + ( ( ( m_value - m_minValue ) / ( m_maxValue - m_minValue ) ) * ( getRectangle().width - ( DebugGui_DefaultMargin * 2.0f ) ) );
+		const float xSlider = getRectangle().x + getPadding().left + ( ( ( m_value - m_minValue ) / ( m_maxValue - m_minValue ) ) * ( getRectangle().width - getPadding().getWidth() ) );
 
-		m_slider.x		= xSlider - DebugGui_DefaultMargin;
+		m_slider.x		= xSlider - getPadding().left;
 		m_slider.height	= TIKI_MIN( 25.0f, getRectangle().height );
 		m_slider.y		= yMid - ( m_slider.height / 2.0f );
-		m_slider.width	= DebugGui_DefaultMargin * 2.0f;
+		m_slider.width	= getPadding().getWidth();
 	}
 }
