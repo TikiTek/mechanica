@@ -38,4 +38,12 @@
 #	define TIKI_BUILD_64BIT TIKI_OFF
 #endif
 
+#ifndef TIKI_BUILD_MSVC
+#	define TIKI_BUILD_MSVC TIKI_OFF
+#endif
+
+#ifndef TIKI_BUILD_MINGW
+#	define TIKI_BUILD_MINGW TIKI_OFF
+#endif
+
 #endif // __TIKI_DEFINES_HPP_INCLUDED__

@@ -18,7 +18,7 @@ namespace tiki
 			RegisterType& type = m_types[ i ];
 
 			type.pComponent	= nullptr;
-			type.typeCrc	= InvalidCrc32;
+			type.typeCrc	= TIKI_INVALID_CRC32;
 			type.stateSize	= 0u;
 			type.pName		= nullptr;
 		} 
@@ -36,7 +36,7 @@ namespace tiki
 		TIKI_ASSERT( pComponent != nullptr );
 
 		ComponentTypeId typeId = 0u;
-		while ( m_types[ typeId ].typeCrc != InvalidCrc32 )
+		while ( m_types[ typeId ].typeCrc != TIKI_INVALID_CRC32 )
 		{
 			typeId++;
 
@@ -72,7 +72,7 @@ namespace tiki
 		}
 
 		type.stateSize	= 0u;
-		type.typeCrc	= InvalidCrc32;
+		type.typeCrc	= TIKI_INVALID_CRC32;
 		type.pName		= nullptr;
 		type.pComponent	= nullptr;
 	}
@@ -84,7 +84,7 @@ namespace tiki
 			return false;
 		}
 
-		return m_types[ typeId ].typeCrc != InvalidCrc32;
+		return m_types[ typeId ].typeCrc != TIKI_INVALID_CRC32;
 	}
 
 	bool ComponentTypeRegister::isComponentRegistred( const ComponentBase* pComponent ) const

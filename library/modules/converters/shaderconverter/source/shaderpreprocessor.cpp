@@ -118,21 +118,21 @@ namespace tiki
 			{
 				const string fullPath = path::combine( includeDirs[ i ], path );
 
-				if ( file::exists( fullPath ) )
+				if ( file::exists( fullPath.cStr() ) )
 				{
 					path = fullPath;
 					break;
 				}
 			}
 
-			if ( !file::exists( path ) )
+			if ( !file::exists( path.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
 				return "";
 			}
 
 			Array< uint8 > fileData;
-			if ( !file::readAllBytes( path, fileData ) )
+			if ( !file::readAllBytes( path.cStr(), fileData ) )
 			{
 				TIKI_TRACE_ERROR( "open include file failed: %s\n", path.cStr() );
 				return "";

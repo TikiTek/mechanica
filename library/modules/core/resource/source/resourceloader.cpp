@@ -102,7 +102,7 @@ namespace tiki
 	ResourceLoaderResult ResourceLoader::loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
-		TIKI_ASSERT( resourceKey != InvalidCrc32 );
+		TIKI_ASSERT( resourceKey != TIKI_INVALID_CRC32 );
 
 		ResourceLoaderContext context;
 		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType );

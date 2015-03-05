@@ -2,9 +2,10 @@
 #ifndef TIKI_CRC32_HPP
 #define TIKI_CRC32_HPP
 
-#include "tiki/base/types.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {

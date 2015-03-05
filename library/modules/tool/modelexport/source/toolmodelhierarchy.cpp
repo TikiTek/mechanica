@@ -137,10 +137,8 @@ namespace tiki
 
 	void ToolModelHierarchy::searchNodes( List< ToolModelJoint >& targetList, const XmlElement* pNode )
 	{
-		const string nodeTag		= "node";
-		const XmlElement* pChild	= m_pXml->findFirstChild( nodeTag, pNode );
-
-		const uint parentIndex = targetList.getCount() - 1u;
+		const XmlElement* pChild	= m_pXml->findFirstChild( "node", pNode );
+		const uint parentIndex		= targetList.getCount() - 1u;
 
 		while ( pChild )
 		{
@@ -157,7 +155,7 @@ namespace tiki
 
 			searchNodes( targetList, pChild );
 
-			pChild = m_pXml->findNext( nodeTag, pChild );
+			pChild = m_pXml->findNext( "node", pChild );
 		}
 	}
 	

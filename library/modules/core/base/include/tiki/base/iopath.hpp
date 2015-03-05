@@ -2,7 +2,7 @@
 #ifndef TIKI_PATH_HPP
 #define TIKI_PATH_HPP
 
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 
 namespace tiki
 {

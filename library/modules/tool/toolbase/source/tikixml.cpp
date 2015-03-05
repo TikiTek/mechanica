@@ -30,10 +30,10 @@ namespace tiki
 		TIKI_ASSERT( m_pData == nullptr );
 	}
 
-	void TikiXml::create( const string& fileName )
+	void TikiXml::create( cstring pFileName )
 	{
 		Array< uint8 > data;
-		TIKI_VERIFY( file::readAllBytes( fileName, data ) );
+		TIKI_VERIFY( file::readAllBytes( pFileName, data ) );
 
 		m_pNode = xml_create(
 			(const char*)data.getBegin(),
@@ -55,18 +55,18 @@ namespace tiki
 		m_pData			= nullptr;
 	}
 
-	const XmlElement* TikiXml::findNodeByName( const string& name ) const
+	const XmlElement* TikiXml::findNodeByName( cstring pName ) const
 	{
 		TIKI_ASSERT( m_pNode );
-		return xml_element_find_any( m_pNode, name.cStr() );
+		return xml_element_find_any( m_pNode, pName );
 	}
 
-	const XmlElement* TikiXml::findFirstChild( const string& tag, const XmlElement* pElement ) const
+	const XmlElement* TikiXml::findFirstChild( cstring pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( m_pNode );
 		TIKI_ASSERT( pElement );
 		TIKI_ASSERT( pElement->elements );
-		return xml_element_find_element( (XmlElement*)pElement, tag.cStr(), nullptr );
+		return xml_element_find_element( (XmlElement*)pElement, pName, nullptr );
 	}
 
 	const XmlElement* TikiXml::findNext( const XmlElement* pElement ) const
@@ -75,27 +75,27 @@ namespace tiki
 		return xml_element_find_element( nullptr, pElement->name, (XmlElement*)pElement );
 	}
 
-	const XmlElement* TikiXml::findNext( const string& name, const XmlElement* pElement ) const
+	const XmlElement* TikiXml::findNext( cstring pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( pElement );
-		return xml_element_find_element( nullptr, name.cStr(), (XmlElement*)pElement );
+		return xml_element_find_element( nullptr, pName, (XmlElement*)pElement );
 	}
 
-	const XmlAttribute* TikiXml::findAttributeByName( const string& name, const XmlElement* pElement ) const
+	const XmlAttribute* TikiXml::findAttributeByName( cstring pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( pElement );
-		return xml_element_find_attribute( (XmlElement*)pElement, name.cStr(), nullptr );
+		return xml_element_find_attribute( (XmlElement*)pElement, pName, nullptr );
 	}
 
-	size_t TikiXml::getChilds( List< const XmlElement* >& targetList, const XmlElement* pElement, const string& name ) const
+	size_t TikiXml::getChilds( XmlElementList& targetList, const XmlElement* pElement, cstring pName ) const
 	{
 		TIKI_ASSERT( pElement );
-		const XmlElement* pNode = findFirstChild( name, pElement );
+		const XmlElement* pNode = findFirstChild( pName, pElement );
 
 		while ( pNode )
 		{
 			targetList.add( pNode );
-			pNode = findNext( name, pNode );
+			pNode = findNext( pName, pNode );
 		}
 
 		return targetList.getCount();

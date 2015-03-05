@@ -30,7 +30,7 @@ namespace tiki
 		do
 		{
 			const string fileName = path::combine( basePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
-			if ( file::exists( fileName ) )
+			if ( file::exists( fileName.cStr() ) )
 			{
 				uint32 counter = 0;
 

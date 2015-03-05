@@ -73,7 +73,7 @@ namespace tiki
 			const string inputFilename = pFileName;
 			string fullName = inputFilename;
 
-			if ( file::exists( fullName ) )
+			if ( file::exists( fullName.cStr() ) )
 			{
 				found = true;
 			}
@@ -83,7 +83,7 @@ namespace tiki
 				{
 					fullName = path::combine( m_includeDirs[ i ], inputFilename );
 
-					if ( file::exists( fullName ) )
+					if ( file::exists( fullName.cStr() ) )
 					{
 						found = true;
 						break;
@@ -111,7 +111,7 @@ namespace tiki
 					return false;
 				}
 
-				if ( file::readAllBytes( fullName, m_fileData[ freeStreamIndex ] ) == false )
+				if ( file::readAllBytes( fullName.cStr(), m_fileData[ freeStreamIndex ] ) == false )
 				{
 					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
 					return false;
@@ -258,9 +258,11 @@ namespace tiki
 
 		m_includeDirs.add( "./" );
 
-		string text;
-		if ( file::readAllText( "../../shaderinc.lst", text ) )
+		Array< char > charArray;
+		if ( file::readAllText( "../../shaderinc.lst", charArray ) )
 		{
+			const string text = charArray.getBegin();
+
 			Array< string > dirs;
 			text.split( dirs, "\n" );
 
@@ -271,6 +273,7 @@ namespace tiki
 
 			dirs.dispose();
 		}
+		charArray.dispose();
 
 		return true;
 	}
@@ -297,12 +300,15 @@ namespace tiki
 		{
 			const ConversionParameters::InputFile& file = parameters.inputFiles[ fileIndex ];
 
-			string sourceCode;
-			if ( file::readAllText( file.fileName, sourceCode ) == false )
+			Array< char > charArray;
+			if ( !file::readAllText( file.fileName.cStr(), charArray ) )
 			{
 				TIKI_TRACE_ERROR( "Can't open file.\n" );
 				continue;
 			}
+
+			const string sourceCode = charArray.getBegin();
+			charArray.dispose();
 
 			const bool debugMode = parameters.arguments.getOptionalBool( "compile_debug", false );
 

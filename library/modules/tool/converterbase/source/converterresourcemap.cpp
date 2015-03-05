@@ -14,10 +14,10 @@ namespace tiki
 	{
 		m_fileName = mapFilename;
 
-		if ( file::exists( mapFilename ) )
+		if ( file::exists( mapFilename.cStr() ) )
 		{
 			Array< uint8 > binaryData;
-			file::readAllBytes( mapFilename, binaryData );
+			file::readAllBytes( mapFilename.cStr(), binaryData );
 
 			ResourceNameMapper mapper;
 			mapper.create( binaryData.getBegin() );
@@ -86,7 +86,7 @@ namespace tiki
 		stream.write( stringData.getData(), sizeof( uint8 ) * stringData.getCount() );
 
 		file::writeAllBytes(
-			m_fileName,
+			m_fileName.cStr(),
 			static_cast< const uint8* >( stream.getData() ),
 			stream.getLength()
 		);

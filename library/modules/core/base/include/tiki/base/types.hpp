@@ -68,30 +68,12 @@ namespace tiki
 
 	typedef const char*		cstring;
 
-	enum
-	{
-		InvalidCrc32	= 0xffffffffu,
-
-#if TIKI_ENABLED( TIKI_BUILD_32BIT )
-
-		MaxPointer		= 0xffffffffu,
-		PointerBits		= 32u
-
-#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
-
-		MaxPointer		= 0xffffffffffffffffu,
-		PointerBits		= 64u
-
-#else
-
-#	error Platform not suppored
-
-#endif
-	};
 }
 
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 #define TIKI_OFFSETOF( type, member )		( (uint)(&((type*)nullptr)->member) )
+
+#define TIKI_INVALID_CRC32 0xffffffffu
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
@@ -178,5 +160,8 @@ namespace tiki
 #endif
 
 #endif
+
+#define TIKI_MIN( a, b ) ( a < b ? a : b )
+#define TIKI_MAX( a, b ) ( a > b ? a : b )
 
 #endif // __TIKI_TYPES_HPP_INCLUDED__

@@ -6,7 +6,7 @@
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )
 #	include "tiki/base/array.hpp"
 #	include "tiki/base/functions.hpp"
-#	include "tiki/base/string.hpp"
+#	include "tiki/base/basicstring.hpp"
 #	include "tiki/toolbase/list.hpp"
 
 #	define TIKI_REFLECTION_STRUCT( name, code ) struct name													\

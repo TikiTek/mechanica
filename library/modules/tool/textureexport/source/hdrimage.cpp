@@ -32,14 +32,14 @@ namespace tiki
 		m_data.create( imageToCopy.m_data.getBegin(), imageToCopy.m_data.getCount() );
 	}
 
-	bool HdrImage::createFromFile( const string& fileName )
+	bool HdrImage::createFromFile( cstring pFileName )
 	{
 		psd_context* pContext	= nullptr;
-		psd_status status		= psd_image_load( &pContext, (psd_char*)fileName.cStr() );
+		psd_status status		= psd_image_load( &pContext, (psd_char*)pFileName );
 
 		if ( status != psd_status_done )
 		{
-			TIKI_TRACE_ERROR( "input file can't parse: %s\n", fileName.cStr() );
+			TIKI_TRACE_ERROR( "input file can't parse: %s\n", pFileName );
 			return false;
 		}
 

@@ -48,8 +48,8 @@ namespace tiki
 		}
 
 		const string databaseFileName = path::combine( m_outputPath, "build.sqlite" );
-		m_isNewDatabase = !file::exists( databaseFileName );
-		if ( m_dataBase.create( databaseFileName ) == false )
+		m_isNewDatabase = !file::exists( databaseFileName.cStr() );
+		if ( m_dataBase.create( databaseFileName.cStr() ) == false )
 		{
 			TIKI_TRACE_ERROR( "[convertermanager] database intialization failed.\n" );
 		}
@@ -107,7 +107,7 @@ namespace tiki
 	void ConverterManager::addTemplate( const string& fileName )
 	{
 		TikiXml xmlFile;
-		xmlFile.create( fileName );
+		xmlFile.create( fileName.cStr() );
 
 		const XmlElement* pRoot = xmlFile.findNodeByName( "xtemplate" );
 
@@ -329,7 +329,7 @@ namespace tiki
 			const FileDescription& fileDesc = filesToBuild[ fileIndex ];
 			ConversionTask task;
 
-			if ( !file::exists( fileDesc.fullFileName ) )
+			if ( !file::exists( fileDesc.fullFileName.cStr() ) )
 			{
 				result = false;
 				continue;
@@ -403,7 +403,7 @@ namespace tiki
 	bool ConverterManager::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
 	{
 		TikiXml xmlFile;
-		xmlFile.create( fileDesc.fullFileName );
+		xmlFile.create( fileDesc.fullFileName.cStr() );
 
 		// parse root node
 		const XmlElement* pRoot = xmlFile.findNodeByName( "tikiasset" );
@@ -445,12 +445,12 @@ namespace tiki
 				input.fileName	= pAttFile->content;
 				input.typeCrc	= crcString( pAttType->content );
 
-				if ( !file::exists( input.fileName ) )
+				if ( !file::exists( input.fileName.cStr() ) )
 				{
 					input.fileName = path::combine( inputDir, input.fileName );
 				}
 
-				if ( !file::exists( input.fileName ) )
+				if ( !file::exists( input.fileName.cStr() ) )
 				{
 					TIKI_TRACE_WARNING( "input file not found. these will be ignored. path: %s\n", input.fileName.cStr() );
 				}
@@ -678,7 +678,7 @@ namespace tiki
 
 				case ConversionResult::DependencyType_File:
 					{
-						const crc32 fileChangeCrc = file::getLastChangeCrc( identifier );
+						const crc32 fileChangeCrc = file::getLastChangeCrc( identifier.cStr() );
 						if ( fileChangeCrc != (crc32)valueInt )
 						{
 							pTask->parameters.isBuildRequired = true;

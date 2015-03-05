@@ -59,12 +59,12 @@ namespace tiki
 
 			string preboundModelName = parameters.arguments.getString( "prebound_model" );
 
-			if ( !file::exists( preboundModelName ) )
+			if ( !file::exists( preboundModelName.cStr() ) )
 			{
 				preboundModelName = path::combine( path::getDirectoryName( file.fileName ), preboundModelName );
 			}
 
-			if ( !file::exists( preboundModelName ) )
+			if ( !file::exists( preboundModelName.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[animationconverter] prebound model not found. name: %s.\n", preboundModelName.cStr() );
 				return false;

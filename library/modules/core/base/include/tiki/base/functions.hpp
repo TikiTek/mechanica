@@ -4,9 +4,6 @@
 
 #include "tiki/base/inline.hpp"
 
-#define TIKI_MIN( a, b ) ( a < b ? a : b )
-#define TIKI_MAX( a, b ) ( a > b ? a : b )
-
 namespace tiki
 {
 	template<typename T>

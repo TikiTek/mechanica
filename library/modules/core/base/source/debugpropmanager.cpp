@@ -5,6 +5,28 @@
 
 namespace tiki
 {
+	class DebugPropManager
+	{
+		TIKI_NONCOPYABLE_CLASS( DebugPropManager );
+
+	public:
+
+		DebugPropManager();
+		~DebugPropManager();
+
+		void					registerProperty( DebugProp& prop );
+		void					unregisterProperty( DebugProp& prop );
+
+		LinkedList<DebugProp>&	getProperties() { return m_properties; }
+
+	private:
+
+		LinkedList< DebugProp >	m_properties;
+
+		DebugProp*				findPropertyByFullName( const char* pName );
+
+	};
+
 	static DebugPropManager& getDebugProManager()
 	{
 		static DebugPropManager s_manager;
@@ -36,11 +58,25 @@ namespace tiki
 
 	void DebugPropManager::registerProperty( DebugProp& prop )
 	{
+		TIKI_ASSERT( findPropertyByFullName( prop.getFullName() ) == nullptr );
 		m_properties.push( prop );
 	}
 
 	void DebugPropManager::unregisterProperty( DebugProp& prop )
 	{
 		m_properties.removeSortedByValue( prop );
+	}
+
+	DebugProp* DebugPropManager::findPropertyByFullName( const char* pName )
+	{
+		for (DebugProp& prop : m_properties)
+		{
+			if ( isStringEquals( prop.getFullName(), pName ) )
+			{
+				return &prop;
+			}
+		}
+
+		return nullptr;
 	}
 }

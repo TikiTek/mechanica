@@ -127,7 +127,7 @@ namespace tiki
 			if ( type == DependencyType_File )
 			{
 				id			= path::getAbsolutePath( id );
-				valueInt	= file::getLastChangeCrc( id );
+				valueInt	= file::getLastChangeCrc( id.cStr() );
 			}
 
 			Dependency* pDependency = nullptr;

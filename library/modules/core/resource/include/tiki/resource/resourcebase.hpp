@@ -10,7 +10,7 @@ namespace tiki
 	{
 		ResourceId()
 		{
-			key = InvalidCrc32;
+			key = TIKI_INVALID_CRC32;
 		}
 
 		crc32	key;

@@ -48,7 +48,7 @@ namespace tiki
 	bool ToolMaterial::create( const string& fileName )
 	{
 		TikiXml xml;
-		xml.create( fileName );
+		xml.create( fileName.cStr() );
 
 		const XmlElement* pRootNode = xml.findNodeByName( "tikimaterial" );
 		if ( pRootNode == nullptr )
