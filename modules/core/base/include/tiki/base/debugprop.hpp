@@ -18,9 +18,9 @@
 
 #else
 
-#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, defaultValue );
-#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropInt varname ( name, defaultValue, minValue, maxValue );
-#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname ( name, defaultValue, minValue, maxValue );
+#	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, TIKI_CURRENT_MODULE, defaultValue );
+#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropInt varname ( name, TIKI_CURRENT_MODULE, defaultValue, minValue, maxValue );
+#	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname ( name, TIKI_CURRENT_MODULE, defaultValue, minValue, maxValue );
 
 #	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const ::tiki::DebugPropBool varname;
 #	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const ::tiki::DebugPropInt varname;
@@ -46,11 +46,24 @@ namespace tiki
 		DebugProp( cstring pName, cstring pModule, Type type )
 			: m_pName( pName ), m_pModule( pModule ), m_type( type )
 		{
+			debugprop::registerProperty( *this );
+		}
+
+		~DebugProp()
+		{
+			debugprop::unregisterProperty( *this );
 		}
 
 		Type		getType() const		{ return m_type; }
-		cstring		getName() const		{ return m_pName; }
+		cstring		getFullName() const	{ return m_pName; }
 		cstring		getModule() const	{ return m_pModule; }
+		cstring		getName() const
+		{
+			uint index = stringLastIndexOf( m_pName, '/' );
+			index = ( index == TIKI_SIZE_T_MAX ? 0u : index + 1u );
+
+			return m_pName + index;
+		}
 
 	protected:
 
@@ -66,15 +79,9 @@ namespace tiki
 
 	public:
 
-		DebugPropBool( cstring pName, bool defaultValue )
-			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
+		DebugPropBool( cstring pName, cstring pModule, bool defaultValue )
+			: DebugProp( pName, pModule, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
 		{
-			debugprop::registerProperty( *this );
-		}
-
-		~DebugPropBool()
-		{
-			debugprop::unregisterProperty( *this );
 		}
 
 		bool		getValue() const		{ return m_value; }
@@ -96,9 +103,11 @@ namespace tiki
 
 	public:
 
-		DebugPropInt( cstring pName, int defaultValue, int minValue, int maxValue )
-			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Int ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
+		DebugPropInt( cstring pName, cstring pModule, int defaultValue, int minValue, int maxValue )
+			: DebugProp( pName, pModule, Type_Int ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
+			TIKI_ASSERT( defaultValue >= minValue );
+			TIKI_ASSERT( defaultValue <= maxValue );
 		}
 
 		int			getValue() const		{ return m_value; }
@@ -126,9 +135,11 @@ namespace tiki
 
 	public:
 
-		DebugPropFloat( cstring pName, float defaultValue, float minValue, float maxValue )
-			: DebugProp( pName, TIKI_CURRENT_MODULE, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
+		DebugPropFloat( cstring pName, cstring pModule, float defaultValue, float minValue, float maxValue )
+			: DebugProp( pName, pModule, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
+			TIKI_ASSERT( defaultValue >= minValue );
+			TIKI_ASSERT( defaultValue <= maxValue );
 		}
 
 		float		getValue() const		{ return m_value; }

@@ -52,7 +52,7 @@ namespace tiki
 
 			HdrImage image;
 			
-			if ( image.createFromFile( file.fileName ) == false )
+			if ( image.createFromFile( file.fileName.cStr() ) == false )
 			{
 				continue;
 			}

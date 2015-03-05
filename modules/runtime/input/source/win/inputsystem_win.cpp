@@ -1,6 +1,8 @@
 
 #include "tiki/input/inputsystem.hpp"
 
+#include "tiki/base/functions.hpp"
+#include "tiki/base/memory.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/framework/mainwindow.hpp"
 

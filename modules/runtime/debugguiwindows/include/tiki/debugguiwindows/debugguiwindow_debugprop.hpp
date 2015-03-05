@@ -15,6 +15,8 @@
 
 namespace tiki
 {
+	class DebugProp;
+
 	class DebugGuiWindowDebugProp : public DebugGuiWindow
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGuiWindowDebugProp );
@@ -24,9 +26,12 @@ namespace tiki
 		void						create( DebugGui& debugGui );
 		void						dispose();
 
+		virtual void				render( ImmediateRenderer& renderer ) TIKI_OVERRIDE;
+
 	protected:
 
-		virtual bool				processGuiEvent( const DebugGuiEvent& guiEvent );
+		virtual bool				processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE;
+		virtual bool				processGuiEvent( const DebugGuiEvent& guiEvent ) TIKI_OVERRIDE;
 
 	private:
 
@@ -56,13 +61,17 @@ namespace tiki
 			uint						parentIndex;
 		};
 
-		DebugGuiHorizontalLayout	m_baseLayout;
+		DebugGuiVerticalLayout		m_baseLayout;
 
 		Array< TreeFolderNode >		m_folderNodes;
 		Array< TreePropNode >		m_propNodes;
 
+		uint						m_selectedProp;
+
 		void						setLayoutParameters( DebugGuiHorizontalLayout& layout );
 		void						setLayoutParameters( DebugGuiVerticalLayout& layout );
+
+		void						setDebugPropText( DebugGuiLabel& targetLabel, const DebugProp& prop );
 
 	};
 }

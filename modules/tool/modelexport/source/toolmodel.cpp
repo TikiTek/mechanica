@@ -13,7 +13,7 @@ namespace tiki
 
 	bool ToolModel::create( const string& fileName, float scale )
 	{
-		m_xml.create( fileName );
+		m_xml.create( fileName.cStr() );
 
 		m_scale		= scale;
 

@@ -2,10 +2,8 @@
 #ifndef __TIKI_SQLITE_HPP_INCLUDED__
 #define __TIKI_SQLITE_HPP_INCLUDED__
 
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/base/string.hpp"
-
-#include <map>
 
 struct sqlite3;
 struct sqlite3_stmt;
@@ -24,7 +22,7 @@ namespace tiki
 		~SqliteDatabase();
 		friend class SqliteQuery;
 
-		bool			create( const string& fileName );
+		bool			create( cstring pFileName );
 		void			dispose();
 
 		bool			isCreated() const { return m_pDatabase != nullptr; }

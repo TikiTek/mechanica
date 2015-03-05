@@ -3,7 +3,6 @@
 #define TIKI_HDRIMAGE_HPP__INCLUDED
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/pixelformat.hpp"
 
@@ -37,7 +36,7 @@ namespace tiki
 		};
 
 		void			create( const size_t width, const size_t height, GammaType gamma = GammaType_Linear );
-		bool			createFromFile( const string& fileName );
+		bool			createFromFile( cstring pFileName );
 		void			createFromImage( const HdrImage& imageToCopy );
 
 		void			dispose();

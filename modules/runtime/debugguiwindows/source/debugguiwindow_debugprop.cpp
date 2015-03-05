@@ -5,7 +5,11 @@
 #include "tiki/base/debugprop.hpp"
 #include "tiki/base/debugpropmanager.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/debuggui/debuggui.hpp"
 #include "tiki/debuggui/debugguievent.hpp"
+#include "tiki/graphics/color.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputevent.hpp"
 
 namespace tiki
 {
@@ -13,11 +17,17 @@ namespace tiki
 	TIKI_DEBUGPROP_BOOL( s_test2, "test/ccc", false );
 	TIKI_DEBUGPROP_BOOL( s_test3, "test2/bbb", false );
 	TIKI_DEBUGPROP_BOOL( s_test4, "test3/bbb", false );
+	TIKI_DEBUGPROP_INT( s_test5, "test2/ccc", 1, 0, 10 );
+	TIKI_DEBUGPROP_INT( s_test6, "test3/ccc", 5, 4, 50 );
+	TIKI_DEBUGPROP_FLOAT( s_test7, "test2/ddd", 1.0f, 0.0f, 10.0f );
+	TIKI_DEBUGPROP_FLOAT( s_test8, "test3/ddd", 5.0f, 4.0f, 50.0f );
 
 	void DebugGuiWindowDebugProp::create( DebugGui& debugGui )
 	{
+		m_selectedProp = TIKI_SIZE_T_MAX;
+
 		m_baseLayout.create();
-		//m_baseLayout.setExpandChildren( )
+		m_baseLayout.setExpandChildren( false );
 
 		DebugGuiWindow::create( debugGui, "Debug Properties", m_baseLayout );
 
@@ -31,7 +41,7 @@ namespace tiki
 			string pathName;
 			pathName += prop.getModule();
 			pathName += "/";
-			pathName += prop.getName();
+			pathName += prop.getFullName();
 			pathName = pathName.toLower();
 
 			int currentIndex = 0;
@@ -113,19 +123,13 @@ namespace tiki
 		{
 			TreePropNode& node = m_propNodes[ propIndex ];
 
-			string nodeName;
-			nodeName += prop.getName();
-
-			const int lastIndex = nodeName.lastIndexOf( '/' ) + 1;
-			nodeName = nodeName.subString( lastIndex, nodeName.getLength() - lastIndex );
-
 			node.nodeLayout.create();
 
 			setLayoutParameters( node.nodeLayout );
 
-			node.nameLabel.create( nodeName.cStr() );
+			node.nameLabel.create( prop.getName() );
 			node.valueAlignment.create( DebugGuiAlignment::OrientationFlags_X, vector::create( 400.0f, 0.0f ) );
-			node.valueLabel.create( "NI" );
+			setDebugPropText( node.valueLabel, prop );
 
 			node.nodeLayout.addChildControl( &node.nameLabel );
 			node.nodeLayout.addChildControl( &node.valueAlignment );
@@ -134,7 +138,7 @@ namespace tiki
 			string pathName;
 			pathName += prop.getModule();
 			pathName += "/";
-			pathName += prop.getName();
+			pathName += prop.getFullName();
 			pathName = pathName.toLower();
 			pathName = pathName.subString( 0, pathName.lastIndexOf( '/' ) );
 
@@ -188,6 +192,37 @@ namespace tiki
 		m_propNodes.dispose();
 
 		DebugGuiWindow::dispose();
+	}
+
+	void DebugGuiWindowDebugProp::render( ImmediateRenderer& renderer )
+	{
+		if ( m_selectedProp != TIKI_SIZE_T_MAX )
+		{
+			TreePropNode& selectedNode = m_propNodes[ m_selectedProp ];
+			renderer.drawRectangle( selectedNode.nodeLayout.getRectangle(), TIKI_COLOR( 194, 194, 255, 164 ) );
+		}
+
+		DebugGuiWindow::render( renderer );
+	}
+
+	bool DebugGuiWindowDebugProp::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
+	{
+		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Left )
+		{
+			for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+			{
+				TreePropNode& propNode = m_propNodes[ i ];
+
+				if ( propNode.nodeLayout.getRectangle().contains( state.mousePosition ) )
+				{
+					m_selectedProp = i;
+
+					return true;
+				}
+			}
+		}
+
+		return DebugGuiWindow::processInputEvent( inputEvent, state );
 	}
 
 	bool DebugGuiWindowDebugProp::processGuiEvent( const DebugGuiEvent& guiEvent )
@@ -252,5 +287,44 @@ namespace tiki
 	{
 		layout.setPadding( Thickness() );
 		layout.setExpandChildren( false );
+	}
+
+	void DebugGuiWindowDebugProp::setDebugPropText( DebugGuiLabel& targetLabel, const DebugProp& prop )
+	{
+		switch (prop.getType())
+		{
+		case DebugProp::Type_Bool:
+			{
+				const DebugPropBool& propBool = static_cast< const DebugPropBool& >( prop );
+
+				const char* pText = ( propBool.getValue() ? "true" : "false" );
+				targetLabel.setText( pText );
+			}
+			break;
+
+		case DebugProp::Type_Float:
+			{
+				const DebugPropFloat& propFloat = static_cast< const DebugPropFloat& >( prop );
+
+				char buffer[ 128u ];
+				formatStringBuffer( buffer, TIKI_COUNT( buffer ), "%f", propFloat.getValue() );
+				targetLabel.setText( buffer );
+			}
+			break;
+
+		case DebugProp::Type_Int:
+			{
+				const DebugPropInt& propInt = static_cast< const DebugPropInt& >( prop );
+
+				char buffer[ 128u ];
+				formatStringBuffer( buffer, TIKI_COUNT( buffer ), "%i", propInt.getValue() );
+				targetLabel.setText( buffer );
+			}
+			break;
+
+		default:
+			TIKI_ASSERT(false);
+			break;
+		}
 	}
 }
