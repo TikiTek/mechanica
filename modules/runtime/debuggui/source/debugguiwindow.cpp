@@ -28,6 +28,8 @@ namespace tiki
 		m_isVisible		= true;
 		m_resizeMode	= WindowResizeMask_None;
 
+		m_pLayout->setParent( this );
+
 		setTitle( pTitle );
 		m_minimizeButton.create( "_" );
 		m_minimizedButton.create( pTitle );
@@ -41,6 +43,8 @@ namespace tiki
 
 		m_minimizeButton.dispose();
 		m_minimizedButton.dispose();
+
+		m_pLayout->setParent( nullptr );
 
 		m_pDebugGui		= nullptr;
 		m_pLayout		= nullptr;
@@ -91,6 +95,11 @@ namespace tiki
 		m_minimizeButton.setRectangle( minimizeRect );
 
 		m_pLayout->setRectangle( m_clientRectangle );
+	}
+
+	bool DebugGuiWindow::isInHierarchy() const
+	{
+		return m_isVisible;
 	}
 
 	Vector2 DebugGuiWindow::getMinimumSize()

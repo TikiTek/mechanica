@@ -117,7 +117,13 @@ namespace tiki
 		int			getMinValue() const		{ return m_minValue; }
 		int			getMaxValue() const		{ return m_maxValue; }
 			
-		void		setValue( int value )	{ m_value = value; }
+		void		setValue( int value )
+		{
+			TIKI_ASSERT( value >= m_minValue );
+			TIKI_ASSERT( value <= m_maxValue );
+
+			m_value = value;
+		}
 
 	private:
 
@@ -149,7 +155,13 @@ namespace tiki
 		float		getMinValue() const		{ return m_minValue; }
 		float		getMaxValue() const		{ return m_maxValue; }
 
-		void		setValue( float value ) { m_value = value; }
+		void		setValue( float value )
+		{
+			TIKI_ASSERT( value >= m_minValue );
+			TIKI_ASSERT( value <= m_maxValue );
+
+			m_value = value;
+		}
 
 	private:
 

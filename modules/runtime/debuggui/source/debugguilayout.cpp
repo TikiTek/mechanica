@@ -18,18 +18,32 @@ namespace tiki
 
 	void DebugGuiLayout::dispose()
 	{
+		for ( DebugGuiControl& child : m_childControls )
+		{
+			child.setParent(nullptr);
+		}
 		m_childControls.clear();
 	}
 
 	void DebugGuiLayout::addChildControl( DebugGuiControl* pChild )
 	{
+		TIKI_ASSERT( pChild != nullptr );
+		TIKI_ASSERT( pChild->getParent() == nullptr );
+
 		m_childControls.push( pChild );
+		pChild->setParent( this );
+
 		refreshRectangle();
 	}
 
 	void DebugGuiLayout::removeChildControl( DebugGuiControl* pChild )
 	{
+		TIKI_ASSERT( pChild != nullptr );
+		TIKI_ASSERT( pChild->getParent() == this );
+
 		m_childControls.removeSortedByValue( *pChild );
+		pChild->setParent( nullptr );
+
 		refreshRectangle();
 	}
 
