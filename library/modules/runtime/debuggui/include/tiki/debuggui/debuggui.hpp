@@ -57,17 +57,10 @@ namespace tiki
 
 	private:
 
-		//struct WindowMinimizedData
-		//{
-		//	bool			isVisible;
-		//	DebugGuiButton	button;
-		//};
-
 		bool							m_isActive;
 		Vector2							m_screenSize;
 
 		LinkedList< DebugGuiControl >	m_windows;
-		//Array< WindowMinimizedData >	m_minimizedData;
 		DebugGuiHorizontalLayout		m_minimizedLayout;
 
 		const Font*						m_pDefaultFont;

@@ -12,11 +12,13 @@ namespace tiki
 {
 	namespace f32
 	{
-		static const float epsilon	= 4.37114e-08f;
+		static const float epsilon	= 1.192092896e-07f;
 		static const float pi		= 3.141592653f;
 		static const float twoPi	= 6.283185307f;
 		static const float piOver2	= 1.570796326f;
 		static const float piOver4	= 0.785398163f;
+		static const float minValue	= 1.175494351e-38f;
+		static const float maxValue	= 3.402823466e+38f;
 
 		TIKI_FORCE_INLINE float	abs( float a )
 		{

@@ -11,6 +11,10 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 
+// TODO: delete:
+#include "tiki/base/timer.hpp"
+#include "tiki/framework/framework.hpp"
+
 namespace tiki
 {
 	TIKI_DEBUGPROP_BOOL( s_test1, "test/bbb", false );
@@ -24,7 +28,10 @@ namespace tiki
 
 	void DebugGuiWindowDebugProp::create( DebugGui& debugGui )
 	{
-		m_selectedProp = TIKI_SIZE_T_MAX;
+		m_inputAction	= InputAction_Invalid;
+		m_inputTimer	= 0.0;
+		m_pInputNode	= nullptr;
+		m_pSelectedNode	= nullptr;
 
 		m_baseLayout.create();
 		m_baseLayout.setExpandChildren( false );
@@ -71,6 +78,9 @@ namespace tiki
 		{
 			const string& name = folderNames[ folderIndex ];
 			TreeFolderNode& node = m_folderNodes[ folderIndex ];
+
+			node.id		= folderIndex;
+			node.type	= TreeNodeType_Folder;
 
 			int lastIndex = name.lastIndexOf( '/' ) + 1;
 			const string nodeName = name.subString( lastIndex, name.getLength() - lastIndex );
@@ -123,8 +133,11 @@ namespace tiki
 		{
 			TreePropNode& node = m_propNodes[ propIndex ];
 
-			node.nodeLayout.create();
+			node.id			= propIndex;
+			node.type		= TreeNodeType_Property;
+			node.pProperty	= &prop;
 
+			node.nodeLayout.create();
 			setLayoutParameters( node.nodeLayout );
 
 			node.nameLabel.create( prop.getName() );
@@ -194,12 +207,83 @@ namespace tiki
 		DebugGuiWindow::dispose();
 	}
 
+	void DebugGuiWindowDebugProp::update()
+	{
+		if ( m_inputAction != InputAction_Invalid )
+		{
+			m_inputTimer -= framework::getFrameTimer().getElapsedTime();
+			if ( m_inputTimer < 0.0 )
+			{
+				switch ( m_inputAction )
+				{
+				case InputAction_MoveUp:
+				case InputAction_MoveDown:
+					{
+						const bool up = ( m_inputAction == InputAction_MoveUp );
+
+						if ( m_pSelectedNode != nullptr )
+						{
+							m_pSelectedNode = findNearestNode( m_pSelectedNode->nodeLayout.getRectangle().getXY(), up, m_pSelectedNode );
+						}
+
+						if ( m_pSelectedNode == nullptr )
+						{
+							const float multiplier = ( up ? 1.0f : -1.0f );
+							m_pSelectedNode = findNearestNode( vector::create( 0.0f, 100000.0f * multiplier ), up, nullptr );
+						}
+					}
+					break;
+
+				case InputAction_Decrese:
+					{
+						if ( m_pSelectedNode == nullptr )
+						{
+							break;
+						}
+						else if ( m_pSelectedNode->type == TreeNodeType_Folder )
+						{
+							collapseFolderNode( *(TreeFolderNode*)m_pSelectedNode );
+						}
+						else if ( m_pSelectedNode->type == TreeNodeType_Property )
+						{
+							changePropNode( *(TreePropNode*)m_pSelectedNode, false );
+						}
+					}
+					break;
+
+				case InputAction_Increse:
+					{
+						if ( m_pSelectedNode == nullptr )
+						{
+							break;
+						}
+						else if ( m_pSelectedNode->type == TreeNodeType_Folder )
+						{
+							expandFolderNode( *(TreeFolderNode*)m_pSelectedNode );
+						}
+						else if ( m_pSelectedNode->type == TreeNodeType_Property )
+						{
+							changePropNode( *(TreePropNode*)m_pSelectedNode, true );
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+
+				m_inputTimer = 1.0;
+			}
+		}
+
+		DebugGuiWindow::update();
+	}
+
 	void DebugGuiWindowDebugProp::render( ImmediateRenderer& renderer )
 	{
-		if ( m_selectedProp != TIKI_SIZE_T_MAX )
+		if ( m_pSelectedNode != nullptr )
 		{
-			TreePropNode& selectedNode = m_propNodes[ m_selectedProp ];
-			renderer.drawRectangle( selectedNode.nodeLayout.getRectangle(), TIKI_COLOR( 194, 194, 255, 164 ) );
+			renderer.drawRectangle( m_pSelectedNode->nodeLayout.getRectangle(), TIKI_COLOR( 194, 194, 255, 164 ) );
 		}
 
 		DebugGuiWindow::render( renderer );
@@ -207,19 +291,54 @@ namespace tiki
 
 	bool DebugGuiWindowDebugProp::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )
 	{
-		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Left )
+		if ( ( inputEvent.eventType == InputEventType_Mouse_ButtonDown || inputEvent.eventType == InputEventType_Mouse_ButtonUp ) && inputEvent.data.mouseButton.button == MouseButton_Left )
 		{
-			for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+			TreeNode* pNearestNode = findNearestNode( state.mousePosition, true, nullptr );
+			if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown )
 			{
-				TreePropNode& propNode = m_propNodes[ i ];
-
-				if ( propNode.nodeLayout.getRectangle().contains( state.mousePosition ) )
-				{
-					m_selectedProp = i;
-
-					return true;
-				}
+				m_pInputNode = pNearestNode;
 			}
+			else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && m_pInputNode == pNearestNode )
+			{
+				m_pSelectedNode = m_pInputNode;
+			}
+		}
+		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
+		{			
+			m_inputTimer = 0.0;
+
+			switch ( inputEvent.data.keybaordKey.key )
+			{
+			case KeyboardKey_Up:
+				m_inputAction = InputAction_MoveUp;
+				break;
+
+			case KeyboardKey_Down:
+				m_inputAction = InputAction_MoveDown;
+				break;
+
+			case KeyboardKey_Left:
+				if ( m_pSelectedNode != nullptr )
+				{
+					m_inputAction = InputAction_Decrese;
+				}
+				break;
+
+			case KeyboardKey_Right:
+				if ( m_pSelectedNode != nullptr )
+				{
+					m_inputAction = InputAction_Increse;
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+		else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
+		{
+			m_inputAction = InputAction_Invalid;
+			m_inputTimer = 0.0;
 		}
 
 		return DebugGuiWindow::processInputEvent( inputEvent, state );
@@ -237,39 +356,12 @@ namespace tiki
 				{
 					if ( parentNode.chilrenLayout.getChildCount() == 0 )
 					{
-						// expand
-						parentNode.expandButton.setText( "-" );
-
-						for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
-						{
-							TreeFolderNode& node = m_folderNodes[ i ];
-
-							if ( node.parentIndex == parentIndex )
-							{
-								parentNode.chilrenLayout.addChildControl( &node.fullLayout );
-							}
-						}
-
-						for (uint i = 0u; i < m_propNodes.getCount(); ++i)
-						{
-							TreePropNode& node = m_propNodes[ i ];
-
-							if ( node.parentIndex == parentIndex )
-							{
-								parentNode.chilrenLayout.addChildControl( &node.nodeLayout );
-							}
-						}
+						expandFolderNode( parentNode );
 					}
 					else
 					{
-						// collapse
-						parentNode.expandButton.setText( "+" );
-
-						parentNode.chilrenLayout.dispose();
-						parentNode.chilrenLayout.create();
-					}
-
-					refreshRectangle();
+						collapseFolderNode( parentNode );
+					}					
 				}
 			}
 		}
@@ -287,6 +379,97 @@ namespace tiki
 	{
 		layout.setPadding( Thickness() );
 		layout.setExpandChildren( false );
+	}
+
+	void DebugGuiWindowDebugProp::expandFolderNode( TreeFolderNode& parentNode )
+	{
+		if ( parentNode.chilrenLayout.getChildCount() > 0 )
+		{
+			return;
+		}
+
+		parentNode.expandButton.setText( "-" );
+
+		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
+		{
+			TreeFolderNode& node = m_folderNodes[ i ];
+
+			if ( node.parentIndex == parentNode.id )
+			{
+				parentNode.chilrenLayout.addChildControl( &node.fullLayout );
+			}
+		}
+
+		for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+		{
+			TreePropNode& node = m_propNodes[ i ];
+
+			if ( node.parentIndex == parentNode.id )
+			{
+				parentNode.chilrenLayout.addChildControl( &node.nodeLayout );
+			}
+		}
+
+		refreshRectangle();
+	}
+
+	void DebugGuiWindowDebugProp::collapseFolderNode( TreeFolderNode& parentNode )
+	{
+		if ( parentNode.chilrenLayout.getChildCount() == 0 )
+		{
+			return;
+		}
+
+		parentNode.expandButton.setText( "+" );
+
+		parentNode.chilrenLayout.dispose();
+		parentNode.chilrenLayout.create();
+
+		refreshRectangle();
+	}
+
+	void DebugGuiWindowDebugProp::changePropNode( TreePropNode& node, bool increase )
+	{
+		switch ( node.pProperty->getType() )
+		{
+		case DebugProp::Type_Bool:
+			{
+				DebugPropBool* pBoolProperty = (DebugPropBool*)node.pProperty;
+				pBoolProperty->setValue( !pBoolProperty->getValue() );
+			}
+			break;
+
+		case DebugProp::Type_Int:
+			{
+				DebugPropInt* pIntProperty = (DebugPropInt*)node.pProperty;
+
+				int value = pIntProperty->getValue() + (increase ? 1 : -1);
+				value = TIKI_MIN( value, pIntProperty->getMaxValue() );
+				value = TIKI_MAX( value, pIntProperty->getMinValue() );
+
+				pIntProperty->setValue( value );
+			}
+			break;
+
+		case DebugProp::Type_Float:
+			{
+				DebugPropFloat* pFloatProperty = (DebugPropFloat*)node.pProperty;
+
+				float value = pFloatProperty->getValue() + (increase ? 1.0f : -1.0f);
+				value = TIKI_MIN( value, pFloatProperty->getMaxValue() );
+				value = TIKI_MAX( value, pFloatProperty->getMinValue() );
+
+				pFloatProperty->setValue( value );
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		setDebugPropText( node.valueLabel, *node.pProperty );
+
+		m_inputTimer = 500;
 	}
 
 	void DebugGuiWindowDebugProp::setDebugPropText( DebugGuiLabel& targetLabel, const DebugProp& prop )
@@ -326,5 +509,53 @@ namespace tiki
 			TIKI_ASSERT(false);
 			break;
 		}
+	}
+
+	DebugGuiWindowDebugProp::TreeNode* DebugGuiWindowDebugProp::findNearestNode( const Vector2& position, bool up, const TreeNode* pExcludeNode )
+	{
+		float nearestAbsDistance = f32::maxValue;
+		TreeNode* pNearestNode = nullptr;
+
+		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
+		{
+			TreeNode& node = m_folderNodes[ i ];
+			if ( &node != pExcludeNode && isNodeNearest( node, nearestAbsDistance, position.y, up ) )
+			{
+				pNearestNode = &node;
+			}
+		}
+
+		for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+		{
+			TreeNode& node = m_propNodes[ i ];
+			if ( &node != pExcludeNode && isNodeNearest( node, nearestAbsDistance, position.y, up ) )
+			{			
+				pNearestNode = &node;
+			}
+		}
+
+		return pNearestNode;
+	}
+
+	bool DebugGuiWindowDebugProp::isNodeNearest( const TreeNode& node, float& nearestAbsDistance, float sourcePositionY, bool up ) const
+	{
+		if ( !node.nodeLayout.isInHierarchy() )
+		{
+			return false;
+		}
+
+		const float distance = sourcePositionY - node.nodeLayout.getRectangle().y;
+		const float absDistance = f32::abs( distance );
+
+		if ( absDistance < nearestAbsDistance )
+		{
+			if ( ( up && distance >= 0.0f ) || ( !up && distance <= 0.0f ) )
+			{
+				nearestAbsDistance = absDistance;
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

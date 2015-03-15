@@ -10,13 +10,15 @@
 
 namespace tiki
 {
-    class DebugGui;
+	class DebugGuiLayout;
+	class DebugGuiWindow;
 	class Font;
 	class ImmediateRenderer;
 	struct DebugGuiEvent;
 	struct DebugGuiInputState;
 	struct InputEvent;
 	struct Rectangle;
+    class DebugGui;
 
 	enum
 	{
@@ -28,10 +30,15 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_CLASS( DebugGuiControl );
 		friend class DebugGui;
+		friend class DebugGuiLayout;
+		friend class DebugGuiWindow;
 
 	public:
 
 		DebugGuiControl();
+
+		const DebugGuiControl*	getParent() const;
+		virtual bool			isInHierarchy() const;
 
 		const Thickness&		getPadding() const;
 		void					setPadding( const Thickness& padding );
@@ -56,13 +63,17 @@ namespace tiki
 
 	private: // friend
 
+		void					setParent( const DebugGuiControl* pParent );
+
 		static void				initialize( const Font* pDefaultFont, DebugGui* pDebugGui );
 		static void				shutdown();
-
+		
 	private:
 
 		static const Font*		s_pDefaultFont;
 		static DebugGui*		s_pDebugGui;
+
+		const DebugGuiControl*	m_pParent;
 
 		Thickness				m_padding;
 		Rectangle				m_rectangle;

@@ -20,6 +20,8 @@ namespace tiki
 
 	public:
 
+		virtual bool	isInHierarchy() const;
+
 		virtual Vector2	getMinimumSize();
 
 		virtual void	update();

@@ -10,7 +10,23 @@ namespace tiki
 
 	DebugGuiControl::DebugGuiControl()
 		: m_padding( DebugGui_DefaultPadding )
+		, m_pParent( nullptr )
 	{
+	}
+
+	const DebugGuiControl* DebugGuiControl::getParent() const
+	{
+		return m_pParent;
+	}
+
+	bool DebugGuiControl::isInHierarchy() const
+	{
+		if ( m_pParent == nullptr )
+		{
+			return false;
+		}
+
+		return m_pParent->isInHierarchy();
 	}
 
 	const Thickness& DebugGuiControl::getPadding() const
@@ -55,6 +71,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( s_pDebugGui != nullptr );
 		s_pDebugGui->pushEvent( guiEvent );
+	}
+
+	void DebugGuiControl::setParent( const DebugGuiControl* pParent )
+	{
+		m_pParent = pParent;
 	}
 
 	/*static*/ void DebugGuiControl::initialize( const Font* pDefaultFont, DebugGui* pDebugGui )
