@@ -61,7 +61,7 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-		targetContent.create( len, alignment );
+		targetContent.create( (uint)len, alignment );
 		fread_s( targetContent.getBegin(), (size_t)len, (size_t)len, 1u, pFile );
 		fclose( pFile );
 

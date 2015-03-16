@@ -9,6 +9,7 @@
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+#include "tiki/toollibraries/iwebinterrface.hpp"
 
 namespace tiki
 {
@@ -25,6 +26,10 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		DebugGui			debugGui;
 		DebugGuiWindows		debugGuiWindows;
+#endif
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		IWebInterface*		pWebInterface;
 #endif
 	};
 

@@ -5,7 +5,7 @@ local module = Module:new( "commandlineconverter" );
 module:add_files( "source/*.*" );
 
 module:add_dependency( "config" );
-module:add_dependency( "toollibrarys" );
+module:add_dependency( "toollibraries" );
 
 module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 

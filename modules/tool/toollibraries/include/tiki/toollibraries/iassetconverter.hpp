@@ -5,7 +5,7 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toollibrarys/librarybase.hpp"
+#include "tiki/toollibraries/librarybase.hpp"
 
 namespace tiki
 {
