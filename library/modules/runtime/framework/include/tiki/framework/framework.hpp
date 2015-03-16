@@ -7,6 +7,7 @@ namespace tiki
 {
 	class DebugGui;
 	class GraphicsSystem;
+	class IWebInterface;
 	class InputSystem;
 	class MainWindow;
 	class ResourceManager;
@@ -28,6 +29,10 @@ namespace tiki
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		DebugGui&					getDebugGui();
+#endif
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		IWebInterface*				getWebInterface();
 #endif
 	}
 }

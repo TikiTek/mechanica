@@ -49,7 +49,7 @@ namespace tiki
 
 	int unittest::run()
 	{
-		TIKI_TRACE( "Start UnitTests...\n" );
+		debug::trace( "Start UnitTests...\n" );
 
 		uint testCount = 0u;
 		uint testSuccess = 0u;
@@ -58,30 +58,31 @@ namespace tiki
 		{
 			const UnitTest& unitTest = getUnitTestSystem()->unitTests[ i ];
 
-			TIKI_TRACE( "Run UnitTest: %s\n", unitTest.pName );
+			debug::trace( "Run UnitTest: %s\n", unitTest.pName );
 			for (uint j = 0u; j < unitTest.tests.getCount(); ++j)
 			{
 				const Test& test = unitTest.tests[ j ];
-				TIKI_TRACE( "\t%s...", test.pTitle );
+				debug::trace( "\t%s...", test.pTitle );
 
 				testCount++;
 
 				if ( test.pFunc() )
 				{
-					TIKI_TRACE( " OK.\n" );
+					debug::trace( " OK.\n" );
 					testSuccess++;
 				}
 				else
 				{
-					TIKI_TRACE( " FAILED.\n" );
-					TIKI_TRACE( "%s(%s): %s failed.\n", test.pFile, test.pLine, test.pTitle );
+					debug::trace( " FAILED.\n" );
+					debug::trace( "%s(%s): %s failed.\n", test.pFile, test.pLine, test.pTitle );
 				}
 			}
 		}
 
 		getUnitTestSystem()->unitTests.dispose();
 
-		TIKI_TRACE( "\nUnitTests finish: %u of %u success.\n===================================\n", testSuccess, testCount );
+		debug::trace( "\nUnitTests finish: %u of %u success.", testSuccess, testCount );
+		debug::trace( "\n=====================================\n", testSuccess, testCount );
 		return 0u;
 	}
 }

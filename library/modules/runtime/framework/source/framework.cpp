@@ -42,8 +42,17 @@ namespace tiki
 		return getFrameworkData().mainWindow.getEventBuffer();
 	}
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	DebugGui& framework::getDebugGui()
 	{
 		return getFrameworkData().debugGui;
 	}
+#endif
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+	IWebInterface* framework::getWebInterface()
+	{
+		return getFrameworkData().pWebInterface;
+	}
+#endif
 }

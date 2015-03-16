@@ -1,6 +1,6 @@
--- library/modules/tool/toollibrarys
+-- library/modules/tool/toollibraries
 
-local module = Module:new( "toollibrarys" );
+local module = Module:new( "toollibraries" );
 
 module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );

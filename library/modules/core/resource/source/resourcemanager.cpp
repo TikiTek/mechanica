@@ -7,7 +7,7 @@
 #include "tiki/base/iopath.hpp"
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
-#include "tiki/toollibrarys/iassetconverter.hpp"
+#include "tiki/toollibraries/iassetconverter.hpp"
 
 namespace tiki
 {

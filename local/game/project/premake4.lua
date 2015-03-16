@@ -2,4 +2,11 @@
 
 include "../../../library/buildtools/base_scripts"
 
-finalize( "tiki3game", { find_project( "game" ), find_project( "converterlibrary" ) } );
+finalize(
+	"tiki3game",
+	{
+		find_project( "game" ),
+		find_project( "converterlibrary" ),
+		find_project( "webinterfacelibrary" )
+	}
+);

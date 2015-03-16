@@ -12,7 +12,9 @@ namespace tiki
 
 	GameFramework::GameFramework()
 	{
-		m_isInitialized = false;
+		m_frameworkData.pWebInterface	= nullptr;
+
+		m_isInitialized					= false;
 	}
 
 	GameFramework::~GameFramework()
@@ -113,6 +115,14 @@ namespace tiki
 		m_frameworkData.debugGuiWindows.create( m_frameworkData.debugGui );
 #endif
 
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		m_frameworkData.pWebInterface = createWebInterface();
+		if ( m_frameworkData.pWebInterface == nullptr || !m_frameworkData.pWebInterface->create() )
+		{
+			return false;
+		}
+#endif
+
 		m_isInitialized = true;
 		return true;
 	}
@@ -124,6 +134,16 @@ namespace tiki
 			shutdown();
 		}
 		m_isInitialized = false;
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		if ( m_frameworkData.pWebInterface != nullptr )
+		{
+			m_frameworkData.pWebInterface->dispose();
+
+			disposeWebInterface( m_frameworkData.pWebInterface );
+			m_frameworkData.pWebInterface = nullptr;
+		}	
+#endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_frameworkData.debugGuiWindows.dispose();
@@ -144,6 +164,10 @@ namespace tiki
 		m_frameworkData.resourceManager.update();
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_frameworkData.debugGui.update();
+#endif
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		m_frameworkData.pWebInterface->update();
 #endif
 
 		const WindowEvent* pDestroyEvent = m_frameworkData.mainWindow.getEventBuffer().getEventByType( WindowEventType_Destroy );

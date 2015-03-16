@@ -192,29 +192,28 @@ namespace tiki
 
 		int imin = 0u;
 		int imax = int( m_count );
-		// continue searching while [imin,imax] is not empty
 		while (imax >= imin)
 		{
-			// calculate the midpoint for roughly equal partition
-			const int imid =  ( imax + imin ) / 2u; //midpoint(imin, imax);
-			if(m_pData[ imid ].key == key)
+			const int imid =  ( imax + imin ) / 2u;
+			if ( imid < 0 || imid >= m_count )
 			{
-				// key found at index imid
+				return TIKI_SIZE_T_MAX;
+			}
+
+			if ( m_pData[ imid ].key == key )
+			{
 				return imid;
 			}
-			// determine which sub array to search
-			else if (m_pData[ imid ].key < key)
+			else if ( m_pData[ imid ].key < key )
 			{
-				// change min index to search upper sub array
 				imin = imid + 1;
 			}
 			else
 			{
-				// change max index to search lower sub array
 				imax = imid - 1;
 			}
 		}
-		// key was not found
+
 		return TIKI_SIZE_T_MAX;
 	}
 
