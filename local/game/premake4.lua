@@ -14,8 +14,8 @@ game:add_dependency( "gamestates" );
 
 game:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 
-game:add_dependency( "toollibrarys" );
 game:add_library_file( "converterlibrary" );
+game:add_library_file( "webinterfacelibrary" );
 
 local game_project = Project:new(
 	"game",
