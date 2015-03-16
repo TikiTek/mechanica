@@ -451,7 +451,7 @@ DECLARE_INTERFACE_(ID3D11Module, IUnknown)
 
     // Create an instance of a module for resource re-binding.
     STDMETHOD(CreateInstance)(THIS_ _In_opt_ LPCSTR pNamespace,
-                                    _Out_ interface ID3D11ModuleInstance ** ppModuleInstance) PURE;
+                                    _COM_Outptr_ interface ID3D11ModuleInstance ** ppModuleInstance) PURE;
 };
 
 
@@ -508,8 +508,8 @@ DECLARE_INTERFACE_(ID3D11Linker, IUnknown)
                           _In_ LPCSTR pEntryName,
                           _In_ LPCSTR pTargetName,
                           _In_ UINT uFlags,
-                          _Out_ ID3DBlob ** ppShaderBlob,
-                          _Out_ ID3DBlob ** ppErrorBuffer) PURE;
+                          _COM_Outptr_ ID3DBlob ** ppShaderBlob,
+                          _Always_(_Outptr_opt_result_maybenull_) ID3DBlob ** ppErrorBuffer) PURE;
 
     // Add an instance of a library module to be used for linking.
     STDMETHOD(UseLibrary)(THIS_ _In_ interface ID3D11ModuleInstance * pLibraryMI) PURE;
@@ -550,21 +550,21 @@ DECLARE_INTERFACE_(ID3D11FunctionLinkingGraph, IUnknown)
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
     // Create a shader module out of FLG description.
-    STDMETHOD(CreateModuleInstance)(THIS_ _Out_ interface ID3D11ModuleInstance ** ppModuleInstance, 
-                                          _Out_opt_ ID3DBlob ** ppErrorBuffer) PURE;
+    STDMETHOD(CreateModuleInstance)(THIS_ _COM_Outptr_ interface ID3D11ModuleInstance ** ppModuleInstance, 
+                                          _Always_(_Outptr_opt_result_maybenull_) ID3DBlob ** ppErrorBuffer) PURE;
 
     STDMETHOD(SetInputSignature)(THIS_ __in_ecount(cInputParameters) const D3D11_PARAMETER_DESC * pInputParameters,
                                        _In_ UINT cInputParameters,
-                                       _Out_ interface ID3D11LinkingNode ** ppInputNode) PURE;
+                                       _COM_Outptr_ interface ID3D11LinkingNode ** ppInputNode) PURE;
 
     STDMETHOD(SetOutputSignature)(THIS_ __in_ecount(cOutputParameters) const D3D11_PARAMETER_DESC * pOutputParameters,
                                         _In_ UINT cOutputParameters,
-                                        _Out_ interface ID3D11LinkingNode ** ppOutputNode) PURE;
+                                        _COM_Outptr_ interface ID3D11LinkingNode ** ppOutputNode) PURE;
 
     STDMETHOD(CallFunction)(THIS_ _In_opt_ LPCSTR pModuleInstanceNamespace,
                                   _In_ interface ID3D11Module * pModuleWithFunctionPrototype,
                                   _In_ LPCSTR pFunctionName,
-                                  _Out_ interface ID3D11LinkingNode ** ppCallNode) PURE;
+                                  _COM_Outptr_ interface ID3D11LinkingNode ** ppCallNode) PURE;
 
     STDMETHOD(PassValue)(THIS_ _In_ interface ID3D11LinkingNode * pSrcNode,
                                _In_ INT SrcParameterIndex,
@@ -578,10 +578,10 @@ DECLARE_INTERFACE_(ID3D11FunctionLinkingGraph, IUnknown)
                                           _In_ INT DstParameterIndex,
                                           _In_ LPCSTR pDstSwizzle) PURE;
 
-    STDMETHOD(GetLastError)(THIS_ _Out_ ID3DBlob ** ppErrorBuffer) PURE;
+    STDMETHOD(GetLastError)(THIS_ _Always_(_Outptr_opt_result_maybenull_) ID3DBlob ** ppErrorBuffer) PURE;
 
     STDMETHOD(GenerateHlsl)(THIS_ _In_ UINT uFlags,                 // uFlags is reserved for future use.
-                                  _Out_ ID3DBlob ** ppBuffer) PURE;
+                                  _COM_Outptr_ ID3DBlob ** ppBuffer) PURE;
 };
 
 

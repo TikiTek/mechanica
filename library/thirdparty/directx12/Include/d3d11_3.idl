@@ -308,13 +308,13 @@ interface ID3D11RasterizerState2
 // Jpeg
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 typedef enum D3D11_JPEG_DECODE_TIER
 {
     D3D11_JPEG_DECODE_TIER_NOT_SUPPORTED = 0,
     D3D11_JPEG_DECODE_TIER_1 = 1,
     D3D11_JPEG_DECODE_TIER_2 = 2,
-    D3D11_JPEG_DECODE_TIER_3 = 3,
-    D3D11_JPEG_DECODE_TIER_4 = 4
+    D3D11_JPEG_DECODE_TIER_3 = 3
 } D3D11_JPEG_DECODE_TIER;
 
 typedef enum D3D11_JPEG_ENCODE_TIER
@@ -324,6 +324,14 @@ typedef enum D3D11_JPEG_ENCODE_TIER
     D3D11_JPEG_ENCODE_TIER_2 = 2,
     D3D11_JPEG_ENCODE_TIER_3 = 3
 } D3D11_JPEG_ENCODE_TIER;
+
+typedef enum D3D11_JPEG_IDCT_DOWNSCALE
+{
+    D3D11_JPEG_IDCT_DOWNSCALE_1 = 0,
+    D3D11_JPEG_IDCT_DOWNSCALE_2 = 1,
+    D3D11_JPEG_IDCT_DOWNSCALE_4 = 2,
+    D3D11_JPEG_IDCT_DOWNSCALE_8 = 3,
+} D3D11_JPEG_IDCT_DOWNSCALE;
 
 typedef enum D3D11_JPEG_COMPONENTS
 {
@@ -338,25 +346,9 @@ typedef struct D3D11_FEATURE_DATA_JPEG_OPTIONS
 {
     D3D11_JPEG_DECODE_TIER JpegDecodeTier;
     D3D11_JPEG_ENCODE_TIER JpegEncodeTier;
-    UINT MaxJpegDecodeDownscaleFactor;
+    UINT MaxDecodeDownscaleFactor;
+    D3D11_JPEG_IDCT_DOWNSCALE MaxDecodeIDctDownscale;
 } D3D11_FEATURE_DATA_JPEG_OPTIONS;
-
-typedef struct D3D11_JPEG_DC_HUFFMAN_TABLE
-{
-    BYTE CodeCounts[12];
-    BYTE CodeValues[12];
-} D3D11_JPEG_DC_HUFFMAN_TABLE;
-
-typedef struct D3D11_JPEG_AC_HUFFMAN_TABLE
-{
-    BYTE CodeCounts[16];
-    BYTE CodeValues[162];
-} D3D11_JPEG_AC_HUFFMAN_TABLE;
-
-typedef struct D3D11_JPEG_QUANTIZATION_TABLE
-{
-    BYTE Table[64];
-} D3D11_JPEG_QUANTIZATION_TABLE;
 
 typedef struct D3D11_JPEG_DECODE_PARAMETERS
 {
@@ -364,12 +356,12 @@ typedef struct D3D11_JPEG_DECODE_PARAMETERS
     UINT SourceHeight;
     UINT RestartInterval;
     D3D11_JPEG_COMPONENTS SourceComponents;
-    D3D11_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    D3D11_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
+    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
+    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
 } D3D11_JPEG_DECODE_PARAMETERS;
 
 cpp_quote( "#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )" )
@@ -386,12 +378,12 @@ cpp_quote( "        UINT SourceWidth," )
 cpp_quote( "        UINT SourceHeight," )
 cpp_quote( "        UINT RestartInterval," )
 cpp_quote( "        D3D11_JPEG_COMPONENTS SourceComponents," )
-cpp_quote( "        const D3D11_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
-cpp_quote( "        const D3D11_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
-cpp_quote( "        const D3D11_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
+cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
+cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
+cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
 cpp_quote( "    {" )
 cpp_quote( "        this->SourceWidth = SourceWidth;" )
 cpp_quote( "        this->SourceHeight = SourceHeight;" )
@@ -413,12 +405,12 @@ cpp_quote( "#endif" )
 typedef struct D3D11_JPEG_ENCODE_PARAMETERS
 {
     D3D11_JPEG_COMPONENTS DestinationComponents; 
-    D3D11_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    D3D11_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
+    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
+    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
 } D3D11_JPEG_ENCODE_PARAMETERS;
 
 cpp_quote( "#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )" )
@@ -432,12 +424,12 @@ cpp_quote( "        D3D11_JPEG_ENCODE_PARAMETERS( o )" )
 cpp_quote( "    {}" )
 cpp_quote( "    explicit CD3D11_JPEG_ENCODE_PARAMETERS(" )
 cpp_quote( "        D3D11_JPEG_COMPONENTS DestinationComponents," )
-cpp_quote( "        const D3D11_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
-cpp_quote( "        const D3D11_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
-cpp_quote( "        const D3D11_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
-cpp_quote( "        const D3D11_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
+cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
+cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
+cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
+cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
 cpp_quote( "    {" )
 cpp_quote( "        this->DestinationComponents = DestinationComponents;" )
 cpp_quote( "        this->LumaQuantizationTable = LumaQuantizationTable;" )
@@ -462,7 +454,7 @@ typedef struct D3D11_TEX2D_SRV1
 {
     UINT MostDetailedMip;
     UINT MipLevels;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_SRV1;
 
 typedef struct D3D11_TEX2D_ARRAY_SRV1 
@@ -471,7 +463,7 @@ typedef struct D3D11_TEX2D_ARRAY_SRV1
     UINT MipLevels;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_ARRAY_SRV1;
 
 typedef struct D3D11_SHADER_RESOURCE_VIEW_DESC1 
@@ -512,7 +504,7 @@ cpp_quote( "        UINT mipLevels = -1, // NumElements for BUFFER" )
 cpp_quote( "        UINT firstArraySlice = 0, // First2DArrayFace for TEXTURECUBEARRAY" )
 cpp_quote( "        UINT arraySize = -1, // NumCubes for TEXTURECUBEARRAY" )
 cpp_quote( "        UINT flags = 0, // BUFFEREX only" )
-cpp_quote( "        UINT planeIndex = 0 ) // Texture2D and Texture2DArray only" )
+cpp_quote( "        UINT planeSlice = 0 ) // Texture2D and Texture2DArray only" )
 cpp_quote( "    {" )
 cpp_quote( "        Format = format;" )
 cpp_quote( "        ViewDimension = viewDimension;" )
@@ -535,14 +527,14 @@ cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MostDetailedMip = mostDetailedMip;" )
 cpp_quote( "            Texture2D.MipLevels = mipLevels;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MostDetailedMip = mostDetailedMip;" )
 cpp_quote( "            Texture2DArray.MipLevels = mipLevels;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2DMS:" )
 cpp_quote( "            break;" )
@@ -628,7 +620,7 @@ cpp_quote( "        UINT mostDetailedMip = 0," )
 cpp_quote( "        UINT mipLevels = -1," )
 cpp_quote( "        UINT firstArraySlice = 0, // First2DArrayFace for TEXTURECUBEARRAY" )
 cpp_quote( "        UINT arraySize = -1,  // NumCubes for TEXTURECUBEARRAY" )
-cpp_quote( "        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D or TEXTURE2DARRAY" )
+cpp_quote( "        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D or TEXTURE2DARRAY" )
 cpp_quote( "    {" )
 cpp_quote( "        ViewDimension = viewDimension;" )
 cpp_quote( "        if (DXGI_FORMAT_UNKNOWN == format || " )
@@ -656,14 +648,14 @@ cpp_quote( "        {" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MostDetailedMip = mostDetailedMip;" )
 cpp_quote( "            Texture2D.MipLevels = mipLevels;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MostDetailedMip = mostDetailedMip;" )
 cpp_quote( "            Texture2DArray.MipLevels = mipLevels;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_SRV_DIMENSION_TEXTURE2DMS:" )
 cpp_quote( "            break;" )
@@ -723,7 +715,7 @@ interface ID3D11ShaderResourceView1
 typedef struct D3D11_TEX2D_RTV1
 {
     UINT MipSlice;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_RTV1;
 
 typedef struct D3D11_TEX2D_ARRAY_RTV1 
@@ -731,7 +723,7 @@ typedef struct D3D11_TEX2D_ARRAY_RTV1
     UINT MipSlice;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_ARRAY_RTV1;
 
 typedef struct D3D11_RENDER_TARGET_VIEW_DESC1 
@@ -767,7 +759,7 @@ cpp_quote( "        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN," )
 cpp_quote( "        UINT mipSlice = 0, // FirstElement for BUFFER" )
 cpp_quote( "        UINT firstArraySlice = 0, // NumElements for BUFFER, FirstWSlice for TEXTURE3D" )
 cpp_quote( "        UINT arraySize = -1, // WSize for TEXTURE3D" )
-cpp_quote( "        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D and TEXTURE2DARRAY" )
+cpp_quote( "        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D and TEXTURE2DARRAY" )
 cpp_quote( "    {" )
 cpp_quote( "        Format = format;" )
 cpp_quote( "        ViewDimension = viewDimension;" )
@@ -787,13 +779,13 @@ cpp_quote( "            Texture1DArray.ArraySize = arraySize;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MipSlice = mipSlice;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MipSlice = mipSlice;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2DMS:" )
 cpp_quote( "            break;" )
@@ -858,7 +850,7 @@ cpp_quote( "        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN," )
 cpp_quote( "        UINT mipSlice = 0," )
 cpp_quote( "        UINT firstArraySlice = 0," )
 cpp_quote( "        UINT arraySize = -1," )
-cpp_quote( "        UINT planeIndex = 0 )" )
+cpp_quote( "        UINT planeSlice = 0 )" )
 cpp_quote( "    {" )
 cpp_quote( "        ViewDimension = viewDimension;" )
 cpp_quote( "        if (DXGI_FORMAT_UNKNOWN == format || " )
@@ -876,13 +868,13 @@ cpp_quote( "        switch (viewDimension)" )
 cpp_quote( "        {" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MipSlice = mipSlice;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MipSlice = mipSlice;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_RTV_DIMENSION_TEXTURE2DMS:" )
 cpp_quote( "            break;" )
@@ -934,7 +926,7 @@ interface ID3D11RenderTargetView1
 typedef struct D3D11_TEX2D_UAV1
 {
     UINT MipSlice;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_UAV1;
 
 typedef struct D3D11_TEX2D_ARRAY_UAV1 
@@ -942,7 +934,7 @@ typedef struct D3D11_TEX2D_ARRAY_UAV1
     UINT MipSlice;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
 } D3D11_TEX2D_ARRAY_UAV1;
 
 typedef struct D3D11_UNORDERED_ACCESS_VIEW_DESC1
@@ -977,7 +969,7 @@ cpp_quote( "        UINT mipSlice = 0, // FirstElement for BUFFER" )
 cpp_quote( "        UINT firstArraySlice = 0, // NumElements for BUFFER, FirstWSlice for TEXTURE3D" )
 cpp_quote( "        UINT arraySize = -1, // WSize for TEXTURE3D" )
 cpp_quote( "        UINT flags = 0, // BUFFER only" )
-cpp_quote( "        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D and TEXTURE2DARRAY" )
+cpp_quote( "        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D and TEXTURE2DARRAY" )
 cpp_quote( "    {" )
 cpp_quote( "        Format = format;" )
 cpp_quote( "        ViewDimension = viewDimension;" )
@@ -998,13 +990,13 @@ cpp_quote( "            Texture1DArray.ArraySize = arraySize;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_UAV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MipSlice = mipSlice;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_UAV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MipSlice = mipSlice;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_UAV_DIMENSION_TEXTURE3D:" )
 cpp_quote( "            Texture3D.MipSlice = mipSlice;" )
@@ -1065,7 +1057,7 @@ cpp_quote( "        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN," )
 cpp_quote( "        UINT mipSlice = 0," )
 cpp_quote( "        UINT firstArraySlice = 0," )
 cpp_quote( "        UINT arraySize = -1, " )
-cpp_quote( "        UINT planeIndex = 0 ) " )
+cpp_quote( "        UINT planeSlice = 0 ) " )
 cpp_quote( "    {" )
 cpp_quote( "        ViewDimension = viewDimension;" )
 cpp_quote( "        if (DXGI_FORMAT_UNKNOWN == format || " )
@@ -1081,13 +1073,13 @@ cpp_quote( "        switch (viewDimension)" )
 cpp_quote( "        {" )
 cpp_quote( "        case D3D11_UAV_DIMENSION_TEXTURE2D:" )
 cpp_quote( "            Texture2D.MipSlice = mipSlice;" )
-cpp_quote( "            Texture2D.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2D.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        case D3D11_UAV_DIMENSION_TEXTURE2DARRAY:" )
 cpp_quote( "            Texture2DArray.MipSlice = mipSlice;" )
 cpp_quote( "            Texture2DArray.FirstArraySlice = firstArraySlice;" )
 cpp_quote( "            Texture2DArray.ArraySize = arraySize;" )
-cpp_quote( "            Texture2DArray.PlaneIndex = planeIndex;" )
+cpp_quote( "            Texture2DArray.PlaneSlice = planeSlice;" )
 cpp_quote( "            break;" )
 cpp_quote( "        default: break;" )
 cpp_quote( "        }" )
@@ -1193,35 +1185,35 @@ interface ID3D11Device3
     HRESULT CreateTexture2D1(
         [annotation("_In_")] const D3D11_TEXTURE2D_DESC1* pDesc1,
         [annotation("_In_reads_opt_(_Inexpressible_(pDesc1->MipLevels * pDesc1->ArraySize))")] const D3D11_SUBRESOURCE_DATA* pInitialData,
-        [annotation("_Out_opt_")] ID3D11Texture2D1** ppTexture2D );
+        [annotation("_COM_Outptr_opt_")] ID3D11Texture2D1** ppTexture2D );
         
     HRESULT CreateTexture3D1(
         [annotation("_In_")] const D3D11_TEXTURE3D_DESC1* pDesc1,
         [annotation("_In_reads_opt_(_Inexpressible_(pDesc1->MipLevels))")] const D3D11_SUBRESOURCE_DATA* pInitialData,
-        [annotation("_Out_opt_")] ID3D11Texture3D1** ppTexture3D );
+        [annotation("_COM_Outptr_opt_")] ID3D11Texture3D1** ppTexture3D );
 
     HRESULT CreateRasterizerState2(
         [annotation("_In_")] const D3D11_RASTERIZER_DESC2* pRasterizerDesc,
-        [annotation("_Out_opt_")] ID3D11RasterizerState2** ppRasterizerState );
+        [annotation("_COM_Outptr_opt_")] ID3D11RasterizerState2** ppRasterizerState );
 
     HRESULT CreateShaderResourceView1(
         [annotation("_In_")] ID3D11Resource* pResource,
         [annotation("_In_opt_")] const D3D11_SHADER_RESOURCE_VIEW_DESC1* pDesc1,
-        [annotation("_Out_opt_")] ID3D11ShaderResourceView1** ppSRView1 );
+        [annotation("_COM_Outptr_opt_")] ID3D11ShaderResourceView1** ppSRView1 );
 
     HRESULT CreateUnorderedAccessView1(
         [annotation("_In_")] ID3D11Resource* pResource,
         [annotation("_In_opt_")] const D3D11_UNORDERED_ACCESS_VIEW_DESC1* pDesc1,
-        [annotation("_Out_opt_")] ID3D11UnorderedAccessView1** ppUAView1 );
+        [annotation("_COM_Outptr_opt_")] ID3D11UnorderedAccessView1** ppUAView1 );
 
     HRESULT CreateRenderTargetView1(
         [annotation("_In_")] ID3D11Resource* pResource,
         [annotation("_In_opt_")] const D3D11_RENDER_TARGET_VIEW_DESC1* pDesc1,
-        [annotation("_Out_opt_")] ID3D11RenderTargetView1** ppRTView1 );
+        [annotation("_COM_Outptr_opt_")] ID3D11RenderTargetView1** ppRTView1 );
 
     HRESULT CreateQuery1(
         [annotation("_In_")] const D3D11_QUERY_DESC1 *pQueryDesc1,
-        [annotation("_Out_opt_")] ID3D11Query1 **ppQuery1
+        [annotation("_COM_Outptr_opt_")] ID3D11Query1 **ppQuery1
         );
 
     void GetImmediateContext3(
@@ -1230,8 +1222,26 @@ interface ID3D11Device3
 
     HRESULT CreateDeferredContext3(
             UINT ContextFlags, 
-            [annotation("_Outptr_opt_")] ID3D11DeviceContext3** ppDeferredContext
+            [annotation("_COM_Outptr_opt_")] ID3D11DeviceContext3** ppDeferredContext
             );
+ 
+    void WriteToSubresource(
+        [annotation("_In_")] ID3D11Resource* pDstResource,
+        [annotation("_In_")] UINT DstSubresource,
+        [annotation("_In_opt_")] const D3D11_BOX* pDstBox,
+        [annotation("_In_")] const void* pSrcData,
+        [annotation("_In_")] UINT SrcRowPitch,
+        [annotation("_In_")] UINT SrcDepthPitch 
+        );
+        
+    void ReadFromSubresource(
+        [annotation("_Out_")] void* pDstData,
+        [annotation("_In_")] UINT DstRowPitch,
+        [annotation("_In_")] UINT DstDepthPitch,
+        [annotation("_In_")] ID3D11Resource* pSrcResource,
+        [annotation("_In_")] UINT SrcSubresource,
+        [annotation("_In_opt_")] const D3D11_BOX* pSrcBox
+        );
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

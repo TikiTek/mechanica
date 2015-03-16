@@ -8,7 +8,7 @@ cpp_quote("#include <winapifamily.h>")
 cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)")
 
 cpp_quote( "#define DXGI_CREATE_FACTORY_DEBUG 0x1")
-cpp_quote( "HRESULT WINAPI CreateDXGIFactory2(UINT Flags, REFIID riid, _Out_ void **ppFactory);" )
+cpp_quote( "HRESULT WINAPI CreateDXGIFactory2(UINT Flags, REFIID riid, _COM_Outptr_ void **ppFactory);" )
 cpp_quote( "HRESULT WINAPI DXGIGetDebugInterface1(UINT Flags, REFIID riid, _COM_Outptr_ void **pDebug);" )
 
 //--------------------------------------------------------------------------------------------------------
@@ -168,15 +168,15 @@ interface IDXGIFactoryMedia :
         [in, annotation("_In_opt_")] HANDLE hSurface,
         [in, annotation("_In_")] const DXGI_SWAP_CHAIN_DESC1 *pDesc,
         [in, annotation("_In_opt_")] IDXGIOutput *pRestrictToOutput,
-        [out, annotation("_Out_")] IDXGISwapChain1 **ppSwapChain );
+        [out, annotation("_COM_Outptr_")] IDXGISwapChain1 **ppSwapChain );
 
     HRESULT CreateDecodeSwapChainForCompositionSurfaceHandle(
-        IUnknown *pDevice,
-        HANDLE hSurface,
-        DXGI_DECODE_SWAP_CHAIN_DESC *pDesc,
-        IDXGIResource *pYuvDecodeBuffers,
-        IDXGIOutput *pRestrictToOutput,
-        [out, annotation("_Out_")] IDXGIDecodeSwapChain **ppSwapChain );
+        [in, annotation("_In_")] IUnknown *pDevice,
+        [in, annotation("_In_opt_")] HANDLE hSurface,
+        [in, annotation("_In_")] DXGI_DECODE_SWAP_CHAIN_DESC *pDesc,
+        [in, annotation("_In_")] IDXGIResource *pYuvDecodeBuffers,
+        [in, annotation("_In_opt_")] IDXGIOutput *pRestrictToOutput,
+        [out, annotation("_COM_Outptr_")] IDXGIDecodeSwapChain **ppSwapChain );
 };
 
 //+-----------------------------------------------------------------------------
@@ -240,6 +240,55 @@ interface IDXGIOutput3 :
     HRESULT CheckOverlaySupport( [in, annotation("_In_")] DXGI_FORMAT EnumFormat, [out, annotation("_In_")] IUnknown *pConcernedDevice, [out, annotation("_Out_")] UINT *pFlags );
 };
 
+typedef enum DXGI_MEMORY_SEGMENT_GROUP
+{
+    DXGI_MEMORY_SEGMENT_GROUP_LOCAL = 0,
+    DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL = 1
+} DXGI_MEMORY_SEGMENT_GROUP;
+
+typedef struct DXGI_QUERY_VIDEO_MEMORY_INFO
+{
+    UINT64  Budget;
+    UINT64  CurrentUsage;
+    UINT64  AvailableForReservation;
+    UINT64  CurrentReservation;
+} DXGI_QUERY_VIDEO_MEMORY_INFO;
+
+//--------------------------------------------------------------------------------------------------------
+// IDXGIAdapter3 interface
+//--------------------------------------------------------------------------------------------------------
+[
+    object,
+    uuid( 645967A4-1392-4310-A798-8053CE3E93FD ),
+    local,
+    pointer_default(unique)
+]
+interface IDXGIAdapter3 :
+    IDXGIAdapter2
+{
+    HRESULT RegisterHardwareContentProtectionTeardownStatusEvent(
+        [in, annotation("_In_")] HANDLE hEvent, 
+        [out, annotation("_Out_")] DWORD *pdwCookie );
+
+    void UnregisterHardwareContentProtectionTeardownStatus(
+        [in, annotation("_In_")] DWORD dwCookie );
+
+    HRESULT QueryVideoMemoryInfo(
+        [in, annotation("_In_")] DXGI_MEMORY_SEGMENT_GROUP MemorySegmentGroup,
+        [out, annotation("_Out_")] DXGI_QUERY_VIDEO_MEMORY_INFO *pVideoMemoryInfo );
+
+    HRESULT SetVideoMemoryReservation(
+        [in, annotation("_In_")] DXGI_MEMORY_SEGMENT_GROUP MemorySegmentGroup,
+        [in, annotation("_In_")] UINT64 Reservation );
+
+    HRESULT RegisterVideoMemoryBudgetChangeNotificationEvent(
+        [in, annotation("_In_")] HANDLE hEvent, 
+        [out, annotation("_Out_")] DWORD *pdwCookie );
+
+    void UnregisterVideoMemoryBudgetChangeNotification(
+        [in, annotation("_In_")] DWORD dwCookie );
+};
+
 cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */")
 #pragma endregion
 
@@ -251,3 +300,4 @@ cpp_quote( "DEFINE_GUID(IID_IDXGIDecodeSwapChain,0x2633066b,0x4514,0x4c7a,0x8f,0
 cpp_quote( "DEFINE_GUID(IID_IDXGIFactoryMedia,0x41e7d1f2,0xa591,0x4f7b,0xa2,0xe5,0xfa,0x9c,0x84,0x3e,0x1c,0x12);" )
 cpp_quote( "DEFINE_GUID(IID_IDXGISwapChainMedia,0xdd95b90b,0xf05f,0x4f6a,0xbd,0x65,0x25,0xbf,0xb2,0x64,0xbd,0x84);" )
 cpp_quote( "DEFINE_GUID(IID_IDXGIOutput3,0x8a6bb301,0x7e7e,0x41F4,0xa8,0xe0,0x5b,0x32,0xf7,0xf9,0x9b,0x18);" )
+cpp_quote( "DEFINE_GUID(IID_IDXGIAdapter3,0x645967A4,0x1392,0x4310,0xA7,0x98,0x80,0x53,0xCE,0x3E,0x93,0xFD);" )

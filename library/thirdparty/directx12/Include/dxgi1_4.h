@@ -3,7 +3,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0606 */
+ /* File created by MIDL compiler version 8.00.0608 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -156,14 +156,14 @@ EXTERN_C const IID IID_IDXGISwapChain3;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDevice )( 
             IDXGISwapChain3 * This,
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppDevice);
+            _COM_Outptr_  void **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *Present )( 
             IDXGISwapChain3 * This,
@@ -176,7 +176,7 @@ EXTERN_C const IID IID_IDXGISwapChain3;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][out][in] */ 
-            _Out_  void **ppSurface);
+            _COM_Outptr_  void **ppSurface);
         
         HRESULT ( STDMETHODCALLTYPE *SetFullscreenState )( 
             IDXGISwapChain3 * This,
@@ -189,7 +189,7 @@ EXTERN_C const IID IID_IDXGISwapChain3;
             /* [annotation][out] */ 
             _Out_opt_  BOOL *pFullscreen,
             /* [annotation][out] */ 
-            _Out_opt_  IDXGIOutput **ppTarget);
+            _COM_Outptr_opt_result_maybenull_  IDXGIOutput **ppTarget);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGISwapChain3 * This,
@@ -212,7 +212,7 @@ EXTERN_C const IID IID_IDXGISwapChain3;
         HRESULT ( STDMETHODCALLTYPE *GetContainingOutput )( 
             IDXGISwapChain3 * This,
             /* [annotation][out] */ 
-            _Out_  IDXGIOutput **ppOutput);
+            _COM_Outptr_  IDXGIOutput **ppOutput);
         
         HRESULT ( STDMETHODCALLTYPE *GetFrameStatistics )( 
             IDXGISwapChain3 * This,
@@ -244,7 +244,7 @@ EXTERN_C const IID IID_IDXGISwapChain3;
             /* [annotation][in] */ 
             _In_  REFIID refiid,
             /* [annotation][out] */ 
-            _Out_  void **ppUnk);
+            _COM_Outptr_  void **ppUnk);
         
         HRESULT ( STDMETHODCALLTYPE *Present1 )( 
             IDXGISwapChain3 * This,
@@ -565,7 +565,7 @@ EXTERN_C const IID IID_IDXGIOutput4;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGIOutput4 * This,
@@ -660,7 +660,7 @@ EXTERN_C const IID IID_IDXGIOutput4;
             /* [annotation][in] */ 
             _In_  IUnknown *pDevice,
             /* [annotation][out] */ 
-            _Out_  IDXGIOutputDuplication **ppOutputDuplication);
+            _COM_Outptr_  IDXGIOutputDuplication **ppOutputDuplication);
         
         BOOL ( STDMETHODCALLTYPE *SupportsOverlays )( 
             IDXGIOutput4 * This);

@@ -8,7 +8,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0606 */
+ /* File created by MIDL compiler version 8.00.0608 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -276,7 +276,7 @@ EXTERN_C const IID IID_ID3D11Texture2D1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11Texture2D1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11Texture2D1 * This,
@@ -507,7 +507,7 @@ EXTERN_C const IID IID_ID3D11Texture3D1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11Texture3D1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11Texture3D1 * This,
@@ -751,7 +751,7 @@ EXTERN_C const IID IID_ID3D11RasterizerState2;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11RasterizerState2 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11RasterizerState2 * This,
@@ -860,8 +860,7 @@ enum D3D11_JPEG_DECODE_TIER
         D3D11_JPEG_DECODE_TIER_NOT_SUPPORTED	= 0,
         D3D11_JPEG_DECODE_TIER_1	= 1,
         D3D11_JPEG_DECODE_TIER_2	= 2,
-        D3D11_JPEG_DECODE_TIER_3	= 3,
-        D3D11_JPEG_DECODE_TIER_4	= 4
+        D3D11_JPEG_DECODE_TIER_3	= 3
     } 	D3D11_JPEG_DECODE_TIER;
 
 typedef 
@@ -872,6 +871,15 @@ enum D3D11_JPEG_ENCODE_TIER
         D3D11_JPEG_ENCODE_TIER_2	= 2,
         D3D11_JPEG_ENCODE_TIER_3	= 3
     } 	D3D11_JPEG_ENCODE_TIER;
+
+typedef 
+enum D3D11_JPEG_IDCT_DOWNSCALE
+    {
+        D3D11_JPEG_IDCT_DOWNSCALE_1	= 0,
+        D3D11_JPEG_IDCT_DOWNSCALE_2	= 1,
+        D3D11_JPEG_IDCT_DOWNSCALE_4	= 2,
+        D3D11_JPEG_IDCT_DOWNSCALE_8	= 3
+    } 	D3D11_JPEG_IDCT_DOWNSCALE;
 
 typedef 
 enum D3D11_JPEG_COMPONENTS
@@ -887,25 +895,9 @@ typedef struct D3D11_FEATURE_DATA_JPEG_OPTIONS
     {
     D3D11_JPEG_DECODE_TIER JpegDecodeTier;
     D3D11_JPEG_ENCODE_TIER JpegEncodeTier;
-    UINT MaxJpegDecodeDownscaleFactor;
+    UINT MaxDecodeDownscaleFactor;
+    D3D11_JPEG_IDCT_DOWNSCALE MaxDecodeIDctDownscale;
     } 	D3D11_FEATURE_DATA_JPEG_OPTIONS;
-
-typedef struct D3D11_JPEG_DC_HUFFMAN_TABLE
-    {
-    BYTE CodeCounts[ 12 ];
-    BYTE CodeValues[ 12 ];
-    } 	D3D11_JPEG_DC_HUFFMAN_TABLE;
-
-typedef struct D3D11_JPEG_AC_HUFFMAN_TABLE
-    {
-    BYTE CodeCounts[ 16 ];
-    BYTE CodeValues[ 162 ];
-    } 	D3D11_JPEG_AC_HUFFMAN_TABLE;
-
-typedef struct D3D11_JPEG_QUANTIZATION_TABLE
-    {
-    BYTE Table[ 64 ];
-    } 	D3D11_JPEG_QUANTIZATION_TABLE;
 
 typedef struct D3D11_JPEG_DECODE_PARAMETERS
     {
@@ -913,12 +905,12 @@ typedef struct D3D11_JPEG_DECODE_PARAMETERS
     UINT SourceHeight;
     UINT RestartInterval;
     D3D11_JPEG_COMPONENTS SourceComponents;
-    D3D11_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    D3D11_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
+    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
+    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
     } 	D3D11_JPEG_DECODE_PARAMETERS;
 
 #if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )
@@ -935,12 +927,12 @@ struct CD3D11_JPEG_DECODE_PARAMETERS : public D3D11_JPEG_DECODE_PARAMETERS
         UINT SourceHeight,
         UINT RestartInterval,
         D3D11_JPEG_COMPONENTS SourceComponents,
-        const D3D11_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
-        const D3D11_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
-        const D3D11_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
-        const D3D11_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
-        const D3D11_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
-        const D3D11_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
+        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
+        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
+        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
+        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
+        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
+        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
     {
         this->SourceWidth = SourceWidth;
         this->SourceHeight = SourceHeight;
@@ -961,12 +953,12 @@ extern "C"{
 typedef struct D3D11_JPEG_ENCODE_PARAMETERS
     {
     D3D11_JPEG_COMPONENTS DestinationComponents;
-    D3D11_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    D3D11_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    D3D11_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    D3D11_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
+    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
+    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
+    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
+    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
     } 	D3D11_JPEG_ENCODE_PARAMETERS;
 
 #if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )
@@ -980,12 +972,12 @@ struct CD3D11_JPEG_ENCODE_PARAMETERS : public D3D11_JPEG_ENCODE_PARAMETERS
     {}
     explicit CD3D11_JPEG_ENCODE_PARAMETERS(
         D3D11_JPEG_COMPONENTS DestinationComponents,
-        const D3D11_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
-        const D3D11_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
-        const D3D11_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
-        const D3D11_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
-        const D3D11_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
-        const D3D11_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
+        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
+        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
+        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
+        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
+        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
+        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
     {
         this->DestinationComponents = DestinationComponents;
         this->LumaQuantizationTable = LumaQuantizationTable;
@@ -1004,7 +996,7 @@ typedef struct D3D11_TEX2D_SRV1
     {
     UINT MostDetailedMip;
     UINT MipLevels;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_SRV1;
 
 typedef struct D3D11_TEX2D_ARRAY_SRV1
@@ -1013,7 +1005,7 @@ typedef struct D3D11_TEX2D_ARRAY_SRV1
     UINT MipLevels;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_ARRAY_SRV1;
 
 typedef struct D3D11_SHADER_RESOURCE_VIEW_DESC1
@@ -1053,7 +1045,7 @@ struct CD3D11_SHADER_RESOURCE_VIEW_DESC1 : public D3D11_SHADER_RESOURCE_VIEW_DES
         UINT firstArraySlice = 0, // First2DArrayFace for TEXTURECUBEARRAY
         UINT arraySize = -1, // NumCubes for TEXTURECUBEARRAY
         UINT flags = 0, // BUFFEREX only
-        UINT planeIndex = 0 ) // Texture2D and Texture2DArray only
+        UINT planeSlice = 0 ) // Texture2D and Texture2DArray only
     {
         Format = format;
         ViewDimension = viewDimension;
@@ -1076,14 +1068,14 @@ struct CD3D11_SHADER_RESOURCE_VIEW_DESC1 : public D3D11_SHADER_RESOURCE_VIEW_DES
         case D3D11_SRV_DIMENSION_TEXTURE2D:
             Texture2D.MostDetailedMip = mostDetailedMip;
             Texture2D.MipLevels = mipLevels;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MostDetailedMip = mostDetailedMip;
             Texture2DArray.MipLevels = mipLevels;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         case D3D11_SRV_DIMENSION_TEXTURE2DMS:
             break;
@@ -1169,7 +1161,7 @@ struct CD3D11_SHADER_RESOURCE_VIEW_DESC1 : public D3D11_SHADER_RESOURCE_VIEW_DES
         UINT mipLevels = -1,
         UINT firstArraySlice = 0, // First2DArrayFace for TEXTURECUBEARRAY
         UINT arraySize = -1,  // NumCubes for TEXTURECUBEARRAY
-        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D or TEXTURE2DARRAY
+        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D or TEXTURE2DARRAY
     {
         ViewDimension = viewDimension;
         if (DXGI_FORMAT_UNKNOWN == format || 
@@ -1197,14 +1189,14 @@ struct CD3D11_SHADER_RESOURCE_VIEW_DESC1 : public D3D11_SHADER_RESOURCE_VIEW_DES
         case D3D11_SRV_DIMENSION_TEXTURE2D:
             Texture2D.MostDetailedMip = mostDetailedMip;
             Texture2D.MipLevels = mipLevels;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MostDetailedMip = mostDetailedMip;
             Texture2DArray.MipLevels = mipLevels;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         case D3D11_SRV_DIMENSION_TEXTURE2DMS:
             break;
@@ -1296,7 +1288,7 @@ EXTERN_C const IID IID_ID3D11ShaderResourceView1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11ShaderResourceView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11ShaderResourceView1 * This,
@@ -1326,7 +1318,7 @@ EXTERN_C const IID IID_ID3D11ShaderResourceView1;
         void ( STDMETHODCALLTYPE *GetResource )( 
             ID3D11ShaderResourceView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Resource **ppResource);
+            _Outptr_  ID3D11Resource **ppResource);
         
         void ( STDMETHODCALLTYPE *GetDesc )( 
             ID3D11ShaderResourceView1 * This,
@@ -1402,7 +1394,7 @@ EXTERN_C const IID IID_ID3D11ShaderResourceView1;
 typedef struct D3D11_TEX2D_RTV1
     {
     UINT MipSlice;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_RTV1;
 
 typedef struct D3D11_TEX2D_ARRAY_RTV1
@@ -1410,7 +1402,7 @@ typedef struct D3D11_TEX2D_ARRAY_RTV1
     UINT MipSlice;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_ARRAY_RTV1;
 
 typedef struct D3D11_RENDER_TARGET_VIEW_DESC1
@@ -1445,7 +1437,7 @@ struct CD3D11_RENDER_TARGET_VIEW_DESC1 : public D3D11_RENDER_TARGET_VIEW_DESC1
         UINT mipSlice = 0, // FirstElement for BUFFER
         UINT firstArraySlice = 0, // NumElements for BUFFER, FirstWSlice for TEXTURE3D
         UINT arraySize = -1, // WSize for TEXTURE3D
-        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D and TEXTURE2DARRAY
+        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D and TEXTURE2DARRAY
     {
         Format = format;
         ViewDimension = viewDimension;
@@ -1465,13 +1457,13 @@ struct CD3D11_RENDER_TARGET_VIEW_DESC1 : public D3D11_RENDER_TARGET_VIEW_DESC1
             break;
         case D3D11_RTV_DIMENSION_TEXTURE2D:
             Texture2D.MipSlice = mipSlice;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_RTV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MipSlice = mipSlice;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         case D3D11_RTV_DIMENSION_TEXTURE2DMS:
             break;
@@ -1536,7 +1528,7 @@ struct CD3D11_RENDER_TARGET_VIEW_DESC1 : public D3D11_RENDER_TARGET_VIEW_DESC1
         UINT mipSlice = 0,
         UINT firstArraySlice = 0,
         UINT arraySize = -1,
-        UINT planeIndex = 0 )
+        UINT planeSlice = 0 )
     {
         ViewDimension = viewDimension;
         if (DXGI_FORMAT_UNKNOWN == format || 
@@ -1554,13 +1546,13 @@ struct CD3D11_RENDER_TARGET_VIEW_DESC1 : public D3D11_RENDER_TARGET_VIEW_DESC1
         {
         case D3D11_RTV_DIMENSION_TEXTURE2D:
             Texture2D.MipSlice = mipSlice;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_RTV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MipSlice = mipSlice;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         case D3D11_RTV_DIMENSION_TEXTURE2DMS:
             break;
@@ -1644,7 +1636,7 @@ EXTERN_C const IID IID_ID3D11RenderTargetView1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11RenderTargetView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11RenderTargetView1 * This,
@@ -1674,7 +1666,7 @@ EXTERN_C const IID IID_ID3D11RenderTargetView1;
         void ( STDMETHODCALLTYPE *GetResource )( 
             ID3D11RenderTargetView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Resource **ppResource);
+            _Outptr_  ID3D11Resource **ppResource);
         
         void ( STDMETHODCALLTYPE *GetDesc )( 
             ID3D11RenderTargetView1 * This,
@@ -1750,7 +1742,7 @@ EXTERN_C const IID IID_ID3D11RenderTargetView1;
 typedef struct D3D11_TEX2D_UAV1
     {
     UINT MipSlice;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_UAV1;
 
 typedef struct D3D11_TEX2D_ARRAY_UAV1
@@ -1758,7 +1750,7 @@ typedef struct D3D11_TEX2D_ARRAY_UAV1
     UINT MipSlice;
     UINT FirstArraySlice;
     UINT ArraySize;
-    UINT PlaneIndex;
+    UINT PlaneSlice;
     } 	D3D11_TEX2D_ARRAY_UAV1;
 
 typedef struct D3D11_UNORDERED_ACCESS_VIEW_DESC1
@@ -1792,7 +1784,7 @@ struct CD3D11_UNORDERED_ACCESS_VIEW_DESC1 : public D3D11_UNORDERED_ACCESS_VIEW_D
         UINT firstArraySlice = 0, // NumElements for BUFFER, FirstWSlice for TEXTURE3D
         UINT arraySize = -1, // WSize for TEXTURE3D
         UINT flags = 0, // BUFFER only
-        UINT planeIndex = 0 ) // PlaneIndex for TEXTURE2D and TEXTURE2DARRAY
+        UINT planeSlice = 0 ) // PlaneSlice for TEXTURE2D and TEXTURE2DARRAY
     {
         Format = format;
         ViewDimension = viewDimension;
@@ -1813,13 +1805,13 @@ struct CD3D11_UNORDERED_ACCESS_VIEW_DESC1 : public D3D11_UNORDERED_ACCESS_VIEW_D
             break;
         case D3D11_UAV_DIMENSION_TEXTURE2D:
             Texture2D.MipSlice = mipSlice;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_UAV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MipSlice = mipSlice;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         case D3D11_UAV_DIMENSION_TEXTURE3D:
             Texture3D.MipSlice = mipSlice;
@@ -1880,7 +1872,7 @@ struct CD3D11_UNORDERED_ACCESS_VIEW_DESC1 : public D3D11_UNORDERED_ACCESS_VIEW_D
         UINT mipSlice = 0,
         UINT firstArraySlice = 0,
         UINT arraySize = -1, 
-        UINT planeIndex = 0 ) 
+        UINT planeSlice = 0 ) 
     {
         ViewDimension = viewDimension;
         if (DXGI_FORMAT_UNKNOWN == format || 
@@ -1896,13 +1888,13 @@ struct CD3D11_UNORDERED_ACCESS_VIEW_DESC1 : public D3D11_UNORDERED_ACCESS_VIEW_D
         {
         case D3D11_UAV_DIMENSION_TEXTURE2D:
             Texture2D.MipSlice = mipSlice;
-            Texture2D.PlaneIndex = planeIndex;
+            Texture2D.PlaneSlice = planeSlice;
             break;
         case D3D11_UAV_DIMENSION_TEXTURE2DARRAY:
             Texture2DArray.MipSlice = mipSlice;
             Texture2DArray.FirstArraySlice = firstArraySlice;
             Texture2DArray.ArraySize = arraySize;
-            Texture2DArray.PlaneIndex = planeIndex;
+            Texture2DArray.PlaneSlice = planeSlice;
             break;
         default: break;
         }
@@ -1980,7 +1972,7 @@ EXTERN_C const IID IID_ID3D11UnorderedAccessView1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11UnorderedAccessView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11UnorderedAccessView1 * This,
@@ -2010,7 +2002,7 @@ EXTERN_C const IID IID_ID3D11UnorderedAccessView1;
         void ( STDMETHODCALLTYPE *GetResource )( 
             ID3D11UnorderedAccessView1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Resource **ppResource);
+            _Outptr_  ID3D11Resource **ppResource);
         
         void ( STDMETHODCALLTYPE *GetDesc )( 
             ID3D11UnorderedAccessView1 * This,
@@ -2161,7 +2153,7 @@ EXTERN_C const IID IID_ID3D11Query1;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11Query1 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11Query1 * This,
@@ -2303,7 +2295,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11DeviceContext3 * This,
@@ -2400,7 +2392,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
             /* [annotation] */ 
             _In_  UINT MapFlags,
             /* [annotation] */ 
-            _Out_  D3D11_MAPPED_SUBRESOURCE *pMappedResource);
+            _Out_opt_  D3D11_MAPPED_SUBRESOURCE *pMappedResource);
         
         void ( STDMETHODCALLTYPE *Unmap )( 
             ID3D11DeviceContext3 * This,
@@ -2912,7 +2904,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *PSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11PixelShader **ppPixelShader,
+            _Outptr_result_maybenull_  ID3D11PixelShader **ppPixelShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -2930,7 +2922,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *VSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11VertexShader **ppVertexShader,
+            _Outptr_result_maybenull_  ID3D11VertexShader **ppVertexShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -2948,7 +2940,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *IAGetInputLayout )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11InputLayout **ppInputLayout);
+            _Outptr_result_maybenull_  ID3D11InputLayout **ppInputLayout);
         
         void ( STDMETHODCALLTYPE *IAGetVertexBuffers )( 
             ID3D11DeviceContext3 * This,
@@ -2966,7 +2958,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *IAGetIndexBuffer )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Buffer **pIndexBuffer,
+            _Outptr_opt_result_maybenull_  ID3D11Buffer **pIndexBuffer,
             /* [annotation] */ 
             _Out_opt_  DXGI_FORMAT *Format,
             /* [annotation] */ 
@@ -2984,7 +2976,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *GSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11GeometryShader **ppGeometryShader,
+            _Outptr_result_maybenull_  ID3D11GeometryShader **ppGeometryShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -3016,7 +3008,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *GetPredication )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Predicate **ppPredicate,
+            _Outptr_opt_result_maybenull_  ID3D11Predicate **ppPredicate,
             /* [annotation] */ 
             _Out_opt_  BOOL *pPredicateValue);
         
@@ -3045,7 +3037,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
             /* [annotation] */ 
             _Out_writes_opt_(NumViews)  ID3D11RenderTargetView **ppRenderTargetViews,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DepthStencilView **ppDepthStencilView);
+            _Outptr_opt_result_maybenull_  ID3D11DepthStencilView **ppDepthStencilView);
         
         void ( STDMETHODCALLTYPE *OMGetRenderTargetsAndUnorderedAccessViews )( 
             ID3D11DeviceContext3 * This,
@@ -3054,7 +3046,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
             /* [annotation] */ 
             _Out_writes_opt_(NumRTVs)  ID3D11RenderTargetView **ppRenderTargetViews,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DepthStencilView **ppDepthStencilView,
+            _Outptr_opt_result_maybenull_  ID3D11DepthStencilView **ppDepthStencilView,
             /* [annotation] */ 
             _In_range_( 0, D3D11_PS_CS_UAV_REGISTER_COUNT - 1 )  UINT UAVStartSlot,
             /* [annotation] */ 
@@ -3065,7 +3057,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *OMGetBlendState )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_opt_  ID3D11BlendState **ppBlendState,
+            _Outptr_opt_result_maybenull_  ID3D11BlendState **ppBlendState,
             /* [annotation] */ 
             _Out_opt_  FLOAT BlendFactor[ 4 ],
             /* [annotation] */ 
@@ -3074,7 +3066,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *OMGetDepthStencilState )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DepthStencilState **ppDepthStencilState,
+            _Outptr_opt_result_maybenull_  ID3D11DepthStencilState **ppDepthStencilState,
             /* [annotation] */ 
             _Out_opt_  UINT *pStencilRef);
         
@@ -3088,7 +3080,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *RSGetState )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11RasterizerState **ppRasterizerState);
+            _Outptr_result_maybenull_  ID3D11RasterizerState **ppRasterizerState);
         
         void ( STDMETHODCALLTYPE *RSGetViewports )( 
             ID3D11DeviceContext3 * This,
@@ -3116,7 +3108,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *HSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11HullShader **ppHullShader,
+            _Outptr_result_maybenull_  ID3D11HullShader **ppHullShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -3152,7 +3144,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *DSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11DomainShader **ppDomainShader,
+            _Outptr_result_maybenull_  ID3D11DomainShader **ppDomainShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -3197,7 +3189,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
         void ( STDMETHODCALLTYPE *CSGetShader )( 
             ID3D11DeviceContext3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11ComputeShader **ppComputeShader,
+            _Outptr_result_maybenull_  ID3D11ComputeShader **ppComputeShader,
             /* [annotation] */ 
             _Out_writes_opt_(*pNumClassInstances)  ID3D11ClassInstance **ppClassInstances,
             /* [annotation] */ 
@@ -3237,7 +3229,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
             ID3D11DeviceContext3 * This,
             BOOL RestoreDeferredContextState,
             /* [annotation] */ 
-            _Out_opt_  ID3D11CommandList **ppCommandList);
+            _COM_Outptr_opt_  ID3D11CommandList **ppCommandList);
         
         void ( STDMETHODCALLTYPE *CopySubresourceRegion1 )( 
             ID3D11DeviceContext3 * This,
@@ -3448,7 +3440,7 @@ EXTERN_C const IID IID_ID3D11DeviceContext3;
             /* [annotation] */ 
             _In_  ID3DDeviceContextState *pState,
             /* [annotation] */ 
-            _Out_opt_  ID3DDeviceContextState **ppPreviousState);
+            _Outptr_opt_  ID3DDeviceContextState **ppPreviousState);
         
         void ( STDMETHODCALLTYPE *ClearView )( 
             ID3D11DeviceContext3 * This,
@@ -4057,7 +4049,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc1->MipLevels * pDesc1->ArraySize))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture2D1 **ppTexture2D) = 0;
+            _COM_Outptr_opt_  ID3D11Texture2D1 **ppTexture2D) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateTexture3D1( 
             /* [annotation] */ 
@@ -4065,13 +4057,13 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc1->MipLevels))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture3D1 **ppTexture3D) = 0;
+            _COM_Outptr_opt_  ID3D11Texture3D1 **ppTexture3D) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateRasterizerState2( 
             /* [annotation] */ 
             _In_  const D3D11_RASTERIZER_DESC2 *pRasterizerDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RasterizerState2 **ppRasterizerState) = 0;
+            _COM_Outptr_opt_  ID3D11RasterizerState2 **ppRasterizerState) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateShaderResourceView1( 
             /* [annotation] */ 
@@ -4079,7 +4071,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_SHADER_RESOURCE_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11ShaderResourceView1 **ppSRView1) = 0;
+            _COM_Outptr_opt_  ID3D11ShaderResourceView1 **ppSRView1) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateUnorderedAccessView1( 
             /* [annotation] */ 
@@ -4087,7 +4079,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_UNORDERED_ACCESS_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11UnorderedAccessView1 **ppUAView1) = 0;
+            _COM_Outptr_opt_  ID3D11UnorderedAccessView1 **ppUAView1) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateRenderTargetView1( 
             /* [annotation] */ 
@@ -4095,13 +4087,13 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_RENDER_TARGET_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RenderTargetView1 **ppRTView1) = 0;
+            _COM_Outptr_opt_  ID3D11RenderTargetView1 **ppRTView1) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateQuery1( 
             /* [annotation] */ 
             _In_  const D3D11_QUERY_DESC1 *pQueryDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Query1 **ppQuery1) = 0;
+            _COM_Outptr_opt_  ID3D11Query1 **ppQuery1) = 0;
         
         virtual void STDMETHODCALLTYPE GetImmediateContext3( 
             /* [annotation] */ 
@@ -4110,7 +4102,35 @@ EXTERN_C const IID IID_ID3D11Device3;
         virtual HRESULT STDMETHODCALLTYPE CreateDeferredContext3( 
             UINT ContextFlags,
             /* [annotation] */ 
-            _Outptr_opt_  ID3D11DeviceContext3 **ppDeferredContext) = 0;
+            _COM_Outptr_opt_  ID3D11DeviceContext3 **ppDeferredContext) = 0;
+        
+        virtual void STDMETHODCALLTYPE WriteToSubresource( 
+            /* [annotation] */ 
+            _In_  ID3D11Resource *pDstResource,
+            /* [annotation] */ 
+            _In_  UINT DstSubresource,
+            /* [annotation] */ 
+            _In_opt_  const D3D11_BOX *pDstBox,
+            /* [annotation] */ 
+            _In_  const void *pSrcData,
+            /* [annotation] */ 
+            _In_  UINT SrcRowPitch,
+            /* [annotation] */ 
+            _In_  UINT SrcDepthPitch) = 0;
+        
+        virtual void STDMETHODCALLTYPE ReadFromSubresource( 
+            /* [annotation] */ 
+            _Out_  void *pDstData,
+            /* [annotation] */ 
+            _In_  UINT DstRowPitch,
+            /* [annotation] */ 
+            _In_  UINT DstDepthPitch,
+            /* [annotation] */ 
+            _In_  ID3D11Resource *pSrcResource,
+            /* [annotation] */ 
+            _In_  UINT SrcSubresource,
+            /* [annotation] */ 
+            _In_opt_  const D3D11_BOX *pSrcBox) = 0;
         
     };
     
@@ -4140,7 +4160,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Buffer **ppBuffer);
+            _COM_Outptr_opt_  ID3D11Buffer **ppBuffer);
         
         HRESULT ( STDMETHODCALLTYPE *CreateTexture1D )( 
             ID3D11Device3 * This,
@@ -4149,7 +4169,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc->MipLevels * pDesc->ArraySize))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture1D **ppTexture1D);
+            _COM_Outptr_opt_  ID3D11Texture1D **ppTexture1D);
         
         HRESULT ( STDMETHODCALLTYPE *CreateTexture2D )( 
             ID3D11Device3 * This,
@@ -4158,7 +4178,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc->MipLevels * pDesc->ArraySize))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture2D **ppTexture2D);
+            _COM_Outptr_opt_  ID3D11Texture2D **ppTexture2D);
         
         HRESULT ( STDMETHODCALLTYPE *CreateTexture3D )( 
             ID3D11Device3 * This,
@@ -4167,7 +4187,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc->MipLevels))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture3D **ppTexture3D);
+            _COM_Outptr_opt_  ID3D11Texture3D **ppTexture3D);
         
         HRESULT ( STDMETHODCALLTYPE *CreateShaderResourceView )( 
             ID3D11Device3 * This,
@@ -4176,7 +4196,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_SHADER_RESOURCE_VIEW_DESC *pDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11ShaderResourceView **ppSRView);
+            _COM_Outptr_opt_  ID3D11ShaderResourceView **ppSRView);
         
         HRESULT ( STDMETHODCALLTYPE *CreateUnorderedAccessView )( 
             ID3D11Device3 * This,
@@ -4185,7 +4205,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_UNORDERED_ACCESS_VIEW_DESC *pDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11UnorderedAccessView **ppUAView);
+            _COM_Outptr_opt_  ID3D11UnorderedAccessView **ppUAView);
         
         HRESULT ( STDMETHODCALLTYPE *CreateRenderTargetView )( 
             ID3D11Device3 * This,
@@ -4194,7 +4214,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_RENDER_TARGET_VIEW_DESC *pDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RenderTargetView **ppRTView);
+            _COM_Outptr_opt_  ID3D11RenderTargetView **ppRTView);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDepthStencilView )( 
             ID3D11Device3 * This,
@@ -4203,7 +4223,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_DEPTH_STENCIL_VIEW_DESC *pDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DepthStencilView **ppDepthStencilView);
+            _COM_Outptr_opt_  ID3D11DepthStencilView **ppDepthStencilView);
         
         HRESULT ( STDMETHODCALLTYPE *CreateInputLayout )( 
             ID3D11Device3 * This,
@@ -4216,7 +4236,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_  SIZE_T BytecodeLength,
             /* [annotation] */ 
-            _Out_opt_  ID3D11InputLayout **ppInputLayout);
+            _COM_Outptr_opt_  ID3D11InputLayout **ppInputLayout);
         
         HRESULT ( STDMETHODCALLTYPE *CreateVertexShader )( 
             ID3D11Device3 * This,
@@ -4227,7 +4247,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11VertexShader **ppVertexShader);
+            _COM_Outptr_opt_  ID3D11VertexShader **ppVertexShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateGeometryShader )( 
             ID3D11Device3 * This,
@@ -4238,7 +4258,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11GeometryShader **ppGeometryShader);
+            _COM_Outptr_opt_  ID3D11GeometryShader **ppGeometryShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateGeometryShaderWithStreamOutput )( 
             ID3D11Device3 * This,
@@ -4259,7 +4279,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11GeometryShader **ppGeometryShader);
+            _COM_Outptr_opt_  ID3D11GeometryShader **ppGeometryShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreatePixelShader )( 
             ID3D11Device3 * This,
@@ -4270,7 +4290,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11PixelShader **ppPixelShader);
+            _COM_Outptr_opt_  ID3D11PixelShader **ppPixelShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateHullShader )( 
             ID3D11Device3 * This,
@@ -4281,7 +4301,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11HullShader **ppHullShader);
+            _COM_Outptr_opt_  ID3D11HullShader **ppHullShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDomainShader )( 
             ID3D11Device3 * This,
@@ -4292,7 +4312,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DomainShader **ppDomainShader);
+            _COM_Outptr_opt_  ID3D11DomainShader **ppDomainShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateComputeShader )( 
             ID3D11Device3 * This,
@@ -4303,67 +4323,67 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  ID3D11ClassLinkage *pClassLinkage,
             /* [annotation] */ 
-            _Out_opt_  ID3D11ComputeShader **ppComputeShader);
+            _COM_Outptr_opt_  ID3D11ComputeShader **ppComputeShader);
         
         HRESULT ( STDMETHODCALLTYPE *CreateClassLinkage )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11ClassLinkage **ppLinkage);
+            _COM_Outptr_  ID3D11ClassLinkage **ppLinkage);
         
         HRESULT ( STDMETHODCALLTYPE *CreateBlendState )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_BLEND_DESC *pBlendStateDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11BlendState **ppBlendState);
+            _COM_Outptr_opt_  ID3D11BlendState **ppBlendState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDepthStencilState )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_DEPTH_STENCIL_DESC *pDepthStencilDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DepthStencilState **ppDepthStencilState);
+            _COM_Outptr_opt_  ID3D11DepthStencilState **ppDepthStencilState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateRasterizerState )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_RASTERIZER_DESC *pRasterizerDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RasterizerState **ppRasterizerState);
+            _COM_Outptr_opt_  ID3D11RasterizerState **ppRasterizerState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateSamplerState )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_SAMPLER_DESC *pSamplerDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11SamplerState **ppSamplerState);
+            _COM_Outptr_opt_  ID3D11SamplerState **ppSamplerState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateQuery )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_QUERY_DESC *pQueryDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Query **ppQuery);
+            _COM_Outptr_opt_  ID3D11Query **ppQuery);
         
         HRESULT ( STDMETHODCALLTYPE *CreatePredicate )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_QUERY_DESC *pPredicateDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Predicate **ppPredicate);
+            _COM_Outptr_opt_  ID3D11Predicate **ppPredicate);
         
         HRESULT ( STDMETHODCALLTYPE *CreateCounter )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_COUNTER_DESC *pCounterDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Counter **ppCounter);
+            _COM_Outptr_opt_  ID3D11Counter **ppCounter);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDeferredContext )( 
             ID3D11Device3 * This,
             UINT ContextFlags,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DeviceContext **ppDeferredContext);
+            _COM_Outptr_opt_  ID3D11DeviceContext **ppDeferredContext);
         
         HRESULT ( STDMETHODCALLTYPE *OpenSharedResource )( 
             ID3D11Device3 * This,
@@ -4372,7 +4392,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_  REFIID ReturnedInterface,
             /* [annotation] */ 
-            _Out_opt_  void **ppResource);
+            _COM_Outptr_opt_  void **ppResource);
         
         HRESULT ( STDMETHODCALLTYPE *CheckFormatSupport )( 
             ID3D11Device3 * This,
@@ -4460,7 +4480,7 @@ EXTERN_C const IID IID_ID3D11Device3;
         void ( STDMETHODCALLTYPE *GetImmediateContext )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11DeviceContext **ppImmediateContext);
+            _Outptr_  ID3D11DeviceContext **ppImmediateContext);
         
         HRESULT ( STDMETHODCALLTYPE *SetExceptionMode )( 
             ID3D11Device3 * This,
@@ -4472,27 +4492,27 @@ EXTERN_C const IID IID_ID3D11Device3;
         void ( STDMETHODCALLTYPE *GetImmediateContext1 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11DeviceContext1 **ppImmediateContext);
+            _Outptr_  ID3D11DeviceContext1 **ppImmediateContext);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDeferredContext1 )( 
             ID3D11Device3 * This,
             UINT ContextFlags,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DeviceContext1 **ppDeferredContext);
+            _COM_Outptr_opt_  ID3D11DeviceContext1 **ppDeferredContext);
         
         HRESULT ( STDMETHODCALLTYPE *CreateBlendState1 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_BLEND_DESC1 *pBlendStateDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11BlendState1 **ppBlendState);
+            _COM_Outptr_opt_  ID3D11BlendState1 **ppBlendState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateRasterizerState1 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_RASTERIZER_DESC1 *pRasterizerDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RasterizerState1 **ppRasterizerState);
+            _COM_Outptr_opt_  ID3D11RasterizerState1 **ppRasterizerState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDeviceContextState )( 
             ID3D11Device3 * This,
@@ -4514,7 +4534,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_  REFIID returnedInterface,
             /* [annotation] */ 
-            _Out_  void **ppResource);
+            _COM_Outptr_  void **ppResource);
         
         HRESULT ( STDMETHODCALLTYPE *OpenSharedResourceByName )( 
             ID3D11Device3 * This,
@@ -4525,18 +4545,18 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_  REFIID returnedInterface,
             /* [annotation] */ 
-            _Out_  void **ppResource);
+            _COM_Outptr_  void **ppResource);
         
         void ( STDMETHODCALLTYPE *GetImmediateContext2 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
-            _Out_  ID3D11DeviceContext2 **ppImmediateContext);
+            _Outptr_  ID3D11DeviceContext2 **ppImmediateContext);
         
         HRESULT ( STDMETHODCALLTYPE *CreateDeferredContext2 )( 
             ID3D11Device3 * This,
             UINT ContextFlags,
             /* [annotation] */ 
-            _Out_opt_  ID3D11DeviceContext2 **ppDeferredContext);
+            _COM_Outptr_opt_  ID3D11DeviceContext2 **ppDeferredContext);
         
         void ( STDMETHODCALLTYPE *GetResourceTiling )( 
             ID3D11Device3 * This,
@@ -4573,7 +4593,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc1->MipLevels * pDesc1->ArraySize))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture2D1 **ppTexture2D);
+            _COM_Outptr_opt_  ID3D11Texture2D1 **ppTexture2D);
         
         HRESULT ( STDMETHODCALLTYPE *CreateTexture3D1 )( 
             ID3D11Device3 * This,
@@ -4582,14 +4602,14 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_reads_opt_(_Inexpressible_(pDesc1->MipLevels))  const D3D11_SUBRESOURCE_DATA *pInitialData,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Texture3D1 **ppTexture3D);
+            _COM_Outptr_opt_  ID3D11Texture3D1 **ppTexture3D);
         
         HRESULT ( STDMETHODCALLTYPE *CreateRasterizerState2 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_RASTERIZER_DESC2 *pRasterizerDesc,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RasterizerState2 **ppRasterizerState);
+            _COM_Outptr_opt_  ID3D11RasterizerState2 **ppRasterizerState);
         
         HRESULT ( STDMETHODCALLTYPE *CreateShaderResourceView1 )( 
             ID3D11Device3 * This,
@@ -4598,7 +4618,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_SHADER_RESOURCE_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11ShaderResourceView1 **ppSRView1);
+            _COM_Outptr_opt_  ID3D11ShaderResourceView1 **ppSRView1);
         
         HRESULT ( STDMETHODCALLTYPE *CreateUnorderedAccessView1 )( 
             ID3D11Device3 * This,
@@ -4607,7 +4627,7 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_UNORDERED_ACCESS_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11UnorderedAccessView1 **ppUAView1);
+            _COM_Outptr_opt_  ID3D11UnorderedAccessView1 **ppUAView1);
         
         HRESULT ( STDMETHODCALLTYPE *CreateRenderTargetView1 )( 
             ID3D11Device3 * This,
@@ -4616,14 +4636,14 @@ EXTERN_C const IID IID_ID3D11Device3;
             /* [annotation] */ 
             _In_opt_  const D3D11_RENDER_TARGET_VIEW_DESC1 *pDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11RenderTargetView1 **ppRTView1);
+            _COM_Outptr_opt_  ID3D11RenderTargetView1 **ppRTView1);
         
         HRESULT ( STDMETHODCALLTYPE *CreateQuery1 )( 
             ID3D11Device3 * This,
             /* [annotation] */ 
             _In_  const D3D11_QUERY_DESC1 *pQueryDesc1,
             /* [annotation] */ 
-            _Out_opt_  ID3D11Query1 **ppQuery1);
+            _COM_Outptr_opt_  ID3D11Query1 **ppQuery1);
         
         void ( STDMETHODCALLTYPE *GetImmediateContext3 )( 
             ID3D11Device3 * This,
@@ -4634,7 +4654,37 @@ EXTERN_C const IID IID_ID3D11Device3;
             ID3D11Device3 * This,
             UINT ContextFlags,
             /* [annotation] */ 
-            _Outptr_opt_  ID3D11DeviceContext3 **ppDeferredContext);
+            _COM_Outptr_opt_  ID3D11DeviceContext3 **ppDeferredContext);
+        
+        void ( STDMETHODCALLTYPE *WriteToSubresource )( 
+            ID3D11Device3 * This,
+            /* [annotation] */ 
+            _In_  ID3D11Resource *pDstResource,
+            /* [annotation] */ 
+            _In_  UINT DstSubresource,
+            /* [annotation] */ 
+            _In_opt_  const D3D11_BOX *pDstBox,
+            /* [annotation] */ 
+            _In_  const void *pSrcData,
+            /* [annotation] */ 
+            _In_  UINT SrcRowPitch,
+            /* [annotation] */ 
+            _In_  UINT SrcDepthPitch);
+        
+        void ( STDMETHODCALLTYPE *ReadFromSubresource )( 
+            ID3D11Device3 * This,
+            /* [annotation] */ 
+            _Out_  void *pDstData,
+            /* [annotation] */ 
+            _In_  UINT DstRowPitch,
+            /* [annotation] */ 
+            _In_  UINT DstDepthPitch,
+            /* [annotation] */ 
+            _In_  ID3D11Resource *pSrcResource,
+            /* [annotation] */ 
+            _In_  UINT SrcSubresource,
+            /* [annotation] */ 
+            _In_opt_  const D3D11_BOX *pSrcBox);
         
         END_INTERFACE
     } ID3D11Device3Vtbl;
@@ -4842,6 +4892,12 @@ EXTERN_C const IID IID_ID3D11Device3;
 #define ID3D11Device3_CreateDeferredContext3(This,ContextFlags,ppDeferredContext)	\
     ( (This)->lpVtbl -> CreateDeferredContext3(This,ContextFlags,ppDeferredContext) ) 
 
+#define ID3D11Device3_WriteToSubresource(This,pDstResource,DstSubresource,pDstBox,pSrcData,SrcRowPitch,SrcDepthPitch)	\
+    ( (This)->lpVtbl -> WriteToSubresource(This,pDstResource,DstSubresource,pDstBox,pSrcData,SrcRowPitch,SrcDepthPitch) ) 
+
+#define ID3D11Device3_ReadFromSubresource(This,pDstData,DstRowPitch,DstDepthPitch,pSrcResource,SrcSubresource,pSrcBox)	\
+    ( (This)->lpVtbl -> ReadFromSubresource(This,pDstData,DstRowPitch,DstDepthPitch,pSrcResource,SrcSubresource,pSrcBox) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -4917,7 +4973,7 @@ EXTERN_C const IID IID_ID3D11ImageContext;
         void ( STDMETHODCALLTYPE *GetDevice )( 
             ID3D11ImageContext * This,
             /* [annotation] */ 
-            _Out_  ID3D11Device **ppDevice);
+            _Outptr_  ID3D11Device **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
             ID3D11ImageContext * This,

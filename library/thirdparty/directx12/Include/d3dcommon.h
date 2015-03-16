@@ -3,7 +3,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0606 */
+ /* File created by MIDL compiler version 8.00.0608 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -437,6 +437,7 @@ EXTERN_C const IID IID_ID3D10Blob;
 
 typedef interface ID3D10Blob* LPD3D10BLOB;
 typedef ID3D10Blob ID3DBlob;
+
 typedef ID3DBlob* LPD3DBLOB;
 #define IID_ID3DBlob IID_ID3D10Blob
 typedef 

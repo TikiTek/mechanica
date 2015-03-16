@@ -353,7 +353,7 @@ interface ID3D11DeviceContext1
 
     void SwapDeviceContextState(
         [annotation("_In_")] ID3DDeviceContextState* pState, 
-        [annotation("_Out_opt_")] ID3DDeviceContextState** ppPreviousState );
+        [annotation("_Outptr_opt_")] ID3DDeviceContextState** ppPreviousState );
 
     void ClearView(
         [annotation("_In_")] ID3D11View* pView,
@@ -442,6 +442,31 @@ typedef enum D3D11_CRYPTO_SESSION_STATUS
     D3D11_CRYPTO_SESSION_STATUS_KEY_LOST = 1,
     D3D11_CRYPTO_SESSION_STATUS_KEY_AND_CONTENT_LOST = 2
 } D3D11_CRYPTO_SESSION_STATUS;
+
+typedef struct D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA
+{
+    UINT PrivateDataSize;
+    UINT HWProtectionDataSize;
+    BYTE pbInput[4];
+} D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA;
+
+typedef struct D3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA
+{
+    UINT PrivateDataSize;
+    UINT MaxHWProtectionDataSize;
+    UINT HWProtectionDataSize;
+    UINT64 TransportTime;
+    UINT64 ExecutionTime;
+    BYTE pbOutput[4];
+} D3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA;
+
+typedef struct D3D11_KEY_EXCHANGE_HW_PROTECTION_DATA
+{
+    UINT HWProtectionFunctionID;
+    D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA *pInputData;
+    D3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA *pOutputData;
+    HRESULT Status;
+} D3D11_KEY_EXCHANGE_HW_PROTECTION_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -551,8 +576,12 @@ interface ID3D11VideoContext1
 interface ID3D11VideoDevice1
     : ID3D11VideoDevice
 {
-    HRESULT SetEventOnHardwareContentProtectionTilt(
-        [annotation("_In_")] HANDLE hEvent);
+    HRESULT GetCryptoSessionPrivateDataSize(
+        [annotation("_In_")] const GUID* pCryptoType,
+        [annotation("_In_opt_")] const GUID* pDecoderProfile,
+        [annotation("_In_")] const GUID* pKeyExchangeType,
+        [annotation("_Out_")] UINT* pPrivateInputSize,
+        [annotation("_Out_")] UINT* pPrivateOutputSize);
 
     HRESULT GetVideoDecoderCaps(
         [annotation("_In_")] const GUID* pDecoderProfile,
@@ -598,19 +627,19 @@ interface ID3D11VideoProcessorEnumerator1
 interface ID3D11Device1
     : ID3D11Device
 {
-    void GetImmediateContext1( [annotation("_Out_")] ID3D11DeviceContext1** ppImmediateContext );
+    void GetImmediateContext1( [annotation("_Outptr_")] ID3D11DeviceContext1** ppImmediateContext );
 
     HRESULT CreateDeferredContext1(
             UINT ContextFlags, // Reserved parameter; must be 0
-            [annotation("_Out_opt_")] ID3D11DeviceContext1** ppDeferredContext );
+            [annotation("_COM_Outptr_opt_")] ID3D11DeviceContext1** ppDeferredContext );
 
     HRESULT CreateBlendState1(
         [annotation("_In_")] const D3D11_BLEND_DESC1* pBlendStateDesc,
-        [annotation("_Out_opt_")] ID3D11BlendState1** ppBlendState );
+        [annotation("_COM_Outptr_opt_")] ID3D11BlendState1** ppBlendState );
 
     HRESULT CreateRasterizerState1(
         [annotation("_In_")] const D3D11_RASTERIZER_DESC1* pRasterizerDesc,
-        [annotation("_Out_opt_")] ID3D11RasterizerState1** ppRasterizerState );
+        [annotation("_COM_Outptr_opt_")] ID3D11RasterizerState1** ppRasterizerState );
 
     HRESULT CreateDeviceContextState(
         UINT Flags,
@@ -624,13 +653,13 @@ interface ID3D11Device1
     HRESULT OpenSharedResource1(
         [annotation("_In_")] HANDLE hResource,
         [annotation("_In_")] REFIID returnedInterface,
-        [annotation("_Out_")] void** ppResource);
+        [annotation("_COM_Outptr_")] void** ppResource);
 
     HRESULT OpenSharedResourceByName(
         [annotation("_In_")] LPCWSTR lpName,
         [annotation("_In_")] DWORD dwDesiredAccess,
         [annotation("_In_")] REFIID returnedInterface,
-        [annotation("_Out_")] void** ppResource);
+        [annotation("_COM_Outptr_")] void** ppResource);
 };
 
 [ uuid( b2daad8b-03d4-4dbf-95eb-32ab4b63d0ab ), object, local, pointer_default( unique ) ]

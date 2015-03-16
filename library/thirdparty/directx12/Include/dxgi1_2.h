@@ -3,7 +3,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0606 */
+ /* File created by MIDL compiler version 8.00.0608 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -290,7 +290,7 @@ EXTERN_C const IID IID_IDXGIOutputDuplication;
             /* [annotation][out] */ 
             _Out_  DXGI_OUTDUPL_FRAME_INFO *pFrameInfo,
             /* [annotation][out] */ 
-            _Out_  IDXGIResource **ppDesktopResource) = 0;
+            _COM_Outptr_  IDXGIResource **ppDesktopResource) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE GetFrameDirtyRects( 
             /* [annotation][in] */ 
@@ -376,7 +376,7 @@ EXTERN_C const IID IID_IDXGIOutputDuplication;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         void ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGIOutputDuplication * This,
@@ -390,7 +390,7 @@ EXTERN_C const IID IID_IDXGIOutputDuplication;
             /* [annotation][out] */ 
             _Out_  DXGI_OUTDUPL_FRAME_INFO *pFrameInfo,
             /* [annotation][out] */ 
-            _Out_  IDXGIResource **ppDesktopResource);
+            _COM_Outptr_  IDXGIResource **ppDesktopResource);
         
         HRESULT ( STDMETHODCALLTYPE *GetFrameDirtyRects )( 
             IDXGIOutputDuplication * This,
@@ -544,7 +544,7 @@ EXTERN_C const IID IID_IDXGISurface2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][out] */ 
-            _Out_  void **ppParentResource,
+            _COM_Outptr_  void **ppParentResource,
             /* [annotation][out] */ 
             _Out_  UINT *pSubresourceIndex) = 0;
         
@@ -598,14 +598,14 @@ EXTERN_C const IID IID_IDXGISurface2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDevice )( 
             IDXGISurface2 * This,
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppDevice);
+            _COM_Outptr_  void **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGISurface2 * This,
@@ -637,7 +637,7 @@ EXTERN_C const IID IID_IDXGISurface2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][out] */ 
-            _Out_  void **ppParentResource,
+            _COM_Outptr_  void **ppParentResource,
             /* [annotation][out] */ 
             _Out_  UINT *pSubresourceIndex);
         
@@ -730,7 +730,7 @@ EXTERN_C const IID IID_IDXGIResource1;
         virtual HRESULT STDMETHODCALLTYPE CreateSubresourceSurface( 
             UINT index,
             /* [annotation][out] */ 
-            _Out_  IDXGISurface2 **ppSurface) = 0;
+            _COM_Outptr_  IDXGISurface2 **ppSurface) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateSharedHandle( 
             /* [annotation][in] */ 
@@ -792,14 +792,14 @@ EXTERN_C const IID IID_IDXGIResource1;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDevice )( 
             IDXGIResource1 * This,
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppDevice);
+            _COM_Outptr_  void **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *GetSharedHandle )( 
             IDXGIResource1 * This,
@@ -808,8 +808,7 @@ EXTERN_C const IID IID_IDXGIResource1;
         
         HRESULT ( STDMETHODCALLTYPE *GetUsage )( 
             IDXGIResource1 * This,
-            /* [annotation][out] */ 
-            _Out_  DXGI_USAGE *pUsage);
+            /* [out] */ DXGI_USAGE *pUsage);
         
         HRESULT ( STDMETHODCALLTYPE *SetEvictionPriority )( 
             IDXGIResource1 * This,
@@ -824,7 +823,7 @@ EXTERN_C const IID IID_IDXGIResource1;
             IDXGIResource1 * This,
             UINT index,
             /* [annotation][out] */ 
-            _Out_  IDXGISurface2 **ppSurface);
+            _COM_Outptr_  IDXGISurface2 **ppSurface);
         
         HRESULT ( STDMETHODCALLTYPE *CreateSharedHandle )( 
             IDXGIResource1 * This,
@@ -1008,12 +1007,12 @@ EXTERN_C const IID IID_IDXGIDevice2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetAdapter )( 
             IDXGIDevice2 * This,
             /* [annotation][out] */ 
-            _Out_  IDXGIAdapter **pAdapter);
+            _COM_Outptr_  IDXGIAdapter **pAdapter);
         
         HRESULT ( STDMETHODCALLTYPE *CreateSurface )( 
             IDXGIDevice2 * This,
@@ -1024,7 +1023,7 @@ EXTERN_C const IID IID_IDXGIDevice2;
             /* [annotation][in] */ 
             _In_opt_  const DXGI_SHARED_RESOURCE *pSharedResource,
             /* [annotation][out] */ 
-            _Out_  IDXGISurface **ppSurface);
+            _COM_Outptr_  IDXGISurface **ppSurface);
         
         HRESULT ( STDMETHODCALLTYPE *QueryResourceResidency )( 
             IDXGIDevice2 * This,
@@ -1251,7 +1250,7 @@ EXTERN_C const IID IID_IDXGISwapChain1;
             /* [annotation][in] */ 
             _In_  REFIID refiid,
             /* [annotation][out] */ 
-            _Out_  void **ppUnk) = 0;
+            _COM_Outptr_  void **ppUnk) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Present1( 
             /* [in] */ UINT SyncInterval,
@@ -1331,14 +1330,14 @@ EXTERN_C const IID IID_IDXGISwapChain1;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDevice )( 
             IDXGISwapChain1 * This,
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppDevice);
+            _COM_Outptr_  void **ppDevice);
         
         HRESULT ( STDMETHODCALLTYPE *Present )( 
             IDXGISwapChain1 * This,
@@ -1351,7 +1350,7 @@ EXTERN_C const IID IID_IDXGISwapChain1;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][out][in] */ 
-            _Out_  void **ppSurface);
+            _COM_Outptr_  void **ppSurface);
         
         HRESULT ( STDMETHODCALLTYPE *SetFullscreenState )( 
             IDXGISwapChain1 * This,
@@ -1364,7 +1363,7 @@ EXTERN_C const IID IID_IDXGISwapChain1;
             /* [annotation][out] */ 
             _Out_opt_  BOOL *pFullscreen,
             /* [annotation][out] */ 
-            _Out_opt_  IDXGIOutput **ppTarget);
+            _COM_Outptr_opt_result_maybenull_  IDXGIOutput **ppTarget);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGISwapChain1 * This,
@@ -1387,7 +1386,7 @@ EXTERN_C const IID IID_IDXGISwapChain1;
         HRESULT ( STDMETHODCALLTYPE *GetContainingOutput )( 
             IDXGISwapChain1 * This,
             /* [annotation][out] */ 
-            _Out_  IDXGIOutput **ppOutput);
+            _COM_Outptr_  IDXGIOutput **ppOutput);
         
         HRESULT ( STDMETHODCALLTYPE *GetFrameStatistics )( 
             IDXGISwapChain1 * This,
@@ -1419,7 +1418,7 @@ EXTERN_C const IID IID_IDXGISwapChain1;
             /* [annotation][in] */ 
             _In_  REFIID refiid,
             /* [annotation][out] */ 
-            _Out_  void **ppUnk);
+            _COM_Outptr_  void **ppUnk);
         
         HRESULT ( STDMETHODCALLTYPE *Present1 )( 
             IDXGISwapChain1 * This,
@@ -1600,7 +1599,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Out_  IDXGISwapChain1 **ppSwapChain) = 0;
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CreateSwapChainForCoreWindow( 
             /* [annotation][in] */ 
@@ -1612,7 +1611,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Out_  IDXGISwapChain1 **ppSwapChain) = 0;
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE GetSharedResourceAdapterLuid( 
             /* [annotation] */ 
@@ -1664,7 +1663,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Outptr_  IDXGISwapChain1 **ppSwapChain) = 0;
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain) = 0;
         
     };
     
@@ -1716,13 +1715,13 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *EnumAdapters )( 
             IDXGIFactory2 * This,
             /* [in] */ UINT Adapter,
             /* [annotation][out] */ 
-            _Out_  IDXGIAdapter **ppAdapter);
+            _COM_Outptr_  IDXGIAdapter **ppAdapter);
         
         HRESULT ( STDMETHODCALLTYPE *MakeWindowAssociation )( 
             IDXGIFactory2 * This,
@@ -1741,19 +1740,19 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_  DXGI_SWAP_CHAIN_DESC *pDesc,
             /* [annotation][out] */ 
-            _Out_  IDXGISwapChain **ppSwapChain);
+            _COM_Outptr_  IDXGISwapChain **ppSwapChain);
         
         HRESULT ( STDMETHODCALLTYPE *CreateSoftwareAdapter )( 
             IDXGIFactory2 * This,
             /* [in] */ HMODULE Module,
             /* [annotation][out] */ 
-            _Out_  IDXGIAdapter **ppAdapter);
+            _COM_Outptr_  IDXGIAdapter **ppAdapter);
         
         HRESULT ( STDMETHODCALLTYPE *EnumAdapters1 )( 
             IDXGIFactory2 * This,
             /* [in] */ UINT Adapter,
             /* [annotation][out] */ 
-            _Out_  IDXGIAdapter1 **ppAdapter);
+            _COM_Outptr_  IDXGIAdapter1 **ppAdapter);
         
         BOOL ( STDMETHODCALLTYPE *IsCurrent )( 
             IDXGIFactory2 * This);
@@ -1774,7 +1773,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Out_  IDXGISwapChain1 **ppSwapChain);
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain);
         
         HRESULT ( STDMETHODCALLTYPE *CreateSwapChainForCoreWindow )( 
             IDXGIFactory2 * This,
@@ -1787,7 +1786,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Out_  IDXGISwapChain1 **ppSwapChain);
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain);
         
         HRESULT ( STDMETHODCALLTYPE *GetSharedResourceAdapterLuid )( 
             IDXGIFactory2 * This,
@@ -1847,7 +1846,7 @@ EXTERN_C const IID IID_IDXGIFactory2;
             /* [annotation][in] */ 
             _In_opt_  IDXGIOutput *pRestrictToOutput,
             /* [annotation][out] */ 
-            _Outptr_  IDXGISwapChain1 **ppSwapChain);
+            _COM_Outptr_  IDXGISwapChain1 **ppSwapChain);
         
         END_INTERFACE
     } IDXGIFactory2Vtbl;
@@ -2065,13 +2064,13 @@ EXTERN_C const IID IID_IDXGIAdapter2;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *EnumOutputs )( 
             IDXGIAdapter2 * This,
             /* [in] */ UINT Output,
             /* [annotation][out][in] */ 
-            _Out_  IDXGIOutput **ppOutput);
+            _COM_Outptr_  IDXGIOutput **ppOutput);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGIAdapter2 * This,
@@ -2198,7 +2197,7 @@ EXTERN_C const IID IID_IDXGIOutput1;
             /* [annotation][in] */ 
             _In_  IUnknown *pDevice,
             /* [annotation][out] */ 
-            _Out_  IDXGIOutputDuplication **ppOutputDuplication) = 0;
+            _COM_Outptr_  IDXGIOutputDuplication **ppOutputDuplication) = 0;
         
     };
     
@@ -2250,7 +2249,7 @@ EXTERN_C const IID IID_IDXGIOutput1;
             /* [annotation][in] */ 
             _In_  REFIID riid,
             /* [annotation][retval][out] */ 
-            _Out_  void **ppParent);
+            _COM_Outptr_  void **ppParent);
         
         HRESULT ( STDMETHODCALLTYPE *GetDesc )( 
             IDXGIOutput1 * This,
@@ -2345,7 +2344,7 @@ EXTERN_C const IID IID_IDXGIOutput1;
             /* [annotation][in] */ 
             _In_  IUnknown *pDevice,
             /* [annotation][out] */ 
-            _Out_  IDXGIOutputDuplication **ppOutputDuplication);
+            _COM_Outptr_  IDXGIOutputDuplication **ppOutputDuplication);
         
         END_INTERFACE
     } IDXGIOutput1Vtbl;

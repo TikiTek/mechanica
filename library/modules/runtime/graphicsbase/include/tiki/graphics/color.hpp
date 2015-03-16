@@ -177,6 +177,14 @@ namespace tiki
 			);
 		}
 
+		TIKI_FORCE_INLINE void toFloatArray( float target[ 4u ], Color c )
+		{
+			target[ 0u ] = getFloatChannelR( c );
+			target[ 1u ] = getFloatChannelG( c );
+			target[ 2u ] = getFloatChannelB( c );
+			target[ 3u ] = getFloatChannelA( c );
+		}
+
 		TIKI_FORCE_INLINE void toHdrColor( HdrColor& target, Color c )
 		{
 			target.r = getFloatChannelR( c );

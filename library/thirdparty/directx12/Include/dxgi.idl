@@ -32,13 +32,13 @@ cpp_quote( "#define DXGI_CPU_ACCESS_FIELD        15" )
 //    2D non-mipped uses can be added here (for example, DXVA extensions)
 //
 //    Bitfield meanings: (Shift these into bits 18:4)
-cpp_quote( "#define DXGI_USAGE_SHADER_INPUT             ( 1L << (0 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_RENDER_TARGET_OUTPUT     ( 1L << (1 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_BACK_BUFFER              ( 1L << (2 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_SHARED                   ( 1L << (3 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_READ_ONLY                ( 1L << (4 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_DISCARD_ON_PRESENT       ( 1L << (5 + 4) )" )
-cpp_quote( "#define DXGI_USAGE_UNORDERED_ACCESS         ( 1L << (6 + 4) )" )
+cpp_quote( "#define DXGI_USAGE_SHADER_INPUT             0x00000010UL" )
+cpp_quote( "#define DXGI_USAGE_RENDER_TARGET_OUTPUT     0x00000020UL" )
+cpp_quote( "#define DXGI_USAGE_BACK_BUFFER              0x00000040UL" )
+cpp_quote( "#define DXGI_USAGE_SHARED                   0x00000080UL" )
+cpp_quote( "#define DXGI_USAGE_READ_ONLY                0x00000100UL" )
+cpp_quote( "#define DXGI_USAGE_DISCARD_ON_PRESENT       0x00000200UL" )
+cpp_quote( "#define DXGI_USAGE_UNORDERED_ACCESS         0x00000400UL" )
 
 // See dxgiinternal.idl for private DXGI USAGE BITS, e.g.
 // #define DXGI_USAGE_REMOTE_SWAPCHAIN_BUFFER  ( 1L << (15 + 4) )
@@ -214,7 +214,7 @@ interface IDXGIObject :
         [out, annotation("_Out_writes_bytes_(*pDataSize)")] void *pData );
     HRESULT GetParent(
         [in, annotation("_In_")] REFIID riid,
-        [out, retval, annotation("_Out_")] void **ppParent );
+        [out, retval, annotation("_COM_Outptr_")] void **ppParent );
 };
 
 //--------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ interface IDXGIDeviceSubObject :
 {
     HRESULT GetDevice(
         [in, annotation("_In_")] REFIID riid,
-        [out, retval, annotation("_Out_")] void **ppDevice );
+        [out, retval, annotation("_COM_Outptr_")] void **ppDevice );
 };
 
 
@@ -246,7 +246,7 @@ interface IDXGIResource :
     IDXGIDeviceSubObject
 {
     HRESULT GetSharedHandle( [out, annotation("_Out_")] HANDLE * pSharedHandle );
-    HRESULT GetUsage( [out, annotation("_Out_")] DXGI_USAGE * pUsage );
+    HRESULT GetUsage( [out] DXGI_USAGE * pUsage );
     HRESULT SetEvictionPriority( [in] UINT EvictionPriority );
     HRESULT GetEvictionPriority( [out, retval, annotation("_Out_")] UINT* pEvictionPriority );
 };
@@ -328,7 +328,7 @@ interface IDXGIAdapter : IDXGIObject
 {
     HRESULT EnumOutputs(
         [in] UINT Output,
-        [in, out, annotation("_Out_")] IDXGIOutput **ppOutput );
+        [in, out, annotation("_COM_Outptr_")] IDXGIOutput **ppOutput );
     HRESULT GetDesc( [out, annotation("_Out_")] DXGI_ADAPTER_DESC *pDesc );
     HRESULT CheckInterfaceSupport(
         [in, annotation("_In_")] REFGUID InterfaceName,
@@ -406,17 +406,17 @@ interface IDXGISwapChain :
     HRESULT GetBuffer(
         [in] UINT Buffer,
         [in, annotation("_In_")] REFIID riid,
-        [in, out, annotation("_Out_")] void **ppSurface );
+        [in, out, annotation("_COM_Outptr_")] void **ppSurface );
     HRESULT SetFullscreenState(
         [in] BOOL Fullscreen,
         [in, annotation("_In_opt_")] IDXGIOutput *pTarget );
     HRESULT GetFullscreenState(
         [out, annotation("_Out_opt_")] BOOL *pFullscreen,
-        [out, annotation("_Out_opt_")] IDXGIOutput **ppTarget );
+        [out, annotation("_COM_Outptr_opt_result_maybenull_")] IDXGIOutput **ppTarget );
     HRESULT GetDesc( [out, annotation("_Out_")] DXGI_SWAP_CHAIN_DESC *pDesc );
     HRESULT ResizeBuffers( [in] UINT BufferCount, [in] UINT Width, [in] UINT Height, [in] DXGI_FORMAT NewFormat, [in] UINT SwapChainFlags );
     HRESULT ResizeTarget( [in, annotation("_In_")] const DXGI_MODE_DESC *pNewTargetParameters );
-    HRESULT GetContainingOutput( [out, annotation("_Out_")] IDXGIOutput **ppOutput );
+    HRESULT GetContainingOutput( [out, annotation("_COM_Outptr_")] IDXGIOutput **ppOutput );
     HRESULT GetFrameStatistics( [out, annotation("_Out_")] DXGI_FRAME_STATISTICS *pStats );
     HRESULT GetLastPresentCount( [out, annotation("_Out_")] UINT *pLastPresentCount );
 };
@@ -441,16 +441,16 @@ interface IDXGIFactory :
 {
     HRESULT EnumAdapters(
         [in] UINT Adapter,
-        [out, annotation("_Out_")] IDXGIAdapter **ppAdapter );
+        [out, annotation("_COM_Outptr_")] IDXGIAdapter **ppAdapter );
     HRESULT MakeWindowAssociation(HWND WindowHandle, UINT Flags); //pass NULL to break the association
     HRESULT GetWindowAssociation( [out, annotation("_Out_")] HWND *pWindowHandle );
     HRESULT CreateSwapChain(
         [in, annotation("_In_")] IUnknown *pDevice,
         [in, annotation("_In_")] DXGI_SWAP_CHAIN_DESC *pDesc,
-        [out, annotation("_Out_")] IDXGISwapChain **ppSwapChain );
+        [out, annotation("_COM_Outptr_")] IDXGISwapChain **ppSwapChain );
     HRESULT CreateSoftwareAdapter(
         [in] HMODULE Module,
-        [out, annotation("_Out_")] IDXGIAdapter **ppAdapter );
+        [out, annotation("_COM_Outptr_")] IDXGIAdapter **ppAdapter );
 };
 
 //--------------------------------------------------------------------------------------------------------
@@ -459,11 +459,11 @@ interface IDXGIFactory :
 
 #pragma region Desktop Family
 cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)")
-cpp_quote( "HRESULT WINAPI CreateDXGIFactory(REFIID riid, _Out_ void **ppFactory);" )
+cpp_quote( "HRESULT WINAPI CreateDXGIFactory(REFIID riid, _COM_Outptr_ void **ppFactory);" )
 cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */")
 #pragma endregion
 
-cpp_quote( "HRESULT WINAPI CreateDXGIFactory1(REFIID riid, _Out_ void **ppFactory);" )
+cpp_quote( "HRESULT WINAPI CreateDXGIFactory1(REFIID riid, _COM_Outptr_ void **ppFactory);" )
 
 //----------------------------- ---------------------------------------------------------------------------
 // The DXGIDevice base interface
@@ -477,13 +477,13 @@ cpp_quote( "HRESULT WINAPI CreateDXGIFactory1(REFIID riid, _Out_ void **ppFactor
 interface IDXGIDevice :
     IDXGIObject
 {
-    HRESULT GetAdapter( [out, annotation("_Out_")] IDXGIAdapter **pAdapter );
+    HRESULT GetAdapter( [out, annotation("_COM_Outptr_")] IDXGIAdapter **pAdapter );
     HRESULT CreateSurface(
         [in, annotation("_In_")] const DXGI_SURFACE_DESC *pDesc,
         [in] UINT NumSurfaces,
         [in] DXGI_USAGE Usage,
         [in, annotation("_In_opt_")] const DXGI_SHARED_RESOURCE *pSharedResource,
-        [out, annotation("_Out_")] IDXGISurface **ppSurface );
+        [out, annotation("_COM_Outptr_")] IDXGISurface **ppSurface );
     HRESULT QueryResourceResidency(
         [in, size_is(NumResources), annotation("_In_reads_(NumResources)")] IUnknown *const *ppResources,
         [out, size_is(NumResources), annotation("_Out_writes_(NumResources)")] DXGI_RESIDENCY *pResidencyStatus,
@@ -553,7 +553,7 @@ interface IDXGIFactory1 :
 {
     HRESULT EnumAdapters1(
         [in] UINT Adapter,
-        [out, annotation("_Out_")] IDXGIAdapter1 **ppAdapter );
+        [out, annotation("_COM_Outptr_")] IDXGIAdapter1 **ppAdapter );
     BOOL IsCurrent();
 };
 

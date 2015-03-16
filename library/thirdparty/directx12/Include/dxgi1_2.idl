@@ -85,7 +85,7 @@ interface IDXGIOutputDuplication :
     void GetDesc([out, annotation ("_Out_")] DXGI_OUTDUPL_DESC* pDesc);
     HRESULT AcquireNextFrame([in, annotation ("_In_")] UINT TimeoutInMilliseconds,
                              [out, annotation("_Out_")] DXGI_OUTDUPL_FRAME_INFO* pFrameInfo,
-                             [out, annotation("_Out_")] IDXGIResource** ppDesktopResource);
+                             [out, annotation("_COM_Outptr_")] IDXGIResource** ppDesktopResource);
     HRESULT GetFrameDirtyRects([in, annotation("_In_")] UINT DirtyRectsBufferSize,
                                [out, annotation("_Out_writes_bytes_to_(DirtyRectsBufferSize, *pDirtyRectsBufferSizeRequired)")] RECT* pDirtyRectsBuffer,
                                [out, annotation("_Out_")] UINT* pDirtyRectsBufferSizeRequired);
@@ -125,7 +125,7 @@ interface IDXGISurface2 :
     IDXGISurface1
 {
     HRESULT GetResource([in, annotation("_In_")] REFIID riid,
-                        [out, annotation("_Out_")] void **ppParentResource,
+                        [out, annotation("_COM_Outptr_")] void **ppParentResource,
                         [out, annotation("_Out_")] UINT *pSubresourceIndex);
 };
 
@@ -140,7 +140,7 @@ interface IDXGIResource1 :
 {
     HRESULT CreateSubresourceSurface(
         UINT index,
-        [out, annotation("_Out_")] IDXGISurface2 **ppSurface );
+        [out, annotation("_COM_Outptr_")] IDXGISurface2 **ppSurface );
 
     HRESULT CreateSharedHandle(
         [in, annotation("_In_opt_")] const SECURITY_ATTRIBUTES *pAttributes,
@@ -252,7 +252,7 @@ interface IDXGISwapChain1 :
     HRESULT GetHwnd( [out, annotation("_Out_")] HWND *pHwnd);
     HRESULT GetCoreWindow (
             [in, annotation("_In_")] REFIID refiid,
-            [out, annotation("_Out_")] void **ppUnk);
+            [out, annotation("_COM_Outptr_")] void **ppUnk);
 
     HRESULT Present1(
         [in] UINT SyncInterval,
@@ -286,14 +286,14 @@ interface IDXGIFactory2 :
         [in, annotation("_In_")] const DXGI_SWAP_CHAIN_DESC1 *pDesc,
         [in, annotation("_In_opt_")] const DXGI_SWAP_CHAIN_FULLSCREEN_DESC *pFullscreenDesc,
         [in, annotation("_In_opt_")] IDXGIOutput *pRestrictToOutput,
-        [out, annotation("_Out_")] IDXGISwapChain1 **ppSwapChain );
+        [out, annotation("_COM_Outptr_")] IDXGISwapChain1 **ppSwapChain );
 
     HRESULT CreateSwapChainForCoreWindow(
         [in, annotation("_In_")] IUnknown *pDevice,
         [in, annotation("_In_")] IUnknown *pWindow,
         [in, annotation("_In_")] const DXGI_SWAP_CHAIN_DESC1 *pDesc,
         [in, annotation("_In_opt_")] IDXGIOutput *pRestrictToOutput,
-        [out, annotation("_Out_")] IDXGISwapChain1 **ppSwapChain );
+        [out, annotation("_COM_Outptr_")] IDXGISwapChain1 **ppSwapChain );
 
     HRESULT GetSharedResourceAdapterLuid(
         [annotation("_In_")] HANDLE hResource,
@@ -327,7 +327,7 @@ interface IDXGIFactory2 :
         [in, annotation("_In_")] IUnknown *pDevice,
         [in, annotation("_In_")] const DXGI_SWAP_CHAIN_DESC1 *pDesc,
         [in, annotation("_In_opt_")] IDXGIOutput *pRestrictToOutput,
-        [out, annotation("_Outptr_")] IDXGISwapChain1 **ppSwapChain );
+        [out, annotation("_COM_Outptr_")] IDXGISwapChain1 **ppSwapChain );
 };
 
 //--------------------------------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ interface IDXGIOutput1 :
         [in, annotation("_In_opt_")] IUnknown * pConcernedDevice );
     HRESULT GetDisplaySurfaceData1( [in, annotation("_In_")] IDXGIResource *pDestination );
     HRESULT DuplicateOutput([in, annotation("_In_")] IUnknown    *pDevice,
-                            [out, annotation("_Out_")] IDXGIOutputDuplication **ppOutputDuplication);
+                            [out, annotation("_COM_Outptr_")] IDXGIOutputDuplication **ppOutputDuplication);
 };
 
 cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) */")
