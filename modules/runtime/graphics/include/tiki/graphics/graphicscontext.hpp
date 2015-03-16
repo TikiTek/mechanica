@@ -81,16 +81,16 @@ namespace tiki
 		void				setDepthStencilState( const DepthStencilState* pDepthStencilState );
 		void				setRasterizerState( const RasterizerState* pRasterizerState );
 
-		void				setIndexBuffer( const IndexBuffer& buffer );
-		void				setVertexBuffer( uint slot, const VertexBuffer& buffer );
+		void				setIndexBuffer( const IndexBuffer& indexBuffer );
+		void				setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer );
 
 		void				setVertexShaderSamplerState( uint slot, const SamplerState* pSampler );
 		void				setVertexShaderTexture( uint slot, const TextureData* pTextureData );
-		void				setVertexShaderConstant( uint slot, const ConstantBuffer& buffer );
+		void				setVertexShaderConstant( uint slot, const ConstantBuffer& constantBuffer );
 
 		void				setPixelShaderSamplerState( uint slot, const SamplerState* pSampler );
 		void				setPixelShaderTexture( uint slot, const TextureData* pTextureData );
-		void				setPixelShaderConstant( uint slot, const ConstantBuffer& buffer );
+		void				setPixelShaderConstant( uint slot, const ConstantBuffer& constantBuffer );
 
 		void				setPrimitiveTopology( PrimitiveTopology topology );
 

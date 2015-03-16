@@ -88,18 +88,15 @@ namespace tiki
 
 	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
 	{
-		float4 floatColor;
-		color::toFloat4( floatColor, color );
-		
-		UINT depthClearFlags = 0u;
+		D3D12_CLEAR_FLAG depthClearFlags = (D3D12_CLEAR_FLAG)0u;
 		if ( isBitSet( clearMask, ClearMask_Depth ) )
 		{
-			depthClearFlags |= D3D10_CLEAR_DEPTH;
+			depthClearFlags |= D3D12_CLEAR_DEPTH;
 		}
 
 		if ( isBitSet( clearMask, ClearMask_Stencil ) )
 		{
-			depthClearFlags |= D3D10_CLEAR_STENCIL;
+			depthClearFlags |= D3D12_CLEAR_STENCIL;
 		}
 
 		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthHeap != nullptr )
@@ -107,22 +104,11 @@ namespace tiki
 			m_platformData.pCommandList->ClearDepthStencilView( renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(), depthClearFlags, depthValue, stencilValue, nullptr, 0u );
 		}
 
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color1 == ClearMask_Color0 << 1u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color2 == ClearMask_Color0 << 2u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color3 == ClearMask_Color0 << 3u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color4 == ClearMask_Color0 << 4u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color5 == ClearMask_Color0 << 5u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color6 == ClearMask_Color0 << 6u );
-		//TIKI_COMPILETIME_ASSERT( ClearMask_Color7 == ClearMask_Color0 << 7u );
-		//for (uint i = 0u; i < renderTarget.m_colorBufferCount; ++i)
-		//{
-		//	if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
-		//	{
-		//	}
-		//}
-
 		if( renderTarget.m_platformData.pColorHeap != nullptr )
 		{
+			float4 floatColor;
+			color::toFloat4( floatColor, color );
+
 			m_platformData.pCommandList->ClearRenderTargetView( renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(), &floatColor.x, nullptr, 0u );
 		}
 	}
@@ -313,12 +299,22 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		m_platformData.pCommandList->SetIndexBuffer( &indexBuffer.m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+		D3D12_INDEX_BUFFER_VIEW bufferView;
+		bufferView.BufferLocation	= indexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.SizeInBytes		= UINT( indexBuffer.getCount() * indexBuffer.getIndexType() );
+		bufferView.Format			= graphics::getD3dIndexFormat( indexBuffer.getIndexType() );
+
+		m_platformData.pCommandList->SetIndexBuffer( &bufferView );
 	}
 
-	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& buffer )
+	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer )
 	{
-		m_platformData.pCommandList->SetVertexBuffers( (UINT)slot, &buffer.m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), FALSE, 1u );
+		D3D12_VERTEX_BUFFER_VIEW bufferView;
+		bufferView.BufferLocation	= vertexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.SizeInBytes		= UINT( vertexBuffer.getCount() * vertexBuffer.getStride() );
+		bufferView.StrideInBytes	= UINT( vertexBuffer.getStride() );
+
+		m_platformData.pCommandList->SetVertexBuffers( (UINT)slot, &bufferView, 1u );
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
@@ -336,11 +332,11 @@ namespace tiki
 		unmapBuffer( m_immediateVertexData );
 		TIKI_ASSERT( validateDrawCall() );
 
-		D3D12_VERTEX_BUFFER_VIEW_DESC viewDesc;
-		viewDesc.OffsetInBytes	= 0u;
-		viewDesc.SizeInBytes	= m_immediateVertexCount * m_immediateVertexStride;
-		viewDesc.StrideInBytes	= (UINT)m_immediateVertexStride;
-		m_platformData.pCommandList->SetVertexBuffersSingleUse( 0u, &m_immediateVertexData.m_pBuffer, &viewDesc, 1u );
+		D3D12_VERTEX_BUFFER_VIEW bufferView;
+		bufferView.BufferLocation	= m_immediateVertexData.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.SizeInBytes		= UINT( m_immediateVertexCount * m_immediateVertexStride );
+		bufferView.StrideInBytes	= UINT( m_immediateVertexStride );
+		m_platformData.pCommandList->SetVertexBuffers( 0u, &bufferView, 1u );
 
 		prepareDrawCall();
 		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );
@@ -367,14 +363,14 @@ namespace tiki
 		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
 
 		void* pData;
-		buffer.m_pBuffer->Map( nullptr, &pData );
+		buffer.m_pBuffer->Map( 0u, nullptr, &pData );
 
 		return pData;
 	}
 
 	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
-		buffer.m_pBuffer->Unmap( nullptr );
+		buffer.m_pBuffer->Unmap( 0u, nullptr );
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const
@@ -527,23 +523,28 @@ namespace tiki
 
 			m_platformData.pCommandList->SetDescriptorHeaps( heaps.getBegin(), (UINT)heaps.getCount() );
 
+			for (UINT i = 0u; i < heaps.getCount(); ++i)
+			{
+				m_platformData.pCommandList->SetGraphicsRootDescriptorTable( i, heaps[ i ]->GetGPUDescriptorHandleForHeapStart() );
+			}
+
 			//for( uint i = 0u; i < samplerViews.getCount(); ++i )
 			//{
 			//	const ViewData& viewData = samplerViews[ i ];
 			//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
 			//}
 
-			for( uint i = 0u; i < textureViews.getCount(); ++i )
-			{
-				const ViewHandleDataD3d12& viewData = textureViews[ i ];
-				m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
-			}
+			//for( uint i = 0u; i < textureViews.getCount(); ++i )
+			//{
+			//	const ViewHandleDataD3d12& viewData = textureViews[ i ];
+			//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
+			//}
 
-			for( uint i = 0u; i < constantViews.getCount(); ++i )
-			{
-				const ViewHandleDataD3d12& viewData = constantViews[ i ];
-				m_platformData.pCommandList->SetGraphicsRootConstantBufferView( viewData.slot, viewData.handle );
-			}
+			//for( uint i = 0u; i < constantViews.getCount(); ++i )
+			//{
+			//	const ViewHandleDataD3d12& viewData = constantViews[ i ];
+			//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
+			//}
 		}
 	}
 }

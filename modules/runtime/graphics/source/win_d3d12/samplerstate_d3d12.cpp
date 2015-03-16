@@ -78,7 +78,7 @@ namespace tiki
 		samplerDesc.BorderColor[ 2 ]	= color::getFloatChannelB( creationParamter.borderColor );
 		samplerDesc.BorderColor[ 3 ]	= color::getFloatChannelA( creationParamter.borderColor );
 		samplerDesc.MinLOD				= 0;
-		samplerDesc.MaxLOD				= D3D11_FLOAT32_MAX;
+		samplerDesc.MaxLOD				= D3D12_FLOAT32_MAX;
 
 		TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 		heapDesc.NumDescriptors	= 1u;

@@ -30,11 +30,11 @@ namespace tiki
 
 		typedef FixedSizedArray< GraphicsContextPipelineState, GraphicsSystemLimits_MaxPipelineStates > PipelineStateArray;
 
-		ID3D12Device*			pDevice;
-		ID3D12CommandList*		pCommandList;
-		ID3D12RootSignature*	pRootSignature;
+		ID3D12Device*				pDevice;
+		ID3D12GraphicsCommandList*	pCommandList;
+		ID3D12RootSignature*		pRootSignature;
 
-		PipelineStateArray		pipelineStates;
+		PipelineStateArray			pipelineStates;
 	};
 }
 

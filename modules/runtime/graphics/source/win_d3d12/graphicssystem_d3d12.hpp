@@ -21,6 +21,7 @@ namespace tiki
 			pDevice						= nullptr;
 			pRootSignature				= nullptr;
 			pSwapChain					= nullptr;
+			pFence						= nullptr;
 
 			pBackBufferColor					= nullptr;
 			pBackBufferColorDescriptionHeap		= nullptr;
@@ -29,14 +30,16 @@ namespace tiki
 
 			swapBufferCount				= 0u;
 			currentSwapBufferIndex		= 0u;
+			currentFench				= 0u;
 		}
 
 		ID3D12CommandAllocator*		pCommandAllocator;
-		ID3D12CommandList*			pCommandList;
+		ID3D12GraphicsCommandList*	pCommandList;
 		ID3D12CommandQueue*			pCommandQueue;
 		ID3D12Device*				pDevice;
 		ID3D12RootSignature*		pRootSignature;
 		IDXGISwapChain*				pSwapChain;
+		ID3D12Fence*				pFence;
 
 		ID3D12Resource*				pBackBufferColor;
 		ID3D12DescriptorHeap*		pBackBufferColorDescriptionHeap;
@@ -45,8 +48,11 @@ namespace tiki
 
 		UploadHeapD3d12				uploadHeap;
 
+		HANDLE						waitEventHandle;
+
 		uint						swapBufferCount;
 		uint						currentSwapBufferIndex;
+		uint64						currentFench;
 	};
 }
 

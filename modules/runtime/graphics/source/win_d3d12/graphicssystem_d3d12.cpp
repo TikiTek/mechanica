@@ -17,6 +17,7 @@ namespace tiki
 		static bool initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
 		static bool initBackBuffer( GraphicsSystemPlatformData& data );
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
+		static bool initWaitForGpu( GraphicsSystemPlatformData& data );
 
 		static void resetDeviceState( const GraphicsSystemPlatformData& data );
 	}
@@ -26,9 +27,9 @@ namespace tiki
 		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
 	}
 
-	ID3D12Device*		graphics::getDevice( GraphicsSystem& graphicsSystem )		{ return getPlatformData( graphicsSystem ).pDevice; }
-	ID3D12CommandList*	graphics::getCommandList( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pCommandList; }
-	UploadHeapD3d12&	graphics::getUploadHeap( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).uploadHeap; }
+	ID3D12Device*				graphics::getDevice( GraphicsSystem& graphicsSystem )		{ return getPlatformData( graphicsSystem ).pDevice; }
+	ID3D12GraphicsCommandList*	graphics::getCommandList( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pCommandList; }
+	UploadHeapD3d12&			graphics::getUploadHeap( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).uploadHeap; }
 	
 	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
 	{
@@ -103,6 +104,12 @@ namespace tiki
 			return false;
 		}
 
+		if ( !graphics::initWaitForGpu( m_platformData ) )
+		{
+			disposePlatform();
+			return false;
+		}
+
 		return true;
 	}
 
@@ -125,16 +132,21 @@ namespace tiki
 		
 		if ( m_platformData.pCommandQueue != nullptr )
 		{
-			HANDLE eventHandle = CreateEventEx( nullptr, FALSE, FALSE, EVENT_ALL_ACCESS );
+			// wait for the GPU to be done with all resources
+			const UINT64 fenceToWait = m_platformData.currentFench;
+			const UINT64 lastCompletedFence = m_platformData.pFence->GetCompletedValue();
 
-			const UINT64 fence = m_platformData.pCommandQueue->AdvanceFence();
-			if( m_platformData.pCommandQueue->GetLastCompletedFence( ) < fence )
+			// Signal and increment the current fence
+			m_platformData.pCommandQueue->Signal( m_platformData.pFence, m_platformData.currentFench);
+			m_platformData.currentFench++;
+
+			if ( lastCompletedFence < fenceToWait )
 			{
-				TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandQueue->SetEventOnFenceCompletion( fence, eventHandle ) ) );
-				WaitForSingleObject( eventHandle, INFINITE );
+				TIKI_VERIFY( m_platformData.pFence->SetEventOnCompletion( fenceToWait, m_platformData.waitEventHandle ) );
+				WaitForSingleObject( m_platformData.waitEventHandle, INFINITE );
 			}
 
-			CloseHandle( eventHandle );
+			CloseHandle( m_platformData.waitEventHandle );
 		}
 
 		if( m_platformData.pSwapChain != nullptr )
@@ -189,11 +201,20 @@ namespace tiki
 	}
 
 	GraphicsContext& GraphicsSystem::beginFrame()
-	{	
+	{
+		const UINT64 lastCompletedFence = m_platformData.pFence->GetCompletedValue();
+		if (m_platformData.currentFench != 0u && m_platformData.currentFench > lastCompletedFence)
+		{
+			TIKI_VERIFY( m_platformData.pFence->SetEventOnCompletion( m_platformData.currentFench, m_platformData.waitEventHandle ) );
+			WaitForSingleObject( m_platformData.waitEventHandle , INFINITE );
+		}
+
 		m_frameNumber++;
 		
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
-		m_platformData.pCommandQueue->ExecuteCommandList( m_platformData.pCommandList );
+
+		ID3D12CommandList* pCommandList = m_platformData.pCommandList;
+		m_platformData.pCommandQueue->ExecuteCommandLists( 1u, &pCommandList );
 
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandAllocator->Reset() ) );
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Reset( m_platformData.pCommandAllocator, nullptr ) ) );
@@ -220,12 +241,16 @@ namespace tiki
 		);
 
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
-		m_platformData.pCommandQueue->ExecuteCommandList( m_platformData.pCommandList );
-		m_platformData.pCommandQueue->AdvanceFence();
+		ID3D12CommandList* apCommandList[] = { m_platformData.pCommandList };
+		m_platformData.pCommandQueue->ExecuteCommandLists( TIKI_COUNT( apCommandList ), apCommandList );
 		
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pSwapChain->Present( 1, 0 ) ) );
+		
+		m_platformData.uploadHeap.finalizeFrame( (uint)m_platformData.currentFench );
 
-		m_platformData.uploadHeap.finalizeFrame( (uint)m_platformData.pCommandQueue->GetLastCompletedFence() );
+		// signal and increment the current fence
+		m_platformData.pCommandQueue->Signal( m_platformData.pFence, m_platformData.currentFench );
+		m_platformData.currentFench++;
 
 		m_platformData.currentSwapBufferIndex = (m_platformData.currentSwapBufferIndex + 1u) % m_platformData.swapBufferCount;
 
@@ -250,7 +275,7 @@ namespace tiki
 		swapDesc.SampleDesc.Count					= 1;
 		swapDesc.Windowed							= !params.fullScreen;
 		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-		//swapDesc.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		//swapDesc.Flags							= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		data.swapBufferCount = swapDesc.BufferCount;
 
@@ -273,8 +298,8 @@ namespace tiki
 			TIKI_BREAK( "[graphics] renderer type not supported.\n" );
 			break;
 		}
-
-		HRESULT result = D3D12CreateDeviceAndSwapChain(
+		
+		HRESULT result = D3D12CreateDevice(
 			nullptr,
 			rendererType,
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
@@ -284,10 +309,28 @@ namespace tiki
 #endif
 			D3D_FEATURE_LEVEL_9_1,
 			D3D12_SDK_VERSION,
-			&swapDesc,
-			IID_PPV_ARGS( &data.pSwapChain ),
-			IID_PPV_ARGS( &data.pDevice )
+			IID_PPV_ARGS( &data.pDevice)
 		);
+		
+		if ( FAILED( result ) )
+		{
+			return false;
+		}
+
+		IDXGIFactory1* pDxgiFactory = nullptr;
+		result = CreateDXGIFactory1( IID_PPV_ARGS( &pDxgiFactory ) );
+		if ( FAILED( result ) || pDxgiFactory == nullptr )
+		{
+			return false;
+		}
+
+		result = pDxgiFactory->CreateSwapChain(
+			data.pDevice,
+			&swapDesc,
+			&data.pSwapChain
+		);
+
+		safeRelease( &pDxgiFactory );
 
 		return SUCCEEDED( result );
 	}
@@ -305,7 +348,7 @@ namespace tiki
 			return false;
 		}
 
-		if( FAILED( data.pDevice->CreateCommandList( D3D12_COMMAND_LIST_TYPE_DIRECT, data.pCommandAllocator, nullptr, &data.pCommandList ) ) )
+		if( FAILED( data.pDevice->CreateCommandList( D3D12_COMMAND_LIST_TYPE_DIRECT, data.pCommandAllocator, nullptr, IID_PPV_ARGS( &data.pCommandList ) ) ) )
 		{
 			return false;
 		}
@@ -351,6 +394,12 @@ namespace tiki
 			return false;
 		}
 
+		result = data.pDevice->CreateFence(0, D3D12_FENCE_MISC_NONE, &data.pFence);
+		if ( FAILED( result ) )
+		{
+			return false;
+		}
+
 		return true;
 	}
 
@@ -377,11 +426,29 @@ namespace tiki
 
 	static bool graphics::initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize )
 	{
-		HRESULT result = data.pDevice->CreateDefaultResource(
-			&CD3D11_RESOURCE_DESC( CD3D12_RESOURCE_DESC::Tex2D( DXGI_FORMAT_R24G8_TYPELESS, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT | D3D12_RESOURCE_MISC_NO_UNORDERED_ACCESS | D3D12_RESOURCE_MISC_DEPTH_STENCIL ) ),
-			nullptr,
+		TIKI_DECLARE_STACKANDZERO( D3D12_DEPTH_STENCIL_VIEW_DESC, depthStencilDesc );
+		depthStencilDesc.Format			= DXGI_FORMAT_D32_FLOAT;
+		depthStencilDesc.ViewDimension	= D3D12_DSV_DIMENSION_TEXTURE2D;
+		depthStencilDesc.Flags			= D3D12_DSV_NONE;
+
+		TIKI_DECLARE_STACKANDZERO( D3D12_CLEAR_VALUE, depthClearValue );
+		depthClearValue.Format				= DXGI_FORMAT_D32_FLOAT;
+		depthClearValue.DepthStencil.Depth	= 1.0f;
+
+		HRESULT result = data.pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+			D3D12_HEAP_MISC_NONE,
+			&CD3D12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_ALLOW_DEPTH_STENCIL),
+			D3D12_RESOURCE_USAGE_INITIAL,
+			&depthClearValue,
 			IID_PPV_ARGS( &data.pBackBufferDepth )
 		);
+		
+		//HRESULT result = data.pDevice->CreateDefaultResource(
+		//	&CD3D11_RESOURCE_DESC( CD3D12_RESOURCE_DESC::Tex2D( DXGI_FORMAT_R24G8_TYPELESS, backBufferSize.x, backBufferSize.y, 1u, 0u, 1u, 0u, D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT | D3D12_RESOURCE_MISC_NO_UNORDERED_ACCESS | D3D12_RESOURCE_MISC_DEPTH_STENCIL ) ),
+		//	nullptr,
+		//	IID_PPV_ARGS( &data.pBackBufferDepth )
+		//);
 
 		if( FAILED( result ) )
 		{
@@ -393,7 +460,6 @@ namespace tiki
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 			heapDesc.NumDescriptors = 1u;
 			heapDesc.Type			= D3D12_DSV_DESCRIPTOR_HEAP;
-			heapDesc.Flags			= 0u;
 
 			result = data.pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &data.pBackBufferDepthDescriptionHeap ) );
 			if( FAILED( result ) )
@@ -412,7 +478,25 @@ namespace tiki
 		return true;
 	}
 	
-	void graphics::setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter )
+	bool initWaitForGpu( GraphicsSystemPlatformData& data )
+	{
+		data.waitEventHandle = CreateEventEx( nullptr, false, false, EVENT_ALL_ACCESS );
+
+		const uint64 fenchToWait = data.currentFench;
+		if ( FAILED( data.pCommandQueue->Signal( data.pFence, fenchToWait ) ) )
+		{
+			return false;
+		}
+		data.currentFench++;
+
+		if ( FAILED( data.pFence->SetEventOnCompletion( fenchToWait, data.waitEventHandle ) ) )
+		{
+			return false;
+		}
+		WaitForSingleObject( data.waitEventHandle, INFINITE );
+	}
+
+	void graphics::setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D12_RESOURCE_BARRIER_DESC, descBarrier );
 		descBarrier.Type					= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

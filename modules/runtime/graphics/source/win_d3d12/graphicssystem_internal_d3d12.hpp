@@ -10,15 +10,18 @@ namespace tiki
 {
 	class GraphicsSystem;
 	class UploadHeapD3d12;
+	struct GraphicsSystemPlatformData;
 
 	namespace graphics
 	{
 		GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 		ID3D12Device*				getDevice( GraphicsSystem& graphicsSystem );
-		ID3D12CommandList*			getCommandList( GraphicsSystem& graphicsSystem );
+		ID3D12GraphicsCommandList*	getCommandList( GraphicsSystem& graphicsSystem );
 		UploadHeapD3d12&			getUploadHeap( GraphicsSystem& graphicsSystem );
 
-		void						setResourceBarrier( ID3D12CommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
+		DXGI_FORMAT					getD3dIndexFormat( IndexType type );
+
+		void						setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
 
 		template<class T>
 		TIKI_FORCE_INLINE void safeRelease( T** ppObject )

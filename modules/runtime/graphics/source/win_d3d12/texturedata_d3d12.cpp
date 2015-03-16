@@ -40,17 +40,17 @@ namespace tiki
 
 		if ( isBitSet( flags, TextureFlags_RenderTarget ) )
 		{
-			result |= D3D12_RESOURCE_MISC_RENDER_TARGET;
+			result |= D3D12_RESOURCE_MISC_ALLOW_RENDER_TARGET;
 		}
 
 		if ( isBitSet( flags, TextureFlags_DepthStencil ) )
 		{
-			result |= D3D12_RESOURCE_MISC_DEPTH_STENCIL;
+			result |= D3D12_RESOURCE_MISC_ALLOW_DEPTH_STENCIL;
 		}
 
 		if ( !isBitSet( flags, TextureFlags_ShaderInput ) )
 		{
-			result |= D3D12_RESOURCE_MISC_NO_SHADER_RESOURCE;
+			result |= D3D12_RESOURCE_MISC_DENY_SHADER_RESOURCE;
 		}
 
 		return result;
@@ -136,13 +136,12 @@ namespace tiki
 			break;
 		}
 
-		resourceDesc.MiscFlags |= D3D12_RESOURCE_MISC_NO_UNORDERED_ACCESS | D3D12_RESOURCE_MISC_NO_STREAM_OUTPUT;
-
 		HRESULT result = pDevice->CreateCommittedResource(
 			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
 			D3D12_HEAP_MISC_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_USAGE_INITIAL,
+			nullptr,
 			IID_PPV_ARGS( &m_platformData.pResource )
 		);
 
@@ -156,7 +155,7 @@ namespace tiki
 		{
 
 			UploadHeapD3d12& uploadHeap = graphics::getUploadHeap( graphicsSystem );
-			ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+			ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
 
 			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
 
@@ -191,7 +190,7 @@ namespace tiki
 				TIKI_DECLARE_STACKANDZERO( D3D12_SELECT_SUBRESOURCE, subResource );
 				subResource.Subresource = (UINT)mipLevel;
 
-				pCommandList->CopySubresourceRegion(
+				pCommandList->copy(
 					m_platformData.pResource,
 					D3D12_SUBRESOURCE_VIEW_SELECT_SUBRESOURCE,
 					&subResource,

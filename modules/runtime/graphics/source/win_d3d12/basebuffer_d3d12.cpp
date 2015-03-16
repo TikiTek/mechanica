@@ -2,6 +2,7 @@
 #include "tiki/graphics/basebuffer.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
@@ -48,21 +49,7 @@ namespace tiki
 		return s_aD3dResourceUsage[ binding ];
 	}
 
-	static D3D12_DESCRIPTOR_HEAP_TYPE getD3dDescriptorHeapType( GraphicsBufferType binding  )
-	{
-		static const D3D12_DESCRIPTOR_HEAP_TYPE s_aD3dDescriptorHeapType[ ] =
-		{
-			D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP,
-			D3D12_IBV_DESCRIPTOR_HEAP,
-			D3D12_VBV_DESCRIPTOR_HEAP
-		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dDescriptorHeapType ) == GraphicsBufferType_Count );
-
-		TIKI_ASSERT( binding < GraphicsBufferType_Count );
-		return s_aD3dDescriptorHeapType[ binding ];
-	}
-
-	static DXGI_FORMAT getD3dIndexFormat( IndexType type )
+	DXGI_FORMAT graphics::getD3dIndexFormat( IndexType type )
 	{
 		if( type == IndexType_UInt16 )
 		{
@@ -107,6 +94,7 @@ namespace tiki
 			D3D12_HEAP_MISC_NONE,
 			&CD3D12_RESOURCE_DESC::Buffer( size ),
 			resourceUsage,
+			nullptr,
 			IID_PPV_ARGS( &m_pBuffer )
 		);
 
@@ -126,6 +114,7 @@ namespace tiki
 					D3D12_HEAP_MISC_NONE,
 					&CD3D12_RESOURCE_DESC::Buffer( size ),
 					D3D12_RESOURCE_USAGE_GENERIC_READ,
+					nullptr,
 					IID_PPV_ARGS( &pUploadBuffer )
 				);
 
@@ -140,7 +129,7 @@ namespace tiki
 				initData.RowPitch	= size;
 				initData.SlicePitch	= size;
 
-				ID3D12CommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+				ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
 				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
 				UpdateSubresources<1>( pCommandList, m_pBuffer, pUploadBuffer, 0, 0, 1, &initData );
 				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_GENERIC_READ );
@@ -151,65 +140,35 @@ namespace tiki
 			else
 			{
 				void* pTargetData = nullptr;
-				m_pBuffer->Map( nullptr, &pTargetData );
+				m_pBuffer->Map( 0u, nullptr, &pTargetData );
 				memory::copy( pTargetData, pInitData, size );
-				m_pBuffer->Unmap( nullptr );
+				m_pBuffer->Unmap( 0u, nullptr );
 			}
 		}
 
-		// create descriptor heap
+		if ( binding == GraphicsBufferType_ConstantBuffer )
 		{
+			// create descriptor heap
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 			heapDesc.NumDescriptors	= 1u;
-			heapDesc.Type			= getD3dDescriptorHeapType( binding );
-
-			if( binding == GraphicsBufferType_ConstantBuffer )
-			{
-				heapDesc.Flags		= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
-			}
+			heapDesc.Type			= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
+			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
 
 			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_pDescriptorHeap ) ) ) )
 			{
 				dispose( graphicsSystem );
 				return false;
 			}
+
+			TIKI_DECLARE_STACKANDZERO( D3D12_CONSTANT_BUFFER_VIEW_DESC, viewDesc );
+			viewDesc.SizeInBytes = (UINT)size;
+
+			pDevice->CreateConstantBufferView( &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 		}
-
-		switch( binding )
+		else
 		{
-		case GraphicsBufferType_ConstantBuffer:
-			{
-				TIKI_DECLARE_STACKANDZERO( D3D12_CONSTANT_BUFFER_VIEW_DESC, viewDesc );
-				viewDesc.SizeInBytes = (UINT)size;
-
-				pDevice->CreateConstantBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-			}
-			break;
-
-		case GraphicsBufferType_IndexBuffer:
-			{
-				IndexBuffer* pBuffer = static_cast<IndexBuffer*>(this);
-
-				TIKI_DECLARE_STACKANDZERO( D3D12_INDEX_BUFFER_VIEW_DESC, viewDesc );
-				viewDesc.Format			= getD3dIndexFormat( pBuffer->getIndexType() );
-				viewDesc.SizeInBytes	= (UINT)size;
-
-				pDevice->CreateIndexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-			}
-			break;
-
-		case GraphicsBufferType_VertexBuffer:
-			{
-				VertexBuffer* pBuffer = static_cast<VertexBuffer*>(this);
-
-				TIKI_DECLARE_STACKANDZERO( D3D12_VERTEX_BUFFER_VIEW_DESC, viewDesc );
-				viewDesc.SizeInBytes	= (UINT)size;
-				viewDesc.StrideInBytes	= (UINT)pBuffer->getStride( );
-
-				pDevice->CreateVertexBufferView( m_pBuffer, &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-			}
-			break;
-		}		
+			m_pDescriptorHeap = nullptr;
+		}
 
 		return true;
 	}
