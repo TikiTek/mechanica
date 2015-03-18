@@ -195,7 +195,7 @@ namespace tiki
 		while (imax >= imin)
 		{
 			const int imid =  ( imax + imin ) / 2u;
-			if ( imid < 0 || imid >= m_count )
+			if ( imid < 0 || imid >= (int)m_count )
 			{
 				return TIKI_SIZE_T_MAX;
 			}

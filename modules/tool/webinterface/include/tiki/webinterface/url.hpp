@@ -44,6 +44,9 @@ namespace tiki
 		string	getFragment() const;
 		void	setFragment( const string& fragment );
 
+		string	getUrl() const;
+		string	getUrlWithoutQuery() const;
+
 	private:
 
 		// URL:
