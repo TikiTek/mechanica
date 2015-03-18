@@ -146,7 +146,58 @@ namespace tiki
 
 	bool Url::match( const Url& other ) const
 	{
-		return false;
+		const string thisUrl = getUrlWithoutQuery();
+		const string otherUrl = other.getUrlWithoutQuery();
+
+		int indexOfStart = thisUrl.indexOf( '*' );
+		if ( indexOfStart < 0 )
+		{
+			return thisUrl == otherUrl;
+		}
+		else
+		{
+			int thisIndex = 0u;
+			int otherIndex = 0u;
+			int length = indexOfStart;
+
+			while (true)
+			{
+				const string thisPart = thisUrl.subString( thisIndex, length );
+				const string otherPart = thisUrl.subString( thisIndex, length );
+
+				if ( thisPart != otherPart )
+				{
+					return false;
+				}
+
+				thisIndex += length + 1;
+				otherIndex += length;
+
+				if ( thisIndex >= (int)thisUrl.getLength() )
+				{
+					break;
+				}
+
+				const char nextChar = thisUrl[thisIndex];
+				otherIndex = otherUrl.indexOf( nextChar, otherIndex );
+				if ( otherIndex < 0 )
+				{
+					otherIndex = otherUrl.getLength();
+				}
+
+				indexOfStart = thisUrl.indexOf( '*', thisIndex );
+				if ( indexOfStart < 0 )
+				{
+					length = thisUrl.getLength() - thisIndex;
+				}
+				else
+				{
+					length = indexOfStart - thisIndex;
+				}
+			}			
+
+			return true;
+		}
 	}
 
 	string Url::getProtocol() const
@@ -297,5 +348,15 @@ namespace tiki
 		m_urlString += formatString( "#%s", fragment.cStr() );
 
 		m_fragmentLength = (int)fragment.getLength();
+	}
+
+	string Url::getUrl() const
+	{
+		return m_urlString;
+	}
+
+	string Url::getUrlWithoutQuery() const
+	{
+		return m_urlString.subString( 0u, m_portEndIndex + m_pathLength );
 	}
 }
