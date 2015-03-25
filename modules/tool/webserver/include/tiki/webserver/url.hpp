@@ -52,20 +52,22 @@ namespace tiki
 		// URL:
 		// protocol:[//][username[:password]@]domain[:port][/path][?var1=value2[&var2=value2]]
 
-		string				m_urlString;
+		typedef Map<string, string> QueryMap;
 
-		int					m_protocolLength;
-		int					m_protocolEndIndex;
-		int					m_usernameLength;
-		int					m_passwordLength;
-		int					m_authDataEndIndex;
-		int					m_domainLength;
-		int					m_portLength;
-		int					m_portEndIndex;
-		int					m_pathLength;
-		int					m_fragmentLength;
+		string		m_urlString;
 
-		Map<string, string>	m_arguments;
+		int			m_protocolLength;
+		int			m_protocolEndIndex;
+		int			m_usernameLength;
+		int			m_passwordLength;
+		int			m_authDataEndIndex;
+		int			m_domainLength;
+		int			m_portLength;
+		int			m_portEndIndex;
+		int			m_pathLength;
+		int			m_fragmentLength;
+
+		QueryMap	m_query;
 
 	};
 }

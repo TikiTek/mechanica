@@ -19,12 +19,12 @@ namespace tiki
 		TIKI_FORCE_INLINE				Map( const Map< TKey, TValue >& copy );
 		TIKI_FORCE_INLINE				~Map();
 
-		TIKI_FORCE_INLINE void			clear();
 		TIKI_FORCE_INLINE void			dispose();
+
+		TIKI_FORCE_INLINE void			clear();
 
 		TIKI_FORCE_INLINE uint			getCount() const;
 		TIKI_FORCE_INLINE bool			isEmpty() const;
-
 
 		TIKI_FORCE_INLINE TValue&		getValueAt( uint index );
 		TIKI_FORCE_INLINE const TValue&	getValueAt( uint index ) const;

@@ -31,12 +31,6 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE void Map<TKey, TValue>::clear()
-	{
-		m_count = 0u;
-	}
-
-	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE void Map<TKey, TValue>::dispose()
 	{
 		if ( m_pData != nullptr )
@@ -47,6 +41,12 @@ namespace tiki
 		m_pData		= nullptr;
 		m_count		= 0u;
 		m_capacity	= 0u;
+	}
+
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE void Map<TKey, TValue>::clear()
+	{
+		m_count = 0u;
 	}
 
 	template<typename TKey, typename TValue>

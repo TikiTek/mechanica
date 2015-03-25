@@ -4,12 +4,12 @@
 
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/webinterface/url.hpp"
+#include "tiki/webserver/url.hpp"
 
 namespace tiki
 {
-	class HttpRequest;
-	class HttpResponse;
+	struct HttpRequest;
+	struct HttpResponse;
 
 	class HttpRequestHandler : public LinkedItem< HttpRequestHandler >
 	{

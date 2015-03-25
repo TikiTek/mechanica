@@ -1,11 +1,11 @@
 
-#include "tiki/webinterface/httpserver.hpp"
+#include "tiki/webserver/httpserver.hpp"
 
 #include "tiki/base/string.hpp"
-#include "tiki/webinterface/httprequest.hpp"
-#include "tiki/webinterface/httprequesthandler.hpp"
-#include "tiki/webinterface/httpresponse.hpp"
-#include "tiki/webinterface/url.hpp"
+#include "tiki/webserver/httprequest.hpp"
+#include "tiki/webserver/httprequesthandler.hpp"
+#include "tiki/webserver/httpresponse.hpp"
+#include "tiki/webserver/url.hpp"
 
 #include "mongoose.h"
 
@@ -68,19 +68,26 @@ namespace tiki
 		else if ( eventType == MG_REQUEST )
 		{
 			HttpRequest request;
-			if ( !request.create( pConnection->uri, pConnection->content ) )
+			if ( !request.url.createFromString( pConnection->uri ) )
 			{
 				return MG_FALSE;
 			}
+			request.pBody = pConnection->content;
 
 			for ( HttpRequestHandler& requestHandler : m_handler )
 			{
-				if ( requestHandler.matchUrl( request.getUrl() ) )
+				if ( requestHandler.matchUrl( request.url ) )
 				{
-					//HttpResponse response;
+					HttpResponse response;
+					requestHandler.handleRequest( response, request );					
 
-					mg_printf_data(pConnection, "%s", "Hello world");
+					if ( response.statusCode == HttpStatusCode_200_OK )
+					{
+						mg_send_data( pConnection, response.content.cStr(), (int)response.content.getLength() );
+						return MG_TRUE;
+					}
 
+					mg_printf_data(pConnection, "%s", "error");
 					return MG_TRUE;
 				}
 			}

@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	class IWebHandler;
+
 	class IWebInterface
 	{
 	public:
@@ -14,6 +16,9 @@ namespace tiki
 		virtual void		dispose() = 0;
 
 		virtual void		update() = 0;
+
+		virtual void		registerRequestHandler( cstring url, IWebHandler* pHandler ) = 0;
+		virtual void		unregisterRequestHandler( IWebHandler* pHandler ) = 0;
 
 	};
 

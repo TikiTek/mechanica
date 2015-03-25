@@ -23,8 +23,11 @@ namespace tiki
 		TIKI_FORCE_INLINE bool			create( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 		TIKI_FORCE_INLINE void			dispose();
 
+		TIKI_FORCE_INLINE void			clear();
+
 		TIKI_FORCE_INLINE uint			getCount() const;
 		TIKI_FORCE_INLINE uint			getCapacity() const;
+		TIKI_FORCE_INLINE bool			isEmpty() const;
 
 		TIKI_FORCE_INLINE TValue&		getValueAt( uint index );
 		TIKI_FORCE_INLINE const TValue&	getValueAt( uint index ) const;
