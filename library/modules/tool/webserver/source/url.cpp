@@ -1,5 +1,5 @@
 
-#include "tiki/webinterface/url.hpp"
+#include "tiki/webserver/url.hpp"
 
 namespace tiki
 {
@@ -111,7 +111,7 @@ namespace tiki
 				const string key = m_urlString.subString( currentIndex, equalsIndex - currentIndex );
 				const string value = m_urlString.subString( equalsIndex + 1, endIndex - (equalsIndex + 1) );
 
-				m_arguments.set(key, value);
+				m_query.set(key, value);
 				currentIndex = endIndex + 1;
 			}
 			while ( endIndex < stringEndIndex );
@@ -136,7 +136,7 @@ namespace tiki
 		m_pathLength		= 0u;
 		m_fragmentLength	= 0u;
 
-		m_arguments.clear();
+		m_query.clear();
 	}
 
 	bool Url::isValid() const
@@ -182,13 +182,13 @@ namespace tiki
 				otherIndex = otherUrl.indexOf( nextChar, otherIndex );
 				if ( otherIndex < 0 )
 				{
-					otherIndex = otherUrl.getLength();
+					otherIndex = (int)otherUrl.getLength();
 				}
 
 				indexOfStart = thisUrl.indexOf( '*', thisIndex );
 				if ( indexOfStart < 0 )
 				{
-					length = thisUrl.getLength() - thisIndex;
+					length = (int)thisUrl.getLength() - thisIndex;
 				}
 				else
 				{
@@ -284,7 +284,7 @@ namespace tiki
 		const string portString = formatString( ":%s", port.cStr() );
 		m_urlString = m_urlString.insert( portString, portIndex );
 
-		int lengthDiff = port.getLength() - m_portLength;
+		int lengthDiff = (int)port.getLength() - m_portLength;
 		m_portLength = (int)port.getLength();
 		m_portEndIndex += lengthDiff;
 	}
@@ -301,13 +301,13 @@ namespace tiki
 		const string pathString = ( path[ 0u ] != '/' ? "/" : "" ) + path;
 		m_urlString = m_urlString.insert( pathString, m_portEndIndex );
 
-		m_pathLength = pathString.getLength();
+		m_pathLength = (int)pathString.getLength();
 	}
 
 	string Url::getQueryValue( const string& key ) const
 	{
 		string value;
-		m_arguments.findValue( &value, key );
+		m_query.findValue( &value, key );
 
 		return value;
 	}
@@ -315,7 +315,7 @@ namespace tiki
 	void Url::setQueryValue( const string& key, const string& value )
 	{
 		string oldValue;
-		if ( m_arguments.findValue( &oldValue, key ) )
+		if ( m_query.findValue( &oldValue, key ) )
 		{
 			const string oldPair = formatString( "%s=%s", key.cStr(), oldValue.cStr() );
 			const string newPair = formatString( "%s=%s", key.cStr(), value.cStr() );
@@ -324,16 +324,16 @@ namespace tiki
 		else
 		{
 			const int fragmentIndex = (int)m_urlString.getLength() - m_fragmentLength - 1;
-			const string newPair = formatString( "%s%s=%s", ( m_arguments.isEmpty() ? "?" : "&" ), key.cStr(), value.cStr() );
+			const string newPair = formatString( "%s%s=%s", ( m_query.isEmpty() ? "?" : "&" ), key.cStr(), value.cStr() );
 			m_urlString = m_urlString.insert( newPair, fragmentIndex );
 		}
 
-		m_arguments.set( key, value );
+		m_query.set( key, value );
 	}
 
 	string Url::getFragment() const
 	{
-		const int fragmentIndex = m_urlString.getLength() - m_fragmentLength;
+		const int fragmentIndex = (int)m_urlString.getLength() - m_fragmentLength;
 		return m_urlString.subString( fragmentIndex, m_fragmentLength );
 	}
 
@@ -341,7 +341,7 @@ namespace tiki
 	{
 		if ( m_fragmentLength > 0 )
 		{
-			const int fragmentIndex = m_urlString.getLength() - m_fragmentLength - 1;
+			const int fragmentIndex = (int)m_urlString.getLength() - m_fragmentLength - 1;
 			m_urlString = m_urlString.remove( fragmentIndex, m_fragmentLength + 1u );
 		}
 

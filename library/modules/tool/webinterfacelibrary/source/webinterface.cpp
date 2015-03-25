@@ -5,6 +5,8 @@
 #include "tiki/base/types.hpp"
 #include "tiki/threading/thread.hpp"
 
+#include "webrquesthandler.hpp"
+
 namespace tiki
 {
 	IWebInterface* createWebInterface()
@@ -38,5 +40,18 @@ namespace tiki
 	void WebInterface::update()
 	{
 		m_server.update();
+	}
+
+	void WebInterface::registerRequestHandler( cstring pUrlPath, IWebHandler* pHandler )
+	{
+		WebRquestHandler* pWebHandler = TIKI_NEW WebRquestHandler();
+		pWebHandler->create( pUrlPath, pHandler );
+
+		m_server.registerRequestHandler( *pWebHandler );
+	}
+
+	void WebInterface::unregisterRequestHandler( IWebHandler* pHandler )
+	{
+		//m_server.unregisterRequestHandler( handler );
 	}
 }

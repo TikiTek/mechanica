@@ -139,6 +139,8 @@ namespace tiki
 
 #define TIKI_DEFAULT_ALIGNMENT 0xffffffffu
 
+#	define TIKI_PURE				= 0
+
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 #	define TIKI_PRE_ALIGN( var )	__declspec( align( var ) )

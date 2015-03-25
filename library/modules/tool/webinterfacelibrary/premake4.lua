@@ -7,7 +7,7 @@ module:add_files( "source/*.*" );
 module:add_dependency( "config" );
 module:add_dependency( "threading" );
 module:add_dependency( "toollibraries" );
-module:add_dependency( "webinterface" );
+module:add_dependency( "webserver" );
 
 local project = Project:new(
 	"webinterfacelibrary",

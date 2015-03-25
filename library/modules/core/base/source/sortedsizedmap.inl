@@ -54,6 +54,12 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE void tiki::SortedSizedMap<TKey, TValue>::clear()
+	{
+		m_count = 0u;
+	}
+
+	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCount() const
 	{
 		return m_count;
@@ -63,6 +69,12 @@ namespace tiki
 	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCapacity() const
 	{
 		return m_capacity;
+	}
+
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE bool tiki::SortedSizedMap<TKey, TValue>::isEmpty() const
+	{
+		return m_count == 0u;
 	}
 
 	template<typename TKey, typename TValue>

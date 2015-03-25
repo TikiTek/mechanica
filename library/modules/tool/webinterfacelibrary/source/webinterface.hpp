@@ -4,7 +4,7 @@
 
 #include "tiki/toollibraries/iwebinterrface.hpp"
 
-#include "tiki/webinterface/httpserver.hpp"
+#include "tiki/webserver/httpserver.hpp"
 
 namespace tiki
 {
@@ -19,9 +19,13 @@ namespace tiki
 
 		virtual void		update() TIKI_OVERRIDE;
 
+		virtual void		registerRequestHandler( cstring pUrlPath, IWebHandler* pHandler ) TIKI_OVERRIDE;
+		virtual void		unregisterRequestHandler( IWebHandler* pHandler ) TIKI_OVERRIDE;
+
 	private:
 
 		HttpServer			m_server;
+		
 
 	};
 }
