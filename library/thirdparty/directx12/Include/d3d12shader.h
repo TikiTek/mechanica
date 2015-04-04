@@ -155,21 +155,23 @@ typedef struct _D3D12_SHADER_INPUT_BIND_DESC
     D3D_SRV_DIMENSION           Dimension;      // Dimension (if texture)
     UINT                        NumSamples;     // Number of samples (0 if not MS texture)
     UINT                        Space;          // Register space
+    UINT uID;                                   // Range ID in the bytecode
 } D3D12_SHADER_INPUT_BIND_DESC;
 
-#define D3D_SHADER_REQUIRES_DOUBLES                         0x00000001
-#define D3D_SHADER_REQUIRES_EARLY_DEPTH_STENCIL             0x00000002
-#define D3D_SHADER_REQUIRES_UAVS_AT_EVERY_STAGE             0x00000004
-#define D3D_SHADER_REQUIRES_64_UAVS                         0x00000008
-#define D3D_SHADER_REQUIRES_MINIMUM_PRECISION               0x00000010
-#define D3D_SHADER_REQUIRES_11_1_DOUBLE_EXTENSIONS          0x00000020
-#define D3D_SHADER_REQUIRES_11_1_SHADER_EXTENSIONS          0x00000040
-#define D3D_SHADER_REQUIRES_LEVEL_9_COMPARISON_FILTERING    0x00000080
-#define D3D_SHADER_REQUIRES_TILED_RESOURCES                 0x00000100
-#define D3D_SHADER_REQUIRES_STENCIL_REF                     0x00000200
-#define D3D_SHADER_REQUIRES_INNER_COVERAGE                  0x00000400
-#define D3D_SHADER_REQUIRES_TYPED_UAV_LOAD_ADDITIONAL_FORMATS 0x00000800
-#define D3D_SHADER_REQUIRES_ROVS                            0x00001000
+#define D3D_SHADER_REQUIRES_DOUBLES                                                         0x00000001
+#define D3D_SHADER_REQUIRES_EARLY_DEPTH_STENCIL                                             0x00000002
+#define D3D_SHADER_REQUIRES_UAVS_AT_EVERY_STAGE                                             0x00000004
+#define D3D_SHADER_REQUIRES_64_UAVS                                                         0x00000008
+#define D3D_SHADER_REQUIRES_MINIMUM_PRECISION                                               0x00000010
+#define D3D_SHADER_REQUIRES_11_1_DOUBLE_EXTENSIONS                                          0x00000020
+#define D3D_SHADER_REQUIRES_11_1_SHADER_EXTENSIONS                                          0x00000040
+#define D3D_SHADER_REQUIRES_LEVEL_9_COMPARISON_FILTERING                                    0x00000080
+#define D3D_SHADER_REQUIRES_TILED_RESOURCES                                                 0x00000100
+#define D3D_SHADER_REQUIRES_STENCIL_REF                                                     0x00000200
+#define D3D_SHADER_REQUIRES_INNER_COVERAGE                                                  0x00000400
+#define D3D_SHADER_REQUIRES_TYPED_UAV_LOAD_ADDITIONAL_FORMATS                               0x00000800
+#define D3D_SHADER_REQUIRES_ROVS                                                            0x00001000
+#define D3D_SHADER_REQUIRES_VIEWPORT_AND_RT_ARRAY_INDEX_FROM_ANY_SHADER_FEEDING_RASTERIZER  0x00002000
 
 
 typedef struct _D3D12_LIBRARY_DESC
@@ -288,10 +290,10 @@ DECLARE_INTERFACE(ID3D12ShaderReflectionType)
     STDMETHOD(ImplementsInterface)(THIS_ _In_ ID3D12ShaderReflectionType* pBase) PURE;
 };
 
-// {18D270C3-A16C-4EFB-B264-574F69964CF6}
-interface DECLSPEC_UUID("18D270C3-A16C-4EFB-B264-574F69964CF6") ID3D12ShaderReflectionVariable;
+// {8337A8A6-A216-444A-B2F4-314733A73AEA}
+interface DECLSPEC_UUID("8337A8A6-A216-444A-B2F4-314733A73AEA") ID3D12ShaderReflectionVariable;
 DEFINE_GUID(IID_ID3D12ShaderReflectionVariable, 
-0x18d270c3, 0xa16c, 0x4efb, 0xb2, 0x64, 0x57, 0x4f, 0x69, 0x96, 0x4c, 0xf6);
+0x8337a8a6, 0xa216, 0x444a, 0xb2, 0xf4, 0x31, 0x47, 0x33, 0xa7, 0x3a, 0xea);
 
 #undef INTERFACE
 #define INTERFACE ID3D12ShaderReflectionVariable
@@ -327,10 +329,10 @@ DECLARE_INTERFACE(ID3D12ShaderReflectionConstantBuffer)
 // from working with an old binary.  Recompiling with the new header
 // will pick up the new IID.
 
-// {66E28C56-6258-452B-B291-26038C016E5C}
-interface DECLSPEC_UUID("66E28C56-6258-452B-B291-26038C016E5C") ID3D12ShaderReflection;
-DEFINE_GUID(IID_ID3D12ShaderReflection,
-0x66e28c56, 0x6258, 0x452b, 0xb2, 0x91, 0x26, 0x3, 0x8c, 0x1, 0x6e, 0x5c);
+// {5A58797D-A72C-478D-8BA2-EFC6B0EFE88E}
+interface DECLSPEC_UUID("5A58797D-A72C-478D-8BA2-EFC6B0EFE88E") ID3D12ShaderReflection;
+DEFINE_GUID(IID_ID3D12ShaderReflection, 
+0x5a58797d, 0xa72c, 0x478d, 0x8b, 0xa2, 0xef, 0xc6, 0xb0, 0xef, 0xe8, 0x8e);
 
 #undef INTERFACE
 #define INTERFACE ID3D12ShaderReflection

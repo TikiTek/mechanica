@@ -29,7 +29,6 @@ typedef enum D3D11_CONTEXT_TYPE
     D3D11_CONTEXT_TYPE_COMPUTE = 2,
     D3D11_CONTEXT_TYPE_COPY = 3,
     D3D11_CONTEXT_TYPE_VIDEO = 4,
-    D3D11_CONTEXT_TYPE_IMAGE = 5,
 } D3D11_CONTEXT_TYPE;
 
 typedef enum D3D11_TEXTURE_LAYOUT
@@ -303,147 +302,6 @@ interface ID3D11RasterizerState2
 };
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Jpeg
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-typedef enum D3D11_JPEG_DECODE_TIER
-{
-    D3D11_JPEG_DECODE_TIER_NOT_SUPPORTED = 0,
-    D3D11_JPEG_DECODE_TIER_1 = 1,
-    D3D11_JPEG_DECODE_TIER_2 = 2,
-    D3D11_JPEG_DECODE_TIER_3 = 3
-} D3D11_JPEG_DECODE_TIER;
-
-typedef enum D3D11_JPEG_ENCODE_TIER
-{
-    D3D11_JPEG_ENCODE_TIER_NOT_SUPPORTED = 0,
-    D3D11_JPEG_ENCODE_TIER_1 = 1,
-    D3D11_JPEG_ENCODE_TIER_2 = 2,
-    D3D11_JPEG_ENCODE_TIER_3 = 3
-} D3D11_JPEG_ENCODE_TIER;
-
-typedef enum D3D11_JPEG_IDCT_DOWNSCALE
-{
-    D3D11_JPEG_IDCT_DOWNSCALE_1 = 0,
-    D3D11_JPEG_IDCT_DOWNSCALE_2 = 1,
-    D3D11_JPEG_IDCT_DOWNSCALE_4 = 2,
-    D3D11_JPEG_IDCT_DOWNSCALE_8 = 3,
-} D3D11_JPEG_IDCT_DOWNSCALE;
-
-typedef enum D3D11_JPEG_COMPONENTS
-{
-    D3D11_JPEG_COMPONENTS_ONE         = 1,
-    D3D11_JPEG_COMPONENTS_THREE_420   = 2,
-    D3D11_JPEG_COMPONENTS_THREE_422   = 3,
-    D3D11_JPEG_COMPONENTS_THREE_440   = 4,
-    D3D11_JPEG_COMPONENTS_THREE_444   = 5,
-} D3D11_JPEG_COMPONENTS;
-
-typedef struct D3D11_FEATURE_DATA_JPEG_OPTIONS
-{
-    D3D11_JPEG_DECODE_TIER JpegDecodeTier;
-    D3D11_JPEG_ENCODE_TIER JpegEncodeTier;
-    UINT MaxDecodeDownscaleFactor;
-    D3D11_JPEG_IDCT_DOWNSCALE MaxDecodeIDctDownscale;
-} D3D11_FEATURE_DATA_JPEG_OPTIONS;
-
-typedef struct D3D11_JPEG_DECODE_PARAMETERS
-{
-    UINT SourceWidth;
-    UINT SourceHeight;
-    UINT RestartInterval;
-    D3D11_JPEG_COMPONENTS SourceComponents;
-    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
-} D3D11_JPEG_DECODE_PARAMETERS;
-
-cpp_quote( "#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )" )
-cpp_quote( "}" ) // extern C
-cpp_quote( "struct CD3D11_JPEG_DECODE_PARAMETERS : public D3D11_JPEG_DECODE_PARAMETERS" )
-cpp_quote( "{" )
-cpp_quote( "    CD3D11_JPEG_DECODE_PARAMETERS()" )
-cpp_quote( "    {}" )
-cpp_quote( "    explicit CD3D11_JPEG_DECODE_PARAMETERS( const D3D11_JPEG_DECODE_PARAMETERS& o ) :" )
-cpp_quote( "        D3D11_JPEG_DECODE_PARAMETERS( o )" )
-cpp_quote( "    {}" )
-cpp_quote( "    explicit CD3D11_JPEG_DECODE_PARAMETERS(" )
-cpp_quote( "        UINT SourceWidth," )
-cpp_quote( "        UINT SourceHeight," )
-cpp_quote( "        UINT RestartInterval," )
-cpp_quote( "        D3D11_JPEG_COMPONENTS SourceComponents," )
-cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
-cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
-cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
-cpp_quote( "    {" )
-cpp_quote( "        this->SourceWidth = SourceWidth;" )
-cpp_quote( "        this->SourceHeight = SourceHeight;" )
-cpp_quote( "        this->RestartInterval = RestartInterval;" )
-cpp_quote( "        this->SourceComponents = SourceComponents;" )
-cpp_quote( "        this->LumaQuantizationTable = LumaQuantizationTable;" )
-cpp_quote( "        this->ChromaQuantizationTable = ChromaQuantizationTable;" )
-cpp_quote( "        this->LumaDcHuffmanTable = LumaDcHuffmanTable;" )
-cpp_quote( "        this->ChromaDcHuffmanTable = ChromaDcHuffmanTable;" )
-cpp_quote( "        this->LumaAcHuffmanTable = LumaAcHuffmanTable;" )
-cpp_quote( "        this->ChromaAcHuffmanTable = ChromaAcHuffmanTable;" )
-cpp_quote( "    }" )
-cpp_quote( "    ~CD3D11_JPEG_DECODE_PARAMETERS() {}" )
-cpp_quote( "    operator const D3D11_JPEG_DECODE_PARAMETERS&() const { return *this; }" )
-cpp_quote( "};" )
-cpp_quote( "extern \"C\"{" )
-cpp_quote( "#endif" )
-
-typedef struct D3D11_JPEG_ENCODE_PARAMETERS
-{
-    D3D11_JPEG_COMPONENTS DestinationComponents; 
-    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
-} D3D11_JPEG_ENCODE_PARAMETERS;
-
-cpp_quote( "#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )" )
-cpp_quote( "}" ) // extern C
-cpp_quote( "struct CD3D11_JPEG_ENCODE_PARAMETERS : public D3D11_JPEG_ENCODE_PARAMETERS" )
-cpp_quote( "{" )
-cpp_quote( "    CD3D11_JPEG_ENCODE_PARAMETERS()" )
-cpp_quote( "    {}" )
-cpp_quote( "    explicit CD3D11_JPEG_ENCODE_PARAMETERS( const D3D11_JPEG_ENCODE_PARAMETERS& o ) :" )
-cpp_quote( "        D3D11_JPEG_ENCODE_PARAMETERS( o )" )
-cpp_quote( "    {}" )
-cpp_quote( "    explicit CD3D11_JPEG_ENCODE_PARAMETERS(" )
-cpp_quote( "        D3D11_JPEG_COMPONENTS DestinationComponents," )
-cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable," )
-cpp_quote( "        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable," )
-cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable," )
-cpp_quote( "        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)" )
-cpp_quote( "    {" )
-cpp_quote( "        this->DestinationComponents = DestinationComponents;" )
-cpp_quote( "        this->LumaQuantizationTable = LumaQuantizationTable;" )
-cpp_quote( "        this->ChromaQuantizationTable = ChromaQuantizationTable;" )
-cpp_quote( "        this->LumaDcHuffmanTable = LumaDcHuffmanTable;" )
-cpp_quote( "        this->ChromaDcHuffmanTable = ChromaDcHuffmanTable;" )
-cpp_quote( "        this->LumaAcHuffmanTable = LumaAcHuffmanTable;" )
-cpp_quote( "        this->ChromaAcHuffmanTable = ChromaAcHuffmanTable;" )
-cpp_quote( "    }" )
-cpp_quote( "    ~CD3D11_JPEG_ENCODE_PARAMETERS() {}" )
-cpp_quote( "    operator const D3D11_JPEG_ENCODE_PARAMETERS&() const { return *this; }" )
-cpp_quote( "};" )
-cpp_quote( "extern \"C\"{" )
-cpp_quote( "#endif" )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1221,9 +1079,9 @@ interface ID3D11Device3
         );
 
     HRESULT CreateDeferredContext3(
-            UINT ContextFlags, 
-            [annotation("_COM_Outptr_opt_")] ID3D11DeviceContext3** ppDeferredContext
-            );
+        UINT ContextFlags, 
+        [annotation("_COM_Outptr_opt_")] ID3D11DeviceContext3** ppDeferredContext
+        );
  
     void WriteToSubresource(
         [annotation("_In_")] ID3D11Resource* pDstResource,
@@ -1243,37 +1101,6 @@ interface ID3D11Device3
         [annotation("_In_opt_")] const D3D11_BOX* pSrcBox
         );
 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Imagecontext
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-[ uuid( 1345b344-2425-44ac-8299-091659b81f40 ), object, local, pointer_default( unique ) ]
-interface ID3D11ImageContext
-    : ID3D11DeviceChild
-{
-    void JpegDecode(
-        [annotation("_In_")] const D3D11_JPEG_DECODE_PARAMETERS *pParameters,
-        [annotation("_In_")] ID3D11Resource *pDestination,
-        [annotation("_In_reads_opt_(NumDestinations)")] const UINT *pDestinationSubresources,
-        [annotation("_In_reads_opt_(NumDestinations)")] const D3D11_BOX *pDestinationBoxes,
-        UINT NumDestinations,
-        [annotation("_In_")] ID3D11Buffer *pScanData,
-        UINT ScanDataOffset,
-        UINT CopyFlags
-        );
-
-    void JpegEncode(
-        [annotation("_In_")]  const D3D11_JPEG_ENCODE_PARAMETERS *pParameters,
-        [annotation("_In_")]  ID3D11Buffer *pScanData,
-        UINT ScanDataOffset,
-        [annotation("_In_")]  ID3D11Resource *pSource,
-        UINT SourceSubresource
-        );
-};
-
 cpp_quote( "DEFINE_GUID(IID_ID3D11Texture2D1,0x51218251,0x1E33,0x4617,0x9C,0xCB,0x4D,0x3A,0x43,0x67,0xE7,0xBB);" )
 cpp_quote( "DEFINE_GUID(IID_ID3D11Texture3D1,0x0C711683,0x2853,0x4846,0x9B,0xB0,0xF3,0xE6,0x06,0x39,0xE4,0x6A);" )
 cpp_quote( "DEFINE_GUID(IID_ID3D11RasterizerState2,0x6fbd02fb,0x209f,0x46c4,0xb0,0x59,0x2e,0xd1,0x55,0x86,0xa6,0xac);" )
@@ -1283,4 +1110,3 @@ cpp_quote( "DEFINE_GUID(IID_ID3D11UnorderedAccessView1,0x7b3b6153,0xa886,0x4544,
 cpp_quote( "DEFINE_GUID(IID_ID3D11Query1,0x631b4766,0x36dc,0x461d,0x8d,0xb6,0xc4,0x7e,0x13,0xe6,0x09,0x16);" )
 cpp_quote( "DEFINE_GUID(IID_ID3D11DeviceContext3,0xb4e3c01d,0xe79e,0x4637,0x91,0xb2,0x51,0x0e,0x9f,0x4c,0x9b,0x8f);" )
 cpp_quote( "DEFINE_GUID(IID_ID3D11Device3,0xA05C8C37,0xD2C6,0x4732,0xB3,0xA0,0x9C,0xE0,0xB0,0xDC,0x9A,0xE6);" )
-cpp_quote( "DEFINE_GUID(IID_ID3D11ImageContext,0x1345b344,0x2425,0x44ac,0x82,0x99,0x09,0x16,0x59,0xb8,0x1f,0x40);" )

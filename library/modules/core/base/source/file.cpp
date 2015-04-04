@@ -61,9 +61,12 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-		targetContent.create( (uint)len, alignment );
-		fread_s( targetContent.getBegin(), (size_t)len, (size_t)len, 1u, pFile );
+		targetContent.create( (uint)len + 1u, alignment );
+		fpos_t bytesRead = fread_s(targetContent.getBegin(), (size_t)len, (size_t)len, 1u, pFile);
+		TIKI_ASSERT( bytesRead == 1u );
 		fclose( pFile );
+
+		targetContent[ len ] = '\0';
 
 		return true;
 	}

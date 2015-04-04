@@ -8,7 +8,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0608 */
+ /* File created by MIDL compiler version 8.00.0611 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -28,7 +28,7 @@
 
 #ifndef __RPCNDR_H_VERSION__
 #error this stub requires an updated version of <rpcndr.h>
-#endif // __RPCNDR_H_VERSION__
+#endif /* __RPCNDR_H_VERSION__ */
 
 #ifndef COM_NO_WINDOWS_H
 #include "windows.h"
@@ -2566,7 +2566,9 @@ enum D3D11_VIDEO_DECODER_CAPS
     {
         D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE	= 0x1,
         D3D11_VIDEO_DECODER_CAPS_NON_REAL_TIME	= 0x2,
-        D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_DYNAMIC	= 0x4
+        D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_DYNAMIC	= 0x4,
+        D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_REQUIRED	= 0x8,
+        D3D11_VIDEO_DECODER_CAPS_UNSUPPORTED	= 0x10
     } 	D3D11_VIDEO_DECODER_CAPS;
 
 typedef 
@@ -3865,6 +3867,10 @@ EXTERN_C const IID IID_ID3D11VideoDevice1;
             /* [annotation] */ 
             _In_  const DXGI_RATIONAL *pFrameRate,
             /* [annotation] */ 
+            _In_  UINT BitRate,
+            /* [annotation] */ 
+            _In_opt_  const GUID *pCryptoType,
+            /* [annotation] */ 
             _Out_  UINT *pDecoderCaps) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CheckVideoDecoderDownsampling( 
@@ -4085,6 +4091,10 @@ EXTERN_C const IID IID_ID3D11VideoDevice1;
             /* [annotation] */ 
             _In_  const DXGI_RATIONAL *pFrameRate,
             /* [annotation] */ 
+            _In_  UINT BitRate,
+            /* [annotation] */ 
+            _In_opt_  const GUID *pCryptoType,
+            /* [annotation] */ 
             _Out_  UINT *pDecoderCaps);
         
         HRESULT ( STDMETHODCALLTYPE *CheckVideoDecoderDownsampling )( 
@@ -4195,8 +4205,8 @@ EXTERN_C const IID IID_ID3D11VideoDevice1;
 #define ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize(This,pCryptoType,pDecoderProfile,pKeyExchangeType,pPrivateInputSize,pPrivateOutputSize)	\
     ( (This)->lpVtbl -> GetCryptoSessionPrivateDataSize(This,pCryptoType,pDecoderProfile,pKeyExchangeType,pPrivateInputSize,pPrivateOutputSize) ) 
 
-#define ID3D11VideoDevice1_GetVideoDecoderCaps(This,pDecoderProfile,SampleWidth,SampleHeight,pFrameRate,pDecoderCaps)	\
-    ( (This)->lpVtbl -> GetVideoDecoderCaps(This,pDecoderProfile,SampleWidth,SampleHeight,pFrameRate,pDecoderCaps) ) 
+#define ID3D11VideoDevice1_GetVideoDecoderCaps(This,pDecoderProfile,SampleWidth,SampleHeight,pFrameRate,BitRate,pCryptoType,pDecoderCaps)	\
+    ( (This)->lpVtbl -> GetVideoDecoderCaps(This,pDecoderProfile,SampleWidth,SampleHeight,pFrameRate,BitRate,pCryptoType,pDecoderCaps) ) 
 
 #define ID3D11VideoDevice1_CheckVideoDecoderDownsampling(This,pInputDesc,InputColorSpace,pInputConfig,pFrameRate,pOutputDesc,pSupported,pRealTimeHint)	\
     ( (This)->lpVtbl -> CheckVideoDecoderDownsampling(This,pInputDesc,InputColorSpace,pInputConfig,pFrameRate,pOutputDesc,pSupported,pRealTimeHint) ) 

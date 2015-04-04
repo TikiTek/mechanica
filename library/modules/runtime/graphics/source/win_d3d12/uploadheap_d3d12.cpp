@@ -21,10 +21,12 @@ namespace tiki
 	{
 		TIKI_ASSERT( pDevice != nullptr );
 
-		HRESULT result = pDevice->CreateBuffer(
-			D3D12_HEAP_TYPE_UPLOAD,
-			size,
-			D3D12_RESOURCE_MISC_NONE,
+		HRESULT result = pDevice->CreateCommittedResource(
+			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+			D3D12_HEAP_MISC_NONE,
+			&CD3D12_RESOURCE_DESC::Buffer( size ),
+			D3D12_RESOURCE_USAGE_GENERIC_READ,
+			nullptr, 
 			IID_PPV_ARGS( &m_pBuffer )
 		);
 
@@ -33,7 +35,7 @@ namespace tiki
 			return false;
 		}
 
-		if( FAILED( m_pBuffer->Map( nullptr, (void**)&m_pDataStart ) ) )
+		if( FAILED( m_pBuffer->Map( 0u, nullptr, (void**)&m_pDataStart ) ) )
 		{
 			return false;
 		}
@@ -55,7 +57,7 @@ namespace tiki
 		
 		if( m_pBuffer != nullptr )
 		{
-			m_pBuffer->Unmap( nullptr );
+			m_pBuffer->Unmap( 0u, nullptr );
 		}
 		graphics::safeRelease( &m_pBuffer );
 	}

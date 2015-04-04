@@ -46,9 +46,12 @@ namespace tiki
 
 		m_renderer.dispose( grahicsSystem, resourceManager );
 
-		DebugGuiControl::shutdown();
-		resourceManager.unloadResource( m_pDefaultFont );
-		m_pDefaultFont = nullptr;
+		if ( m_pDefaultFont != nullptr )
+		{
+			DebugGuiControl::shutdown();
+			resourceManager.unloadResource( m_pDefaultFont );
+			m_pDefaultFont = nullptr;
+		}
 	}
 
 	void DebugGui::addWindow( DebugGuiWindow& window )

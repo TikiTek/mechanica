@@ -429,13 +429,14 @@ namespace tiki
 				pipelineDesc.PS						= m_pPixelShader->m_platformData.shaderCode;
 				pipelineDesc.RasterizerState		= m_pRasterizerState->m_platformData.rasterizerDesc;
 				pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
+				pipelineDesc.SampleDesc.Count		= 1u;
 
 				for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
 				{
 					pipelineDesc.RTVFormats[ i ] = graphics::getD3dFormat( m_pRenderTarget->m_colorBuffers[ i ].format, TextureFlags_RenderTarget );
 				}
 
-				TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, &pPipelineState ) ) );
+				TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, IID_PPV_ARGS( &pPipelineState ) ) ) );
 
 				GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates.push();
 				pipelineState.crc				= crc;

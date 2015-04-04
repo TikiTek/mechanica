@@ -12,3 +12,4 @@ module:add_binary_dir( "Bin/x64", nil, "x64" );
 
 module:add_binary_file( "d3d12.dll" );
 module:add_binary_file( "d3dcompiler_47.dll" );
+ 

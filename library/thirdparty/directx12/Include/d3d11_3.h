@@ -8,7 +8,7 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0608 */
+ /* File created by MIDL compiler version 8.00.0611 */
 /* @@MIDL_FILE_HEADING(  ) */
 
 
@@ -28,7 +28,7 @@
 
 #ifndef __RPCNDR_H_VERSION__
 #error this stub requires an updated version of <rpcndr.h>
-#endif // __RPCNDR_H_VERSION__
+#endif /* __RPCNDR_H_VERSION__ */
 
 #ifndef COM_NO_WINDOWS_H
 #include "windows.h"
@@ -107,13 +107,6 @@ typedef interface ID3D11Device3 ID3D11Device3;
 #endif 	/* __ID3D11Device3_FWD_DEFINED__ */
 
 
-#ifndef __ID3D11ImageContext_FWD_DEFINED__
-#define __ID3D11ImageContext_FWD_DEFINED__
-typedef interface ID3D11ImageContext ID3D11ImageContext;
-
-#endif 	/* __ID3D11ImageContext_FWD_DEFINED__ */
-
-
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -143,8 +136,7 @@ enum D3D11_CONTEXT_TYPE
         D3D11_CONTEXT_TYPE_3D	= 1,
         D3D11_CONTEXT_TYPE_COMPUTE	= 2,
         D3D11_CONTEXT_TYPE_COPY	= 3,
-        D3D11_CONTEXT_TYPE_VIDEO	= 4,
-        D3D11_CONTEXT_TYPE_IMAGE	= 5
+        D3D11_CONTEXT_TYPE_VIDEO	= 4
     } 	D3D11_CONTEXT_TYPE;
 
 typedef 
@@ -854,144 +846,6 @@ EXTERN_C const IID IID_ID3D11RasterizerState2;
 /* interface __MIDL_itf_d3d11_3_0000_0003 */
 /* [local] */ 
 
-typedef 
-enum D3D11_JPEG_DECODE_TIER
-    {
-        D3D11_JPEG_DECODE_TIER_NOT_SUPPORTED	= 0,
-        D3D11_JPEG_DECODE_TIER_1	= 1,
-        D3D11_JPEG_DECODE_TIER_2	= 2,
-        D3D11_JPEG_DECODE_TIER_3	= 3
-    } 	D3D11_JPEG_DECODE_TIER;
-
-typedef 
-enum D3D11_JPEG_ENCODE_TIER
-    {
-        D3D11_JPEG_ENCODE_TIER_NOT_SUPPORTED	= 0,
-        D3D11_JPEG_ENCODE_TIER_1	= 1,
-        D3D11_JPEG_ENCODE_TIER_2	= 2,
-        D3D11_JPEG_ENCODE_TIER_3	= 3
-    } 	D3D11_JPEG_ENCODE_TIER;
-
-typedef 
-enum D3D11_JPEG_IDCT_DOWNSCALE
-    {
-        D3D11_JPEG_IDCT_DOWNSCALE_1	= 0,
-        D3D11_JPEG_IDCT_DOWNSCALE_2	= 1,
-        D3D11_JPEG_IDCT_DOWNSCALE_4	= 2,
-        D3D11_JPEG_IDCT_DOWNSCALE_8	= 3
-    } 	D3D11_JPEG_IDCT_DOWNSCALE;
-
-typedef 
-enum D3D11_JPEG_COMPONENTS
-    {
-        D3D11_JPEG_COMPONENTS_ONE	= 1,
-        D3D11_JPEG_COMPONENTS_THREE_420	= 2,
-        D3D11_JPEG_COMPONENTS_THREE_422	= 3,
-        D3D11_JPEG_COMPONENTS_THREE_440	= 4,
-        D3D11_JPEG_COMPONENTS_THREE_444	= 5
-    } 	D3D11_JPEG_COMPONENTS;
-
-typedef struct D3D11_FEATURE_DATA_JPEG_OPTIONS
-    {
-    D3D11_JPEG_DECODE_TIER JpegDecodeTier;
-    D3D11_JPEG_ENCODE_TIER JpegEncodeTier;
-    UINT MaxDecodeDownscaleFactor;
-    D3D11_JPEG_IDCT_DOWNSCALE MaxDecodeIDctDownscale;
-    } 	D3D11_FEATURE_DATA_JPEG_OPTIONS;
-
-typedef struct D3D11_JPEG_DECODE_PARAMETERS
-    {
-    UINT SourceWidth;
-    UINT SourceHeight;
-    UINT RestartInterval;
-    D3D11_JPEG_COMPONENTS SourceComponents;
-    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
-    } 	D3D11_JPEG_DECODE_PARAMETERS;
-
-#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )
-}
-struct CD3D11_JPEG_DECODE_PARAMETERS : public D3D11_JPEG_DECODE_PARAMETERS
-{
-    CD3D11_JPEG_DECODE_PARAMETERS()
-    {}
-    explicit CD3D11_JPEG_DECODE_PARAMETERS( const D3D11_JPEG_DECODE_PARAMETERS& o ) :
-        D3D11_JPEG_DECODE_PARAMETERS( o )
-    {}
-    explicit CD3D11_JPEG_DECODE_PARAMETERS(
-        UINT SourceWidth,
-        UINT SourceHeight,
-        UINT RestartInterval,
-        D3D11_JPEG_COMPONENTS SourceComponents,
-        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
-        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
-        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
-        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
-        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
-        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
-    {
-        this->SourceWidth = SourceWidth;
-        this->SourceHeight = SourceHeight;
-        this->RestartInterval = RestartInterval;
-        this->SourceComponents = SourceComponents;
-        this->LumaQuantizationTable = LumaQuantizationTable;
-        this->ChromaQuantizationTable = ChromaQuantizationTable;
-        this->LumaDcHuffmanTable = LumaDcHuffmanTable;
-        this->ChromaDcHuffmanTable = ChromaDcHuffmanTable;
-        this->LumaAcHuffmanTable = LumaAcHuffmanTable;
-        this->ChromaAcHuffmanTable = ChromaAcHuffmanTable;
-    }
-    ~CD3D11_JPEG_DECODE_PARAMETERS() {}
-    operator const D3D11_JPEG_DECODE_PARAMETERS&() const { return *this; }
-};
-extern "C"{
-#endif
-typedef struct D3D11_JPEG_ENCODE_PARAMETERS
-    {
-    D3D11_JPEG_COMPONENTS DestinationComponents;
-    DXGI_JPEG_QUANTIZATION_TABLE LumaQuantizationTable;
-    DXGI_JPEG_QUANTIZATION_TABLE ChromaQuantizationTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE LumaDcHuffmanTable;
-    DXGI_JPEG_DC_HUFFMAN_TABLE ChromaDcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE LumaAcHuffmanTable;
-    DXGI_JPEG_AC_HUFFMAN_TABLE ChromaAcHuffmanTable;
-    } 	D3D11_JPEG_ENCODE_PARAMETERS;
-
-#if !defined( D3D11_NO_HELPERS ) && defined( __cplusplus )
-}
-struct CD3D11_JPEG_ENCODE_PARAMETERS : public D3D11_JPEG_ENCODE_PARAMETERS
-{
-    CD3D11_JPEG_ENCODE_PARAMETERS()
-    {}
-    explicit CD3D11_JPEG_ENCODE_PARAMETERS( const D3D11_JPEG_ENCODE_PARAMETERS& o ) :
-        D3D11_JPEG_ENCODE_PARAMETERS( o )
-    {}
-    explicit CD3D11_JPEG_ENCODE_PARAMETERS(
-        D3D11_JPEG_COMPONENTS DestinationComponents,
-        const DXGI_JPEG_QUANTIZATION_TABLE &LumaQuantizationTable,
-        const DXGI_JPEG_QUANTIZATION_TABLE &ChromaQuantizationTable,
-        const DXGI_JPEG_DC_HUFFMAN_TABLE &LumaDcHuffmanTable,
-        const DXGI_JPEG_DC_HUFFMAN_TABLE &ChromaDcHuffmanTable,
-        const DXGI_JPEG_AC_HUFFMAN_TABLE &LumaAcHuffmanTable,
-        const DXGI_JPEG_AC_HUFFMAN_TABLE &ChromaAcHuffmanTable)
-    {
-        this->DestinationComponents = DestinationComponents;
-        this->LumaQuantizationTable = LumaQuantizationTable;
-        this->ChromaQuantizationTable = ChromaQuantizationTable;
-        this->LumaDcHuffmanTable = LumaDcHuffmanTable;
-        this->ChromaDcHuffmanTable = ChromaDcHuffmanTable;
-        this->LumaAcHuffmanTable = LumaAcHuffmanTable;
-        this->ChromaAcHuffmanTable = ChromaAcHuffmanTable;
-    }
-    ~CD3D11_JPEG_ENCODE_PARAMETERS() {}
-    operator const D3D11_JPEG_ENCODE_PARAMETERS&() const { return *this; }
-};
-extern "C"{
-#endif
 typedef struct D3D11_TEX2D_SRV1
     {
     UINT MostDetailedMip;
@@ -4909,178 +4763,7 @@ EXTERN_C const IID IID_ID3D11Device3;
 #endif 	/* __ID3D11Device3_INTERFACE_DEFINED__ */
 
 
-#ifndef __ID3D11ImageContext_INTERFACE_DEFINED__
-#define __ID3D11ImageContext_INTERFACE_DEFINED__
-
-/* interface ID3D11ImageContext */
-/* [unique][local][object][uuid] */ 
-
-
-EXTERN_C const IID IID_ID3D11ImageContext;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("1345b344-2425-44ac-8299-091659b81f40")
-    ID3D11ImageContext : public ID3D11DeviceChild
-    {
-    public:
-        virtual void STDMETHODCALLTYPE JpegDecode( 
-            /* [annotation] */ 
-            _In_  const D3D11_JPEG_DECODE_PARAMETERS *pParameters,
-            /* [annotation] */ 
-            _In_  ID3D11Resource *pDestination,
-            /* [annotation] */ 
-            _In_reads_opt_(NumDestinations)  const UINT *pDestinationSubresources,
-            /* [annotation] */ 
-            _In_reads_opt_(NumDestinations)  const D3D11_BOX *pDestinationBoxes,
-            UINT NumDestinations,
-            /* [annotation] */ 
-            _In_  ID3D11Buffer *pScanData,
-            UINT ScanDataOffset,
-            UINT CopyFlags) = 0;
-        
-        virtual void STDMETHODCALLTYPE JpegEncode( 
-            /* [annotation] */ 
-            _In_  const D3D11_JPEG_ENCODE_PARAMETERS *pParameters,
-            /* [annotation] */ 
-            _In_  ID3D11Buffer *pScanData,
-            UINT ScanDataOffset,
-            /* [annotation] */ 
-            _In_  ID3D11Resource *pSource,
-            UINT SourceSubresource) = 0;
-        
-    };
-    
-    
-#else 	/* C style interface */
-
-    typedef struct ID3D11ImageContextVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            ID3D11ImageContext * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            ID3D11ImageContext * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            ID3D11ImageContext * This);
-        
-        void ( STDMETHODCALLTYPE *GetDevice )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _Outptr_  ID3D11Device **ppDevice);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetPrivateData )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _In_  REFGUID guid,
-            /* [annotation] */ 
-            _Inout_  UINT *pDataSize,
-            /* [annotation] */ 
-            _Out_writes_bytes_opt_( *pDataSize )  void *pData);
-        
-        HRESULT ( STDMETHODCALLTYPE *SetPrivateData )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _In_  REFGUID guid,
-            /* [annotation] */ 
-            _In_  UINT DataSize,
-            /* [annotation] */ 
-            _In_reads_bytes_opt_( DataSize )  const void *pData);
-        
-        HRESULT ( STDMETHODCALLTYPE *SetPrivateDataInterface )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _In_  REFGUID guid,
-            /* [annotation] */ 
-            _In_opt_  const IUnknown *pData);
-        
-        void ( STDMETHODCALLTYPE *JpegDecode )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _In_  const D3D11_JPEG_DECODE_PARAMETERS *pParameters,
-            /* [annotation] */ 
-            _In_  ID3D11Resource *pDestination,
-            /* [annotation] */ 
-            _In_reads_opt_(NumDestinations)  const UINT *pDestinationSubresources,
-            /* [annotation] */ 
-            _In_reads_opt_(NumDestinations)  const D3D11_BOX *pDestinationBoxes,
-            UINT NumDestinations,
-            /* [annotation] */ 
-            _In_  ID3D11Buffer *pScanData,
-            UINT ScanDataOffset,
-            UINT CopyFlags);
-        
-        void ( STDMETHODCALLTYPE *JpegEncode )( 
-            ID3D11ImageContext * This,
-            /* [annotation] */ 
-            _In_  const D3D11_JPEG_ENCODE_PARAMETERS *pParameters,
-            /* [annotation] */ 
-            _In_  ID3D11Buffer *pScanData,
-            UINT ScanDataOffset,
-            /* [annotation] */ 
-            _In_  ID3D11Resource *pSource,
-            UINT SourceSubresource);
-        
-        END_INTERFACE
-    } ID3D11ImageContextVtbl;
-
-    interface ID3D11ImageContext
-    {
-        CONST_VTBL struct ID3D11ImageContextVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define ID3D11ImageContext_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define ID3D11ImageContext_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define ID3D11ImageContext_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define ID3D11ImageContext_GetDevice(This,ppDevice)	\
-    ( (This)->lpVtbl -> GetDevice(This,ppDevice) ) 
-
-#define ID3D11ImageContext_GetPrivateData(This,guid,pDataSize,pData)	\
-    ( (This)->lpVtbl -> GetPrivateData(This,guid,pDataSize,pData) ) 
-
-#define ID3D11ImageContext_SetPrivateData(This,guid,DataSize,pData)	\
-    ( (This)->lpVtbl -> SetPrivateData(This,guid,DataSize,pData) ) 
-
-#define ID3D11ImageContext_SetPrivateDataInterface(This,guid,pData)	\
-    ( (This)->lpVtbl -> SetPrivateDataInterface(This,guid,pData) ) 
-
-
-#define ID3D11ImageContext_JpegDecode(This,pParameters,pDestination,pDestinationSubresources,pDestinationBoxes,NumDestinations,pScanData,ScanDataOffset,CopyFlags)	\
-    ( (This)->lpVtbl -> JpegDecode(This,pParameters,pDestination,pDestinationSubresources,pDestinationBoxes,NumDestinations,pScanData,ScanDataOffset,CopyFlags) ) 
-
-#define ID3D11ImageContext_JpegEncode(This,pParameters,pScanData,ScanDataOffset,pSource,SourceSubresource)	\
-    ( (This)->lpVtbl -> JpegEncode(This,pParameters,pScanData,ScanDataOffset,pSource,SourceSubresource) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __ID3D11ImageContext_INTERFACE_DEFINED__ */
-
-
-/* interface __MIDL_itf_d3d11_3_0000_0010 */
+/* interface __MIDL_itf_d3d11_3_0000_0009 */
 /* [local] */ 
 
 DEFINE_GUID(IID_ID3D11Texture2D1,0x51218251,0x1E33,0x4617,0x9C,0xCB,0x4D,0x3A,0x43,0x67,0xE7,0xBB);
@@ -5092,11 +4775,10 @@ DEFINE_GUID(IID_ID3D11UnorderedAccessView1,0x7b3b6153,0xa886,0x4544,0xab,0x37,0x
 DEFINE_GUID(IID_ID3D11Query1,0x631b4766,0x36dc,0x461d,0x8d,0xb6,0xc4,0x7e,0x13,0xe6,0x09,0x16);
 DEFINE_GUID(IID_ID3D11DeviceContext3,0xb4e3c01d,0xe79e,0x4637,0x91,0xb2,0x51,0x0e,0x9f,0x4c,0x9b,0x8f);
 DEFINE_GUID(IID_ID3D11Device3,0xA05C8C37,0xD2C6,0x4732,0xB3,0xA0,0x9C,0xE0,0xB0,0xDC,0x9A,0xE6);
-DEFINE_GUID(IID_ID3D11ImageContext,0x1345b344,0x2425,0x44ac,0x82,0x99,0x09,0x16,0x59,0xb8,0x1f,0x40);
 
 
-extern RPC_IF_HANDLE __MIDL_itf_d3d11_3_0000_0010_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_d3d11_3_0000_0010_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_d3d11_3_0000_0009_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_d3d11_3_0000_0009_v0_0_s_ifspec;
 
 /* Additional Prototypes for ALL interfaces */
 

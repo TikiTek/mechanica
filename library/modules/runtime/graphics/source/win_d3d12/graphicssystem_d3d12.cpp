@@ -202,12 +202,12 @@ namespace tiki
 
 	GraphicsContext& GraphicsSystem::beginFrame()
 	{
-		const UINT64 lastCompletedFence = m_platformData.pFence->GetCompletedValue();
-		if (m_platformData.currentFench != 0u && m_platformData.currentFench > lastCompletedFence)
-		{
-			TIKI_VERIFY( m_platformData.pFence->SetEventOnCompletion( m_platformData.currentFench, m_platformData.waitEventHandle ) );
-			WaitForSingleObject( m_platformData.waitEventHandle , INFINITE );
-		}
+		//const UINT64 lastCompletedFence = m_platformData.pFence->GetCompletedValue();
+		//if (m_platformData.currentFench != 0u && m_platformData.currentFench > lastCompletedFence)
+		//{
+		//	TIKI_VERIFY( SUCCEEDED(m_platformData.pFence->SetEventOnCompletion( m_platformData.currentFench, m_platformData.waitEventHandle ) ) );
+		//	WaitForSingleObject( m_platformData.waitEventHandle, INFINITE );
+		//}
 
 		m_frameNumber++;
 		
@@ -263,22 +263,6 @@ namespace tiki
 
 	static bool graphics::initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize )
 	{
-		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
-		swapDesc.BufferCount						= 2;
-		swapDesc.BufferDesc.Format					= DXGI_FORMAT_R16G16B16A16_FLOAT;
-		swapDesc.BufferDesc.Width					= backBufferSize.x;
-		swapDesc.BufferDesc.Height					= backBufferSize.y;
-		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;
-		swapDesc.BufferDesc.RefreshRate.Numerator	= 60;
-		swapDesc.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapDesc.OutputWindow						= static_cast< HWND >( params.pWindowHandle );
-		swapDesc.SampleDesc.Count					= 1;
-		swapDesc.Windowed							= !params.fullScreen;
-		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-		//swapDesc.Flags							= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-		data.swapBufferCount = swapDesc.BufferCount;
-
 		D3D_DRIVER_TYPE rendererType;
 		switch ( params.rendererMode )
 		{
@@ -318,11 +302,26 @@ namespace tiki
 		}
 
 		IDXGIFactory1* pDxgiFactory = nullptr;
-		result = CreateDXGIFactory1( IID_PPV_ARGS( &pDxgiFactory ) );
-		if ( FAILED( result ) || pDxgiFactory == nullptr )
+		if ( FAILED( CreateDXGIFactory1( IID_PPV_ARGS( &pDxgiFactory ) ) ) )
 		{
 			return false;
 		}
+
+		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
+		swapDesc.BufferCount						= 2;
+		swapDesc.BufferDesc.Format					= DXGI_FORMAT_R16G16B16A16_FLOAT;
+		swapDesc.BufferDesc.Width					= backBufferSize.x;
+		swapDesc.BufferDesc.Height					= backBufferSize.y;
+		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;
+		swapDesc.BufferDesc.RefreshRate.Numerator	= 60;
+		swapDesc.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapDesc.OutputWindow						= static_cast< HWND >( params.pWindowHandle );
+		swapDesc.SampleDesc.Count					= 1;
+		swapDesc.Windowed							= !params.fullScreen;
+		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+		//swapDesc.Flags							= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+		data.swapBufferCount = swapDesc.BufferCount;
 
 		result = pDxgiFactory->CreateSwapChain(
 			data.pDevice,
@@ -337,18 +336,20 @@ namespace tiki
 	
 	static bool graphics::initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
 	{
-		if( FAILED( data.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, &data.pCommandAllocator ) ) )
+		TIKI_DECLARE_STACKANDZERO( D3D12_COMMAND_QUEUE_DESC, queueDesc );
+		queueDesc.Flags	= D3D12_COMMAND_QUEUE_NONE;
+		queueDesc.Type	= D3D12_COMMAND_LIST_TYPE_DIRECT;
+		if ( FAILED( data.pDevice->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( &data.pCommandQueue ) ) ) )
 		{
 			return false;
 		}
 
-		data.pDevice->GetDefaultCommandQueue( &data.pCommandQueue );
-		if( data.pCommandQueue == nullptr )
+		if( FAILED( data.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &data.pCommandAllocator ) ) ) )
 		{
 			return false;
 		}
 
-		if( FAILED( data.pDevice->CreateCommandList( D3D12_COMMAND_LIST_TYPE_DIRECT, data.pCommandAllocator, nullptr, IID_PPV_ARGS( &data.pCommandList ) ) ) )
+		if( FAILED( data.pDevice->CreateCommandList( 1u, D3D12_COMMAND_LIST_TYPE_DIRECT, data.pCommandAllocator, nullptr, IID_PPV_ARGS( &data.pCommandList ) ) ) )
 		{
 			return false;
 		}
@@ -364,7 +365,7 @@ namespace tiki
 		rootParameters[ 2u ].InitAsDescriptorTable( 1u, &descRanges[ 2u ], D3D12_SHADER_VISIBILITY_ALL );
 
 		D3D12_ROOT_SIGNATURE descRootSignature;
-		descRootSignature.Init( TIKI_COUNT( rootParameters ), rootParameters, 0u );
+		descRootSignature.Init( TIKI_COUNT( rootParameters ), rootParameters, 0u, nullptr, D3D12_ROOT_SIGNATURE_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
 
 		ID3DBlob* pOutputBlob	= nullptr;
 		ID3DBlob* pErrorBlob	= nullptr;
@@ -384,7 +385,7 @@ namespace tiki
 		TIKI_ASSERT( pOutputBlob != nullptr );
 		TIKI_ASSERT( pErrorBlob == nullptr );
 
-		HRESULT result = data.pDevice->CreateRootSignature( pOutputBlob->GetBufferPointer(), pOutputBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void**)&data.pRootSignature );
+		HRESULT result = data.pDevice->CreateRootSignature( 1u, pOutputBlob->GetBufferPointer(), pOutputBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void**)&data.pRootSignature );
 
 		pOutputBlob->Release();
 		pOutputBlob = nullptr;
@@ -394,7 +395,7 @@ namespace tiki
 			return false;
 		}
 
-		result = data.pDevice->CreateFence(0, D3D12_FENCE_MISC_NONE, &data.pFence);
+		result = data.pDevice->CreateFence( 0u, D3D12_FENCE_MISC_NONE, IID_PPV_ARGS( &data.pFence ) );
 		if ( FAILED( result ) )
 		{
 			return false;
@@ -469,16 +470,17 @@ namespace tiki
 		}
 
 		TIKI_DECLARE_STACKANDZERO( D3D12_DEPTH_STENCIL_VIEW_DESC, depthStencilViewDesc );
-		depthStencilViewDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilViewDesc.Format				= DXGI_FORMAT_D32_FLOAT;
 		depthStencilViewDesc.ViewDimension		= D3D12_DSV_DIMENSION_TEXTURE2D;
 		depthStencilViewDesc.Texture2D.MipSlice	= 0u;
 
 		data.pDevice->CreateDepthStencilView( data.pBackBufferDepth, &depthStencilViewDesc, data.pBackBufferDepthDescriptionHeap->GetCPUDescriptorHandleForHeapStart() );
+		graphics::setResourceBarrier( data.pCommandList, data.pBackBufferDepth, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_DEPTH );
 
 		return true;
 	}
 	
-	bool initWaitForGpu( GraphicsSystemPlatformData& data )
+	bool graphics::initWaitForGpu( GraphicsSystemPlatformData& data )
 	{
 		data.waitEventHandle = CreateEventEx( nullptr, false, false, EVENT_ALL_ACCESS );
 
@@ -494,6 +496,8 @@ namespace tiki
 			return false;
 		}
 		WaitForSingleObject( data.waitEventHandle, INFINITE );
+
+		return true;
 	}
 
 	void graphics::setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter )
