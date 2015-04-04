@@ -153,11 +153,7 @@ namespace tiki
 
 		if( pTextureData != nullptr )
 		{
-
 			UploadHeapD3d12& uploadHeap = graphics::getUploadHeap( graphicsSystem );
-			ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
-
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
 
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
@@ -165,51 +161,47 @@ namespace tiki
 			uint height	= description.height;
 			uint depth	= TIKI_MAX( description.depth, 1u );
 
+			const uint subResourceCount		= description.arrayCount * description.mipCount;
+			const uint requiredUploadSize	= GetRequiredIntermediateSize( m_platformData.pResource, 0u, (UINT)subResourceCount );
+
+			UploadHeapAllocationResult allocation;
+			if ( !uploadHeap.allocateData( allocation, requiredUploadSize, D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT) )
+			{
+				dispose( graphicsSystem );
+				return false;
+			}
+
+			D3D12_SUBRESOURCE_DATA subResources[ 32u ];
 			for( uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel )
 			{
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
-
-				UploadHeapAllocationResult allocation;
-				if( !uploadHeap.allocateData( allocation, depthPitch, D3D12_TEXTURE_OFFSET_ALIGNMENT ) )
-				{
-					dispose( graphicsSystem );
-					return false;
-				}
-
-				memory::copy( allocation.pData, pTextureData, depthPitch );
-
-				TIKI_DECLARE_STACKANDZERO( D3D12_PLACED_PITCHED_SUBRESOURCE_DESC, viewDesc );
-				viewDesc.Offset				= allocation.offset;
-				viewDesc.Placement.Format	= dxFormat;
-				viewDesc.Placement.Width	= (UINT)width;
-				viewDesc.Placement.Height	= (UINT)height;
-				viewDesc.Placement.Depth	= (UINT)depth;
-				viewDesc.Placement.RowPitch	= (UINT)rowPitch;
-
-				TIKI_DECLARE_STACKANDZERO( D3D12_SELECT_SUBRESOURCE, subResource );
-				subResource.Subresource = (UINT)mipLevel;
-
-				pCommandList->copy(
-					m_platformData.pResource,
-					D3D12_SUBRESOURCE_VIEW_SELECT_SUBRESOURCE,
-					&subResource,
-					0u,
-					0u,
-					0u,
-					uploadHeap.getBuffer(),
-					D3D12_SUBRESOURCE_VIEW_PLACED_PITCHED_SUBRESOURCE,
-					&viewDesc,
-					nullptr,
-					D3D12_COPY_NONE
-				);
 				
+				//memory::copy( allocation.pData, pTextureData, depthPitch );
+
+				//TIKI_DECLARE_STACKANDZERO( D3D12_PLACED_PITCHED_SUBRESOURCE_DESC, viewDesc );
+				//viewDesc.Offset				= allocation.offset;
+				//viewDesc.Placement.Format	= dxFormat;
+				//viewDesc.Placement.Width	= (UINT)width;
+				//viewDesc.Placement.Height	= (UINT)height;
+				//viewDesc.Placement.Depth	= (UINT)depth;
+				//viewDesc.Placement.RowPitch	= (UINT)rowPitch;
+
+				subResources[ mipLevel ].pData		= pTextureData;
+				subResources[ mipLevel ].RowPitch	= rowPitch;
+				subResources[ mipLevel ].SlicePitch	= depthPitch;
+
 				width		= TIKI_MAX( width / 2u, 1u );
 				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			}
+
+			ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
+			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
+			UpdateSubresources<32>( pCommandList, m_platformData.pResource, uploadHeap.getBuffer(), allocation.offset, 0u, (UINT)subResourceCount, subResources );
+			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_PIXEL_SHADER_RESOURCE );
 		}
-		
+	
 		if( isBitSet( description.flags, TextureFlags_ShaderInput ) )
 		{
 			// create descriptor heap
@@ -229,8 +221,9 @@ namespace tiki
 			// create shader resource view
 			{
 				TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
-				viewDesc.ViewDimension = getD3dViewDimentions( (TextureType)description.type );
-				viewDesc.Format = dxFormat;
+				viewDesc.ViewDimension				= getD3dViewDimentions( (TextureType)description.type );
+				viewDesc.Format						= dxFormat;
+				viewDesc.Shader4ComponentMapping	= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
 				switch (m_description.type)
 				{

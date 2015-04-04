@@ -111,7 +111,7 @@ namespace tiki
 					return false;
 				}
 
-				if ( file::readAllBytes( fullName.cStr(), m_fileData[ freeStreamIndex ] ) == false )
+				if ( !file::readAllBytes( fullName.cStr(), m_fileData[ freeStreamIndex ] ) )
 				{
 					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
 					return false;

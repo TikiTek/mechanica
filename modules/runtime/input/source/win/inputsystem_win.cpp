@@ -601,9 +601,9 @@ namespace tiki
 		if ( m_platformData.isTouchInputReady )
 		{
 			const uint eventCount = windowEvents.getEventCount();
-			for (uint i = 0u; i < eventCount; ++i)
+			for (uint eventIndex = 0u; eventIndex < eventCount; ++eventIndex)
 			{
-				const WindowEvent& windowEvent = windowEvents.getEventByIndex( i );
+				const WindowEvent& windowEvent = windowEvents.getEventByIndex(eventIndex );
 
 				if ( windowEvent.type != WindowEventType_Touch )
 				{
@@ -614,9 +614,9 @@ namespace tiki
 				const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), windowEvent.data.touch.pointCount );
 				if ( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
 				{
-					for (uint i=0; i < touchInputCount; i++)
+					for (uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++)
 					{
-						const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[ i ];
+						const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[touchIndex];
 						
 						const TouchInputState state = getTouchInputMapping( touchInput.dwID, m_platformData.touchInputMapping, TIKI_COUNT( m_platformData.touchInputMapping ) );
 						if ( !state.isValid )

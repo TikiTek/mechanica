@@ -495,6 +495,11 @@ namespace tiki
 
 	bool ConverterManager::writeConvertInputs( List< ConversionTask >& tasks )
 	{
+		if ( tasks.isEmpty() )
+		{
+			return false;
+		}
+		
 		bool result = true;
 
 		string whereFileName;

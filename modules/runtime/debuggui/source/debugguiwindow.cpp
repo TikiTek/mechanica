@@ -39,12 +39,15 @@ namespace tiki
 
 	void DebugGuiWindow::dispose()
 	{
-		m_pDebugGui->removeWindow( *this );
+		if ( m_pDebugGui != nullptr )
+		{
+			m_pDebugGui->removeWindow( *this );
 
-		m_minimizeButton.dispose();
-		m_minimizedButton.dispose();
+			m_minimizeButton.dispose();
+			m_minimizedButton.dispose();
 
-		m_pLayout->setParent( nullptr );
+			m_pLayout->setParent( nullptr );
+		}
 
 		m_pDebugGui		= nullptr;
 		m_pLayout		= nullptr;
