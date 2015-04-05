@@ -26,12 +26,12 @@ namespace tiki
 		TIKI_ASSERT( m_currentSequenceFailed == false );
 		TIKI_ASSERT( m_pCurrentSequence == nullptr );
 
-		if ( m_sequences.create( sizeof( RenderSequence ) * sequenceCount ) == false )
+		if ( m_sequences.create( sizeof( RenderSequence ) * sequenceCount, TIKI_ALIGNOF( RenderSequence ) ) == false )
 		{
 			return false;
 		}
 
-		if ( m_commands.create( sizeof( RenderCommand ) * commandCount ) == false )
+		if ( m_commands.create( sizeof( RenderCommand ) * commandCount, TIKI_ALIGNOF( RenderCommand ) ) == false )
 		{
 			return false;
 		}

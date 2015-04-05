@@ -314,8 +314,11 @@ namespace tiki
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
-		const string frameRate = formatString( " FPS: %.2f", 1.0f / timeDelta );
-		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, frameRate.cStr(), TIKI_COLOR_GREEN );
+
+		char buffer[ 128u ];
+		formatStringBuffer( buffer, TIKI_COUNT( buffer ), " FPS: %.2f", 1.0f / timeDelta );
+
+		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
 #endif
 		
 		m_immediateRenderer.endRenderPass();
