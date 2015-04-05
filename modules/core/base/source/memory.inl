@@ -5,75 +5,132 @@
 
 namespace tiki
 {
-	template<typename T>
-	TIKI_FORCE_INLINE T* memory::newAlign( uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE void memory::set8( void* pTargetData, uint count, uint8 value )
 	{
-		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		register uint remainingCount = count;
+		register uint8* pData = static_cast< uint8* >( pTargetData );
+		while ( remainingCount-- > 0u )
 		{
-			alignment = TIKI_ALIGNOF( T );
+			*pData++ = value;
 		}
-
-		void* pNew = TIKI_MEMORY_ALLOCALIGN( sizeof( T ), alignment );
-		return ::new( pNew ) T();
 	}
 
-	template<typename T>
-	TIKI_FORCE_INLINE void memory::deleteAlign( T* pPtr )
+	TIKI_FORCE_INLINE void memory::set16( void* pTargetData, uint count, uint16 value )
 	{
-		TIKI_ASSERT( pPtr != nullptr );
-
-		pPtr->~T();
-		freeAlign( pPtr );
-	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE T* memory::newArray( uint count, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
-	{
-		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		register uint remainingCount = count;
+		register uint16* pData = static_cast< uint16* >( pTargetData );
+		while ( remainingCount-- > 0u )
 		{
-			alignment = TIKI_ALIGNOF( T );
+			*pData++ = value;
 		}
-
-		void* pNew = TIKI_MEMORY_ALLOCALIGN( sizeof( T ) * count, alignment );
-		TIKI_ASSERT( (uint)pNew % alignment == 0u );
-
-		T* pArray = (T*)pNew;
-
-		for (uint i = 0u; i < count; ++i)
-		{
-			T* pItem = new( &pArray[ i ] ) T;
-			TIKI_ASSERT( (uint)pItem == (uint)&pArray[ i ] );
-		} 
-
-		return pArray;
 	}
 
-	template<typename T>
-	TIKI_FORCE_INLINE void memory::deleteArray( T* pArray, uint count )
+	TIKI_FORCE_INLINE void memory::set32( void* pTargetData, uint count, uint32 value )
 	{
-		for (uint i = 0u; i < count; ++i)
+		register uint remainingCount = count;
+		register uint32* pData = static_cast< uint32* >( pTargetData );
+		while ( remainingCount-- > 0u )
 		{
-			pArray[ i ].~T();
+			*pData++ = value;
 		}
-		freeAlign( pArray );
 	}
 
-	template<typename T>
-	TIKI_FORCE_INLINE void memory::zero( T& p )
+	TIKI_FORCE_INLINE void memory::set64( void* pTargetData, uint count, uint64 value )
 	{
-		zero( &p, sizeof( p ) );
+		register uint remainingCount = count;
+		register uint64* pData = static_cast< uint64* >( pTargetData );
+		while ( remainingCount-- > 0u )
+		{
+			*pData++ = value;
+		}
 	}
 
 	TIKI_FORCE_INLINE void memory::zero( void* pTargetData, uint sizeInBytes )
 	{
 		uint8* pData = static_cast< uint8* >( pTargetData );
 
-		const uint uint64Count = sizeInBytes / 8u;
-		set64( pData, uint64Count, 0ull );
-
-		const uint uint8Count = sizeInBytes % 8u;
+		const uint uint64Count	= sizeInBytes / 8u;
+		const uint uint8Count	= sizeInBytes % 8u;
 		const uint offset		= uint64Count * 8u;
+
+		set64( pData, uint64Count, 0ull );
 		set8( pData + offset, uint8Count, 0u );
+	}
+
+	template<typename T>
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+	TIKI_FORCE_INLINE T* memory::newObjectAligned( const char* pFileName, int lineNumber, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+#else
+	TIKI_FORCE_INLINE T* memory::newObjectAligned( uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+#endif
+	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = TIKI_ALIGNOF( T );
+		}
+
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		void* pNew = memory::allocAligned( sizeof( T ), pFileName, lineNumber, alignment );
+#else
+		void* pNew = memory::allocAligned( sizeof( T ), alignment );
+#endif
+		return static_cast< T*>( pNew );
+	}
+
+	template<typename T>
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+#else
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+#endif
+	{
+		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
+		{
+			alignment = TIKI_ALIGNOF( T );
+		}
+
+#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		void* pNew = memory::allocAligned( sizeof( T ) * count, pFileName, lineNumber, alignment );
+#else
+		void* pNew = memory::allocAligned( sizeof( T ) * count, alignment );
+#endif
+
+		T* pArray = static_cast< T*>( pNew );
+		for (uint i = 0u; i < count; ++i)
+		{
+			T* pItem = new( &pArray[ i ] ) T;
+			TIKI_ASSERT( pItem == &pArray[ i ] );
+		}
+
+		return pArray;
+	}
+
+	template<typename T>
+	void memory::deleteObjectAligned( T* pPtr )
+	{
+		TIKI_ASSERT( pPtr != nullptr );
+
+		pPtr->~T();
+		memory::freeAligned( pPtr );
+	}
+
+	template<typename T>
+	void memory::deleteArrayAligned( T* pArray, uint count )
+	{
+		TIKI_ASSERT( pArray != nullptr );
+
+		for (uint i = 0u; i < count; ++i)
+		{
+			pArray[ i ].~T();
+		}
+
+		memory::freeAligned( pArray );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void memory::zero( T& p )
+	{
+		zero( &p, sizeof( p ) );
 	}
 }
 

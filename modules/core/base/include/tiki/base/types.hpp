@@ -73,17 +73,21 @@ namespace tiki
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 #define TIKI_OFFSETOF( type, member )		( (uint)(&((type*)nullptr)->member) )
 
+#define TIKI_DEFAULT_ALIGNMENT 0u
+
 #define TIKI_INVALID_CRC32 0xffffffffu
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
 #	define TIKI_SIZE_T_MAX		0xffffffffu
 #	define TIKI_SIZE_T_BITS		32u
+#	define TIKI_SIZE_T_BYTES	4u
 
 #elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 
 #	define TIKI_SIZE_T_MAX		0xffffffffffffffffu
 #	define TIKI_SIZE_T_BITS		64u
+#	define TIKI_SIZE_T_BYTES	8u
 
 #else
 
@@ -122,22 +126,9 @@ namespace tiki
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name
 
-#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	include <crtdbg.h>
-#	define TIKI_NEW		new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#	define TIKI_DEL		delete
-#	define TIKI_DELARR	delete[]
-#else
-#	define TIKI_NEW		new
-#	define TIKI_DEL		delete
-#	define TIKI_DELARR	delete[]
-#endif
-
 #define TIKI_CONCAT( x1, x2 )			TIKI_CONCAT_HELPER( x1, x2 )
 #define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
 #define TIKI_STRING( text )				# text
-
-#define TIKI_DEFAULT_ALIGNMENT 0xffffffffu
 
 #	define TIKI_PURE				= 0
 

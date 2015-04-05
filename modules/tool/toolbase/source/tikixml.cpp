@@ -49,7 +49,7 @@ namespace tiki
 
 	void TikiXml::dispose()
 	{
-		memory::freeAlign( m_pData );
+		TIKI_MEMORY_FREE( m_pData );
 
 		m_pNode			= nullptr;
 		m_pData			= nullptr;

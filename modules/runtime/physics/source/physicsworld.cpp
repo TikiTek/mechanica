@@ -56,7 +56,7 @@ namespace tiki
 
 	void PhysicsWorld::create( const Vector3& gravity )
 	{
-		m_pPhysicWorld = new btDiscreteDynamicsWorld(
+		m_pPhysicWorld = TIKI_MEMORY_NEW_OBJECT( btDiscreteDynamicsWorld )(
 			&m_physicDispatcher,
 			&m_physicOverlappingPair,
 			nullptr,
@@ -84,7 +84,7 @@ namespace tiki
 
 		if ( m_pPhysicWorld != nullptr )
 		{
-			TIKI_DEL m_pPhysicWorld;
+			TIKI_MEMORY_DELETE_OBJECT( m_pPhysicWorld );
 			m_pPhysicWorld = nullptr;
 		}
 	}

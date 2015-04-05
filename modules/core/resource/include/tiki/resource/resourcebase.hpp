@@ -67,12 +67,12 @@ namespace tiki
 
 		static Resource* factoryContextGenericCreateResourceFunction()
 		{
-			return TIKI_NEW T();
+			return TIKI_MEMORY_NEW_OBJECT( T );
 		}
 
 		static void factoryContextGenericDisposeResourceFunction( Resource* pResource )
 		{
-			TIKI_DEL static_cast< T* >( pResource );
+			TIKI_MEMORY_DELETE_OBJECT( static_cast< T* >( pResource ) );
 		}
 
 	};

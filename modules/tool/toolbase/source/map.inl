@@ -35,7 +35,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::deleteArray( m_pData, m_capacity );
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_pData		= nullptr;
@@ -161,14 +161,17 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE void Map<TKey, TValue>::operator=( const Map<TKey, TValue>& copy )
 	{
-		memory::deleteArray( m_pData, m_capacity );
+		if ( m_pData != nullptr )
+		{
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+		}
 
 		m_capacity		= copy.m_capacity;
 		m_count			= copy.m_count;
 
 		if ( m_count > 0u )
 		{
-			m_pData = memory::newArray< Pair >( m_capacity );
+			m_pData = TIKI_MEMORY_NEW_ARRAY( Pair, m_capacity );
 		}
 		else
 		{
@@ -236,7 +239,7 @@ namespace tiki
 		if ( m_capacity < neddedSize )
 		{
 			const uint capacity = getNextSize( neddedSize );
-			Pair* pNewData = memory::newArray< Pair >( capacity );
+			Pair* pNewData = TIKI_MEMORY_NEW_ARRAY( Pair, capacity );
 
 			for (uint i = 0u; i < m_count; ++i)
 			{
@@ -245,7 +248,7 @@ namespace tiki
 
 			if ( m_pData != nullptr )
 			{
-				memory::deleteArray( m_pData, m_capacity );
+				TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 			}
 
 			m_pData		= pNewData;

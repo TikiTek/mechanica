@@ -12,12 +12,12 @@ namespace tiki
 	IWebInterface* createWebInterface()
 	{
 		reflection::initialize();
-		return TIKI_NEW WebInterface();
+		return TIKI_MEMORY_NEW_OBJECT( WebInterface );
 	}
 
 	void disposeWebInterface( IWebInterface* pObject )
 	{
-		TIKI_DEL pObject;
+		TIKI_MEMORY_DELETE_OBJECT( pObject );
 		reflection::shutdown();
 		Thread::shutdownSystem();
 	}
@@ -44,7 +44,7 @@ namespace tiki
 
 	void WebInterface::registerRequestHandler( cstring pUrlPath, IWebHandler* pHandler )
 	{
-		WebRquestHandler* pWebHandler = TIKI_NEW WebRquestHandler();
+		WebRquestHandler* pWebHandler = TIKI_MEMORY_NEW_OBJECT( WebRquestHandler );
 		pWebHandler->create( pUrlPath, pHandler );
 
 		m_server.registerRequestHandler( *pWebHandler );

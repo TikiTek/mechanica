@@ -2,6 +2,7 @@
 #include "tiki/threading/thread.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/memory.hpp"
 #include "tiki/base/string.hpp"
 
 #include <windows.h>
@@ -153,7 +154,7 @@ namespace tiki
 		const Thread* pThread = getThreadById( getCurrentThreadId() );
 		if ( pThread == nullptr )
 		{
-			Thread* pCurrentThread = TIKI_NEW Thread();
+			Thread* pCurrentThread = TIKI_MEMORY_NEW_OBJECT( Thread );
 			pCurrentThread->m_platformData.threadHandle	= GetCurrentThread();
 			pCurrentThread->m_platformData.threadId		= GetCurrentThreadId();
 
@@ -186,7 +187,7 @@ namespace tiki
 			Thread& thread = *it;
 
 			thread.dispose();
-			TIKI_DEL( &thread  );
+			TIKI_MEMORY_DELETE_OBJECT( &thread  );
 		}
 	}
 }

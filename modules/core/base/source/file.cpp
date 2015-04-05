@@ -66,7 +66,7 @@ namespace tiki
 		TIKI_ASSERT( bytesRead == 1u );
 		fclose( pFile );
 
-		targetContent[ len ] = '\0';
+		targetContent[ (uint)len ] = '\0';
 
 		return true;
 	}
