@@ -24,7 +24,7 @@ namespace tiki
 	template<typename T>
 	bool Queue<T>::create( uint capacity, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		m_pData = memory::newArray< T >( capacity, alignment );
+		m_pData = TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, alignment );
 		if ( m_pData == nullptr )
 		{
 			return false;
@@ -42,7 +42,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::deleteArray( m_pData, m_capacity );
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 			m_pData = nullptr;
 		}
 

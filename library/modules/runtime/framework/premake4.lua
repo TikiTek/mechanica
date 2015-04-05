@@ -8,6 +8,8 @@ module:add_include_dir( "include" );
 
 module:set_define( "TIKI_WINDOWEVENTBUFFER_SIZE", "32" );
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_ON", "Debug" );
+module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Release" );
+module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Master" );
 
 module:add_dependency( "graphics" );
 module:add_dependency( "resource" );

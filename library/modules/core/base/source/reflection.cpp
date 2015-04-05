@@ -137,7 +137,7 @@ namespace tiki
 		{
 			for (uint i = 0u; i < m_fields.getCount(); ++i)
 			{
-				TIKI_DEL m_fields[ i ];
+				TIKI_MEMORY_DELETE_OBJECT( m_fields[ i ] );
 			}
 
 			m_isInitialized = false;
@@ -255,7 +255,7 @@ namespace tiki
 
 				m_size		 = alignValue( m_size, fieldAlign );
 
-				m_fields.add( TIKI_NEW FieldMember( fieldName.cStr(), this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), getSize() ) );
+				m_fields.add( TIKI_MEMORY_NEW_OBJECT( FieldMember )( fieldName.cStr(), this, TypeMemberInfo( pType, (TypeMemberFlag)flags ), getSize() ) );
 
 				m_size		+= fieldSize;
 				m_alignment	 = TIKI_MAX( m_alignment, fieldAlign );
@@ -285,7 +285,7 @@ namespace tiki
 					m_pFuncDestructor( pObject );
 				}
 
-				memory::freeAlign( pObject );
+				TIKI_MEMORY_FREE( pObject );
 			}
 		}
 
@@ -401,12 +401,12 @@ namespace tiki
 		{
 			for (uint i = 0u; i < m_valueTypes.getCount(); ++i)
 			{
-				TIKI_DEL( m_valueTypes[ i ] );
+				TIKI_MEMORY_DELETE_OBJECT( m_valueTypes[ i ] );
 			}
 
 			for (uint i = 0u; i < m_structTypes.getCount(); ++i)
 			{
-				TIKI_DEL( m_structTypes[ i ] );
+				TIKI_MEMORY_DELETE_OBJECT( m_structTypes[ i ] );
 			}
 
 			m_types.dispose();
@@ -455,7 +455,7 @@ namespace tiki
 
 		const ValueType* TypeSystem::registerValueType( const char* pName, uint size, ValueTypeVariant variant )
 		{
-			ValueType* pType = TIKI_NEW ValueType( pName, size, variant );
+			ValueType* pType = TIKI_MEMORY_NEW_OBJECT( ValueType )( pName, size, variant );
 
 			m_types.add( pType );
 			m_valueTypes.add( pType );
@@ -465,7 +465,7 @@ namespace tiki
 
 		const StructType* TypeSystem::registerStructType( const char* pName, const char* pBaseName, const char* pCode, TypeConstructor pFuncConstructor, TypeDestructor pFuncDestructor )
 		{
-			StructType* pType = TIKI_NEW StructType( pName, pBaseName, pCode, pFuncConstructor, pFuncDestructor );
+			StructType* pType = TIKI_MEMORY_NEW_OBJECT( StructType )( pName, pBaseName, pCode, pFuncConstructor, pFuncDestructor );
 
 			m_types.add( pType );
 			m_structTypes.add( pType );

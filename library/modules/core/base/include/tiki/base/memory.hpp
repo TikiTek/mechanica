@@ -6,6 +6,8 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/assert.hpp"
 
+#define TIKI_MINIMUM_ALIGNMENT TIKI_SIZE_T_BYTES
+
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	define TIKI_DECLARE_STACKANDZERO( type, name ) type name = { }
 #else
@@ -13,50 +15,75 @@
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-#	define TIKI_MEMORY_ALLOC( size ) ::tiki::memory::allocAlign( size, __FILE__, __LINE__, TIKI_DEFAULT_ALIGNMENT )
-#	define TIKI_MEMORY_ALLOCALIGN( size, alignment ) ::tiki::memory::allocAlign( size, __FILE__, __LINE__, alignment )
+
+#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size, __FILE__, __LINE__ )
+#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )				::tiki::memory::allocAligned( size, __FILE__, __LINE__, alignment )
+
+#	define TIKI_MEMORY_NEW_OBJECT( type )							::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__ ) ) type
+#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )		::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__, alignment ) ) type
+
+#	define TIKI_MEMORY_NEW_ARRAY( type, count )						::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__ )
+#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment )	::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__, alignment )
+
 #else
-#	define TIKI_MEMORY_ALLOC( size ) ::tiki::memory::allocAlign( size, TIKI_DEFAULT_ALIGNMENT )
-#	define TIKI_MEMORY_ALLOCALIGN( size, alignment ) ::tiki::memory::allocAlign( size, alignment )
+
+#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size, TIKI_DEFAULT_ALIGNMENT )
+#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )				::tiki::memory::allocAligned( size, alignment )
+
+#	define TIKI_MEMORY_NEW_OBJECT( type )							::new ( ::tiki::memory::newObjectAligned< type >() ) type
+#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )		::new ( ::tiki::memory::newObjectAligned< type >( alignment ) ) type
+
+#	define TIKI_MEMORY_NEW_ARRAY( type, count )						::tiki::memory::newArrayAligned< type >( count )
+#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment )	::tiki::memory::newArrayAligned< type >( count, alignment )
+
 #endif
 
-#define TIKI_MEMORY_FREE( pData ) ::tiki::memory::freeAlign( pData )
+#define TIKI_MEMORY_FREE( pData )				::tiki::memory::freeAligned( pData )
+#define TIKI_MEMORY_DELETE_OBJECT( ptr )		::tiki::memory::deleteObjectAligned( ptr )
+#define TIKI_MEMORY_DELETE_ARRAY( ptr, count )	::tiki::memory::deleteArrayAligned( ptr, count )
 
 namespace tiki
 {
 	namespace memory
 	{
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		void*					allocAlign( uint size, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void*					allocAligned( uint size, const char* pFileName, int lineNumber, uint alignment = TIKI_MINIMUM_ALIGNMENT );
+
+		template<typename T>
+		TIKI_FORCE_INLINE T*	newObjectAligned( const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+
+		template<typename T>
+		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+
 #else
-		void*					allocAlign( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void*					allocAligned( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+
+		template<typename T>
+		TIKI_FORCE_INLINE T*	newObjectAligned( uint alignment = TIKI_DEFAULT_ALIGNMENT );
+
+		template<typename T>
+		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 #endif
 
-		void					freeAlign( void* pPtr );
+		void					freeAligned( void* pPtr );
+
+		template<typename T>
+		void					deleteObjectAligned( T* pPtr );
+
+		template<typename T>
+		void					deleteArrayAligned( T* pArray, uint count );
 
 		int						compare ( const void* pData1, const void* pData2, uint sizeInBytes );
 		void					copy( void* pTargetData, const void* pSourceData, uint sizeInBytes );
-		void					set8( void* pTargetData, uint size, uint8 value );
-		void					set16( void* pTargetData, uint size, uint16 value );
-		void					set32( void* pTargetData, uint size, uint32 value );
-		void					set64( void* pTargetData, uint size, uint64 value );
+		
+		TIKI_FORCE_INLINE void	set8( void* pTargetData, uint count, uint8 value );
+		TIKI_FORCE_INLINE void	set16( void* pTargetData, uint count, uint16 value );
+		TIKI_FORCE_INLINE void	set32( void* pTargetData, uint count, uint32 value );
+		TIKI_FORCE_INLINE void	set64( void* pTargetData, uint count, uint64 value );
+		TIKI_FORCE_INLINE void	zero( void* pTargetData, uint sizeInBytes );
 		
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newAlign( uint alignment = TIKI_DEFAULT_ALIGNMENT );
-
-		template<typename T>
-		TIKI_FORCE_INLINE void	deleteAlign( T* pPtr );
-
-		template<typename T>
-		TIKI_FORCE_INLINE T*	newArray( uint count, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-
-		template<typename T>
-		TIKI_FORCE_INLINE void	deleteArray( T* pArray, uint count );
-
-		template<typename T>
 		TIKI_FORCE_INLINE void	zero( T& pTargetData );
-
-		TIKI_FORCE_INLINE void	zero( void* pTargetData, uint sizeInBytes );
 	}
 }
 

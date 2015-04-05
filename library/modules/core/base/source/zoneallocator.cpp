@@ -21,9 +21,9 @@ namespace tiki
 
 	}
 
-	bool ZoneAllocator::create( uint sizeInBytes, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool ZoneAllocator::create( uint sizeInBytes, uint alignment /* = TIKI_MINIMUM_ALIGNMENT */ )
 	{
-		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOCALIGN( sizeInBytes, alignment ) );
+		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOC_ALIGNED( sizeInBytes, alignment ) );
 
 		if ( m_pMemory == nullptr )
 		{
@@ -43,7 +43,7 @@ namespace tiki
 	{
 		if ( m_pCurrent != nullptr )
 		{
-			memory::freeAlign( m_pMemory );
+			TIKI_MEMORY_FREE( m_pMemory );
 		}
 	}
 

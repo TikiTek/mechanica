@@ -26,7 +26,7 @@ namespace tiki
 		TIKI_ASSERT( m_capacity == 0u );
 
 		m_capacity	= capacity;
-		m_pData		= memory::newArray< T >( capacity );
+		m_pData		= TIKI_MEMORY_NEW_ARRAY( T, capacity );
 		if ( m_pData == nullptr )
 		{
 			dispose();
@@ -41,7 +41,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::deleteArray( m_pData, m_capacity );
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_pData		= nullptr;

@@ -58,7 +58,7 @@ namespace tiki
 
 		if ( m_pStringData != nullptr )
 		{
-			memory::freeAlign( m_pStringData );
+			TIKI_MEMORY_FREE( m_pStringData );
 			m_pStringData = nullptr;
 		}
 	}

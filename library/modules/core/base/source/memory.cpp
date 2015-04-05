@@ -7,116 +7,55 @@
 #	include <string.h>
 #endif
 
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_ENABLED( TIKI_BUILD_DEBUG )
+#	include <crtdbg.h>
+#endif
+
 namespace tiki
 {
-#if TIKI_ENABLED( TIKI_BUILD_MSVC )
-
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
+	void* memory::allocAligned( size_t size, const char* pFileName, int lineNumber, size_t alignment /*= TIKI_MINIMUM_ALIGNMENT*/ )
 #else
-	void* memory::allocAlign( size_t size, size_t alignment )
+	void* memory::allocAligned( size_t size, size_t alignment /*= TIKI_MINIMUM_ALIGNMENT*/ )
 #endif
 	{
-		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
-		{
-			alignment = 4u;
-		}
+		TIKI_ASSERT( alignment != TIKI_DEFAULT_ALIGNMENT );
 
-#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		return _aligned_malloc_dbg( size, alignment, pFileName, lineNumber );
-#else
-		return _aligned_malloc( size, alignment );
+		void* pMemory = nullptr;
+#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+		pMemory = malloc( size );
+#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+		pMemory = _aligned_malloc_dbg( size, alignment, pFileName, lineNumber );
+#	else
+		pMemory = _aligned_malloc( size, alignment );
+#	endif
 #endif
+
+		TIKI_ASSERT( (uint)pMemory % alignment == 0u );
+		return pMemory;
 	}
 
-	void memory::freeAlign( void* pPtr )
+	void memory::freeAligned( void* pPtr )
 	{
-#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
+#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+		return free( size );
+#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		_aligned_free( pPtr );
-#else
+#	else
 		_aligned_free_dbg( pPtr );
+#	endif
 #endif
 	}
-
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
-
-#if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	void* memory::allocAlign( size_t size, const char* pFileName, int lineNumber, size_t alignment )
-#else
-	void* memory::allocAlign( size_t size, size_t alignment )
-#endif
-	{
-		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
-		{
-			alignment = 4u;
-		}
-
-		return malloc( size );
-	}
-
-	void memory::freeAlign( void* pPtr )
-	{
-		free( pPtr );
-	}
-
-#else
-
-#   error Platform not supported
-
-#endif
 
 	int	memory::compare( const void* pData1, const void* pData2, uint sizeInBytes )
 	{
 		return memcmp( pData1, pData2, sizeInBytes );
 	}
 
-	//void memory::set( void* p, size_t size, uint8 value )
-	//{
-	//	memset( p, value, size );
-	//}
-
 	void memory::copy( void* pTargetData, const void* pSourceData, uint sizeInBytes )
 	{
 		memcpy( pTargetData, pSourceData, sizeInBytes );
-	}
-
-	void memory::set8( void* pTargetData, uint size, uint8 value )
-	{
-		register uint count = size;
-		register uint8* pData = static_cast< uint8* >( pTargetData );
-		while ( count-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	void memory::set16( void* pTargetData, uint size, uint16 value )
-	{
-		register uint count = size;
-		register uint16* pData = static_cast< uint16* >( pTargetData );
-		while ( count-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	void memory::set32( void* pTargetData, uint size, uint32 value )
-	{
-		register uint count = size;
-		register uint32* pData = static_cast< uint32* >( pTargetData );
-		while ( count-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	void memory::set64( void* pTargetData, uint size, uint64 value )
-	{
-		register uint count = size;
-		register uint64* pData = static_cast< uint64* >( pTargetData );
-		while ( count-- > 0u )
-		{
-			*pData++ = value;
-		}
 	}
 }

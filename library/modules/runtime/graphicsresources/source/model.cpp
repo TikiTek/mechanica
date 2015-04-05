@@ -60,12 +60,11 @@ namespace tiki
 
 		if ( modelInitData.hierarchy.getData() != nullptr )
 		{
-			m_pHierarchy = static_cast< ModelHierarchy* >( memory::newAlign< ModelHierarchy >() );
+			m_pHierarchy = TIKI_MEMORY_NEW_OBJECT( ModelHierarchy );
 			TIKI_VERIFY( m_pHierarchy->initialize( *modelInitData.hierarchy.getData() ) );
 		}
 
 		m_geometries.create( modelInitData.geometrieCount );
-
 		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
 		{
 			const ModelGeometryInitData* pGeometryInitData = modelInitData.geometries[ i ].getData();
@@ -82,7 +81,7 @@ namespace tiki
 		if ( m_pHierarchy )
 		{
 			m_pHierarchy->dispose();
-			memory::deleteAlign( m_pHierarchy );
+			TIKI_MEMORY_DELETE_OBJECT( m_pHierarchy );
 			m_pHierarchy = nullptr;
 		}
 

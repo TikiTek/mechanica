@@ -28,7 +28,7 @@ namespace tiki
 
 		if ( m_pData != nullptr )
 		{
-			memory::freeAlign( m_pData );
+			TIKI_MEMORY_FREE( m_pData );
 		}
 
 		m_pData = (uint8*)TIKI_MEMORY_ALLOC( m_capacity );
@@ -74,7 +74,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::freeAlign( m_pData );
+			TIKI_MEMORY_FREE( m_pData );
 			m_pData = nullptr;
 		}
 
@@ -110,7 +110,7 @@ namespace tiki
 
 			uint8* pNewData	= (uint8*)TIKI_MEMORY_ALLOC( cl );
 			memory::copy( pNewData, m_pData, m_length );
-			memory::freeAlign( m_pData );
+			TIKI_MEMORY_FREE( m_pData );
 			
 			m_pData			= pNewData;
 			m_capacity		= cl;

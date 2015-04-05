@@ -15,7 +15,8 @@
 	static fourcc getResourceType() { return s_resourceType; }	\
 	private:													\
 	static const fourcc s_resourceType = cc;					\
-	friend struct FactoryContextGenericBase< class_name >
+	friend struct FactoryContextGenericBase< class_name >;		\
+	friend TIKI_FORCE_INLINE void memory::deleteObjectAligned< class_name >( class_name * ptr )
 
 namespace tiki
 {

@@ -44,7 +44,7 @@ namespace tiki
 		m_chunkSize		= chunkSize;
 
 		const uint dataSize = chunkSize * chunkCount;
-		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOCALIGN( dataSize, ChunkAlignment ) );
+		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOC_ALIGNED( dataSize, ChunkAlignment ) );
 
 		if ( !m_chunks.create( chunkCount ) )
 		{
@@ -84,7 +84,7 @@ namespace tiki
 	{
 		if ( m_pMemory != nullptr )
 		{
-			memory::freeAlign( m_pMemory );
+			TIKI_MEMORY_FREE( m_pMemory );
 			m_pMemory = nullptr;
 		}
 

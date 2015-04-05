@@ -12,7 +12,9 @@ namespace tiki
 
 	GameFramework::GameFramework()
 	{
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
 		m_frameworkData.pWebInterface	= nullptr;
+#endif
 
 		m_isInitialized					= false;
 	}

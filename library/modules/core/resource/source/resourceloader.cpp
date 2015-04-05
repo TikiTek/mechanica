@@ -332,7 +332,7 @@ namespace tiki
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
 
-			void* pSectionData = TIKI_MEMORY_ALLOCALIGN( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
+			void* pSectionData = TIKI_MEMORY_ALLOC_ALIGNED( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
 
 			context.pStream->setPosition( header.offsetInFile + sectionHeader.offsetInResource );
 			context.pStream->read( pSectionData, sectionHeader.sizeInBytes );
@@ -487,12 +487,12 @@ namespace tiki
 
 		for (uint i = 0u; i < sectionData.sectorCount; ++i)
 		{
-			memory::freeAlign( sectionData.ppSectorPointers[ i ] );
+			TIKI_MEMORY_FREE( sectionData.ppSectorPointers[ i ] );
 		}
 
 		if ( sectionData.stringCount != 0u )
 		{
-			memory::freeAlign( sectionData.ppStringPointers[ 0u ] );
+			TIKI_MEMORY_FREE( sectionData.ppStringPointers[ 0u ] );
 		}
 
 		for (uint i = 0u; i < sectionData.linkCount; ++i)
@@ -505,7 +505,7 @@ namespace tiki
 			}		
 		} 
 
-		memory::freeAlign( sectionData.ppLinkedResources );
+		TIKI_MEMORY_FREE( sectionData.ppLinkedResources );
 
 		const FactoryContext* pFactory = findFactory( resourceType );		
 		if ( pFactory == nullptr )

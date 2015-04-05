@@ -10,12 +10,12 @@ namespace tiki
 	IAssetConverter* createAssetConverter()
 	{
 		reflection::initialize();
-		return TIKI_NEW AssetConverter();
+		return TIKI_MEMORY_NEW_OBJECT( AssetConverter );
 	}
 
 	void disposeAssetConverter( IAssetConverter* pObject )
 	{
-		TIKI_DEL pObject;
+		TIKI_MEMORY_DELETE_OBJECT( pObject );
 		reflection::shutdown();
 		Thread::shutdownSystem();
 	}

@@ -22,7 +22,7 @@ namespace tiki
 		TIKI_ASSERT( m_pData == nullptr );
 
 		m_capacity	= capacity;
-		m_pData		= memory::newArray< T >( capacity, aligment );
+		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment );
 
 		return m_pData != nullptr;
 	}
@@ -48,7 +48,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::deleteArray( m_pData, m_capacity );
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_capacity	= 0u;

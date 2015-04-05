@@ -30,8 +30,8 @@ namespace tiki
 		const string userName = buffer;
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
-			return TikiArenaGameStates_BasicTest;
-			//return TikiArenaGameStates_Test;
+			//return TikiArenaGameStates_BasicTest;
+			return TikiArenaGameStates_Test;
 		}
 #endif
 
@@ -59,7 +59,7 @@ namespace tiki
 	{
 		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
 
-		m_pStates = memory::newAlign< TikiArenaStates >();
+		m_pStates = TIKI_MEMORY_NEW_OBJECT( TikiArenaStates );
 		m_pStates->applicationState.create();
 		m_pStates->basicTestState.create();
 		m_pStates->introState.create();
@@ -118,7 +118,7 @@ namespace tiki
 			m_pStates->playState.dispose();
 			m_pStates->testState.dispose();
 
-			memory::deleteAlign( m_pStates );
+			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
 	}
 

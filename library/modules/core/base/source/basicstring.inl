@@ -26,7 +26,7 @@ namespace tiki
 		StringRefData( uint strLen, uint dataLen )
 			: refCount( 1 )
 		{
-			pData			= TIKI_NEW TChar[ dataLen ];
+			pData			= TIKI_MEMORY_NEW_ARRAY( TChar, dataLen );
 			dataLength		= dataLen;
 			stringLength	= strLen;
 
@@ -36,7 +36,7 @@ namespace tiki
 		StringRefData( uint strLen, uint dataLen, const TChar* pBaseData, sint baseDataLen = -1 )
 			: refCount( 1 )
 		{
-			pData			= TIKI_NEW TChar[dataLen];
+			pData			= TIKI_MEMORY_NEW_ARRAY( TChar, dataLen );
 			dataLength		= dataLen;
 			stringLength	= strLen;
 
@@ -48,7 +48,7 @@ namespace tiki
 		{
 			if ( pData != nullptr && pData != s_pEmptyString )
 			{
-				delete[] pData;
+				TIKI_MEMORY_DELETE_ARRAY( pData, dataLength );
 				pData = nullptr;
 			}
 		}
@@ -67,7 +67,7 @@ namespace tiki
 
 			if (--refCount < 1)
 			{
-				delete this;
+				TIKI_MEMORY_DELETE_OBJECT( this );
 				return 0;
 			}
 
@@ -84,7 +84,7 @@ namespace tiki
 	template<typename TChar>
 	BasicString< TChar >::BasicString( uint len )
 	{
-		data = TIKI_NEW StringRefData< TChar >(
+		data = TIKI_MEMORY_NEW_OBJECT( StringRefData< TChar > )(
 			len,
 			calcLength( len + 1 )
 		);
@@ -136,7 +136,7 @@ namespace tiki
 				return;
 			}
 
-			data = TIKI_NEW StringRefData< TChar >(
+			data = TIKI_MEMORY_NEW_OBJECT( StringRefData< TChar > )(
 				len,
 				calcLength( len + 1 ),
 				pString
@@ -614,7 +614,7 @@ namespace tiki
 		{
 			StringRefData< TChar >* oldData = data;
 
-			data = TIKI_NEW StringRefData< TChar >(
+			data = TIKI_MEMORY_NEW_OBJECT( StringRefData< TChar > )(
 				data->stringLength,
 				data->dataLength,
 				data->pData
@@ -694,7 +694,7 @@ namespace tiki
 		{
 			StringRefData< TChar >* oldData = data;
 
-			data = TIKI_NEW StringRefData< TChar >(
+			data = TIKI_MEMORY_NEW_OBJECT( StringRefData< TChar > )(
 				len,
 				calcLength(len + 1),
 				oldData->pData,

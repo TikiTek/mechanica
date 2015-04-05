@@ -15,7 +15,7 @@ namespace tiki
 		ZoneAllocator();
 		~ZoneAllocator();
 
-		bool		create( uint sizeInBytes, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		bool		create( uint sizeInBytes, uint alignment = TIKI_MINIMUM_ALIGNMENT );
 		void		dispose();
 
 		void*		allocate( uint sizeInBytes, uint alignment = TIKI_DEFAULT_ALIGNMENT );

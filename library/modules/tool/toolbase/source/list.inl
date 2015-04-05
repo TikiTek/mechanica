@@ -31,9 +31,9 @@ namespace tiki
 	List< T >::List( const T* pData, uint count, bool readOnly /*= false*/ )
 	{
 		m_capacity		= getNextSize( count );
-		m_count		= count;
+		m_count			= count;
 		m_isReadOnly	= readOnly;
-		m_pData			= memory::newArray<T>( m_capacity );
+		m_pData			= TIKI_MEMORY_NEW_ARRAY( T, m_capacity );
 
 		for (uint i = 0u; i < m_count; ++i)
 		{
@@ -52,7 +52,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			memory::deleteArray( m_pData, m_capacity );
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_pData		= nullptr;
@@ -244,7 +244,10 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::operator=( const List<T>& copy )
 	{
-		memory::deleteArray( m_pData, m_capacity );
+		if ( m_pData != nullptr )
+		{
+			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+		}
 
 		m_isReadOnly	= copy.m_isReadOnly;
 		m_capacity		= copy.m_capacity;
@@ -252,7 +255,7 @@ namespace tiki
 		
 		if ( m_count > 0u )
 		{
-			m_pData = memory::newArray< T >( m_capacity );
+			m_pData = TIKI_MEMORY_NEW_ARRAY( T, m_capacity );
 		}
 		else
 		{
@@ -285,7 +288,7 @@ namespace tiki
 		if ( m_capacity < neddedSize )
 		{
 			const uint capacity = getNextSize( neddedSize );
-			T* pNewData = memory::newArray< T >( capacity );
+			T* pNewData = TIKI_MEMORY_NEW_ARRAY( T, capacity );
 
 			for (uint i = 0u; i < m_count; ++i)
 			{
@@ -294,7 +297,7 @@ namespace tiki
 
 			if ( m_pData != nullptr )
 			{
-				memory::deleteArray( m_pData, m_capacity );
+				TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
 			}
 
 			m_pData		= pNewData;
