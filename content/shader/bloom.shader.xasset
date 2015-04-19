@@ -1,4 +1,3 @@
-<tikiasset>
+<tikiasset template="shader_defaults">
   <input file="../../local/modules/renderer/source/shader/bloom.fx" type="shader" />
-  <param key="compile_debug" value="true" />  
 <tikiasset>

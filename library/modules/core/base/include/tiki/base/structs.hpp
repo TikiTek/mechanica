@@ -57,6 +57,11 @@ namespace tiki
 		TIKI_REFLECTION_FIELD( uint32, w )
 	);
 
+	TIKI_FORCE_INLINE void createUint2( uint2& value, uint32 x, uint32 y ) { value.x = x; value.y = y; }
+	TIKI_FORCE_INLINE void createUint3( uint3& value, uint32 x, uint32 y, uint32 z ) { value.x = x; value.y = y; value.z = z; }
+	TIKI_FORCE_INLINE void createUint4( uint4& value, uint32 x, uint32 y, uint32 z, uint32 w ) { value.x = x; value.y = y; value.z = z; value.w = w; }
+
+
 	// sint
 	TIKI_REFLECTION_STRUCT(
 		sint2,
@@ -79,6 +84,11 @@ namespace tiki
 		TIKI_REFLECTION_FIELD( sint32, w )
 	);
 
+	TIKI_FORCE_INLINE void createSint2( sint2& value, sint32 x, sint32 y ) { value.x = x; value.y = y; }
+	TIKI_FORCE_INLINE void createSint3( sint3& value, sint32 x, sint32 y, sint32 z ) { value.x = x; value.y = y; value.z = z; }
+	TIKI_FORCE_INLINE void createSint4( sint4& value, sint32 x, sint32 y, sint32 z, sint32 w ) { value.x = x; value.y = y; value.z = z; value.w = w; }
+
+
 	// half
 	TIKI_REFLECTION_STRUCT(
 		half2,
@@ -100,6 +110,11 @@ namespace tiki
 		TIKI_REFLECTION_FIELD( float16, z )
 		TIKI_REFLECTION_FIELD( float16, w )
 	);
+
+	TIKI_FORCE_INLINE void createHalf2( half2& value, float16 x, float16 y ) { value.x = x; value.y = y; }
+	TIKI_FORCE_INLINE void createHalf3( half3& value, float16 x, float16 y, float16 z ) { value.x = x; value.y = y; value.z = z; }
+	TIKI_FORCE_INLINE void createHalf4( half4& value, float16 x, float16 y, float16 z, float16 w ) { value.x = x; value.y = y; value.z = z; value.w = w; }
+
 
 	// float
 	TIKI_REFLECTION_STRUCT(

@@ -84,6 +84,8 @@ namespace tiki
 		const TextureData&	getAccumulationBuffer() const					{ return m_accumulationData; }
 		const TextureData&	getDepthBuffer() const							{ return m_readOnlyDepthBuffer; }
 
+		const RenderTarget&	getGeometryTarget() const						{ return m_geometryTarget; }
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		VisualizationMode	getVisualizationMode() const					{ return m_visualizationMode; }
 		void				setVisualizationMode( VisualizationMode mode )	{ m_visualizationMode = mode; }

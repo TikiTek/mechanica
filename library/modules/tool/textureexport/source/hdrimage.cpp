@@ -324,11 +324,11 @@ namespace tiki
 		SizedArray< float > tempImage;
 		tempImage.create( m_data.getCount() );
 
+		const uint lineSize = m_width * ChannelCount;
 		switch ( direction )
 		{
 		case FlipDirection_Horizontal:
 			{
-				const uint lineSize = m_width * ChannelCount;
 				for (uint y = 0u; y < m_height; ++y)
 				{
 					for (uint x = m_width - 1u; x < m_width; --x)
@@ -342,7 +342,6 @@ namespace tiki
 
 		case FlipDirection_Vertical:
 			{
-				const uint lineSize = m_width * ChannelCount;
 				for (uint y = m_height - 1u; y < m_height; --y)
 				{
 					tempImage.pushRange( &m_data[ y * lineSize ], lineSize );

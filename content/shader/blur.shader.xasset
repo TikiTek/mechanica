@@ -1,4 +1,3 @@
-<tikiasset>
-  <input file="../../local/modules/renderer/source/shader/blur.fx" type="shader" />
-  <param key="compile_debug" value="true" />  
+<tikiasset template="shader_defaults">
+	<input file="../../local/modules/renderer/source/shader/blur.fx" type="shader" />
 <tikiasset>

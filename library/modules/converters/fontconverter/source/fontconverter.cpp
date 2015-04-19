@@ -169,7 +169,8 @@ namespace tiki
 			writerParameters.targetType		= (mode3D ? TextureType_3d : TextureType_2d );
 			writerParameters.targetApi		= parameters.targetApi;
 			writerParameters.mipMapCount	= 1u;
-			writerParameters.data.texture3d.sliceSize = fontSize;
+			writerParameters.data.texture3d.sliceWidth	= fontSize;
+			writerParameters.data.texture3d.sliceHeight	= imageHeight;
 
 			TextureWriter textureWriter;
 			if ( !textureWriter.create( image, writerParameters ) )

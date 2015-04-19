@@ -86,18 +86,18 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
-		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
 		TIKI_ASSERT( description.mipCount > 0u );
 		TIKI_ASSERT( description.arrayCount > 0u );
 
 		m_description = description;
 
 		D3D11_SUBRESOURCE_DATA initData[ 32u ];
-		memory::zero( initData, sizeof( initData ) );
-
 		const D3D11_SUBRESOURCE_DATA* pD3dInitData = nullptr;
+
 		if ( pTextureData != nullptr )
 		{
+			memory::zero( initData, sizeof( initData ) );
+
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
 			uint width	= description.width;
@@ -105,16 +105,24 @@ namespace tiki
 			uint depth	= TIKI_MAX( description.depth, 1u );
 			const uint8* pLevelData	= static_cast< const uint8* >( pTextureData );
 
+			uint initIndex = 0u;
 			for (uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel)
 			{
 				const uint rowPitch		= width * bytesPerPixel;
 				const uint depthPitch	= rowPitch * height;
 
-				initData[ mipLevel ].pSysMem			= pLevelData;
-				initData[ mipLevel ].SysMemPitch		= UINT( rowPitch );
-				initData[ mipLevel ].SysMemSlicePitch	= UINT( depthPitch );
+				for (uint arrayIndex = 0u; arrayIndex < description.arrayCount; ++arrayIndex)
+				{
+					initData[ initIndex ].pSysMem			= pLevelData;
+					initData[ initIndex ].SysMemPitch		= UINT( rowPitch );
+					initData[ initIndex ].SysMemSlicePitch	= UINT( depthPitch );
 
-				pLevelData	+= depthPitch * depth;
+					TIKI_ASSERT( initIndex < TIKI_COUNT( initData ) );
+					initIndex++;
+
+					pLevelData += depthPitch * depth;
+				}
+
 				width		= TIKI_MAX( width / 2u, 1u );
 				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
@@ -173,9 +181,27 @@ namespace tiki
 			break;
 
 		case TextureType_Cube:
+			{
+				TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
+				desc.Format				= dxFormat;
+				desc.Width				= description.width;
+				desc.Height				= description.height;
+				desc.Usage				= D3D11_USAGE_DEFAULT;
+				desc.MipLevels			= description.mipCount;
+				desc.ArraySize			= description.arrayCount;
+				desc.SampleDesc.Count	= 1u;
+				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
+				desc.MiscFlags			= D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+				result = pDevice->CreateTexture2D( &desc, pD3dInitData, &m_platformData.pTexture2d );
+			}
 			break;
 
+		default:
+			TIKI_BREAK( "case not supported" );
+			break;
 		}
+
 		if ( FAILED( result ) )
 		{
 			TIKI_TRACE_ERROR( "[grpahics] Can't create Texture.\n" );
@@ -190,7 +216,7 @@ namespace tiki
 			srvDesc.ViewDimension				= getViewDimentions( (TextureType)description.type );
 			srvDesc.Texture2D.MipLevels			= description.mipCount;
 			srvDesc.Texture2D.MostDetailedMip	= 0u;
-
+			
 			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
 			{
 				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );

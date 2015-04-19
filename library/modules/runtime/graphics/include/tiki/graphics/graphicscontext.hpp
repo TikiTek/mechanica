@@ -101,9 +101,9 @@ namespace tiki
 		void				drawIndexedGeometry( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );
 
 		void				drawFullScreenQuadPos2();
-		void				drawFullScreenQuadPos2Tex2( float x0 = 0.0f, float y0 = 0.0f, float x1 = 1.0f, float y1 = 1.0f );
-		void				drawFullScreenQuadPos3();
-		void				drawFullScreenQuadPos3Tex2( float x0 = 0.0f, float y0 = 0.0f, float x1 = 1.0f, float y1 = 1.0f );
+		void				drawFullScreenQuadPos2Tex2( float u0 = 0.0f, float v0 = 0.0f, float u1 = 1.0f, float v1 = 1.0f );
+		void				drawFullScreenQuadPos3( float z = 0.0f );
+		void				drawFullScreenQuadPos3Tex2( float u0 = 0.0f, float v0 = 0.0f, float u1 = 1.0f, float v1 = 1.0f, float z = 0.0f );
 
 		void*				mapBuffer( const BaseBuffer& buffer );
 		void				unmapBuffer( const BaseBuffer& buffer );

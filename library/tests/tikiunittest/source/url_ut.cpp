@@ -1,7 +1,7 @@
 
 #include "tiki/unittest/unittest.hpp"
 
-#include "tiki/webinterface/url.hpp"
+#include "tiki/webserver/url.hpp"
 
 namespace tiki
 {
@@ -82,7 +82,7 @@ namespace tiki
 		return result;
 	}
 
-	TIKI_BEGIN_UNITTEST( UrlUt );
+	TIKI_BEGIN_UNITTEST( Url );
 
 	TIKI_ADD_TEST( UrlCreateAndCheckHttpFull )
 	{

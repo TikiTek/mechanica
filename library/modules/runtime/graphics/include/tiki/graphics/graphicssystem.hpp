@@ -79,7 +79,7 @@ namespace tiki
 		bool						resize( uint width, uint height );
 
 		const BlendState*			createBlendState( const BlendStateParamters& creationParameters );
-		const BlendState*			createBlendState( bool blendEnabled, Blend sourceBlend, Blend destinationBlend, BlendOperation operation, ColorWriteMask colorWriteMask );
+		const BlendState*			createBlendState( bool blendEnabled, Blend sourceBlend = Blend_One, Blend destinationBlend = Blend_Zero, BlendOperation operation = BlendOperation_Add, ColorWriteMask colorWriteMask = ColorWriteMask_All );
 		void						disposeBlendState( const BlendState* pBlendState );
 
 		const DepthStencilState*	createDepthStencilState( const DepthStencilStateParamters& creationParameters );
@@ -87,11 +87,11 @@ namespace tiki
 		void						disposeDepthStencilState( const DepthStencilState* pDepthStencilState );
 
 		const RasterizerState*		createRasterizerState( const RasterizerStateParamters& creationParameters );
-		const RasterizerState*		createRasterizerState( FillMode fillMode, CullMode cullMode, WindingOrder windingOrder );
+		const RasterizerState*		createRasterizerState( FillMode fillMode = FillMode_Solid, CullMode cullMode = CullMode_Back, WindingOrder windingOrder = WindingOrder_Clockwise );
 		void						disposeRasterizerState( const RasterizerState* pRasterizerState );
 
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
-		const SamplerState*			createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
+		const SamplerState*			createSamplerState( AddressMode addressU = AddressMode_Clamp, AddressMode addressV = AddressMode_Clamp, AddressMode addressW = AddressMode_Clamp, FilterMode magFilter = FilterMode_Linear, FilterMode mipFilter = FilterMode_Linear, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void						disposeSamplerState( const SamplerState* pSamplerState );
 
 		const VertexFormat*			createVertexFormat( const VertexFormatParameters& creationParameters );

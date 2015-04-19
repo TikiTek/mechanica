@@ -1,0 +1,5 @@
+<tikiasset>
+  <input file="skybox_sea.psd" type="texture" />
+   <param key="type" value="cube" />
+   <param key="generate_mipmaps" value="false" />
+</tikiasset>

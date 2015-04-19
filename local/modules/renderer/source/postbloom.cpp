@@ -85,13 +85,16 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	bool PostProcessBloom::resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount )
+	bool PostProcessBloom::resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount /*= TIKI_SIZE_T_MAX*/ )
 	{
 		disposeRenderTargets( graphicsSystem );
 
 		m_width		= width;
 		m_height	= height;
-		m_passCount	= passCount;
+		if ( passCount != TIKI_SIZE_T_MAX )
+		{
+			m_passCount	= passCount;
+		}
 
 		m_blur.resize( graphicsSystem, m_width, m_height );
 
