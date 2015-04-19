@@ -90,7 +90,7 @@ namespace tiki
 		endImmediateGeometry();
 	}
 
-	void GraphicsContext::drawFullScreenQuadPos2Tex2( float x0 /*= 0.0f*/, float y0 /*= 0.0f*/, float x1 /*= 1.0f*/, float y1 /*= 1.0f*/ )
+	void GraphicsContext::drawFullScreenQuadPos2Tex2( float u0 /* = 0.0f */, float v0 /* = 0.0f */, float u1 /* = 1.0f */, float v1 /* = 1.0f */ )
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
@@ -99,21 +99,21 @@ namespace tiki
 		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 4u ) );
 		
 		createFloat2( pVertices[ 0u ].position, -1.0f, -1.0f );
-		createFloat2( pVertices[ 0u ].texCoord, x0, y1 );
+		createFloat2( pVertices[ 0u ].texCoord, u0, v1 );
 
 		createFloat2( pVertices[ 1u ].position, -1.0f, 1.0f );
-		createFloat2( pVertices[ 1u ].texCoord, x0, y0 );
+		createFloat2( pVertices[ 1u ].texCoord, u0, v0 );
 
 		createFloat2( pVertices[ 2u ].position, 1.0f, -1.0f );
-		createFloat2( pVertices[ 2u ].texCoord, x1, y1 );
+		createFloat2( pVertices[ 2u ].texCoord, u1, v1 );
 
 		createFloat2( pVertices[ 3u ].position, 1.0f, 1.0f );
-		createFloat2( pVertices[ 3u ].texCoord, x1, y0 );
+		createFloat2( pVertices[ 3u ].texCoord, u1, v0 );
 
 		endImmediateGeometry();
 	}
 
-	void GraphicsContext::drawFullScreenQuadPos3()
+	void GraphicsContext::drawFullScreenQuadPos3( float z /* = 0.0f */ )
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
@@ -123,10 +123,10 @@ namespace tiki
 
 		static const StockVertexPos3 s_aVertices[] =
 		{
-			{ -1.0f, -1.0f, 0.0f },
-			{ -1.0f,  1.0f, 0.0f },
-			{  1.0f, -1.0f, 0.0f },
-			{  1.0f,  1.0f, 0.0f }
+			{ -1.0f, -1.0f, z },
+			{ -1.0f,  1.0f, z },
+			{  1.0f, -1.0f, z },
+			{  1.0f,  1.0f, z }
 		};
 		pVertices[ 0u ] = s_aVertices[ 0u ];
 		pVertices[ 1u ] = s_aVertices[ 1u ];
@@ -136,7 +136,7 @@ namespace tiki
 		endImmediateGeometry();
 	}
 
-	void GraphicsContext::drawFullScreenQuadPos3Tex2( float x0 /*= 0.0f*/, float y0 /*= 0.0f*/, float x1 /*= 1.0f*/, float y1 /*= 1.0f */ )
+	void GraphicsContext::drawFullScreenQuadPos3Tex2( float u0 /* = 0.0f */, float v0 /* = 0.0f */, float u1 /* = 1.0f */, float v1 /* = 1.0f */, float z /* = 0.0f */ )
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
@@ -144,17 +144,17 @@ namespace tiki
 
 		StockVertexPos3Tex2* pVertices = static_cast< StockVertexPos3Tex2* >( beginImmediateGeometry( sizeof( StockVertexPos3Tex2 ), 4u ) );
 
-		createFloat3( pVertices[ 0u ].position, -1.0f, -1.0f, 0.0f );
-		createFloat2( pVertices[ 0u ].texCoord, x0, y1 );
+		createFloat3( pVertices[ 0u ].position, -1.0f, -1.0f, z );
+		createFloat2( pVertices[ 0u ].texCoord, u0, v1 );
 
-		createFloat3( pVertices[ 1u ].position, -1.0f, 1.0f, 0.0f );
-		createFloat2( pVertices[ 1u ].texCoord, x0, y0 );
+		createFloat3( pVertices[ 1u ].position, -1.0f, 1.0f, z );
+		createFloat2( pVertices[ 1u ].texCoord, u0, v0 );
 
-		createFloat3( pVertices[ 2u ].position, 1.0f, -1.0f, 0.0f );
-		createFloat2( pVertices[ 2u ].texCoord, x1, y1 );
+		createFloat3( pVertices[ 2u ].position, 1.0f, -1.0f, z );
+		createFloat2( pVertices[ 2u ].texCoord, u1, v1 );
 
-		createFloat3( pVertices[ 3u ].position, 1.0f, 1.0f, 0.0f );
-		createFloat2( pVertices[ 3u ].texCoord, x1, y0 );
+		createFloat3( pVertices[ 3u ].position, 1.0f, 1.0f, z );
+		createFloat2( pVertices[ 3u ].texCoord, u1, v0 );
 
 		endImmediateGeometry();
 	}

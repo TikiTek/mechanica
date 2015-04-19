@@ -129,10 +129,6 @@ namespace tiki
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
 		m_pVertexFormat = nullptr;
 
-		//m_sprites.dispose();
-		//m_vertices.dispose();
-
-		//m_vertexBuffer.dispose( graphicsSystem );
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 	}
 

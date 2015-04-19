@@ -5,9 +5,9 @@
 
 namespace tiki
 {	
-	TIKI_BEGIN_UNITTEST( SortedSizedMapUt );
+	TIKI_BEGIN_UNITTEST( SortedSizedMap );
 
-	TIKI_ADD_TEST( ssmTestIntert )
+	TIKI_ADD_TEST( SortedSizedMapIntert )
 	{
 		const uint count	= 10u;
 		const uint maxIndex	= count - 1u;

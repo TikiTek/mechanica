@@ -100,7 +100,7 @@ namespace tiki
 		return pState;
 	}
 
-	const BlendState* GraphicsSystem::createBlendState( bool blendEnabled, Blend sourceBlend, Blend destinationBlend, BlendOperation operation, ColorWriteMask colorWriteMask )
+	const BlendState* GraphicsSystem::createBlendState( bool blendEnabled, Blend sourceBlend /* = Blend_One */, Blend destinationBlend /* = Blend_Zero */, BlendOperation operation /* = BlendOperation_Add */, ColorWriteMask colorWriteMask /* = ColorWriteMask_All */ )
 	{
 		BlendStateParamters creationParameters;
 		creationParameters.blendEnabled		= blendEnabled;
@@ -177,7 +177,7 @@ namespace tiki
 		return pState;
 	}
 
-	const RasterizerState* GraphicsSystem::createRasterizerState( FillMode fillMode, CullMode cullMode, WindingOrder windingOrder )
+	const RasterizerState* GraphicsSystem::createRasterizerState( FillMode fillMode /* = FillMode_Solid */, CullMode cullMode /* = CullMode_Back */, WindingOrder windingOrder /* = WindingOrder_Clockwise */ )
 	{
 		RasterizerStateParamters creationParameters;
 		creationParameters.fillMode		= fillMode;
@@ -215,7 +215,7 @@ namespace tiki
 		return pState;
 	}
 
-	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU, AddressMode addressV, AddressMode addressW, FilterMode magFilter, FilterMode mipFilter, size_t maxAnisotropy /*= 1*/, Color borderColor /*= TIKI_COLOR_BLACK */ )
+	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU /* = AddressMode_Clamp */, AddressMode addressV /* = AddressMode_Clamp */, AddressMode addressW /* = AddressMode_Clamp */, FilterMode magFilter /* = FilterMode_Linear */, FilterMode mipFilter /* = FilterMode_Linear */, size_t maxAnisotropy /* = 1 */, Color borderColor /* = TIKI_COLOR_BLACK */ )
 	{
 		SamplerStateParamters creationParameters;
 		creationParameters.addressU			= addressU;
@@ -274,7 +274,7 @@ namespace tiki
 		}
 
 		VertexFormat* pNonConst = const_cast< VertexFormat* >( pVertexFormat );
-		if ( pNonConst->releaseRef() == false )
+		if ( !pNonConst->releaseRef() )
 		{
 			pNonConst->dispose();
 		}
@@ -289,9 +289,9 @@ namespace tiki
 		const crc32 hashValue	= crcBytes( hashData, sizeof( hashData ) );
 
 		VertexInputBinding* pVertexInputBinding = m_vertexInputBindings.findOrAllocate( hashValue );
-		if ( pVertexInputBinding != nullptr && pVertexInputBinding->isCreated() == false )
+		if ( pVertexInputBinding != nullptr && !pVertexInputBinding->isCreated() )
 		{
-			if ( pVertexInputBinding->create( *this, parameters ) == false )
+			if ( !pVertexInputBinding->create( *this, parameters ) )
 			{
 				pVertexInputBinding = nullptr;
 			}

@@ -23,7 +23,8 @@ namespace tiki
 
 		struct Texture3dData
 		{
-			uint sliceSize;
+			uint sliceWidth;
+			uint sliceHeight;
 		};
 
 		struct TextureCubeData

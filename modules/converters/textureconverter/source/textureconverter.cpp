@@ -18,7 +18,7 @@ namespace tiki
 {
 	uint16 TextureConverter::getConverterRevision() const
 	{
-		return 1u;
+		return 3u;
 	}
 
 	crc32 TextureConverter::getInputType() const
@@ -146,7 +146,8 @@ namespace tiki
 			else if ( dimentionsString == "3d" )
 			{
 				writerParameters.targetType = TextureType_3d;
-				writerParameters.data.texture3d.sliceSize = params.arguments.getInt( "slice_size" );
+				writerParameters.data.texture3d.sliceWidth = params.arguments.getInt( "slice_size" );
+				writerParameters.data.texture3d.sliceHeight = image.getHeight();
 			}
 			else if ( dimentionsString == "cube" )
 			{
@@ -155,6 +156,7 @@ namespace tiki
 			else
 			{
 				TIKI_TRACE_ERROR( "texture type '%s' not supported.\n", dimentionsString.cStr() );
+				continue;
 			}
 
 			TextureWriter textureWriter;
