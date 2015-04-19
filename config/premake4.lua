@@ -20,7 +20,7 @@ module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Release" );
 module:set_flag( "Optimize", "Release" );
 module:set_flag( "NoRTTI", "Release" );
 module:set_flag( "NoExceptions", "Release" );
---module:set_flag( "OptimizeSpeed", "Release" );
+module:set_flag( "OptimizeSpeed", "Release" );
 --module:set_flag( "FatalWarnings", "Release" );
 
 module:set_define( "NDEBUG", nil, "Master" );
@@ -30,7 +30,7 @@ module:set_define( "TIKI_BUILD_MASTER", "TIKI_ON", "Master" );
 module:set_flag( "Optimize", "Master" );
 module:set_flag( "NoRTTI", "Master" );
 module:set_flag( "NoExceptions", "Master" );
---module:set_flag( "OptimizeSpeed", "Master" );
+module:set_flag( "OptimizeSpeed", "Master" );
 --module:set_flag( "FatalWarnings", "Master" );
 
 is_windows	= false;

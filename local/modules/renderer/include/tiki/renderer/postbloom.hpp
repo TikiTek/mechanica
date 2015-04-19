@@ -32,7 +32,7 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessBloomParameters& parameters );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		
-		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount );
+		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount = TIKI_SIZE_T_MAX );
 
 		void				render( GraphicsContext& graphicsContext, const TextureData& accumulationData, const TextureData& selfilluData ) const;
 

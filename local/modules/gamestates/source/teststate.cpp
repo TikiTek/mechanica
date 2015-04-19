@@ -61,6 +61,11 @@ namespace tiki
 					bloomParameters
 				) );
 
+				TIKI_VERIFY( m_skybox.create(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager()
+				) );
+
 				m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 				return TransitionState_Finish;
@@ -68,6 +73,11 @@ namespace tiki
 			else
 			{
 				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+
+				m_skybox.dispose(
+					framework::getGraphicsSystem(),
+					framework::getResourceManager()
+				);
 
 				m_bloom.dispose(
 					framework::getGraphicsSystem(),
@@ -268,6 +278,16 @@ namespace tiki
 		m_gameClient.render( *m_pGameRenderer );
 
 		m_freeCamera.update( frameData.mainCamera, timeDelta );
+
+		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
+		if ( pEvent != nullptr )
+		{
+			TIKI_VERIFY( m_bloom.resize(
+				framework::getGraphicsSystem(),
+				pEvent->data.sizeChanged.size.x,
+				pEvent->data.sizeChanged.size.y
+			) );
+		}
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -283,7 +303,12 @@ namespace tiki
 		//} 
 		//graphicsContext.unmapBuffer( m_skinningData.matrices );
 
-		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
+		m_skybox.render( graphicsContext, m_pGameRenderer->getGeometryTarget() );
+
+		if ( m_enableBloom )
+		{
+			m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
+		}
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 

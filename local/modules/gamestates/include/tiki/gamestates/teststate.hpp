@@ -11,6 +11,7 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/postbloom.hpp"
+#include "tiki/renderer/postskybox.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -78,6 +79,7 @@ namespace tiki
 		bool						m_enablePhysicsDebug;
 		bool						m_enableBloom;
 		PostProcessBloom			m_bloom;
+		PostProcessSkybox			m_skybox;
 
 		GameClient					m_gameClient;
 

@@ -24,7 +24,6 @@ struct ScenePixelConstantData
 	float specluarPower;
 };
 
-
 TIKI_GRAPHICS_NAMESPACE_END
 
 #endif // __TIKI_SCENE_SHADER_HPP_INCLUDED__
