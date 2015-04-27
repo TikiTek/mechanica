@@ -1,12 +1,17 @@
 
-Project = class{ name = nul, type = nil, module = nil, config = nil, platforms = {}, configurations = {} };
-
 ProjectTypes = {
 	consoleApplication	= "ConsoleApp",
 	windowApplication	= "WindowedApp",
 	sharedLibrary		= "SharedLib",
 	staticLibrary		= "StaticLib"
 };
+
+ProjectLanguages = {
+	cpp		= "C++",
+	cs		= "C#"
+};
+
+Project = class{ name = nul, type = nil, lang = ProjectLanguages.cpp, module = nil, presentation = nil, config = nil, platforms = {}, configurations = {} };
 
 global_project_storage = {};
 
@@ -106,7 +111,11 @@ end
 function Project:finalize()
 	project( self.name )
 	kind( self.type );
-	language "C++"
+	language( self.lang );
+	
+	if self.presentation then
+		presentation( self.presentation );
+	end
 	
 	if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
 		defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );
