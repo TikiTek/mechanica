@@ -6,31 +6,31 @@
 
 #include "tiki/framework/frameworkfactories.hpp"
 #include "tiki/framework/touchgamesystem.hpp"
+#include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
 
 namespace tiki
 {
-	struct TikiArenaStates;
+	struct States;
 
-	enum TikiArenaGameStates
+	enum GameStates
 	{
-		TikiArenaGameStates_Root,
-		TikiArenaGameStates_Intro,
-		TikiArenaGameStates_Application,
-		TikiArenaGameStates_Play,
-		TikiArenaGameStates_Test,
-		TikiArenaGameStates_BasicTest,
+		GameStates_Root,
+			GameStates_Application,
+				GameStates_Intro,
+				GameStates_Menu,
+				GameStates_Play,
+				GameStates_Credits,
+				GameStates_Test,
+			GameStates_BasicTest,
 
-		TikiArenaGameStates_Count
+		GameStates_Count
 	};
 
-	class TikiArenaGame : public GameFramework
+	class Game : public GameFramework
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( TikiArenaGame );
-
-	public:
-		
-		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
+		friend GameFlowSystem& framework::getGameFlowSystem();
 
 	protected:
 
@@ -43,12 +43,16 @@ namespace tiki
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent );
 
+	private: // friend
+
+		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
+
 	private:
 
 		FrameworkFactories		m_factories;
 
 		GameFlowSystem			m_gameFlow;
-		TikiArenaStates*		m_pStates;
+		States*					m_pStates;
 
 		TouchGameSystem			m_touchSystem;
 
