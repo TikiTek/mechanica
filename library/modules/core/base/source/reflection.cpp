@@ -165,6 +165,7 @@ namespace tiki
 			}
 			m_pBaseType = pBaseType;
 
+			// to find constructor
 			const string regexString = formatString( "%s\\(\\)( +)\\{[( a-zA-Z0-9=\\-_;,.&<>*)]+\\}", getName().cStr() );
 
 			TRexpp regex;

@@ -3,6 +3,7 @@
 
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/material.hpp"
+#include "tiki/graphics/rendereffectdata.hpp"
 
 namespace tiki
 {

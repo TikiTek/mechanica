@@ -2,7 +2,7 @@
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
 
 #include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/tikixml.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 
 #include "toolmodelsource.hpp"
 
@@ -15,7 +15,7 @@ namespace tiki
 		m_hasFinalIndices	= false;
 	}
 
-	void ToolModelHierarchy::create( const TikiXml* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale )
+	void ToolModelHierarchy::create( const XmlReader* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale )
 	{
 		TIKI_ASSERT( pXml );
 		m_pXml	= pXml;

@@ -3,10 +3,10 @@
 
 #include "tiki/resource/resource.hpp"
 
-#include "tiki/renderer/rendereffectdata.hpp"
-
 namespace tiki
 {
+	struct RenderEffectData;
+
 	class Material : public Resource
 	{
 		friend class GraphicsContext;

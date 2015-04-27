@@ -59,7 +59,7 @@ namespace tiki
 
 		Array< T >			data;
 
-		bool			create( const TikiXml* pXml, const XmlElement* pNode, ConvertFunc pConvertFunc, size_t elementCount )
+		bool			create( const XmlReader* pXml, const XmlElement* pNode, ConvertFunc pConvertFunc, size_t elementCount )
 		{
 			string arrayId;
 			string techniqueSource;

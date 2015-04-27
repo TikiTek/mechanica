@@ -5,7 +5,7 @@
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/toolbase/tikixml.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 
 namespace tiki
 {
@@ -47,7 +47,7 @@ namespace tiki
 
 	bool ToolMaterial::create( const string& fileName )
 	{
-		TikiXml xml;
+		XmlReader xml;
 		xml.create( fileName.cStr() );
 
 		const XmlElement* pRootNode = xml.findNodeByName( "tikimaterial" );

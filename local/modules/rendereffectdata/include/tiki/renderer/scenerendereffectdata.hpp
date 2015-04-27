@@ -2,7 +2,8 @@
 #ifndef __TIKI_SCENERENDEREFFECTDATA_HPP_INCLUDED__
 #define __TIKI_SCENERENDEREFFECTDATA_HPP_INCLUDED__
 
-#include "tiki/renderer/rendereffectdata.hpp"
+#include "tiki/graphics/rendereffectdata.hpp"
+#include "tiki/renderer/rendererdefinition.hpp"
 
 namespace tiki
 {

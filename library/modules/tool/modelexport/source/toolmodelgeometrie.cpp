@@ -89,7 +89,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	void ToolModelGeometrie::create( const TikiXml* pXml, const ToolModelGeometryInstance& instance, const float scaling /*= 1.0f*/ )
+	void ToolModelGeometrie::create( const XmlReader* pXml, const ToolModelGeometryInstance& instance, const float scaling /*= 1.0f*/ )
 	{
 		const XmlAttribute* pIdAtt		= pXml->findAttributeByName( "id", instance.pNode );
 		const XmlAttribute* pNameAtt	= pXml->findAttributeByName( "name", instance.pNode );
@@ -420,7 +420,7 @@ namespace tiki
 		baseSources.dispose();
 	}
 
-	void ToolModelGeometrie::applySkinning( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const XmlElement* pSkinNode )
+	void ToolModelGeometrie::applySkinning( ToolModelHierarchy& hierarchy, const XmlReader* pXml, const XmlElement* pSkinNode )
 	{
 		TIKI_ASSERT( pXml );
 		TIKI_ASSERT( pSkinNode );

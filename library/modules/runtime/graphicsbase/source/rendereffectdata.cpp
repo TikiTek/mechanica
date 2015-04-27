@@ -1,5 +1,5 @@
 
-#include "tiki/renderer/rendereffectdata.hpp"
+#include "tiki/graphics/rendereffectdata.hpp"
 
 namespace tiki
 {

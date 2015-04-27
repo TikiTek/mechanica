@@ -5,7 +5,6 @@
 #include "tiki/base/reflection.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphics_references.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
 
 namespace tiki
 {

@@ -12,14 +12,14 @@ namespace tiki
 {
 	typedef List< const XmlElement* > XmlElementList;
 
-	class TikiXml
+	class XmlReader
 	{
 		friend void* xmlAlloc(size_t _bytes, void* pUserData);
 
 	public:
 
-							TikiXml();
-							~TikiXml();
+							XmlReader();
+							~XmlReader();
 
 		void				create( cstring pFileName );
 		void				dispose();

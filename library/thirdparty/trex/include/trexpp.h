@@ -27,9 +27,7 @@
 
 ****************************************************************/
 
-extern "C" {
 #include "trex.h"
-}
 
 struct TRexParseException{TRexParseException(const TRexChar *c):desc(c){}const TRexChar *desc;};
 

@@ -15,7 +15,7 @@ namespace tiki
 
 	ResourceManager::ResourceManager()
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		m_pAssetConverter = nullptr;
 #endif
 	}
@@ -29,7 +29,7 @@ namespace tiki
 		m_resourceStorage.create( params.maxResourceCount );
 		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		AssetConverterParamter converterParameters;
 		converterParameters.sourcePath	= "../../../../../content";
 		converterParameters.outputPath	= "../../../../../gamebuild";
@@ -51,7 +51,7 @@ namespace tiki
 
 	void ResourceManager::dispose()
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		if ( m_pAssetConverter != nullptr )
 		{
 			if ( s_enableAssetConverterWatch )
@@ -71,7 +71,7 @@ namespace tiki
 
 	void ResourceManager::update()
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		if ( m_pAssetConverter != nullptr && s_enableAssetConverterWatch )
 		{
 			Array< string > files;
@@ -116,7 +116,7 @@ namespace tiki
 
 	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		if ( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->lockConversion();
@@ -130,7 +130,7 @@ namespace tiki
 		const ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
 		traceResourceLoadResult( result, pFileName, crcFileName, type );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		if ( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->unlockConversion();
