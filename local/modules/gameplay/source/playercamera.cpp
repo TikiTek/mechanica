@@ -1,6 +1,7 @@
 
 #include "tiki/gameplay/playercamera.hpp"
 
+#include "tiki/components/playercontrolcomponent.hpp"
 #include "tiki/math/camera.hpp"
 
 namespace tiki

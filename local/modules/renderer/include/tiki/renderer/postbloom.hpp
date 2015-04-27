@@ -2,6 +2,9 @@
 #ifndef __TIKI_POSTBLOOM_HPP_INCLUDED__
 #define __TIKI_POSTBLOOM_HPP_INCLUDED__
 
+#include "tiki/base/array.hpp"
+#include "tiki/graphics/rendertarget.hpp"
+#include "tiki/graphics/texturedata.hpp"
 #include "tiki/renderer/postblur.hpp"
 
 namespace tiki

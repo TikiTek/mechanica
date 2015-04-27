@@ -3,7 +3,11 @@
 
 #include "tiki/base/bits.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
+#include "tiki/graphics/shaderset.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/lighting_shader.hpp"
 #include "tiki/graphics/shader/cameraparameter.hpp"

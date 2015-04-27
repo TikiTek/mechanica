@@ -1,6 +1,10 @@
 
 #include "tiki/renderer/postbloom.hpp"
 
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/shaderset.hpp"
+#include "tiki/resource/resourcemanager.hpp"
+
 #include "shader/bloom_shader.hpp"
 
 namespace tiki

@@ -2,8 +2,24 @@
 #ifndef TIKI_POSTSKYBOX_HPP_INCLUDED__
 #define TIKI_POSTSKYBOX_HPP_INCLUDED__
 
+#include "tiki/base/types.hpp"
+
+#include "tiki/graphics/constantbuffer.hpp"
+
 namespace tiki
 {
+	class BlendState;
+	class DepthStencilState;
+	class GraphicsContext;
+	class GraphicsSystem;
+	class RasterizerState;
+	class RenderTarget;
+	class ResourceManager;
+	class SamplerState;
+	class ShaderSet;
+	class Texture;
+	class VertexInputBinding;
+
 	class PostProcessSkybox
 	{
 		TIKI_NONCOPYABLE_CLASS( PostProcessSkybox );

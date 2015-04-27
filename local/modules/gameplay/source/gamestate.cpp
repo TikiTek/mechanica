@@ -2,6 +2,7 @@
 #include "tiki/gameplay/gamestate.hpp"
 
 #include "tiki/animation/animation.hpp"
+#include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/renderer/renderercontext.hpp"

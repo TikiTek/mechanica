@@ -3,13 +3,24 @@
 #define __TIKI_POSTASCII_HPP_INCLUDED__
 
 #include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
 namespace tiki
 {
-	class Texture;
+	class BlendState;
+	class DepthStencilState;
 	class Font;
+	class GraphicsContext;
+	class RasterizerState;
+	class ResourceManager;
+	class SamplerState;
+	class SamplerState;
+	class ShaderSet;
+	class VertexInputBinding;
+	struct FrameData;
+	struct RendererContext;
 
 	struct PostProcessAsciiParameters
 	{

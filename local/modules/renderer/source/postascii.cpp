@@ -2,7 +2,11 @@
 #include "tiki/renderer/postascii.hpp"
 
 #include "tiki/graphics/font.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/stockvertex.hpp"
+#include "tiki/renderer/renderercontext.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/ascii_shader.hpp"
 
