@@ -1,6 +1,8 @@
 
 #include "tiki/graphics/blendstate.hpp"
 
+#include "tiki/base/memory.hpp"
+
 #include "graphicssystem_internal_d3d11.hpp"
 
 namespace tiki

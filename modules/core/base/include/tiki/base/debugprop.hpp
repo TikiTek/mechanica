@@ -4,6 +4,7 @@
 
 #include "tiki/base/debugpropmanager.hpp"
 #include "tiki/base/linkedlist.hpp"
+#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
@@ -17,6 +18,10 @@
 #	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const float varname;
 
 #else
+
+#	ifndef TIKI_CURRENT_MODULE
+#		define TIKI_CURRENT_MODULE "tiki3"
+#	endif
 
 #	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, TIKI_CURRENT_MODULE, defaultValue );
 #	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropInt varname ( name, TIKI_CURRENT_MODULE, defaultValue, minValue, maxValue );

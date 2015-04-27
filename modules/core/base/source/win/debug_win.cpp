@@ -1,6 +1,7 @@
 
 #include "tiki/base/debug.hpp"
 
+#include <crtdbg.h>
 #include <stdio.h>
 #include <windows.h>
 

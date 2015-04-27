@@ -1,6 +1,9 @@
 
 #include "tiki/base/string.hpp"
 
+#include <cstdarg>
+#include <cstdio>
+
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )

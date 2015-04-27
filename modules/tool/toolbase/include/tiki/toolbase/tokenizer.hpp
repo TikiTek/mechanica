@@ -2,7 +2,7 @@
 #ifndef TIKI_TOKENIZER_HPP
 #define TIKI_TOKENIZER_HPP
 
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 
 namespace tiki
 {

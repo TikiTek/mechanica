@@ -3,12 +3,16 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/debugprop.hpp"
+#include "tiki/base/memory.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/physics/physicsbody.hpp"
 #include "tiki/physics/physicscharactercontroller.hpp"
 #include "tiki/physics/physicscollider.hpp"
+#include "tiki/physics/physicsshape.hpp"
 
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
+
+#include "physicsinternal.hpp"
 
 namespace tiki
 {	

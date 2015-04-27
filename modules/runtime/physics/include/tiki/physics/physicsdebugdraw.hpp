@@ -4,6 +4,8 @@
 
 #include "LinearMath/btIDebugDraw.h"
 
+#include "tiki/base/types.hpp"
+
 namespace tiki
 {
 	class Camera;
