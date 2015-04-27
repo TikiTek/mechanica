@@ -1,6 +1,8 @@
 
 #include "tiki/framework/mainwindow.hpp"
 
+#include "tiki/base/memory.hpp"
+
 #include <windows.h>
 #include <windowsx.h>
 

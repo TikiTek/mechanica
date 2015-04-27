@@ -2,17 +2,23 @@
 #ifndef __TIKI_GAMESTATE_HPP_INCLUDED__
 #define __TIKI_GAMESTATE_HPP_INCLUDED__
 
-#include "tiki/base/sizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
+#include "tiki/math/vector.hpp"
+#include "tiki/base/fixedsizedarray.hpp"
 
 namespace tiki
 {
 	class Animation;
 	class GameClient;
 	class Model;
+	class PhysicsShape;
 	class ResourceManager;
 	struct FrameData;
+	struct PhysicsCharacterControllerComponentState;
+	struct Vector3;
+
+	typedef FixedSizedArray< EntityId, 4u > CollectedCoinIdArray;
 
 	class GameState
 	{

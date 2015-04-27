@@ -2,7 +2,7 @@
 #ifndef TIKI_TOOLDIRECTORY_HPP
 #define TIKI_TOOLDIRECTORY_HPP
 
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/list.hpp"
 

@@ -17,7 +17,7 @@ namespace tiki
 		PhysicsSphereShape			sphereShape;
 	};
 
-	PhysicsShape* createPhysicsComponentShape( PhysicsComponentShape& shape, const PhysicsComponentShapeInitData& initData )
+	TIKI_INLINE PhysicsShape* createPhysicsComponentShape( PhysicsComponentShape& shape, const PhysicsComponentShapeInitData& initData )
 	{
 		shape.shapeType	= initData.shapeType;
 
@@ -47,7 +47,7 @@ namespace tiki
 		return pShape;
 	}
 
-	void disposePhysicsComponentShape( PhysicsComponentShape& shape )
+	TIKI_INLINE void disposePhysicsComponentShape( PhysicsComponentShape& shape )
 	{
 		switch ( shape.shapeType )
 		{

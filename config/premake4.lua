@@ -10,8 +10,6 @@ module:set_define( "TIKI_BUILD_DEBUG", "TIKI_ON", "Debug" );
 module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Debug" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Debug" );
 module:set_flag( "Symbols", "Debug" );
-module:set_flag( "NoExceptions", "Debug" );
---module:set_flag( "FatalWarnings", "Debug" );
 
 module:set_define( "NDEBUG", nil, "Release" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_OFF", "Release" );
@@ -19,9 +17,7 @@ module:set_define( "TIKI_BUILD_RELEASE", "TIKI_ON", "Release" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_OFF", "Release" );
 module:set_flag( "Optimize", "Release" );
 module:set_flag( "NoRTTI", "Release" );
-module:set_flag( "NoExceptions", "Release" );
 module:set_flag( "OptimizeSpeed", "Release" );
---module:set_flag( "FatalWarnings", "Release" );
 
 module:set_define( "NDEBUG", nil, "Master" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_OFF", "Master" );
@@ -29,9 +25,7 @@ module:set_define( "TIKI_BUILD_RELEASE", "TIKI_OFF", "Master" );
 module:set_define( "TIKI_BUILD_MASTER", "TIKI_ON", "Master" );
 module:set_flag( "Optimize", "Master" );
 module:set_flag( "NoRTTI", "Master" );
-module:set_flag( "NoExceptions", "Master" );
 module:set_flag( "OptimizeSpeed", "Master" );
---module:set_flag( "FatalWarnings", "Master" );
 
 is_windows	= false;
 is_linux	= false;
@@ -90,6 +84,7 @@ module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OF
 module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) );
 
---module:set_flag("NoExceptions");
+--module:set_flag( "FatalWarnings", "Master" );
+module:set_flag("NoExceptions");
 module:set_flag("NoMinimalRebuild");
-module:set_flag("MultiProcessorCompilation");
+module:set_flag("MultiProcessorCompile");

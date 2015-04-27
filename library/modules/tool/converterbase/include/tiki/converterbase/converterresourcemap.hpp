@@ -2,7 +2,7 @@
 #ifndef __TIKI_CONVERTERRESOURCEMAP_HPP_INCLUDED__
 #define __TIKI_CONVERTERRESOURCEMAP_HPP_INCLUDED__
 
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/map.hpp"
 

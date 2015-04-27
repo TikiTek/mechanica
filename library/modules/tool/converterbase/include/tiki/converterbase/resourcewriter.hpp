@@ -3,7 +3,7 @@
 #define TIKI_RESOURCEWRITER_HPP
 
 #include "tiki/base/platform.hpp"
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/resource/resourcefile.hpp"
 #include "tiki/toolbase/list.hpp"

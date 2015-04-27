@@ -4,7 +4,7 @@
 
 #include "tiki/base/inline.hpp"
 #include "tiki/base/sizedarray.hpp"
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/resource/resourceloader.hpp"
 #include "tiki/resource/resourcestorage.hpp"

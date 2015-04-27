@@ -4,6 +4,7 @@
 #include "tiki/animation/animation.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
+#include "tiki/framework/mainwindow.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"

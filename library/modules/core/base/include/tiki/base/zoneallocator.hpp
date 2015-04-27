@@ -2,6 +2,7 @@
 #ifndef __TIKI_ZONEALLOCATOR_HPP_INCLUDED__
 #define __TIKI_ZONEALLOCATOR_HPP_INCLUDED__
 
+#include "tiki/base/memory.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

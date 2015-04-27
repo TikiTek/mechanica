@@ -4,6 +4,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/graphics/color.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 

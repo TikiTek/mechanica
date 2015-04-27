@@ -2,8 +2,24 @@
 #ifndef __TIKI_POSTBLUR_HPP_INCLUDED__
 #define __TIKI_POSTBLUR_HPP_INCLUDED__
 
+#include "tiki/base/types.hpp"
+#include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/pixelformat.hpp"
+#include "tiki/graphics/rendertarget.hpp"
+#include "tiki/graphics/texturedata.hpp"
+
 namespace tiki
 {
+	class BlendState;
+	class DepthStencilState;
+	class GraphicsContext;
+	class GraphicsSystem;
+	class RasterizerState;
+	class ResourceManager;
+	class SamplerState;
+	class ShaderSet;
+	class VertexInputBinding;
+
 	class PostProcessBlur
 	{
 		TIKI_NONCOPYABLE_CLASS( PostProcessBlur );

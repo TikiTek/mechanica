@@ -1,7 +1,13 @@
 
 #include "tiki/gamestates/playstate.hpp"
 
+#include "tiki/base/timer.hpp"
+#include "tiki/framework/framework.hpp"
+#include "tiki/gamestates/applicationstate.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/renderer/gamerenderer.hpp"
+#include "tiki/renderer/renderercontext.hpp"
 
 namespace tiki
 {

@@ -1,6 +1,12 @@
 
 #include "tiki/physics/physicscharactercontroller.hpp"
 
+#include "tiki/physics/physicsshape.hpp"
+
+#include "physicsinternal.hpp"
+
+#include "BulletCollision/CollisionShapes/btConvexShape.h"
+
 namespace tiki
 {	
 	PhysicsCharacterController::PhysicsCharacterController()
@@ -14,7 +20,7 @@ namespace tiki
 
 	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position )
 	{
-		btConvexShape* pShape = static_cast< btConvexShape* >( static_cast< void* >( shape.getNativeShape() ) );
+		btConvexShape* pShape = static_cast< btConvexShape* >( shape.getNativeShape() );
 
 		btTransform transform;
 		transform.setIdentity();

@@ -2,6 +2,7 @@
 #define TIKI_GRAPHICSSTATEOBJECT_HPP
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/inline.hpp"
 
 namespace tiki
 {

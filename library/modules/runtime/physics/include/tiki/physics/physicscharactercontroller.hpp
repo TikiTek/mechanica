@@ -10,6 +10,7 @@
 namespace tiki
 {
 	class PhysicsShape;
+	struct Quaternion;
 	struct Vector3;
 
 	class PhysicsCharacterController : public PhysicsCollisionObject

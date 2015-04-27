@@ -1,6 +1,8 @@
 
 #include "tiki/debuggui/debugguialignment.hpp"
 
+#include "tiki/base/functions.hpp"
+
 namespace tiki
 {
 	void DebugGuiAlignment::create( OrientationFlags flags, const Vector2& alignment )

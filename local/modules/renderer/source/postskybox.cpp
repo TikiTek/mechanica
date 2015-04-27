@@ -1,6 +1,10 @@
 
 #include "tiki/renderer/postskybox.hpp"
 
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/texture.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/skybox_shader.hpp"
 
