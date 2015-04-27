@@ -12,7 +12,7 @@
 #include "tiki/threading/mutex.hpp"
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/map.hpp"
-#include "tiki/toolbase/sqlite.hpp"
+#include "tiki/converterbase/sqlite.hpp"
 
 struct _XmlElement;
 
@@ -20,7 +20,7 @@ namespace tiki
 {
 	class ConversionResult;
 	class ConverterBase;
-	class TikiXml;
+	class XmlReader;
 	struct ConversionParameters;
 
 	struct ConverterManagerParameter
@@ -116,7 +116,7 @@ namespace tiki
 		List< ConversionTask >		m_tasks;
 
 		void						traceCallback( cstring message, TraceLevel level ) const;
-		void						parseParams( const TikiXml& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const;
+		void						parseParams( const XmlReader& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const;
 
 		bool						prepareTasks();
 		bool						generateTaskFromFiles( const List< FileDescription >& filesToBuild );

@@ -8,7 +8,6 @@
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/toolbase/tikixml.hpp"
 
 namespace tiki
 {

@@ -9,6 +9,12 @@
 #include "tiki/resource/resourceloader.hpp"
 #include "tiki/resource/resourcestorage.hpp"
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && 0
+#	define TIKI_ENABLE_ASSET_CONVERTER TIKI_ON
+#else
+#	define TIKI_ENABLE_ASSET_CONVERTER TIKI_OFF
+#endif
+
 namespace tiki
 {
 	class FactoryBase;
@@ -58,7 +64,7 @@ namespace tiki
 		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		IAssetConverter*			m_pAssetConverter;
 #endif
 

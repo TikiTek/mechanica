@@ -11,7 +11,7 @@ struct _XmlElement;
 
 namespace tiki
 {
-	class TikiXml;
+	class XmlReader;
 	template<typename T>
 	class List;
 
@@ -48,7 +48,7 @@ namespace tiki
 
 		ToolModelHierarchy();
 
-		void								create( const TikiXml* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale );
+		void								create( const XmlReader* pXml, const _XmlElement* pHierarchyNode, const _XmlElement* pGeometriesNode, float scale );
 		void								dispose();
 
 		bool								isCreated() const { return m_pXml != nullptr; }
@@ -68,7 +68,7 @@ namespace tiki
 
 	private:
 
-		const TikiXml*						m_pXml;
+		const XmlReader*						m_pXml;
 
 		Array< ToolModelJoint >				m_joints;
 		Array< ToolModelGeometryInstance >	m_instances;

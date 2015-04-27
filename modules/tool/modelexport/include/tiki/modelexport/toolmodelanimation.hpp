@@ -9,7 +9,7 @@ struct _XmlElement;
 
 namespace tiki
 {
-	class TikiXml;
+	class XmlReader;
 	class ToolModelHierarchy;
 	struct ToolModelJoint;
 
@@ -33,7 +33,7 @@ namespace tiki
 	{
 	public:
 
-		void								create( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const _XmlElement* pNode );
+		void								create( ToolModelHierarchy& hierarchy, const XmlReader* pXml, const _XmlElement* pNode );
 		void								dispose();
 
 		bool								isCreated() const { return m_isCreated; }
@@ -51,7 +51,7 @@ namespace tiki
 
 		Array< ToolModelAnimationJoint >	m_joints;
 
-		uint								createJoint( const TikiXml* pXml, const _XmlElement* pNode, const ToolModelHierarchy& hierarchy );
+		uint								createJoint( const XmlReader* pXml, const _XmlElement* pNode, const ToolModelHierarchy& hierarchy );
 
 	};
 }

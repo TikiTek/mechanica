@@ -10,7 +10,7 @@
 #include "tiki/converterbase/converterbase.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
 #include "tiki/toolbase/autodispose.hpp"
-#include "tiki/toolbase/tikixml.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 
 #include "sqlite/sqlite3.h"
 
@@ -106,7 +106,7 @@ namespace tiki
 
 	void ConverterManager::addTemplate( const string& fileName )
 	{
-		TikiXml xmlFile;
+		XmlReader xmlFile;
 		xmlFile.create( fileName.cStr() );
 
 		const XmlElement* pRoot = xmlFile.findNodeByName( "xtemplate" );
@@ -208,7 +208,7 @@ namespace tiki
 		m_loggingMutex.unlock();
 	}
 
-	void ConverterManager::parseParams( const TikiXml& xmlFile, const XmlElement* pRoot, Map< string, string >& arguments ) const
+	void ConverterManager::parseParams( const XmlReader& xmlFile, const XmlElement* pRoot, Map< string, string >& arguments ) const
 	{
 		const XmlElement* pParam = xmlFile.findFirstChild( "param", pRoot );
 		while ( pParam )
@@ -402,7 +402,7 @@ namespace tiki
 
 	bool ConverterManager::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
 	{
-		TikiXml xmlFile;
+		XmlReader xmlFile;
 		xmlFile.create( fileDesc.fullFileName.cStr() );
 
 		// parse root node

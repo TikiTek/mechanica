@@ -4,13 +4,13 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
-#include "tiki/toolbase/tikixml.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 
 #include "toolmodelsource.hpp"
 
 namespace tiki
 {
-	void ToolModelAnimation::create( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const _XmlElement* pNode )
+	void ToolModelAnimation::create( ToolModelHierarchy& hierarchy, const XmlReader* pXml, const _XmlElement* pNode )
 	{
 		m_isCreated		= true;
 		m_frameCount	= TIKI_SIZE_T_MAX;
@@ -50,7 +50,7 @@ namespace tiki
 		}
 	}
 
-	uint ToolModelAnimation::createJoint( const TikiXml* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
+	uint ToolModelAnimation::createJoint( const XmlReader* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
 	{
 		const XmlElement* pNode = pXml->findFirstChild( "animation", pParentNode );
 

@@ -7,7 +7,7 @@
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/toolbase/tikixml.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 #include "tiki/modelexport/toolmodelvertexformat.hpp"
 
 namespace tiki
@@ -67,11 +67,11 @@ namespace tiki
 	{
 	public:
 
-		void							create( const TikiXml* pXml, const ToolModelGeometryInstance& instance, const float scaling = 1.0f );
+		void							create( const XmlReader* pXml, const ToolModelGeometryInstance& instance, const float scaling = 1.0f );
 		void							dispose();
 
 		bool							calculateTangents();
-		void							applySkinning( ToolModelHierarchy& hierarchy, const TikiXml* pXml, const XmlElement* pSkinNode );
+		void							applySkinning( ToolModelHierarchy& hierarchy, const XmlReader* pXml, const XmlElement* pSkinNode );
 		void							transformToInstance();
 
 		uint							getIndexCount() const { return m_indices.getCount(); };

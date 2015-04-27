@@ -5,11 +5,11 @@
 #include "tiki/base/inline.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/converterbase/xmlreader.hpp"
 #include "tiki/modelexport/toolmodelanimation.hpp"
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
 #include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/tikixml.hpp"
 
 namespace tiki
 {
@@ -34,7 +34,7 @@ namespace tiki
 
 	private:
 
-		TikiXml							m_xml;
+		XmlReader						m_xml;
 
 		ToolModelHierarchy				m_hierarchy;
 		ToolModelAnimation				m_animation;

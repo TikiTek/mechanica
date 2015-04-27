@@ -11,7 +11,7 @@ ProjectLanguages = {
 	cs		= "C#"
 };
 
-Project = class{ name = nul, type = nil, lang = ProjectLanguages.cpp, module = nil, presentation = nil, config = nil, platforms = {}, configurations = {} };
+Project = class{ name = nul, type = nil, lang = ProjectLanguages.cpp, module = nil, buildoptions = nil, config = nil, platforms = {}, configurations = {} };
 
 global_project_storage = {};
 
@@ -113,14 +113,16 @@ function Project:finalize()
 	kind( self.type );
 	language( self.lang );
 	
-	if self.presentation then
-		presentation( self.presentation );
+	if self.buildoptions then
+		buildoptions( self.buildoptions );
 	end
 	
-	if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
-		defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );
-	else
-		defines( { "TIKI_BUILD_LIBRARY=TIKI_OFF" } );
+	if self.lang == ProjectLanguages.cpp then
+		if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
+			defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );
+		else
+			defines( { "TIKI_BUILD_LIBRARY=TIKI_OFF" } );
+		end
 	end
 
 	local modules = {};
@@ -232,7 +234,7 @@ function Project:finalize()
 	local shader_file = io.open( shader_file_name, "w" );
 	if shader_file ~= nil then		
 		for i,dir in pairs( shader_lines ) do
-			print( "Shader: " .. dir );
+			--print( "Shader: " .. dir );
 
 			if i > 1 then
 				shader_file:write( "\n" );
