@@ -8,6 +8,8 @@
 
 namespace tiki
 {
+	class ApplicationState;
+
 	enum IntroStateTransitionSteps
 	{
 		IntroStateTransitionSteps_Count
@@ -15,11 +17,14 @@ namespace tiki
 
 	class IntroState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( IntroState );
+		TIKI_NONCOPYABLE_CLASS( IntroState );
 
-	public:								
+	public:				
 
-		void					create();
+								IntroState();
+		virtual					~IntroState();
+
+		void					create( ApplicationState* pParentState );
 		void					dispose();
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
@@ -28,6 +33,10 @@ namespace tiki
 		virtual void			render( GraphicsContext& graphicsContext );
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent );
+
+	private:
+
+		ApplicationState*		m_pParentState;
 
 	};
 }

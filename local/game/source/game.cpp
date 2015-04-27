@@ -1,9 +1,11 @@
 
-#include "tiki/game/tikiarenagame.hpp"
+#include "tiki/game/game.hpp"
 
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/gamestates/basicteststate.hpp"
+#include "tiki/gamestates/creditsstate.hpp"
 #include "tiki/gamestates/introstate.hpp"
+#include "tiki/gamestates/menustate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
 
@@ -11,16 +13,18 @@
 
 namespace tiki
 {
-	struct TikiArenaStates
+	struct States
 	{
 		ApplicationState	applicationState;
-		BasicTestState		basicTestState;
 		IntroState			introState;
+		MenuState			menuState;
 		PlayState			playState;
+		CreditsState		creditsState;
 		TestState			testState;
+		BasicTestState		basicTestState;
 	};
 
-	static TikiArenaGameStates getStartState()
+	static GameStates getStartState()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		char buffer[ 32u ];
@@ -31,14 +35,14 @@ namespace tiki
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
 			//return TikiArenaGameStates_BasicTest;
-			return TikiArenaGameStates_Test;
+			return GameStates_Test;
 		}
 #endif
 
-		return TikiArenaGameStates_Play;
+		return GameStates_Play;
 	}
 
-	void TikiArenaGame::fillParameters( GameFrameworkParamters& parameters )
+	void Game::fillParameters( GameFrameworkParamters& parameters )
 	{
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
@@ -55,27 +59,29 @@ namespace tiki
 #endif
 	}
 
-	bool TikiArenaGame::initialize()
+	bool Game::initialize()
 	{
 		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
 
-		m_pStates = TIKI_MEMORY_NEW_OBJECT( TikiArenaStates );
+		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
 		m_pStates->applicationState.create();
-		m_pStates->basicTestState.create();
-		m_pStates->introState.create();
+		m_pStates->introState.create( &m_pStates->applicationState );
 		m_pStates->playState.create( &m_pStates->applicationState );
 		m_pStates->testState.create( &m_pStates->applicationState );
+		m_pStates->basicTestState.create();
 
 		GameStateDefinition gameDefinition[] =
 		{
 			{ nullptr,								0u,	0u,										"Root" },
-				{ &m_pStates->introState,			0u,	IntroStateTransitionSteps_Count,		"IntroState" },			// F5
-				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },	// F6
-					{ &m_pStates->playState,		2u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F7
-					{ &m_pStates->testState,		2u,	TestStateTransitionSteps_Count,			"TestState" },			// F8
-				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" }		// F9
+				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },	// F5
+					{ &m_pStates->introState,		1u,	IntroStateTransitionSteps_Count,		"IntroState" },			// F6
+					{ &m_pStates->menuState,		1u,	MenuStateTransitionSteps_Count,			"MenuState" },			// F7
+					{ &m_pStates->playState,		1u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F8
+					{ &m_pStates->creditsState,		1u,	CreditsStateTransitionSteps_Count,		"CreditsState" },		// F9
+					{ &m_pStates->testState,		1u,	TestStateTransitionSteps_Count,			"TestState" },			// F10
+				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" }		// F11
 		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == TikiArenaGameStates_Count );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == GameStates_Count );
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
@@ -88,7 +94,7 @@ namespace tiki
 		return true;
 	}
 
-	void TikiArenaGame::shutdown()
+	void Game::shutdown()
 	{
 		m_touchSystem.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -99,7 +105,7 @@ namespace tiki
 				m_gameFlow.update();
 			}
 
-			m_gameFlow.startTransition( TikiArenaGameStates_Root );
+			m_gameFlow.startTransition( GameStates_Root );
 
 			while ( m_gameFlow.isInTransition() )
 			{
@@ -113,16 +119,18 @@ namespace tiki
 		if ( m_pStates != nullptr )
 		{
 			m_pStates->applicationState.dispose();
-			m_pStates->basicTestState.dispose();
 			m_pStates->introState.dispose();
+			m_pStates->menuState.dispose();
 			m_pStates->playState.dispose();
+			m_pStates->creditsState.dispose();
 			m_pStates->testState.dispose();
+			m_pStates->basicTestState.dispose();
 
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
 	}
 
-	void TikiArenaGame::update()
+	void Game::update()
 	{
 		m_touchSystem.update( float( framework::getFrameTimer().getElapsedTime() ), framework::getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
@@ -133,14 +141,14 @@ namespace tiki
 		m_gameFlow.update();
 	}
 
-	void TikiArenaGame::render( GraphicsContext& graphicsContext ) const
+	void Game::render( GraphicsContext& graphicsContext ) const
 	{
 		m_gameFlow.render( graphicsContext );
 
 		m_touchSystem.render( graphicsContext );
 	}
 
-	bool TikiArenaGame::processInputEvent( const InputEvent& inputEvent )
+	bool Game::processInputEvent( const InputEvent& inputEvent )
 	{
 		if ( m_touchSystem.processInputEvent( inputEvent ) )
 		{
@@ -164,7 +172,7 @@ namespace tiki
 
 	GameFramework& framework::getGame()
 	{
-		static TikiArenaGame game;
+		static Game game;
 		return game;
 	}
 }

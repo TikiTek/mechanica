@@ -64,6 +64,7 @@
 		if type(msg) == "number" then
 			s = string.rep(io.indent, msg) .. string.format(unpack(arg))
 		else
+			print(msg)
 			s = string.format(msg, unpack(arg))
 		end
 		

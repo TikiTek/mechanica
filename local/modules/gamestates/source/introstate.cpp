@@ -3,12 +3,27 @@
 
 namespace tiki
 {
-	void IntroState::create()
+	IntroState::IntroState()
 	{
+		m_pParentState = nullptr;
+	}
+
+	IntroState::~IntroState()
+	{
+		TIKI_ASSERT( m_pParentState == nullptr );
+	}
+
+	void IntroState::create( ApplicationState* pParentState )
+	{
+		TIKI_ASSERT( pParentState != nullptr );
+		TIKI_ASSERT( m_pParentState == nullptr );
+
+		m_pParentState = pParentState;
 	}
 
 	void IntroState::dispose()
 	{
+		m_pParentState = nullptr;
 	}
 
 	TransitionState IntroState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
