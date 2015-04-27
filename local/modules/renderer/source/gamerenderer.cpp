@@ -6,6 +6,7 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
+#include "tiki/graphics/rendereffectdata.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
