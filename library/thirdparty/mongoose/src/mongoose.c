@@ -48,7 +48,9 @@
 #define _MBCS                   // Use multibyte encoding on Windows
 #endif
 #define _INTEGRAL_MAX_BITS 64   // Enable _stati64() on Windows
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning in VS2005+
+#endif
 #undef WIN32_LEAN_AND_MEAN      // Let windows.h always include winsock2.h
 #ifdef __Linux__
 #define _XOPEN_SOURCE 600       // For flockfile() on Linux
@@ -1749,14 +1751,14 @@ static int get_request_len(const char *s, size_t buf_len) {
   const unsigned char *buf = (unsigned char *) s;
   int i;
 
-  for (i = 0; i < buf_len; i++) {
+  for (i = 0; i < (int)buf_len; i++) {
     // Control characters are not allowed but >=128 are.
     // Abort scan as soon as one malformed character is found.
     if (!isprint(buf[i]) && buf[i] != '\r' && buf[i] != '\n' && buf[i] < 128) {
       return -1;
-    } else if (buf[i] == '\n' && i + 1 < buf_len && buf[i + 1] == '\n') {
+    } else if (buf[i] == '\n' && i + 1 < (int)buf_len && buf[i + 1] == '\n') {
       return i + 2;
-    } else if (buf[i] == '\n' && i + 2 < buf_len && buf[i + 1] == '\r' &&
+    } else if (buf[i] == '\n' && i + 2 < (int)buf_len && buf[i + 1] == '\r' &&
                buf[i + 2] == '\n') {
       return i + 3;
     }
@@ -2443,8 +2445,8 @@ int mg_url_decode(const char *src, size_t src_len, char *dst,
   int i, j, a, b;
 #define HEXTOI(x) (isdigit(x) ? x - '0' : x - 'W')
 
-  for (i = j = 0; i < src_len && j < dst_len - 1; i++, j++) {
-    if (src[i] == '%' && i < src_len - 2 &&
+  for (i = j = 0; i < (int)src_len && j < (int)dst_len - 1; i++, j++) {
+    if (src[i] == '%' && i < (int)src_len - 2 &&
         isxdigit(* (const unsigned char *) (src + i + 1)) &&
         isxdigit(* (const unsigned char *) (src + i + 2))) {
       a = tolower(* (const unsigned char *) (src + i + 1));
@@ -2460,7 +2462,7 @@ int mg_url_decode(const char *src, size_t src_len, char *dst,
 
   dst[j] = '\0'; // Null-terminate the destination
 
-  return i >= src_len ? j : -1;
+  return i >= (int)src_len ? j : -1;
 }
 
 static int is_valid_http_method(const char *s) {
@@ -2565,7 +2567,7 @@ int mg_match_prefix(const char *pattern, size_t pattern_len, const char *str) {
       (pattern + pattern_len) - (or_str + 1), str);
   }
 
-  for (; i < pattern_len; i++, j++) {
+  for (; i < (int)pattern_len; i++, j++) {
     if (pattern[i] == '?' && str[j] != '\0') {
       continue;
     } else if (pattern[i] == '$') {
@@ -3798,7 +3800,7 @@ static void handle_put(struct connection *conn, const char *path) {
 
 static void forward_put_data(struct connection *conn) {
   struct iobuf *io = &conn->ns_conn->recv_iobuf;
-  size_t k = conn->cl < (int64_t) io->len ? conn->cl : (int64_t) io->len;   // To write
+  size_t k = conn->cl < (int64_t) io->len ? (size_t) conn->cl : io->len;   // To write
   size_t n = write(conn->endpoint.fd, io->buf, (unsigned int)k);   // Write them!
   if (n > 0) {
     iobuf_remove(io, n);

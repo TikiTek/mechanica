@@ -28,6 +28,7 @@ namespace tiki
 		D3D11_BLEND_OP_MIN,			// BlendOperation_Min
 		D3D11_BLEND_OP_MAX			// BlendOperation_Max
 	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aBlendOperationMapping ) == BlendOperation_Count );
 
 	TIKI_COMPILETIME_ASSERT( ColorWriteMask_Red		== D3D11_COLOR_WRITE_ENABLE_RED );
 	TIKI_COMPILETIME_ASSERT( ColorWriteMask_Green	== D3D11_COLOR_WRITE_ENABLE_GREEN );

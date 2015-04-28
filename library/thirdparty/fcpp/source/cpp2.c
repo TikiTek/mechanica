@@ -669,7 +669,7 @@ ReturnCode openinclude( struct Global *global,
      */
     for( incptr = global->incdir; incptr < global->incend; incptr++ )
         {
-        len = strlen(*incptr);
+        len = (int)strlen(*incptr);
 
         if( len + strlen(filename) >= sizeof(tmpname) )
             {

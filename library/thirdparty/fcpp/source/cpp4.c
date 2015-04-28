@@ -316,7 +316,7 @@ ReturnCode textput(struct Global *global, char *text)
 
   int size;
   
-  size = strlen(text) + 1;
+  size = (int)strlen(text) + 1;
   if ((global->parmp + size) >= &global->parm[NPARMWORK]) {
     cfatal(global, FATAL_MACRO_AREA_OVERFLOW);
     return(FPP_WORK_AREA_OVERFLOW);
@@ -591,7 +591,7 @@ ReturnCode expstuff(struct Global *global,
 	 * Replace formal parameter by actual parameter string.
 	 */
 	if ((c -= MAC_PARM) < global->nargs) {
-	  size = strlen(global->parlist[c]);
+	  size = (int)strlen(global->parlist[c]);
 #if OK_CONCAT
 	  if (quoting) {
 	    size++;

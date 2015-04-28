@@ -134,7 +134,7 @@ int PREFIX fppPreProcess(REG(a0) struct fppTag *tags)
 
   if(!ret)
     ret=cppmain(global);             /* Process main file            */
-  if ((i = (global->ifptr - global->ifstack)) != 0) {
+  if ((i = (int)(global->ifptr - global->ifstack)) != 0) {
 #if OLD_PREPROCESSOR
     cwarn(global, ERROR_IFDEF_DEPTH, i);
 #else

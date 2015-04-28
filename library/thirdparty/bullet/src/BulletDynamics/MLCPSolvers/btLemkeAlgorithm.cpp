@@ -248,7 +248,7 @@ btScalar btEpsRoot() {
 
 	  for (int i = 0; i < Rows.size(); i++) 
 	  {
-		  if (Rows[i].nrm2() > 0.) {
+		  if (Rows[i].nrm2() > 0.0f) {
 
 			  int j = 0;
 			  for (; j < Rows.size(); j++) 

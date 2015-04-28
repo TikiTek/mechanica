@@ -23,7 +23,7 @@ subject to the following restrictions:
 btMLCPSolver::btMLCPSolver(	 btMLCPSolverInterface* solver)
 :m_solver(solver),
 m_fallback(0),
-m_cfm(0.000001)//0.0000001
+m_cfm(0.000001f)//0.0000001
 {
 }
 

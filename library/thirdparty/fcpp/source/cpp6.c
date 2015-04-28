@@ -498,11 +498,11 @@ ReturnCode getfile(struct Global *global,
 
   int size;
 
-  size = strlen(name);                          /* File/macro name      */
+  size = (int)strlen(name);                          /* File/macro name      */
 
   if(!size) {
       name = "[stdin]";
-      size = strlen(name);
+      size = (int)strlen(name);
   }
 
   *file = (FILEINFO *) malloc((int)(sizeof (FILEINFO) + bufsize + size));
@@ -587,7 +587,7 @@ DEFBUF *defendel(struct Global *global,
 
   for (nhash = 0, np = name; *np != EOS;)
     nhash += *np++;
-  size = (np - name);
+  size = (int)(np - name);
   nhash += size;
   prevp = &global->symtab[nhash % SBSIZE];
   while ((dp = *prevp) != (DEFBUF *) NULL) {
@@ -954,7 +954,7 @@ ReturnCode ungetstring(struct Global *global, char *text)
   FILEINFO *file;
   ReturnCode ret;
 
-  ret = getfile(global, strlen(text) + 1, "", &file);
+  ret = getfile(global, (int)strlen(text) + 1, "", &file);
   if(!ret)
     strcpy(file->buffer, text);
   return(ret);

@@ -94,7 +94,7 @@ struct btVectorX
 						{
 							T temp;
 							temp = scale / absxi;
-							ssq = ssq * (temp * temp) + 1.0;
+							ssq = ssq * (temp * temp) + 1.0f;
 							scale = absxi;
 						}
 						else

@@ -3337,8 +3337,8 @@ const char*	btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 		{
 			memPtr->m_bbending = m_links[i].m_bbending;
 			memPtr->m_material = m_links[i].m_material? (SoftBodyMaterialData*)serializer->getUniquePointer((void*) m_links[i].m_material):0;
-			memPtr->m_nodeIndices[0] = m_links[i].m_n[0] ? m_links[i].m_n[0] - &m_nodes[0]: -1;
-			memPtr->m_nodeIndices[1] = m_links[i].m_n[1] ? m_links[i].m_n[1] - &m_nodes[0]: -1;
+			memPtr->m_nodeIndices[0] = m_links[i].m_n[0] ? int(m_links[i].m_n[0] - &m_nodes[0]) : -1;
+			memPtr->m_nodeIndices[1] = m_links[i].m_n[1] ? int(m_links[i].m_n[1] - &m_nodes[0]) : -1;
 			btAssert(memPtr->m_nodeIndices[0]<m_nodes.size());
 			btAssert(memPtr->m_nodeIndices[1]<m_nodes.size());
 			memPtr->m_restLength = m_links[i].m_rl;
@@ -3362,7 +3362,7 @@ const char*	btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 			m_faces[i].m_normal.serializeFloat(	memPtr->m_normal);
 			for (int j=0;j<3;j++)
 			{
-				memPtr->m_nodeIndices[j] = m_faces[i].m_n[j]? m_faces[i].m_n[j] - &m_nodes[0]: -1;
+				memPtr->m_nodeIndices[j] = m_faces[i].m_n[j] ? int(m_faces[i].m_n[j] - &m_nodes[0]) : -1;
 			}
 			memPtr->m_restArea = m_faces[i].m_ra;
 		}
@@ -3383,7 +3383,7 @@ const char*	btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 			for (int j=0;j<4;j++)
 			{
 				m_tetras[i].m_c0[j].serializeFloat(	memPtr->m_c0[j] );
-				memPtr->m_nodeIndices[j] = m_tetras[j].m_n[j]? m_tetras[j].m_n[j]-&m_nodes[0] : -1;
+				memPtr->m_nodeIndices[j] = m_tetras[j].m_n[j] ? int(m_tetras[j].m_n[j] - &m_nodes[0]) : -1;
 			}
 			memPtr->m_c1 = m_tetras[i].m_c1;
 			memPtr->m_c2 = m_tetras[i].m_c2;
@@ -3407,7 +3407,7 @@ const char*	btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 			m_anchors[i].m_c1.serializeFloat(memPtr->m_c1);
 			memPtr->m_c2 = m_anchors[i].m_c2;
 			m_anchors[i].m_local.serializeFloat(memPtr->m_localFrame);
-			memPtr->m_nodeIndex = m_anchors[i].m_node? m_anchors[i].m_node-&m_nodes[0]: -1;
+			memPtr->m_nodeIndex = m_anchors[i].m_node ? int(m_anchors[i].m_node-&m_nodes[0]) : -1;
 			
 			memPtr->m_rigidBody = m_anchors[i].m_body? (btRigidBodyData*)  serializer->getUniquePointer((void*)m_anchors[i].m_body): 0;
 			btAssert(memPtr->m_nodeIndex < m_nodes.size());
