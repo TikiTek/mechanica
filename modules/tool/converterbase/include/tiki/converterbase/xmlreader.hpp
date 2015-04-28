@@ -14,6 +14,7 @@ namespace tiki
 
 	class XmlReader
 	{
+		TIKI_NONCOPYABLE_CLASS( XmlReader );
 		friend void* xmlAlloc(size_t _bytes, void* pUserData);
 
 	public:

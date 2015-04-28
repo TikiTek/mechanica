@@ -52,7 +52,7 @@ namespace tiki
 			pathName = pathName.toLower();
 
 			int currentIndex = 0;
-			while ( currentIndex < pathName.getLength() )
+			while ( currentIndex < (int)pathName.getLength() )
 			{
 				int nextIndex = pathName.indexOf( '/', currentIndex );
 				if ( nextIndex == -1 )
