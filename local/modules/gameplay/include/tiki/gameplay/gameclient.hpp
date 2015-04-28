@@ -6,12 +6,12 @@
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/physicscollidercomponent.hpp"
-#include "tiki/components/playercontrolcomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
 #include "tiki/components/staticmodelcomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/gamecomponents/coincomponent.hpp"
+#include "tiki/gamecomponents/playercontrolcomponent.hpp"
 #include "tiki/physics/physicsworld.hpp"
 
 namespace tiki
@@ -80,11 +80,11 @@ namespace tiki
 		PhysicsBodyComponent				m_physicsBodyComponent;
 		PhysicsCharacterControllerComponent	m_physicsCharacterControllerComponent;
 		PhysicsColliderComponent			m_physicsColliderComponent;
-		PlayerControlComponent				m_playerControlComponent;
 		SkinnedModelComponent				m_skinnedModelComponent;
 		StaticModelComponent				m_staticModelComponent;
 		TransformComponent					m_transformComponent;
 
+		PlayerControlComponent				m_playerControlComponent;
 		CoinComponent						m_coinComponent;
 
 	};

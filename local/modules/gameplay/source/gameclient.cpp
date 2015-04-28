@@ -4,10 +4,10 @@
 #include "tiki/components/entitytemplate.hpp"
 #include "tiki/components/lifetimecomponent_initdata.hpp"
 #include "tiki/components/physicscomponents_initdata.hpp"
-#include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent_initdata.hpp"
 #include "tiki/gamecomponents/coincomponent_initdata.hpp"
+#include "tiki/gamecomponents/playercontrolcomponent_initdata.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki

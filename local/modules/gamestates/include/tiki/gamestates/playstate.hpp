@@ -5,10 +5,9 @@
 #include "tiki/gameflow/gameflowstate.hpp"
 
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/gameplay/gamestate.hpp"
+#include "tiki/gameplay/gamesession.hpp"
 #include "tiki/gameplay/playercamera.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/renderer/postascii.hpp"
 #include "tiki/renderer/postbloom.hpp"
 
 namespace tiki
@@ -49,12 +48,11 @@ namespace tiki
 
 		GameRenderer*				m_pGameRenderer;
 		ImmediateRenderer			m_immediateRenderer;
-		PostProcessAscii			m_ascii;
 		PostProcessBloom			m_bloom;
 
 		PlayerCamera				m_playerCamera;
 		GameClient					m_gameClient;
-		GameState					m_gameState;
+		GameSession					m_gameSession;
 
 	};
 }
