@@ -42,12 +42,6 @@ namespace tiki
 
 			if ( isCreating )
 			{
-				PostProcessAsciiParameters asciiParameters;	
-				if ( !m_ascii.create( framework::getGraphicsSystem(), framework::getResourceManager(), asciiParameters ) )
-				{
-					return TransitionState_Error;
-				}
-
 				PostProcessBloomParameters bloomParameters;	
 				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
 				bloomParameters.height		= framework::getGraphicsSystem().getBackBuffer().getHeight() / 2u;
@@ -67,7 +61,6 @@ namespace tiki
 			else
 			{
 				m_bloom.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-				m_ascii.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
 				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 
@@ -85,7 +78,7 @@ namespace tiki
 					return TransitionState_Error;
 				}
 
-				if( !m_gameState.create( m_gameClient, framework::getResourceManager() ) )
+				if( !m_gameSession.create( m_gameClient, framework::getResourceManager() ) )
 				{
 					return TransitionState_Error;
 				}
@@ -94,7 +87,7 @@ namespace tiki
 			}
 			else
 			{
-				m_gameState.dispose( framework::getResourceManager() );
+				m_gameSession.dispose( framework::getResourceManager() );
 				m_gameClient.dispose();
 
 				return TransitionState_Finish;
@@ -114,8 +107,8 @@ namespace tiki
 				frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
 				m_playerCamera.create(
-					m_gameState.getPlayerEntityId(),
-					(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPlayerControlComponent().getTypeId() ),
+					m_gameSession.getPlayerEntityId(),
+					(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPlayerControlComponent().getTypeId() ),
 					m_gameClient.getPlayerControlComponent()
 				);
 
@@ -149,7 +142,7 @@ namespace tiki
 		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
-		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameState.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
+		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
 
 		GameClientUpdateContext gameClientUpdateContext;
 		gameClientUpdateContext.timeDelta		= timeDelta;
@@ -157,8 +150,7 @@ namespace tiki
 		gameClientUpdateContext.pPlayerCollider	= &m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState );
 		m_gameClient.update( gameClientUpdateContext );
 
-		m_gameState.processCollectedCoins( gameClientUpdateContext.collectedCoins );
-		m_gameState.update( frameData, timeDelta, totalGameTime );
+		m_gameSession.update( frameData, timeDelta, totalGameTime );
 
 		m_gameClient.render( *m_pGameRenderer );
 
@@ -167,19 +159,12 @@ namespace tiki
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
-		m_ascii.render( graphicsContext, m_pGameRenderer->getFrameData(), m_pGameRenderer->getRendererContext() );
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
 		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
-
-		// ascii
-		{
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_ascii.getResultData().getWidth(), (float)m_ascii.getResultData().getHeight() );
-			m_immediateRenderer.drawTexturedRectangle( m_ascii.getResultData(), rect );
-		}
 
 		// bloom
 		{

@@ -1,5 +1,5 @@
 
-#include "tiki/components/playercontrolcomponent_initdata.hpp"
+#include "tiki/gamecomponents/playercontrolcomponent_initdata.hpp"
 
 namespace tiki
 {

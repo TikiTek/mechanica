@@ -1,12 +1,12 @@
 
-#include "tiki/components/playercontrolcomponent.hpp"
+#include "tiki/gamecomponents/playercontrolcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
-#include "tiki/components/playercontrolcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
+#include "tiki/gamecomponents/playercontrolcomponent_initdata.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"

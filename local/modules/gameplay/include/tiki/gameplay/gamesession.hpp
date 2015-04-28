@@ -20,14 +20,14 @@ namespace tiki
 
 	typedef FixedSizedArray< EntityId, 4u > CollectedCoinIdArray;
 
-	class GameState
+	class GameSession
 	{
-		TIKI_NONCOPYABLE_CLASS( GameState );
+		TIKI_NONCOPYABLE_CLASS( GameSession );
 
 	public:
 
-		GameState();
-		~GameState();
+		GameSession();
+		~GameSession();
 
 		bool		create( GameClient& gameClient, ResourceManager& resourceManager );
 		void		dispose( ResourceManager& resourceManager );
@@ -35,51 +35,24 @@ namespace tiki
 		void		update( FrameData& frameData, float timeDelta, float totalGameTime );
 		void		render() const;
 
-		void		processCollectedCoins( const CollectedCoinIdArray& collectedCoins );
-
 		EntityId	getPlayerEntityId() const { return m_playerEntityId; }
 
 	private:
 
 		enum
 		{
-			MaxBoxCount						= 128u,
 			MaxCoinCount					= 128u,
-			MaxCollectedCoinCount			= 8u,
-
-			BoxSpawnIntervalMilliseconds	= 1000u,
-			CoinSpawnIntervalMilliseconds	= 1000u
 		};
 
-		struct CollectedCoinState
-		{
-			Vector3		position;
-			float		timeToLife;
-		};
-		typedef FixedSizedArray< CollectedCoinState, MaxCollectedCoinCount > CollectedCoinStateArray;
 
 		GameClient*				m_pGameClient;
 
-		const Model*			m_pModelBox;
-		const Model*			m_pModelCoin;
-		const Model*			m_pModelPlane;
 		const Model*			m_pModelPlayer;
-		const Animation*		m_pAnimationPlayer;
+		const Model*			m_pModelTerrain;
+		const Model*			m_pModelCoin;
 		
 		EntityId				m_planeEntityId;
-
-		CollectedCoinStateArray	m_collectedCoins;
-
-		float					m_lastBoxSpawn;
-		float					m_lastCoinSpawn;
-		
-		EntityId									m_playerEntityId;
-		PhysicsCharacterControllerComponentState*	m_pPlayerPhysicsControllerState;
-
-		bool					findPositionForShape( Vector3& position, float y, const PhysicsShape& shape );
-
-		void					spawnBox();
-		void					spawnCoin();
+		EntityId				m_playerEntityId;
 
 	};
 }
