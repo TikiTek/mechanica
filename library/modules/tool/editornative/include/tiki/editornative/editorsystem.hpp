@@ -5,9 +5,16 @@
 namespace tiki
 {
 	class GraphicsSystem;
+	class ImmediateRenderer;
 	class ResourceManager;
+	
+	struct EditorData;
+
+	ref class TransformGizmo;
+
 
 	using namespace System;
+	using namespace System::Windows::Input;
 
 	public value struct EditorParameters
 	{
@@ -17,17 +24,25 @@ namespace tiki
 	public ref class EditorSystem
 	{
 	public:
-
 							EditorSystem();
 
 		bool				create( EditorParameters^ parameters );
 		void				dispose();
-	
+
+		void				update();
+		void				render();
+
+		void				onKeyDown( KeyEventArgs^ e );
+		void				onKeyUp( KeyEventArgs^ e );
+		void				onMouseDown( MouseButtonEventArgs^ e );
+		void				onMouseUp( MouseButtonEventArgs^ e );
+		void				onMouseDoubleClick( MouseButtonEventArgs^ e );
+		void				onMouseMove( MouseEventArgs^ e );
+
 	private:
 
-		GraphicsSystem*		m_pGraphicsSystem;
-		ResourceManager*	m_pResourceManager;
-
+		EditorData*			m_pData;
+		TransformGizmo^     m_TransformGizmo;
 	};
 }
 

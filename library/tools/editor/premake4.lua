@@ -15,7 +15,6 @@ module:add_library_file( "PresentationFramework" );
 module:add_library_file( "Microsoft.CSharp" );
 
 module:add_library_file( "editornative" );
-module:add_library_file( "converterlibrary" );
 
 local project = Project:new(
 	"editor",
