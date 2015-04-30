@@ -9,7 +9,11 @@ namespace tiki
 {
 	void debug::nativeTrace( const char* pText )
 	{
+#ifdef _MANAGED
+		System::Console::WriteLine( gcnew System::String( pText ) );
+#else
 		OutputDebugStringA( pText );
+#endif
 
 		if ( !debug::isDebuggerActive() )
 		{
