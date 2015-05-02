@@ -19,7 +19,14 @@ namespace tiki
 
 	struct InputSystemParameters
 	{
-		WindowHandle windowHandle;
+		InputSystemParameters()
+		{
+			windowHandle	= InvalidWindowHandle;
+			instanceHandle	= InvalidInstanceHandle;
+		}
+
+		WindowHandle	windowHandle;
+		InstanceHandle	instanceHandle;
 	};
 	
 	class InputSystem

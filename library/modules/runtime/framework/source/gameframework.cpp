@@ -93,7 +93,8 @@ namespace tiki
 		}
 
 		InputSystemParameters inputParams;
-		inputParams.windowHandle = m_frameworkData.mainWindow.getHandle();
+		inputParams.windowHandle	= m_frameworkData.mainWindow.getHandle();
+		inputParams.instanceHandle	= getInstanceHandle();
 
 		if( !m_frameworkData.inputSystem.create( inputParams ) )
 		{

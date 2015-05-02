@@ -8,3 +8,5 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "graphicsresources" );
 module:add_dependency( "resource" );
+
+module:set_define( "TIKI_WINDOWEVENTBUFFER_SIZE", "32" );

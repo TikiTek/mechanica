@@ -4,6 +4,7 @@
 #include "tiki/editornative/transformgizmo.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputevent.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -52,11 +53,20 @@ namespace tiki
 		}
 
 		m_pData->frameworkFactories.create( m_pData->resourceManager, m_pData->graphicsSystem );
-
-
+		
 		if ( !m_pData->immediateRenderer.create( m_pData->graphicsSystem, m_pData->resourceManager ) )
 		{
 			dispose();
+			return false;
+		}
+
+		if ( !m_input.create() )
+		{
+			return false;
+		}
+		
+		if ( !m_camera.create() )
+		{
 			return false;
 		}
 
@@ -70,6 +80,9 @@ namespace tiki
 			return;
 		}
 
+		m_camera.dispose();
+		m_input.dispose();
+
 		m_pData->immediateRenderer.dispose( m_pData->graphicsSystem, m_pData->resourceManager );
 		m_pData->frameworkFactories.dispose(m_pData->resourceManager);
 		m_pData->resourceManager.dispose();
@@ -82,7 +95,13 @@ namespace tiki
 
 	void EditorSystem::update()
 	{
-		
+		InputEvent inputEvent;
+		while ( m_input.popInputEvent( inputEvent ) )
+		{
+			processInputEvent( inputEvent );
+		}
+
+		m_camera.update( 0.01666f ); // todo time
 	}
 
 	void EditorSystem::render()
@@ -93,13 +112,13 @@ namespace tiki
 		context.clear( context.getBackBuffer(), TIKI_COLOR_BLUE );
 
 		renderer.beginRendering( context );
-		renderer.beginRenderPass();
+		renderer.beginRenderPass( nullptr, &m_camera.getCamera() );
 
 		Rectangle rect;
-		rect.x		= 10.0f;
-		rect.y		= 10.0f;
-		rect.width	= 100.0f;
-		rect.height	= 100.0f;
+		rect.x		= -1.0f;
+		rect.y		= -1.0f;
+		rect.width	= 2.0f;
+		rect.height	= 2.0f;
 		renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
 
 		renderer.endRenderPass();
@@ -113,34 +132,13 @@ namespace tiki
 		return m_pData->graphicsSystem.resize(x, y);
 	}
 
-	void EditorSystem::onKeyDown( KeyEventArgs^ e )
+	EditorInput^ EditorSystem::Input::get()
 	{
-
+		return %m_input;
 	}
 
-	void EditorSystem::onKeyUp( KeyEventArgs^ e )
+	void EditorSystem::processInputEvent( InputEvent& inputEvent )
 	{
-
+		m_camera.processInputEvent( inputEvent );
 	}
-
-	void EditorSystem::onMouseDown( MouseButtonEventArgs^ e )
-	{
-
-	}
-
-	void EditorSystem::onMouseUp( MouseButtonEventArgs^ e )
-	{
-
-	}
-
-	void EditorSystem::onMouseDoubleClick( MouseButtonEventArgs^ e )
-	{
-
-	}
-
-	void EditorSystem::onMouseMove( MouseEventArgs^ e )
-	{
-
-	}
-
 }

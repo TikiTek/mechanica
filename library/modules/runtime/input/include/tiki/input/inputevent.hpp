@@ -21,6 +21,7 @@ namespace tiki
 		InputEventType_Mouse_Moved,
 		InputEventType_Mouse_ButtonDown,
 		InputEventType_Mouse_ButtonUp,
+		InputEventType_Mouse_DoubleClick,		// not sent in game
 		InputEventType_Mouse_Wheel,
 
 		InputEventType_Controller_ButtonDown,

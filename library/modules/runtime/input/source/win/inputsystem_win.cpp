@@ -4,7 +4,7 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/framework/mainwindow.hpp"
+#include "tiki/runtimeshared/windoweventbuffer.hpp"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -286,7 +286,7 @@ namespace tiki
 
 	bool InputSystem::create( const InputSystemParameters& params )
 	{
-		const HINSTANCE hInstance = (HINSTANCE)getInstanceHandle();
+		const HINSTANCE hInstance = (HINSTANCE)params.instanceHandle;
 
 		m_platformData.windowHandle			= params.windowHandle;
 		m_platformData.currentStateIndex	= 0u;
