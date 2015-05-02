@@ -8,11 +8,14 @@ module:set_flag( "WPF" );
 
 module:add_library_file( "System" );
 module:add_library_file( "System.Core" );
+module:add_library_file( "System.Drawing" );
+module:add_library_file( "System.Windows.Forms" );
 module:add_library_file( "System.Xaml" );
 module:add_library_file( "WindowsBase" );
 module:add_library_file( "PresentationCore" );
 module:add_library_file( "PresentationFramework" );
 module:add_library_file( "Microsoft.CSharp" );
+module:add_library_file( "WindowsFormsIntegration" );
 
 module:add_library_file( "editornative" );
 
