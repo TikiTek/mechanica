@@ -18,3 +18,4 @@ module:add_dependency( "debuggui" );
 module:add_dependency( "debugguiwindows" );
 module:add_dependency( "webserverpages" );
 module:add_dependency( "toollibraries" );
+module:add_dependency( "runtimeshared" );
