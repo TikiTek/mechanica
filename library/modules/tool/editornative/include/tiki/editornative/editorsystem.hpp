@@ -2,6 +2,8 @@
 #ifndef TIKI_EDITORSYSTEM_HPP_INCLUDED__
 #define TIKI_EDITORSYSTEM_HPP_INCLUDED__
 
+#using <PresentationCore.dll>
+
 namespace tiki
 {
 	class GraphicsSystem;
@@ -31,6 +33,8 @@ namespace tiki
 
 		void				update();
 		void				render();
+
+		bool				resize(int x, int y);
 
 		void				onKeyDown( KeyEventArgs^ e );
 		void				onKeyUp( KeyEventArgs^ e );

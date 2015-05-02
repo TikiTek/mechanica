@@ -1,13 +1,13 @@
 
 #include "tiki/editornative/editorsystem.hpp"
 
+#include "tiki/editornative/transformgizmo.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/resource/resourcemanager.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
+#include "tiki/math/rectangle.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 #include "tiki/runtimeshared/frameworkfactories.hpp"
-
-#include "tiki/editornative/transformgizmo.hpp"
 
 namespace tiki
 {
@@ -88,13 +88,29 @@ namespace tiki
 	void EditorSystem::render()
 	{
 		GraphicsContext& context = m_pData->graphicsSystem.beginFrame();
+		ImmediateRenderer& renderer = m_pData->immediateRenderer;		
 
+		context.clear( context.getBackBuffer(), TIKI_COLOR_BLUE );
+
+		renderer.beginRendering( context );
+		renderer.beginRenderPass();
+
+		Rectangle rect;
+		rect.x		= 10.0f;
+		rect.y		= 10.0f;
+		rect.width	= 100.0f;
+		rect.height	= 100.0f;
+		renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
+
+		renderer.endRenderPass();
+		renderer.endRendering();
 		
-		context.clear(context.getBackBuffer(), TIKI_COLOR_BLUE);
-
-
-
 		m_pData->graphicsSystem.endFrame();
+	}
+
+	bool EditorSystem::resize( int x, int y )
+	{
+		return m_pData->graphicsSystem.resize(x, y);
 	}
 
 	void EditorSystem::onKeyDown( KeyEventArgs^ e )

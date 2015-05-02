@@ -1,14 +1,13 @@
 ﻿<Window x:Class="editor.source.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:editor="clr-namespace:editor.source"
         Title="MainWindow" Height="300" Width="300"
         KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp" MouseDoubleClick="Window_MouseDoubleClick" MouseMove="Window_MouseMove">
     <Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition />
-			<RowDefinition Height="25" />
 		</Grid.RowDefinitions>
-        <Canvas Margin="25" Name="RenderControl" />
-        <Control Grid.Row="1"></Control>
+        <editor:RenderControl Margin="25" x:Name="RenderControl" />
     </Grid>
 </Window>

@@ -6,16 +6,12 @@
 #include "tiki/base/inline.hpp"
 #include "tiki/base/structs.hpp"
 
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-#	define TIKI_COLORMODE_RGBA	TIKI_ON
-#else
-#	if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#		define TIKI_COLORMODE_ABGR	TIKI_ON
-#	elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#		define TIKI_COLORMODE_ABGR	TIKI_ON
-#	elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#		define TIKI_COLORMODE_ABGR	TIKI_ON
-#	endif
+#if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
+#	define TIKI_COLORMODE_ABGR	TIKI_ON
+#elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
+#	define TIKI_COLORMODE_ABGR	TIKI_ON
+#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
+#	define TIKI_COLORMODE_ABGR	TIKI_ON
 #endif
 
 #ifndef TIKI_COLORMODE_RGBA
@@ -85,15 +81,7 @@ namespace tiki
 
 	struct HdrColor
 	{
-#if TIKI_ENABLED( TIKI_COLORMODE_RGBA )
 		float r, g, b, a;
-#elif TIKI_ENABLED( TIKI_COLORMODE_BGRA )
-		float b, g, r, a;
-#elif TIKI_ENABLED( TIKI_COLORMODE_ARGB )
-		float a, r, g, b;
-#elif TIKI_ENABLED( TIKI_COLORMODE_ABGR )
-		float a, b, g, r;
-#endif
 	};
 
 	namespace color
