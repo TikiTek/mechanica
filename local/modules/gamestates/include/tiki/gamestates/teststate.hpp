@@ -6,7 +6,7 @@
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
-#include "tiki/framework/freecamera.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
