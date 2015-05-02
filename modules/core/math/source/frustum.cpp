@@ -18,15 +18,15 @@ namespace tiki
 		return FrustumIntersectionType_Disjoint;
 	}
 
-	FrustumIntersectionType Frustum::testIntersectionBoundingBox( const BoundingBox& box ) const
-	{
-		return FrustumIntersectionType_Disjoint;
-	}
+	//FrustumIntersectionType Frustum::testIntersectionBoundingBox( const BoundingBox& box ) const
+	//{
+	//	return FrustumIntersectionType_Disjoint;
+	//}
 
-	FrustumIntersectionType Frustum::testIntersectionBoundingSphere( const BoundingSphere& sphere ) const
-	{
-		return FrustumIntersectionType_Disjoint;
-	}
+	//FrustumIntersectionType Frustum::testIntersectionBoundingSphere( const BoundingSphere& sphere ) const
+	//{
+	//	return FrustumIntersectionType_Disjoint;
+	//}
 
 	void Frustum::getCorner( Vector3& targetVector, FrustumCorner corner ) const
 	{

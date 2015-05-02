@@ -7,8 +7,8 @@
 
 namespace tiki
 {
-	struct BoundingBox;
-	struct BoundingSphere;
+	//struct BoundingBox;
+	//struct BoundingSphere;
 
 	enum FrustumPlane
 	{
@@ -53,8 +53,8 @@ namespace tiki
 		void					create( const Matrix44& viewProjection );
 
 		FrustumIntersectionType	testIntersectionPoint( const Vector3& point ) const;
-		FrustumIntersectionType	testIntersectionBoundingBox( const BoundingBox& box ) const;
-		FrustumIntersectionType	testIntersectionBoundingSphere( const BoundingSphere& sphere ) const;
+		//FrustumIntersectionType	testIntersectionBoundingBox( const BoundingBox& box ) const;
+		//FrustumIntersectionType	testIntersectionBoundingSphere( const BoundingSphere& sphere ) const;
 		
 		void					getCorner( Vector3& targetVector, FrustumCorner corner ) const;
 		void					getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const;
