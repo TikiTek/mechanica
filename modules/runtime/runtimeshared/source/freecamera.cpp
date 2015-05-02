@@ -1,5 +1,5 @@
 
-#include "tiki/framework/freecamera.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
 
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/camera.hpp"

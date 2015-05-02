@@ -122,9 +122,10 @@ namespace tiki
 		class_name () { }						        \
 		~ class_name () { }
 
-#define TIKI_DEFINE_HANLE( handle_name )		\
+#define TIKI_DEFINE_HANLE( handle_name )						\
 	struct handle_name ## Type;					\
-	typedef handle_name ## Type* handle_name
+	typedef handle_name ## Type* handle_name;	\
+	static const handle_name Invalid ## handle_name = (handle_name)TIKI_SIZE_T_MAX
 
 #define TIKI_CONCAT( x1, x2 )			TIKI_CONCAT_HELPER( x1, x2 )
 #define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
@@ -132,7 +133,15 @@ namespace tiki
 
 #	define TIKI_PURE				= 0
 
-#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#if _MANAGED
+
+#	define TIKI_PRE_ALIGN( var )
+#	define TIKI_POST_ALIGN( var )
+#	define TIKI_ALIGNOF( type )		( __alignof( type ) )
+
+#	define TIKI_OVERRIDE			override
+
+#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 #	define TIKI_PRE_ALIGN( var )	__declspec( align( var ) )
 #	define TIKI_POST_ALIGN( var )
