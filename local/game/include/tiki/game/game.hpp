@@ -4,7 +4,7 @@
 
 #include "tiki/framework/gameframework.hpp"
 
-#include "tiki/framework/frameworkfactories.hpp"
+#include "tiki/runtimeshared/frameworkfactories.hpp"
 #include "tiki/framework/touchgamesystem.hpp"
 #include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
