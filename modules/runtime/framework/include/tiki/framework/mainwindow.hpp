@@ -6,7 +6,7 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/framework/windoweventbuffer.hpp"
+#include "tiki/runtimeshared/windoweventbuffer.hpp"
 
 namespace tiki
 {
