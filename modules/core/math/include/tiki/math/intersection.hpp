@@ -3,6 +3,7 @@
 #define TIKI_INTERSECTION_HPP__
 
 #include "tiki/math/vector.hpp"
+#include "tiki/math/plane.hpp"
 
 namespace tiki
 {
@@ -11,6 +12,8 @@ namespace tiki
 #pragma region IntersectionObjects
 		struct Ray3
 		{
+			TIKI_NONCOPYABLE_STRUCT( Ray3 );
+
 			Vector3 Origin;
 			Vector3 Direction;
 
@@ -23,6 +26,8 @@ namespace tiki
 
 		struct Sphere3
 		{
+			TIKI_NONCOPYABLE_STRUCT( Sphere3 );
+
 			Vector3 Center;
 			float	Radius;
 
@@ -34,7 +39,8 @@ namespace tiki
 		};
 #pragma endregion
 
-		bool	IntersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint);
+		bool	intersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint );
+		bool	intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3 intersectionPoint );
 
 
 
