@@ -83,7 +83,7 @@ namespace tiki
 
 		stream.write( crcData.getBegin(), sizeof( uint32 ) * crcData.getCount() );
 		stream.write( offsetData.getBegin(), sizeof( uint32 ) * offsetData.getCount() );
-		stream.write( stringData.getData(), sizeof( uint8 ) * stringData.getCount() );
+		stream.write( stringData.getBegin(), sizeof( uint8 ) * stringData.getCount() );
 
 		file::writeAllBytes(
 			m_fileName.cStr(),

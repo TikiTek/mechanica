@@ -149,7 +149,7 @@ namespace tiki
 			data.dataOffset	= m_pDataType->getFieldByIndex( i )->getOffset();
 			data.pField		= m_pDataType->getFieldByIndex( i );
 		}
-		quickSort( sortDataList.getData(), sortDataList.getCount() );
+		quickSort( sortDataList.getBegin(), sortDataList.getCount() );
 		
 		for (uint i = 0u; i < m_effectData.getCount(); ++i)
 		{

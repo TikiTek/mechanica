@@ -15,8 +15,6 @@ namespace tiki
 
 	class ToolModelVertexFormat
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ToolModelVertexFormat );
-
 	public:
 
 		void					create( uint streamCount = 1u );
@@ -29,12 +27,12 @@ namespace tiki
 
 		uint					getVertexStride( uint streamIndex ) const { return m_vertexStrides[ streamIndex ]; }
 
-		const VertexAttribute*	getAttributes() const { return m_attributes.getData(); }
+		const VertexAttribute*	getAttributes() const { return m_attributes.getBegin(); }
 		uint					getAttributeCount() const { return m_attributes.getCount(); }
 
 	private:
 
-		Array< uint32 >			m_vertexStrides;
+		List< uint32 >			m_vertexStrides;
 		List< VertexAttribute >	m_attributes;
 
 		const VertexAttribute*	findAttributeBySemantic( VertexSementic semantic, uint semanicIndex ) const;

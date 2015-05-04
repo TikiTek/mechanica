@@ -52,7 +52,7 @@ namespace tiki
 			header.stringOffsetInResource	= 0u;
 			header.stringSizeInBytes		= 0u;
 		} 
-		stream.write( resourceHeaders.getData(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
+		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		for (uint resourceIndex = 0u; resourceIndex < m_resources.getCount(); ++resourceIndex)
 		{
@@ -72,7 +72,7 @@ namespace tiki
 				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getLength() );
 				sectionHeader.offsetInResource			= 0u;
 			} 
-			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
+			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
 			
 			List< StringItem > stringItems;
 			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
@@ -89,7 +89,7 @@ namespace tiki
 
 				header.stringSizeInBytes += uint32( stringData.text.getLength() + 1u );
 			}
-			stream.write( stringItems.getData(), sizeof( StringItem ) * stringItems.getCount() );
+			stream.write( stringItems.getBegin(), sizeof( StringItem ) * stringItems.getCount() );
 
 			for (uint linkIndex = 0u; linkIndex < resource.links.getCount(); ++linkIndex)
 			{
@@ -136,13 +136,13 @@ namespace tiki
 			} 
 
 			stream.setPosition( header.offsetInFile );
-			stream.write( sectionHeaders.getData(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
-			stream.write( stringItems.getData(), sizeof( StringItem ) * stringItems.getCount() );
+			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
+			stream.write( stringItems.getBegin(), sizeof( StringItem ) * stringItems.getCount() );
 			stream.setPosition( stream.getLength() );
 		}
 
 		stream.setPosition( sizeof( ResourceFileHeader ) );
-		stream.write( resourceHeaders.getData(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
+		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		FileStream fileStream;
 		fileStream.open( m_fileName.cStr(), DataAccessMode_Write );
