@@ -38,7 +38,7 @@ namespace tiki
 		uint				getLengthInFrames() const	{ return m_lengthImFrames; }
 		uint				getDimentions() const		{ return m_dimensions; }
 
-		const SplineKey*	getKeys() const						{ return m_keys.getData(); }
+		const SplineKey*	getKeys() const						{ return m_keys.getBegin(); }
 		const SplineKey&	getKeyByIndex( uint index ) const	{ return m_keys[ index ]; }
 		uint				getKeyCount() const					{ return m_keys.getCount(); }
 

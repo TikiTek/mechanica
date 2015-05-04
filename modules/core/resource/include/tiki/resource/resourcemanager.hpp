@@ -9,7 +9,7 @@
 #include "tiki/resource/resourceloader.hpp"
 #include "tiki/resource/resourcestorage.hpp"
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && 0
+#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && TIKI_DISABLED( TIKI_BUILD_TOOLS )
 #	define TIKI_ENABLE_ASSET_CONVERTER TIKI_ON
 #else
 #	define TIKI_ENABLE_ASSET_CONVERTER TIKI_OFF

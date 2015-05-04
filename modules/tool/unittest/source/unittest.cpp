@@ -40,7 +40,7 @@ namespace tiki
 
 	void unittest::addTest( const char* pTitle, const char* pFile, const char* pLine, UnitTestFunction pFunc )
 	{
-		Test& test = getUnitTestSystem()->unitTests.getLast()->tests.add();
+		Test& test = getUnitTestSystem()->unitTests.getLast().tests.add();
 		test.pTitle		= pTitle;
 		test.pFile		= pFile;
 		test.pLine		= pLine;

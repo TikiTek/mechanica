@@ -118,7 +118,7 @@ namespace tiki
 		MutexStackLock lock( m_converterMutex );
 		if ( m_changedFiles.getCount() != 0u )
 		{
-			changedFiles.create( m_changedFiles.getData(), m_changedFiles.getCount() );
+			changedFiles.create( m_changedFiles.getBegin(), m_changedFiles.getCount() );
 			m_changedFiles.clear();
 
 			return true;
@@ -153,7 +153,7 @@ namespace tiki
 				List< string > outputFiles;
 				if ( m_manager.startConversion( &outputFiles ) )
 				{
-					m_changedFiles.addRange( outputFiles.getData(), outputFiles.getCount() );
+					m_changedFiles.addRange( outputFiles.getBegin(), outputFiles.getCount() );
 				}
 			}
 			else

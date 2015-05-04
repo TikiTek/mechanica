@@ -41,11 +41,10 @@ namespace tiki
 		// Geometries
 		bool isSkinned = false;
 		
-		m_geometries.create( m_hierarchy.getGeometryInstanceCount() );
-
-		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+		for (size_t i = 0u; i < m_hierarchy.getGeometryInstanceCount(); ++i)
 		{
-			m_geometries[ i ].create(
+			ToolModelGeometrie& geometry = m_geometries.add();
+			geometry.create(
 				&m_xml,
 				m_hierarchy.getGeometryInstanceByIndex( i ),
 				m_scale

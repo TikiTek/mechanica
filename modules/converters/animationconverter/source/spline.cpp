@@ -110,7 +110,7 @@ namespace tiki
 			count++;
 		}
 		while ( maxError > threshold && count < lenCount );
-		TIKI_ASSERT( m_keys.getLast()->time == lengthInFrames - 1u );
+		TIKI_ASSERT( m_keys.getLast().time == lengthInFrames - 1u );
 	}
 
 	void Spline::dispose()
@@ -126,7 +126,7 @@ namespace tiki
 
 		const float frame		= 60u * sampleTime;
 		const uint32 exactFrame	= (uint32)frame;
-		TIKI_ASSERT( m_keys.getLast()->time >= exactFrame );
+		TIKI_ASSERT( m_keys.getLast().time >= exactFrame );
 
 		if ( m_keys.getCount() == 1u )
 		{

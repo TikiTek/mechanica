@@ -89,11 +89,11 @@ namespace tiki
 		const XmlElement*				m_pGeometryNode;
 		const XmlElement*				m_pMeshNode;
 
-		Array< uint32 >					m_indices;
-		Array< ToolModelVertex >		m_vertices;
-		Array< uint >					m_skinningIndicesCount;
-		Array< uint >					m_skinningIndicesOffset;
-		Array< uint >					m_skinningIndicesData;
+		List< uint32 >					m_indices;
+		List< ToolModelVertex >			m_vertices;
+		List< uint >					m_skinningIndicesCount;
+		List< uint >					m_skinningIndicesOffset;
+		List< uint >					m_skinningIndicesData;
 
 		ToolModelGeometrieDesc			m_desc;
 		ToolModelVertexFormat			m_vertexFormat;
