@@ -26,7 +26,7 @@ namespace tiki
 			List< ToolModelJoint > nodes;
 			searchNodes( nodes, pHierarchyNode );
 
-			m_joints.create( nodes.getData(), nodes.getCount() );
+			m_joints.create( nodes.getBegin(), nodes.getCount() );
 			for (uint i = 0u; i < m_joints.getCount(); ++i)
 			{
 				ToolModelJoint& joint = m_joints[ i ];
@@ -94,7 +94,7 @@ namespace tiki
 			}
 		}
 
-		m_instances.create( instances.getData(), instances.getCount() );
+		m_instances.create( instances.getBegin(), instances.getCount() );
 	}
 
 	void ToolModelHierarchy::dispose()

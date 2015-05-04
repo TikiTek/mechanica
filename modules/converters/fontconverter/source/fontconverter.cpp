@@ -187,7 +187,7 @@ namespace tiki
 			// write chars
 			writer.openDataSection( 0u, AllocatorType_MainMemory );
 			const ReferenceKey charArrayKey = writer.addDataPoint();
-			writer.writeData( chars.getData(), chars.getCount() * sizeof( FontChar ) );
+			writer.writeData( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
 			writer.closeDataSection();
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );

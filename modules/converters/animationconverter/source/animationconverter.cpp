@@ -135,9 +135,9 @@ namespace tiki
 					Spline rotationSpline;
 					Spline positionSpline;
 					Spline scaleSpline;
-					rotationSpline.createFromSamples( rotationSamples.getData(), 4u, joint.samples.getCount(), maxError );
-					positionSpline.createFromSamples( positionSamples.getData(), 3u, joint.samples.getCount(), maxError );
-					scaleSpline.createFromSamples( scaleSamples.getData(), 3u, joint.samples.getCount(), maxError );
+					rotationSpline.createFromSamples( rotationSamples.getBegin(), 4u, joint.samples.getCount(), maxError );
+					positionSpline.createFromSamples( positionSamples.getBegin(), 3u, joint.samples.getCount(), maxError );
+					scaleSpline.createFromSamples( scaleSamples.getBegin(), 3u, joint.samples.getCount(), maxError );
 
 					builder.setJointData( i, rotationSpline, positionSpline, scaleSpline, hier.getJointByIndex( i ).defaultPose );
 

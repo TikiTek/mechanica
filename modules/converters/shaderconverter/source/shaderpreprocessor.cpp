@@ -26,7 +26,7 @@ namespace tiki
 		const ShaderFeature* pLastFeature = nullptr;
 		if ( features.getCount() > 0u )
 		{
-			pLastFeature = features.getLast();
+			pLastFeature = &features.getLast();
 		}
 
 		ShaderFeature feature;
@@ -227,7 +227,7 @@ namespace tiki
 					variants.addRange( featureVariants );
 				}
 
-				m_variants[ typeIndex ].create( variants.getData(), variants.getCount() );
+				m_variants[ typeIndex ].create( variants.getBegin(), variants.getCount() );
 			}
 			else if ( shaderEnabled[ typeIndex ] )
 			{
