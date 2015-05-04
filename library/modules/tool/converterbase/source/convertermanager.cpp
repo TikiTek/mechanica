@@ -172,7 +172,7 @@ namespace tiki
 
 	void ConverterManager::unregisterConverter( const ConverterBase* pConverter )
 	{
-		m_converters.remove( pConverter );
+		m_converters.removeSortedByValue( pConverter );
 	}
 
 	TaskId ConverterManager::queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId /*= InvalidTaskId */ )
@@ -880,7 +880,7 @@ namespace tiki
 
 		task.pManager->taskRegisterResult( context.thread.getThreadId(), task.result );
 
-		//TIKI_TRACE_INFO( "Building asset: %s\n", path::getFilename( task.parameters.sourceFile ).cStr() );
+		TIKI_TRACE_INFO( "Building asset: %s\n", path::getFilename( task.parameters.sourceFile ).cStr() );
 		task.pConverter->convert( task.result, task.parameters );
 	}
 

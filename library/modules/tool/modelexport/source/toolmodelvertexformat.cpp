@@ -5,7 +5,7 @@ namespace tiki
 {
 	void ToolModelVertexFormat::create( uint streamCount /* = 1u */ )
 	{
-		m_vertexStrides.create( streamCount );
+		m_vertexStrides.resize( streamCount );
 
 		for (uint i = 0u; i < m_vertexStrides.getCount(); ++i)
 		{

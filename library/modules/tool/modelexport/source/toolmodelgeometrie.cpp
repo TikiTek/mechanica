@@ -252,7 +252,6 @@ namespace tiki
 			}
 
 			// read indices			
-			List< uint32 > indicesIndex;
 			List< uint > indicesData;
 			{
 				List< uint > indices;
@@ -300,7 +299,7 @@ namespace tiki
 
 					const sint crcIndex = indicesCrcIndex.indexOf( indexCrc );
 					TIKI_ASSERT( crcIndex >= 0 );
-					indicesIndex.add( uint32( crcIndex ) );
+					m_indices.add( uint32( crcIndex ) );
 				}
 
 				List< uint > indicesSkinningData;
@@ -332,23 +331,22 @@ namespace tiki
 					indicesSkinningCount.add( count );
 				}
 
-				for (uint i = 0u; i < indicesIndex.getCount(); i += 3u)
+				for (uint i = 0u; i < m_indices.getCount(); i += 3u)
 				{
-					const uint32 index0 = indicesIndex[ i + 0u ];
-					const uint32 index1 = indicesIndex[ i + 1u ];
-					const uint32 index2 = indicesIndex[ i + 2u ];
+					const uint32 index0 = m_indices[ i + 0u ];
+					const uint32 index1 = m_indices[ i + 1u ];
+					const uint32 index2 = m_indices[ i + 2u ];
 
-					indicesIndex[ i + 0u ] = index0;
-					indicesIndex[ i + 1u ] = index1;
-					indicesIndex[ i + 2u ] = index2;
+					m_indices[ i + 0u ] = index0;
+					m_indices[ i + 1u ] = index1;
+					m_indices[ i + 2u ] = index2;
 				}
 
-				m_indices.create( indicesIndex.getData(), indicesIndex.getCount() );
-				m_vertices.create( indicesCrcIndex.getCount() );
+				m_vertices.resize( indicesCrcIndex.getCount() );
 
-				m_skinningIndicesData.create( indicesSkinningData.getData(), indicesSkinningData.getCount() );
-				m_skinningIndicesCount.create( indicesSkinningCount.getData(), indicesSkinningCount.getCount() );
-				m_skinningIndicesOffset.create( indicesSkinningOffset.getData(), indicesSkinningOffset.getCount() );
+				m_skinningIndicesData.addRange( indicesSkinningData.getBegin(), indicesSkinningData.getCount() );
+				m_skinningIndicesCount.addRange( indicesSkinningCount.getBegin(), indicesSkinningCount.getCount() );
+				m_skinningIndicesOffset.addRange( indicesSkinningOffset.getBegin(), indicesSkinningOffset.getCount() );
 			}
 
 			// fill vertices

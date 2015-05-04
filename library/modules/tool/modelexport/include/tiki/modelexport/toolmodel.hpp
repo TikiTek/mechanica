@@ -38,7 +38,7 @@ namespace tiki
 
 		ToolModelHierarchy				m_hierarchy;
 		ToolModelAnimation				m_animation;
-		Array< ToolModelGeometrie >		m_geometries;
+		List< ToolModelGeometrie >		m_geometries;
 		
 		float							m_scale;
 

@@ -97,7 +97,7 @@ namespace tiki
 					m_pFont				= framework::getResourceManager().loadResource< Font >( "debug.font" );
 					m_pFontBig			= framework::getResourceManager().loadResource< Font >( "big.font" );
 					m_pModelBox			= framework::getResourceManager().loadResource< Model >( "box.model" );
-					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "test_scene.model" );
+					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "spaceship.model" );
 					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
 					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
 					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
@@ -268,6 +268,9 @@ namespace tiki
 
 		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 
+		Vector3 position = { 0.0f, 3.0f, 0.0f };
+		m_gameClient.getTransformComponent().setPosition( pState, position );
+
 		Quaternion rotation;
 		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
 		m_gameClient.getTransformComponent().setRotation( pState, rotation );
@@ -285,8 +288,8 @@ namespace tiki
 		{
 			TIKI_VERIFY( m_bloom.resize(
 				framework::getGraphicsSystem(),
-				pEvent->data.sizeChanged.size.x,
-				pEvent->data.sizeChanged.size.y
+				pEvent->data.sizeChanged.size.x / 2u,
+				pEvent->data.sizeChanged.size.y / 2u
 			) );
 		}
 	}
