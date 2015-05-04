@@ -6,12 +6,12 @@ namespace tiki
 {
 	namespace intersection
 	{
-		bool IntersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint )
+		bool intersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint )
 		{
 			float rayParameters[ 2 ];
 
 			Vector3 difference = ray.Origin; 
-			difference	= vector::sub( difference, sphere.Center );
+			vector::sub( difference, sphere.Center );
 
 			float a0 = vector::dot( difference, difference ) - sphere.Radius * sphere.Radius;
 			float a1, discr, root;
@@ -23,7 +23,6 @@ namespace tiki
 				discr				= a1 * a1 - a0;
 				root				= f32::sqrt( discr );
 				rayParameters[ 0 ]	= -a1 + root;
-
 
 				Vector3 scaledDir = ray.Direction;
 				vector::scale( scaledDir, rayParameters[ 0 ] );
@@ -40,9 +39,6 @@ namespace tiki
 			{
 				return false;
 			}
-
-
-			
 
 			discr = a1 * a1 - a0;
 			if ( discr < 0.f )
@@ -78,6 +74,42 @@ namespace tiki
 				return true;
 			}
 		}
-	}
 
+		// intersection = origin + t*direction, with t >= 0.
+		bool intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3 intersectionPoint )
+		{
+			Vector3 normal;
+			plane.getNormal( normal );
+
+			float dirDotNormal		= vector::dot( ray.Direction, normal );
+			float signedDistance	= plane.getDistanceTo( ray.Origin );
+			float lineParameter		= 0.f;
+
+			// The line is not parallel to the plane, so they must intersect.
+			if ( f32::abs( dirDotNormal ) > f32::zeroTolerance )
+			{
+				// get t
+				lineParameter = -signedDistance / dirDotNormal;
+
+				// t * direction;
+				intersectionPoint = ray.Direction;
+				vector::scale( intersectionPoint, lineParameter );
+
+				// origin + t * direction;
+				vector::add( intersectionPoint, ray.Origin );
+
+				return true;
+			}
+
+			// The Line and plane are parallel.  Determine if they are numerically close enough to be coincident.
+			if ( f32::abs( signedDistance <= f32::zeroTolerance ) )
+			{
+				// The line is coincident with the plane, so choose t = 0 for the parameter (initial value). 
+				intersectionPoint = ray.Origin;
+				return true;
+			}
+
+			return false;
+		}
+	}
 }
