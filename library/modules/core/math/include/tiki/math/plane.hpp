@@ -31,7 +31,8 @@ namespace tiki
 
 		void	getNormal( Vector3& targetVector ) const;
 		float	getD() const { return m_data.w; }
-		
+		float   getDistanceTo( const Vector3& target ) const;
+
 	private:
 
 		Vector4		m_data;

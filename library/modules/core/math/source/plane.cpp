@@ -57,4 +57,10 @@ namespace tiki
 	{
 		vector::set( targetVector, m_data.x, m_data.y, m_data.z );
 	}
+
+	float Plane::getDistanceTo( const Vector3& target ) const
+	{
+		Vector3 normal = { m_data.x, m_data.y, m_data.z };
+		return vector::dot( normal, target ) - m_data.w;
+	}
 }
