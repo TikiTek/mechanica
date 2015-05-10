@@ -1,4 +1,4 @@
 <xtemplate name="texture_diffuse">
-	<param key="width" value="/4" />
-	<param key="height" value="/4" />
+	<param key="width" value="/1" />
+	<param key="height" value="/1" />
 </xtemplate>

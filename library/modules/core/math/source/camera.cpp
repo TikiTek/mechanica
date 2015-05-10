@@ -43,6 +43,9 @@ namespace tiki
 	{
 		m_isFrustumValid = false;
 
+		//Vector3 forward = Vector3::unitZ;
+		//matrix::transform( forward, m_world.rot );
+
 		Quaternion rot;
 		quaternion::fromMatrix( rot, m_world.rot );
 

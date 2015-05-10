@@ -156,7 +156,9 @@ namespace tiki
 		TIKI_ASSERT( m_isReadOnly == false );
 
 		uint i = m_count;
-		checkArraySize( m_count + 1u );
+
+		m_count++;
+		checkArraySize( m_count );
 
 		while ( i > index )
 		{

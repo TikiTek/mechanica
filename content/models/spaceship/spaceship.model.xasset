@@ -1,5 +1,5 @@
 <tikiasset>
   <input file="spaceship.dae" type="model" />
   <param key="material" value="MATE:spaceship.material" />
-  <param key="scale" value="0.1" />
+  <param key="scale" value="0.01" />
 </tikiasset>

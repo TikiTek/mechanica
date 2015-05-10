@@ -42,6 +42,7 @@ namespace tiki
 		PhysicsCharacterControllerComponentInitData,
 		TIKI_REFLECTION_FIELD( float3,							position )
 		TIKI_REFLECTION_FIELD( PhysicsComponentShapeInitData,	shape )
+		TIKI_REFLECTION_FIELD( float,							gravity )
 	);
 }
 

@@ -10,6 +10,7 @@ namespace tiki
 {
 	class GraphicsContext;
 	struct InputEvent;
+	struct WindowEvent;
 
 	class GameFlowState
 	{
@@ -26,6 +27,7 @@ namespace tiki
 		virtual void			render( GraphicsContext& graphicsContext ) = 0;
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent ) = 0;
+		virtual void			processWindowEvent( const WindowEvent& windowEvent ) {};
 
 	};
 }

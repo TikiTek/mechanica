@@ -1,7 +1,7 @@
 
 #include "tiki/gameplay/gamesession.hpp"
 
-#include "tiki/animation/animation.hpp"
+#include "tiki/base/debugprop.hpp"
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
@@ -10,6 +10,8 @@
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameSession/UseFreeCamera", false );
+
 	GameSession::GameSession()
 	{
 		m_pGameClient		= nullptr;
@@ -30,8 +32,8 @@ namespace tiki
 
 		m_pGameClient		= &gameClient;
 
-		m_pModelPlayer		= resourceManager.loadResource< Model >( "plane.model" );
-		m_pModelTerrain		= resourceManager.loadResource< Model >( "box.model" );
+		m_pModelPlayer		= resourceManager.loadResource< Model >( "spaceship.model" );
+		m_pModelTerrain		= resourceManager.loadResource< Model >( "plane.model" );
 		m_pModelCoin		= resourceManager.loadResource< Model >( "coin.model" );
 		if ( m_pModelPlayer == nullptr || m_pModelTerrain == nullptr || m_pModelCoin == nullptr )
 		{
@@ -39,13 +41,22 @@ namespace tiki
 			return false;
 		}
 
-		m_planeEntityId		= m_pGameClient->createPlaneEntity( m_pModelTerrain, vector::create( 0.0f, -0.1f, 0.0f ) );
-		m_playerEntityId	= gameClient.createPlayerEntity( m_pModelPlayer, vector::create( 0.0f, 1.0f, 0.0f ) );
+		m_planeEntityId		= m_pGameClient->createPlaneEntity( m_pModelTerrain, vector::create( 0.0f, 0.0f, 0.0f ) );
+		m_playerEntityId	= gameClient.createPlayerEntity( m_pModelPlayer, vector::create( 0.0f, 5.0f, 0.0f ) );
 		if ( m_planeEntityId == InvalidEntityId || m_playerEntityId == InvalidEntityId )
 		{
 			dispose( resourceManager );
 			return false;
 		}
+
+		m_gameCamera.create(
+			m_playerEntityId,
+			(TransformComponentState*)gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, gameClient.getTransformComponent().getTypeId() ),
+			gameClient.getTransformComponent()
+		);
+
+		m_freeCamera.create( Vector3::zero, Quaternion::identity );
+		m_freeCamera.setMouseControl( true );
 
 		return true;
 	}
@@ -53,6 +64,9 @@ namespace tiki
 	void GameSession::dispose( ResourceManager& resourceManager )
 	{
 		TIKI_ASSERT( m_pGameClient != nullptr );
+
+		m_freeCamera.dispose();
+		m_gameCamera.dispose();
 		
 		m_pGameClient->disposeEntity( m_playerEntityId );
 		m_playerEntityId = InvalidEntityId;
@@ -72,10 +86,28 @@ namespace tiki
 
 	void GameSession::update( FrameData& frameData, float timeDelta, float totalGameTime )
 	{
+		if ( s_useFreeCamera )
+		{
+			m_freeCamera.update( frameData.mainCamera, timeDelta );
+		}
+		else
+		{
+			m_gameCamera.update( frameData.mainCamera );
+		}
 	}
 
 	void GameSession::render() const
 	{
 		// remove this?
+	}
+
+	bool GameSession::processInputEvent( const InputEvent& inputEvent )
+	{
+		if ( s_useFreeCamera )
+		{
+			return m_freeCamera.processInputEvent( inputEvent );
+		}
+
+		return false;
 	}
 }

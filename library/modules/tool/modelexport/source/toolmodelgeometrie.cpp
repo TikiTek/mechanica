@@ -718,7 +718,7 @@ namespace tiki
 			Vector3 cross;
 			vector::cross( cross, n, t );
 
-			m_vertices[ i ].tangent.w = ( vector::dot( cross, tan2[ i ] ) < 0.0F ) ? -1.0f : 1.0f;
+			m_vertices[ i ].tangent.w = ( vector::dot( cross, tan2[ i ] ) < 0.0f ) ? -1.0f : 1.0f;
 		}
 
 		tan1.dispose();

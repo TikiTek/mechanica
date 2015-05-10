@@ -33,7 +33,8 @@ namespace tiki
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext );
 
-		bool					processInputEvent( const InputEvent& inputEvent );
+		virtual bool			processInputEvent( const InputEvent& inputEvent );
+		virtual void			processWindowEvent( const WindowEvent& windowEvent );
 
 	private:
 

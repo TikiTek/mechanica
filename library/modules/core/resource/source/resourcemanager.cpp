@@ -75,7 +75,7 @@ namespace tiki
 		if ( m_pAssetConverter != nullptr && s_enableAssetConverterWatch )
 		{
 			Array< string > files;
-			if ( m_pAssetConverter->getChangedFiles( files ) == true )
+			if ( m_pAssetConverter->getChangedFiles( files ) )
 			{
 				m_pAssetConverter->lockConversion();
 

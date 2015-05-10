@@ -6,7 +6,6 @@
 
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/gameplay/gamesession.hpp"
-#include "tiki/gameplay/playercamera.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/postbloom.hpp"
 
@@ -41,6 +40,7 @@ namespace tiki
 		virtual void				render( GraphicsContext& graphicsContext );
 
 		virtual bool				processInputEvent( const InputEvent& inputEvent );
+		virtual void				processWindowEvent( const WindowEvent& windowEvent );
 
 	private:
 		
@@ -50,7 +50,6 @@ namespace tiki
 		ImmediateRenderer			m_immediateRenderer;
 		PostProcessBloom			m_bloom;
 
-		PlayerCamera				m_playerCamera;
 		GameClient					m_gameClient;
 		GameSession					m_gameSession;
 

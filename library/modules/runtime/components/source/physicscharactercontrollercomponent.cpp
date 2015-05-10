@@ -142,7 +142,7 @@ namespace tiki
 			return false;
 		}
 
-		pState->controller.create( *pShape, vector::create( pInitData->position ) );
+		pState->controller.create( *pShape, vector::create( pInitData->position ), pInitData->gravity );
 		m_pPhysicsWorld->addCharacterController( pState->controller );
 
 		return true;
