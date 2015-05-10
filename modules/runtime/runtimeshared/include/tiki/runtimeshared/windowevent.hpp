@@ -13,29 +13,29 @@ namespace tiki
 	{
 		WindowEventType_Create,
 		WindowEventType_Destroy,
-		WindowEventType_KeyDown,
-		WindowEventType_KeyUp,
-		WindowEventType_MouseDown,
-		WindowEventType_MouseUp,
-		WindowEventType_MouseMove,
+		//WindowEventType_KeyDown,
+		//WindowEventType_KeyUp,
+		//WindowEventType_MouseDown,
+		//WindowEventType_MouseUp,
+		//WindowEventType_MouseMove,
 		WindowEventType_SizeChanged,
 		WindowEventType_Touch
 	};
 
-	struct WindowKeyEventData
-	{
-		KeyboardKey		key;		
-	};
+	//struct WindowKeyEventData
+	//{
+	//	KeyboardKey		key;		
+	//};
 
-	struct WindowMouseButtonEventData
-	{
-		MouseButton		button;
-	};
+	//struct WindowMouseButtonEventData
+	//{
+	//	MouseButton		button;
+	//};
 
-	struct WindowMouseMoveEventData
-	{
-		uint2			position;
-	};
+	//struct WindowMouseMoveEventData
+	//{
+	//	uint2			position;
+	//};
 
 	struct WindowSizeChangedEventData
 	{
@@ -52,9 +52,9 @@ namespace tiki
 
 	union WindowEventData
 	{
-		WindowKeyEventData			key;
-		WindowMouseButtonEventData	mouseButton;
-		WindowMouseMoveEventData	mouseMove;
+		//WindowKeyEventData			key;
+		//WindowMouseButtonEventData	mouseButton;
+		//WindowMouseMoveEventData	mouseMove;
 		WindowSizeChangedEventData	sizeChanged;
 		WindowTouchEventData		touch;
 	};

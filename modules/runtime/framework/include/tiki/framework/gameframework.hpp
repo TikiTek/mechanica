@@ -62,6 +62,7 @@ namespace tiki
 		virtual void				render( GraphicsContext& graphicsContext ) const = 0;
 
 		virtual bool				processInputEvent( const InputEvent& inputEvent ) = 0;
+		virtual void				processWindowEvent( const WindowEvent& windowEvent ) = 0;
 
 	private:
 		

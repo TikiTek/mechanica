@@ -12,6 +12,7 @@ namespace tiki
 	class GraphicsContext;
 	class InputSystem;
 	struct InputEvent;
+	struct WindowEvent;
 
 	struct GameStateDefinition
 	{
@@ -37,6 +38,7 @@ namespace tiki
 		void				render( GraphicsContext& graphicsContext ) const;
 
 		bool				processInputEvent( const InputEvent& inputEvent );
+		void				processWindowEvent( const WindowEvent& windowEvent );
 
 		void				startTransition( int stateIndex );
 

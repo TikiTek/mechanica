@@ -18,7 +18,7 @@ namespace tiki
 	{
 	}
 
-	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position )
+	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position, float gravity )
 	{
 		btConvexShape* pShape = static_cast< btConvexShape* >( shape.getNativeShape() );
 
@@ -31,6 +31,7 @@ namespace tiki
 		m_ghostObject.setCollisionFlags( btCollisionObject::CF_CHARACTER_OBJECT );
 
 		m_controller = btKinematicCharacterController( &m_ghostObject, pShape, 0.35f );
+		m_controller.setGravity( gravity );
 	}
 
 	void PhysicsCharacterController::dispose()

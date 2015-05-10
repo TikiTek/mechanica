@@ -110,6 +110,15 @@ namespace tiki
 		return false;
 	}
 
+	void GameFlowSystem::processWindowEvent( const WindowEvent& windowEvent )
+	{
+		for (uint i = 0u; i < m_activeStateCount; ++i)
+		{
+			const uint stateIndex = m_activeStates[ i ];
+			m_states[ stateIndex ].pState->processWindowEvent( windowEvent );
+		}
+	}
+
 	void GameFlowSystem::startTransition( int stateIndex )
 	{		
 		m_stateTree.startTransition( stateIndex );
