@@ -378,10 +378,6 @@ namespace tiki
 		{
 			switch ( inputEvent.data.keybaordKey.key )
 			{
-			case KeyboardKey_F1:
-				framework::getDebugGui().setActive( !framework::getDebugGui().getActive() );
-				return true;
-
 			case KeyboardKey_V:
 				{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )

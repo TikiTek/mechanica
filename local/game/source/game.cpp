@@ -35,7 +35,7 @@ namespace tiki
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
 			//return TikiArenaGameStates_BasicTest;
-			return GameStates_Test;
+			return GameStates_Play;
 		}
 #endif
 
@@ -132,7 +132,7 @@ namespace tiki
 
 	void Game::update()
 	{
-		m_touchSystem.update( float( framework::getFrameTimer().getElapsedTime() ), framework::getGraphicsSystem() );
+		m_touchSystem.update( (float)framework::getFrameTimer().getElapsedTime(), framework::getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
 			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
@@ -170,6 +170,11 @@ namespace tiki
 		return m_gameFlow.processInputEvent( inputEvent );
 	}
 
+	void Game::processWindowEvent( const WindowEvent& windowEvent )
+	{
+		m_gameFlow.processWindowEvent( windowEvent );
+	}
+	
 	GameFramework& framework::getGame()
 	{
 		static Game game;

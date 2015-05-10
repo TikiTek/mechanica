@@ -8,6 +8,7 @@
 #include "tiki/math/rectangle.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
 #include "tiki/renderer/renderercontext.hpp"
+#include "tiki/runtimeshared/windowevent.hpp"
 
 namespace tiki
 {
@@ -106,18 +107,10 @@ namespace tiki
 				frameData.farPlane		= 100.0f;
 				frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
-				m_playerCamera.create(
-					m_gameSession.getPlayerEntityId(),
-					(const PlayerControlComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPlayerControlComponent().getTypeId() ),
-					m_gameClient.getPlayerControlComponent()
-				);
-
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_playerCamera.dispose();
-
 				m_pGameRenderer = nullptr;
 
 				return TransitionState_Finish;
@@ -153,8 +146,6 @@ namespace tiki
 		m_gameSession.update( frameData, timeDelta, totalGameTime );
 
 		m_gameClient.render( *m_pGameRenderer );
-
-		m_playerCamera.update( frameData.mainCamera );
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
@@ -165,6 +156,13 @@ namespace tiki
 
 		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
+
+		// renderer output
+		{
+			const TextureData& texture = m_pGameRenderer->getAccumulationBuffer();
+			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			m_immediateRenderer.drawTexturedRectangle( texture, rect );
+		}
 
 		// bloom
 		{
@@ -183,6 +181,28 @@ namespace tiki
 			return true;
 		}
 
+		if ( m_gameSession.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
 		return false;
+	}
+
+	void PlayState::processWindowEvent( const WindowEvent& windowEvent )
+	{
+		if ( windowEvent.type == WindowEventType_SizeChanged )
+		{
+			const bool ok = m_bloom.resize(
+				framework::getGraphicsSystem(),
+				windowEvent.data.sizeChanged.size.x / 2u,
+				windowEvent.data.sizeChanged.size.y / 2u
+			);
+
+			if ( !ok )
+			{
+				m_bloom.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+			}
+		}
 	}
 }
