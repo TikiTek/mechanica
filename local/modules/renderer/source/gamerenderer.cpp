@@ -8,6 +8,7 @@
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/rendereffectdata.hpp"
 #include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/texture.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/lighting_shader.hpp"
@@ -35,6 +36,8 @@ namespace tiki
 
 		m_pLightingShader				= nullptr;
 		m_pLightingInputBinding			= nullptr;
+
+		m_pReflectionTexture			= nullptr;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_pVisualizationShader			= nullptr;
@@ -98,8 +101,9 @@ namespace tiki
 			return false;
 		}
 
-		m_pLightingShader = resourceManager.loadResource< ShaderSet >( "lighting.shader" );
-		if ( m_pLightingShader == nullptr )
+		m_pLightingShader		= resourceManager.loadResource< ShaderSet >( "lighting.shader" );
+		m_pReflectionTexture	= resourceManager.loadResource< Texture >( "skybox_sea.texture" );
+		if ( m_pLightingShader == nullptr || m_pReflectionTexture == nullptr )
 		{
 			dispose( resourceManager );
 			return false;
@@ -154,6 +158,9 @@ namespace tiki
 
 		graphicsSystem.disposeVertexInputBinding( m_pLightingInputBinding );
 		m_pLightingInputBinding = nullptr;
+
+		resourceManager.unloadResource( m_pReflectionTexture );
+		m_pReflectionTexture = nullptr;
 
 		resourceManager.unloadResource( m_pLightingShader );
 		m_pLightingShader = nullptr;
@@ -365,7 +372,9 @@ namespace tiki
 		graphicsContext.setPixelShaderTexture( 1u, &m_geometryBufferData[ 1u ] );
 		graphicsContext.setPixelShaderTexture( 2u, &m_geometryBufferData[ 2u ] );
 		graphicsContext.setPixelShaderTexture( 3u, &m_readOnlyDepthBuffer );
+		graphicsContext.setPixelShaderTexture( 4u, &m_pReflectionTexture->getTextureData() );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerNearst );
+		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerLinear );
 		
 		Matrix44 inverseProjection;
 		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );

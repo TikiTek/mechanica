@@ -173,10 +173,28 @@ namespace tiki
 		m_frameworkData.pWebInterface->update();
 #endif
 
-		const WindowEvent* pDestroyEvent = m_frameworkData.mainWindow.getEventBuffer().getEventByType( WindowEventType_Destroy );
-		if ( pDestroyEvent != nullptr )
+		const uint windowEventCount = m_frameworkData.mainWindow.getEventBuffer().getEventCount();
+		for (uint i = 0u; i < windowEventCount; ++i)
 		{
-			return false;
+			const WindowEvent& windowEvent = m_frameworkData.mainWindow.getEventBuffer().getEventByIndex( i );
+
+			if ( windowEvent.type == WindowEventType_Destroy )
+			{
+				return false;
+			}
+			else if ( windowEvent.type == WindowEventType_SizeChanged )
+			{
+				if ( !m_frameworkData.graphicSystem.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
+				{
+					return false;
+				}
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+				m_frameworkData.debugGui.setScreenSize( vector::create( (float)windowEvent.data.sizeChanged.size.x, (float)windowEvent.data.sizeChanged.size.y ) );
+#endif
+			}		
+
+			processWindowEvent( windowEvent );
 		}
 
 		m_frameworkData.inputSystem.update( m_frameworkData.mainWindow.getEventBuffer() );
@@ -198,6 +216,18 @@ namespace tiki
 
 			if ( !processInputEvent( inputEvent ) )
 			{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+				if ( inputEvent.eventType == InputEventType_Keyboard_Down )
+				{
+					switch ( inputEvent.data.keybaordKey.key )
+					{
+					case KeyboardKey_F1:
+						m_frameworkData.debugGui.setActive( !m_frameworkData.debugGui.getActive() );
+						break;
+					}
+				}
+#endif
+
 				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
 				//{
 				//	const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );

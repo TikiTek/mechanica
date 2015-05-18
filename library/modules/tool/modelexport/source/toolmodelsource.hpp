@@ -115,7 +115,7 @@ namespace tiki
 					stride = 0;
 				}
 
-				techniques.create( count );
+				techniques.create( stride );
 
 				size_t techIndex = 0u;
 				const XmlElement* pParam = pXml->findFirstChild( "param", pAccessorNode );

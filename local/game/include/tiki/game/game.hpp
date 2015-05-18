@@ -42,6 +42,7 @@ namespace tiki
 		virtual void			render( GraphicsContext& graphicsContext ) const;
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent );
+		virtual void			processWindowEvent( const WindowEvent& windowEvent );
 
 	private: // friend
 

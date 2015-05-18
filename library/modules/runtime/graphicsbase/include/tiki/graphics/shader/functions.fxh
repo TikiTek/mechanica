@@ -19,7 +19,7 @@ float3 decodeNormal( TIKI_IN float2 compressedNormal )
     normal.xy	= fenc * g;
     normal.z	= 1.0 - f / 2.0;
 
-    return normal;
+    return normalize( normal );
 }
 
 #endif // __TIKI_FUNCTIONS_FXH_INCLUDED__

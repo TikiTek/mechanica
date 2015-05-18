@@ -39,69 +39,69 @@ namespace tiki
 			}
 			break;
 
-		case WM_KEYDOWN:
-			{
-				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
-				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
-			}
-			break;
+		//case WM_KEYDOWN:
+		//	{
+		//		WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
+		//		event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
+		//	}
+		//	break;
 
-		case WM_KEYUP:
-			{
-				WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
-				event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
-			}
-			break;
+		//case WM_KEYUP:
+		//	{
+		//		WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
+		//		event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
+		//	}
+		//	break;
 
-		case WM_MOUSEMOVE:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
-				event.data.mouseMove.position.x	= GET_X_LPARAM( lParam );
-				event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam );
-			}
-			break;
+		//case WM_MOUSEMOVE:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
+		//		event.data.mouseMove.position.x	= GET_X_LPARAM( lParam );
+		//		event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam );
+		//	}
+		//	break;
 
-		case WM_LBUTTONDOWN:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButton.button	= MouseButton_Left;
-			}
-			break;
+		//case WM_LBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Left;
+		//	}
+		//	break;
 
-		case WM_MBUTTONDOWN:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButton.button	= MouseButton_Middle;
-			}
-			break;
+		//case WM_MBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Middle;
+		//	}
+		//	break;
 
-		case WM_RBUTTONDOWN:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
-				event.data.mouseButton.button	= MouseButton_Right;
-			}
-			break;
+		//case WM_RBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Right;
+		//	}
+		//	break;
 
-		case WM_LBUTTONUP:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButton.button	= MouseButton_Left;
-			}
-			break;
+		//case WM_LBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Left;
+		//	}
+		//	break;
 
-		case WM_MBUTTONUP:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButton.button	= MouseButton_Middle;
-			}
-			break;
+		//case WM_MBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Middle;
+		//	}
+		//	break;
 
-		case WM_RBUTTONUP:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
-				event.data.mouseButton.button	= MouseButton_Right;
-			}
-			break;
+		//case WM_RBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Right;
+		//	}
+		//	break;
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		case WM_TOUCH:

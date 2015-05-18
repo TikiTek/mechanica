@@ -138,11 +138,7 @@ namespace tiki
 				mipImage.createFromImage( *m_pImage );
 				mipImage.cropImage( sourceRects[ sourceRectIndex ] );
 				mipImage.resizeImage( width, height );
-
-				if ( m_parameters.targetApi == GraphicsApi_OpenGL4 )
-				{
-					mipImage.flipImage( HdrImage::FlipDirection_Vertical );
-				}
+				mipImage.flipImage( HdrImage::FlipDirection_Vertical );
 
 				Array< uint8 > bitmap;
 				mipImage.convertTo( bitmap, format );

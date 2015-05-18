@@ -104,6 +104,12 @@ namespace tiki
 		TIKI_ASSERT( ppTargetResource != nullptr );
 		TIKI_ASSERT( resourceKey != TIKI_INVALID_CRC32 );
 
+		if ( m_pStorage->findResource( ppTargetResource, resourceKey ) )
+		{
+			m_pStorage->addReferenceToResource( *ppTargetResource );
+			return ResourceLoaderResult_Success;
+		}
+
 		ResourceLoaderContext context;
 		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType );
 		if ( result != ResourceLoaderResult_Success )
@@ -135,7 +141,10 @@ namespace tiki
 		TIKI_ASSERT( pResource != nullptr );
 
 		Resource* pNonConstResource = const_cast< Resource* >( pResource );
-		disposeResource( pNonConstResource, resourceType, true );
+		if ( m_pStorage->freeReferenceFromResource( pNonConstResource ) )
+		{			
+			disposeResource( pNonConstResource, resourceType, true );
+		}
 	}
 
 	ResourceLoaderResult ResourceLoader::reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
@@ -388,7 +397,7 @@ namespace tiki
 					link.fileKey,
 					link.resourceKey,
 					link.resourceType
-					);
+				);
 			}
 
 			if ( result != ResourceLoaderResult_Success )
