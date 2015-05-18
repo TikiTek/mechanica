@@ -6,7 +6,7 @@ namespace tiki
 {
 	Resource::Resource()
 	{
-		m_referenceCount = 0u;
+		m_referenceCount = 1u;
 	}
 
 	Resource::~Resource()

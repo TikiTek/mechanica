@@ -215,19 +215,33 @@ namespace tiki
 	}
 
 	TIKI_FORCE_INLINE void quaternion::createLookAt( Quaternion& quat, const Vector3& position, const Vector3& target, const Vector3& up /*= Vector3::unitY*/ )
-	{
+	{		
 		Vector3 forward = target;
 		vector::normalize( vector::sub( forward, position ) );
 
-		Vector3 right;
-		vector::normalize( vector::cross( right, up, forward ) );
+		const float dot = vector::dot( Vector3::unitZ, forward );
 
-		quat.w = f32::sqrt( 1.0f + right.x + up.y + forward.z ) * 0.5f;
-		const float reciprocal = 1.0f / ( 4.0f * quat.w );
+		if (f32::abs( dot + 1.0f ) < f32::epsilon)
+		{
+			quat.x = up.x;
+			quat.x = up.y;
+			quat.x = up.z;
+			quat.x = f32::pi;
 
-		quat.x = ( up.z - forward.y ) * reciprocal;
-		quat.y = ( forward.x - right.z ) * reciprocal;
-		quat.z = ( right.y - up.x ) * reciprocal;
+			return;
+		}
+		if (f32::abs( dot - 1.0f ) < f32::epsilon)
+		{
+			quat = Quaternion::identity;
+
+			return;
+		}
+
+		const float rotAngle = f32::acos( dot );
+		Vector3 rotAxis;
+		vector::normalize( vector::cross( rotAxis, Vector3::unitZ, forward ) );
+
+		fromAxisAngle( quat, rotAxis, rotAngle );
 	}
 
 	TIKI_FORCE_INLINE void quaternion::fromMatrix( Quaternion& result, const Matrix33& mtx )
@@ -327,6 +341,21 @@ namespace tiki
 		yawPitchRoll.z = atan2f( 2.0f * ( quat.w * quat.z + quat.x * quat.y ), 1.0f - 2.0f * ( quat.z * quat.z + quat.x * quat.x ));	// roll
 		yawPitchRoll.x = asinf( 2.0f * ( quat.w * quat.x - quat.y * quat.z ));															// pitch
 		yawPitchRoll.y = atan2f( 2.0f * ( quat.w * quat.y + quat.z * quat.x ), 1.0f - 2.0f * ( quat.x * quat.x + quat.y * quat.y ));	// yaw
+	}
+
+	TIKI_FORCE_INLINE void quaternion::fromAxisAngle( Quaternion& quat, const Vector3& axis, float angle )
+	{
+		Vector3 normalized = axis;
+		vector::normalize( normalized );
+
+		float half = angle * 0.5f;
+		float sin = f32::sin( half );
+		float cos = f32::cos( half );
+
+		quat.x = normalized.x * sin;
+		quat.y = normalized.y * sin;
+		quat.z = normalized.z * sin;
+		quat.w = cos;
 	}
 
 	TIKI_FORCE_INLINE void quaternion::transform( Vector3& vec, const Quaternion& quat )

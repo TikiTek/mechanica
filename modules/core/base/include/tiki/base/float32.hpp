@@ -41,6 +41,21 @@ namespace tiki
 			return powf( value, power );
 		}
 
+		TIKI_FORCE_INLINE float sin( float value )
+		{
+			return sinf( value );
+		}
+
+		TIKI_FORCE_INLINE float cos( float value )
+		{
+			return cosf( value );
+		}
+
+		TIKI_FORCE_INLINE float acos( float value )
+		{
+			return acosf( value );
+		}
+
 		TIKI_FORCE_INLINE float lerp( float from, float to, float position )
 		{
 			return from + ( to - from ) * position;
@@ -56,6 +71,7 @@ namespace tiki
 			return ( value < min ? min : ( value > max ? max : value ) );
 		}
 
+		// approximated 1.0f / sqrt( x )
 		TIKI_FORCE_INLINE float rsqrt( float x )
 		{
 			float xhalf = x * 0.5f;

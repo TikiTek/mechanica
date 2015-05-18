@@ -38,7 +38,6 @@ namespace tiki
 	void ResourceStorage::addReferenceToResource( Resource* pResource )
 	{
 		TIKI_ASSERT( pResource != nullptr );
-
 		pResource->addReference();
 	}
 
@@ -48,8 +47,8 @@ namespace tiki
 
 		if ( pResource->releaseReference() )
 		{
-			return m_resources.remove( pResource->getKey() );
-
+			m_resources.remove( pResource->getKey() );
+			return true;
 		}
 
 		return false;

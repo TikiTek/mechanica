@@ -58,6 +58,8 @@ namespace tiki
 		TIKI_FORCE_INLINE void			fromYawPitchRoll( Quaternion& quat, float yaw, float pitch, float roll );
 		TIKI_FORCE_INLINE void			toYawPitchRoll( Vector3& yawPitchRoll, const Quaternion& quat );
 		
+		TIKI_FORCE_INLINE void			fromAxisAngle( Quaternion& quat, const Vector3& axis, float angle );
+
 		TIKI_FORCE_INLINE void			transform( Vector3& vec, const Quaternion& quat );
 
 		TIKI_FORCE_INLINE void			getForward( Vector3& result, const Quaternion& quat );
