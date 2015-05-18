@@ -4,11 +4,31 @@
 		xmlns:editor="clr-namespace:editor.source"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Width="1600" Height="900" >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="124"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- Tab Menu Navigation -->
+        <TabControl AutomationProperties.AutomationId="Tabs" Grid.Row="0" Margin="5">
+            <TabItem Header="File">
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Button Name="Load" Content="Load" MinWidth="70" Margin="0, 0, 5, 0"/>
+                    <Button Name="Save" Content="Save" MinWidth="70" Margin="0, 0, 5, 0"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Object Mode">
+            </TabItem>
+            <TabItem Header="Terrain Mode">
+            </TabItem>
+            <TabItem Header="Area Mode">
+            </TabItem>
+        </TabControl>
 
-        <xcad:DockingManager AllowMixedOrientation="True" BorderBrush="Black" BorderThickness="0">
+        <xcad:DockingManager AllowMixedOrientation="True" BorderBrush="Black" BorderThickness="0" Grid.Row="1">
             <xcad:DockingManager.DocumentHeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -28,26 +48,32 @@
                             </xctk:PropertyGrid>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
-                    <xcad:LayoutDocumentPaneGroup >
+                    <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="3D View"  >
+                            <xcad:LayoutDocument ContentId="document1" Title="3D View" CanClose="False" >
                                 <editor:RenderControl x:Name="RenderControl" />
-                            </xcad:LayoutDocument>
-                            <xcad:LayoutDocument ContentId="document2" Title="Document 2" >
-                                <TextBox Text="Document 2 Content" AcceptsReturn="True"/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
-                    <xcad:LayoutAnchorablePaneGroup DockWidth="125">
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="200"  Orientation="Vertical">
                         <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable ContentId="alarms" Title="Alarms" >
-                                <ListBox>
-                                    <s:String>Alarm 1</s:String>
-                                    <s:String>Alarm 2</s:String>
-                                    <s:String>Alarm 3</s:String>
-                                </ListBox>
+                            <xcad:LayoutAnchorable ContentId="Assets" Title="Assets" >
+
+                                <xcdg:DataGridControl x:Name="_dataGrid" AllowDrag="False" >
+                                    <xcdg:DataGridControl.View>
+                                        <xcdg:TableflowView FixedColumnCount="2" />
+                                    </xcdg:DataGridControl.View>
+
+                                    <xcdg:DataGridControl.Columns>
+                                        <xcdg:Column FieldName="Name" Title="Name" Width="100" IsMainColumn="True" />
+                                        <xcdg:Column FieldName="ID" Title="ID" Width="100" />
+                                        <xcdg:Column FieldName="Template" Title="Template" Width="100"/>
+                                    </xcdg:DataGridControl.Columns>
+                                </xcdg:DataGridControl>
                             </xcad:LayoutAnchorable>
-                            <xcad:LayoutAnchorable ContentId="journal" Title="Journal" >
+                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable ContentId="Entities" Title="Entities" >
                                 <RichTextBox>
                                     <FlowDocument>
                                         <Paragraph FontSize="14" FontFamily="Segoe">
@@ -59,22 +85,10 @@
                                     </FlowDocument>
                                 </RichTextBox>
                             </xcad:LayoutAnchorable>
+
                         </xcad:LayoutAnchorablePane>
                     </xcad:LayoutAnchorablePaneGroup>
                 </xcad:LayoutPanel>
-
-                <xcad:LayoutRoot.LeftSide>
-                    <xcad:LayoutAnchorSide>
-                        <xcad:LayoutAnchorGroup>
-                            <xcad:LayoutAnchorable Title="Agenda" ContentId="agenda" >
-                                <TextBlock Text="Agenda Content" Margin="10" FontSize="18" FontWeight="Black" TextWrapping="Wrap"/>
-                            </xcad:LayoutAnchorable>
-                            <xcad:LayoutAnchorable Title="Contacts" ContentId="contacts" >
-                                <TextBlock Text="Contacts Content" Margin="10" FontSize="18" FontWeight="Black" TextWrapping="Wrap"/>
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorGroup>
-                    </xcad:LayoutAnchorSide>
-                </xcad:LayoutRoot.LeftSide>
             </xcad:LayoutRoot>
         </xcad:DockingManager>
 
