@@ -6,8 +6,15 @@ module:add_files( "source/*.*" );
 module:add_files( "source/**/*.*" );
 module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );
-module:add_shader_dir( "source" );
 
 module:add_dependency( "graphics" );
 module:add_dependency( "graphicsresources" );
 module:add_dependency( "rendereffectdata" );
+module:add_dependency( "renderershader" );
+
+local module = Module:new( "renderershader" );
+
+module:add_files( "source/shader/*.*" );
+module:add_shader_dir( "source" );
+
+module:add_dependency( "graphicsshader" );
