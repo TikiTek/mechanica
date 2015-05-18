@@ -51,39 +51,41 @@ TIKI_PIXEL_OUTPUT_DEFINITION_END( PixelOutput )
 
 // constants
 TIKI_DEFINE_SAMPLER( 0, s_samplerNearst )
+TIKI_DEFINE_SAMPLER( 1, s_samplerLinear )
 
 TIKI_DEFINE_TEXTURE2D( 0, t_gBuffer0 )
 TIKI_DEFINE_TEXTURE2D( 1, t_gBuffer1 )
 TIKI_DEFINE_TEXTURE2D( 2, t_gBuffer2 )
 TIKI_DEFINE_TEXTURE2D( 3, t_depthBuffer )
+TIKI_DEFINE_TEXTURECUBE( 4, t_reflectionMap )
 
 TIKI_DEFINE_CONSTANT( 0, LightingPixelConstantData, c_pixelData )
 TIKI_DEFINE_CONSTANT( 1, CameraParameter, c_cameraParameter )
 
-//float GGX_V1(in float m2, in float nDotX)
-//{
-//    return 1.0 / (nDotX + sqrt(m2 + (1 - m2) * nDotX * nDotX));
-//}
-//
-//float GGX_Specular(in float m, in float3 n, in float3 h, in float3 v, in float3 l)
-//{
-//    float nDotH = TIKI_SATURATE(dot(n, h));
-//    float nDotL = TIKI_SATURATE(dot(n, l));
-//    float nDotV = TIKI_SATURATE(dot(n, v));
-//
-//    float nDotH2 = nDotH * nDotH;
-//    float m2 = m * m;
-//
-//    // Calculate the distribution term
-//    float d = m2 / (3.14159f * pow(nDotH * nDotH * (m2 - 1) + 1, 2.0));
-//
-//    // Calculate the matching visibility term
-//    float v1i = GGX_V1(m2, nDotL);
-//    float v1o = GGX_V1(m2, nDotV);
-//    float vis = v1i * v1o;
-//
-//    return d * vis;
-//}
+float GGX_V1(in float m2, in float nDotX)
+{
+    return 1.0 / (nDotX + sqrt(m2 + (1 - m2) * nDotX * nDotX));
+}
+
+float GGX_Specular(in float m, in float3 n, in float3 h, in float3 v, in float3 l)
+{
+    float nDotH = TIKI_SATURATE(dot(n, h));
+    float nDotL = TIKI_SATURATE(dot(n, l));
+    float nDotV = TIKI_SATURATE(dot(n, v));
+
+    float nDotH2 = nDotH * nDotH;
+    float m2 = m * m;
+
+    // Calculate the distribution term
+    float d = m2 / (3.14159f * pow(nDotH * nDotH * (m2 - 1) + 1, 2.0));
+
+    // Calculate the matching visibility term
+    float v1i = GGX_V1(m2, nDotL);
+    float v1o = GGX_V1(m2, nDotV);
+    float vis = v1i * v1o;
+
+    return d * vis;
+}
 
 TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 {
@@ -103,6 +105,9 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	float4 viewPosition2 = TIKI_MUL( projectionPosition, c_pixelData.inverseProjection );
 	float3 viewPosition = viewPosition2.xyz / viewPosition2.w;
 
+	float3 reflectionVector = reflect( -viewDirection, normal );
+	float3 reflectionColor = TIKI_TEXCUBE( t_reflectionMap, s_samplerLinear, reflectionVector ).xyz;
+
 	float3 color = float3( 0.0, 0.0, 0.0 );
 
 	// directional
@@ -119,7 +124,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 		float specularPower		= getSpecluarPower( gSample );
 
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( diffuseColor * lightColor ) + specularLight;
 		color += diffuseColor * ambientColor * ambientIntensity;
@@ -140,7 +145,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 
 		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getPointLightInverseRange( c_pixelData.pointLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( ( diffuseColor * lightColor ) + specularLight ) * attenuation;
 	}
@@ -163,7 +168,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 
 		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getSpotLightInverseRange( c_pixelData.spotLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
-		float3 specularLight	= float3( 0.0, 0.0, 0.0 ); //lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
+		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot * attenuation;
 	}

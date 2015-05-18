@@ -21,10 +21,11 @@ namespace tiki
 
 		EntityPool entityPools[] =
 		{
-			{ 1u,    1u },		// player
+			{    1u,   1u },	// player
 			{ 1000u, 999u },	// enemies
 			{ 2000u, 999u },	// level objects
 			{ 3000u, 999u },	// static objects
+			{ 4000u, 999u },	// projectiles
 		};
 
 		entitySystemParams.entityPools.create( entityPools, TIKI_COUNT( entityPools ) );
@@ -111,16 +112,17 @@ namespace tiki
 		controllerInitData.shape.shapeType = ShapeType_Capsule;
 		controllerInitData.shape.shapeCapsuleRadius = 0.5f;
 		controllerInitData.shape.shapeCapsuleHeight = 1.0f;
+		controllerInitData.gravity = 0.00001f;
 
 		PlayerControlComponentInitData playerControlInitData;
 		playerControlInitData.speed = 0.1f;
 
 		EntityTemplateComponent entityComponents[] =
 		{
-			{ m_transformComponent.getTypeCrc(), &transformInitData },
-			{ m_physicsCharacterControllerComponent.getTypeCrc(), &controllerInitData },
-			{ m_staticModelComponent.getTypeCrc(), &modelInitData },
-			{ m_playerControlComponent.getTypeCrc(), &playerControlInitData }
+			{ m_transformComponent.getTypeCrc(),					&transformInitData },
+			{ m_physicsCharacterControllerComponent.getTypeCrc(),	&controllerInitData },
+			{ m_staticModelComponent.getTypeCrc(),					&modelInitData },
+			{ m_playerControlComponent.getTypeCrc(),				&playerControlInitData }
 		};
 
 		EntityTemplate entityTemplate;

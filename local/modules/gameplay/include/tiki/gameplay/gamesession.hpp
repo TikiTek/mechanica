@@ -2,23 +2,20 @@
 #ifndef __TIKI_GAMESTATE_HPP_INCLUDED__
 #define __TIKI_GAMESTATE_HPP_INCLUDED__
 
+#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
+#include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
-	class Animation;
 	class GameClient;
 	class Model;
-	class PhysicsShape;
 	class ResourceManager;
 	struct FrameData;
-	struct PhysicsCharacterControllerComponentState;
-	struct Vector3;
-
-	typedef FixedSizedArray< EntityId, 4u > CollectedCoinIdArray;
+	struct TransformComponentState;
 
 	class GameSession
 	{
@@ -35,24 +32,26 @@ namespace tiki
 		void		update( FrameData& frameData, float timeDelta, float totalGameTime );
 		void		render() const;
 
+		bool		processInputEvent( const InputEvent& inputEvent );
+
 		EntityId	getPlayerEntityId() const { return m_playerEntityId; }
 
 	private:
 
-		enum
-		{
-			MaxCoinCount					= 128u,
-		};
-
-
-		GameClient*				m_pGameClient;
-
-		const Model*			m_pModelPlayer;
-		const Model*			m_pModelTerrain;
-		const Model*			m_pModelCoin;
+		GameClient*					m_pGameClient;
 		
-		EntityId				m_planeEntityId;
-		EntityId				m_playerEntityId;
+		bool						m_useFreeCamera;
+		GameCamera					m_gameCamera;
+		FreeCamera					m_freeCamera;
+
+		EntityId					m_playerEntityId;
+		TransformComponentState*	m_pPlayerTransformState;
+		const Model*				m_pModelPlayer;
+		
+		const Model*				m_pModelTerrain;
+		const Model*				m_pModelCoin;
+		
+		EntityId					m_planeEntityId;
 
 	};
 }

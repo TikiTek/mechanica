@@ -63,18 +63,6 @@ namespace tiki
 
 	void ApplicationState::update()
 	{
-		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
-		if ( pEvent != nullptr )
-		{
-			if ( framework::getGraphicsSystem().resize( pEvent->data.sizeChanged.size.x, pEvent->data.sizeChanged.size.y ) )
-			{
-				if ( !m_renderer.resize( pEvent->data.sizeChanged.size.x, pEvent->data.sizeChanged.size.y ) )
-				{
-					m_renderer.dispose( framework::getResourceManager() );				
-				}
-			}
-		}
-
 		m_renderer.update();
 	}
 
@@ -86,5 +74,16 @@ namespace tiki
 	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )
 	{
 		return false;
+	}
+
+	void ApplicationState::processWindowEvent( const WindowEvent& windowEvent )
+	{
+		if ( windowEvent.type == WindowEventType_SizeChanged )
+		{
+			if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
+			{
+				m_renderer.dispose( framework::getResourceManager() );				
+			}
+		}
 	}
 }

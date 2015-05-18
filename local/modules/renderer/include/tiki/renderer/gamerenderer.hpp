@@ -21,6 +21,7 @@ namespace tiki
 	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
+	class Texture;
 	class VertexInputBinding;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -124,6 +125,8 @@ namespace tiki
 		const VertexInputBinding*	m_pLightingInputBinding;
 		ConstantBuffer				m_lightingPixelConstants;
 		ConstantBuffer				m_cameraParameterConstants;
+
+		const Texture*				m_pReflectionTexture;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const ShaderSet*			m_pVisualizationShader;
