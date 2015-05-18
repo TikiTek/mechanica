@@ -76,7 +76,7 @@ namespace tiki
 		}
 
 		// intersection = origin + t*direction, with t >= 0.
-		bool intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3 intersectionPoint )
+		bool intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3& intersectionPoint )
 		{
 			Vector3 normal;
 			plane.getNormal( normal );
@@ -111,5 +111,35 @@ namespace tiki
 
 			return false;
 		}
+
+		bool intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint )
+		{
+			float WdU	[ 3 ];
+			float AWdU	[ 3 ];
+			float DdU	[ 3 ];
+			float ADdU	[ 3 ];
+			float AWxDdu[ 3 ];
+			float RHS;
+
+			Vector3 diff = ray.Origin;
+			vector::sub( diff, box.m_Center );
+
+			WdU	[ 0 ] = vector::dot( ray.Direction, box.m_Center );
+			AWdU[ 0 ] = f32::abs( WdU[ 0 ] );
+			DdU [ 0 ] = vector::dot( diff, box.m_Axis[ 0 ] );
+			ADdU[ 0 ] = f32::abs( DdU[ 0 ] );
+
+			if ( ADdU[ 0 ] > box.m_Extents.x && DdU[ 0 ] * WdU[ 0 ] >= 0.0f )
+			{
+				return false;
+			}
+
+
+
+
+
+		}
+
+
 	}
 }
