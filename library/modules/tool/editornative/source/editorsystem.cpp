@@ -7,6 +7,7 @@
 #include "tiki/input/inputevent.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/math/box.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/runtimeshared/frameworkfactories.hpp"
 
@@ -120,6 +121,15 @@ namespace tiki
 		rect.width	= 2.0f;
 		rect.height	= 2.0f;
 		renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
+
+
+		Vector3 center;
+		vector::set( center, 0.0f, 0.0f, 0.0f );
+		Vector3 extents;
+		vector::set( extents, 1.0f, 1.0f, 1.0f );
+
+		Box box( center, extents );
+		renderer.drawBox( box );
 
 		renderer.endRenderPass();
 		renderer.endRendering();

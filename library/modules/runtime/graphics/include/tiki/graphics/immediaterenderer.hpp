@@ -28,6 +28,7 @@ namespace tiki
 	class TextureData;
 	class VertexFormat;
 	class VertexInputBinding;
+	class Box;
 	struct Rectangle; 
 	struct Vector2;
 
@@ -74,7 +75,7 @@ namespace tiki
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE ) const;
-
+		void				drawBox( const Box& box, Color color = TIKI_COLOR_WHITE ) const;
 	private:
 
 		struct ImmediateVertex
