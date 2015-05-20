@@ -12,4 +12,3 @@ module:add_dependency( "toolbase" );
 module:add_dependency( "threading" );
 module:add_dependency( "resource" );
 module:add_dependency( "tasksystem" );
-module:add_dependency( "dbalsterxml" );

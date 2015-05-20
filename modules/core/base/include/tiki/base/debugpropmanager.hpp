@@ -13,6 +13,9 @@ namespace tiki
 		void					registerProperty( DebugProp& prop );
 		void					unregisterProperty( DebugProp& prop );
 
+		void					loadProperties( const char* pFilename );
+		void					saveProperties( const char* pFilename );
+
 		LinkedList<DebugProp>&	getProperties();
 	}
 }

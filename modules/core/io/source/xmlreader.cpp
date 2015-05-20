@@ -1,5 +1,5 @@
 
-#include "tiki/converterbase/xmlreader.hpp"
+#include "tiki/io/xmlreader.hpp"
 
 #include "tiki/base/file.hpp"
 #include "tiki/base/memory.hpp"
@@ -31,10 +31,13 @@ namespace tiki
 		TIKI_ASSERT( m_pData == nullptr );
 	}
 
-	void XmlReader::create( cstring pFileName )
+	bool XmlReader::create( cstring pFileName )
 	{
 		Array< uint8 > data;
-		TIKI_VERIFY( file::readAllBytes( pFileName, data ) );
+		if( !file::readAllBytes( pFileName, data ) )
+		{
+			return false;
+		}
 
 		m_pNode = xml_create(
 			(const char*)data.getBegin(),
@@ -46,14 +49,22 @@ namespace tiki
 		);
 
 		data.dispose();
+		
+		if ( m_pNode == nullptr )
+		{
+			dispose();
+			return false;
+		}
+
+		return true;
 	}
 
 	void XmlReader::dispose()
 	{
 		TIKI_MEMORY_FREE( m_pData );
 
-		m_pNode			= nullptr;
-		m_pData			= nullptr;
+		m_pNode	= nullptr;
+		m_pData	= nullptr;
 	}
 
 	const XmlElement* XmlReader::findNodeByName( cstring pName ) const
@@ -91,13 +102,9 @@ namespace tiki
 	size_t XmlReader::getChilds( XmlElementList& targetList, const XmlElement* pElement, cstring pName ) const
 	{
 		TIKI_ASSERT( pElement );
-		const XmlElement* pNode = findFirstChild( pName, pElement );
-
-		while ( pNode )
-		{
-			targetList.add( pNode );
-			pNode = findNext( pName, pNode );
-		}
+		const uint count = xml_element_find_elements( (XmlElement*)pElement, pName, nullptr, nullptr );
+		targetList.create( count );
+		xml_element_find_elements( (XmlElement*)pElement, pName, (XmlElement**)targetList.getBegin(), (XmlElement**)targetList.end() );
 
 		return targetList.getCount();
 	}

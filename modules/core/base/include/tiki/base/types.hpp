@@ -131,7 +131,7 @@ namespace tiki
 #define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
 #define TIKI_STRING( text )				# text
 
-#	define TIKI_PURE				= 0
+#	define TIKI_PURE					= 0
 
 #if _MANAGED
 

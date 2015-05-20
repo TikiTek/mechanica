@@ -5,7 +5,7 @@
 #include "tiki/base/inline.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/converterbase/xmlreader.hpp"
+#include "tiki/io/xmlreader.hpp"
 #include "tiki/modelexport/toolmodelanimation.hpp"
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"

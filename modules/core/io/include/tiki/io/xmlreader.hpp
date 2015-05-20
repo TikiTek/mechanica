@@ -2,15 +2,15 @@
 #ifndef TIKI_TIKIXML_HPP
 #define TIKI_TIKIXML_HPP
 
-#include "tiki/base/types.hpp"
+#include "tiki/base/array.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/toolbase/list.hpp"
+#include "tiki/base/types.hpp"
 
 #include "xml.h"
 
 namespace tiki
 {
-	typedef List< const XmlElement* > XmlElementList;
+	typedef Array< const XmlElement* > XmlElementList;
 
 	class XmlReader
 	{
@@ -22,7 +22,7 @@ namespace tiki
 							XmlReader();
 							~XmlReader();
 
-		void				create( cstring pFileName );
+		bool				create( cstring pFileName );
 		void				dispose();
 
 		const XmlElement*	getRoot() const { return m_pNode; }

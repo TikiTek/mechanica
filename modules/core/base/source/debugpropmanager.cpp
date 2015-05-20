@@ -2,6 +2,7 @@
 #include "tiki/base/debugpropmanager.hpp"
 
 #include "tiki/base/debugprop.hpp"
+#include "tiki/io/xmlreader.hpp"
 
 namespace tiki
 {
@@ -16,6 +17,9 @@ namespace tiki
 
 		void					registerProperty( DebugProp& prop );
 		void					unregisterProperty( DebugProp& prop );
+
+		void					loadProperties( const char* pFilename );
+		void					saveProperties( const char* pFilename );
 
 		LinkedList<DebugProp>&	getProperties() { return m_properties; }
 
@@ -43,6 +47,16 @@ namespace tiki
 		getDebugProManager().unregisterProperty( prop );
 	}
 
+	void debugprop::loadProperties( const char* pFilename )
+	{
+		getDebugProManager().loadProperties( pFilename );
+	}
+
+	void debugprop::saveProperties( const char* pFilename )
+	{
+		getDebugProManager().saveProperties( pFilename );
+	}
+
 	LinkedList<DebugProp>& debugprop::getProperties()
 	{
 		return getDebugProManager().getProperties();
@@ -65,6 +79,26 @@ namespace tiki
 	void DebugPropManager::unregisterProperty( DebugProp& prop )
 	{
 		m_properties.removeSortedByValue( prop );
+	}
+
+	void DebugPropManager::loadProperties( const char* pFilename )
+	{
+		XmlReader xml;
+		if ( !xml.create( pFilename ) )
+		{
+			return;
+		}
+
+		const XmlElement* pRootNode = xml.findNodeByName( "DebugProperties" );
+
+
+
+		xml.dispose();
+	}
+
+	void DebugPropManager::saveProperties( const char* pFilename )
+	{
+
 	}
 
 	DebugProp* DebugPropManager::findPropertyByFullName( const char* pName )
