@@ -12,6 +12,7 @@
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
+#include "tiki/math/box.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -420,6 +421,71 @@ namespace tiki
 			targetVertex.v		= 0u;
 			targetVertex.color	= color;
 		} 
+
+		m_pContext->endImmediateGeometry();
+	}
+
+
+	void ImmediateRenderer::drawBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		Vector3 boxVertices[8];
+		box.getVertices( &boxVertices[0] );
+
+		uint lineCount = 24;
+		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), lineCount ));
+		
+		// draw lower rect
+		createFloat3( pVertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( pVertices[ 1 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		
+		createFloat3( pVertices[ 2 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( pVertices[ 3 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+
+		createFloat3( pVertices[ 4 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( pVertices[ 5 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		
+		createFloat3( pVertices[ 6 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( pVertices[ 7 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+
+		// draw upper rect
+		createFloat3( pVertices[ 8 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		createFloat3( pVertices[ 9 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+
+		createFloat3( pVertices[ 10 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( pVertices[ 11 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+
+		createFloat3( pVertices[ 12 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( pVertices[ 13 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+
+		createFloat3( pVertices[ 14 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( pVertices[ 15 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+
+
+		// draw vertical lines
+		createFloat3( pVertices[ 16 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( pVertices[ 17 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		
+		createFloat3( pVertices[ 18 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( pVertices[ 19 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		
+		createFloat3( pVertices[ 20 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( pVertices[ 21 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+
+		createFloat3( pVertices[ 22 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( pVertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+
+		// set color and uv
+		for ( uint i = 0u; i < lineCount; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color	= color;
+			current.u		= 0u;
+			current.v		= 0u;
+		}
 
 		m_pContext->endImmediateGeometry();
 	}
