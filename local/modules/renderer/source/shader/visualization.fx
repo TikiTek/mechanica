@@ -62,8 +62,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 #elif TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_SELFILLUMINATION
 	color.rgb = TIKI_TEX2D( t_gBuffer1, s_linear, texCoord ).rgb;
 #elif TIKI_VISUALIZATION_MODE == TIKI_VISUALIZATION_MODE_NORMAL
-	color.rgb = decodeNormal( TIKI_TEX2D( t_gBuffer2, s_linear, texCoord ).xy );
-	color.rgb = ( color.rgb / 2.0 ) + 0.5;
+	color.rgb = TIKI_TEX2D( t_gBuffer2, s_linear, texCoord ).rgb;
 #else
 	color.r = 1.0;
 #endif

@@ -62,13 +62,11 @@ TIKI_ENTRY_POINT( VertexToPixel, GeometryBufferPixelOutput, main )
 	float3 normalSample = normalize( texCoord );
 	float3 selfIlluminationColor = float3( 0.0, 0.0, 0.0 );
 		
-	float2 packedNormal = encodeNormal( normalSample );
-
 	diffuseColor = 1.0;
 
 	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, createGeometryBuffer0Color( diffuseColor, 0.0 ) );
 	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR1, createGeometryBuffer1Color( selfIlluminationColor, 0.0 ) );
-	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR2, createGeometryBuffer2Color( packedNormal, 0.0, 1.0 ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR2, createGeometryBuffer2Color( normalSample, 1.0 ) );
 	
 	TIKI_PIXEL_OUTPUT_END( GeometryBufferPixelOutput );
 }

@@ -110,6 +110,10 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 
 	float3 color = float3( 0.0, 0.0, 0.0 );
 
+	float3 specularColor	= getSpecluarColor( gSample );
+	float specularIntensity	= getSpecluarIntensity( gSample );
+	float specularPower		= getSpecluarPower( gSample );
+
 	// directional
 	for (int i = 0; i < TIKI_DIRECTION_LIGHT_COUNT; i++)
 	{
@@ -119,15 +123,12 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 		float3 ambientColor		= ( 1 - lightIntensity ) * float3( 0.5, 0.25, 0.25 );
 		float ambientIntensity	= 0.1f;
   
-		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( gSample );
-		float specularPower		= getSpecluarPower( gSample );
-
 		float3 halfVector		= normalize( viewDirection + lightDirection );
 		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
 		color += ( diffuseColor * lightColor ) + specularLight;
 		color += diffuseColor * ambientColor * ambientIntensity;
+		//color += lightIntensity;
 	}
 
 	// point
@@ -139,15 +140,11 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 		float lightIntensity	= max( dot( normal, lightDirection ), 0 );
 		float3 lightColor		= lightIntensity * getPointLightColor( c_pixelData.pointLights[ i ] );
   
-		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( gSample );
-		float specularPower		= getSpecluarPower( gSample );
-
 		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getPointLightInverseRange( c_pixelData.pointLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
 		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
-		color += ( ( diffuseColor * lightColor ) + specularLight ) * attenuation;
+		//color += ( ( diffuseColor * lightColor ) + specularLight ) * attenuation;
 	}
 
 	// spot
@@ -162,15 +159,11 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 		float angle				= acos( dot( lightDirection, normalize( getSpotLightDirection( c_pixelData.spotLights[ i ] ) ) ) );
 		float lightSpot			= TIKI_SATURATE( smoothstep( getSpotLightPhi( c_pixelData.spotLights[ i ] ), getSpotLightTheta( c_pixelData.spotLights[ i ] ), angle ) );
   
-		float3 specularColor	= getSpecluarBrightness( gSample ).xxx;
-		float specularIntensity	= getSpecluarIntensity( gSample );
-		float specularPower		= getSpecluarPower( gSample );
-
 		float attenuation		= 1.0 - TIKI_SATURATE( length( lightDistance ) * getSpotLightInverseRange( c_pixelData.spotLights[ i ] ) );
 		float3 halfVector		= normalize( viewDirection + lightDirection );
 		float3 specularLight	= lightIntensity * specularIntensity * specularColor * max( GGX_Specular( specularPower, normal, halfVector, viewDirection, lightDirection ), 0 );
 
-		color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot * attenuation;
+		//color += ( ( diffuseColor * lightColor ) + specularLight ) * lightSpot * attenuation;
 	}
 
 	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, float4( color, 1.0 ) );

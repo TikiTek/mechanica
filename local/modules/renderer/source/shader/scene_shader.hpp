@@ -19,7 +19,6 @@ struct SceneSkinningVertexConstantData
 struct ScenePixelConstantData
 {
 	float selfIlluminationFactor;
-	float specluarBrightness;
 	float specluarIntensity;
 	float specluarPower;
 };
