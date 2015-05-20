@@ -1,7 +1,7 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/toollibrarys/iassetconverter.hpp"
+#include "tiki/toollibraries/iassetconverter.hpp"
 
 int tiki::mainEntryPoint()
 {

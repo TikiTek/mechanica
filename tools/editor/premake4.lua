@@ -19,6 +19,8 @@ module:add_library_file( "WindowsFormsIntegration" );
 
 module:add_library_file( "editornative" );
 
+module:add_dependency( "wpftoolkit" );
+
 local project = Project:new(
 	"editor",
 	{ "x32", "x64" },
