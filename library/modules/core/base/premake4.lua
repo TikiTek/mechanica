@@ -13,3 +13,5 @@ elseif is_linux then
 else
 	throw("Platform not supported.");
 end
+
+module:add_dependency( "io" );

@@ -117,6 +117,8 @@ function Project:finalize()
 		buildoptions( self.buildoptions );
 	end
 	
+	defines( { "TIKI_PROJECT_NAME=" .. self.name } );
+	
 	if self.lang == ProjectLanguages.cpp then
 		if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
 			defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );

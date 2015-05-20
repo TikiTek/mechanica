@@ -21,7 +21,7 @@ namespace tiki
 {
 	uint16 FontConverter::getConverterRevision() const
 	{
-		return 1u;
+		return 2u;
 	}
 
 	crc32 FontConverter::getInputType() const

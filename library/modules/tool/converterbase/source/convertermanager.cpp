@@ -8,9 +8,9 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
+#include "tiki/io/xmlreader.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
 #include "tiki/toolbase/autodispose.hpp"
-#include "tiki/converterbase/xmlreader.hpp"
 
 #include "sqlite/sqlite3.h"
 

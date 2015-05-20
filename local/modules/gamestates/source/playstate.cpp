@@ -1,6 +1,7 @@
 
 #include "tiki/gamestates/playstate.hpp"
 
+#include "tiki/base/debugprop.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
@@ -12,6 +13,10 @@
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_FLOAT( s_lightDirectionX, "LightDirection/X", 0.5f, 0.0f, 1.0f );
+	TIKI_DEBUGPROP_FLOAT( s_lightDirectionY, "LightDirection/Y", 0.2f, 0.0f, 1.0f );
+	TIKI_DEBUGPROP_FLOAT( s_lightDirectionZ, "LightDirection/Z", 0.1f, 0.0f, 1.0f );
+
 	PlayState::PlayState()
 	{
 		m_pParentState	= nullptr;
@@ -132,7 +137,8 @@ namespace tiki
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
 		DirectionalLightData& directionalLight = frameData.directionalLights.push();
-		vector::set( directionalLight.direction, 0.941176471f, -0.235294118f, 0.0f );
+		vector::set( directionalLight.direction, s_lightDirectionX, s_lightDirectionY, s_lightDirectionZ );
+		vector::normalize( directionalLight.direction );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
 		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );

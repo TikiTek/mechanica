@@ -9,11 +9,11 @@ namespace tiki
 	template<typename T>
 	void quickSort( T* pData, uint capacity )
 	{
-		quickSortRange( pData, capacity, 0u, capacity - 1u );
+		quickSortRange( pData, 0u, capacity - 1u );
 	}
 
 	template<typename T>
-	void quickSortRange( T* pData, uint capacity, uint left, uint right )
+	void quickSortRange( T* pData, uint left, uint right )
 	{
 		uint i = left;
 		uint j = right;
@@ -54,12 +54,12 @@ namespace tiki
 
 			if ( j > i )
 			{
-				quickSortRange( pData, capacity, left, i - 1 );
+				quickSortRange( pData, left, i - 1 );
 				left = i + 1;
 			}
 			else
 			{
-				quickSortRange( pData, capacity, i + 1, right );
+				quickSortRange( pData, i + 1, right );
 				right = i - 1;
 			}
 		}

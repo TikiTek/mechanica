@@ -18,7 +18,7 @@ namespace tiki
 {
 	uint16 TextureConverter::getConverterRevision() const
 	{
-		return 4u;
+		return 5u;
 	}
 
 	crc32 TextureConverter::getInputType() const

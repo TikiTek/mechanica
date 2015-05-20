@@ -20,7 +20,7 @@
 #else
 
 #	ifndef TIKI_CURRENT_MODULE
-#		define TIKI_CURRENT_MODULE "tiki3"
+#		define TIKI_CURRENT_MODULE TIKI_STRING( TIKI_PROJECT_NAME )
 #	endif
 
 #	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue ) static ::tiki::DebugPropBool varname ( name, TIKI_CURRENT_MODULE, defaultValue );

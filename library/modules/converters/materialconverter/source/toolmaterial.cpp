@@ -5,7 +5,7 @@
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-#include "tiki/converterbase/xmlreader.hpp"
+#include "tiki/io/xmlreader.hpp"
 
 namespace tiki
 {

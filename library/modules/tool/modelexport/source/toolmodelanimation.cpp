@@ -2,9 +2,9 @@
 #include "tiki/modelexport/toolmodelanimation.hpp"
 
 #include "tiki/base/crc32.hpp"
+#include "tiki/io/xmlreader.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
-#include "tiki/converterbase/xmlreader.hpp"
 
 #include "toolmodelsource.hpp"
 
