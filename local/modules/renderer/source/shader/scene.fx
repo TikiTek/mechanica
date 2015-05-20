@@ -64,7 +64,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 	float3 tangent = normalize( TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).xyz );
 	tangent = normalize( TIKI_MUL( tangent.xyz, normalMatrix ) );
 
-	float3 binormal = normalize( cross( normal, tangent ) * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w );
+	float3 binormal = normalize( cross( normal, tangent ) ); //TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).www; // * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w );
 
 	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD0 );
 
@@ -94,7 +94,8 @@ TIKI_DEFINE_CONSTANT( 0, ScenePixelConstantData, c_instanceData )
 
 TIKI_DEFINE_TEXTURE2D( 0, t_diffuseMap )
 TIKI_DEFINE_TEXTURE2D( 1, t_normalMap )
-TIKI_DEFINE_TEXTURE2D( 2, t_selfilluMap )
+TIKI_DEFINE_TEXTURE2D( 2, t_specularMap )
+TIKI_DEFINE_TEXTURE2D( 3, t_glossMap )
 
 TIKI_DEFINE_SAMPLER( 0, s_linear )
 
@@ -107,17 +108,20 @@ TIKI_ENTRY_POINT( VertexToPixel, GeometryBufferPixelOutput, main )
 	float3 binormal	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_BINORMAL0 );
 	float2 texCoord	= TIKI_VERTEX_TO_PIXEL_GET( TIKI_TEXCOORD0 );
 
-	float3 diffuseColor = TIKI_TEX2D( t_diffuseMap, s_linear, texCoord ).rgb;
-	float3 normalSample = TIKI_TEX2D( t_normalMap, s_linear, texCoord ).rgb * 2.0 - 1.0;
-	float3 selfIlluminationColor = TIKI_TEX2D( t_selfilluMap, s_linear, texCoord ).rgb;
+	float3 diffuseColor		= TIKI_TEX2D( t_diffuseMap, s_linear, texCoord ).rgb;
+	float3 normalSample		= TIKI_TEX2D( t_normalMap, s_linear, texCoord ).rgb * 2.0 - 1.0;
+	float3 specularColor	= TIKI_TEX2D( t_specularMap, s_linear, texCoord ).rgb;
+	float3 glossColor		= TIKI_TEX2D( t_glossMap, s_linear, texCoord ).rgb;
 		
 	float3x3 tangentSpaceNormalMatrix = float3x3( tangent, binormal, normal );
 	float3 finalNormal = normalize( TIKI_MUL( normalSample, tangentSpaceNormalMatrix ) );
-	float2 packedNormal = encodeNormal( finalNormal );
+	//float2 packedNormal = encodeNormal( finalNormal );
 
-	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, createGeometryBuffer0Color( diffuseColor, c_instanceData.specluarBrightness ) );
-	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR1, createGeometryBuffer1Color( selfIlluminationColor, c_instanceData.selfIlluminationFactor ) );
-	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR2, createGeometryBuffer2Color( packedNormal, c_instanceData.specluarIntensity, c_instanceData.specluarPower ) );
+	//diffuseColor = binormal;
+
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, createGeometryBuffer0Color( diffuseColor, c_instanceData.selfIlluminationFactor ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR1, createGeometryBuffer1Color( specularColor, c_instanceData.specluarIntensity ) );
+	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR2, createGeometryBuffer2Color( finalNormal, c_instanceData.specluarPower ) );
 	
 	TIKI_PIXEL_OUTPUT_END( GeometryBufferPixelOutput );
 }

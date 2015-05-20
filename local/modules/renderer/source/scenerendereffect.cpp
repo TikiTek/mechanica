@@ -204,21 +204,23 @@ namespace tiki
 				ScenePixelConstantData* pPixelConstants = static_cast< ScenePixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstantBuffer ) );
 				TIKI_ASSERT( pPixelConstants != nullptr );
 				pPixelConstants->selfIlluminationFactor = pRenderEffectData->selfIlluminationFactor;
-				pPixelConstants->specluarBrightness		= pRenderEffectData->specluarBrightness;
 				pPixelConstants->specluarIntensity		= pRenderEffectData->specluarIntensity;
 				pPixelConstants->specluarPower			= pRenderEffectData->specluarPower;
 				graphicsContext.unmapBuffer( m_pixelConstantBuffer );	
 
 				const Texture* pDiffuseMap	= pRenderEffectData->diffuseMap.getData();
 				const Texture* pNormalMap	= pRenderEffectData->normalMap.getData();
-				const Texture* pSelfilluMap	= pRenderEffectData->selfilluMap.getData();
+				const Texture* pSpecularMap	= pRenderEffectData->specularMap.getData();
+				const Texture* pGlossMap	= pRenderEffectData->glossMap.getData();
 				const TextureData* pDiffuseMapData	= ( pDiffuseMap == nullptr ? nullptr : &pDiffuseMap->getTextureData() );
 				const TextureData* pNormalMapData	= ( pNormalMap == nullptr ? nullptr : &pNormalMap->getTextureData() );
-				const TextureData* pSelfilluMapFata	= ( pSelfilluMap == nullptr ? nullptr : &pSelfilluMap->getTextureData() );
+				const TextureData* pSelfilluMapData	= ( pSpecularMap == nullptr ? nullptr : &pSpecularMap->getTextureData() );
+				const TextureData* pGlossMapData	= ( pGlossMap == nullptr ? nullptr : &pGlossMap->getTextureData() );
 
 				graphicsContext.setPixelShaderTexture( 0u, pDiffuseMapData );
 				graphicsContext.setPixelShaderTexture( 1u, pNormalMapData );
-				graphicsContext.setPixelShaderTexture( 2u, pSelfilluMapFata );
+				graphicsContext.setPixelShaderTexture( 2u, pSelfilluMapData );
+				graphicsContext.setPixelShaderTexture( 3u, pGlossMapData );
 
 				geometry.render( graphicsContext );
 			}

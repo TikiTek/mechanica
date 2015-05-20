@@ -1,4 +1,3 @@
-#pragma once
 #ifndef TIKI_SKYBOX_SHADER_HPP_INCLUDED__
 #define TIKI_SKYBOX_SHADER_HPP_INCLUDED__
 

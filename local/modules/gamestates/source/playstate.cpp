@@ -132,7 +132,7 @@ namespace tiki
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
 		DirectionalLightData& directionalLight = frameData.directionalLights.push();
-		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
+		vector::set( directionalLight.direction, 0.941176471f, -0.235294118f, 0.0f );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
 		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );

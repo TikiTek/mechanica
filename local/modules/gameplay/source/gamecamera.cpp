@@ -8,6 +8,8 @@
 namespace tiki
 {
 	TIKI_DEBUGPROP_FLOAT( s_cameraAltitude, "GameCamera/CameraAltitude", 15.0f, 1.0f, 100.0f );
+	TIKI_DEBUGPROP_FLOAT( s_cameraDistanceZ, "GameCamera/CameraDistanceZ", 8.0f, 0.0f, 100.0f );
+	TIKI_DEBUGPROP_FLOAT( s_cameraXAngle, "GameCamera/CameraXAngle", f32::piOver4, 0.0f, f32::twoPi );
 
 	GameCamera::GameCamera()
 	{		
@@ -51,12 +53,18 @@ namespace tiki
 		Vector3 position;
 		m_pTransformComponent->getPosition( position, m_pPlayerState );
 		position.y += s_cameraAltitude;
+		position.z += s_cameraDistanceZ;
 
 		Vector3 lookAt = position;
 		lookAt.y += 1.0f;
 
 		Quaternion rotation;
 		quaternion::createLookAt( rotation, position, lookAt );
+
+		Quaternion angleRotation;
+		quaternion::fromYawPitchRoll( angleRotation, 0.0f, s_cameraXAngle, 0.0f );
+
+		quaternion::mul( rotation, angleRotation );
 
 		targetCamera.setTransform( position, rotation );
 	}
