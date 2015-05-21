@@ -118,8 +118,8 @@ namespace tiki
 			float AWdU	[ 3 ];
 			float DdU	[ 3 ];
 			float ADdU	[ 3 ];
-			float AWxDdu[ 3 ];
-			float RHS;
+			//float AWxDdu[ 3 ];
+			//float RHS;
 
 			Vector3 diff = ray.Origin;
 			vector::sub( diff, box.m_Center );
@@ -136,7 +136,7 @@ namespace tiki
 
 
 
-
+			return true;
 
 		}
 
