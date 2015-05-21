@@ -36,4 +36,5 @@ using namespace System::Security::Permissions;
 
 [assembly:CLSCompliantAttribute(true)];
 
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
+// CHECK: https://msdn.microsoft.com/en-us/library/dd409253(v=vs.100).aspx
+//[assembly:SecurityPermission(SecurityAction::RequestOptional, UnmanagedCode = true)];
