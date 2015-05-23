@@ -425,6 +425,17 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
+	void ImmediateRenderer::drawRay( const intersection::Ray3& ray, float length /* = 100.0f */, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		Vector3 scaledDir = ray.Direction;
+		vector::scale( scaledDir, length );
+
+		Vector3 end = ray.Origin;
+		vector::add( end, scaledDir );
+
+		const Vector3 points[ ] = { ray.Origin, end };
+		drawLines( points, TIKI_COUNT( points ), color );
+	}
 
 	void ImmediateRenderer::drawBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ ) const
 	{
