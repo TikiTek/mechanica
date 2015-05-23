@@ -130,22 +130,22 @@ namespace tiki
 		vector::set( extents, 1.0f, 1.0f, 1.0f );
 
 		Box box( center, extents );
-		renderer.drawBox( box );
 
 		Vector3 origin;
 		vector::set( origin, 5.0f, 0.0f, 0.0f );
 		Vector3 direction;
 		vector::set( direction, -1.0f, 0.0f, 0.0f );
-		intersection::Ray3 ray( origin, direction );
+
 
 		Vector3 intersectionPoint;
-		Color intersectionColor;
-		if ( intersectRayBox( ray, box, intersectionPoint ) )
+		Color intersectionColor = TIKI_COLOR_WHITE;
+		if ( intersection::intersectRayBox( m_camera.getMouseRay(), box, intersectionPoint ) )
 		{
 			intersectionColor = TIKI_COLOR_GREEN;
 		}
 
-		renderer.drawRay( ray, 5.0f, intersectionColor);
+		renderer.drawRay( m_camera.getMouseRay(), 10.0f, intersectionColor );
+		renderer.drawBox( box, intersectionColor );
 
 		renderer.endRenderPass();
 		renderer.endRendering();
@@ -155,7 +155,9 @@ namespace tiki
 
 	bool EditorSystem::resize( int x, int y )
 	{
-		return m_pData->graphicsSystem.resize(x, y);
+		m_camera.resize( x, y );
+
+		return m_pData->graphicsSystem.resize( x, y );
 	}
 
 	EditorInput^ EditorSystem::Input::get()

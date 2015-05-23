@@ -2,6 +2,7 @@
 #include "tiki/math/camera.hpp"
 
 #include "tiki/math/quaternion.hpp"
+#include "tiki/base/numbers.hpp"
 
 namespace tiki
 {
@@ -89,4 +90,31 @@ namespace tiki
 
 		return m_frustum;
 	}
+
+	void Camera::getCameraRay( sint16 mousePosX, sint16 mousePosY, int width, int height, Ray3* ray )
+	{
+		if ( ray == nullptr )
+		{
+			TIKI_ASSERT( "Invalid ray" );
+			return;
+		}
+
+		float mouseX = (float)( mousePosX );
+		float mouseY = (float)( mousePosY );
+
+		Vector3 origin;
+		vector::set( origin, mouseX, mouseY, 0.0f );
+		matrix::unproject( origin, 0.0f, 0.0f, (float)width, (float)height, -1.0f, 1.0f, m_viewProjection );
+
+		Vector3 direction;
+		vector::set( direction, mouseX, mouseY, 1.0f );
+		matrix::unproject( direction, 0.0f, 0.0f, (float)width, (float)height, -1.0f, 1.0f, m_viewProjection );
+
+		vector::sub( direction, origin );
+		vector::normalize( direction );
+
+		ray->Origin		= origin;
+		ray->Direction	= direction;
+	}
+
 }

@@ -263,6 +263,6 @@ namespace tiki
 		inputEvent.data.mouseMoved.xOffset	= (sint16)deltaX;
 		inputEvent.data.mouseMoved.yOffset	= (sint16)deltaY;
 		inputEvent.data.mouseMoved.xState	= (sint16)e->X;
-		inputEvent.data.mouseMoved.xState	= (sint16)e->Y;
+		inputEvent.data.mouseMoved.yState	= (sint16)e->Y;
 	}
 }
