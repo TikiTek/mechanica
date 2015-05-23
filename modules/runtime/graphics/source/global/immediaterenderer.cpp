@@ -446,8 +446,8 @@ namespace tiki
 		Vector3 boxVertices[8];
 		box.getVertices( &boxVertices[0] );
 
-		uint lineCount = 24;
-		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), lineCount ));
+		uint vertexCount = 24;
+		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
 		
 		// draw lower rect
 		createFloat3( pVertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
@@ -490,7 +490,7 @@ namespace tiki
 		createFloat3( pVertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
 
 		// set color and uv
-		for ( uint i = 0u; i < lineCount; ++i )
+		for ( uint i = 0u; i < vertexCount; ++i )
 		{
 			ImmediateVertex& current = pVertices[ i ];
 			current.color	= color;
@@ -500,6 +500,60 @@ namespace tiki
 
 		m_pContext->endImmediateGeometry();
 	}
+
+	void ImmediateRenderer::drawGrid( int gridSpacing /*= 10*/, int gridSize /*= 512*/, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		if ( gridSpacing == 0 )
+		{
+			return;
+		}
+
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		uint vertexCount = ((gridSize / gridSpacing) * 8) + 4;
+
+		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+
+		// fill array
+		int idx = 0;
+		for ( int i = 1; i < (gridSize / gridSpacing) + 1; i++ )
+		{
+			createFloat3( pVertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)(  gridSize ) );
+			createFloat3( pVertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)( -gridSize ) );
+			createFloat3( pVertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)(  gridSize ) );
+			createFloat3( pVertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)( -gridSize ) );
+
+			createFloat3( pVertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)( i * gridSpacing ) );
+			createFloat3( pVertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)( i * gridSpacing ) );
+			createFloat3( pVertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)(-i * gridSpacing ) );
+			createFloat3( pVertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)(-i * gridSpacing ) );
+		}
+
+		// set color and uv
+		for ( uint i = 0u; i < idx; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color = color;
+			current.u = 0u;
+			current.v = 0u;
+		}
+
+		// add highlights
+		createFloat3( pVertices[ idx ].position, 0.0f, 0.0f, (float)( -gridSize ) );
+		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( pVertices[ idx ].position, 0.0f, 0.0f, (float)( gridSize ) );
+		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( pVertices[ idx ].position, (float)( gridSize ), 0.0f, 0.0f );
+		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( pVertices[ idx ].position, (float)( -gridSize ), 0.0f, 0.0f );
+		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
+
+		m_pContext->endImmediateGeometry();
+	}
+
+
 
 	void ImmediateRenderer::setState() const
 	{

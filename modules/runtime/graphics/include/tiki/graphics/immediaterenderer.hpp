@@ -76,8 +76,9 @@ namespace tiki
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE ) const;
-		void				drawBox( const Box& box, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawRay( const Ray3& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawBox( const Box& box, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawGrid( int gridSpacing = 5, int gridSize = 10, Color color = TIKI_COLOR_WHITE ) const;
 
 	private:
 

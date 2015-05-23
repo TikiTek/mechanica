@@ -14,6 +14,27 @@ namespace tiki
 		Axis[ 2 ] = Vector3::unitZ;
 	}
 
+	Box::Box()
+	{
+		// Init axis aligned
+		Axis[ 0 ] = Vector3::unitX;
+		Axis[ 1 ] = Vector3::unitY;
+		Axis[ 2 ] = Vector3::unitZ;
+	}
+
+	void Box::create( const Vector3& min, const Vector3& max )
+	{
+		// Center = (min + max) / 2
+		Center = min;
+		vector::add( Center, max );
+		vector::scale( Center, 0.5f );
+		
+		//Extents = (max - min) / 2
+		Extents = max;
+		vector::sub( Extents, min );
+		vector::scale( Extents, 0.5f );
+	}
+
 	void Box::getVertices( Vector3* pVertices ) const
 	{
 		// Indices Order

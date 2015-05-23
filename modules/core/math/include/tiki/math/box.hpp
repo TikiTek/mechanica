@@ -11,8 +11,10 @@ namespace tiki
 		TIKI_NONCOPYABLE_STRUCT( Box );
 
 	public:
+				Box();
 				Box( const Vector3& center, const Vector3& extents );
 
+		void    create( const Vector3& min, const Vector3& max);
 		void	getVertices( Vector3* pVertices ) const;
 
 	public:
