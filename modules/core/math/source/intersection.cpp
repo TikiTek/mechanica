@@ -83,13 +83,12 @@ namespace tiki
 
 			float dirDotNormal		= vector::dot( ray.Direction, normal );
 			float signedDistance	= plane.getDistanceTo( ray.Origin );
-			float lineParameter		= 0.f;
 
 			// The line is not parallel to the plane, so they must intersect.
 			if ( f32::abs( dirDotNormal ) > f32::zeroTolerance )
 			{
 				// get t
-				lineParameter = -signedDistance / dirDotNormal;
+				float lineParameter = -signedDistance / dirDotNormal;
 
 				// t * direction;
 				intersectionPoint = ray.Direction;

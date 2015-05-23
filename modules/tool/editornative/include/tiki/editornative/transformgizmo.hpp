@@ -11,21 +11,25 @@ namespace tiki
 class	ImmediateRenderer;
 struct	Quaternion;
 struct	Vector3;
+struct  InputEvent;
+struct  Box;
 
-enum class AxisType
+ref class EditorCamera;
+
+enum AxisType
 {
 	X,
 	Y,
 	Z,
 
-	XY,
 	XZ,
+	XY,
 	YZ,
-
-	RX,
-	RY,
-	RZ,
-
+	//
+	//RX,
+	//RY,
+	//RZ,
+	//
 	Count,
 
 	None
@@ -46,13 +50,16 @@ public:
 			TransformGizmo();
 			~TransformGizmo();
 	
-	bool	create( ImmediateRenderer* renderer );
+	bool	create( ImmediateRenderer* renderer, EditorCamera^ camera );
 	void	dispose();
 
-	void	render();
 
-	//void	OnKeyDown(KeyEventArgs^ e);
-	//void	OnKeyUp(KeyEventArgs^ e);
+	bool	processInputEvent( InputEvent& inputEvent );
+
+	void	update();
+	void	pickAxis();
+
+	void	render();
 
 
 	property Vector3 Position
@@ -68,13 +75,23 @@ public:
 	}
 
 private:
-	AxisType			m_AxisType;
+	AxisType			m_SelectedAxis;
 	GizmoMode			m_GizmoMode;
 
 	Vector3*			m_pPosition;
 	Quaternion*			m_pRotation;
 
+	float				m_LineOffset;
+	float				m_LineLength;
+	float				m_MultiAxisThickness;
+	float				m_SingleAxisThickness;
+
 	ImmediateRenderer*	m_pRenderer;
+	EditorCamera^		m_pCamera;
+
+	Box*				m_pAxisBounds;
+
+	bool				m_LeftMouseDown;
 };
 
 

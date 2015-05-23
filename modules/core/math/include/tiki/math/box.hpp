@@ -15,6 +15,8 @@ namespace tiki
 				Box( const Vector3& center, const Vector3& extents );
 
 		void    create( const Vector3& min, const Vector3& max);
+		void	create( float minX, float minY, float minZ, float maxX, float maxY, float maxZ );
+
 		void	getVertices( Vector3* pVertices ) const;
 
 	public:
