@@ -10,6 +10,7 @@
 #include "tiki/math/box.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/runtimeshared/frameworkfactories.hpp"
+#include "tiki/math/intersection.hpp"
 
 namespace tiki
 {
@@ -130,6 +131,21 @@ namespace tiki
 
 		Box box( center, extents );
 		renderer.drawBox( box );
+
+		Vector3 origin;
+		vector::set( origin, 5.0f, 0.0f, 0.0f );
+		Vector3 direction;
+		vector::set( direction, -1.0f, 0.0f, 0.0f );
+		intersection::Ray3 ray( origin, direction );
+
+		Vector3 intersectionPoint;
+		Color intersectionColor;
+		if ( intersectRayBox( ray, box, intersectionPoint ) )
+		{
+			intersectionColor = TIKI_COLOR_GREEN;
+		}
+
+		renderer.drawRay( ray, 5.0f, intersectionColor);
 
 		renderer.endRenderPass();
 		renderer.endRendering();

@@ -6,9 +6,9 @@
 
 namespace tiki
 {
-	class Box
+	struct Box
 	{
-		TIKI_NONCOPYABLE_CLASS( Box );
+		TIKI_NONCOPYABLE_STRUCT( Box );
 
 	public:
 				Box( const Vector3& center, const Vector3& extents );
@@ -16,9 +16,9 @@ namespace tiki
 		void	getVertices( Vector3* pVertices ) const;
 
 	public:
-		Vector3		m_Center;
-		Vector3		m_Extents;   
-		Vector3		m_Axis[ 3 ];
+		Vector3		Center;
+		Vector3		Extents;   
+		Vector3		Axis[ 3 ];
 	};
 
 }

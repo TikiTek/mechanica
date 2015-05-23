@@ -146,6 +146,8 @@ namespace tiki
 			sources[ i ].userData = TIKI_SIZE_T_MAX;
 		}
 
+		sourcesNodes.dispose();
+
 		// parse vertex layout
 		uint inputCount = 0u;
 		{

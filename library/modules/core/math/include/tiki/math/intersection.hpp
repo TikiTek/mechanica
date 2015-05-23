@@ -42,8 +42,10 @@ namespace tiki
 
 		bool	intersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint );
 		bool	intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3& intersectionPoint );
-		bool    intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint);
 
+		bool    intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint);
+		bool    doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint);
+		bool    clip( float denom, float numer, float& t0, float& t1 );
 
 	} // namespace intersection
 } // namespace tiki
