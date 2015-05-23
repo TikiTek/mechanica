@@ -116,19 +116,18 @@ namespace tiki
 		GraphicsContext& context = m_pData->graphicsSystem.beginFrame();
 		ImmediateRenderer& renderer = m_pData->immediateRenderer;		
 
-		context.clear( context.getBackBuffer(), TIKI_COLOR_BLUE );
+		context.clear( context.getBackBuffer(), TIKI_COLOR_BLACK );
 
 		renderer.beginRendering( context );
 		renderer.beginRenderPass( nullptr, &m_camera.getCamera() );
 
-		m_TransformGizmo->render();
 
-		Rectangle rect;
-		rect.x		= -1.0f;
-		rect.y		= -1.0f;
-		rect.width	= 2.0f;
-		rect.height	= 2.0f;
-		renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
+		//Rectangle rect;
+		//rect.x		= -1.0f;
+		//rect.y		= -1.0f;
+		//rect.width	= 2.0f;
+		//rect.height	= 2.0f;
+		//renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
 
 
 		Vector3 center;
@@ -151,8 +150,11 @@ namespace tiki
 			intersectionColor = TIKI_COLOR_GREEN;
 		}
 
-		renderer.drawRay( m_camera.getMouseRay(), 10.0f, intersectionColor );
+		//renderer.drawRay( m_camera.getMouseRay(), 10.0f, intersectionColor );
 		renderer.drawBox( box, intersectionColor );
+
+
+		m_TransformGizmo->render();
 
 		renderer.endRenderPass();
 		renderer.endRendering();

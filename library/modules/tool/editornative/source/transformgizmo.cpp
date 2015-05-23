@@ -32,7 +32,8 @@ namespace tiki
 
 	void TransformGizmo::render()
 	{
-		m_pRenderer->drawGrid();
+		m_pRenderer->drawGrid( 2, 10, TIKI_COLOR_GRAY);
+		m_pRenderer->drawAxes( 3.0f, 1.0f , TIKI_COLOR_RED);
 	}
 
 #pragma region Properties
