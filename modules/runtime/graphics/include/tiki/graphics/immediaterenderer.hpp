@@ -79,6 +79,7 @@ namespace tiki
 		void				drawRay( const Ray3& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawBox( const Box& box, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawGrid( int gridSpacing = 5, int gridSize = 10, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawAxes( float LINE_LENGTH, float LINE_OFFSET, Color color = TIKI_COLOR_WHITE ) const;
 
 	private:
 

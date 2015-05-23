@@ -517,7 +517,7 @@ namespace tiki
 		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
 
 		// fill array
-		int idx = 0;
+		uint idx = 0;
 		for ( int i = 1; i < (gridSize / gridSpacing) + 1; i++ )
 		{
 			createFloat3( pVertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)(  gridSize ) );
@@ -553,7 +553,110 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
+	void ImmediateRenderer::drawAxes( float lineLength, float lineOffset, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
 
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		uint vertexCount = 14 * 3;
+
+		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+		
+		float halfLineOffset	= lineOffset * 0.5f;
+		float quarterLineLength = lineLength * 0.25f;
+		float halfLineLength	= lineLength * 0.5f; 
+
+		uint idx = 0;
+
+		// -- X Axis -- 
+		createFloat3( pVertices[ idx++ ].position, halfLineOffset, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );				
+		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineOffset, lineOffset, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, lineOffset );
+
+		// arrow
+		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, quarterLineLength );
+		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, -quarterLineLength );
+
+		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, quarterLineLength, 0.0f );
+		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, -quarterLineLength, 0.0f );
+
+
+		// set color
+		for ( uint i = 0u; i < idx; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color = TIKI_COLOR_RED;
+		}
+
+		uint lastIdx = idx;
+
+		// -- Y Axis -- 
+		createFloat3( pVertices[ idx++ ].position, 0, halfLineOffset, 0 );				
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, 0 );
+		createFloat3( pVertices[ idx++ ].position, lineOffset, lineOffset, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, lineOffset );
+
+		// arrow
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, quarterLineLength, lineLength - quarterLineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, -quarterLineLength, lineLength - quarterLineLength, 0 );
+
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength - quarterLineLength, quarterLineLength );
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( pVertices[ idx++ ].position, 0, lineLength - quarterLineLength, -quarterLineLength );
+
+		// set color
+		for ( uint i = lastIdx + 1; i < idx; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color = TIKI_COLOR_GREEN;
+		}
+
+		lastIdx = idx;
+
+
+		// -- Z Axis --
+		createFloat3( pVertices[ idx++ ].position, 0, 0, halfLineOffset );				
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength  );
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineOffset  );
+		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, lineOffset );
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineOffset );
+		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, lineOffset );
+
+		// arrow
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( pVertices[ idx++ ].position, 0, quarterLineLength, lineLength - quarterLineLength );
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( pVertices[ idx++ ].position, 0, -quarterLineLength, lineLength - quarterLineLength );
+
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( pVertices[ idx++ ].position, quarterLineLength, 0, lineLength - quarterLineLength );
+		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( pVertices[ idx++ ].position, -quarterLineLength, 0, lineLength - quarterLineLength );
+
+		//TIKI_ASSERT( vertexCount == idx );
+
+		// set color
+		for ( uint i = lastIdx + 1; i < vertexCount; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color = TIKI_COLOR_BLUE;
+		}
+
+		m_pContext->endImmediateGeometry();
+	}
 
 	void ImmediateRenderer::setState() const
 	{
@@ -572,6 +675,9 @@ namespace tiki
 		setBlendState( ImmediateBlendState_Add );
 		setDepthState( ImmediateDepthState_TestOffWriteOff );
 	}
+
+
+
 }
 
 
