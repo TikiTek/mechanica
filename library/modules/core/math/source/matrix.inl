@@ -546,21 +546,21 @@ namespace tiki
 	{
 		transform( vec, mtx );
 
-		vec.x = ((1.0f + vec.x) * 0.5f * width) + x;
-		vec.y = ((1.0f - vec.y) * 0.5f * height) + y;
-		vec.z = (vec.z * (maxZ - minZ)) + minZ;
+		vector::set( vec,
+					 ( ( 1.0f + vec.x ) * 0.5f * width ) + x,
+					 ( ( 1.0f - vec.y ) * 0.5f * height ) + y,
+					 ( vec.z * ( maxZ - minZ ) ) + minZ );
 	}
 
 	TIKI_FORCE_INLINE void matrix::unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
 	{
-		Vector3 v = vec;
-
 		Matrix44 inverseMtx;
 		invert( inverseMtx, mtx );
 
-		vec.x = (((v.x - x) / width) * 2.0f) - 1.0f;
-		vec.y = -((((v.y - y) / height) * 2.0f) - 1.0f);
-		vec.z = (v.z - minZ) / (maxZ - minZ);
+		vector::set(vec,
+					( ( ( vec.x - x )  / width ) * 2.0f ) - 1.0f,
+				   -( ( ( ( vec.y - y ) / height ) * 2.0f ) - 1.0f ),
+					( vec.z - minZ ) / ( maxZ - minZ ) );
 
 		transformCoordinate( vec, inverseMtx );
 	}

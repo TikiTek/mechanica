@@ -72,6 +72,11 @@ namespace tiki
 			return false;
 		}
 
+		if ( !m_TransformGizmo->create( &m_pData->immediateRenderer ) )
+		{
+			return false;
+		}
+
 		return true;
 	}
 
@@ -115,6 +120,8 @@ namespace tiki
 
 		renderer.beginRendering( context );
 		renderer.beginRenderPass( nullptr, &m_camera.getCamera() );
+
+		m_TransformGizmo->render();
 
 		Rectangle rect;
 		rect.x		= -1.0f;

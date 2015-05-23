@@ -3,6 +3,7 @@
 
 #include "tiki/math/vector.hpp"
 #include "tiki/math/quaternion.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 
 namespace tiki
 {
@@ -17,13 +18,21 @@ namespace tiki
 
 	}
 
-	void TransformGizmo::create(GraphicsSystem* graphics)
+	bool TransformGizmo::create(ImmediateRenderer* renderer )
 	{
+		m_pRenderer = renderer;
+
+		return true;
 	}
 
 	void TransformGizmo::dispose()
 	{
 
+	}
+
+	void TransformGizmo::render()
+	{
+		m_pRenderer->drawGrid();
 	}
 
 #pragma region Properties
