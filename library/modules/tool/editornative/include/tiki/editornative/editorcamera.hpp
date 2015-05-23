@@ -7,7 +7,7 @@ namespace tiki
 	struct Ray3;
 	struct InputEvent;
 
-	ref class EditorCamera
+	public ref class EditorCamera
 	{
 	public:
 

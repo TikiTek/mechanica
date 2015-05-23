@@ -553,7 +553,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawAxes( float lineLength, float lineOffset, Color color /*= TIKI_COLOR_WHITE */ ) const
+	void ImmediateRenderer::drawAxes( float lineLength, float lineOffset) const
 	{
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
 

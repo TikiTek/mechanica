@@ -11,10 +11,12 @@ namespace tiki
 	#pragma region IntersectionObjects
 	struct Ray3
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_STRUCT( Ray3 );
-
 		Vector3 Origin;
 		Vector3 Direction;
+
+		Ray3( )
+		{
+		}
 
 		Ray3( const Vector3& origin, const Vector3& direction )
 		{

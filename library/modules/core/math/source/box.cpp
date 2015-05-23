@@ -35,6 +35,17 @@ namespace tiki
 		vector::scale( Extents, 0.5f );
 	}
 
+	void Box::create( float minX, float minY, float minZ, float maxX, float maxY, float maxZ )
+	{
+		Vector3 min;
+		vector::set( min,  minX, minY, minZ );
+
+		Vector3 max;
+		vector::set( max, maxX, maxY, maxZ );
+
+		create( min, max);
+	}
+
 	void Box::getVertices( Vector3* pVertices ) const
 	{
 		// Indices Order

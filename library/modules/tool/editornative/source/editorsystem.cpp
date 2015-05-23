@@ -72,7 +72,7 @@ namespace tiki
 			return false;
 		}
 
-		if ( !m_TransformGizmo->create( &m_pData->immediateRenderer ) )
+		if ( !m_TransformGizmo->create( &m_pData->immediateRenderer, %m_camera) )
 		{
 			return false;
 		}
@@ -109,6 +109,8 @@ namespace tiki
 		}
 
 		m_camera.update( 0.01666f ); // todo time
+
+		m_TransformGizmo->update();
 	}
 
 	void EditorSystem::render()
@@ -121,38 +123,12 @@ namespace tiki
 		renderer.beginRendering( context );
 		renderer.beginRenderPass( nullptr, &m_camera.getCamera() );
 
-
 		//Rectangle rect;
 		//rect.x		= -1.0f;
 		//rect.y		= -1.0f;
 		//rect.width	= 2.0f;
 		//rect.height	= 2.0f;
 		//renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
-
-
-		Vector3 center;
-		vector::set( center, 0.0f, 0.0f, 0.0f );
-		Vector3 extents;
-		vector::set( extents, 1.0f, 1.0f, 1.0f );
-
-		Box box( center, extents );
-
-		Vector3 origin;
-		vector::set( origin, 5.0f, 0.0f, 0.0f );
-		Vector3 direction;
-		vector::set( direction, -1.0f, 0.0f, 0.0f );
-
-
-		Vector3 intersectionPoint;
-		Color intersectionColor = TIKI_COLOR_WHITE;
-		if ( intersection::intersectRayBox( m_camera.getMouseRay(), box, intersectionPoint ) )
-		{
-			intersectionColor = TIKI_COLOR_GREEN;
-		}
-
-		//renderer.drawRay( m_camera.getMouseRay(), 10.0f, intersectionColor );
-		renderer.drawBox( box, intersectionColor );
-
 
 		m_TransformGizmo->render();
 
@@ -177,5 +153,6 @@ namespace tiki
 	void EditorSystem::processInputEvent( InputEvent& inputEvent )
 	{
 		m_camera.processInputEvent( inputEvent );
+		m_TransformGizmo->processInputEvent( inputEvent );
 	}
 }
