@@ -528,6 +528,43 @@ namespace tiki
 			vector::dot( vec, mtx.w )
 		);
 	}
+
+
+	TIKI_FORCE_INLINE void matrix::transformCoordinate( Vector3& vec, const Matrix44& mtx )
+	{
+		float w = 1 / ( ( ( ( vec.x * mtx.x.w ) + ( vec.y * mtx.y.w ) ) + ( vec.z * mtx.z.w ) ) + mtx.w.w );
+
+		vector::set(
+			vec,
+			( ( ( ( vec.x * mtx.x.x ) + ( vec.y * mtx.y.x ) ) + ( vec.z * mtx.z.x ) ) + mtx.w.x ) * w,
+			( ( ( ( vec.x * mtx.x.y ) + ( vec.y * mtx.y.y ) ) + ( vec.z * mtx.z.y ) ) + mtx.w.y ) * w,
+			( ( ( ( vec.x * mtx.x.z ) + ( vec.y * mtx.y.z ) ) + ( vec.z * mtx.z.z ) ) + mtx.w.z ) * w
+			);
+	}
+
+	TIKI_FORCE_INLINE void matrix::project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
+	{
+		transform( vec, mtx );
+
+		vec.x = ((1.0f + vec.x) * 0.5f * width) + x;
+		vec.y = ((1.0f - vec.y) * 0.5f * height) + y;
+		vec.z = (vec.z * (maxZ - minZ)) + minZ;
+	}
+
+	TIKI_FORCE_INLINE void matrix::unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
+	{
+		Vector3 v = vec;
+
+		Matrix44 inverseMtx;
+		invert( inverseMtx, mtx );
+
+		vec.x = (((v.x - x) / width) * 2.0f) - 1.0f;
+		vec.y = -((((v.y - y) / height) * 2.0f) - 1.0f);
+		vec.z = (v.z - minZ) / (maxZ - minZ);
+
+		transformCoordinate( vec, inverseMtx );
+	}
+
 }
 
 #endif // __TIKI_MATRIX_INL_INCLUDED__

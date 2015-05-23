@@ -6,6 +6,7 @@
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
+#include "tiki/math/intersection.hpp"
 
 namespace tiki
 {
@@ -35,6 +36,7 @@ namespace tiki
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
 		const Frustum&		getFrustum();
+		void				getCameraRay(sint16 mousePosX, sint16 mousePosY, int width, int height, Ray3* ray);
 
 	private:
 
