@@ -110,6 +110,8 @@ namespace tiki
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix43& mtx );
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix44& mtx );
 		TIKI_FORCE_INLINE void		transform( Vector4& vec, const Matrix44& mtx );
+
+		TIKI_FORCE_INLINE void		transformNormal( Vector3& vec, const Matrix43& mtx );
 		TIKI_FORCE_INLINE void		transformCoordinate( Vector3& vec, const Matrix44& mtx );
 
 

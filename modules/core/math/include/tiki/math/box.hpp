@@ -19,6 +19,8 @@ namespace tiki
 
 		void	getVertices( Vector3* pVertices ) const;
 
+		void	translate( const Vector3& translation );
+
 	public:
 		Vector3		Center;
 		Vector3		Extents;   

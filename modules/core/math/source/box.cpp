@@ -117,4 +117,10 @@ namespace tiki
 		vector::add( pVertices[ 7 ], extAxis2 );
 	}
 
+
+	void Box::translate( const Vector3& translation )
+	{
+		vector::add( Center, translation );
+	}
+
 }

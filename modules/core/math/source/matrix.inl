@@ -530,6 +530,13 @@ namespace tiki
 	}
 
 
+	TIKI_FORCE_INLINE void matrix::transformNormal( Vector3& vec, const Matrix43& mtx )
+	{
+		// TODO: check if this works
+		TIKI_ASSERT( false );
+		matrix::transform( vec, mtx.rot );
+	}
+
 	TIKI_FORCE_INLINE void matrix::transformCoordinate( Vector3& vec, const Matrix44& mtx )
 	{
 		float w = 1 / ( ( ( ( vec.x * mtx.x.w ) + ( vec.y * mtx.y.w ) ) + ( vec.z * mtx.z.w ) ) + mtx.w.w );
