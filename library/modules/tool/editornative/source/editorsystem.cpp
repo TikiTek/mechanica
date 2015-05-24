@@ -110,7 +110,7 @@ namespace tiki
 
 		m_camera.update( 0.01666f ); // todo time
 
-		m_TransformGizmo->update();
+		m_TransformGizmo->update( 0.01666f );
 	}
 
 	void EditorSystem::render()

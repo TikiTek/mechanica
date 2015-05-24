@@ -56,7 +56,7 @@ public:
 
 	bool	processInputEvent( InputEvent& inputEvent );
 
-	void	update();
+	void	update( float timeDelta );
 	void	pickAxis();
 
 	void	render();
@@ -92,6 +92,13 @@ private:
 	Box*				m_pAxisBounds;
 
 	bool				m_LeftMouseDown;
+
+	Vector3*			m_pLastIntersection;
+	Vector3*			m_pIntersection;
+	Vector3*			m_pDelta;
+	Vector3*			m_pTranslationDelta;
+
+	Matrix43*			m_pWorldMatrix;
 };
 
 

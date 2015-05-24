@@ -553,7 +553,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawAxes( float lineLength, float lineOffset) const
+	void ImmediateRenderer::drawAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix ) const
 	{
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
 
@@ -653,6 +653,20 @@ namespace tiki
 		{
 			ImmediateVertex& current = pVertices[ i ];
 			current.color = TIKI_COLOR_BLUE;
+		}
+
+
+		// todo: set immediate renderer world matrix?
+		for ( uint i = 0; i < vertexCount; ++i )
+		{
+			Vector3 transformedPos;
+			vector::set( transformedPos, pVertices[ i ].position.x, pVertices[ i ].position.y, pVertices[ i ].position.z );
+
+			matrix::transform( transformedPos, worldMatrix );
+
+			pVertices[ i ].position.x = transformedPos.x;
+			pVertices[ i ].position.y = transformedPos.y;
+			pVertices[ i ].position.z = transformedPos.z;
 		}
 
 		m_pContext->endImmediateGeometry();

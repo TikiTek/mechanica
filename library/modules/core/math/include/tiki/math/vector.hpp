@@ -35,6 +35,8 @@ namespace tiki
 		static const Vector3 unitY;
 		static const Vector3 unitZ;
 		static const Vector3 forward;
+		static const Vector3 down;
+		static const Vector3 left;
 	}
 	TIKI_POST_ALIGN( 16 );
 
