@@ -130,6 +130,9 @@ namespace tiki
 		//rect.height	= 2.0f;
 		//renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
 
+
+		renderer.drawRay( m_camera.getMouseRay() );
+
 		m_TransformGizmo->render();
 
 		renderer.endRenderPass();

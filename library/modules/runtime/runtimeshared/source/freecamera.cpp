@@ -184,4 +184,16 @@ namespace tiki
 
 		return false;
 	}
+
+	void FreeCamera::setMouseControl( bool enabled )
+	{
+		m_enableMouse = enabled;
+		
+		if ( !enabled )
+		{
+			vector::clear( m_rightStickState );
+			vector::clear( m_leftStickState );
+		}
+	}
+
 }

@@ -21,7 +21,7 @@ namespace tiki
 		void		dispose();
 
 		bool		getMouseControl() const			{ return m_enableMouse; }
-		void		setMouseControl( bool enabled ) { m_enableMouse = enabled; }
+		void		setMouseControl( bool enabled );
 
 		void		update( Camera& targetCamera, float timeDelta );
 

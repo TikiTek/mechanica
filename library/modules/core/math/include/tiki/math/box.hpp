@@ -4,8 +4,11 @@
 
 #include "tiki/math/vector.hpp"
 
+
 namespace tiki
 {
+	struct Quaternion;
+
 	struct Box
 	{
 		TIKI_NONCOPYABLE_STRUCT( Box );
@@ -20,6 +23,7 @@ namespace tiki
 		void	getVertices( Vector3* pVertices ) const;
 
 		void	translate( const Vector3& translation );
+		void	rotate( const Quaternion& rotation );
 
 	public:
 		Vector3		Center;
