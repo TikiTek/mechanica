@@ -1,5 +1,5 @@
 
-#include "tiki/editornative/editorinput.hpp"
+#include "tiki/editorbase/editorinput.hpp"
 
 #include "tiki/input/inputevent.hpp"
 

@@ -1,10 +1,10 @@
 
-#include "tiki/editornative/editorcamera.hpp"
+#include "tiki/editorbase/editorcamera.hpp"
 
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/camera.hpp"
-#include "tiki/runtimeshared/freecamera.hpp"
 #include "tiki/math/intersection.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
