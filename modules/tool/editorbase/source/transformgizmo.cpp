@@ -1,10 +1,10 @@
 
-#include "tiki/editornative/transformgizmo.hpp"
+#include "tiki/editorbase/transformgizmo.hpp"
+#include "tiki/editorbase/editorcamera.hpp"
 
 #include "tiki/math/vector.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/editornative/editorcamera.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/box.hpp"
 
