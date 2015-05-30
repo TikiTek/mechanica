@@ -13,6 +13,7 @@ struct	Quaternion;
 struct	Vector3;
 struct  InputEvent;
 struct  Box;
+struct  Sphere3;
 
 ref class EditorCamera;
 
@@ -25,11 +26,11 @@ enum AxisType
 	XZ,
 	XY,
 	YZ,
-	//
-	//RX,
-	//RY,
-	//RZ,
-	//
+	
+	RX,
+	RY,
+	RZ,
+	
 	Count,
 
 	None
@@ -89,7 +90,9 @@ private:
 	ImmediateRenderer*	m_pRenderer;
 	EditorCamera^		m_pCamera;
 
+	// TODO: GizmoAxis
 	Box*				m_pAxisBounds;
+	Sphere3*			m_pRotateBounds;
 
 	bool				m_LeftMouseDown;
 
@@ -99,6 +102,8 @@ private:
 	Vector3*			m_pTranslationDelta;
 
 	Matrix43*			m_pWorldMatrix;
+
+	float				m_MouseOffsetX;
 };
 
 

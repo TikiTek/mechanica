@@ -1,5 +1,6 @@
 
 #include "tiki/math/box.hpp"
+#include "tiki/math/quaternion.hpp"
 
 namespace tiki
 {
@@ -121,6 +122,14 @@ namespace tiki
 	void Box::translate( const Vector3& translation )
 	{
 		vector::add( Center, translation );
+	}
+
+	void Box::rotate( const Quaternion& rotation )
+	{
+		quaternion::transform( Center, rotation );
+		quaternion::transform( Axis[ 0 ], rotation );
+		quaternion::transform( Axis[ 1 ], rotation );
+		quaternion::transform( Axis[ 2 ], rotation );
 	}
 
 }

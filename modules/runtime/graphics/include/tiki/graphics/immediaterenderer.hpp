@@ -80,6 +80,8 @@ namespace tiki
 		void				drawBox( const Box& box, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawGrid( int gridSpacing = 5, int gridSize = 10, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix) const;
+		void				drawCircle( const Vector3& center, float radius, const Vector3& axe1, const Vector3& axe2, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawSphere( const Vector3& center, float radius, Color color = TIKI_COLOR_WHITE ) const;
 
 	private:
 

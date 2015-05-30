@@ -682,6 +682,63 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
+
+	void ImmediateRenderer::drawCircle( const Vector3& center, float radius, const Vector3& axe1, const Vector3& axe2, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineStrip );
+
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+
+		uint verticesPercircle = 30;
+		uint vertexCount = verticesPercircle + 1;
+		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+
+		Vector3 scaleAxe1;
+		vector::set( scaleAxe1, axe1.x * radius, axe1.y * radius, axe1.z * radius );
+
+		Vector3 scaleAxe2;
+		vector::set( scaleAxe2, axe2.x * radius, axe2.y * radius, axe2.z * radius );
+
+		int idx = 0;
+		for ( int i = 0; i < verticesPercircle; i++ )
+		{
+			Vector3 vt;
+			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
+			vector::scale( vt, f32::sin( ( f32::twoPi / verticesPercircle)*i ) );
+
+			Vector3 vtySin;
+			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
+			vector::scale( vtySin, f32::cos( ( f32::twoPi / verticesPercircle)*i ) );
+
+			vector::add( vt, vtySin );
+			vector::add( vt, center );
+
+			createFloat3( pVertices[ idx++ ].position, vt.x, vt.y, vt.z );
+		}
+
+		// add last vertex from end to start
+		createFloat3( pVertices[ idx++ ].position, pVertices[ 0 ].position.x, pVertices[ 0 ].position.y, pVertices[ 0 ].position.z );
+
+		// set color and uv
+		TIKI_ASSERT( idx == vertexCount );
+		for ( uint i = 0u; i < vertexCount; ++i )
+		{
+			ImmediateVertex& current = pVertices[ i ];
+			current.color = color;
+			current.u = 0u;
+			current.v = 0u;
+		}
+
+		m_pContext->endImmediateGeometry();
+	}
+
+	void ImmediateRenderer::drawSphere( const Vector3& center, float radius, Color color /*= TIKI_COLOR_WHITE */ ) const
+	{
+		drawCircle( center, radius, Vector3::unitX, Vector3::unitY, color );
+		drawCircle( center, radius, Vector3::unitX, Vector3::unitZ, color );
+		drawCircle( center, radius, Vector3::unitZ, Vector3::unitY, color );
+	}
+
 	void ImmediateRenderer::setState() const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
@@ -699,10 +756,4 @@ namespace tiki
 		setBlendState( ImmediateBlendState_Add );
 		setDepthState( ImmediateDepthState_TestOffWriteOff );
 	}
-
-
-
 }
-
-
-

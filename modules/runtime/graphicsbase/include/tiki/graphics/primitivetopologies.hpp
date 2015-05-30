@@ -7,6 +7,7 @@ namespace tiki
 	{
 		PrimitiveTopology_PointList,
 		PrimitiveTopology_LineList,
+		PrimitiveTopology_LineStrip,
 		PrimitiveTopology_TriangleList,
 		PrimitiveTopology_TriangleStrip,
 
