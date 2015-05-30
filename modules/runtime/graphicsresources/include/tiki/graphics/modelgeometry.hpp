@@ -49,28 +49,28 @@ namespace tiki
 
 		const VertexFormat*			getVertexFormat() const	{ return m_pVertexFormat; }
 
-		const uint8*				getVertexData() const	{ return m_vertexData.getData(); }
+		const uint8*				getVertexData() const	{ return m_vertexData.getBegin(); }
 		uint						getVertexCount() const	{ return m_vertexData.getCount(); }
 
-		const uint8*				getIndexData() const	{ return m_indexData.getData(); }
+		const uint8*				getIndexData() const	{ return m_indexData.getBegin(); }
 		uint						getIndexCount() const	{ return m_desc.indexCount; }
 
 		void						render( GraphicsContext& graphicsContext ) const;
 
 	private:
 
-		const VertexFormat*		m_pVertexFormat;
+		const VertexFormat*			m_pVertexFormat;
 
-		ModelGeometryDesc		m_desc;
+		ModelGeometryDesc			m_desc;
 
-		StaticArray< uint8 >	m_vertexData;
-		StaticArray< uint8 >	m_indexData;
+		StaticArray< const uint8 >	m_vertexData;
+		StaticArray< const uint8 >	m_indexData;
 
-		IndexBuffer				m_indexBuffer;
-		VertexBuffer			m_vertexBuffer;
+		IndexBuffer					m_indexBuffer;
+		VertexBuffer				m_vertexBuffer;
 
-		bool					initialize( GraphicsSystem& graphicsSystem, const ModelGeometryInitData& initData, const Material* pMaterial );
-		void					dispose( GraphicsSystem& graphicsSystem );
+		bool						initialize( GraphicsSystem& graphicsSystem, const ModelGeometryInitData& initData, const Material* pMaterial );
+		void						dispose( GraphicsSystem& graphicsSystem );
 
 	};
 }

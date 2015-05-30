@@ -3,6 +3,7 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/inline.hpp"
+#include "tiki/base/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/graphissystemlimits.hpp"
@@ -95,6 +96,8 @@ namespace tiki
 		void				setPrimitiveTopology( PrimitiveTopology topology );
 
 		void*				beginImmediateGeometry( uint vertexStride, uint vertexCount );
+		template<typename T>
+		void				beginImmediateGeometry( StaticArray< T >& targetArray, uint vertexCount );
 		void				endImmediateGeometry();
 
 		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
@@ -106,7 +109,10 @@ namespace tiki
 		void				drawFullScreenQuadPos3Tex2( float u0 = 0.0f, float v0 = 0.0f, float u1 = 1.0f, float v1 = 1.0f, float z = 0.0f );
 
 		void*				mapBuffer( const BaseBuffer& buffer );
+		template<typename T>
+		T*					mapBuffer( const BaseBuffer& buffer );
 		void				unmapBuffer( const BaseBuffer& buffer );
+
 
 		const RenderTarget&	getBackBuffer() const;
 
@@ -162,6 +168,8 @@ namespace tiki
 		void						prepareDrawCall();
 	};
 }
+
+#include "../../../source/global/graphicscontext.inl"
 
 #endif // TIKI_GRAPHICCOMMANDWRITER_HPP__
 

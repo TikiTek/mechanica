@@ -26,7 +26,8 @@ namespace tiki
 
 	BaseBuffer::BaseBuffer()
 	{
-		m_pBuffer = nullptr;
+		m_pBuffer	= nullptr;
+		m_size		= 0u;
 	}
 
 	BaseBuffer::~BaseBuffer()
@@ -34,11 +35,12 @@ namespace tiki
 		TIKI_ASSERT( m_pBuffer == nullptr );
 	}
 
-	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
 
-		m_dynamic = dynamic;
+		m_size		= size;
+		m_dynamic	= dynamic;
 
 		D3D11_BUFFER_DESC desc;
 		desc.Usage					= ( dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT );
@@ -69,5 +71,10 @@ namespace tiki
 			m_pBuffer->Release();
 			m_pBuffer = nullptr;
 		}
+	}
+
+	uint BaseBuffer::getSize() const
+	{
+		return m_size;
 	}
 }
