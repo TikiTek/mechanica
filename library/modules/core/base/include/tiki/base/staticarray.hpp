@@ -12,24 +12,51 @@ namespace tiki
 	{
 	public:
 
-		StaticArray();
-		~StaticArray();
+		typedef T			Type;
 
-		TIKI_FORCE_INLINE void		create( const T* pData, size_t count );
-		TIKI_FORCE_INLINE void		dispose();
+		typedef T*			Iterator;
+		typedef const T*	ConstIterator;
 
-		TIKI_FORCE_INLINE size_t	getCount() const;
+		typedef T&			Reference;
+		typedef const T&	ConstReference;
 
-		TIKI_FORCE_INLINE T*		getData();
-		TIKI_FORCE_INLINE const T*	getData() const;
+		TIKI_FORCE_INLINE					StaticArray();
+		TIKI_FORCE_INLINE					~StaticArray();
 
-		TIKI_FORCE_INLINE T&		operator[]( size_t index );
-		TIKI_FORCE_INLINE const T&	operator[]( size_t index ) const;
+		TIKI_FORCE_INLINE void				create( T* pData, uint count );
+		TIKI_FORCE_INLINE void				dispose();
+
+		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
+		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_count; }
+
+		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_pData; }
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_pData; }
+
+		TIKI_FORCE_INLINE Iterator			getEnd()			{ return m_pData + m_count; }
+		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return m_pData + m_count; }
+
+		TIKI_FORCE_INLINE Reference			getFirst()			{ return m_pData[ 0u ]; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ return m_pData[ 0u ]; }
+
+		TIKI_FORCE_INLINE Reference			getLast()			{ return m_pData[ m_count - 1u ]; }
+		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_pData[ m_count - 1u ]; }
+
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;
+
+		TIKI_FORCE_INLINE Reference			operator[]( uint index );
+		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
+
+		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
+
+		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
 
 	private:
 
-		const T*	m_pData;
-		size_t		m_count;
+		T*			m_pData;
+		uint		m_count;
 
 	};
 }

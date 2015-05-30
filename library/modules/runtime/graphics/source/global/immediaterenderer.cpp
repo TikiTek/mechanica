@@ -213,31 +213,32 @@ namespace tiki
 
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
 
-		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
-		pVertices[ 0u ].u			= 0u;
-		pVertices[ 0u ].v			= 0u;
-		pVertices[ 0u ].color		= color;
+		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		vertices[ 0u ].u			= 0u;
+		vertices[ 0u ].v			= 0u;
+		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( pVertices[ 1u ].position, posLeft, posTop, 0.0f );
-		pVertices[ 1u ].u			= 0u;
-		pVertices[ 1u ].v			= 0u;
-		pVertices[ 1u ].color		= color;
+		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
+		vertices[ 1u ].u			= 0u;
+		vertices[ 1u ].v			= 0u;
+		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( pVertices[ 2u ].position, posRight, posBottom, 0.0f );
-		pVertices[ 2u ].u			= 0u;
-		pVertices[ 2u ].v			= 0u;
-		pVertices[ 2u ].color		= color;
+		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
+		vertices[ 2u ].u			= 0u;
+		vertices[ 2u ].v			= 0u;
+		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( pVertices[ 3u ].position, posRight, posTop, 0.0f );
-		pVertices[ 3u ].u			= 0u;
-		pVertices[ 3u ].v			= 0u;
-		pVertices[ 3u ].color		= color;
+		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
+		vertices[ 3u ].u			= 0u;
+		vertices[ 3u ].v			= 0u;
+		vertices[ 3u ].color		= color;
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -256,31 +257,32 @@ namespace tiki
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
 
-		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
-		pVertices[ 0u ].u			= u16::floatToUnorm( 0.0f );
-		pVertices[ 0u ].v			= u16::floatToUnorm( 1.0f );
-		pVertices[ 0u ].color		= color;
+		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		vertices[ 0u ].u			= u16::floatToUnorm( 0.0f );
+		vertices[ 0u ].v			= u16::floatToUnorm( 1.0f );
+		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( pVertices[ 1u ].position, posLeft, posTop, 0.0f );
-		pVertices[ 1u ].u			= u16::floatToUnorm( 0.0f );
-		pVertices[ 1u ].v			= u16::floatToUnorm( 0.0f );
-		pVertices[ 1u ].color		= color;
+		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
+		vertices[ 1u ].u			= u16::floatToUnorm( 0.0f );
+		vertices[ 1u ].v			= u16::floatToUnorm( 0.0f );
+		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( pVertices[ 2u ].position, posRight, posBottom, 0.0f );
-		pVertices[ 2u ].u			= u16::floatToUnorm( 1.0f );
-		pVertices[ 2u ].v			= u16::floatToUnorm( 1.0f );
-		pVertices[ 2u ].color		= color;
+		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
+		vertices[ 2u ].u			= u16::floatToUnorm( 1.0f );
+		vertices[ 2u ].v			= u16::floatToUnorm( 1.0f );
+		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( pVertices[ 3u ].position, posRight, posTop, 0.0f );
-		pVertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
-		pVertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
-		pVertices[ 3u ].color		= color;
+		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
+		vertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
+		vertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
+		vertices[ 3u ].color		= color;
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -305,31 +307,32 @@ namespace tiki
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
 
-		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), 4u ) );
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( pVertices[ 0u ].position, posLeft, posBottom, 0.0f );
-		pVertices[ 0u ].u			= u16::floatToUnorm( s.x * uScale );
-		pVertices[ 0u ].v			= u16::floatToUnorm( vBottom * vScale );
-		pVertices[ 0u ].color		= color;
+		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		vertices[ 0u ].u			= u16::floatToUnorm( s.x * uScale );
+		vertices[ 0u ].v			= u16::floatToUnorm( vBottom * vScale );
+		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( pVertices[ 1u ].position, posLeft, posTop, 0.0f );
-		pVertices[ 1u ].u			= u16::floatToUnorm( s.x * uScale );
-		pVertices[ 1u ].v			= u16::floatToUnorm( s.y * vScale );
-		pVertices[ 1u ].color		= color;
+		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
+		vertices[ 1u ].u			= u16::floatToUnorm( s.x * uScale );
+		vertices[ 1u ].v			= u16::floatToUnorm( s.y * vScale );
+		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( pVertices[ 2u ].position, posRight, posBottom, 0.0f );
-		pVertices[ 2u ].u			= u16::floatToUnorm( uRight * uScale );
-		pVertices[ 2u ].v			= u16::floatToUnorm( vBottom * vScale );
-		pVertices[ 2u ].color		= color;
+		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
+		vertices[ 2u ].u			= u16::floatToUnorm( uRight * uScale );
+		vertices[ 2u ].v			= u16::floatToUnorm( vBottom * vScale );
+		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( pVertices[ 3u ].position, posRight, posTop, 0.0f );
-		pVertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
-		pVertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
-		pVertices[ 3u ].color		= color;
+		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
+		vertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
+		vertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
+		vertices[ 3u ].color		= color;
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -354,7 +357,9 @@ namespace tiki
 		m_pContext->setPixelShaderTexture( 0u, &font.getTextureData() );
 
 		const size_t vertexCount = textLength * 4u;
-		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), vertexCount ) );
+
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 
 		float x = 0.0f;
 		for (size_t charIndex = 0u; charIndex < textLength; charIndex++)
@@ -371,28 +376,28 @@ namespace tiki
 			const float posBottom	= position.y + charHeight;
 
 			// bottom left
-			createFloat3( pVertices[ vertexIndex + 0u ].position, posLeft, posBottom, 0.0f );
-			pVertices[ vertexIndex + 0u ].u		= character.x1; 
-			pVertices[ vertexIndex + 0u ].v		= character.y2; 
-			pVertices[ vertexIndex + 0u ].color	= color;
+			createFloat3( vertices[ vertexIndex + 0u ].position, posLeft, posBottom, 0.0f );
+			vertices[ vertexIndex + 0u ].u		= character.x1; 
+			vertices[ vertexIndex + 0u ].v		= character.y2; 
+			vertices[ vertexIndex + 0u ].color	= color;
 
 			// top left
-			createFloat3( pVertices[ vertexIndex + 1u ].position, posLeft, posTop, 0.0f );
-			pVertices[ vertexIndex + 1u ].u		= character.x1; 
-			pVertices[ vertexIndex + 1u ].v		= character.y1; 
-			pVertices[ vertexIndex + 1u ].color	= color;
+			createFloat3( vertices[ vertexIndex + 1u ].position, posLeft, posTop, 0.0f );
+			vertices[ vertexIndex + 1u ].u		= character.x1; 
+			vertices[ vertexIndex + 1u ].v		= character.y1; 
+			vertices[ vertexIndex + 1u ].color	= color;
 
 			// bottom right
-			createFloat3( pVertices[ vertexIndex + 2u ].position, posRight, posBottom, 0.0f );
-			pVertices[ vertexIndex + 2u ].u		= character.x2; 
-			pVertices[ vertexIndex + 2u ].v		= character.y2; 
-			pVertices[ vertexIndex + 2u ].color	= color;
+			createFloat3( vertices[ vertexIndex + 2u ].position, posRight, posBottom, 0.0f );
+			vertices[ vertexIndex + 2u ].u		= character.x2; 
+			vertices[ vertexIndex + 2u ].v		= character.y2; 
+			vertices[ vertexIndex + 2u ].color	= color;
 
 			// top right
-			createFloat3( pVertices[ vertexIndex + 3u ].position, posRight, posTop, 0.0f );
-			pVertices[ vertexIndex + 3u ].u		= character.x2; 
-			pVertices[ vertexIndex + 3u ].v		= character.y1; 
-			pVertices[ vertexIndex + 3u ].color	= color;
+			createFloat3( vertices[ vertexIndex + 3u ].position, posRight, posTop, 0.0f );
+			vertices[ vertexIndex + 3u ].u		= character.x2; 
+			vertices[ vertexIndex + 3u ].v		= character.y1; 
+			vertices[ vertexIndex + 3u ].color	= color;
 		
 			x += charWidth;
 		}
@@ -409,11 +414,12 @@ namespace tiki
 
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
 
-		ImmediateVertex* pVertices = static_cast< ImmediateVertex* >( m_pContext->beginImmediateGeometry( sizeof( ImmediateVertex ), capacity ) );
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, capacity );
 
 		for (uint i = 0u; i < capacity; ++i)
 		{
-			ImmediateVertex& targetVertex	= pVertices[ i ];
+			ImmediateVertex& targetVertex	= vertices[ i ];
 			const Vector3& sourcePoint		= pPoints[ i ];
 
 			createFloat3( targetVertex.position, sourcePoint.x, sourcePoint.y, sourcePoint.z );
@@ -446,53 +452,55 @@ namespace tiki
 		Vector3 boxVertices[8];
 		box.getVertices( &boxVertices[0] );
 
-		uint vertexCount = 24;
-		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+		const uint vertexCount = 24;
+
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 		
 		// draw lower rect
-		createFloat3( pVertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
-		createFloat3( pVertices[ 1 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( vertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( vertices[ 1 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
 		
-		createFloat3( pVertices[ 2 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
-		createFloat3( pVertices[ 3 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( vertices[ 2 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( vertices[ 3 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
 
-		createFloat3( pVertices[ 4 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
-		createFloat3( pVertices[ 5 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( vertices[ 4 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( vertices[ 5 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
 		
-		createFloat3( pVertices[ 6 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
-		createFloat3( pVertices[ 7 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( vertices[ 6 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( vertices[ 7 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
 
 		// draw upper rect
-		createFloat3( pVertices[ 8 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
-		createFloat3( pVertices[ 9 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( vertices[ 8 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		createFloat3( vertices[ 9 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
 
-		createFloat3( pVertices[ 10 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
-		createFloat3( pVertices[ 11 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( vertices[ 10 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( vertices[ 11 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
 
-		createFloat3( pVertices[ 12 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
-		createFloat3( pVertices[ 13 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( vertices[ 12 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( vertices[ 13 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
 
-		createFloat3( pVertices[ 14 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
-		createFloat3( pVertices[ 15 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		createFloat3( vertices[ 14 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( vertices[ 15 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
 
 
 		// draw vertical lines
-		createFloat3( pVertices[ 16 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
-		createFloat3( pVertices[ 17 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		createFloat3( vertices[ 16 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( vertices[ 17 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
 		
-		createFloat3( pVertices[ 18 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
-		createFloat3( pVertices[ 19 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( vertices[ 18 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( vertices[ 19 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
 		
-		createFloat3( pVertices[ 20 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
-		createFloat3( pVertices[ 21 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( vertices[ 20 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( vertices[ 21 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
 
-		createFloat3( pVertices[ 22 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
-		createFloat3( pVertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( vertices[ 22 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( vertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
 
 		// set color and uv
 		for ( uint i = 0u; i < vertexCount; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color	= color;
 			current.u		= 0u;
 			current.v		= 0u;
@@ -514,41 +522,42 @@ namespace tiki
 
 		uint vertexCount = ((gridSize / gridSpacing) * 8) + 4;
 
-		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 
 		// fill array
 		uint idx = 0;
 		for ( int i = 1; i < (gridSize / gridSpacing) + 1; i++ )
 		{
-			createFloat3( pVertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)(  gridSize ) );
-			createFloat3( pVertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)( -gridSize ) );
-			createFloat3( pVertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)(  gridSize ) );
-			createFloat3( pVertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)( -gridSize ) );
+			createFloat3( vertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)(  gridSize ) );
+			createFloat3( vertices[ idx++ ].position, (float)(  i * gridSpacing ), 0.0f, (float)( -gridSize ) );
+			createFloat3( vertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)(  gridSize ) );
+			createFloat3( vertices[ idx++ ].position, (float)( -i * gridSpacing ), 0.0f, (float)( -gridSize ) );
 
-			createFloat3( pVertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)( i * gridSpacing ) );
-			createFloat3( pVertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)( i * gridSpacing ) );
-			createFloat3( pVertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)(-i * gridSpacing ) );
-			createFloat3( pVertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)(-i * gridSpacing ) );
+			createFloat3( vertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)( i * gridSpacing ) );
+			createFloat3( vertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)( i * gridSpacing ) );
+			createFloat3( vertices[ idx++ ].position, (float)(  gridSize ), 0.0f, (float)(-i * gridSpacing ) );
+			createFloat3( vertices[ idx++ ].position, (float)( -gridSize ), 0.0f, (float)(-i * gridSpacing ) );
 		}
 
 		// set color and uv
 		for ( uint i = 0u; i < idx; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color = color;
 			current.u = 0u;
 			current.v = 0u;
 		}
 
 		// add highlights
-		createFloat3( pVertices[ idx ].position, 0.0f, 0.0f, (float)( -gridSize ) );
-		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( pVertices[ idx ].position, 0.0f, 0.0f, (float)( gridSize ) );
-		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( pVertices[ idx ].position, (float)( gridSize ), 0.0f, 0.0f );
-		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( pVertices[ idx ].position, (float)( -gridSize ), 0.0f, 0.0f );
-		pVertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)( -gridSize ) );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)( gridSize ) );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, (float)( gridSize ), 0.0f, 0.0f );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, (float)( -gridSize ), 0.0f, 0.0f );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -561,7 +570,8 @@ namespace tiki
 
 		uint vertexCount = 14 * 3;
 
-		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 		
 		float halfLineOffset	= lineOffset * 0.5f;
 		float quarterLineLength = lineLength * 0.25f;
@@ -570,57 +580,57 @@ namespace tiki
 		uint idx = 0;
 
 		// -- X Axis -- 
-		createFloat3( pVertices[ idx++ ].position, halfLineOffset, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );				
-		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineOffset, lineOffset, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, lineOffset );
+		createFloat3( vertices[ idx++ ].position, halfLineOffset, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );				
+		createFloat3( vertices[ idx++ ].position, lineOffset, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineOffset, lineOffset, 0 );
+		createFloat3( vertices[ idx++ ].position, lineOffset, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineOffset, 0, lineOffset );
 
 		// arrow
-		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, quarterLineLength );
-		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, -quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineLength - quarterLineLength, 0.0f, -quarterLineLength );
 
-		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, quarterLineLength, 0.0f );
-		createFloat3( pVertices[ idx++ ].position, lineLength, 0, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineLength - quarterLineLength, -quarterLineLength, 0.0f );
+		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineLength - quarterLineLength, quarterLineLength, 0.0f );
+		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );
+		createFloat3( vertices[ idx++ ].position, lineLength - quarterLineLength, -quarterLineLength, 0.0f );
 
 
 		// set color
 		for ( uint i = 0u; i < idx; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_RED;
 		}
 
 		uint lastIdx = idx;
 
 		// -- Y Axis -- 
-		createFloat3( pVertices[ idx++ ].position, 0, halfLineOffset, 0 );				
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, 0 );
-		createFloat3( pVertices[ idx++ ].position, lineOffset, lineOffset, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, lineOffset );
+		createFloat3( vertices[ idx++ ].position, 0, halfLineOffset, 0 );				
+		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineOffset, 0 );
+		createFloat3( vertices[ idx++ ].position, lineOffset, lineOffset, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineOffset, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineOffset, lineOffset );
 
 		// arrow
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, quarterLineLength, lineLength - quarterLineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, -quarterLineLength, lineLength - quarterLineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, quarterLineLength, lineLength - quarterLineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, -quarterLineLength, lineLength - quarterLineLength, 0 );
 
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength - quarterLineLength, quarterLineLength );
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength, 0 );
-		createFloat3( pVertices[ idx++ ].position, 0, lineLength - quarterLineLength, -quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength - quarterLineLength, quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
+		createFloat3( vertices[ idx++ ].position, 0, lineLength - quarterLineLength, -quarterLineLength );
 
 		// set color
 		for ( uint i = lastIdx + 1; i < idx; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_GREEN;
 		}
 
@@ -628,30 +638,30 @@ namespace tiki
 
 
 		// -- Z Axis --
-		createFloat3( pVertices[ idx++ ].position, 0, 0, halfLineOffset );				
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength  );
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineOffset  );
-		createFloat3( pVertices[ idx++ ].position, lineOffset, 0, lineOffset );
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineOffset );
-		createFloat3( pVertices[ idx++ ].position, 0, lineOffset, lineOffset );
+		createFloat3( vertices[ idx++ ].position, 0, 0, halfLineOffset );				
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength  );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineOffset  );
+		createFloat3( vertices[ idx++ ].position, lineOffset, 0, lineOffset );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineOffset );
+		createFloat3( vertices[ idx++ ].position, 0, lineOffset, lineOffset );
 
 		// arrow
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
-		createFloat3( pVertices[ idx++ ].position, 0, quarterLineLength, lineLength - quarterLineLength );
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
-		createFloat3( pVertices[ idx++ ].position, 0, -quarterLineLength, lineLength - quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( vertices[ idx++ ].position, 0, quarterLineLength, lineLength - quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( vertices[ idx++ ].position, 0, -quarterLineLength, lineLength - quarterLineLength );
 
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
-		createFloat3( pVertices[ idx++ ].position, quarterLineLength, 0, lineLength - quarterLineLength );
-		createFloat3( pVertices[ idx++ ].position, 0, 0, lineLength );
-		createFloat3( pVertices[ idx++ ].position, -quarterLineLength, 0, lineLength - quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( vertices[ idx++ ].position, quarterLineLength, 0, lineLength - quarterLineLength );
+		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength );
+		createFloat3( vertices[ idx++ ].position, -quarterLineLength, 0, lineLength - quarterLineLength );
 
 		//TIKI_ASSERT( vertexCount == idx );
 
 		// set color
 		for ( uint i = lastIdx + 1; i < vertexCount; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_BLUE;
 		}
 
@@ -660,13 +670,13 @@ namespace tiki
 		for ( uint i = 0; i < vertexCount; ++i )
 		{
 			Vector3 transformedPos;
-			vector::set( transformedPos, pVertices[ i ].position.x, pVertices[ i ].position.y, pVertices[ i ].position.z );
+			vector::set( transformedPos, vertices[ i ].position.x, vertices[ i ].position.y, vertices[ i ].position.z );
 
 			matrix::transform( transformedPos, worldMatrix );
 
-			pVertices[ i ].position.x = transformedPos.x;
-			pVertices[ i ].position.y = transformedPos.y;
-			pVertices[ i ].position.z = transformedPos.z;
+			vertices[ i ].position.x = transformedPos.x;
+			vertices[ i ].position.y = transformedPos.y;
+			vertices[ i ].position.z = transformedPos.z;
 		}
 
 		m_pContext->endImmediateGeometry();

@@ -19,12 +19,15 @@ namespace tiki
 								BaseBuffer();
 								~BaseBuffer();
 
-		bool					create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
+		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
 		void					dispose( GraphicsSystem& graphicsSystem );
 		
+		uint					getSize() const;
+
 	private:
 
 		TGBuffer*				m_pBuffer;
+		uint					m_size;
 		bool					m_dynamic;
 
 	};
