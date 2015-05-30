@@ -1,10 +1,10 @@
 
-#include "tiki/editornative/transformgizmo.hpp"
+#include "tiki/editorbase/transformgizmo.hpp"
+#include "tiki/editorbase/editorcamera.hpp"
 
 #include "tiki/math/vector.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/editornative/editorcamera.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/box.hpp"
 
@@ -19,6 +19,7 @@ namespace tiki
 		m_MultiAxisThickness	= 0.05f;
 		m_SingleAxisThickness	= 0.2f;
 		m_pAxisBounds			= nullptr;
+		m_pRotateBounds			= nullptr;
 		m_LeftMouseDown			= false;
 
 		m_pPosition				= nullptr;
@@ -41,7 +42,7 @@ namespace tiki
 		m_pRenderer = renderer;
 		m_pCamera	= camera;
 
-		m_pAxisBounds = new Box[ AxisType::Count ];
+		m_pAxisBounds = new Box[ 6 ];
 		
 		m_pAxisBounds[ AxisType::X  ].create( m_LineOffset, 0, 0, m_LineOffset + m_LineLength, m_SingleAxisThickness, m_SingleAxisThickness );
 		m_pAxisBounds[ AxisType::Y  ].create( 0, m_LineOffset, 0, m_SingleAxisThickness, m_LineOffset + m_LineLength, m_SingleAxisThickness );
@@ -50,6 +51,20 @@ namespace tiki
 		m_pAxisBounds[ AxisType::XZ ].create( 0, 0, 0, m_LineOffset, m_MultiAxisThickness, m_LineOffset);
 		m_pAxisBounds[ AxisType::XY ].create( 0, 0, 0, m_LineOffset, m_LineOffset, m_MultiAxisThickness );
 		m_pAxisBounds[ AxisType::YZ ].create( 0, 0, 0, m_MultiAxisThickness, m_LineOffset, m_LineOffset );
+
+		m_pRotateBounds = new Sphere3[ 3 ];
+
+		float spherePos = m_LineOffset * 2.0f;
+		float radius = 0.5f;
+
+		vector::set( m_pRotateBounds[ 0 ].Center, spherePos, 0, 0 );
+		m_pRotateBounds[ 0 ].Radius = radius;
+
+		vector::set( m_pRotateBounds[ 1 ].Center, 0, spherePos, 0 );
+		m_pRotateBounds[ 1 ].Radius = radius;
+
+		vector::set( m_pRotateBounds[ 2 ].Center, 0, 0, spherePos );
+		m_pRotateBounds[ 2 ].Radius = radius;
 
 		m_pPosition = new Vector3();
 		*m_pPosition = Vector3::zero;
@@ -119,6 +134,12 @@ namespace tiki
 			m_pPosition = nullptr;
 		}
 
+		if ( m_pRotateBounds )
+		{
+			delete[ ] m_pRotateBounds;
+			m_pRotateBounds = nullptr;
+		}
+
 		if ( m_pAxisBounds )
 		{
 			delete[] m_pAxisBounds;
@@ -168,6 +189,11 @@ namespace tiki
 			m_GizmoMode = GizmoMode::None;
 		}
 
+		if ( inputEvent.eventType == InputEventType_Mouse_Moved )
+		{
+			m_MouseOffsetX = (float)inputEvent.data.mouseMoved.xOffset;
+		}
+
 		return true;
 	}
 
@@ -179,23 +205,22 @@ namespace tiki
 		*m_pLastIntersection = *m_pIntersection;
 		*m_pIntersection = Vector3::zero;
 		*m_pTranslationDelta = Vector3::zero;
+		quaternion::createIdentity( *m_pRotation);
 
 
 		if ( m_LeftMouseDown && m_SelectedAxis != AxisType::None )
 		{
 			Vector3 delta = Vector3::zero;
 
-			if ( m_GizmoMode == GizmoMode::Translate ||
-				 m_GizmoMode == GizmoMode::Scale)
+			if ( m_GizmoMode == GizmoMode::Translate || m_GizmoMode == GizmoMode::Scale)
 			{
-
 				switch ( m_SelectedAxis )	
 				{
 				case AxisType::X:
 				case AxisType::XY:
 					{
 						Plane plane;
-						plane.create( Vector3::forward, m_pPosition->z );
+						plane.create( Vector3::forward, f32::abs( m_pPosition->z) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
@@ -224,7 +249,7 @@ namespace tiki
 				case AxisType::Y:
 					{
 						Plane plane;
-						plane.create( Vector3::left, m_pPosition->x );
+						plane.create( Vector3::left, f32::abs( m_pPosition->x) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
@@ -273,6 +298,10 @@ namespace tiki
 						vector::set( delta, m_pDelta->x, 0.0f, m_pDelta->z );
 					}
 					break;
+				case AxisType::RX:
+				case AxisType::RY:
+				case AxisType::RZ:
+					break;
 				case AxisType::None:
 				case AxisType::Count:
 				default:
@@ -293,10 +322,15 @@ namespace tiki
 
 					if ( !vector::isEquals( *m_pTranslationDelta, Vector3::zero ) )
 					{
-						for ( int i = 0; i < AxisType::Count; ++i )
+						for ( int i = 0; i < 6; ++i )
 						{
 							m_pAxisBounds[ i ].translate( *m_pTranslationDelta );
 						}
+						for ( int i = 0; i < 3; ++i )
+						{
+							m_pRotateBounds[ i ].translate( *m_pTranslationDelta );
+						}
+
 					}
 
 					// TODO: OnTransformGizmoTranslateEvent(delta)
@@ -317,6 +351,53 @@ namespace tiki
 				}
 
 			} // Translate Gizmo mode
+			else if ( m_GizmoMode == GizmoMode::Rotate )
+			{
+				float delta = m_MouseOffsetX * timeDelta;
+
+				Quaternion rotation;
+
+				switch ( m_SelectedAxis )
+				{
+				case tiki::RX:
+					quaternion::fromAxisAngle( rotation, Vector3::unitX, delta );
+					break;
+				case tiki::RY:
+					quaternion::fromAxisAngle( rotation, Vector3::unitY, delta );
+					break;
+				case tiki::RZ:
+					quaternion::fromAxisAngle( rotation, Vector3::forward, delta );
+					break;
+				case tiki::X:
+				case tiki::Y:
+				case tiki::Z:
+				case tiki::XZ:
+				case tiki::XY:
+				case tiki::YZ:
+					break;
+				case tiki::Count:
+				case tiki::None:
+					TIKI_ASSERT( false );
+				default:
+					break;
+				}
+
+				if ( !f32::isEquals( delta, 0.0f ) )
+				{
+					*m_pRotation = rotation;
+
+					quaternion::toMatrix( m_pWorldMatrix->rot, rotation );
+
+					for ( int i = 0; i < 3; ++i )
+					{
+						m_pAxisBounds[ i ].rotate( *m_pRotation );
+					}
+
+					// TODO: OnTransformGizmoRotateEvent(delta)
+				}
+
+			}
+
 
 		}
 	}
@@ -331,15 +412,40 @@ namespace tiki
 
 		Vector3 intersection;
 		bool picked = false;
-		for ( int i = 0; i < AxisType::Count; ++i )
+		for ( int i = 0; i <= AxisType::YZ; ++i )
 		{
 			AxisType current = (AxisType)i;
+			
 			if ( intersection::intersectRayBox( m_pCamera->getMouseRay(), m_pAxisBounds[ current ], intersection ) )
 			{
 				m_SelectedAxis = current;
 				picked = true;
 			}
 		}
+
+		for ( int i = 0; i < 3; ++i )
+		{
+			AxisType current = AxisType::None;
+			if ( i == 0 )
+			{
+				current = AxisType::RX;
+			}
+			else if ( i == 1 )
+			{
+				current = AxisType::RY;
+			}
+			else
+			{
+				current = AxisType::RZ;
+			}
+
+			if ( intersection::intersectRaySpere( m_pCamera->getMouseRay( ), m_pRotateBounds[ i ], intersection ) )
+			{
+				m_SelectedAxis	= current;
+				picked			= true;
+			}
+		}
+
 
 		if ( !picked )
 		{
@@ -349,9 +455,11 @@ namespace tiki
 
 	void TransformGizmo::render()
 	{
+		//m_pRenderer->drawSphere( Vector3::forward, 3.0f, TIKI_COLOR_RED );
+
 		m_pRenderer->drawGrid( 2, 10, TIKI_COLOR_GRAY);
 
-		for ( int i = 0; i < AxisType::Count; ++i )
+		for ( int i = 0; i < 6; ++i )
 		{
 			if ( m_SelectedAxis == (AxisType)i )
 			{
@@ -362,6 +470,34 @@ namespace tiki
 				m_pRenderer->drawBox( m_pAxisBounds[ i ] );
 			}
 		}
+
+
+		for ( int i = 0; i < 3; ++i )
+		{
+			AxisType current = AxisType::None;
+			if ( i == 0 )
+			{
+				current = AxisType::RX;
+			}
+			else if ( i == 1 )
+			{
+				current = AxisType::RY;
+			}
+			else
+			{
+				current = AxisType::RZ;
+			}
+
+			if ( m_SelectedAxis == current )
+			{
+				m_pRenderer->drawSphere( m_pRotateBounds[ i ].Center, m_pRotateBounds[ i ].Radius, TIKI_COLOR_GREEN );
+			}
+			else
+			{
+				m_pRenderer->drawSphere( m_pRotateBounds[ i ].Center, m_pRotateBounds[ i ].Radius );
+			}
+		}
+
 
 		m_pRenderer->drawAxes( m_LineLength, m_LineOffset, *m_pWorldMatrix);
 	}

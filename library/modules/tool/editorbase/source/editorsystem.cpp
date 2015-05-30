@@ -1,16 +1,15 @@
+#include "tiki/editorbase/editorsystem.hpp"
 
-#include "tiki/editornative/editorsystem.hpp"
-
-#include "tiki/editornative/transformgizmo.hpp"
+#include "tiki/editorbase/transformgizmo.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
-#include "tiki/math/rectangle.hpp"
 #include "tiki/math/box.hpp"
+#include "tiki/math/intersection.hpp"
+#include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/runtimeshared/frameworkfactories.hpp"
-#include "tiki/math/intersection.hpp"
 
 namespace tiki
 {
@@ -129,6 +128,9 @@ namespace tiki
 		//rect.width	= 2.0f;
 		//rect.height	= 2.0f;
 		//renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
+
+
+		renderer.drawRay( m_camera.getMouseRay() );
 
 		m_TransformGizmo->render();
 

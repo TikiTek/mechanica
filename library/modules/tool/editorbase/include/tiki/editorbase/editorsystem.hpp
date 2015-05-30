@@ -2,8 +2,8 @@
 #ifndef TIKI_EDITORSYSTEM_HPP_INCLUDED__
 #define TIKI_EDITORSYSTEM_HPP_INCLUDED__
 
-#include "tiki/editornative/editorcamera.hpp"
-#include "tiki/editornative/editorinput.hpp"
+#include "tiki/editorbase/editorcamera.hpp"
+#include "tiki/editorbase/editorinput.hpp"
 
 #using <PresentationCore.dll>
 

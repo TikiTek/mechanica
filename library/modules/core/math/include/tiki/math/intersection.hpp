@@ -14,7 +14,7 @@ namespace tiki
 		Vector3 Origin;
 		Vector3 Direction;
 
-		Ray3( )
+		Ray3()
 		{
 		}
 
@@ -27,16 +27,25 @@ namespace tiki
 
 	struct Sphere3
 	{
-		TIKI_NONCOPYABLE_STRUCT( Sphere3 );
 
 		Vector3 Center;
 		float	Radius;
+
+		Sphere3()
+		{
+		}
 
 		Sphere3( const Vector3& center, float radius )
 		{
 			Center = center;
 			Radius = radius;
 		}
+
+		void translate( const Vector3& translation )
+		{
+			vector::add( Center, translation );
+		}
+
 	};
 	#pragma endregion
 

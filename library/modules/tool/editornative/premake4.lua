@@ -16,6 +16,7 @@ module:add_dependency( "graphics" );
 module:add_dependency( "graphicsresources" );
 module:add_dependency( "runtimeshared" );
 module:add_dependency( "input" );
+module:add_dependency( "editorbase" );
 
 module:add_library_file( "converterlibrary" );
 
