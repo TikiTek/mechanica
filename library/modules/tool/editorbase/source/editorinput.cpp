@@ -260,8 +260,8 @@ namespace tiki
 		inputEvent.eventType			= InputEventType_Mouse_Moved;
 		inputEvent.deviceType			= InputDeviceType_Keyboard;
 		inputEvent.deviceId				= 0u;
-		inputEvent.data.mouseMoved.xOffset	= (sint16)deltaX;
-		inputEvent.data.mouseMoved.yOffset	= (sint16)deltaY;
+		inputEvent.data.mouseMoved.xOffset	= (sint16)deltaX * 10;
+		inputEvent.data.mouseMoved.yOffset	= (sint16)deltaY * 10;
 		inputEvent.data.mouseMoved.xState	= (sint16)e->X;
 		inputEvent.data.mouseMoved.yState	= (sint16)e->Y;
 	}

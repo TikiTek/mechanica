@@ -39,6 +39,11 @@ namespace tiki
 			m_value = ad.m_value;
 		}
 
+		T& operator*()
+		{
+			return m_value;
+		}
+
 		T*	operator->()
 		{
 			return &m_value;
