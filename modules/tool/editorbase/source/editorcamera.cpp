@@ -60,6 +60,8 @@ namespace tiki
 	{
 		m_ViewportWidth  = x;
 		m_ViewportHeight = y;
+
+		m_pCamera->getProjection().createPerspective( float( m_ViewportWidth ) / m_ViewportHeight, f32::piOver4, 0.001f, 1000.0f );
 	}
 
 	bool EditorCamera::processInputEvent( InputEvent& inputEvent )

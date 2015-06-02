@@ -240,6 +240,8 @@ namespace tiki
 		vertices[ 3u ].v			= 0u;
 		vertices[ 3u ].color		= color;
 
+		vertices.dispose();
+
 		m_pContext->endImmediateGeometry();
 	}
 
@@ -283,6 +285,8 @@ namespace tiki
 		vertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
 		vertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
 		vertices[ 3u ].color		= color;
+
+		vertices.dispose();
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -333,6 +337,8 @@ namespace tiki
 		vertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
 		vertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
 		vertices[ 3u ].color		= color;
+
+		vertices.dispose();
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -402,6 +408,8 @@ namespace tiki
 			x += charWidth;
 		}
 
+		vertices.dispose();
+
 		m_pContext->endImmediateGeometry();
 	}
 	
@@ -427,6 +435,8 @@ namespace tiki
 			targetVertex.v		= 0u;
 			targetVertex.color	= color;
 		} 
+
+		vertices.dispose();
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -506,6 +516,8 @@ namespace tiki
 			current.v		= 0u;
 		}
 
+		vertices.dispose();
+
 		m_pContext->endImmediateGeometry();
 	}
 
@@ -558,6 +570,8 @@ namespace tiki
 		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
 		createFloat3( vertices[ idx ].position, (float)( -gridSize ), 0.0f, 0.0f );
 		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+
+		vertices.dispose();
 
 		m_pContext->endImmediateGeometry();
 	}
@@ -679,6 +693,8 @@ namespace tiki
 			vertices[ i ].position.z = transformedPos.z;
 		}
 
+		vertices.dispose();
+
 		m_pContext->endImmediateGeometry();
 	}
 
@@ -691,7 +707,9 @@ namespace tiki
 
 		uint verticesPercircle = 30;
 		uint vertexCount = verticesPercircle + 1;
-		ImmediateVertex* pVertices = static_cast<ImmediateVertex*>(m_pContext->beginImmediateGeometry( sizeof(ImmediateVertex), vertexCount ));
+
+		StaticArray< ImmediateVertex > vertices;
+		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 
 		Vector3 scaleAxe1;
 		vector::set( scaleAxe1, axe1.x * radius, axe1.y * radius, axe1.z * radius );
@@ -713,21 +731,23 @@ namespace tiki
 			vector::add( vt, vtySin );
 			vector::add( vt, center );
 
-			createFloat3( pVertices[ idx++ ].position, vt.x, vt.y, vt.z );
+			createFloat3( vertices[ idx++ ].position, vt.x, vt.y, vt.z );
 		}
 
 		// add last vertex from end to start
-		createFloat3( pVertices[ idx++ ].position, pVertices[ 0 ].position.x, pVertices[ 0 ].position.y, pVertices[ 0 ].position.z );
+		createFloat3( vertices[ idx++ ].position, vertices[ 0 ].position.x, vertices[ 0 ].position.y, vertices[ 0 ].position.z );
 
 		// set color and uv
 		TIKI_ASSERT( idx == vertexCount );
 		for ( uint i = 0u; i < vertexCount; ++i )
 		{
-			ImmediateVertex& current = pVertices[ i ];
+			ImmediateVertex& current = vertices[ i ];
 			current.color = color;
 			current.u = 0u;
 			current.v = 0u;
 		}
+
+		vertices.dispose();
 
 		m_pContext->endImmediateGeometry();
 	}

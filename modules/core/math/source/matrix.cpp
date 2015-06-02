@@ -40,9 +40,9 @@ namespace tiki
 		position.z = source.w.z;
 
 		//Scaling is the length of the rows.
-		scale.x = sqrtf( source.x.x * source.x.x + source.x.y * source.x.y + source.x.z * source.x.z );
-		scale.y = sqrtf( source.y.x * source.y.x + source.y.y * source.y.y + source.y.z * source.y.z );
-		scale.z = sqrtf( source.z.x * source.z.x + source.z.y * source.z.y + source.z.z * source.z.z );
+		scale.x = vector::length( source.x );
+		scale.y = vector::length( source.y );
+		scale.z = vector::length( source.z );
 
 		//If any of the scaling factors are zero, than the rotation matrix can not exist.
 		if ( f32::isZero( scale.x ) || f32::isZero( scale.y ) || f32::isZero( scale.z ) )

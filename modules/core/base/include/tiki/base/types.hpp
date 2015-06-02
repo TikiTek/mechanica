@@ -97,7 +97,7 @@ namespace tiki
 
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
-		class_name ( const class_name & );	\
+		class_name ( const class_name & );			\
 		void operator=( const class_name & )
 
 #define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
@@ -122,7 +122,7 @@ namespace tiki
 		class_name () { }						        \
 		~ class_name () { }
 
-#define TIKI_DEFINE_HANLE( handle_name )						\
+#define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name;	\
 	static const handle_name Invalid ## handle_name = (handle_name)TIKI_SIZE_T_MAX

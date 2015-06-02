@@ -1,6 +1,7 @@
 
 #include "tiki/converterbase/convertermanager.hpp"
 
+#include "tiki/base/autodispose.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/directory.hpp"
 #include "tiki/base/file.hpp"
@@ -10,7 +11,6 @@
 #include "tiki/converterbase/converterbase.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
-#include "tiki/toolbase/autodispose.hpp"
 
 #include "sqlite/sqlite3.h"
 
