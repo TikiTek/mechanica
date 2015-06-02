@@ -67,6 +67,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 	float3 binormal = normalize( cross( normal, tangent ) ); //TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).www; // * TIKI_VERTEX_INPUT_GET( TIKI_TANGENT0 ).w );
 
 	float2 texCoord = TIKI_VERTEX_INPUT_GET( TIKI_TEXCOORD0 );
+	texCoord.y = 1 - texCoord.y;
 
 	TIKI_VERTEX_TO_PIXEL_SET_POSITION( TIKI_OUTPUT_POSITION0, position );
 	TIKI_VERTEX_TO_PIXEL_SET( TIKI_NORMAL0,		normal );
