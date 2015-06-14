@@ -45,6 +45,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	module:set_define( "_WIN64", nil, nil, "x64" );
 	
 	module:set_define( "_CRT_SECURE_NO_WARNINGS" );
+	module:set_define( "_WINSOCK_DEPRECATED_NO_WARNINGS" );	
 
 	use_msvc	= true;
 	use_d3d11	= true;
