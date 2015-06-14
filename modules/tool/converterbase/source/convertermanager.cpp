@@ -353,8 +353,8 @@ namespace tiki
 
 			task.parameters.assetId			= TIKI_SIZE_T_MAX;
 			task.parameters.isBuildRequired	= false;
-			task.parameters.targetPlatform	= getHostPlatform();
-			task.parameters.targetApi		= getHostGraphicsApi();
+			task.parameters.targetPlatform	= platform::getHostPlatform();
+			task.parameters.targetApi		= platform::getHostGraphicsApi();
 			task.parameters.sourceFile		= fileDesc.fullFileName;
 			task.parameters.typeCrc			= task.pConverter->getInputType();
 
@@ -499,7 +499,7 @@ namespace tiki
 		{
 			return false;
 		}
-		
+
 		bool result = true;
 
 		string whereFileName;
@@ -655,7 +655,7 @@ namespace tiki
 			{
 				const uint assetId = query->getIntegerField( "asset_id" );
 
-				ConversionTask* pTask = nullptr;				
+				ConversionTask* pTask = nullptr;
 				if ( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
 				{
 					continue;

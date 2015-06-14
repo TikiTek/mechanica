@@ -23,7 +23,7 @@ namespace tiki
 		{
 			maxTaskCount	= 128u;
 
-			threadCount		= getProcessorCount();
+			threadCount		= platform::getProcessorCount();
 			threadStackSize	= 1u * 1024u * 1024u;
 		}
 

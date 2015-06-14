@@ -10,16 +10,16 @@ namespace tiki
 	template<typename TChar>
 	struct StringRefData
 	{
-		TChar*			pData;
-		uint			dataLength;
-		uint			stringLength;
+		TChar*		    	pData;
+		uint		    	dataLength;
+		uint		    	stringLength;
 
-		sint			refCount;
+		sint	    		refCount;
 
-		static TChar*	s_pEmptyString;
+		static const TChar*	s_pEmptyString;
 
 		StringRefData()
-			: pData( s_pEmptyString ), dataLength( 0u ), stringLength( 0u ), refCount( 1 )
+			: pData( (TChar*)s_pEmptyString ), dataLength( 0u ), stringLength( 0u ), refCount( 1 )
 		{
 		}
 
@@ -284,7 +284,7 @@ namespace tiki
 		}
 
 		bool isWhiteSpace = false;
-		do 
+		do
 		{
 			isWhiteSpace = false;
 
@@ -301,7 +301,7 @@ namespace tiki
 		}
 		while ( isWhiteSpace );
 
-		do 
+		do
 		{
 			isWhiteSpace = false;
 
@@ -598,7 +598,7 @@ namespace tiki
 	template<typename TChar>
 	TIKI_FORCE_INLINE TChar BasicString< TChar >::operator[](uint index) const
 	{
-		if (index >= data->stringLength) 
+		if (index >= data->stringLength)
 			throw "Index > Length";
 
 		return data->pData[index];
@@ -633,7 +633,7 @@ namespace tiki
 		{
 			return true;
 		}
-		
+
 		if (data->stringLength != rhs.data->stringLength)
 		{
 			return false;

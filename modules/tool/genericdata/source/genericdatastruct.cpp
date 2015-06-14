@@ -7,8 +7,9 @@
 
 namespace tiki
 {
-	GenericDataStruct::GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
+	GenericDataStruct::GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, mode )
+		, m_pBaseType( pBaseType )
 	{
 	}
 
@@ -42,7 +43,7 @@ namespace tiki
 				const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
 				if ( pNameAtt && pTypeAtt )
 				{
-					const GenericDataType* pType = m_collection.getTypeByName( pTypeAtt->content );
+					const GenericDataType* pType = m_collection.findTypeByName( pTypeAtt->content );
 					if ( pType == nullptr )
 					{
 						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] the type(%s) of field or array with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->content, pNameAtt->content );
@@ -57,7 +58,7 @@ namespace tiki
 
 					if ( pModeAtt != nullptr )
 					{
-						GenericDataTypeMode mode = m_collection.getModeByName( pModeAtt->content );
+						GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
 						if ( mode == GenericDataTypeMode_Invalid )
 						{
 							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );
@@ -93,12 +94,24 @@ namespace tiki
 
 	uint GenericDataStruct::getAlignment() const
 	{
-		return m_alignment;
+		uint alignment = m_alignment;
+		if ( m_pBaseType != nullptr )
+		{
+			alignment = TIKI_MAX( alignment, m_pBaseType->getAlignment() );
+		}
+
+		return alignment;
 	}
 
 	uint GenericDataStruct::getSize() const
 	{
-		return m_size;
+		uint size = m_size;
+		if ( m_pBaseType != nullptr )
+		{
+			size += m_pBaseType->getSize();
+		}
+
+		return size;
 	}
 
 	void GenericDataStruct::addField( const string& name, const GenericDataType* pType, bool isArray /* = false */, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )

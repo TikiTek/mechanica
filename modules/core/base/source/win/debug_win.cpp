@@ -1,9 +1,12 @@
 
 #include "tiki/base/debug.hpp"
 
-#include <crtdbg.h>
 #include <stdio.h>
 #include <windows.h>
+
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#   include <crtdbg.h>
+#endif
 
 namespace tiki
 {

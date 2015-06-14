@@ -9,18 +9,19 @@
 #include "tiki/resource/resourcebase.hpp"
 
 #define TIKI_DEFINE_RESOURCE( class_name, cc )					\
-	public:														\
-	friend class ResourceLoader;								\
+	public:															\
+	friend class ResourceLoader;										\
 	virtual fourcc getType() const { return s_resourceType; }	\
 	static fourcc getResourceType() { return s_resourceType; }	\
-	private:													\
-	static const fourcc s_resourceType = cc;					\
+	private:															\
+	static const fourcc s_resourceType = cc;						\
 	friend struct FactoryContextGenericBase< class_name >;		\
-	friend TIKI_FORCE_INLINE void memory::deleteObjectAligned< class_name >( class_name * ptr )
+	friend void memory::deleteObjectAligned< class_name >( class_name * ptr )
 
 namespace tiki
 {
 	class ResourceLoader;
+	class ResourceManager;
 	class ResourceStorage;
 
 	class Resource
