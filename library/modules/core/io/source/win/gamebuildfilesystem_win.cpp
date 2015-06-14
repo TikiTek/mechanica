@@ -2,7 +2,7 @@
 #include "tiki/io/gamebuildfilesystem.hpp"
 
 #include "tiki/base/file.hpp"
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
 
 #include <windows.h>

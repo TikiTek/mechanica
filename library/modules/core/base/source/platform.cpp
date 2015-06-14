@@ -30,7 +30,7 @@ namespace tiki
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/debug.hpp"
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_TOOLS )

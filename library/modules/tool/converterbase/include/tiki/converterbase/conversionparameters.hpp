@@ -3,7 +3,7 @@
 #define TIKI_CONVERSIONPARAMETERS_HPP
 
 #include "tiki/base/file.hpp"
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
