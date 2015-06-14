@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_TOOLDIRECTORY_HPP
-#define TIKI_TOOLDIRECTORY_HPP
+#ifndef TIKI_DIRECTORY_TOOL_HPP
+#define TIKI_DIRECTORY_TOOL_HPP
 
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
@@ -15,4 +15,4 @@ namespace tiki
 	}
 }
 
-#endif // TIKI_TOOLDIRECTORY_HPP
+#endif // TIKI_DIRECTORY_TOOL_HPP
