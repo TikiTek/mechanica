@@ -2,6 +2,8 @@
 #ifndef __TIKI_SHADER_OPENGL4_HPP_INCLUDED__
 #define __TIKI_SHADER_OPENGL4_HPP_INCLUDED__
 
+#include "tiki/graphics/graphissystemlimits.hpp"
+
 #include "graphicstypes_opengl4.hpp"
 
 namespace tiki

@@ -3,6 +3,9 @@
 #define __TIKI_SHADERLINKER_OPENGL4_HPP_INCLUDED__
 
 #include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/graphics/shadertype.hpp"
+
+#include "graphicssystem_internal_opengl4.hpp"
 
 namespace tiki
 {

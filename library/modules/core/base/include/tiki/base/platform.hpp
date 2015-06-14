@@ -3,7 +3,7 @@
 #define TIKI_PLATFORM_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/forwarddeclaration.hpp"
+#include "tiki/base/staticarray.hpp"
 
 namespace tiki
 {
@@ -32,18 +32,21 @@ namespace tiki
 		GraphicsApi_Count
 	};
 
-	PlatformType			getHostPlatform();
-	GraphicsApi				getHostGraphicsApi();
+	namespace platform
+	{
+		PlatformType			        getHostPlatform();
+		GraphicsApi			        	getHostGraphicsApi();
 
-	uint					getProcessorCount();
+		uint					        getProcessorCount();
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
-	InstanceHandle			getInstanceHandle();
-	const Array< string >&	getArguments();
-	bool					hasArgument( const string& name );
-
-	int						mainEntryPoint();
+		InstanceHandle					getInstanceHandle();
+		const StaticArray< cstring >&	getArguments();
+		bool							hasArgument( cstring name );
 #endif
+	}
+
+	int							mainEntryPoint();
 }
 
 #endif // TIKI_PLATFORM_HPP

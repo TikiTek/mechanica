@@ -2,6 +2,8 @@
 #ifndef __TIKI_GRAPHICSCONTEXT_OPENGL4_HPP_INCLUDED__
 #define __TIKI_GRAPHICSCONTEXT_OPENGL4_HPP_INCLUDED__
 
+#include "tiki/base/types.hpp"
+
 #include "graphicstypes_opengl4.hpp"
 #include "graphicssystem_internal_opengl4.hpp"
 
@@ -14,17 +16,17 @@ namespace tiki
 	{
 		GraphicsContextPlatformData()
 		{
-			maxVertexAttributeCount	= 0;
+			maxVertexAttributeCount		= 0;
 
-			indexType					= GL_INVALID_ENUM;
-			primitiveTopology			= GL_INVALID_ENUM;
+			indexType						= GL_INVALID_ENUM;
+			primitiveTopology				= GL_INVALID_ENUM;
 
-			pVertexShaderData			= nullptr;
-			pPixelShaderData			= nullptr;
+			pVertexShaderData				= nullptr;
+			pPixelShaderData				= nullptr;
 
 			pApplyedVertexInutBinding	= nullptr;
 
-			programCrc					= InvalidCrc32;
+			programCrc						= TIKI_INVALID_CRC32;
 		}
 
 		uint						maxVertexAttributeCount;

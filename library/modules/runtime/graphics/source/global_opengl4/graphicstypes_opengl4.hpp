@@ -7,7 +7,6 @@ typedef unsigned int GLenum;
 
 namespace tiki
 {
-	TIKI_DEFINE_HANLE( WindowHandle );
 	TIKI_DEFINE_HANLE( DeviceContextHandle );
 	TIKI_DEFINE_HANLE( RenderContextHandle );
 }

@@ -15,6 +15,8 @@
 
 namespace tiki
 {
+    class GraphicsSystem;
+
 	class Shader
 	{
 		TIKI_NONCOPYABLE_CLASS( Shader );
@@ -25,7 +27,7 @@ namespace tiki
 		friend class PoolAllocator;
 
 	public:
-		
+
 								Shader();
 								~Shader();
 

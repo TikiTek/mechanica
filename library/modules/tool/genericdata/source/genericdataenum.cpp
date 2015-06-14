@@ -50,7 +50,7 @@ namespace tiki
 
 					if ( pModeAtt != nullptr )
 					{
-						GenericDataTypeMode mode = m_collection.getModeByName( pModeAtt->content );
+						GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
 						if ( mode == GenericDataTypeMode_Invalid )
 						{
 							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );

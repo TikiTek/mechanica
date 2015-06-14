@@ -22,7 +22,7 @@ namespace tiki
 
 	public:
 
-												GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
+												GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
 		virtual									~GenericDataStruct();
 
 		virtual bool							loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
@@ -37,10 +37,15 @@ namespace tiki
 		const List< GenericDataStructField >&	getFields() const;
 		const GenericDataType*					getFieldTypeByName( const string& name ) const;
 
+	protected:
+
+		uint							m_size;
+
 	private:
 
+		const GenericDataType*			m_pBaseType;
+
 		uint							m_alignment;	
-		uint							m_size;
 
 		List< GenericDataStructField >	m_fields;
 

@@ -41,7 +41,7 @@ namespace tiki
 	void memory::freeAligned( void* pPtr )
 	{
 #if TIKI_ENABLED( TIKI_BUILD_MINGW )
-		return free( size );
+		return free( pPtr );
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		_aligned_free( pPtr );

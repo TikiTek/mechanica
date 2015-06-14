@@ -3,7 +3,7 @@
 
 namespace tiki
 {
-	PlatformType getHostPlatform()
+	PlatformType platform::getHostPlatform()
 	{
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		return PlatformType_Win;
@@ -12,7 +12,7 @@ namespace tiki
 #endif
 	}
 
-	GraphicsApi getHostGraphicsApi()
+	GraphicsApi platform::getHostGraphicsApi()
 	{
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 		return GraphicsApi_D3D11;
@@ -37,76 +37,44 @@ namespace tiki
 #	include "tiki/base/reflection.hpp"
 #endif
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-
-#include <windows.h>
-
-tiki::InstanceHandle		s_instanceHandle;
-tiki::Array< tiki::string >	s_arguments;
-
-int main( int argc, char** argv )
-{
-	s_instanceHandle	= (tiki::InstanceHandle)GetModuleHandle( nullptr );
-
-	s_arguments.create( argc );
-	for (int i = 0u; i < argc; ++i)
-	{
-		s_arguments[ i ] = argv[ i ];
-	} 
-	
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-	tiki::reflection::initialize();
-
-	{
-		const tiki::string currentPath = tiki::path::getCurrentDir();
-		const tiki::string exePath = tiki::path::getExecutablePath();
-
-		TIKI_TRACE_DEBUG( "Executable Path: %s\n", exePath.cStr() );
-		TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.cStr() );
-	}
-#endif
-
-	int returnValue = 0;
-	{
-		returnValue = tiki::mainEntryPoint();
-
-		s_arguments.dispose();
-	}
-
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-	tiki::reflection::shutdown();
-#endif
-
-	tiki::debug::dumpMemoryStats();
-
-	return returnValue;
-}
+#include "platform_internal.hpp"
 
 namespace tiki
 {
-	InstanceHandle getInstanceHandle()
+	int platform::startApplication()
 	{
-		return s_instanceHandle;
-	}
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+		reflection::initialize();
+#endif
 
-	const Array< string >& getArguments()
-	{
-		return s_arguments;
-	}
-	
-	bool hasArgument( const string& name )
-	{
-		for (uint i = 0u; i < s_arguments.getCount(); ++i)
 		{
-			if ( s_arguments[ i ] == name )
-			{
-				return true;
-			}
+			const string currentPath = path::getCurrentDir();
+			const string exePath = path::getExecutablePath();
+
+			TIKI_TRACE_DEBUG( "Executable Path: %s\n", exePath.cStr() );
+			TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.cStr() );
 		}
 
-		return false;
+		int returnValue = 0;
+		{
+			returnValue = mainEntryPoint();
+		}
+
+#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
+		reflection::shutdown();
+#endif
+
+		debug::dumpMemoryStats();
+
+		return returnValue;
 	}
 }
+
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+
+
+
+
 
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 

@@ -5,6 +5,7 @@
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/genericdata/genericdatatype.hpp"
+#include "tiki/toolbase/list.hpp"
 
 namespace tiki
 {
@@ -19,13 +20,13 @@ namespace tiki
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
-		void							create( const char* pFolderName, bool recursive, GenericDataTypeMode mode );
+		void							create( const char* pFolderName, bool recursive );
 		void							dispose();
 
-		void							addType( GenericDataType& type );
+		bool							addType( GenericDataType& type );
 
-		const GenericDataType*			getTypeByName( const string& name ) const;
-		GenericDataTypeMode				getModeByName( const string& name ) const;
+		const GenericDataType*			findTypeByName( const string& name ) const;
+		GenericDataTypeMode				findModeByName( const string& name ) const;
 
 		bool							exportCode( GenericDataTypeMode mode );
 
@@ -36,6 +37,8 @@ namespace tiki
 		const GenericDataEnum*			m_pModeEnum;
 		
 		void							registerDefaultTypes();
+
+		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
 
 	};
 }

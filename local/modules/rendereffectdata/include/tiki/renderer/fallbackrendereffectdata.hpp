@@ -15,7 +15,7 @@ namespace tiki
 			renderEffectId			= RenderEffectId_Fallback;
 			renderPassMask			= 0u;
 			renderFlags				= 0u;
-			defaultTextureOffset	= (uint16)TIKI_OFFSETOF( FallbackRenderEffectData, defaultTexture );
+			defaultTextureOffset		= (uint16)TIKI_OFFSETOF( FallbackRenderEffectData, defaultTexture );
 		}
 		TextureReference	defaultTexture;
 	);

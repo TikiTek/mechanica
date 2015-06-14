@@ -181,7 +181,7 @@ namespace tiki
 
 			m_pBlendState = pBlendState;
 			TIKI_CHECK_GRAPHICS;
-		}		
+		}
 	}
 
 	void GraphicsContext::setDepthStencilState( const DepthStencilState* pDepthStencilState )
@@ -226,7 +226,7 @@ namespace tiki
 
 			m_pDepthStencilState = pDepthStencilState;
 			TIKI_CHECK_GRAPHICS;
-		}		
+		}
 	}
 
 	void GraphicsContext::setRasterizerState( const RasterizerState* pRasterizerState )
@@ -252,6 +252,7 @@ namespace tiki
 		{
 			GL_POINTS,			// PrimitiveTopology_PointList
 			GL_LINES,			// PrimitiveTopology_LineList
+			GL_LINE_STRIP,      // PrimitiveTopology_LineStrip
 			GL_TRIANGLES,		// PrimitiveTopology_TriangleList
 			GL_TRIANGLE_STRIP	// PrimitiveTopology_TriangleStrip
 		};
@@ -568,8 +569,8 @@ namespace tiki
 
 						bindingCount++;
 					}
-				}				
-			} 
+				}
+			}
 
 			for (uint bindingIndex = 0u; bindingIndex < bindingCount; ++bindingIndex)
 			{

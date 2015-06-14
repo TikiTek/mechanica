@@ -59,13 +59,13 @@ namespace tiki
 		windowParams.height			= m_parameters.screenHeight;
 		windowParams.pWindowTitle	= m_parameters.pWindowTitle;
 		windowParams.pClassName		= "TikiEngineMainWindow";
-		
+
 		if ( !m_frameworkData.mainWindow.create( windowParams ) )
 		{
 			TIKI_TRACE_ERROR( "[gameframework] Could not create MainWindow.\n" );
 			return false;
 		}
-		
+
 		GraphicsSystemParameters graphicParams;
 		graphicParams.fullScreen		= m_parameters.fullScreen;
 		graphicParams.pWindowHandle		= m_frameworkData.mainWindow.getHandle();
@@ -94,7 +94,7 @@ namespace tiki
 
 		InputSystemParameters inputParams;
 		inputParams.windowHandle	= m_frameworkData.mainWindow.getHandle();
-		inputParams.instanceHandle	= getInstanceHandle();
+		inputParams.instanceHandle	= platform::getInstanceHandle();
 
 		if( !m_frameworkData.inputSystem.create( inputParams ) )
 		{
@@ -145,7 +145,7 @@ namespace tiki
 
 			disposeWebInterface( m_frameworkData.pWebInterface );
 			m_frameworkData.pWebInterface = nullptr;
-		}	
+		}
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -192,7 +192,7 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 				m_frameworkData.debugGui.setScreenSize( vector::create( (float)windowEvent.data.sizeChanged.size.x, (float)windowEvent.data.sizeChanged.size.y ) );
 #endif
-			}		
+			}
 
 			processWindowEvent( windowEvent );
 		}

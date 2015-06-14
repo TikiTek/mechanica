@@ -4,6 +4,7 @@
 #include "tiki/base/types.hpp"
 
 #include <math.h>
+#include <stdlib.h>
 
 namespace tiki
 {
@@ -12,25 +13,25 @@ namespace tiki
 	public:
 
 		static sint16 parseInt16( cstring string )
-		{			
+		{
 			return (uint16)atoi( string );
 			//return parseSigedInteger<char, sint16>(string);
 		}
 
 		static sint32 parseInt32( cstring string )
-		{			
+		{
 			return (sint32)atoi( string );
 			//return parseSigedInteger<char, sint32>(string);
 		}
 
 		static sint64 parseInt64( cstring string )
-		{			
+		{
 			return (sint64)atol( string );
 			//return parseSigedInteger<char, sint64>(string);
 		}
 
 		static uint16 parseUInt16( cstring string )
-		{			
+		{
 			return (uint16)atoi( string );
 			//return parseUnsigedInteger<char, uint16>(string);
 		}
@@ -42,7 +43,7 @@ namespace tiki
 		}
 
 		static uint64 parseUInt64( cstring string )
-		{			
+		{
 			return (uint64)atol( string );
 			//return parseUnsigedInteger<char, uint64>(string);
 		}
@@ -54,7 +55,7 @@ namespace tiki
 		}
 
 		static double parseDouble( cstring string )
-		{			
+		{
 			return (double)atof( string );
 			//return parseFloat<char, double>(string);
 		}
@@ -117,7 +118,7 @@ namespace tiki
 		static TFloat parseFloat(const BasicString<TString>& string)
 		{
 			return (TFloat)atof( string.cStr() );
-			
+
 			BasicString<TString> str = string;
 			TFloat mul = (TFloat)(getSiged(str) ? 1.0 : -1.0);
 			TFloat num = 0;

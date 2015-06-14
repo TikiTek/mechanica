@@ -2,6 +2,7 @@
 #include "tiki/graphics/blendstate.hpp"
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/functions.hpp"
 
 #include "graphicssystem_internal_opengl4.hpp"
 

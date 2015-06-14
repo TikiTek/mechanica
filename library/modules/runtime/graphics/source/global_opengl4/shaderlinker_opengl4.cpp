@@ -1,6 +1,8 @@
 
 #include "shaderlinker_opengl4.hpp"
 
+#include "tiki/base/crc32.hpp"
+
 namespace tiki
 {
 	bool ShaderLinker::create( uint maxProgrammCount )

@@ -2,6 +2,7 @@
 #ifndef __TIKI_GRAPHICSSYSTEM_OPENGL4_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSYSTEM_OPENGL4_HPP_INCLUDED__
 
+#include "tiki/base/platform.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
 #include "graphicstypes_opengl4.hpp"
