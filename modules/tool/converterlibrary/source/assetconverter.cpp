@@ -3,7 +3,7 @@
 
 #include "tiki/base/path.hpp"
 #include "tiki/base/reflection.hpp"
-#include "tiki/toolbase/tooldirectory.hpp"
+#include "tiki/toolbase/directory_tool.hpp"
 
 namespace tiki
 {
