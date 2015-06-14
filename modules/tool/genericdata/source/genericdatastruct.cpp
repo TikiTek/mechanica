@@ -24,9 +24,9 @@ namespace tiki
 			return false;
 		}
 
-		if ( !isStringEquals( pTypeRoot->name, "struct" ) )
+		if ( !isStringEquals( pTypeRoot->name, getNodeName() ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'struct') \n", getName().cStr(), pTypeRoot->name );
+			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != '%s') \n", getName().cStr(), pTypeRoot->name, getNodeName() );
 			return false;
 		}
 
@@ -84,6 +84,11 @@ namespace tiki
 			pChildElement = pChildElement->next;
 		}
 
+		return true;
+	}
+
+	bool GenericDataStruct::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	{
 		return true;
 	}
 
@@ -153,5 +158,10 @@ namespace tiki
 		}
 
 		return nullptr;
+	}
+
+	cstring GenericDataStruct::getNodeName() const
+	{
+		return "struct";
 	}
 }

@@ -84,6 +84,11 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataEnum::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	{
+		return true;
+	}
+
 	GenericDataTypeType GenericDataEnum::getType() const
 	{
 		return GenericDataTypeType_Enum;

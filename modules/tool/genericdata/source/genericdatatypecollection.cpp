@@ -1,6 +1,7 @@
 
 #include "tiki/genericdata/genericdatatypecollection.hpp"
 
+#include "tiki/base/directory.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/genericdata/genericdataenum.hpp"
@@ -23,23 +24,26 @@ namespace tiki
 	{
 	}
 
-	void GenericDataTypeCollection::create( const char* pFolderName, bool recursive )
+	void GenericDataTypeCollection::create( const string& contentFolder, bool recursive )
 	{
 		registerDefaultTypes();
 
 		List< string > files;
-		findFiles( pFolderName, files, ".tikigeneric" );
+		findFiles( contentFolder, files, ".tikigeneric" );
 
 		for (uint i = 0u; i < files.getCount(); ++i)
 		{
+			const string& fileName = files[ i ];
+			const string moduleName = path::getFilenameWithoutExtension( fileName );
+
 			XmlReader reader;
-			if ( !reader.create( files[ i ].cStr() ) )
+			if ( !reader.create( fileName.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be parsed.\n", files[ i ].cStr() );
 				continue;
 			}
 
-			const XmlElement* pRoot = reader.getRoot();
+			const XmlElement* pRoot = reader.findNodeByName( "tikigeneric" );
 			if ( pRoot == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", files[ i ].cStr() );
@@ -50,8 +54,8 @@ namespace tiki
 			while ( pChildNode != nullptr )
 			{
 				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildNode );
-				const XmlAttribute* pBaseAtt = reader.findAttributeByName( "name", pChildNode );
-				const XmlAttribute* pModeAtt = reader.findAttributeByName( "name", pChildNode );
+				const XmlAttribute* pBaseAtt = reader.findAttributeByName( "base", pChildNode );
+				const XmlAttribute* pModeAtt = reader.findAttributeByName( "mode", pChildNode );
 
 				if ( pNameAtt != nullptr )
 				{
@@ -130,6 +134,7 @@ namespace tiki
 					{
 						if ( pType->loadFromXml( reader, pChildNode ) )
 						{
+							pType->setModule( moduleName );
 							addType( *pType );
 						}
 						else
@@ -139,13 +144,15 @@ namespace tiki
 						}
 					}
 				}
-				else
+				else if ( pChildNode->name != nullptr )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] node has no name attribute and will be ignored.\n" );
 				}
 				
 				pChildNode = pChildNode->next;
 			}
+
+			reader.dispose();
 		}
 	}
 
@@ -210,9 +217,18 @@ namespace tiki
 		return GenericDataTypeMode_Invalid;
 	}
 
-	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode )
+	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode, const string& targetDir )
 	{
-		return false;
+		if ( !directory::exists( targetDir ) )
+		{
+			if ( !directory::create( targetDir ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::exportCode] unable to create target directory(%s).\n", targetDir.cStr() );
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	void GenericDataTypeCollection::registerDefaultTypes()
@@ -255,12 +271,20 @@ namespace tiki
 		addType( *pCrc32 );
 		addType( *pTimeMS );
 
+		GenericDataValueType* pBoolean	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "bool", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_Boolean );
+		GenericDataValueType* pString	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "String", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_String );
+
+		addType( *pBoolean );
+		addType( *pString );
+
 		GenericDataEnum* pGenericDataTypeMode = TIKI_MEMORY_NEW_OBJECT( GenericDataEnum )( *this, "GenericDataTypeMode", GenericDataTypeMode_ToolOnly, *pUInt8 );
 		pGenericDataTypeMode->addValue( "Invalid",			0, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "RuntimeOnly",		1, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "ToolOnly",			2, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "ToolAndRuntime",	3, GenericDataTypeMode_ToolOnly );
 		m_pModeEnum = pGenericDataTypeMode;
+
+		addType( *pGenericDataTypeMode );
 	}
 
 	void GenericDataTypeCollection::findFiles( const string& path, List< string >& files, const string& ext ) const

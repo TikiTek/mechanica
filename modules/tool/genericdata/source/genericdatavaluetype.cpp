@@ -18,6 +18,11 @@ namespace tiki
 		return false;
 	}
 
+	bool GenericDataValueType::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	{
+		return true;
+	}
+
 	GenericDataTypeType GenericDataValueType::getType() const
 	{
 		return GenericDataTypeType_ValueType;
@@ -43,6 +48,8 @@ namespace tiki
 			2,	// GenericDataValueTypeType_FloatingPoint16
 			4,	// GenericDataValueTypeType_FloatingPoint32
 			8,	// GenericDataValueTypeType_FloatingPoint64
+			1,	// GenericDataValueTypeType_Boolean
+			8,	// GenericDataValueTypeType_String
 		};
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aSizes ) == GenericDataValueTypeType_Count );
 

@@ -19,6 +19,16 @@ namespace tiki
 		return m_name;
 	}
 
+	const string& GenericDataType::getModule() const
+	{
+		return m_module;
+	}
+
+	void GenericDataType::setModule( const string& value )
+	{
+		m_module = value;
+	}
+
 	GenericDataTypeMode GenericDataType::getMode() const
 	{
 		return m_mode;
