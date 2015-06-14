@@ -1,9 +1,9 @@
 #pragma once
 
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
+
 #include <math.h>
-#include <stdlib.h>
 
 namespace tiki
 {
@@ -11,88 +11,53 @@ namespace tiki
 	{
 	public:
 
-		static sint16 parseInt16(const string& string)
+		static sint16 parseInt16( cstring string )
 		{			
-			return parseSigedInteger<char, sint16>(string);
+			return (uint16)atoi( string );
+			//return parseSigedInteger<char, sint16>(string);
 		}
 
-		static sint32 parseInt32(const string& string)
+		static sint32 parseInt32( cstring string )
 		{			
-			return parseSigedInteger<char, sint32>(string);
+			return (sint32)atoi( string );
+			//return parseSigedInteger<char, sint32>(string);
 		}
 
-		static sint64 parseInt64(const string& string)
+		static sint64 parseInt64( cstring string )
 		{			
-			return parseSigedInteger<char, sint64>(string);
+			return (sint64)atol( string );
+			//return parseSigedInteger<char, sint64>(string);
 		}
 
-		static uint16 parseUInt16(const string& string)
+		static uint16 parseUInt16( cstring string )
 		{			
-			return parseUnsigedInteger<char, uint16>(string);
+			return (uint16)atoi( string );
+			//return parseUnsigedInteger<char, uint16>(string);
 		}
 
-		static uint32 parseUInt32(const string& string)
+		static uint32 parseUInt32( cstring string )
 		{
-			return (uint32)atoi( string.cStr() );
+			return (uint32)atoi( string );
 			//return parseUnsigedInteger<char, uint32>(string);
 		}
 
-		static uint64 parseUInt64(const string& string)
+		static uint64 parseUInt64( cstring string )
 		{			
-			return parseUnsigedInteger<char, uint64>(string);
+			return (uint64)atol( string );
+			//return parseUnsigedInteger<char, uint64>(string);
 		}
 
-		static float parseSingle(const string& string)
+		static float parseSingle( cstring string )
 		{
-			return (float)atof( string.cStr() );
+			return (float)atof( string );
 			//return parseFloat<char, float>(string);
 		}
 
-		static double parseDouble(const string& string)
+		static double parseDouble( cstring string )
 		{			
-			return parseFloat<char, double>(string);
+			return (double)atof( string );
+			//return parseFloat<char, double>(string);
 		}
-
-		static sint16 wparseInt16(const wstring& string)
-		{			
-			return parseSigedInteger<wchar_t, sint16>(string);
-		}
-
-		static sint32 wparseInt32(const wstring& string)
-		{			
-			return parseSigedInteger<wchar_t, sint32>(string);
-		}
-
-		static sint64 wparseInt64(const wstring& string)
-		{			
-			return parseSigedInteger<wchar_t, sint64>(string);
-		}
-
-		static uint16 wparseUInt16(const wstring& string)
-		{			
-			return parseUnsigedInteger<wchar_t, uint16>(string);
-		}
-
-		static uint32 wparseUInt32(const wstring& string)
-		{			
-			return parseUnsigedInteger<wchar_t, uint32>(string);
-		}
-
-		static uint64 wparseUInt64(const wstring& string)
-		{			
-			return parseUnsigedInteger<wchar_t, uint64>(string);
-		}
-
-/*
-		static float wparseSingle(const wstring& string)
-		{			
-			return parseFloat<wchar_t, float>(string);
-		}
-
-		static double wparseDouble(const wstring& string)
-		{			
-			return parseFloat<wchar_t, double>(string);
-		}*/
 
 	private:
 
@@ -130,7 +95,7 @@ namespace tiki
 				}
 				else
 				{
-					return (TUInt)-1;
+					return num;
 				}
 
 				i++;

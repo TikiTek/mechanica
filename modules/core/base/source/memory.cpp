@@ -3,7 +3,9 @@
 
 #include <malloc.h>
 
-#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	include <memory.h>
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 #	include <string.h>
 #endif
 

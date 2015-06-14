@@ -19,6 +19,7 @@ namespace tiki
 	{
 		friend class LinkedList< T >;
 		friend class LinkedIterator< T >;
+		friend class LinkedIterator< const T >;
 
 	public:
 

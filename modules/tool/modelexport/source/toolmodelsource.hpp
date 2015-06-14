@@ -14,7 +14,7 @@ namespace tiki
 {
 	static void stringSourceToFloat( float& target, const Array< string >& source )
 	{
-		target = ParseString::parseSingle( source[ 0u ] );
+		target = ParseString::parseSingle( source[ 0u ].cStr() );
 	}
 
 	static void stringSourceToString( string& target, const Array< string >& source )
@@ -27,7 +27,7 @@ namespace tiki
 		float* pMatrix = &target.x.x;
 		for (size_t i = 0u; i < 16u; ++i)
 		{
-			pMatrix[ i ] = ParseString::parseSingle( source[ i ] );
+			pMatrix[ i ] = ParseString::parseSingle( source[ i ].cStr() );
 		}
 		matrix::transpose( target );
 	}
@@ -236,7 +236,7 @@ namespace tiki
 
 			if ( !value.isEmpty() )
 			{
-				const float fval = ParseString::parseSingle( value );
+				const float fval = ParseString::parseSingle( value.cStr() );
 
 				pValues[ j++ ] = fval;
 			}

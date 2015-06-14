@@ -1,6 +1,7 @@
 
 #include "tiki/editorbase/editorcamera.hpp"
 
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/intersection.hpp"
@@ -19,10 +20,10 @@ namespace tiki
 		m_Ray				= nullptr;
 	}
 
-	bool EditorCamera::create()
+	bool EditorCamera::create( GraphicsSystem& graphicsSystem )
 	{
 		Projection projection;
-		projection.createPerspective( 800 / 600, f32::piOver4, 0.001f, 1000.0f );
+		projection.createPerspective((float)graphicsSystem.getBackBuffer().getWidth() / graphicsSystem.getBackBuffer().getHeight(), f32::piOver4, 0.001f, 1000.0f );
 
 		const Vector3 position = { 0.0f, 0.0f, 3.0f };
 		const Quaternion rotation = Quaternion::identity;

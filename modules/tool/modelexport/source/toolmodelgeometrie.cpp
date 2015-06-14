@@ -212,7 +212,7 @@ namespace tiki
 
 					if ( !value.isEmpty() )
 					{
-						uint i = ParseString::parseUInt32( value );
+						uint i = ParseString::parseUInt32( value.cStr() );
 
 						if ( i != 3u )
 						{
@@ -269,7 +269,7 @@ namespace tiki
 					
 					if ( !value.isEmpty() )
 					{
-						uint i = ParseString::parseUInt32( value );
+						uint i = ParseString::parseUInt32( value.cStr() );
 
 						indices.add( i );
 					}
@@ -558,14 +558,14 @@ namespace tiki
 					if ( count != TIKI_SIZE_T_MAX ) i++;
 
 					const string countString	= tokenCount.findNext();
-					count						= ParseString::parseUInt32( countString );
+					count						= ParseString::parseUInt32( countString.cStr() );
 					c = 0u;
 
 					TIKI_ASSERT( count < 5u );
 				}
 
 				const string part	= token.findNext( &index );
-				const uint value	= ParseString::parseUInt32( part );
+				const uint value	= ParseString::parseUInt32( part.cStr() );
 
 				for (uint j = 0u; j < m_skinningIndicesCount[ i ]; ++j)
 				{

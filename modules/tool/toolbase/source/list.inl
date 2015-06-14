@@ -221,7 +221,7 @@ namespace tiki
 	}
 	
 	template<typename T>
-	TIKI_FORCE_INLINE bool List< T >::removeSortedByValue( const T& item)
+	TIKI_FORCE_INLINE bool List< T >::removeSortedByValue( const T& item )
 	{
 		TIKI_ASSERT( m_isReadOnly == false );
 
