@@ -1,7 +1,7 @@
 
 #include "assetconverter.hpp"
 
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/reflection.hpp"
 #include "tiki/toolbase/tooldirectory.hpp"
 

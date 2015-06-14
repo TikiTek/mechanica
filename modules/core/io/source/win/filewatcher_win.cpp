@@ -3,7 +3,7 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/file.hpp"
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 
 namespace tiki
 {

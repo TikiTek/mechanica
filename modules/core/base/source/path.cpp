@@ -1,7 +1,5 @@
 
-#include "tiki/base/iopath.hpp"
-
-#include <windows.h>
+#include "tiki/base/path.hpp"
 
 namespace tiki
 {
@@ -99,23 +97,5 @@ namespace tiki
 		}
 
 		return fullPath.replace( "/./", "/" );
-	}
-
-	string path::getCurrentDir()
-	{
-		char buffer[ 256u ];
-		GetCurrentDirectoryA( TIKI_COUNT( buffer ), buffer );
-
-		return buffer;
-	}
-
-	string path::getExecutablePath()
-	{
-		HMODULE currentModule = GetModuleHandleA( nullptr );
-
-		char buffer[ 256u ];
-		GetModuleFileNameA( currentModule, buffer, TIKI_COUNT( buffer ) );
-
-		return path::getDirectoryName( buffer );
 	}
 }

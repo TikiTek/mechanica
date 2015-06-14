@@ -5,7 +5,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/directory.hpp"
 #include "tiki/base/file.hpp"
-#include "tiki/base/iopath.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"

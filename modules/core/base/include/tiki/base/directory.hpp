@@ -14,9 +14,6 @@ namespace tiki
 		bool	remove( const string& path );
 
 		bool	exists( const string& path );
-
-		//bool	getFiles( const string& path, Array< string >& targetList );
-		//bool	getDirectories( const string& path, Array< string >& targetList );
 	}
 }
 
