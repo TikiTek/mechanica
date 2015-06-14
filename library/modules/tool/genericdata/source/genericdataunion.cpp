@@ -34,4 +34,9 @@ namespace tiki
 	{
 		return GenericDataTypeType_Union;
 	}
+
+	cstring GenericDataUnion::getNodeName() const
+	{
+		return "union";
+	}
 }

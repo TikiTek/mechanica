@@ -20,7 +20,7 @@ namespace tiki
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
-		void							create( const char* pFolderName, bool recursive );
+		void							create( const string& contentFolder, bool recursive );
 		void							dispose();
 
 		bool							addType( GenericDataType& type );
@@ -28,7 +28,7 @@ namespace tiki
 		const GenericDataType*			findTypeByName( const string& name ) const;
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
-		bool							exportCode( GenericDataTypeMode mode );
+		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
 	private:
 				

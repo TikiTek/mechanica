@@ -19,6 +19,10 @@ namespace tiki
 
 		virtual GenericDataTypeType	getType() const TIKI_OVERRIDE;
 
+	protected:
+
+		virtual cstring				getNodeName() const TIKI_OVERRIDE;
+
 	};
 }
 

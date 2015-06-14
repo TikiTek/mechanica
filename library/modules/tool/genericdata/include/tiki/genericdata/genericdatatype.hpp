@@ -45,12 +45,16 @@ namespace tiki
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_PURE;
+		virtual bool				exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir ) TIKI_PURE;
 
 		const string&				getName() const;
 		GenericDataTypeMode			getMode() const;
 		virtual GenericDataTypeType	getType() const TIKI_PURE;
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
+
+		const string&				getModule() const;
+		void						setModule( const string& value );
 
 	protected:
 
@@ -59,6 +63,7 @@ namespace tiki
 	private:
 
 		string								m_name;
+		string								m_module;
 		GenericDataTypeMode					m_mode;
 
 	};

@@ -42,6 +42,15 @@ namespace tiki
 	
 	TIKI_FORCE_INLINE bool isStringEquals( cstring pString1, cstring pString2 )
 	{
+		if ( pString1 == pString2 )
+		{
+			return true;
+		}
+		else if ( pString1 == nullptr || pString2 == nullptr )
+		{
+			return false;
+		}
+
 		uint index = 0u;
 		while ( pString1[ index ] != '\0' && pString2[ index ] != '\0' )
 		{
