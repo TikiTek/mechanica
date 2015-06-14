@@ -2,11 +2,14 @@
 
 include "../../../library/buildtools/base_scripts"
 
-finalize(
-	"tiki3game",
-	{
-		find_project( "game" ),
-		find_project( "converterlibrary" ),
-		find_project( "webinterfacelibrary" )
-	}
-);
+local projects =
+{
+	find_project( "game" ),
+	find_project( "converterlibrary" )	
+};
+
+if use_msvc then
+	projects[#projects+1] = find_project( "webinterfacelibrary" );
+end
+
+finalize( "tiki3game",  projects );

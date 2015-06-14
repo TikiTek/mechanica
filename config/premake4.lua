@@ -47,18 +47,30 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	module:set_define( "_CRT_SECURE_NO_WARNINGS" );
 	module:set_define( "_WINSOCK_DEPRECATED_NO_WARNINGS" );	
 
+	module:set_flag("MultiProcessorCompile");
+	
 	use_msvc	= true;
 	use_d3d11	= true;
 	
-	global_configuration.enable_unity_builds = true
-elseif _ACTION == "gmake" or _ACTION == "codeblocks" then
+	global_configuration.enable_unity_builds = true	
+elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or _ACTION == "eclipse" then
 	use_mingw	= true;
 	use_opengl	= true;
+	
+	--if _ACTION == "codelite" then
+	--	include( "codelite" );
+	--elseif _ACTION == "codeblocks" then
+	--	include( "codeblocks" );
+	--elseif _ACTION == "eclipse" then
+	--	include( "eclipse" );
+	--end
 elseif _ACTION == "xcode" then
 	use_opengl	= true;
 else
 	throw("Build action not supported.");
 end
+
+
 
 if os.get() == "windows" then
 	is_windows = true;
@@ -87,7 +99,6 @@ module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OF
 module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) );
 
---module:set_flag( "FatalWarnings", "Master" );
+--module:set_flag( "FatalWarnings" );
 module:set_flag("NoExceptions");
 module:set_flag("NoMinimalRebuild");
-module:set_flag("MultiProcessorCompile");
