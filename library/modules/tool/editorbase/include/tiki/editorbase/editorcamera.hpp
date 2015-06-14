@@ -4,8 +4,9 @@ namespace tiki
 {
 	class Camera;
 	class FreeCamera;
-	struct Ray3;
+	class GraphicsSystem;
 	struct InputEvent;
+	struct Ray3;
 
 	public ref class EditorCamera
 	{
@@ -13,7 +14,7 @@ namespace tiki
 
 						EditorCamera();
 
-		bool			create();
+		bool			create( GraphicsSystem& graphicsSystem );
 		void			dispose();
 
 		void			update( float timeDelta );

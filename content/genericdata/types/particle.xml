@@ -1,0 +1,79 @@
+<tikigeneric>
+	<!-- Emitters -->
+	<enum name="ParticleEmitterSpawnType" type="uint8">
+		<value name="Once" />
+		<value name="TimeBased" />
+		<value name="External" />
+	</enum>
+	<union name="ParticleEmitterSpawnData">
+		<field name="timeInTimeLine" type="timems" />
+		<field name="timeInterval" type="timems" />
+		<field name="spawnToken" type="String" mode="ToolOnly" />
+		<field name="spawnToken" type="crc32" mode="RuntimeOnly" />
+	</union>
+	<struct name="ParticleEmitterData">
+		<field name="type" type="ParticleEmitterSpawnType" />
+		<field name="particleType" type="String" mode="ToolOnly" />
+		<field name="particleType" type="uint8" mode="RuntimeOnly" />
+		<field name="maxParticleCount" type="uint16" />
+		<field name="spawnData" type="ParticleEmitterSpawnData" />
+	</struct>
+	<!-- Particle -->
+	<enum name="ParticleType" type="uint8">
+		<value name="Billboard" />
+		<value name="Model" />
+		<value name="Light" />
+	</enum>
+	<enum name="ParticleFieldType" type="uint8">
+		<value name="Float" />
+		<value name="Double" />
+		<value name="SingedInteger" />
+		<value name="UningedInteger" />
+	</enum>
+	<struct name="ParticleParticleFieldData">
+		<field name="name" type="String" mode="ToolOnly" />
+		<field name="dimensions" type="uint8" />
+		<field name="type" type="ParticleFieldType" />
+	</struct>
+	<struct name="ParticleParticleData">
+		<field name="type" type="ParticleType" />
+		<array name="fields" type="ParticleParticleFieldData" />
+	</struct>
+	<!-- Evaluation -->
+	<enum name="ParticleEvalCommandType" type="uint8" mode="ToolOnly">
+		<value name="Value" />
+		<value name="Lerp" />
+		<value name="Time" />
+		<value name="Spline" />
+		<value name="Add" />
+		<value name="Subtract" />
+		<value name="Multiply" />
+		<value name="Divide" />
+	</enum>
+	<enum name="ParticleEvalParameterType" type="uint8" mode="ToolOnly">
+		<value name="Value" />
+		<value name="Register" />
+		<value name="ParticleData" />
+	</enum>	
+	<struct name="ParticleEvalParameterData" mode="ToolOnly">
+		<field name="type" type="ParticleEvalParameterType" />
+		<array name="value" type="uint64" />
+	</struct>
+	<struct name="ParticleEvalCommandData" mode="ToolOnly">
+		<field name="command" type="ParticleEvalCommandType" />
+		<array name="parameters" type="ParticleEvalParameterData" />
+	</struct>
+	<struct name="ParticleEvalData">
+		<field name="name" type="String" mode="ToolOnly" />
+		<array name="commands" type="ParticleEvalCommandData" mode="ToolOnly" />
+		<array name="byteCode" type="uint8" mode="RuntimeOnly" />
+	</struct>
+	<!-- Main -->
+	<struct name="ParticleEffectData">
+		<array name="emitters" type="ParticleEmitterData" />
+		<array name="particles" type="ParticleParticleData" />
+		<array name="evals" type="ParticleEvalData" />
+		<field name="simulateWhenInvisible" type="bool" />
+	</struct>
+	<resource name="ParticleEffect" postfix="particle" fourcc="PAFX" type="ParticleEffectData" />
+</tikigeneric>

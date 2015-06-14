@@ -61,6 +61,7 @@ namespace tiki
 
 	typedef uint32			crc32;
 	typedef uint32			fourcc;
+	typedef sint64			timems;	// time in milliseconds
 
 	typedef uint16			float16;
 	typedef float			float32;

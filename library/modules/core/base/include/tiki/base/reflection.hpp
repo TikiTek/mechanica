@@ -55,15 +55,16 @@
 		} s_typeDefinition;																					\
 	}
 
-#	define TIKI_REFLECTION_VALUE_TYPE( type, size, variant ) static const struct type ## Definition			\
-	{																							\
-		type ## Definition()																	\
-		{																						\
-			::tiki::reflection::registerValueType( #type, size, ::tiki::reflection::variant );	\
-		}																						\
+#	define TIKI_REFLECTION_VALUE_TYPE( type, size, variant ) static const struct type ## Definition	\
+	{																								\
+		type ## Definition()																		\
+		{																							\
+			::tiki::reflection::registerValueType( #type, size, ::tiki::reflection::variant );		\
+		}																							\
 	} s_ ## type ## Definition
 
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
+#	define TIKI_REFLECTION_ARRAY( type, name ) StaticArray< type > name;
 #	define TIKI_REFLECTION_CPPDECLARE( type_name ) type_name ::Definition type_name :: s_typeDefinition
 
 #else
@@ -81,6 +82,7 @@
 #	define TIKI_REFLECTION_VALUE_TYPE( type, size, variant )
 
 #	define TIKI_REFLECTION_FIELD( type, name ) type name;
+#	define TIKI_REFLECTION_ARRAY( type, name ) StaticArray< type > name;
 #	define TIKI_REFLECTION_CPPDECLARE( type )
 
 #endif

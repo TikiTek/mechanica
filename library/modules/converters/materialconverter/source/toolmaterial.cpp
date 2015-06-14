@@ -165,11 +165,11 @@ namespace tiki
 				break;
 
 			case MaterialFieldType_Integer:
-				kvp.value.data.integerValue = ParseString::parseInt64( kvp.value.value );
+				kvp.value.data.integerValue = ParseString::parseInt64( kvp.value.value.cStr() );
 				break;
 
 			case MaterialFieldType_Float:
-				kvp.value.data.floatValue = ParseString::parseDouble( kvp.value.value );
+				kvp.value.data.floatValue = ParseString::parseDouble( kvp.value.value.cStr() );
 				break;
 			}
 		} 

@@ -512,7 +512,7 @@ namespace tiki
 				const string name = string( pArgumentBegin, length );
 
 				ShaderConstantInfo& info = constants.add();
-				info.slotIndex	= ParseString::parseInt32( slotIndex );
+				info.slotIndex	= ParseString::parseInt32( slotIndex.cStr() );
 				info.name		= name;
 
 				const uint startIndex	= pSearchBegin - sourceCode.cStr();

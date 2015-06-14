@@ -93,6 +93,8 @@ namespace tiki
 
 	void Camera::getCameraRay( sint16 mousePosX, sint16 mousePosY, int width, int height, Ray3* ray )
 	{
+		createMatrix();
+
 		if ( ray == nullptr )
 		{
 			TIKI_ASSERT( "Invalid ray" );

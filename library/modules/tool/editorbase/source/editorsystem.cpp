@@ -20,6 +20,8 @@ namespace tiki
 		ResourceManager		resourceManager;
 		GamebuildFileSystem fileSystem;
 		FrameworkFactories	frameworkFactories;
+
+		Ray3				testRay;
 	};
 
 
@@ -66,7 +68,7 @@ namespace tiki
 			return false;
 		}
 		
-		if ( !m_camera.create() )
+		if ( !m_camera.create( m_pData->graphicsSystem ) )
 		{
 			return false;
 		}
@@ -130,7 +132,7 @@ namespace tiki
 		//renderer.drawRectangle( rect, TIKI_COLOR_GREEN );
 
 
-		renderer.drawRay( m_camera.getMouseRay() );
+		renderer.drawRay( m_pData->testRay );
 
 		m_TransformGizmo->render();
 
@@ -154,6 +156,11 @@ namespace tiki
 
 	void EditorSystem::processInputEvent( InputEvent& inputEvent )
 	{
+		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Left )
+		{
+			m_pData->testRay = m_camera.getMouseRay();
+		}
+
 		m_camera.processInputEvent( inputEvent );
 		m_TransformGizmo->processInputEvent( inputEvent );
 	}

@@ -28,7 +28,7 @@ namespace tiki
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
 
-		return ParseString::parseSingle( value );
+		return ParseString::parseSingle( value.cStr() );
 	}
 
 	int ConversionArguments::getInt( const string& key ) const
@@ -36,7 +36,7 @@ namespace tiki
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
 
-		return ParseString::parseInt32( value );
+		return ParseString::parseInt32( value.cStr() );
 	}
 
 	string ConversionArguments::getOptionalString( const string& key, const string& defaultValue ) const
@@ -55,7 +55,7 @@ namespace tiki
 		string value;
 		if ( getArgument( value, key ) )
 		{
-			return ParseString::parseSingle( value );
+			return ParseString::parseSingle( value.cStr() );
 		}
 
 		return defaultValue;
@@ -66,7 +66,7 @@ namespace tiki
 		string value;
 		if ( getArgument( value, key ) )
 		{
-			return ParseString::parseInt32( value );
+			return ParseString::parseInt32( value.cStr() );
 		}
 
 		return defaultValue;

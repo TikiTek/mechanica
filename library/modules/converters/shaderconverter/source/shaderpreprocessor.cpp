@@ -81,7 +81,7 @@ namespace tiki
 						}
 
 						const string maxValueString = name.subString( arrayIndex, arrayLength );
-						maxValue	= ParseString::parseUInt32( maxValueString ) - 1u;
+						maxValue	= ParseString::parseUInt32( maxValueString.cStr() ) - 1u;
 						name		= name.subString( 0u, arrayIndex - 1 );
 					}
 
