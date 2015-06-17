@@ -33,10 +33,11 @@ namespace tiki
 
 		TIKI_FORCE_INLINE bool			findValue( TValue* pTargetValue, TKey key ) const;
 
-		TIKI_FORCE_INLINE void			set( const TKey& key, const TValue& value );
+		TIKI_FORCE_INLINE TValue&		set( const TKey& key, const TValue& value );
 		TIKI_FORCE_INLINE bool			remove( const TKey& key );
 
 		TIKI_FORCE_INLINE void			operator=( const Map<TKey, TValue>& copy );
+		TIKI_FORCE_INLINE TValue&		operator[]( const TKey& key );
 
 	private:
 

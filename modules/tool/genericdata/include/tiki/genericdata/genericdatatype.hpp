@@ -45,7 +45,7 @@ namespace tiki
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_PURE;
-		virtual bool				exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir ) TIKI_PURE;
+		virtual bool				exportCode( string& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
 
 		const string&				getName() const;
 		GenericDataTypeMode			getMode() const;

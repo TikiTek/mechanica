@@ -30,11 +30,10 @@ namespace tiki
 			return false;
 		}
 
-		sint64 nextValue = 0;
 		const XmlElement* pChildElement = pTypeRoot->elements;
 		while ( pChildElement != nullptr )
 		{
-			const bool isValue = isStringEquals( pChildElement->name, "field" );
+			const bool isValue = isStringEquals( pChildElement->name, "value" );
 			if ( isValue )
 			{
 				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildElement );
@@ -44,9 +43,9 @@ namespace tiki
 				if ( pNameAtt )
 				{
 					GenericDataEnumValue& field = m_values.add();
-					field.name	= pNameAtt->content;
-					field.mode	= GenericDataTypeMode_ToolAndRuntime;
-					field.value	= nextValue;
+					field.name		= pNameAtt->content;
+					field.mode		= GenericDataTypeMode_ToolAndRuntime;
+					field.hasValue	= false;
 
 					if ( pModeAtt != nullptr )
 					{
@@ -63,12 +62,8 @@ namespace tiki
 
 					if ( pValueAtt != nullptr )
 					{
-						field.value = ParseString::parseInt64( pValueAtt->content );
-						nextValue = field.value + 1;
-					}
-					else
-					{
-						nextValue++;
+						field.hasValue	= true;
+						field.value		= ParseString::parseInt64( pValueAtt->content );
 					}
 				}
 				else
@@ -84,8 +79,45 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataEnum::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	bool GenericDataEnum::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
+		static const char* s_pBaseFormat			= "\n"
+													  "\tenum %s : %s\n"
+													  "\t{\n"
+													  "\t\t%s_Invalid = -1,\n"
+													  "\n"
+													  "%s"
+													  "\n"
+													  "\t\t%s_Count\n"
+													  "\t};\n";
+
+		static const char* s_pValueFormat			= "\t\t%s_%s,\n";
+		static const char* s_pValueFormatWithValue	= "\t\t%s_%s = %i,\n";
+
+		string valuesCode;
+		for (uint i = 0u; i < m_values.getCount(); ++i)
+		{
+			const GenericDataEnumValue& value = m_values[ i ];
+
+			if ( value.hasValue )
+			{
+				valuesCode += formatString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), value.value );
+			}
+			else
+			{
+				valuesCode += formatString( s_pValueFormat, getName().cStr(), value.name.cStr() );
+			}
+		}
+
+		targetData += formatString(
+			s_pBaseFormat,
+			getName().cStr(),
+			m_pBaseType->getName().cStr(),
+			getName().cStr(),
+			valuesCode.cStr(),
+			getName().cStr()
+		);
+
 		return true;
 	}
 

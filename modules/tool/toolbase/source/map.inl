@@ -109,7 +109,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE void Map<TKey, TValue>::set( const TKey& key, const TValue& value )
+	TIKI_FORCE_INLINE TValue& Map<TKey, TValue>::set( const TKey& key, const TValue& value )
 	{
 		uint pos = 0u;
 		for (; pos < m_count; ++pos)
@@ -119,7 +119,7 @@ namespace tiki
 			if ( pair.key == key )
 			{
 				pair.value = value;
-				return;
+				return pair.value;
 			}
 			else if ( pair.key > key )
 			{
@@ -134,9 +134,12 @@ namespace tiki
 			m_pData[ i ] = m_pData[ i - 1 ];
 		}
 
-		m_pData[ pos ].key		= key;
-		m_pData[ pos ].value	= value;
+		Pair& pair = m_pData[ pos ];
+		pair.key		= key;
+		pair.value	= value;
 		m_count++;
+
+		return pair.value;
 	}
 
 	template<typename TKey, typename TValue>
@@ -183,6 +186,18 @@ namespace tiki
 		{
 			m_pData[ i ] = copy.m_pData[ i ];
 		}
+	}
+	
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE TValue& tiki::Map<TKey, TValue>::operator[]( const TKey& key )
+	{
+		const uint index = findIndex( key );
+		if ( index == TIKI_SIZE_T_MAX )
+		{
+			return set( key, TValue() );
+		}
+
+		return m_pData[index].value;
 	}
 
 	template<typename TKey, typename TValue>
