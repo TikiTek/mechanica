@@ -87,8 +87,33 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataStruct::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	bool GenericDataStruct::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
+		static const char* s_pBaseFormat		= "\n"
+												  "\tstruct %s%s\n"
+												  "\t{\n"
+												  "%s"
+												  "\t};\n";
+
+		static const char* s_pBaseTypeFormat	= " : public %s";
+		static const char* s_pFieldFormat		= "\t\t%s %s;\n";
+
+		string fieldsCode;
+		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		{
+			const GenericDataStructField& field = m_fields[ i ];
+
+			fieldsCode += formatString( s_pFieldFormat, field.pType->getName().cStr(), field.name.cStr() );
+		}
+
+		string baseTypeCode;
+		if ( m_pBaseType != nullptr )
+		{
+			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getName().cStr() );
+		}
+
+		targetData += formatString( s_pBaseFormat, baseTypeCode.cStr(), getName().cStr(), fieldsCode.cStr() );
+
 		return true;
 	}
 

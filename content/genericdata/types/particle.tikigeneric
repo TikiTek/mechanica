@@ -8,12 +8,12 @@
 	<union name="ParticleEmitterSpawnData">
 		<field name="timeInTimeLine" type="timems" />
 		<field name="timeInterval" type="timems" />
-		<field name="spawnToken" type="String" mode="ToolOnly" />
+		<field name="spawnToken" type="string" mode="ToolOnly" />
 		<field name="spawnToken" type="crc32" mode="RuntimeOnly" />
 	</union>
 	<struct name="ParticleEmitterData">
 		<field name="type" type="ParticleEmitterSpawnType" />
-		<field name="particleType" type="String" mode="ToolOnly" />
+		<field name="particleType" type="string" mode="ToolOnly" />
 		<field name="particleType" type="uint8" mode="RuntimeOnly" />
 		<field name="maxParticleCount" type="uint16" />
 		<field name="spawnData" type="ParticleEmitterSpawnData" />
@@ -31,14 +31,14 @@
 		<value name="UningedInteger" />
 	</enum>
 	<struct name="ParticleParticleFieldData">
-		<field name="name" type="String" mode="ToolOnly" />
+		<field name="name" type="string" mode="ToolOnly" />
 		<field name="dimensions" type="uint8" />
 		<field name="type" type="ParticleFieldType" />
 	</struct>
 	<!--union name="ParticleEmitterSpawnData">
 		<field name="timeInTimeLine" type="timems" />
 		<field name="timeInterval" type="timems" />
-		<field name="spawnToken" type="String" mode="ToolOnly" />
+		<field name="spawnToken" type="string" mode="ToolOnly" />
 		<field name="spawnToken" type="crc32" mode="RuntimeOnly" />
 	</union-->	
 	<struct name="ParticleParticleData">
@@ -70,7 +70,7 @@
 		<array name="parameters" type="ParticleEvalParameterData" />
 	</struct>
 	<struct name="ParticleEvalData">
-		<field name="name" type="String" mode="ToolOnly" />
+		<field name="name" type="string" mode="ToolOnly" />
 		<array name="commands" type="ParticleEvalCommandData" mode="ToolOnly" />
 		<array name="byteCode" type="uint8" mode="RuntimeOnly" />
 	</struct>

@@ -18,9 +18,9 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValueType::exportCode( string& targetData, GenericDataTypeMode mode, const string& targetDir )
+	bool GenericDataValueType::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
-		return true;
+		return false;
 	}
 
 	GenericDataTypeType GenericDataValueType::getType() const

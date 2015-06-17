@@ -2,6 +2,7 @@
 #include "tiki/genericdata/genericdatatypecollection.hpp"
 
 #include "tiki/base/directory.hpp"
+#include "tiki/base/file.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/genericdata/genericdataenum.hpp"
@@ -12,6 +13,7 @@
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
 #include "tiki/toolbase/list.hpp"
+#include "tiki/toolbase/map.hpp"
 
 namespace tiki
 {
@@ -228,6 +230,50 @@ namespace tiki
 			}
 		}
 
+		Map<string, string> moduleCode;
+		for (const GenericDataType& type : m_types)
+		{
+			const string& moduleName = type.getModule();
+			if ( moduleName.isEmpty() )
+			{
+				continue;
+			}
+			
+			string& code = moduleCode[ moduleName ];
+
+			type.exportCode( code, mode );
+		}
+
+		static const char* s_pBaseFormat =	"#pragma once\n"
+											"#ifndef TIKI_%s_INCLUDED__\n"
+											"#define TIKI_%s_INCLUDED__\n"
+											"\n"
+											"namespace tiki\n"
+											"{\n"
+											"%s\n"
+											"}\n"
+											"\n"
+											"#endif // TIKI_%s_INCLUDED__\n";
+
+		for (uint i = 0u; i < moduleCode.getCount(); ++i)
+		{
+			const auto& kvp = moduleCode.getPairAt( i );
+
+			const string fileName		= kvp.key + ".hpp";
+			const string fileNameUpper	= fileName.toUpper();
+			const string fullPath		= path::combine( targetDir, fileName );
+
+			string finalCode = formatString(
+				s_pBaseFormat,
+				fileNameUpper.cStr(),
+				fileNameUpper.cStr(),
+				kvp.value.cStr(),
+				fileNameUpper.cStr()
+			);
+
+			file::writeAllBytes( fullPath.cStr(), (const uint8*)finalCode.cStr(), finalCode.getLength() );
+		}
+
 		return true;
 	}
 
@@ -272,7 +318,7 @@ namespace tiki
 		addType( *pTimeMS );
 
 		GenericDataValueType* pBoolean	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "bool", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_Boolean );
-		GenericDataValueType* pString	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "String", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_String );
+		GenericDataValueType* pString	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "string", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_String );
 
 		addType( *pBoolean );
 		addType( *pString );
