@@ -45,7 +45,7 @@ namespace tiki
 				continue;
 			}
 
-			const XmlElement* pRoot = reader.findNodeByName( "tikigeneric" );
+			const XmlElement* pRoot = reader.findNodeByName( "tikigenerictypes" );
 			if ( pRoot == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", files[ i ].cStr() );
@@ -260,15 +260,15 @@ namespace tiki
 			const auto& kvp = moduleCode.getPairAt( i );
 
 			const string fileName		= kvp.key + ".hpp";
-			const string fileNameUpper	= fileName.toUpper();
+			const string fileNameDefine	= fileName.toUpper().replace('.', '_');
 			const string fullPath		= path::combine( targetDir, fileName );
 
 			string finalCode = formatString(
 				s_pBaseFormat,
-				fileNameUpper.cStr(),
-				fileNameUpper.cStr(),
+				fileNameDefine.cStr(),
+				fileNameDefine.cStr(),
 				kvp.value.cStr(),
-				fileNameUpper.cStr()
+				fileNameDefine.cStr()
 			);
 
 			file::writeAllBytes( fullPath.cStr(), (const uint8*)finalCode.cStr(), finalCode.getLength() );
@@ -279,24 +279,28 @@ namespace tiki
 
 	void GenericDataTypeCollection::registerDefaultTypes()
 	{
-		GenericDataValueType* pShort	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "short", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
-		GenericDataValueType* pInt		= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "int", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
-		GenericDataValueType* pLong		= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "long", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
+		GenericDataValueType* pShort	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "short",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
+		GenericDataValueType* pInt		= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "int",		GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
+		GenericDataValueType* pLong		= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "long",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
 
-		GenericDataValueType* pSInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint8",  GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger8 );
-		GenericDataValueType* pSInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint16", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
-		GenericDataValueType* pSInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint32", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
-		GenericDataValueType* pSInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint64", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
-		GenericDataValueType* pUInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint8",  GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger8 );
-		GenericDataValueType* pUInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint16", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
-		GenericDataValueType* pUInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint32", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
-		GenericDataValueType* pUInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint64", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
-		GenericDataValueType* pFloat16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "half",   GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint16 );
-		GenericDataValueType* pFloat32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "float",  GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint32 );
-		GenericDataValueType* pFloat64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "double", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint64 );
+		GenericDataValueType* pSInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint8",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger8 );
+		GenericDataValueType* pSInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
+		GenericDataValueType* pSInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
+		GenericDataValueType* pSInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "sint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
+		GenericDataValueType* pUInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint8",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger8 );
+		GenericDataValueType* pUInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger16 );
+		GenericDataValueType* pUInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger32 );
+		GenericDataValueType* pUInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "uint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
 
-		GenericDataValueType* pCrc32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "crc32", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_UnsingedInteger32 );
-		GenericDataValueType* pTimeMS	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "timems", GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
+		GenericDataValueType* pHalf		= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "half",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint16 );		
+		GenericDataValueType* pFloat	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "float",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint32 );
+		GenericDataValueType* pDouble	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "double",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint64 );
+		GenericDataValueType* pFloat16	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "float16",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint16 );		
+		GenericDataValueType* pFloat32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "float32",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint32 );
+		GenericDataValueType* pFloat64	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "float64",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_FloatingPoint64 );
+
+		GenericDataValueType* pCrc32	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "crc32",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_UnsingedInteger32 );
+		GenericDataValueType* pTimeMS	= TIKI_MEMORY_NEW_OBJECT( GenericDataValueType )( *this, "timems",	GenericDataTypeMode_ToolAndRuntime, GenericDataValueTypeType_SingedInteger64 );
 
 		addType( *pShort );
 		addType( *pInt );
@@ -310,6 +314,10 @@ namespace tiki
 		addType( *pUInt16 );
 		addType( *pUInt32 );
 		addType( *pUInt64 );
+
+		addType( *pHalf );
+		addType( *pFloat );
+		addType( *pDouble );
 		addType( *pFloat16 );
 		addType( *pFloat32 );
 		addType( *pFloat64 );
