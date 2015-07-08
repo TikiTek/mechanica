@@ -11,6 +11,7 @@ game:add_dependency( "base" );
 game:add_dependency( "framework" );
 game:add_dependency( "gameflowsystem" );
 game:add_dependency( "gamestates" );
+game:add_dependency( "genericdata" );
 
 game:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 
