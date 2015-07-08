@@ -1,5 +1,13 @@
 
-Module = class{ name = nil, module_type = 0, config = nil, module_dependencies = {}, source_files = {}, exclude_files = {} };
+Module = class{
+	name = nil,
+	module_type = 0,
+	import_func = nil,
+	config = nil,
+	module_dependencies = {},
+	source_files = {},
+	exclude_files = {}
+};
 
 global_module_storage = {};
 
@@ -25,6 +33,12 @@ function Module:new( name, initFunc )
 	module_new.name			= name;
 	module_new.config		= PlatformConfiguration:new();
 	module_new.module_type	= ModuleTypes.UnityCppModule;
+	
+	for i,module in pairs( global_module_storage ) do
+		if ( module.name == name ) then
+			throw( "Module name already used: " .. name );
+		end
+	end
 	
 	table.insert( global_module_storage, module_new );
 
@@ -104,8 +118,12 @@ end
 
 function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform )
 	self.module_type = ModuleTypes.FilesModule;
-
+	
 	if ( configuration_obj == nil and platform == nil ) then
+		if self.import_func ~= nil and type( self.import_func ) == "function" then
+			self.import_func();
+		end
+
 		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then
 			local all_files = {};
 		

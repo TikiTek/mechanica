@@ -1,6 +1,6 @@
--- library/modules/tool/genericdata
+-- library/modules/tool/toolgenericdata
 
-local module = Module:new( "genericdata" );
+local module = Module:new( "toolgenericdata" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );

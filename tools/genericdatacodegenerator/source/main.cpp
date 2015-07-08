@@ -20,11 +20,11 @@ int tiki::mainEntryPoint()
 
 			if ( arg.startsWith( "--content-dir=" ) )
 			{
-				sourceDir = arg.subString( getStringLength( "--content-dir=" ) + 1 );
+				sourceDir = arg.subString( getStringLength( "--content-dir=" ) );
 			}
 			else if ( arg.startsWith( "--target-dir=" ) )
 			{
-				targetDir = arg.subString( getStringLength( "--target-dir=" ) + 1 );
+				targetDir = arg.subString( getStringLength( "--target-dir=" ) );
 			}
 		}
 
@@ -33,6 +33,8 @@ int tiki::mainEntryPoint()
 		if ( !collection.exportCode( GenericDataTypeMode_RuntimeOnly, targetDir ) )
 		{
 			TIKI_TRACE_ERROR( "[genericdatacodegenerator] code generation finish with some errors.\n" );
+
+			retValue = 1;
 		}
 		else
 		{

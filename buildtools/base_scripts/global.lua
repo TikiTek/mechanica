@@ -1,12 +1,17 @@
 newoption { trigger = "outpath", description = "Location for generated project files" }
 newoption { trigger = "unity_dir", description = "" }
-
-file_actions = {};
-global_configuration = { enable_unity_builds = false };
+newoption { trigger = "genericdata_dir", description = "" }
 
 if not _OPTIONS["outpath"] then
 	error("No outpath specified.")
 end
+
+file_actions = {};
+global_configuration = {
+	enable_unity_builds = false,
+	root_path = path.getabsolute( path.getdirectory( _SCRIPT ) .. "/../../../" ),
+	output_path = path.getrelative( _OPTIONS["outpath"], "." )
+};
 
 function throw( text )
 	print( "Exception: " .. text );
@@ -120,8 +125,8 @@ function table.index_of( table, object )
 	local count = #table;
 	for i = 0,count do
 		if table[ i ] == object then
-			result = i
-			break
+			result = i;
+			break;
 		end
 	end
 	
@@ -203,7 +208,7 @@ function finalize( output_name, projects )
 			if not table.contains( var_configurations, configuration ) then 
 				table.insert( var_configurations, configuration );
 			end
-		end		
+		end
 	end
 	
 	solution( output_name );
@@ -219,6 +224,11 @@ function finalize( output_name, projects )
 			os.mkdir( _OPTIONS[ "unity_dir" ] )
 		end
 
+		_OPTIONS[ "genericdata_dir" ] = path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name )
+		if not os.isdir( _OPTIONS[ "genericdata_dir" ] ) then
+			os.mkdir( _OPTIONS[ "genericdata_dir" ] )
+		end
+		
 		project:finalize();
 	end
 end
