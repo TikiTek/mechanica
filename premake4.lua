@@ -1,4 +1,4 @@
 
-include "config"
-include "library"
-include "local"
+import( "config" );
+import( "library" );
+import( "local" );
