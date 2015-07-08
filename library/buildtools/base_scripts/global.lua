@@ -154,9 +154,18 @@ function class_instance( class )
 	return new_instance;
 end
 
-function include_sub_directories()
+function import( fname )
+	local fileName = path.join( fname, fname .. ".lua" );
+	if os.isfile( fileName ) then
+		include( fileName );
+	else
+		include( fname );
+	end
+end
+
+function import_sub_directories()
 	for i,dir in pairs( os.matchdirs("*") ) do
-		include( dir );
+		import( dir );
 	end
 end
 

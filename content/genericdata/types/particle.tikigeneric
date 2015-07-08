@@ -1,8 +1,8 @@
-<tikigeneric>
+<tikigenerictypes>
 	<!-- Emitters -->
 	<enum name="ParticleEmitterSpawnType" base="uint8">
 		<value name="Once" />
-		<value name="TimeBased" />
+		<value name="TimeInterval" />
 		<value name="External" />
 	</enum>
 	<union name="ParticleEmitterSpawnData">
@@ -82,4 +82,4 @@
 		<field name="simulateWhenInvisible" type="bool" />
 	</struct>
 	<resource name="ParticleEffect" postfix="particle" fourcc="PAFX" base="ParticleEffectData" />
-</tikigeneric>
+</tikigenerictypes>
