@@ -6,10 +6,11 @@ module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
 module:add_files( "source/*.*" );
 
-if is_windows then
-	module:add_files( "source/win/*.*" );
-elseif is_linux then
-	module:add_files( "source/linux/*.*" );
+if use_sdl then
+	module:add_files( "source/sdl/*.*" );
+	module:add_dependency( "sdl" );
+elseif use_msvc then
+	module:add_files( "source/dinput/*.*" );
 else
 	throw "Platform not implemented"
 end

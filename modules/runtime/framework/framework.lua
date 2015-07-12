@@ -6,6 +6,15 @@ module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );
 
+if use_sdl then
+	module:add_files( "source/sdl/*.*" );
+	module:add_dependency( "sdl" );
+elseif is_windows then
+	module:add_files( "source/win/*.*" );
+else
+	throw "Platform not implemented"
+end
+
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_ON", "Debug" );
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Release" );
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Master" );

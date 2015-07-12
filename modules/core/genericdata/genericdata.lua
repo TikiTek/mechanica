@@ -2,7 +2,6 @@
 
 local module = Module:new( "genericdata" );
 
-
 module.import_func = function()
 	local output_path = path.getabsolute( _OPTIONS[ "genericdata_dir" ] );
 

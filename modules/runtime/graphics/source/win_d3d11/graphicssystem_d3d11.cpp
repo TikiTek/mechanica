@@ -202,7 +202,7 @@ namespace tiki
 		swapDesc.SampleDesc.Count					= 1;
 		swapDesc.SampleDesc.Quality					= 0;
 		swapDesc.Windowed							= !params.fullScreen;
-		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_SEQUENTIAL;
 		swapDesc.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		D3D_FEATURE_LEVEL level;
