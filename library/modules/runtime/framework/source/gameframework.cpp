@@ -3,6 +3,10 @@
 
 #include "tiki/threading/thread.hpp"
 
+#if TIKI_ENABLED( TIKI_SDL )
+#	include "SDL.h"
+#endif
+
 namespace tiki
 {
 	FrameworkData& framework::getFrameworkData()
@@ -53,6 +57,14 @@ namespace tiki
 	bool GameFramework::internInitialize()
 	{
 		fillParameters( m_parameters );
+
+#if TIKI_ENABLED( TIKI_SDL )
+		if ( SDL_Init( SDL_INIT_GAMECONTROLLER ) < 0 )
+		{
+			TIKI_TRACE_ERROR( "Failed to initialize SDL! Error: %s\n", SDL_GetError() );
+			return false;
+		}
+#endif
 
 		WindowParameters windowParams;
 		windowParams.width			= m_parameters.screenWidth;
@@ -158,6 +170,10 @@ namespace tiki
 		m_frameworkData.mainWindow.dispose();
 
 		m_frameworkData.gamebuildFileSystem.dispose();
+
+#if TIKI_ENABLED( TIKI_SDL )
+		SDL_Quit();
+#endif
 	}
 
 	bool GameFramework::frame()

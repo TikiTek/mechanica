@@ -7,8 +7,10 @@
 #include "tiki/input/inputdevice.hpp"
 #include "tiki/input/inputevent.hpp"
 
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#	include "../../../source/win/inputsystem_win.hpp"
+#if TIKI_ENABLED( TIKI_SDL )
+#	include "../../../source/sdl/inputsystem_sdl.hpp"
+#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	include "../../../source/dinput/inputsystem_dinput.hpp"
 #else
 #	error Platform not supported
 #endif

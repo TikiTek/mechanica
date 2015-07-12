@@ -8,6 +8,14 @@
 #include "tiki/base/types.hpp"
 #include "tiki/runtimeshared/windoweventbuffer.hpp"
 
+#if TIKI_ENABLED( TIKI_SDL )
+#	include "../../../source/sdl/mainwindow_sdl.hpp"
+#elif TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#	include "../../../source/win/mainwindow_win.hpp"
+#else
+#	error Platform not supported
+#endif
+
 namespace tiki
 {
 	struct WindowParameters
@@ -36,7 +44,9 @@ namespace tiki
 
 	private:
 
-		WindowHandle				m_pHandle;
+		static bool					s_mainWindowCreated;
+
+		MainWindowPlatformData		m_platformData;
 
 		WindowEventBuffer			m_eventBuffer;
 

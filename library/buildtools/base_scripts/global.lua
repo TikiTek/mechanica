@@ -162,7 +162,7 @@ end
 function import( fname )
 	local fileName = path.join( fname, fname .. ".lua" );
 	if os.isfile( fileName ) then
-		include( fileName );
+		dofile( fileName );
 	else
 		include( fname );
 	end

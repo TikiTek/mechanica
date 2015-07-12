@@ -12,9 +12,13 @@
 tiki::InstanceHandle				s_instanceHandle;
 tiki::StaticArray< tiki::cstring >	s_arguments;
 
+#if TIKI_ENABLED( TIKI_SDL )
+#	include "SDL_main.h"
+#endif
+
 int main( int argc, char** argv )
 {
-	s_instanceHandle	= (tiki::InstanceHandle)GetModuleHandle( nullptr );
+	s_instanceHandle = (tiki::InstanceHandle)GetModuleHandle( nullptr );
 
 	s_arguments.create( (tiki::cstring*)argv, (tiki::uint)argc );
 
@@ -23,6 +27,7 @@ int main( int argc, char** argv )
 	s_arguments.dispose();
 	return returnValue;
 }
+
 #endif
 
 namespace tiki

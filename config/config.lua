@@ -38,6 +38,8 @@ use_d3d11	= false;
 use_d3d12	= false;
 use_opengl	= false;
 
+use_sdl		= false;
+
 if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	module:set_define( "WIN_NT" );
 	module:set_define( "WIN32" );
@@ -51,11 +53,13 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	
 	use_msvc	= true;
 	use_d3d11	= true;
+	use_sdl		= true;
 	
 	global_configuration.enable_unity_builds = true	
 elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or _ACTION == "eclipse" then
 	use_mingw	= true;
 	use_opengl	= true;
+	use_sdl		= true;
 	
 	--if _ACTION == "codelite" then
 	--	include( "codelite" );
@@ -69,8 +73,6 @@ elseif _ACTION == "xcode" then
 else
 	throw("Build action not supported.");
 end
-
-
 
 if os.get() == "windows" then
 	is_windows = true;
@@ -95,6 +97,8 @@ module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
 module:set_define( "TIKI_GRAPHICS_D3D11", iff( use_d3d11, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_GRAPHICS_D3D12", iff( use_d3d12, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_GRAPHICS_OPENGL4", iff( use_opengl, "TIKI_ON", "TIKI_OFF" ) );
+
+module:set_define( "TIKI_SDL", iff( use_sdl, "TIKI_ON", "TIKI_OFF" ) );
 
 module:set_define( "TIKI_BUILD_MSVC", iff( use_msvc, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) );
