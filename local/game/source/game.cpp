@@ -59,7 +59,7 @@ namespace tiki
 #endif
 	}
 
-	bool Game::initialize()
+	bool Game::initializeGame()
 	{
 		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
 
@@ -94,7 +94,7 @@ namespace tiki
 		return true;
 	}
 
-	void Game::shutdown()
+	void Game::shutdownGame()
 	{
 		m_touchSystem.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 

@@ -7,7 +7,5 @@ int tiki::mainEntryPoint()
 {
 	//debug::breakOnAlloc( 239 );
 	
-	framework::run();
-
-	return 0;
+	return framework::run();
 }

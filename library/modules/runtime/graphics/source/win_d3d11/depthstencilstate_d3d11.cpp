@@ -2,8 +2,9 @@
 #include "tiki/graphics/depthstencilstate.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -56,7 +57,7 @@ namespace tiki
 
 		m_platformData.stencilRef = creationParamter.stencilReference;
 
-		HRESULT result = graphics::getDevice( graphicsSystem )->CreateDepthStencilState( &stateDesc, &m_platformData.pDepthStencilState );
+		HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateDepthStencilState( &stateDesc, &m_platformData.pDepthStencilState );
 		if( FAILED( result ) )
 		{
 			dispose( graphicsSystem );

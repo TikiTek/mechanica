@@ -8,7 +8,7 @@
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexsemantic.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -70,7 +70,7 @@ namespace tiki
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 
-		TGInputElementDesc desc[ GraphicsSystemLimits_MaxVertexAttributes ];
+		D3D11_INPUT_ELEMENT_DESC desc[ GraphicsSystemLimits_MaxVertexAttributes ];
 
 		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
 		{

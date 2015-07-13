@@ -17,8 +17,6 @@
 
 namespace tiki
 {
-	class WindowEventBuffer;
-
 	struct InputSystemParameters
 	{
 		InputSystemParameters()
@@ -33,9 +31,9 @@ namespace tiki
 	
 	class InputSystem
 	{
+		friend class InputSystemPlatform;
 		TIKI_NONCOPYABLE_CLASS( InputSystem );
-		friend struct FrameworkData;
-
+		
 	public:
 
 		enum
@@ -47,10 +45,13 @@ namespace tiki
 		typedef FixedSizedArray< InputDevice, MaxInputDeviceCount > InputDeviceArray;
 		typedef FixedSizedArray< InputEvent, MaxInputEventCount > InputEventArray;
 
+								InputSystem();
+								~InputSystem();
+
 		bool					create( const InputSystemParameters& params );
 		void					dispose();
 
-		void					update( const WindowEventBuffer& windowEvents );
+		void					update();
 
 		uint					getDeviceCount() const;
 		InputDevice&			getDeviceByIndex( uint index ) const;
@@ -58,11 +59,6 @@ namespace tiki
 		uint					getEventCount() const;
 		bool					popEvent( InputEvent& inputEvent );
 
-	private: // friends
-
-								InputSystem();
-								~InputSystem();
-							
 	private:
 			
 		InputDeviceArray		m_devices;

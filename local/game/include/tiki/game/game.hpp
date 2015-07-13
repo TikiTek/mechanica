@@ -35,8 +35,8 @@ namespace tiki
 	protected:
 
 		virtual void			fillParameters( GameFrameworkParamters& parameters );
-		virtual bool			initialize();
-		virtual void			shutdown();
+		virtual bool			initializeGame();
+		virtual void			shutdownGame();
 
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext ) const;

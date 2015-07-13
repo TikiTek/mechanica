@@ -6,6 +6,8 @@ namespace tiki
 {
 	enum MouseButton
 	{
+		MouseButton_Invalid = -1,
+
 		MouseButton_Left,
 		MouseButton_Middle,
 		MouseButton_Right,

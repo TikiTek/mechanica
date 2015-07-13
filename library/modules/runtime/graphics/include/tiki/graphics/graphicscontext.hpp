@@ -6,7 +6,7 @@
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 #include "tiki/graphics/primitivetopologies.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 

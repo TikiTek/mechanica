@@ -2,13 +2,17 @@
 #ifndef __TIKI_INPUTSYSTEM_WIN32_HPP_INCLUDED__
 #define __TIKI_INPUTSYSTEM_WIN32_HPP_INCLUDED__
 
+#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 
-struct IDirectInputA;
-struct IDirectInputDeviceA;
+struct SDL_KeyboardEvent;
+struct SDL_MouseButtonEvent;
+struct SDL_MouseMotionEvent;
+union SDL_Event;
 
 namespace tiki
 {
+	class InputSystem;
 	struct InputSystemState;
 
 	enum
@@ -21,29 +25,23 @@ namespace tiki
 	{
 		InputSystemPlatformData()
 		{
-			windowHandle	= nullptr;
-
-			pInputDevice	= nullptr;
-			pMouse			= nullptr;
-			pKeyboard		= nullptr;
-
-			currentStateIndex	= 0u;
-			pStates[ 0u ]		= nullptr;
-			pStates[ 1u ]		= nullptr;
 		}
 
-		WindowHandle			windowHandle;
+		SortedSizedMap< int, KeyboardKey > keyboardMapping;
+	};
 
-		IDirectInputA*			pInputDevice;
-		IDirectInputDeviceA*	pMouse;
-		IDirectInputDeviceA*	pKeyboard;
-		bool					isTouchInputReady;
+	class InputSystemPlatform
+	{
+	public:
 
-		uint8					keyboardMapping[ 256u ];
-		uint32					touchInputMapping[ MaxInputTouchPoints ];
+		static void		processEvent( InputSystem& inputSystem, const SDL_Event& sdlEvent );
 
-		uint					currentStateIndex;
-		InputSystemState*		pStates[ 2u ];
+	private:
+
+		static void		processKeyEvent( InputSystem& inputSystem, const SDL_KeyboardEvent& keyboardEvent );
+		static void		processMouseMotionEvent( InputSystem& inputSystem, const SDL_MouseMotionEvent& mouseMotionEvent );
+		static void		processMouseButtonEvent( InputSystem& inputSystem, const SDL_MouseButtonEvent& mouseButtonEvent );
+
 	};
 }
 

@@ -16,11 +16,7 @@ namespace tiki
 
 	GameFramework::GameFramework()
 	{
-#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
-		m_frameworkData.pWebInterface	= nullptr;
-#endif
-
-		m_isInitialized					= false;
+		m_isInitialized = false;
 	}
 
 	GameFramework::~GameFramework()
@@ -31,7 +27,7 @@ namespace tiki
 	{
 		int resultValue = 0;
 
-		if ( internInitialize() )
+		if ( initialize() )
 		{
 			// HACK: to handle device connect events
 			InputEvent inputEvent;
@@ -47,24 +43,53 @@ namespace tiki
 			resultValue = -1;
 		}
 
-		internShutdown();
+		shutdown();
 
 		Thread::shutdownSystem();
 
 		return resultValue;
 	}
 
-	bool GameFramework::internInitialize()
+	bool GameFramework::initialize()
 	{
-		fillParameters( m_parameters );
-
-#if TIKI_ENABLED( TIKI_SDL )
-		if ( SDL_Init( SDL_INIT_GAMECONTROLLER ) < 0 )
+		if ( !initializePlatform() )
 		{
-			TIKI_TRACE_ERROR( "Failed to initialize SDL! Error: %s\n", SDL_GetError() );
 			return false;
 		}
-#endif
+
+		if ( !initializeFramework() )
+		{
+			return false;
+		}
+
+		if ( !initializeGame() )
+		{
+			return false;
+		}
+
+		if ( !initializeDebugSystems() )
+		{
+			return false;
+		}
+
+		m_isInitialized = true;
+
+		return true;
+	}
+
+	void GameFramework::shutdown()
+	{
+		shutdownDebugSystems();
+		shutdownGame();
+		shutdownFramework();
+		shutdownPlatform();
+
+		m_isInitialized = false;
+	}
+
+	bool GameFramework::initializeFramework()
+	{
+		fillParameters( m_parameters );
 
 		WindowParameters windowParams;
 		windowParams.width			= m_parameters.screenWidth;
@@ -116,11 +141,21 @@ namespace tiki
 
 		m_frameworkData.frameTimer.create();
 
-		if ( !initialize() )
-		{
-			return false;
-		}
+		return true;
+	}
 
+	void GameFramework::shutdownFramework()
+	{
+		m_frameworkData.inputSystem.dispose();
+		m_frameworkData.graphicSystem.dispose();
+		m_frameworkData.resourceManager.dispose();
+		m_frameworkData.mainWindow.dispose();
+
+		m_frameworkData.gamebuildFileSystem.dispose();
+	}
+
+	bool GameFramework::initializeDebugSystems()
+	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( !m_frameworkData.debugGui.create( m_frameworkData.graphicSystem, m_frameworkData.resourceManager ) )
 		{
@@ -138,18 +173,11 @@ namespace tiki
 		}
 #endif
 
-		m_isInitialized = true;
 		return true;
 	}
 
-	void GameFramework::internShutdown()
+	void GameFramework::shutdownDebugSystems()
 	{
-		if ( m_isInitialized )
-		{
-			shutdown();
-		}
-		m_isInitialized = false;
-
 #if TIKI_ENABLED( TIKI_WEB_INTERFACE )
 		if ( m_frameworkData.pWebInterface != nullptr )
 		{
@@ -164,16 +192,6 @@ namespace tiki
 		m_frameworkData.debugGuiWindows.dispose();
 		m_frameworkData.debugGui.dispose( m_frameworkData.graphicSystem, m_frameworkData.resourceManager );
 #endif
-		m_frameworkData.inputSystem.dispose();
-		m_frameworkData.graphicSystem.dispose();
-		m_frameworkData.resourceManager.dispose();
-		m_frameworkData.mainWindow.dispose();
-
-		m_frameworkData.gamebuildFileSystem.dispose();
-
-#if TIKI_ENABLED( TIKI_SDL )
-		SDL_Quit();
-#endif
 	}
 
 	bool GameFramework::frame()
@@ -181,6 +199,10 @@ namespace tiki
 		m_frameworkData.frameTimer.update();
 		m_frameworkData.mainWindow.update();
 		m_frameworkData.resourceManager.update();
+		m_frameworkData.inputSystem.update();
+
+		updatePlatform();
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_frameworkData.debugGui.update();
 #endif
@@ -212,8 +234,6 @@ namespace tiki
 
 			processWindowEvent( windowEvent );
 		}
-
-		m_frameworkData.inputSystem.update( m_frameworkData.mainWindow.getEventBuffer() );
 
 		InputEvent inputEvent;
 		while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )

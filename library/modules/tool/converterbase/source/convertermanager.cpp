@@ -466,7 +466,7 @@ namespace tiki
 
 		if ( task.parameters.inputFiles.getCount() == 0u )
 		{
-			TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted.\n" );
+			TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted. Filename: %s\n", task.parameters.sourceFile.cStr() );
 			xmlFile.dispose();
 			return false;
 		}

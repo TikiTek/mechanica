@@ -7,7 +7,7 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shadertype.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -38,7 +38,7 @@ namespace tiki
 		m_type	= type;
 		m_hash	= crcBytes( m_platformData.pShaderCode, m_platformData.shaderCodeLength );
 
-		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D11Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
 		HRESULT result = S_FALSE;
 		switch ( m_type )
@@ -89,11 +89,11 @@ namespace tiki
 		m_platformData.shaderCodeLength	= 0u;
 	}
 
-	TGInputLayout* graphics::createVertexInputLayout( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const TGInputElementDesc* pElements, uint elementCount )
+	ID3D11InputLayout* graphics::createVertexInputLayout( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const D3D11_INPUT_ELEMENT_DESC* pElements, uint elementCount )
 	{
-		TGDevice* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D11Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
-		TGInputLayout* pLayout = nullptr;
+		ID3D11InputLayout* pLayout = nullptr;
 		const HRESULT result = pDevice->CreateInputLayout(
 			pElements,
 			(UINT)elementCount,

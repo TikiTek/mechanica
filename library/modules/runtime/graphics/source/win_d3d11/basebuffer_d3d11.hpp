@@ -26,7 +26,7 @@ namespace tiki
 
 	private:
 
-		TGBuffer*				m_pBuffer;
+		ID3D11Buffer*			m_pBuffer;
 		uint					m_size;
 		bool					m_dynamic;
 

@@ -2,7 +2,7 @@
 #define TIKI_RENDERTARGET_D3D11_HPP__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 
 #include "graphicstypes_d3d11.hpp"
 
@@ -20,8 +20,8 @@ namespace tiki
 			pDepthView = nullptr;
 		}
 
-		TGRenderTargetView*		pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];
-		TGDepthStencilView*		pDepthView;
+		ID3D11RenderTargetView*		pColorViews[ GraphicsSystemLimits_RenderTargetSlots ];
+		ID3D11DepthStencilView*		pDepthView;
 	};
 }
 

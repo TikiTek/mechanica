@@ -15,6 +15,13 @@ namespace tiki
 {
 	struct FrameworkData
 	{
+		FrameworkData()
+		{
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+			pWebInterface = nullptr;
+#endif
+		}
+
 		MainWindow			mainWindow;
 		GraphicsSystem		graphicSystem;
 		ResourceManager		resourceManager;

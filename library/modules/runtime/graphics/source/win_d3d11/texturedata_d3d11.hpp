@@ -16,17 +16,18 @@ namespace tiki
 
 		union
 		{
-			TGResource*			pResource;
-			TGTexture1D*		pTexture1d;
-			TGTexture2D*		pTexture2d;
-			TGTexture3D*		pTexture3d;
+			ID3D11Resource*			pResource;
+			ID3D11Texture1D*		pTexture1d;
+			ID3D11Texture2D*		pTexture2d;
+			ID3D11Texture3D*		pTexture3d;
 		};
-		TGShaderResourceView*	pShaderView;		
+
+		ID3D11ShaderResourceView*	pShaderView;		
 	};
 
 	namespace graphics
 	{
-		TGFormat getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
+		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
 	}
 }
 

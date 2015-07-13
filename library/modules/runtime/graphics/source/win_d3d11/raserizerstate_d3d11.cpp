@@ -2,8 +2,9 @@
 #include "tiki/graphics/rasterizerstate.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -39,7 +40,7 @@ namespace tiki
 		stateDesc.FrontCounterClockwise	= s_aWindingOrderMapping[ creationParamter.windingOrder ];
 		stateDesc.DepthClipEnable		= TRUE;
 
-		HRESULT result = graphics::getDevice( graphicsSystem )->CreateRasterizerState( &stateDesc, &m_platformData.pRasterizerState );
+		HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateRasterizerState( &stateDesc, &m_platformData.pRasterizerState );
 		if( FAILED( result ) )
 		{
 			dispose( graphicsSystem );

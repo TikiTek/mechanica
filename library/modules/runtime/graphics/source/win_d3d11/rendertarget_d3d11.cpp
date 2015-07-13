@@ -1,9 +1,10 @@
 
 #include "tiki/graphics/rendertarget.hpp"
 
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -62,12 +63,12 @@ namespace tiki
 
 			checkSize( m_width, m_height, pColorBuffers[ i ].pDataBuffer->getWidth(), pColorBuffers[ i ].pDataBuffer->getHeight() );
 
-			TGRenderTargetDescription renderTargetDesc;
+			D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
 			renderTargetDesc.Format				= graphics::getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDescription().format, TextureFlags_RenderTarget );
 			renderTargetDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
 			renderTargetDesc.Texture2D.MipSlice	= 0;
 
-			const HRESULT result = graphics::getDevice( graphicsSystem )->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &renderTargetDesc, &m_platformData.pColorViews[ i ] );
+			const HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &renderTargetDesc, &m_platformData.pColorViews[ i ] );
 			if ( FAILED( result ) || m_platformData.pColorViews[ i ] == nullptr )
 			{
 				dispose( graphicsSystem );
@@ -89,13 +90,13 @@ namespace tiki
 
 			checkSize( m_width, m_height, pDepthBuffer->pDataBuffer->getWidth(), pDepthBuffer->pDataBuffer->getHeight() );
 
-			TGDepthStencilDescription depthDesc;
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthDesc;
 			depthDesc.Format				= graphics::getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDescription().format, TextureFlags_DepthStencil );
 			depthDesc.ViewDimension			= D3D11_DSV_DIMENSION_TEXTURE2D;
 			depthDesc.Texture2D.MipSlice	= 0u;
 			depthDesc.Flags					= 0u;
 
-			const HRESULT result = graphics::getDevice( graphicsSystem )->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &depthDesc, &m_platformData.pDepthView );
+			const HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &depthDesc, &m_platformData.pDepthView );
 			if ( FAILED( result ) || m_platformData.pDepthView == nullptr )
 			{
 				dispose( graphicsSystem );

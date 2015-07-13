@@ -13,19 +13,19 @@ namespace tiki
 			pBlendState = nullptr;
 		}
 
-		TGBlendState*	pBlendState;
+		ID3D11BlendState* pBlendState;
 	};
 
 	struct DepthStencilStatePlatformData
 	{
 		DepthStencilStatePlatformData()
 		{
-			stencilRef = 0u;
-			pDepthStencilState = nullptr;
+			stencilRef			= 0u;
+			pDepthStencilState	= nullptr;
 		}
 
-		uint					stencilRef;
-		TGDepthStencilState*	pDepthStencilState;
+		uint						stencilRef;
+		ID3D11DepthStencilState*	pDepthStencilState;
 	};
 
 	struct RasterizerStatePlatformData
@@ -35,7 +35,7 @@ namespace tiki
 			pRasterizerState = nullptr;
 		}
 
-		TGRasterizerState*	pRasterizerState;
+		ID3D11RasterizerState* pRasterizerState;
 	};
 
 	struct SamplerStatePlatformData
@@ -45,7 +45,7 @@ namespace tiki
 			pSamplerState = nullptr;
 		}
 
-		TGSamplerState* pSamplerState;
+		ID3D11SamplerState* pSamplerState;
 	};
 
 	struct VertexInputBindingPlatformData
@@ -55,7 +55,7 @@ namespace tiki
 			pInputLayout = nullptr;
 		}
 
-		TGInputLayout*	pInputLayout;
+		ID3D11InputLayout* pInputLayout;
 	};
 }
 
