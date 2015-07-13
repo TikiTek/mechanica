@@ -7,7 +7,8 @@
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
+#include <dxgi.h>
 
 namespace tiki
 {
@@ -18,18 +19,13 @@ namespace tiki
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 		static void initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
-		static void resetDeviceState( TGContext* pContext );
+		static void resetDeviceState( ID3D11DeviceContext* pContext );
 
 		static GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
 	}
 
-	static GraphicsSystemPlatformData& graphics::getPlatformData( GraphicsSystem& graphicSystem )
-	{
-		return *(GraphicsSystemPlatformData*)addPtr( &graphicSystem, sizeof( uint ) );
-	}
-
-	TGDevice*	graphics::getDevice( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pDevice; }
-	TGContext*	graphics::getContext( GraphicsSystem& graphicsSystem )	{ return getPlatformData( graphicsSystem ).pContext; }
+	ID3D11Device*			GraphicsSystemPlatform::getDevice( GraphicsSystem& graphicsSystem )		{ return graphicsSystem.m_platformData.pDevice; }
+	ID3D11DeviceContext*	GraphicsSystemPlatform::getContext( GraphicsSystem& graphicsSystem )	{ return graphicsSystem.m_platformData.pContext; }
 
 	template<class T>
 	TIKI_FORCE_INLINE void safeRelease( T** ppObject )
@@ -313,7 +309,7 @@ namespace tiki
 		data.pContext->RSSetViewports( 1, &viewPort );
 	}
 
-	void graphics::resetDeviceState( TGContext* pContext )
+	void graphics::resetDeviceState( ID3D11DeviceContext* pContext )
 	{
 		void* pNullPointers[] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( pNullPointers ) >= GraphicsSystemLimits_VertexShaderConstantSlots );

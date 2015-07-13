@@ -6,7 +6,7 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -77,7 +77,7 @@ namespace tiki
 		stateDesc.MinLOD			= 0;
 		stateDesc.MaxLOD			= D3D11_FLOAT32_MAX;
 
-		HRESULT result = graphics::getDevice( graphicsSystem )->CreateSamplerState( &stateDesc, &m_platformData.pSamplerState );
+		HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateSamplerState( &stateDesc, &m_platformData.pSamplerState );
 		if( FAILED( result ) )
 		{
 			dispose( graphicsSystem );

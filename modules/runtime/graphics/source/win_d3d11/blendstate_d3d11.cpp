@@ -2,8 +2,9 @@
 #include "tiki/graphics/blendstate.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -57,7 +58,7 @@ namespace tiki
 		
 		stateDesc.RenderTarget[ 0u ].RenderTargetWriteMask	= (UINT8)creationParamter.colorWriteMask;
 
-		HRESULT result = graphics::getDevice( graphicsSystem )->CreateBlendState( &stateDesc, &m_platformData.pBlendState );
+		HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateBlendState( &stateDesc, &m_platformData.pBlendState );
 		if( FAILED( result ) )
 		{
 			dispose();

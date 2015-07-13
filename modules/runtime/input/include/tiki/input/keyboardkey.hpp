@@ -6,6 +6,8 @@ namespace tiki
 {
 	enum KeyboardKey
 	{
+		KeyboardKey_Invalid = -1,
+
 		KeyboardKey_Escape,
 		KeyboardKey_BackSpace,
 		KeyboardKey_Tab,

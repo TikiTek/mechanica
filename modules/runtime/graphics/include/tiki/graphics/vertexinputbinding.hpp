@@ -3,7 +3,7 @@
 #define TIKI_VERTEXINPUTBINDING_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )

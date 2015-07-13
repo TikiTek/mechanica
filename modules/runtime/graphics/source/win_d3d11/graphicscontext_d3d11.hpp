@@ -10,12 +10,12 @@ namespace tiki
 	{
 		GraphicsContextPlatformData()
 		{
-			pDevice						= nullptr;
-			pContext					= nullptr;
+			pDevice		= nullptr;
+			pContext	= nullptr;
 		}
 
-		TGDevice*				pDevice;
-		TGContext*				pContext;
+		ID3D11Device*			pDevice;
+		ID3D11DeviceContext*	pContext;
 	};
 }
 

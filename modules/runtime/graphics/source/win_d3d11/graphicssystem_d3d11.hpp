@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	class GraphicsSystem;
+
 	struct GraphicsSystemPlatformData
 	{
 		GraphicsSystemPlatformData()
@@ -19,13 +21,22 @@ namespace tiki
 			pDepthStencilView			= nullptr;
 		}
 
-		TGDevice*				pDevice;
-		TGContext*				pContext;
-		TGSwapChain*			pSwapChain;
-		TGRenderTargetView*		pBackBufferTargetView;
+		ID3D11Device*			pDevice;
+		ID3D11DeviceContext*	pContext;
+		IDXGISwapChain*			pSwapChain;
+		ID3D11RenderTargetView*	pBackBufferTargetView;
 
-		TGTexture2D*			pDepthStencilBuffer;
-		TGDepthStencilView*		pDepthStencilView;
+		ID3D11Texture2D*		pDepthStencilBuffer;
+		ID3D11DepthStencilView*	pDepthStencilView;
+	};
+
+	class GraphicsSystemPlatform
+	{
+	public:
+
+		static ID3D11Device*		getDevice( GraphicsSystem& graphicsSystem );
+		static ID3D11DeviceContext*	getContext( GraphicsSystem& graphicsSystem );
+
 	};
 }
 

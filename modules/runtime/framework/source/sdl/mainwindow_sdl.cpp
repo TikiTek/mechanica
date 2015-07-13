@@ -13,6 +13,10 @@ namespace tiki
 	MainWindow::MainWindow()
 	{
 	}
+
+	MainWindow::~MainWindow()
+	{
+	}
 	
 	bool MainWindow::create( const WindowParameters& params )
 	{
@@ -49,6 +53,8 @@ namespace tiki
 	void MainWindow::update()
 	{
 		m_eventBuffer.clear();
+
+		//SDL_UpdateWindowSurface( m_platformData.pWindow );
 	}
 
 	WindowHandle MainWindow::getHandle() const
@@ -79,4 +85,42 @@ namespace tiki
 		return m_eventBuffer;
 	}
 
+	void MainWindowPlatform::processEvent( MainWindow& mainWindow, const SDL_Event& sdlEvent )
+	{
+		switch ( sdlEvent.type )
+		{
+		case SDL_WINDOWEVENT:
+			processWindowEvent( mainWindow.m_eventBuffer, sdlEvent.window );
+			break;
+
+		case SDL_QUIT:
+			processQuitEvent( mainWindow.m_eventBuffer, sdlEvent.quit );
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	void MainWindowPlatform::processWindowEvent( WindowEventBuffer& eventBuffer, const SDL_WindowEvent& windowEvent )
+	{
+		switch ( windowEvent.type )
+		{
+		case SDL_WINDOWEVENT_RESIZED:
+			{
+				WindowEvent& event				= eventBuffer.pushEvent( WindowEventType_SizeChanged );
+				event.data.sizeChanged.size.x	= windowEvent.data1;
+				event.data.sizeChanged.size.y	= windowEvent.data2;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	void MainWindowPlatform::processQuitEvent( WindowEventBuffer& eventBuffer, const SDL_QuitEvent& quitEvent )
+	{
+		eventBuffer.pushEvent( WindowEventType_Destroy );
+	}
 }

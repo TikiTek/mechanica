@@ -54,9 +54,11 @@ namespace tiki
 
 		int							run();
 
+	protected:
+
 		virtual void				fillParameters( GameFrameworkParamters& parameters ) = 0;
-		virtual bool				initialize() = 0;
-		virtual void				shutdown() = 0;
+		virtual bool				initializeGame() = 0;
+		virtual void				shutdownGame() = 0;
 
 		virtual void				update() = 0;
 		virtual void				render( GraphicsContext& graphicsContext ) const = 0;
@@ -71,8 +73,18 @@ namespace tiki
 		GameFrameworkParamters		m_parameters;
 		FrameworkData				m_frameworkData;
 	
-		bool						internInitialize();
-		void						internShutdown();
+		bool						initialize();
+		void						shutdown();
+
+		bool						initializePlatform();
+		void						shutdownPlatform();
+		void						updatePlatform();
+
+		bool						initializeFramework();
+		void						shutdownFramework();
+
+		bool						initializeDebugSystems();
+		void						shutdownDebugSystems();
 
 		bool						frame();
 

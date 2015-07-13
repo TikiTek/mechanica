@@ -4,16 +4,17 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
-	TGFormat graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
+	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
 	{
 		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
 
-		static TGFormat s_formatLookup[] =
+		static DXGI_FORMAT s_formatLookup[] =
 		{
 			DXGI_FORMAT_R8_UNORM,				// PixelFormat_R8,
 			DXGI_FORMAT_R8G8B8A8_UNORM,			// PixelFormat_R8G8B8A8
@@ -132,13 +133,13 @@ namespace tiki
 		}
 
 		const DXGI_FORMAT dxFormat = graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags );
-		ID3D11Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D11Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 		HRESULT result = S_FALSE;
 		switch ( m_description.type )
 		{
 		case TextureType_1d:
 			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture1DDesc, desc );
+				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE1D_DESC, desc );
 				desc.Format				= dxFormat;
 				desc.Width				= description.width;
 				desc.Usage				= D3D11_USAGE_DEFAULT;
@@ -151,7 +152,7 @@ namespace tiki
 
 		case TextureType_2d:
 			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
+				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, desc );
 				desc.Format				= dxFormat;
 				desc.Width				= description.width;
 				desc.Height				= description.height;
@@ -167,7 +168,7 @@ namespace tiki
 
 		case TextureType_3d:
 			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture3DDesc, desc );
+				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE3D_DESC, desc );
 				desc.Format				= dxFormat;
 				desc.Width				= description.width;
 				desc.Height				= description.height;
@@ -182,7 +183,7 @@ namespace tiki
 
 		case TextureType_Cube:
 			{
-				TIKI_DECLARE_STACKANDZERO( TGTexture2DDesc, desc );
+				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, desc );
 				desc.Format				= dxFormat;
 				desc.Width				= description.width;
 				desc.Height				= description.height;

@@ -12,15 +12,15 @@
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
+#include "tiki/graphics/shadertype.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
-#include "tiki/graphics/shadertype.hpp"
-#include "tiki/math/rectangle.hpp"
 #include "tiki/graphics/viewport.hpp"
+#include "tiki/math/rectangle.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -43,8 +43,8 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pContext == nullptr );
 
 		m_pGraphicsSystem		= &graphicsSystem;
-		m_platformData.pDevice	= graphics::getDevice( graphicsSystem );
-		m_platformData.pContext	= graphics::getContext( graphicsSystem );
+		m_platformData.pDevice	= GraphicsSystemPlatform::getDevice( graphicsSystem );
+		m_platformData.pContext	= GraphicsSystemPlatform::getContext( graphicsSystem );
 
 		m_pRenderTarget = nullptr;
 
@@ -126,7 +126,7 @@ namespace tiki
 		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 		
-		TGShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
+		ID3D11ShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
 		{
 			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 		};
@@ -172,7 +172,7 @@ namespace tiki
 		}
 		else
 		{
-			TGRenderTargetView* apRenderTargetViews[ GraphicsSystemLimits_RenderTargetSlots ] =
+			ID3D11RenderTargetView* apRenderTargetViews[ GraphicsSystemLimits_RenderTargetSlots ] =
 			{
 				nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 			};

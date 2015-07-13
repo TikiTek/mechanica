@@ -3,8 +3,9 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 
-#include "graphicssystem_internal_d3d11.hpp"
+#include <d3d11.h>
 
 namespace tiki
 {
@@ -54,7 +55,7 @@ namespace tiki
 		initData.pSysMem = pInitData;
 		const D3D11_SUBRESOURCE_DATA* pD3dInitData = ( pInitData != nullptr ? &initData : nullptr );
 
-		const HRESULT result = graphics::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer );
+		const HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateBuffer( &desc, pD3dInitData, &m_pBuffer );
 		if ( FAILED( result ) )
 		{
 			dispose( graphicsSystem );

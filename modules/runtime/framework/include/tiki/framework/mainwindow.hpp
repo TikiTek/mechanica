@@ -29,9 +29,13 @@ namespace tiki
 
 	class MainWindow
 	{
+		friend class MainWindowPlatform;
+		TIKI_NONCOPYABLE_CLASS( MainWindow );
+
 	public:
 
 		MainWindow();
+		~MainWindow();
 
 		bool						create( const WindowParameters& params );
 		void						dispose();
