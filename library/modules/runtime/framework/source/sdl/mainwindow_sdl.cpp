@@ -23,18 +23,13 @@ namespace tiki
 		TIKI_ASSERT( !s_mainWindowCreated );
 		s_mainWindowCreated = true;
 
-		uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_RESIZABLE;
-#if TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-		flags |= SDL_WINDOW_OPENGL;
-#endif
-
 		m_platformData.pWindow = SDL_CreateWindow(
 			params.pWindowTitle,
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			int( params.width ),
 			int( params.height ),
-			flags
+			SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_RESIZABLE
 		);
 
 		return true;

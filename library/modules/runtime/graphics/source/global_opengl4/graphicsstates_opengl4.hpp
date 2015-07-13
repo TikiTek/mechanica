@@ -2,7 +2,7 @@
 #ifndef __TIKI_GRAPHICSSTATES_OPENGL4_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSTATES_OPENGL4_HPP_INCLUDED__
 
-#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 
 #include "graphicssystem_internal_opengl4.hpp"
 

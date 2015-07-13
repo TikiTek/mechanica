@@ -66,6 +66,10 @@ if is_windows then
 	module:add_files( "src/loadso/windows/*.c" );
 	module:add_files( "src/main/windows/*.c" );
 	module:add_files( "src/power/windows/*.c" );
+	module:add_files( "src/render/direct3d/*.c" );
+	module:add_files( "src/render/direct3d/*.h" );
+	module:add_files( "src/render/direct3d11/*.c" );
+	module:add_files( "src/render/direct3d11/*.h" );
 	module:add_files( "src/thread/windows/*.c" );
 	module:add_files( "src/thread/windows/*.h" );
 	module:add_files( "src/timer/windows/*.c" );
@@ -77,16 +81,6 @@ if is_windows then
 	module:add_library_file( "Imm32" );
 	module:add_library_file( "Winmm" );
 	module:add_library_file( "Version" );
-else
-	throw "Platform not implemented"
-end
-
-if use_d3d11 then
-	module:add_files( "src/render/direct3d/*.c" );
-	module:add_files( "src/render/direct3d/*.h" );
-	module:add_files( "src/render/direct3d11/*.c" );
-	module:add_files( "src/render/direct3d11/*.h" );
-elseif use_opengl then
 else
 	throw "Platform not implemented"
 end

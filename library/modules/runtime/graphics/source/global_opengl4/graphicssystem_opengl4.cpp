@@ -176,7 +176,9 @@ namespace tiki
 		data.pixelFormatHandle = ChoosePixelFormat( (HDC)data.deviceContextHandle, &pixelDesc );
 
 		if ( !SetPixelFormat( (HDC)data.deviceContextHandle, data.pixelFormatHandle, &pixelDesc ) )
+		{
 			return false;
+		}
 
 		data.renderContextHandle = (RenderContextHandle)wglCreateContext( (HDC)data.deviceContextHandle );
 		if ( data.renderContextHandle == nullptr )
