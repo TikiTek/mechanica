@@ -2,6 +2,12 @@
 
 local module = Module:new( "config" );
 
+module.import_func = function()
+	if use_mingw then
+		buildoptions { "-std=c++11" }
+	end
+end
+
 module:set_define( "TIKI_ON", "2-" );
 module:set_define( "TIKI_OFF", "1-" );
 
@@ -60,6 +66,9 @@ elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or
 	use_mingw	= true;
 	use_opengl	= true;
 	use_sdl		= true;
+	
+	if _ACTION == "codeblocks" then
+	end
 	
 	--if _ACTION == "codelite" then
 	--	include( "codelite" );
