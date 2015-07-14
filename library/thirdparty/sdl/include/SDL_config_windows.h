@@ -166,12 +166,14 @@ typedef unsigned int uintptr_t;
 
 /* Enable various video drivers */
 #define SDL_VIDEO_DRIVER_DUMMY  1
+#if !defined( __MINGW32__ ) 
 #define SDL_VIDEO_DRIVER_WINDOWS    1
+#endif
 
-#ifndef SDL_VIDEO_RENDER_D3D
+#if !defined( SDL_VIDEO_RENDER_D3D ) && !defined( __MINGW32__ ) 
 #define SDL_VIDEO_RENDER_D3D    1
 #endif
-#ifndef SDL_VIDEO_RENDER_D3D11
+#if !defined( SDL_VIDEO_RENDER_D3D11 ) && !defined( __MINGW32__ ) 
 #define SDL_VIDEO_RENDER_D3D11	0
 #endif
 
@@ -191,7 +193,7 @@ typedef unsigned int uintptr_t;
 #ifndef SDL_VIDEO_OPENGL_ES2
 #define SDL_VIDEO_OPENGL_ES2    1
 #endif
-#ifndef SDL_VIDEO_OPENGL_EGL
+#if !defined( SDL_VIDEO_OPENGL_EGL ) && !defined( __MINGW32__ )
 #define SDL_VIDEO_OPENGL_EGL    1
 #endif
 

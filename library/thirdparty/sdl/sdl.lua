@@ -33,8 +33,6 @@ module:add_files( "src/render/opengl/*.c" );
 module:add_files( "src/render/opengl/*.h" );
 module:add_files( "src/render/opengles/*.c" );
 module:add_files( "src/render/opengles/*.h" );
-module:add_files( "src/render/opengles2/*.c" );
-module:add_files( "src/render/opengles2/*.h" );
 module:add_files( "src/render/software/*.c" );
 module:add_files( "src/render/software/*.h" );
 module:add_files( "src/stdlib/*.c" );
@@ -50,31 +48,36 @@ module:add_files( "src/video/dummy/*.c" );
 module:add_files( "src/video/dummy/*.h" );
 
 if is_windows then
-	module:add_files( "src/audio/directsound/*.c" );
-	module:add_files( "src/audio/directsound/*.h" );
 	module:add_files( "src/audio/winmm/*.c" );
 	module:add_files( "src/audio/winmm/*.h" );
-	module:add_files( "src/audio/xaudio2/*.c" );
-	module:add_files( "src/audio/xaudio2/*.h" );
 	module:add_files( "src/core/windows/*.c" );
 	module:add_files( "src/core/windows/*.h" );
 	module:add_files( "src/filesystem/windows/*.c" );
-	module:add_files( "src/haptic/windows/*.c" );
-	module:add_files( "src/haptic/windows/*.h" );
-	module:add_files( "src/joystick/windows/*.c" );
-	module:add_files( "src/joystick/windows/*.h" );
 	module:add_files( "src/loadso/windows/*.c" );
 	module:add_files( "src/main/windows/*.c" );
 	module:add_files( "src/power/windows/*.c" );
-	module:add_files( "src/render/direct3d/*.c" );
-	module:add_files( "src/render/direct3d/*.h" );
-	module:add_files( "src/render/direct3d11/*.c" );
-	module:add_files( "src/render/direct3d11/*.h" );
 	module:add_files( "src/thread/windows/*.c" );
 	module:add_files( "src/thread/windows/*.h" );
 	module:add_files( "src/timer/windows/*.c" );
 	module:add_files( "src/video/windows/*.c" );
 	module:add_files( "src/video/windows/*.h" );
+	
+	if use_msvc then
+		module:add_files( "src/audio/directsound/*.c" );
+		module:add_files( "src/audio/directsound/*.h" );
+		module:add_files( "src/audio/xaudio2/*.c" );
+		module:add_files( "src/audio/xaudio2/*.h" );
+		module:add_files( "src/haptic/windows/*.c" );
+		module:add_files( "src/haptic/windows/*.h" );
+		module:add_files( "src/joystick/windows/*.c" );
+		module:add_files( "src/joystick/windows/*.h" );
+		module:add_files( "src/render/direct3d/*.c" );
+		module:add_files( "src/render/direct3d/*.h" );
+		module:add_files( "src/render/direct3d11/*.c" );
+		module:add_files( "src/render/direct3d11/*.h" );
+		module:add_files( "src/render/opengles2/*.c" );
+		module:add_files( "src/render/opengles2/*.h" );
+	end
 	
 	module:add_dependency( "directx" );
 	
