@@ -8,9 +8,10 @@
 
 namespace tiki
 {
-	class GenericDataType;
+	class GenericDataTypeStruct;
 	class GenericDataValue;
 	class ResourceWriter;
+	class XmlReader;
 
 	class GenericDataObject
 	{
@@ -18,24 +19,25 @@ namespace tiki
 
 	public:
 
-		GenericDataObject();
-		~GenericDataObject();
+									GenericDataObject();
+									~GenericDataObject();
 
-		const GenericDataType*	getType() const;
-		bool					setType( const GenericDataType* pType );
+		bool						createFromType( const GenericDataTypeStruct* pType );
 
-		bool					hasField( const string& name ) const;
+		const GenericDataTypeStruct*	getType() const;
 
-		GenericDataValue&		getFieldValue( const string& name );
-		const GenericDataValue&	getFieldValue( const string& name ) const;
+		bool						hasField( const string& name ) const;
 
-		bool					setFieldValue( const string& name, const GenericDataValue& value );
+		GenericDataValue&			getFieldValue( const string& name );
+		const GenericDataValue&		getFieldValue( const string& name ) const;
+		bool						setFieldValue( const string& name, const GenericDataValue& value );
 
-		void					writeToResource( ResourceWriter& writer ) const;
+		bool						importFromXml( XmlReader& reader );
+		bool						exportToResource( ResourceWriter& writer ) const;
 
 	private:
 
-		const GenericDataType*			m_pType;
+		const GenericDataTypeStruct*		m_pType;
 
 		Map< string, GenericDataValue >	m_fields;
 

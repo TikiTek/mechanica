@@ -1,5 +1,5 @@
 
-#include "tiki/genericdata/genericdataenum.hpp"
+#include "tiki/genericdata/genericdatatypeenum.hpp"
 
 #include "tiki/base/stringparse.hpp"
 #include "tiki/genericdata/genericdatatypecollection.hpp"
@@ -7,17 +7,17 @@
 
 namespace tiki
 {
-	GenericDataEnum::GenericDataEnum( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType )
+	GenericDataTypeEnum::GenericDataTypeEnum( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( &baseType )
 	{
 	}
 
-	GenericDataEnum::~GenericDataEnum()
+	GenericDataTypeEnum::~GenericDataTypeEnum()
 	{
 	}
 
-	bool GenericDataEnum::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
+	bool GenericDataTypeEnum::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
 	{
 		if ( pTypeRoot == nullptr )
 		{
@@ -79,7 +79,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataEnum::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeEnum::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat			= "\n"
 													  "\tenum %s : %s\n"
@@ -121,27 +121,27 @@ namespace tiki
 		return true;
 	}
 
-	GenericDataTypeType GenericDataEnum::getType() const
+	GenericDataTypeType GenericDataTypeEnum::getType() const
 	{
 		return GenericDataTypeType_Enum;
 	}
 
-	uint GenericDataEnum::getAlignment() const
+	uint GenericDataTypeEnum::getAlignment() const
 	{
 		return m_pBaseType->getAlignment();
 	}
 
-	uint GenericDataEnum::getSize() const
+	uint GenericDataTypeEnum::getSize() const
 	{
 		return m_pBaseType->getSize();
 	}
 
-	const GenericDataType* GenericDataEnum::getBaseType() const
+	const GenericDataType* GenericDataTypeEnum::getBaseType() const
 	{
 		return m_pBaseType;
 	}
 
-	void GenericDataEnum::addValue( const string& name, sint64 value, GenericDataTypeMode mode /*= GenericDataTypeMode_ToolAndRuntime */ )
+	void GenericDataTypeEnum::addValue( const string& name, sint64 value, GenericDataTypeMode mode /*= GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		GenericDataEnumValue& field = m_values.add();
 		field.name	= name;
@@ -149,7 +149,7 @@ namespace tiki
 		field.mode	= mode;
 	}
 
-	void GenericDataEnum::removeValue( const string& name )
+	void GenericDataTypeEnum::removeValue( const string& name )
 	{
 		for (uint i = 0u; i < m_values.getCount(); ++i)
 		{
@@ -161,7 +161,7 @@ namespace tiki
 		}
 	}
 
-	const sint64* GenericDataEnum::getValueByName( const string& name ) const
+	const sint64* GenericDataTypeEnum::getValueByName( const string& name ) const
 	{
 		for (uint i = 0u; i < m_values.getCount(); ++i)
 		{
@@ -174,7 +174,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	const List< GenericDataEnumValue >& GenericDataEnum::getValues() const
+	const List< GenericDataEnumValue >& GenericDataTypeEnum::getValues() const
 	{
 		return m_values;
 	}

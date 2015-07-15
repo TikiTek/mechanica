@@ -6,10 +6,12 @@
 #include "tiki/base/types.hpp"
 #include "tiki/genericdata/genericdatatype.hpp"
 #include "tiki/toolbase/list.hpp"
+#include "tiki/toolbase/map.hpp"
 
 namespace tiki
 {
-	class GenericDataEnum;
+	class GenericDataTypeArray;
+	class GenericDataTypeEnum;
 
 	class GenericDataTypeCollection
 	{
@@ -28,16 +30,21 @@ namespace tiki
 		const GenericDataType*			findTypeByName( const string& name ) const;
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
+		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
+
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
 	private:
+
+		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
 				
 		LinkedList< GenericDataType >	m_types;
+		TypeArrayMap					m_arrays;
 
-		const GenericDataEnum*			m_pModeEnum;
+		const GenericDataTypeEnum*		m_pModeEnum;
 		
 		void							registerDefaultTypes();
-
+		
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
 
 	};

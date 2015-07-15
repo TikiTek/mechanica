@@ -60,6 +60,12 @@ namespace tiki
 	{
 		return m_count == 0u;
 	}
+	
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE bool tiki::Map<TKey, TValue>::hasKey( const TKey& key ) const
+	{
+		return findIndex( key ) != TIKI_SIZE_T_MAX;
+	}
 
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE TValue& Map<TKey, TValue>::getValueAt( uint index )
@@ -94,7 +100,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE bool Map<TKey, TValue>::findValue( TValue* pTargetValue, TKey key ) const
+	TIKI_FORCE_INLINE bool Map<TKey, TValue>::findValue( TValue* pTargetValue, const TKey& key ) const
 	{
 		TIKI_ASSERT( pTargetValue != nullptr );
 
@@ -196,6 +202,15 @@ namespace tiki
 		{
 			return set( key, TValue() );
 		}
+
+		return m_pData[index].value;
+	}
+
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE const TValue& tiki::Map<TKey, TValue>::operator[]( const TKey& key ) const
+	{
+		const uint index = findIndex( key );
+		TIKI_ASSERT( index != TIKI_SIZE_T_MAX );
 
 		return m_pData[index].value;
 	}
