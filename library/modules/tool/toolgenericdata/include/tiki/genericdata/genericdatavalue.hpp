@@ -14,10 +14,16 @@ namespace tiki
 	{
 	public:
 
+		GenericDataValue();
 		GenericDataValue( const GenericDataType* pType );
 		~GenericDataValue();
 
-		void		setUint8();
+		const GenericDataType*	getType() const;
+
+		void					setUint8( uint8 value );
+
+		void					setString( const string& value );
+		void					setObject( const GenericDataObject* pValue );
 
 	private:
 

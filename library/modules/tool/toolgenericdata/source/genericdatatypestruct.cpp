@@ -1,5 +1,5 @@
 
-#include "tiki/genericdata/genericdatastruct.hpp"
+#include "tiki/genericdata/genericdatatypestruct.hpp"
 
 #include "tiki/base/string.hpp"
 #include "tiki/genericdata/genericdatatypecollection.hpp"
@@ -7,17 +7,17 @@
 
 namespace tiki
 {
-	GenericDataStruct::GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+	GenericDataTypeStruct::GenericDataTypeStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
 
-	GenericDataStruct::~GenericDataStruct()
+	GenericDataTypeStruct::~GenericDataTypeStruct()
 	{
 	}
 
-	bool GenericDataStruct::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
+	bool GenericDataTypeStruct::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
 	{
 		if ( pTypeRoot == nullptr )
 		{
@@ -87,7 +87,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataStruct::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeStruct::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat		= "\n"
 												  "\tstruct %s%s\n"
@@ -117,12 +117,12 @@ namespace tiki
 		return true;
 	}
 
-	GenericDataTypeType GenericDataStruct::getType() const
+	GenericDataTypeType GenericDataTypeStruct::getType() const
 	{
 		return GenericDataTypeType_Struct;
 	}
 
-	uint GenericDataStruct::getAlignment() const
+	uint GenericDataTypeStruct::getAlignment() const
 	{
 		uint alignment = m_alignment;
 		if ( m_pBaseType != nullptr )
@@ -133,7 +133,7 @@ namespace tiki
 		return alignment;
 	}
 
-	uint GenericDataStruct::getSize() const
+	uint GenericDataTypeStruct::getSize() const
 	{
 		uint size = m_size;
 		if ( m_pBaseType != nullptr )
@@ -144,7 +144,7 @@ namespace tiki
 		return size;
 	}
 
-	void GenericDataStruct::addField( const string& name, const GenericDataType* pType, bool isArray /* = false */, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
+	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, bool isArray /* = false */, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		TIKI_ASSERT( pType != nullptr );
 
@@ -155,7 +155,7 @@ namespace tiki
 		field.mode		= mode;
 	}
 
-	void GenericDataStruct::removeField( const string& name )
+	void GenericDataTypeStruct::removeField( const string& name )
 	{
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
@@ -167,12 +167,12 @@ namespace tiki
 		}
 	}
 
-	const List< GenericDataStructField >& GenericDataStruct::getFields() const
+	const List< GenericDataStructField >& GenericDataTypeStruct::getFields() const
 	{
 		return m_fields;
 	}
 
-	const GenericDataType* GenericDataStruct::getFieldTypeByName( const string& name ) const
+	const GenericDataType* GenericDataTypeStruct::getFieldTypeByName( const string& name ) const
 	{
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{			
@@ -185,7 +185,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	cstring GenericDataStruct::getNodeName() const
+	cstring GenericDataTypeStruct::getNodeName() const
 	{
 		return "struct";
 	}

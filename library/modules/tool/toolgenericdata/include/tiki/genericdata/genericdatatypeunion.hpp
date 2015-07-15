@@ -2,18 +2,18 @@
 #ifndef TIKI_GENERICDATAUNION_HPP_INCLUDED__
 #define TIKI_GENERICDATAUNION_HPP_INCLUDED__
 
-#include "tiki/genericdata/genericdatastruct.hpp"
+#include "tiki/genericdata/genericdatatypestruct.hpp"
 
 namespace tiki
 {
-	class GenericDataUnion : public GenericDataStruct
+	class GenericDataTypeUnion : public GenericDataTypeStruct
 	{
-		TIKI_NONCOPYABLE_CLASS( GenericDataUnion );
+		TIKI_NONCOPYABLE_CLASS( GenericDataTypeUnion );
 
 	public:
 
-									GenericDataUnion( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
-		virtual						~GenericDataUnion();
+									GenericDataTypeUnion( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
+		virtual						~GenericDataTypeUnion();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
 
