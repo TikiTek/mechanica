@@ -2,6 +2,7 @@
 #include "tiki/framework/mainwindow.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/input/inputsystem.hpp"
 
 #include <windows.h>
 #include <windowsx.h>
@@ -101,13 +102,11 @@ namespace tiki
 		//	}
 		//	break;
 
-		//case WM_TOUCH:
-		//	{
-		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_Touch );
-		//		event.data.touch.pointCount		= LOWORD( wParam );
-		//		event.data.touch.handle			= (TouchInputHandle)lParam;
-		//	}
-		//	break;
+		case WM_TOUCH:
+			{
+				InputSystemPlatform::processTouchEvent( todo, wParam, lParam );
+			}
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
