@@ -22,7 +22,7 @@ namespace tiki
 
 	public:
 
-												GenericDataTypeStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
+												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
 		virtual									~GenericDataTypeStruct();
 
 		virtual bool							loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
@@ -31,6 +31,7 @@ namespace tiki
 		virtual GenericDataTypeType				getType() const TIKI_OVERRIDE;
 		virtual uint							getAlignment() const TIKI_OVERRIDE;
 		virtual uint							getSize() const TIKI_OVERRIDE;
+		virtual string							getExportName() const TIKI_OVERRIDE;
 
 		void									addField( const string& name, const GenericDataType* pType, bool isArray = false, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
 		void									removeField( const string& name );

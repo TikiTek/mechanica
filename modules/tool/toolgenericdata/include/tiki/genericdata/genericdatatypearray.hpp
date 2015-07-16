@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-									GenericDataTypeArray( const GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode );
+									GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode );
 		virtual						~GenericDataTypeArray();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
@@ -21,6 +21,7 @@ namespace tiki
 		virtual GenericDataTypeType	getType() const TIKI_OVERRIDE;
 		virtual uint				getAlignment() const TIKI_OVERRIDE;
 		virtual uint				getSize() const TIKI_OVERRIDE;
+		virtual string				getExportName() const TIKI_OVERRIDE;
 
 		const GenericDataType*		getBaseType() const;
 

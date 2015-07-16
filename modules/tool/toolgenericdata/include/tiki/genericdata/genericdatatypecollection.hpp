@@ -12,6 +12,7 @@ namespace tiki
 {
 	class GenericDataTypeArray;
 	class GenericDataTypeEnum;
+	class GenericDataValue;
 
 	class GenericDataTypeCollection
 	{
@@ -32,11 +33,20 @@ namespace tiki
 
 		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
 
+		const GenericDataType*			parseType( const string& typeString );
+		bool							parseValue( GenericDataValue& outValue, const string& valueString );
+
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
 	private:
 
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
+
+		struct ModifierDescription
+		{
+			string	modifier;
+			string	content;
+		};
 				
 		LinkedList< GenericDataType >	m_types;
 		TypeArrayMap					m_arrays;
@@ -46,6 +56,8 @@ namespace tiki
 		void							registerDefaultTypes();
 		
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
+
+		bool							parseToken( ModifierDescription& outModifier, const string& text );
 
 	};
 }

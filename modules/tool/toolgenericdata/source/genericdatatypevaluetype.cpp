@@ -3,7 +3,7 @@
 
 namespace tiki
 {
-	GenericDataTypeValueType::GenericDataTypeValueType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
+	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
 		: GenericDataType( collection, name, mode )
 	{
 		m_type = type;
@@ -54,5 +54,10 @@ namespace tiki
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aSizes ) == GenericDataValueTypeType_Count );
 
 		return s_aSizes[ m_type ];
+	}
+
+	string GenericDataTypeValueType::getExportName() const
+	{
+		return getName();
 	}
 }

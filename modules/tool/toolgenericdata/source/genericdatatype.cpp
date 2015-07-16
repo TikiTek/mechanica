@@ -3,7 +3,7 @@
 
 namespace tiki
 {
-	GenericDataType::GenericDataType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
+	GenericDataType::GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
 		: m_collection( collection )
 		, m_name( name )
 		, m_mode( mode )
