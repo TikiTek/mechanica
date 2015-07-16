@@ -22,6 +22,8 @@ namespace tiki
 		GenericDataTypeType_ValueType,
 		GenericDataTypeType_Union,
 		GenericDataTypeType_Resource,
+		GenericDataTypeType_Array,
+		GenericDataTypeType_Reference,
 	
 		GenericDataTypeType_Count,
 	};
