@@ -48,8 +48,6 @@ namespace tiki
 
 	private:
 
-		static bool					s_mainWindowCreated;
-
 		MainWindowPlatformData		m_platformData;
 
 		WindowEventBuffer			m_eventBuffer;

@@ -9,17 +9,24 @@
 
 namespace tiki
 {
+	//TIKI_DEFINE_HANLE( TouchInputHandle );
+
 	enum WindowEventType
 	{
 		WindowEventType_Create,
 		WindowEventType_Destroy,
+		WindowEventType_SizeChanged
 		//WindowEventType_KeyDown,
 		//WindowEventType_KeyUp,
 		//WindowEventType_MouseDown,
 		//WindowEventType_MouseUp,
 		//WindowEventType_MouseMove,
-		WindowEventType_SizeChanged,
-		WindowEventType_Touch
+		//WindowEventType_Touch,
+	};
+
+	struct WindowSizeChangedEventData
+	{
+		uint2			size;
 	};
 
 	//struct WindowKeyEventData
@@ -37,26 +44,19 @@ namespace tiki
 	//	uint2			position;
 	//};
 
-	struct WindowSizeChangedEventData
-	{
-		uint2			size;
-	};
-
-	TIKI_DEFINE_HANLE( TouchInputHandle );
-
-	struct WindowTouchEventData
-	{
-		uint				pointCount;
-		TouchInputHandle	handle;
-	};
+	//struct WindowTouchEventData
+	//{
+	//	uint				pointCount;
+	//	TouchInputHandle	handle;
+	//};
 
 	union WindowEventData
 	{
+		WindowSizeChangedEventData	sizeChanged;
 		//WindowKeyEventData			key;
 		//WindowMouseButtonEventData	mouseButton;
 		//WindowMouseMoveEventData	mouseMove;
-		WindowSizeChangedEventData	sizeChanged;
-		WindowTouchEventData		touch;
+		//WindowTouchEventData		touch;
 	};
 
 	struct WindowEvent

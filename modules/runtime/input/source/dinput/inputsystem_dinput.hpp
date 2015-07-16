@@ -3,12 +3,16 @@
 #define TIKI_INPUTSYSTEM_DINPUT_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/platform.hpp"
+
+#include <windows.h>
 
 struct IDirectInputA;
 struct IDirectInputDeviceA;
 
 namespace tiki
 {
+	class InputSystem;
 	struct InputSystemState;
 
 	enum
@@ -44,6 +48,14 @@ namespace tiki
 
 		uint					currentStateIndex;
 		InputSystemState*		pStates[ 2u ];
+	};
+
+	class InputSystemPlatform
+	{
+	public:
+
+		static void processTouchEvent( InputSystem& inputSystem, WPARAM wParam, LPARAM lParam );
+
 	};
 }
 
