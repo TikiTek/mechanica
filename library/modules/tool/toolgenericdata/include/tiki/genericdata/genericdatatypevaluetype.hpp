@@ -28,14 +28,14 @@ namespace tiki
 		GenericDataValueTypeType_Count
 	};
 
-	class GenericDataValueType : public GenericDataType
+	class GenericDataTypeValueType : public GenericDataType
 	{
-		TIKI_NONCOPYABLE_CLASS( GenericDataValueType );
+		TIKI_NONCOPYABLE_CLASS( GenericDataTypeValueType );
 
 	public:
 
-									GenericDataValueType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type );
-		virtual						~GenericDataValueType();
+									GenericDataTypeValueType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type );
+		virtual						~GenericDataTypeValueType();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
 		virtual bool				exportCode( string& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;

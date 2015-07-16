@@ -13,7 +13,7 @@ module:add_dependency( "textureconverter" );
 module:add_dependency( "modelconverter" );
 module:add_dependency( "materialconverter" );
 module:add_dependency( "animationconverter" );
-module:add_dependency( "genericdata" );
+module:add_dependency( "genericdataconverter" );
 
 local project = Project:new(
 	"converterlibrary",

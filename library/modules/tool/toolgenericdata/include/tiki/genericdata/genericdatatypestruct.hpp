@@ -16,14 +16,14 @@ namespace tiki
 		GenericDataTypeMode		mode;
 	};
 
-	class GenericDataStruct : public GenericDataType
+	class GenericDataTypeStruct : public GenericDataType
 	{
-		TIKI_NONCOPYABLE_CLASS( GenericDataStruct );
+		TIKI_NONCOPYABLE_CLASS( GenericDataTypeStruct );
 
 	public:
 
-												GenericDataStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
-		virtual									~GenericDataStruct();
+												GenericDataTypeStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
+		virtual									~GenericDataTypeStruct();
 
 		virtual bool							loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
 		virtual bool							exportCode( string& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;

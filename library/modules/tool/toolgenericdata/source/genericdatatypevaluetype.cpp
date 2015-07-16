@@ -1,39 +1,39 @@
 
-#include "tiki/genericdata/genericdatavaluetype.hpp"
+#include "tiki/genericdata/genericdatatypevaluetype.hpp"
 
 namespace tiki
 {
-	GenericDataValueType::GenericDataValueType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
+	GenericDataTypeValueType::GenericDataTypeValueType( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
 		: GenericDataType( collection, name, mode )
 	{
 		m_type = type;
 	}
 
-	GenericDataValueType::~GenericDataValueType()
+	GenericDataTypeValueType::~GenericDataTypeValueType()
 	{
 	}
 
-	bool GenericDataValueType::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
-	{
-		return false;
-	}
-
-	bool GenericDataValueType::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeValueType::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
 	{
 		return false;
 	}
 
-	GenericDataTypeType GenericDataValueType::getType() const
+	bool GenericDataTypeValueType::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	{
+		return false;
+	}
+
+	GenericDataTypeType GenericDataTypeValueType::getType() const
 	{
 		return GenericDataTypeType_ValueType;
 	}
 
-	uint GenericDataValueType::getAlignment() const
+	uint GenericDataTypeValueType::getAlignment() const
 	{
 		return getSize();
 	}
 
-	uint GenericDataValueType::getSize() const
+	uint GenericDataTypeValueType::getSize() const
 	{
 		static const uint s_aSizes[] =
 		{
