@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	GenericDataTypeStruct::GenericDataTypeStruct( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -43,7 +43,7 @@ namespace tiki
 				const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
 				if ( pNameAtt && pTypeAtt )
 				{
-					const GenericDataType* pType = m_collection.findTypeByName( pTypeAtt->content );
+					const GenericDataType* pType = m_collection.parseType( pTypeAtt->content );
 					if ( pType == nullptr )
 					{
 						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] the type(%s) of field or array with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->content, pNameAtt->content );
@@ -90,7 +90,7 @@ namespace tiki
 	bool GenericDataTypeStruct::exportCode( string& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat		= "\n"
-												  "\tstruct %s%s\n"
+												  "\t%s %s%s\n"
 												  "\t{\n"
 												  "%s"
 												  "\t};\n";
@@ -103,16 +103,16 @@ namespace tiki
 		{
 			const GenericDataStructField& field = m_fields[ i ];
 
-			fieldsCode += formatString( s_pFieldFormat, field.pType->getName().cStr(), field.name.cStr() );
+			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
 		}
 
 		string baseTypeCode;
 		if ( m_pBaseType != nullptr )
 		{
-			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getName().cStr() );
+			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
 		}
 
-		targetData += formatString( s_pBaseFormat, baseTypeCode.cStr(), getName().cStr(), fieldsCode.cStr() );
+		targetData += formatString( s_pBaseFormat, getNodeName(), baseTypeCode.cStr(), getExportName().cStr(), fieldsCode.cStr() );
 
 		return true;
 	}
@@ -142,6 +142,11 @@ namespace tiki
 		}
 
 		return size;
+	}
+
+	string GenericDataTypeStruct::getExportName() const
+	{
+		return getName();
 	}
 
 	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, bool isArray /* = false */, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )

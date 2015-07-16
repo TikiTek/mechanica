@@ -3,7 +3,7 @@
 
 namespace tiki
 {
-	GenericDataTypeUnion::GenericDataTypeUnion( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
+	GenericDataTypeUnion::GenericDataTypeUnion( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
 		: GenericDataTypeStruct( collection, name, mode, nullptr )
 	{
 	}

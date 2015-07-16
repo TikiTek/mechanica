@@ -65,7 +65,7 @@ namespace tiki
 					const GenericDataType* pBaseType = nullptr;
 					if ( pBaseAtt != nullptr )
 					{
-						pBaseType = findTypeByName( pBaseAtt->content );
+						pBaseType = parseType( pBaseAtt->content );
 					}
 
 					GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime;
@@ -206,7 +206,6 @@ namespace tiki
 		}
 
 		return nullptr;
-
 	}
 
 	GenericDataTypeMode GenericDataTypeCollection::findModeByName( const string& name ) const
@@ -222,17 +221,72 @@ namespace tiki
 
 	const GenericDataTypeArray* GenericDataTypeCollection::makeArrayType( const GenericDataType* pType )
 	{
-		const GenericDataTypeArray* pArrayType = nullptr;
-		if ( !m_arrays.findValue( &pArrayType, pType ) )
+		GenericDataTypeArray* pArrayType = nullptr;
+		if ( !m_arrays.findValue( const_cast< const GenericDataTypeArray** >( &pArrayType ), pType ) )
 		{
 			string name = pType->getName();
 			name += "[]";
 
 			pArrayType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeArray )( *this, name, pType, GenericDataTypeMode_ToolAndRuntime );
 			m_arrays.set( pType, pArrayType );
+
+			addType( *pArrayType );
 		}
 
 		return pArrayType;
+	}
+
+	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
+	{
+		List< ModifierDescription > modifiers;
+
+		ModifierDescription desc;
+		string content = typeString;
+		while ( parseToken( desc, content ) )
+		{
+			modifiers.add( desc );
+
+			content = desc.content;
+		}
+
+		if ( modifiers.isEmpty() )
+		{
+			return findTypeByName( typeString );
+		}
+
+		const GenericDataType* pType = nullptr;
+		for (uint i = modifiers.getCount() - 1u; i < modifiers.getCount(); --i)
+		{
+			const ModifierDescription& modifier = modifiers[ i ];
+
+			if ( modifier.modifier == "array" )
+			{
+				if ( pType == nullptr )
+				{
+					pType = findTypeByName( modifier.content );
+
+					if ( pType == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
+						return nullptr;
+					}
+				}
+
+				pType = makeArrayType( pType );
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Modifier(%s) not supported.\n", modifier.modifier.cStr() );
+				return nullptr;
+			}
+		}
+
+		return pType;
+	}
+
+	bool GenericDataTypeCollection::parseValue( GenericDataValue& outValue, const string& valueString )
+	{
+		return false;
 	}
 
 	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode, const string& targetDir )
@@ -380,5 +434,24 @@ namespace tiki
 		{
 			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );
 		}		
+	}
+
+	bool GenericDataTypeCollection::parseToken( ModifierDescription& outModifier, const string& text )
+	{
+		if ( text.isEmpty() || text[ 0u ] != '{' || text[ text.getLength() - 1 ] != '}' )
+		{
+			return false;
+		}
+
+		const int contentBeginIndex = text.indexOf( ' ' );
+		if ( contentBeginIndex < 1 )
+		{
+			return false;
+		}
+
+		outModifier.modifier	= text.subString( 1u, contentBeginIndex - 1u );
+		outModifier.content		= text.subString( contentBeginIndex + 1, text.getLength() - contentBeginIndex - 2 );
+
+		return true;
 	}
 }

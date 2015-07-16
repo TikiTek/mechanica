@@ -2,6 +2,7 @@
 #include "tiki/framework/mainwindow.hpp"
 
 #include "tiki/base/memory.hpp"
+#include "tiki/framework/framework.hpp"
 #include "tiki/input/inputsystem.hpp"
 
 #include <windows.h>
@@ -104,7 +105,7 @@ namespace tiki
 
 		case WM_TOUCH:
 			{
-				InputSystemPlatform::processTouchEvent( todo, wParam, lParam );
+				InputSystemPlatform::processTouchEvent( framework::getInputSystem(), wParam, lParam );
 			}
 			break;
 

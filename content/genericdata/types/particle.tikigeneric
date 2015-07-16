@@ -43,7 +43,7 @@
 	</union-->	
 	<struct name="ParticleParticleData">
 		<field name="type" type="ParticleType" />
-		<array name="fields" type="ParticleParticleFieldData" />
+		<field name="fields" type="{array ParticleParticleFieldData}" />
 	</struct>
 	<!-- Evaluation -->
 	<enum name="ParticleEvalCommandType" base="uint8" mode="ToolOnly">
@@ -63,22 +63,22 @@
 	</enum>	
 	<struct name="ParticleEvalParameterData" mode="ToolOnly">
 		<field name="type" type="ParticleEvalParameterType" />
-		<array name="value" type="uint64" />
+		<field name="value" type="{array uint64}" />
 	</struct>
 	<struct name="ParticleEvalCommandData" mode="ToolOnly">
 		<field name="command" type="ParticleEvalCommandType" />
-		<array name="parameters" type="ParticleEvalParameterData" />
+		<field name="parameters" type="{array ParticleEvalParameterData}" />
 	</struct>
 	<struct name="ParticleEvalData">
 		<field name="name" type="string" mode="ToolOnly" />
-		<array name="commands" type="ParticleEvalCommandData" mode="ToolOnly" />
-		<array name="byteCode" type="uint8" mode="RuntimeOnly" />
+		<field name="commands" type="{array ParticleEvalCommandData}" mode="ToolOnly" />
+		<field name="byteCode" type="{array uint8}" mode="RuntimeOnly" />
 	</struct>
 	<!-- Main -->
 	<struct name="ParticleEffectData">
-		<array name="emitters" type="ParticleEmitterData" />
-		<array name="particles" type="ParticleParticleData" />
-		<array name="evals" type="ParticleEvalData" />
+		<field name="emitters" type="{array ParticleEmitterData}" />
+		<field name="particles" type="{array ParticleParticleData}" />
+		<field name="evals" type="{array ParticleEvalData}" />
 		<field name="simulateWhenInvisible" type="bool" />
 	</struct>
 	<resource name="ParticleEffect" postfix="particle" fourcc="PAFX" base="ParticleEffectData" />

@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-									GenericDataTypeUnion( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
+									GenericDataTypeUnion( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
 		virtual						~GenericDataTypeUnion();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;

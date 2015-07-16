@@ -3,7 +3,7 @@
 
 namespace tiki
 {
-	GenericDataTypeArray::GenericDataTypeArray( const GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode )
+	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode )
 		: GenericDataType( collection, name, mode )
 	{
 		m_pBaseType = pBaseType;
@@ -36,6 +36,11 @@ namespace tiki
 	uint GenericDataTypeArray::getSize() const
 	{
 		return 4 + 8;
+	}
+
+	string GenericDataTypeArray::getExportName() const
+	{
+		return formatString( "StaticArray< %s >", m_pBaseType->getName().cStr() );
 	}
 
 	const GenericDataType* GenericDataTypeArray::getBaseType() const

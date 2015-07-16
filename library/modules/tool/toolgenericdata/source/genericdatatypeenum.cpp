@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	GenericDataTypeEnum::GenericDataTypeEnum( const GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType )
+	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( &baseType )
 	{
@@ -111,11 +111,11 @@ namespace tiki
 
 		targetData += formatString(
 			s_pBaseFormat,
-			getName().cStr(),
-			m_pBaseType->getName().cStr(),
-			getName().cStr(),
+			getExportName().cStr(),
+			m_pBaseType->getExportName().cStr(),
+			getExportName().cStr(),
 			valuesCode.cStr(),
-			getName().cStr()
+			getExportName().cStr()
 		);
 
 		return true;
@@ -134,6 +134,11 @@ namespace tiki
 	uint GenericDataTypeEnum::getSize() const
 	{
 		return m_pBaseType->getSize();
+	}
+
+	string GenericDataTypeEnum::getExportName() const
+	{
+		return getName();
 	}
 
 	const GenericDataType* GenericDataTypeEnum::getBaseType() const
