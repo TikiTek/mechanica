@@ -58,8 +58,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	module:set_flag("MultiProcessorCompile");
 	
 	use_msvc	= true;
-	use_opengl	= true;
-	use_sdl		= true;
+	use_d3d11	= true;
 	
 	global_configuration.enable_unity_builds = true	
 elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or _ACTION == "eclipse" then

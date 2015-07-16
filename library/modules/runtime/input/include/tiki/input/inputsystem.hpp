@@ -52,6 +52,7 @@ namespace tiki
 		void					dispose();
 
 		void					update();
+		void					endFrame();
 
 		uint					getDeviceCount() const;
 		InputDevice&			getDeviceByIndex( uint index ) const;

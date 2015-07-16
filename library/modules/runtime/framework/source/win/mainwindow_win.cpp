@@ -6,8 +6,6 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#define GET_HWND (HWND)m_pHandle
-
 namespace tiki
 {
 	static bool					s_mainWindowCreated	= false;
@@ -103,15 +101,13 @@ namespace tiki
 		//	}
 		//	break;
 
-#if TIKI_ENABLED( TIKI_BUILD_MSVC )
-		case WM_TOUCH:
-			{
-				WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_Touch );
-				event.data.touch.pointCount		= LOWORD( wParam );
-				event.data.touch.handle			= (TouchInputHandle)lParam;
-			}
-			break;
-#endif
+		//case WM_TOUCH:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_Touch );
+		//		event.data.touch.pointCount		= LOWORD( wParam );
+		//		event.data.touch.handle			= (TouchInputHandle)lParam;
+		//	}
+		//	break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -122,10 +118,13 @@ namespace tiki
 	}
 
 	MainWindow::MainWindow()
-		: m_pHandle( nullptr )
 	{
 	}
 
+	MainWindow::~MainWindow()
+	{
+
+	}
 
 	bool MainWindow::create( const WindowParameters& params )
 	{
@@ -171,7 +170,7 @@ namespace tiki
 			MessageBoxA( nullptr, "Can't create Window.", params.pWindowTitle, MB_ICONSTOP );
 			return false;
 		}
-		m_pHandle = WindowHandle( hWnd );
+		m_platformData.windowHandle = hWnd;
 
 		TIKI_DECLARE_STACKANDZERO( STARTUPINFO, startupInfo );
 		startupInfo.cb			= sizeof(startupInfo);
@@ -186,12 +185,11 @@ namespace tiki
 
 	void MainWindow::dispose()
 	{
-		HWND hWnd = GET_HWND;
-		CloseWindow( hWnd );
-		m_pHandle			= nullptr;
+		CloseWindow( m_platformData.windowHandle );
+		m_platformData.windowHandle	= nullptr;
 
-		s_pEventBuffer		= nullptr;
-		s_mainWindowCreated	= false;
+		s_pEventBuffer				= nullptr;
+		s_mainWindowCreated			= false;
 
 		m_eventBuffer.dispose();
 	}
@@ -210,15 +208,13 @@ namespace tiki
 
 	WindowHandle MainWindow::getHandle() const
 	{
-		return m_pHandle;
+		return WindowHandle( m_platformData.windowHandle );
 	}
 
 	uint2 MainWindow::getClientSize() const
 	{
-		HWND hWnd = GET_HWND;
-
 		RECT rect;
-		GetClientRect( hWnd, &rect );
+		GetClientRect( m_platformData.windowHandle, &rect );
 
 		uint2 size =
 		{

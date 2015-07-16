@@ -291,6 +291,8 @@ namespace tiki
 			m_frameworkData.graphicSystem.endFrame();
 		}
 
+		m_frameworkData.inputSystem.endFrame();
+
 		return true;
 	}
 }
