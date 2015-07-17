@@ -26,7 +26,7 @@ namespace tiki
 		virtual								~GenericDataTypeEnum();
 
 		virtual bool						loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
-		virtual bool						exportCode( string& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;
+		virtual bool						exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;
 
 		virtual GenericDataTypeType			getType() const TIKI_OVERRIDE;
 		virtual uint						getAlignment() const TIKI_OVERRIDE;

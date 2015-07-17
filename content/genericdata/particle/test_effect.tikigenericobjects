@@ -1,0 +1,26 @@
+<tikigenericobjects>
+	<resource type="ParticleEffect">
+		<object type="ParticleEffectData">
+			<field name="emitters" type="{array ParticleEmitterData}">
+				<array type="ParticleEmitterData">
+					<object type="ParticleEmitterData">
+						<field name="type" type="ParticleEmitterSpawnType" value="{enum ParticleEmitterSpawnType.TimeInterval}" />
+						<field name="particleType" type="string" value="test1" />
+						<field name="maxParticleCount" type="uint16" value="128" />
+						<field name="spawnData" type="ParticleEmitterSpawnData">
+							<union type="ParticleEmitterSpawnData">
+								<field name="timeInterval" type="timems" value="250" />
+							</union>
+						</field>
+					</object>
+				</array>
+			</field>
+			<field name="particles" type="{array ParticleParticleData}">
+				<array>
+				</array>
+			</field>
+		</object>
+	</resource>
+	<type>ParticleEffectData</type>
+	<field name="diffuseMap" type="resource">TEXR:test_diffuse.texture</field>
+</tikigenericobjects>

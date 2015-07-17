@@ -87,7 +87,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTypeStruct::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeStruct::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat		= "\n"
 												  "\t%s %s%s\n"
@@ -102,6 +102,13 @@ namespace tiki
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
+			if ( !isBitSet( field.mode, mode ) )
+			{
+				continue;
+			}
+
+			targetData.containsArray	|= (field.pType->getType() == GenericDataTypeType_Array);
+			targetData.containsString	|= (field.pType->getName() == "string");
 
 			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
 		}
@@ -112,7 +119,7 @@ namespace tiki
 			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
 		}
 
-		targetData += formatString( s_pBaseFormat, getNodeName(), baseTypeCode.cStr(), getExportName().cStr(), fieldsCode.cStr() );
+		targetData.code += formatString( s_pBaseFormat, getNodeName(), baseTypeCode.cStr(), getExportName().cStr(), fieldsCode.cStr() );
 
 		return true;
 	}

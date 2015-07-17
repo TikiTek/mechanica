@@ -37,17 +37,33 @@ namespace tiki
 		GenericDataTypeMode_ToolAndRuntime	= GenericDataTypeMode_RuntimeOnly | GenericDataTypeMode_ToolOnly
 	};
 
+	struct GenericDataExportData
+	{
+		GenericDataExportData()
+		{
+			containsResource	= false;
+			containsArray		= false;
+			containsString		= false;
+		}
+
+		string	code;
+		bool	containsResource;
+		bool	containsArray;
+		bool	containsString;
+	};
+
 	class GenericDataType : public LinkedItem< GenericDataType >
 	{
 		TIKI_NONCOPYABLE_CLASS( GenericDataType );
+		friend class GenericDataTypeCollection;
 
 	public:
-
+		
 									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_PURE;
-		virtual bool				exportCode( string& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
+		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
 
 		const string&				getName() const;
 		GenericDataTypeMode			getMode() const;
@@ -61,6 +77,8 @@ namespace tiki
 		void						setModule( const string& value );
 
 	protected:
+
+
 
 		GenericDataTypeCollection&			m_collection;
 
