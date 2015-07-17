@@ -32,7 +32,7 @@ namespace tiki
 		registerDefaultTypes();
 
 		List< string > files;
-		findFiles( contentFolder, files, ".tikigeneric" );
+		findFiles( contentFolder, files, ".tikigenerictypes" );
 
 		for (uint i = 0u; i < files.getCount(); ++i)
 		{
@@ -125,7 +125,14 @@ namespace tiki
 
 					case GenericDataTypeType_Resource:
 						{
-							//pType = TIKI_MEMORY_NEW_OBJECT( GenericDataResource )( *this, pNameAtt->content, mode );
+							if ( pBaseType != nullptr )
+							{
+								pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, pNameAtt->content, mode, pBaseType );
+							}
+							else
+							{
+								TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Resource types requires an base Type. Typename: %s\n", pNameAtt->content );
+							}
 						}
 						break;
 
@@ -300,7 +307,14 @@ namespace tiki
 			}
 		}
 
-		Map<string, string> moduleCode;
+		static const char* s_pFactoriesIncludeFormat = "#include \"%s\"\n";
+		static const char* s_pFactoriesCreateFormat = "\t\t%sGenericDataResource::registerResourceType( resourceManager );\n";
+		static const char* s_pFactoriesDisposeFormat = "\t\t%sGenericDataResource::unregisterResourceType( resourceManager );\n";
+
+		string factoriesIncludeCode;
+		string factoriesCreateCode;
+		string factoriesDisposeCode;
+		Map<string, GenericDataExportData> moduleCode;
 		for (const GenericDataType& type : m_types)
 		{
 			const string& moduleName = type.getModule();
@@ -309,11 +323,17 @@ namespace tiki
 				continue;
 			}
 			
-			string& code = moduleCode[ moduleName ];
+			GenericDataExportData& moduleData = moduleCode[ moduleName ];
 
-			if ( type.getMode() & mode )
+			if ( isBitSet( type.getMode(), mode ) )
 			{
-				type.exportCode( code, mode );
+				type.exportCode( moduleData, mode );
+			}
+
+			if ( type.getType() == GenericDataTypeType_Resource )
+			{
+				factoriesCreateCode += formatString( s_pFactoriesCreateFormat, type.getName().cStr() );
+				factoriesDisposeCode += formatString( s_pFactoriesDisposeFormat, type.getName().cStr() );
 			}
 		}
 
@@ -321,12 +341,26 @@ namespace tiki
 											"#ifndef TIKI_%s_INCLUDED__\n"
 											"#define TIKI_%s_INCLUDED__\n"
 											"\n"
+											"#include \"tiki/base/types.hpp\"\n"
+											"%s"
+											"%s"
+											"%s"
+											"\n"
 											"namespace tiki\n"
 											"{\n"
+											"\t#pragma warning( push )\n"
+											"\t#pragma warning( disable: 4309 4369 4340 )\n"
+											"\t\n"
 											"%s\n"
+											"\t\n"
+											"\t#pragma warning( pop )\n"
 											"}\n"
 											"\n"
 											"#endif // TIKI_%s_INCLUDED__\n";
+
+		static const char* s_pStringInclude		= "#include \"tiki/base/basicstring.hpp\"\n";
+		static const char* s_pArrayInclude		= "#include \"tiki/base/staticarray.hpp\"\n";
+		static const char* s_pResourceInclude	= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
 
 		for (uint i = 0u; i < moduleCode.getCount(); ++i)
 		{
@@ -336,16 +370,79 @@ namespace tiki
 			const string fileNameDefine	= fileName.toUpper().replace('.', '_');
 			const string fullPath		= path::combine( targetDir, fileName );
 
+			if ( kvp.value.containsResource )
+			{
+				factoriesIncludeCode += formatString( s_pFactoriesIncludeFormat, fileName.cStr() );
+			}
+
 			string finalCode = formatString(
 				s_pBaseFormat,
 				fileNameDefine.cStr(),
 				fileNameDefine.cStr(),
-				kvp.value.cStr(),
+				(kvp.value.containsString ? s_pStringInclude : ""),
+				(kvp.value.containsArray ? s_pArrayInclude : ""),
+				(kvp.value.containsResource ? s_pResourceInclude : ""),
+				kvp.value.code.cStr(),
 				fileNameDefine.cStr()
 			);
 
 			file::writeAllBytes( fullPath.cStr(), (const uint8*)finalCode.cStr(), finalCode.getLength() );
 		}
+
+		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
+														"#ifndef TIKI_GENERICDATAFACTORIES_INCLUDED__\n"
+														"#define TIKI_GENERICDATAFACTORIES_INCLUDED__\n"
+														"\n"
+														"#include \"tiki/base/types.hpp\"\n"
+														"\n"
+														"namespace tiki\n"
+														"{\n"
+														"\tclass ResourceManager;\n"
+														"\t\n"
+														"\tclass GenericDataFactories\n"
+														"\t{\n"
+														"\t\tTIKI_NONCOPYABLE_CLASS( GenericDataFactories );\n"
+														"\t\t\n"
+														"\tpublic:\n"
+														"\t\t\n"
+														"\t\tvoid\tcreate( ResourceManager& resourceManager );\n"
+														"\t\tvoid\tdispose( ResourceManager& resourceManager );\n"
+														"\t\t\n"
+														"\t};\n"
+														"}\n"
+														"\n"
+														"#endif // TIKI_GENERICDATAFACTORIES_INCLUDED__\n";
+
+		static const char* s_pFactoriesSourceFormat =	"\n"
+														"#include \"genericdatafactories.hpp\"\n"
+														"\n"
+														"%s"
+														"\n"
+														"namespace tiki\n"
+														"{\n"
+														"\tvoid GenericDataFactories::create( ResourceManager& resourceManager )\n"
+														"\t{\n"
+														"%s"
+														"\t}\n"
+														"\t\n"
+														"\tvoid GenericDataFactories::dispose( ResourceManager& resourceManager )\n"
+														"\t{\n"
+														"%s"
+														"\t}\n"
+														"};\n"
+														"\n";
+
+		const string headerFileName		= "genericdatafactories.hpp";
+		const string sourceFileName		= "genericdatafactories.cpp";
+
+		const string headerFullPath		= path::combine( targetDir, headerFileName );
+		const string sourceFullPath		= path::combine( targetDir, sourceFileName );
+
+		const string headerFinalCode	= formatString( s_pFactoriesHeaderFormat );
+		const string sourceFinalCode	= formatString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
+
+		file::writeAllBytes( headerFullPath.cStr(), (const uint8*)headerFinalCode.cStr(), headerFinalCode.getLength() );
+		file::writeAllBytes( sourceFullPath.cStr(), (const uint8*)sourceFinalCode.cStr(), sourceFinalCode.getLength() );
 
 		return true;
 	}

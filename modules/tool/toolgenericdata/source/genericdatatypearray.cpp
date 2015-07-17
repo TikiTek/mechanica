@@ -18,7 +18,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataTypeArray::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeArray::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		return false;
 	}

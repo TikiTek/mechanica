@@ -79,7 +79,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTypeEnum::exportCode( string& targetData, GenericDataTypeMode mode ) const
+	bool GenericDataTypeEnum::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat			= "\n"
 													  "\tenum %s : %s\n"
@@ -109,7 +109,7 @@ namespace tiki
 			}
 		}
 
-		targetData += formatString(
+		targetData.code += formatString(
 			s_pBaseFormat,
 			getExportName().cStr(),
 			m_pBaseType->getExportName().cStr(),
