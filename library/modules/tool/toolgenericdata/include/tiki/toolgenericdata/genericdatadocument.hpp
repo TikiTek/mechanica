@@ -5,10 +5,16 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/map.hpp"
+#include "tiki/toolgenericdata/genericdatatype.hpp"
+
+struct _XmlElement;
 
 namespace tiki
 {
 	class GenericDataObject;
+	class GenericDataTypeCollection;
+	class GenericDataTypeResource;
+	class GenericDataTypeStruct;
 	class ResourceWriter;
 	class XmlReader;
 
@@ -18,22 +24,31 @@ namespace tiki
 
 	public:
 
-		GenericDataDocument();
+		GenericDataDocument( GenericDataTypeCollection& collection );
 		~GenericDataDocument();
 
-		void							addObject( const string& pName, GenericDataObject* pObject );
+		bool							create( const GenericDataTypeResource* pResourceType, const GenericDataTypeStruct* pObjectType );
+		void							dispose();
+
+		const GenericDataTypeResource*	getType() const;
 
 		GenericDataObject*				getObject();
 		const GenericDataObject*		getObject() const;
 
 		bool							importFromXml( XmlReader& reader );
 
-		// TODO: bool							exportToXml() const;
+		// TODO: bool							exportToXml( XmlWriter& writer ) const;
 		bool							exportToResource( ResourceWriter& writer ) const;
 
 	private:
 
-		Map<string, GenericDataObject*>	m_objects;
+		GenericDataTypeCollection&		m_collection;
+
+		const GenericDataTypeResource*	m_pType;
+
+		GenericDataObject*				m_pObject;
+
+		const GenericDataType*			findTypeForNode( XmlReader& reader, const _XmlElement* pElement, GenericDataTypeType type ) const;
 
 	};
 }

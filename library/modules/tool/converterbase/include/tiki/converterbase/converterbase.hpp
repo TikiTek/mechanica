@@ -52,7 +52,7 @@ namespace tiki
 
 	private:
 
-		ConverterManager*			m_pManager;
+		ConverterManager*		m_pManager;
 
 	};
 }

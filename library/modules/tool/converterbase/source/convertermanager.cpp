@@ -35,6 +35,7 @@ namespace tiki
 
 	void ConverterManager::create( const ConverterManagerParameter& parameters )
 	{
+		m_sourcePath	= parameters.sourcePath;
 		m_outputPath	= parameters.outputPath;
 		m_rebuildForced	= parameters.forceRebuild;
 		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );

@@ -13,6 +13,7 @@
 
 #include "tiki/animationconverter/animationconverter.hpp"
 #include "tiki/fontconverter/fontconverter.hpp"
+#include "tiki/genericdataconverter/genericdataconverter.hpp"
 #include "tiki/materialconverter/materialconverter.hpp"
 #include "tiki/modelconverter/modelconverter.hpp"
 #include "tiki/shaderconverter/shaderconverter.hpp"
@@ -52,13 +53,14 @@ namespace tiki
 		string				m_currentFileName;
 		List< string >		m_changedFiles;
 
-		//NavMeshConverter	m_navmeshConverter;
-		AnimationConverter	m_animationConverter;
-		FontConverter		m_fontConverter;
-		MaterialConverter	m_materialConverter;
-		ModelConverter		m_modelConverter;
-		ShaderConverter		m_shaderConverter;
-		TextureConverter	m_textureConverter;		
+		//NavMeshConverter		m_navmeshConverter;
+		AnimationConverter		m_animationConverter;
+		FontConverter			m_fontConverter;
+		GenericDataConverter	m_genericDataConverter;
+		MaterialConverter		m_materialConverter;
+		ModelConverter			m_modelConverter;
+		ShaderConverter			m_shaderConverter;
+		TextureConverter		m_textureConverter;
 
 		void				findFiles( const string& path, List< string >& files, const string& ext ) const;
 

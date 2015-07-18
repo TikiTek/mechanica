@@ -3,6 +3,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatadocument.hpp"
@@ -38,11 +39,14 @@ namespace tiki
 
 	bool GenericDataConverter::initializeConverter()
 	{
+		m_collection.create( getManager()->getSourcePath(), true );
+
 		return true;
 	}
 
 	void GenericDataConverter::disposeConverter()
 	{
+		m_collection.dispose();
 	}
 
 	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
@@ -58,7 +62,7 @@ namespace tiki
 				continue;
 			}
 
-			GenericDataDocument document;
+			GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
 			if ( !document.importFromXml( reader ) )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", file.fileName.cStr() );

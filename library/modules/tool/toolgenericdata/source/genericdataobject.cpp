@@ -1,8 +1,8 @@
 
-#include "tiki/genericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/genericdataobject.hpp"
 
-#include "tiki/genericdata/genericdatatypestruct.hpp"
-#include "tiki/genericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/genericdatavalue.hpp"
 
 namespace tiki
 {
@@ -65,7 +65,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataObject::importFromXml( XmlReader& reader )
+	bool GenericDataObject::importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode )
 	{
 		return true; 
 	}

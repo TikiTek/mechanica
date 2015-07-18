@@ -33,6 +33,7 @@ namespace tiki
 		m_sourcePath	= parameters.sourcePath;
 
 		ConverterManagerParameter managerParameters;
+		managerParameters.sourcePath	= parameters.sourcePath;
 		managerParameters.outputPath	= parameters.outputPath;
 		managerParameters.forceRebuild	= parameters.forceRebuild;
 		m_converterMutex.create();
@@ -41,6 +42,7 @@ namespace tiki
 		//m_navmeshConverter.create( &m_manager );
 		m_animationConverter.create( &m_manager );
 		m_fontConverter.create( &m_manager );
+		m_genericDataConverter.create( &m_manager );
 		m_materialConverter.create( &m_manager );
 		m_modelConverter.create( &m_manager );
 		m_shaderConverter.create( &m_manager );
@@ -59,6 +61,7 @@ namespace tiki
 		//m_navmeshConverter.dispose();
 		m_animationConverter.dispose();
 		m_fontConverter.dispose();
+		m_genericDataConverter.dispose();
 		m_materialConverter.dispose();
 		m_modelConverter.dispose();
 		m_shaderConverter.dispose();

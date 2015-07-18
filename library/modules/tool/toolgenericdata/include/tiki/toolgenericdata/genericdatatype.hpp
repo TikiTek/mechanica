@@ -78,15 +78,13 @@ namespace tiki
 
 	protected:
 
-
-
-		GenericDataTypeCollection&			m_collection;
+		GenericDataTypeCollection&	m_collection;
 
 	private:
 
-		string								m_name;
-		string								m_module;
-		GenericDataTypeMode					m_mode;
+		string						m_name;
+		string						m_module;
+		GenericDataTypeMode			m_mode;
 
 	};
 }

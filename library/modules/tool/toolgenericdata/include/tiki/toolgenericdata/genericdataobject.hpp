@@ -6,6 +6,8 @@
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/map.hpp"
 
+struct _XmlElement;
+
 namespace tiki
 {
 	class GenericDataTypeStruct;
@@ -32,7 +34,9 @@ namespace tiki
 		const GenericDataValue&		getFieldValue( const string& name ) const;
 		bool						setFieldValue( const string& name, const GenericDataValue& value );
 
-		bool						importFromXml( XmlReader& reader );
+		bool						importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode );
+
+		// TODO: bool							exportToXml( XmlWriter& writer ) const;
 		bool						exportToResource( ResourceWriter& writer ) const;
 
 	private:

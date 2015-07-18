@@ -1,9 +1,9 @@
 
-#include "tiki/genericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 
 #include "tiki/base/stringparse.hpp"
-#include "tiki/genericdata/genericdatatypecollection.hpp"
 #include "tiki/io/xmlreader.hpp"
+#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 namespace tiki
 {
