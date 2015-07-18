@@ -2,7 +2,7 @@
 #ifndef TIKI_GENERICDATATYPERESOURCE_HPP_INCLUDED__
 #define TIKI_GENERICDATATYPERESOURCE_HPP_INCLUDED__
 
-#include "tiki/genericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/genericdatatype.hpp"
 
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/fixedarray.hpp"

@@ -4,7 +4,8 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-
+#include "tiki/io/xmlreader.hpp"
+#include "tiki/toolgenericdata/genericdatadocument.hpp"
 
 namespace tiki
 {
@@ -50,6 +51,19 @@ namespace tiki
 		{
 			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
 
+			XmlReader reader;
+			if ( !reader.create( file.fileName.cStr() ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to parse '%s'.\n", file.fileName.cStr() );
+				continue;
+			}
+
+			GenericDataDocument document;
+			if ( !document.importFromXml( reader ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", file.fileName.cStr() );
+				continue;
+			}
 
 			ResourceWriter writer;
 			openResourceWriter( writer, result, parameters.outputName, "material", PlatformType_Win );

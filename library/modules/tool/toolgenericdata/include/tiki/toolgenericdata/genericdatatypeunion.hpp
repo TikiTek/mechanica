@@ -2,7 +2,7 @@
 #ifndef TIKI_GENERICDATAUNION_HPP_INCLUDED__
 #define TIKI_GENERICDATAUNION_HPP_INCLUDED__
 
-#include "tiki/genericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
 namespace tiki
 {
