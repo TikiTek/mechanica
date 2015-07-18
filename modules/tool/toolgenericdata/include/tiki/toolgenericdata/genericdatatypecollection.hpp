@@ -4,7 +4,7 @@
 
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/genericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/genericdatatype.hpp"
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/map.hpp"
 
