@@ -1,5 +1,5 @@
 
-#include "tiki/genericdata/genericdatatyperesource.hpp"
+#include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 
 #include "tiki/base/fourcc.hpp"
 #include "tiki/io/xmlreader.hpp"
