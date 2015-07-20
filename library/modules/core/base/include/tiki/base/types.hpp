@@ -23,15 +23,15 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
-	typedef unsigned char				uint8;
+	typedef unsigned char			uint8;
 	typedef unsigned short			uint16;
-	typedef unsigned int				uint32;
+	typedef unsigned int			uint32;
 	typedef unsigned long long int	uint64;
 
-	typedef char						sint8;
-	typedef short						sint16;
+	typedef char					sint8;
+	typedef short					sint16;
 	typedef int						sint32;
-	typedef long long int				sint64;
+	typedef long long int			sint64;
 
 #	define nullptr 0
 

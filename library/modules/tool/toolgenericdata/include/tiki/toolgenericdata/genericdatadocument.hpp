@@ -17,6 +17,7 @@ namespace tiki
 	class GenericDataTypeStruct;
 	class ResourceWriter;
 	class XmlReader;
+	struct ReferenceKey;
 
 	class GenericDataDocument
 	{
@@ -36,9 +37,9 @@ namespace tiki
 		const GenericDataObject*		getObject() const;
 
 		bool							importFromXml( XmlReader& reader );
+		// TODO: bool					exportToXml( XmlWriter& writer ) const;
 
-		// TODO: bool							exportToXml( XmlWriter& writer ) const;
-		bool							exportToResource( ResourceWriter& writer ) const;
+		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
 
 	private:
 

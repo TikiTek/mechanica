@@ -51,7 +51,7 @@ namespace tiki
 			1,	// GenericDataValueTypeType_Boolean
 			8,	// GenericDataValueTypeType_String
 		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aSizes ) == GenericDataValueTypeType_Count );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aSizes ) == GenericDataTypeValueTypeType_Count );
 
 		return s_aSizes[ m_type ];
 	}

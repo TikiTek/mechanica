@@ -2,11 +2,13 @@
 #ifndef TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 #define TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 
+#include "tiki/base/fixedarray.hpp"
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolgenericdata/genericdatatype.hpp"
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/map.hpp"
+#include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 
 namespace tiki
 {
@@ -34,13 +36,14 @@ namespace tiki
 		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
 
 		const GenericDataType*			parseType( const string& typeString );
-		bool							parseValue( GenericDataValue& outValue, const string& valueString );
+		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType );
 
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
 	private:
 
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
+		typedef FixedArray< const GenericDataTypeValueType*, GenericDataTypeValueTypeType_Count > ValueTypeArray;
 
 		struct ModifierDescription
 		{
@@ -52,6 +55,7 @@ namespace tiki
 		TypeArrayMap					m_arrays;
 
 		const GenericDataTypeEnum*		m_pModeEnum;
+		ValueTypeArray					m_valueTypes;
 		
 		void							registerDefaultTypes();
 		

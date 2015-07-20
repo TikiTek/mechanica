@@ -27,9 +27,9 @@ namespace tiki
 		}
 
 		m_pType		= pResourceType;
-		m_pObject	= TIKI_MEMORY_NEW_OBJECT( GenericDataObject );
+		m_pObject	= TIKI_MEMORY_NEW_OBJECT( GenericDataObject )( m_collection );
 		
-		return m_pObject->createFromType( pObjectType );
+		return m_pObject->create( pObjectType );
 	}
 
 	void GenericDataDocument::dispose()
@@ -37,6 +37,7 @@ namespace tiki
 		m_pType = nullptr;
 
 		TIKI_MEMORY_DELETE_OBJECT( m_pObject );
+		m_pObject = nullptr;
 	}
 
 	const GenericDataTypeResource* GenericDataDocument::getType() const
@@ -88,7 +89,7 @@ namespace tiki
 		return m_pObject->importFromXml( reader, pObjectNode );
 	}
 
-	bool GenericDataDocument::exportToResource( ResourceWriter& writer ) const
+	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
 		return true;
 	}
