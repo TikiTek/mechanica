@@ -8,24 +8,27 @@ namespace tiki
 {
 	enum GenericDataValueTypeType
 	{
-		GenericDataValueTypeType_Invalid = -1,
+		GenericDataTypeValueTypeType_Invalid = -1,
 
-		GenericDataValueTypeType_SingedInteger8,
-		GenericDataValueTypeType_SingedInteger16,
-		GenericDataValueTypeType_SingedInteger32,
-		GenericDataValueTypeType_SingedInteger64,
-		GenericDataValueTypeType_UnsingedInteger8,
-		GenericDataValueTypeType_UnsingedInteger16,
-		GenericDataValueTypeType_UnsingedInteger32,
-		GenericDataValueTypeType_UnsingedInteger64,
-		GenericDataValueTypeType_FloatingPoint16,
-		GenericDataValueTypeType_FloatingPoint32,
-		GenericDataValueTypeType_FloatingPoint64,
+		GenericDataTypeValueTypeType_Boolean,
 
-		GenericDataValueTypeType_Boolean,
-		GenericDataValueTypeType_String,
+		GenericDataTypeValueTypeType_SingedInteger8,
+		GenericDataTypeValueTypeType_SingedInteger16,
+		GenericDataTypeValueTypeType_SingedInteger32,
+		GenericDataTypeValueTypeType_SingedInteger64,
 
-		GenericDataValueTypeType_Count
+		GenericDataTypeValueTypeType_UnsingedInteger8,
+		GenericDataTypeValueTypeType_UnsingedInteger16,
+		GenericDataTypeValueTypeType_UnsingedInteger32,
+		GenericDataTypeValueTypeType_UnsingedInteger64,
+
+		GenericDataTypeValueTypeType_FloatingPoint16,
+		GenericDataTypeValueTypeType_FloatingPoint32,
+		GenericDataTypeValueTypeType_FloatingPoint64,
+
+		GenericDataTypeValueTypeType_String,
+
+		GenericDataTypeValueTypeType_Count
 	};
 
 	class GenericDataTypeValueType : public GenericDataType

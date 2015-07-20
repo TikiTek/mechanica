@@ -10,6 +10,7 @@ struct _XmlElement;
 
 namespace tiki
 {
+	class GenericDataTypeCollection;
 	class GenericDataTypeStruct;
 	class GenericDataValue;
 	class ResourceWriter;
@@ -21,27 +22,30 @@ namespace tiki
 
 	public:
 
-									GenericDataObject();
-									~GenericDataObject();
+										GenericDataObject( GenericDataTypeCollection& collection );
+										~GenericDataObject();
 
-		bool						createFromType( const GenericDataTypeStruct* pType );
+		bool							create( const GenericDataTypeStruct* pType );
+		void							dispose();
 
 		const GenericDataTypeStruct*	getType() const;
 
-		bool						hasField( const string& name ) const;
+		bool							hasField( const string& name ) const;
 
-		GenericDataValue&			getFieldValue( const string& name );
-		const GenericDataValue&		getFieldValue( const string& name ) const;
-		bool						setFieldValue( const string& name, const GenericDataValue& value );
+		GenericDataValue&				getFieldValue( const string& name );
+		const GenericDataValue&			getFieldValue( const string& name ) const;
+		bool							setFieldValue( const string& name, const GenericDataValue& value );
 
-		bool						importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode );
+		bool							importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode );
 
-		// TODO: bool							exportToXml( XmlWriter& writer ) const;
-		bool						exportToResource( ResourceWriter& writer ) const;
+		// TODO: bool					exportToXml( XmlWriter& writer ) const;
+		bool							exportToResource( ResourceWriter& writer ) const;
 
 	private:
 
-		const GenericDataTypeStruct*		m_pType;
+		GenericDataTypeCollection&		m_collection;
+
+		const GenericDataTypeStruct*	m_pType;
 
 		Map< string, GenericDataValue >	m_fields;
 

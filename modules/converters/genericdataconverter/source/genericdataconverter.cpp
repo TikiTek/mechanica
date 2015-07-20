@@ -7,6 +7,7 @@
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatadocument.hpp"
+#include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 
 namespace tiki
 {
@@ -69,15 +70,18 @@ namespace tiki
 				continue;
 			}
 
+			const string& extension = document.getType()->getPostFix();
+
 			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "material", PlatformType_Win );
+			openResourceWriter( writer, result, parameters.outputName, extension, PlatformType_Win );
 
-			writer.openResource( parameters.outputName + ".material", TIKI_FOURCC( 'M', 'A', 'T', 'E' ), 1u );
+			writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), 1u );
 
-			//const ReferenceKey materialDataKey = material.writeResource( writer );
+			ReferenceKey dataKey;
+			document.writeToResource( dataKey, writer );
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			//writer.writeReference( &materialDataKey );
+			writer.writeReference( &dataKey );
 			writer.closeDataSection();
 
 			writer.closeResource();
