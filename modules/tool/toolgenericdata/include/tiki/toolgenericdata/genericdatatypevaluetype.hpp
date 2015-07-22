@@ -48,11 +48,18 @@ namespace tiki
 		virtual uint				getSize() const TIKI_OVERRIDE;
 		virtual string				getExportName() const TIKI_OVERRIDE;
 
+		bool						isBoolean() const;
+		bool						isSignedInteger() const;
+		bool						isUnsignedInteger() const;
+		bool						isFloatingPoint() const;
+		bool						isString() const;
+
 	private:
 
 		GenericDataValueTypeType	m_type;
 
 	};
+	
 }
 
 #endif // TIKI_GENERICDATAVALUETYPE_HPP_INCLUDED__

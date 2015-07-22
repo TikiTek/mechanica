@@ -60,4 +60,37 @@ namespace tiki
 	{
 		return getName();
 	}
+
+	bool GenericDataTypeValueType::isBoolean() const
+	{
+		return m_type == GenericDataTypeValueTypeType_Boolean;
+	}
+
+	bool GenericDataTypeValueType::isSignedInteger() const
+	{
+		return m_type == GenericDataTypeValueTypeType_SingedInteger8 ||
+			   m_type == GenericDataTypeValueTypeType_SingedInteger16 ||
+			   m_type == GenericDataTypeValueTypeType_SingedInteger32 ||
+			   m_type == GenericDataTypeValueTypeType_SingedInteger64;
+	}
+
+	bool GenericDataTypeValueType::isUnsignedInteger() const
+	{
+		return m_type == GenericDataTypeValueTypeType_UnsingedInteger8 ||
+			   m_type == GenericDataTypeValueTypeType_UnsingedInteger16 ||
+			   m_type == GenericDataTypeValueTypeType_UnsingedInteger32 ||
+			   m_type == GenericDataTypeValueTypeType_UnsingedInteger64;
+	}
+
+	bool GenericDataTypeValueType::isFloatingPoint() const
+	{
+		return m_type == GenericDataTypeValueTypeType_FloatingPoint16 ||
+			   m_type == GenericDataTypeValueTypeType_FloatingPoint32 ||
+			   m_type == GenericDataTypeValueTypeType_FloatingPoint64;
+	}
+
+	bool GenericDataTypeValueType::isString() const
+	{
+		return m_type == GenericDataTypeValueTypeType_String;
+	}
 }

@@ -3,6 +3,7 @@
 #define TIKI_BASE_FUNCTIONS_HPP
 
 #include "tiki/base/inline.hpp"
+#include "tiki/base/numberlimits.hpp"
 
 namespace tiki
 {
@@ -104,6 +105,23 @@ namespace tiki
 		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
 		return T( 1 ) << shift;
 	}
+
+	template<typename TTarget, typename TSource>
+	TIKI_FORCE_INLINE bool rangeCheckCast( TTarget& outValue, const TSource& value )
+	{
+		if ( value < NumberLimits< TTarget >::min() )
+		{
+			return false;
+		}
+		else if ( value > NumberLimits< TTarget >::max() )
+		{
+			return false;
+		}
+
+		outValue = (TTarget)value;
+		return true;
+	}
+
 }
 
 #endif // TIKI_BASE_FUNCTIONS_HPP

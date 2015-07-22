@@ -1,8 +1,11 @@
 
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
 
+#include "tiki/base/numberlimits.hpp"
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/genericdatatypearray.hpp"
+#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 
@@ -30,14 +33,16 @@ namespace tiki
 	{
 		m_pType		= nullptr;
 		m_valueType	= GenericDataValueType_Invalid;
+		m_value.u64	= 0;
 	}
 
 	GenericDataValue::GenericDataValue( const GenericDataType* pType )
 	{
 		m_pType		= nullptr;
 		m_valueType	= GenericDataValueType_Invalid;
+		m_value.u64	= 0;
 
-		setType( pType );
+		setType( pType, GenericDataTypeType_Invalid );
 	}
 
 	GenericDataValue::~GenericDataValue()
@@ -61,21 +66,103 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataValue::setUint8( uint8 value, const GenericDataType* pType )
+	bool GenericDataValue::setBoolean( bool value, const GenericDataType* pType )
 	{
-		if ( !setType( pType ) )
+		if ( !setType( pType, GenericDataTypeType_ValueType ) )
 		{
 			return false;
 		}
 
-		m_value.u8 = value;
+		m_value.b = value;
 
 		return true;
 	}
 
+	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType )
+	{
+		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		{
+			return false;
+		}
+
+		switch ( pType->getSize() )
+		{
+		case 1:
+			return rangeCheckCast( m_value.s8, value );
+
+		case 2:
+			return rangeCheckCast( m_value.s16, value );
+
+		case 4:
+			return rangeCheckCast( m_value.s32, value );
+
+		case 8:
+			return rangeCheckCast( m_value.s64, value );
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::setUnsignedValue( uint64 value, const GenericDataType* pType )
+	{
+		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		{
+			return false;
+		}
+
+		switch ( pType->getSize() )
+		{
+		case 1:
+			return rangeCheckCast( m_value.u8, value );
+
+		case 2:
+			return rangeCheckCast( m_value.u16, value );
+
+		case 4:
+			return rangeCheckCast( m_value.u32, value );
+
+		case 8:
+			return rangeCheckCast( m_value.u64, value );
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::setFloatingPoint( float64 value, const GenericDataType* pType )
+	{
+		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		{
+			return false;
+		}
+
+		switch ( pType->getSize() )
+		{
+
+		case 2:
+			return rangeCheckCast( m_value.f16, value );
+
+		case 4:
+			return rangeCheckCast( m_value.f32, value );
+
+		case 8:
+			return rangeCheckCast( m_value.f64, value );
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setString( const string& value, const GenericDataType* pType )
 	{
-		if ( !setType( pType ) )
+		if ( !setType( pType, GenericDataTypeType_ValueType ) )
 		{
 			return false;
 		}
@@ -87,7 +174,7 @@ namespace tiki
 
 	bool GenericDataValue::setObject( GenericDataObject* pValue )
 	{
-		if ( pValue == nullptr || !setType( pValue->getType() ) )
+		if ( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Struct ) )
 		{
 			return false;
 		}
@@ -97,7 +184,40 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::setType( const GenericDataType* pType )
+	bool GenericDataValue::setArray( GenericDataArray* pValue )
+	{
+		if ( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Array ) )
+		{
+			return false;
+		}
+
+		m_value.pArray = pValue;
+
+		return true;
+	}
+
+	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType )
+	{
+		if ( !setType( pType, GenericDataTypeType_Enum ) )
+		{
+			return false;
+		}
+
+		const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pType;
+		const sint64* pValue = pTypedEnumType->getValueByName( valueName );
+		if ( pValue == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataValue::setEnum] enum value with name '%s' not found.\n", valueName.cStr() );
+			return false;
+		}
+
+		m_text		= valueName;
+		m_value.s64	= *pValue;
+
+		return true;
+	}
+
+	bool GenericDataValue::setType( const GenericDataType* pType, GenericDataTypeType expectedType )
 	{
 		if ( pType == nullptr )
 		{
@@ -107,6 +227,11 @@ namespace tiki
 		if ( m_valueType == GenericDataValueType_Invalid )
 		{
 			const GenericDataTypeType typeType = pType->getType();
+			if ( typeType != expectedType && expectedType != GenericDataTypeType_Invalid )
+			{
+				return false;
+			}
+
 			if ( typeType == GenericDataTypeType_ValueType )
 			{
 				const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pType;
@@ -127,6 +252,13 @@ namespace tiki
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Array;
+
+				return true;
+			}
+			else if ( typeType == GenericDataTypeType_Enum )
+			{
+				m_pType		= pType;
+				m_valueType	= GenericDataValueType_Enum;
 
 				return true;
 			}

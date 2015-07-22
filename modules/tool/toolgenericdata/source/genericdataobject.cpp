@@ -9,7 +9,7 @@
 namespace tiki
 {
 	GenericDataObject::GenericDataObject( GenericDataTypeCollection& collection )
-		: m_collection( collection )
+		: GenericDataContainer( collection )
 	{
 		m_pType = nullptr;
 	}
@@ -88,113 +88,25 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataObject::importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode )
-	{
-		bool result = true;
-
-		const XmlElement* pFieldElement = reader.findFirstChild( "field", pObjectRootNode );
-		while ( pFieldElement )
-		{
-			const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pFieldElement );
-			const XmlAttribute* pTypeAtt = reader.findAttributeByName( "type", pFieldElement );
-
-			if ( pNameAtt == nullptr || pTypeAtt == nullptr )
-			{
-				TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] 'field' node needs 'name' and 'type' attribute.\n" );
-				result = false;
-				continue;
-			}
-
-			const GenericDataType* pFieldType = m_collection.parseType( pTypeAtt->content );
-			if ( pFieldType == nullptr )
-			{
-				result = false;
-				continue;
-			}
-
-			GenericDataValue value;
-			const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pFieldElement );
-			if ( pValueAtt != nullptr )
-			{
-				if ( !m_collection.parseValue( value, pValueAtt->content, pFieldType ) )
-				{
-					result = false;
-					continue;
-				}
-			}
-			else
-			{
-				const XmlElement* pChildElement = pFieldElement->elements;
-				if ( pChildElement == nullptr )
-				{
-					TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] 'field' node needs a 'value' attribute or a child node named 'object' or 'array'. Fieldname: %s\n", pNameAtt->content );
-					result = false;
-					continue;
-				}
-
-				const XmlAttribute* pChildTypeAtt = reader.findAttributeByName( "type", pChildElement );
-				if ( pChildTypeAtt == nullptr )
-				{
-					TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] child node needs a 'type' attribute.\n" );
-					result = false;
-					continue;
-				}
-
-				const GenericDataType* pChildType = m_collection.parseType( pChildTypeAtt->content );
-				if ( pChildType == nullptr )
-				{
-					result = false;
-					continue;
-				}
-
-				const string childName = pChildElement->name;
-				if ( childName == "object" )
-				{
-					if ( pChildType->getType() != GenericDataTypeType_Struct )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] type of a object needs to be a struct. '%s' is not a struct.\n", pChildType->getName().cStr() );
-						result = false;
-						continue;
-					}
-
-					const GenericDataTypeStruct* pTypedChildType = (const GenericDataTypeStruct*)pChildType;
-					GenericDataObject* pObject = TIKI_MEMORY_NEW_OBJECT( GenericDataObject )( m_collection );
-					if ( !pObject->create( pTypedChildType ) )
-					{
-						TIKI_MEMORY_DELETE_OBJECT( pObject );
-						result = false;
-						continue;
-					}
-
-					if ( !pObject->importFromXml( reader, pChildElement ) )
-					{
-						TIKI_MEMORY_DELETE_OBJECT( pObject );
-						result = false;
-						continue;
-					}
-
-					value.setObject( pObject );
-				}
-				else if ( childName == "array" )
-				{
-
-				}
-				else 
-				{
-					TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] child node has a invalid name(%s).\n", pChildElement->name );
-					result = false;
-					continue;
-				}
-			}
-
-			pFieldElement = reader.findNext( "field", pFieldElement );
-		}
-
-		return true; 
-	}
-
 	bool GenericDataObject::exportToResource( ResourceWriter& writer ) const
 	{
 		return true;
+	}
+
+	const char* GenericDataObject::getElementName() const
+	{
+		return "field";
+	}
+
+	bool GenericDataObject::applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
+	{
+		const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pElement );
+		if ( pNameAtt == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] 'field' node needs a 'name' attribute.\n" );
+			return false;
+		}
+
+		return setFieldValue( pNameAtt->content, value );
 	}
 }
