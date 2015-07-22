@@ -5,6 +5,7 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/toolgenericdata/genericdatatypetype.hpp"
 
 struct _XmlElement;
 
@@ -12,21 +13,6 @@ namespace tiki
 {
 	class GenericDataTypeCollection;
 	class XmlReader;
-
-	enum GenericDataTypeType
-	{
-		GenericDataTypeType_Invalid = -1,
-
-		GenericDataTypeType_Enum,
-		GenericDataTypeType_Struct,
-		GenericDataTypeType_ValueType,
-		GenericDataTypeType_Union,
-		GenericDataTypeType_Resource,
-		GenericDataTypeType_Array,
-		GenericDataTypeType_Reference,
-	
-		GenericDataTypeType_Count,
-	};
 
 	enum GenericDataTypeMode
 	{

@@ -5,16 +5,19 @@
 #include "tiki/base/file.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/path.hpp"
+#include "tiki/base/stringconvert.hpp"
+#include "tiki/base/stringparse.hpp"
+#include "tiki/io/xmlreader.hpp"
+#include "tiki/toolbase/directory_tool.hpp"
+#include "tiki/toolbase/list.hpp"
+#include "tiki/toolbase/map.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatatypeunion.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
-#include "tiki/io/xmlreader.hpp"
-#include "tiki/toolbase/directory_tool.hpp"
-#include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/map.hpp"
+#include "tiki/toolgenericdata/genericdatavalue.hpp"
 
 namespace tiki
 {
@@ -293,6 +296,99 @@ namespace tiki
 
 	bool GenericDataTypeCollection::parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType )
 	{
+		if ( pType == nullptr )
+		{
+			return false;
+		}
+
+		List< ModifierDescription > modifiers;
+
+		ModifierDescription desc;
+		string content = valueString;
+		while ( parseToken( desc, content ) )
+		{
+			modifiers.add( desc );
+
+			content = desc.content;
+		}
+		
+		string enumValueName;
+		if ( modifiers.isEmpty() )
+		{
+			content = valueString;			
+		}
+		else
+		{
+			for (uint i = modifiers.getCount() - 1u; i < modifiers.getCount(); --i)
+			{
+				const ModifierDescription& modifier = modifiers[ i ];
+
+				if ( modifier.modifier == "enum" )
+				{
+					const int dotIndex = modifier.content.indexOf( '.' );
+					if ( dotIndex == -1 )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please {enum TypeName.ValueName} for enum modfiers.\n" );
+						return false;
+					}
+
+					const string enumTypeName = modifier.content.subString( 0u, dotIndex );
+					const GenericDataType* pEnumType = findTypeByName( enumTypeName );
+					if ( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] '%s' not found or not an enum.\n", enumTypeName.cStr() );
+						return false;
+					}
+
+					enumValueName = modifier.content.subString( dotIndex + 1 );
+
+					const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
+					const sint64* pValue = pTypedEnumType->getValueByName( enumValueName );
+					if ( pValue == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s' not found.\n", enumValueName.cStr() );
+						return false;
+					}
+
+					content = StringConvert::ToString( *pValue );
+				}
+			}
+		}
+
+		if ( pType->getType() == GenericDataTypeType_ValueType )
+		{
+			const GenericDataTypeValueType* pTypedType = (const GenericDataTypeValueType*)pType;
+
+			if ( pTypedType->isBoolean() )
+			{
+				const bool value = ParseString::parseInt64( content.cStr() ) != 0;
+				return outValue.setBoolean( value, pType );
+			}
+			else if ( pTypedType->isSignedInteger() )
+			{
+				const sint64 value = ParseString::parseInt64( content.cStr() );
+				return outValue.setSignedValue( value, pType );
+			}
+			else if ( pTypedType->isUnsignedInteger() )
+			{
+				const uint64 value = ParseString::parseUInt64( content.cStr() );
+				return outValue.setUnsignedValue( value, pType );
+			}
+			else if ( pTypedType->isFloatingPoint() )
+			{
+				const double value = ParseString::parseDouble( content.cStr() );
+				return outValue.setFloatingPoint( value, pType );
+			}
+			else if ( pTypedType->isString() )
+			{
+				return outValue.setString( content, pType );
+			}
+		}
+		else if ( pType->getType() == GenericDataTypeType_Enum )
+		{
+			return outValue.setEnum( enumValueName, pType );
+		}
+
 		return false;
 	}
 

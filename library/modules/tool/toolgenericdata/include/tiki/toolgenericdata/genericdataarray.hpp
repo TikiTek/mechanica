@@ -2,6 +2,8 @@
 #ifndef TIKI_GENERICDATAARRAY_HPP_INCLUDED__
 #define TIKI_GENERICDATAARRAY_HPP_INCLUDED__
 
+#include "tiki/toolgenericdata/genericdatacontainer.hpp"
+
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolbase/list.hpp"
@@ -16,7 +18,7 @@ namespace tiki
 	class ResourceWriter;
 	class XmlReader;
 
-	class GenericDataArray
+	class GenericDataArray : public GenericDataContainer
 	{
 		TIKI_NONCOPYABLE_CLASS( GenericDataArray );
 
@@ -39,14 +41,15 @@ namespace tiki
 		bool							setElement( uint index, const GenericDataValue& value );
 		bool							removeElement( uint index );
 
-		bool							importFromXml( XmlReader& reader, const _XmlElement* pArrayRootNode );
-
 		// TODO: bool					exportToXml( XmlWriter& writer ) const;
 		bool							exportToResource( ResourceWriter& writer ) const;
 
-	private:
+	protected:
 
-		GenericDataTypeCollection&		m_collection;
+		virtual const char*				getElementName() const TIKI_OVERRIDE;
+		virtual bool					applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
+
+	private:
 
 		const GenericDataTypeArray*		m_pType;
 

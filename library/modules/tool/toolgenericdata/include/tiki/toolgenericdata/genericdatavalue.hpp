@@ -2,8 +2,9 @@
 #ifndef TIKI_GENERICDATAVALUE_HPP_INCLUDED__
 #define TIKI_GENERICDATAVALUE_HPP_INCLUDED__
 
-#include "tiki/base/types.hpp"
 #include "tiki/base/basicstring.hpp"
+#include "tiki/base/types.hpp"
+#include "tiki/toolgenericdata/genericdatatypetype.hpp"
 
 namespace tiki
 {
@@ -36,6 +37,8 @@ namespace tiki
 		GenericDataValueType_Object,
 		GenericDataValueType_Array,
 
+		GenericDataValueType_Enum,
+
 		GenericDataValueType_Count
 	};
 
@@ -51,12 +54,18 @@ namespace tiki
 
 		const GenericDataType*	getType() const;
 
-		bool					setUint8( uint8 value, const GenericDataType* pType );
+		bool					setBoolean( bool value, const GenericDataType* pType );
+
+		bool					setSignedValue( sint64 value, const GenericDataType* pType );
+		bool					setUnsignedValue( uint64 value, const GenericDataType* pType );
+		bool					setFloatingPoint( float64 value, const GenericDataType* pType );
 
 		bool					setString( const string& value, const GenericDataType* pType );
 
 		bool					setObject( GenericDataObject* pValue );
 		bool					setArray( GenericDataArray* pValue );
+
+		bool					setEnum( const string& valueName, const GenericDataType* pType );
 
 	private:
 
@@ -88,7 +97,7 @@ namespace tiki
 		Values					m_value;
 		string					m_text;
 
-		bool					setType( const GenericDataType* pType );
+		bool					setType( const GenericDataType* pType, GenericDataTypeType expectedType );
 
 	};
 }
