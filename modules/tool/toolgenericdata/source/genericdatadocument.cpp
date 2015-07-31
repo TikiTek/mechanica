@@ -91,7 +91,7 @@ namespace tiki
 
 	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
-		return true;
+		return m_pObject->writeToResource( dataKey, writer );
 	}
 
 	const GenericDataType* GenericDataDocument::findTypeForNode( XmlReader& reader, const _XmlElement* pElement, GenericDataTypeType type ) const

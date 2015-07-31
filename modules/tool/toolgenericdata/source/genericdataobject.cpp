@@ -88,7 +88,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataObject::exportToResource( ResourceWriter& writer ) const
+	bool GenericDataObject::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
 		return true;
 	}

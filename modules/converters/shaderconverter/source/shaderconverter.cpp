@@ -235,9 +235,10 @@ namespace tiki
 		return 1u;
 	}
 
-	crc32 ShaderConverter::getInputType() const
+	bool ShaderConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "shader" );
+		static const crc32 s_typeCrc = crcString( "shader" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 ShaderConverter::getOutputType() const

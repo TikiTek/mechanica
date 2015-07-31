@@ -15,7 +15,6 @@
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
-#include "tiki/toolgenericdata/genericdatatypeunion.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
 
@@ -30,143 +29,47 @@ namespace tiki
 	{
 	}
 
-	void GenericDataTypeCollection::create( const string& contentFolder, bool recursive )
+	bool GenericDataTypeCollection::create( const string& contentFolder, bool recursive )
 	{
-		registerDefaultTypes();
+		if ( !registerDefaultTypes() )
+		{
+			dispose();
+			return false;
+		}
 
 		List< string > files;
 		findFiles( contentFolder, files, ".tikigenerictypes" );
 
+		bool ok = true;
 		for (uint i = 0u; i < files.getCount(); ++i)
 		{
 			const string& fileName = files[ i ];
 			const string moduleName = path::getFilenameWithoutExtension( fileName );
 
 			XmlReader reader;
-			if ( !reader.create( fileName.cStr() ) )
+			if ( reader.create( fileName.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be parsed.\n", files[ i ].cStr() );
-				continue;
-			}
-
-			const XmlElement* pRoot = reader.findNodeByName( "tikigenerictypes" );
-			if ( pRoot == nullptr )
-			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", files[ i ].cStr() );
-				continue;
-			}
-
-			const XmlElement* pChildNode = pRoot->elements;
-			while ( pChildNode != nullptr )
-			{
-				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildNode );
-				const XmlAttribute* pBaseAtt = reader.findAttributeByName( "base", pChildNode );
-				const XmlAttribute* pModeAtt = reader.findAttributeByName( "mode", pChildNode );
-
-				if ( pNameAtt != nullptr )
+				if ( !parseFile( reader, fileName, moduleName ) )
 				{
-					const GenericDataType* pBaseType = nullptr;
-					if ( pBaseAtt != nullptr )
-					{
-						pBaseType = parseType( pBaseAtt->content );
-					}
-
-					GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime;
-					if ( pModeAtt != nullptr )
-					{
-						mode = findModeByName( pModeAtt->content );
-						if ( mode == GenericDataTypeMode_Invalid )
-						{
-							TIKI_TRACE_WARNING( "[GenericDataTypeCollection::create] type named '%s' has a invalid mode(%s).\n", pNameAtt->content, pModeAtt->content );
-							mode = GenericDataTypeMode_ToolAndRuntime;
-						}
-					}
-
-					GenericDataTypeType type = GenericDataTypeType_Invalid;
-					if ( isStringEquals( pChildNode->name, "enum" ) )
-					{
-						type = GenericDataTypeType_Enum;
-					}
-					else if ( isStringEquals( pChildNode->name, "struct" ) )
-					{
-						type = GenericDataTypeType_Struct;
-					}
-					else if ( isStringEquals( pChildNode->name, "union" ) )
-					{
-						type = GenericDataTypeType_Union;
-					}
-					else if ( isStringEquals( pChildNode->name, "resource" ) )
-					{
-						type = GenericDataTypeType_Resource;
-					}
-
-					GenericDataType* pType = nullptr;
-					switch ( type )
-					{
-					case GenericDataTypeType_Enum:
-						{
-							if ( pBaseType == nullptr )
-							{
-								pBaseType = findTypeByName( "int" );
-							}
-
-							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, *pBaseType );
-						}
-						break;
-
-					case GenericDataTypeType_Struct:
-						{
-							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeStruct )( *this, pNameAtt->content, mode, pBaseType );
-						}
-						break;
-
-					case GenericDataTypeType_Union:
-						{
-							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeUnion )( *this, pNameAtt->content, mode );
-						}
-						break;
-
-					case GenericDataTypeType_Resource:
-						{
-							if ( pBaseType != nullptr )
-							{
-								pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, pNameAtt->content, mode, pBaseType );
-							}
-							else
-							{
-								TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Resource types requires an base Type. Typename: %s\n", pNameAtt->content );
-							}
-						}
-						break;
-
-					default:
-						break;
-					}
-
-					if ( pType != nullptr )
-					{
-						if ( pType->loadFromXml( reader, pChildNode ) )
-						{
-							pType->setModule( moduleName );
-							addType( *pType );
-						}
-						else
-						{
-							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to load type with name '%s' from xml.\n", pType->getName().cStr() );
-							TIKI_MEMORY_DELETE_OBJECT( pType );
-						}
-					}
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", fileName.cStr() );
+					ok = false;
 				}
-				else if ( pChildNode->name != nullptr )
-				{
-					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] node has no name attribute and will be ignored.\n" );
-				}
-				
-				pChildNode = pChildNode->next;
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be parsed.\n", fileName.cStr() );
+				ok = false;
 			}
 
 			reader.dispose();
 		}
+
+		if ( !ok )
+		{
+			dispose();
+		}
+
+		return ok;
 	}
 
 	void GenericDataTypeCollection::dispose()
@@ -218,6 +121,17 @@ namespace tiki
 		return nullptr;
 	}
 
+	void GenericDataTypeCollection::findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const
+	{
+		for (const GenericDataType& type : m_types)
+		{
+			if ( type.getType() == typeType )
+			{
+				types.add( &type );
+			}
+		}
+	}
+
 	GenericDataTypeMode GenericDataTypeCollection::findModeByName( const string& name ) const
 	{
 		const sint64* pValue = m_pModeEnum->getValueByName( name );
@@ -240,7 +154,7 @@ namespace tiki
 			pArrayType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeArray )( *this, name, pType, GenericDataTypeMode_ToolAndRuntime );
 			m_arrays.set( pType, pArrayType );
 
-			addType( *pArrayType );
+			TIKI_VERIFY( addType( *pArrayType ) );
 		}
 
 		return pArrayType;
@@ -543,8 +457,10 @@ namespace tiki
 		return true;
 	}
 
-	void GenericDataTypeCollection::registerDefaultTypes()
+	bool GenericDataTypeCollection::registerDefaultTypes()
 	{
+		bool ok = true;
+
 		GenericDataTypeValueType* pShort	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "short",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
 		GenericDataTypeValueType* pInt		= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "int",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
 		GenericDataTypeValueType* pLong		= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "long",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
@@ -570,34 +486,34 @@ namespace tiki
 		GenericDataTypeValueType* pCrc32	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "crc32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
 		GenericDataTypeValueType* pTimeMS	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "timems",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
-		addType( *pShort );
-		addType( *pInt );
-		addType( *pLong );
+		ok &= addType( *pShort );
+		ok &= addType( *pInt );
+		ok &= addType( *pLong );
 
-		addType( *pSInt8 );
-		addType( *pSInt16 );
-		addType( *pSInt32 );
-		addType( *pSInt64 );
-		addType( *pUInt8 );
-		addType( *pUInt16 );
-		addType( *pUInt32 );
-		addType( *pUInt64 );
+		ok &= addType( *pSInt8 );
+		ok &= addType( *pSInt16 );
+		ok &= addType( *pSInt32 );
+		ok &= addType( *pSInt64 );
+		ok &= addType( *pUInt8 );
+		ok &= addType( *pUInt16 );
+		ok &= addType( *pUInt32 );
+		ok &= addType( *pUInt64 );
 
-		addType( *pHalf );
-		addType( *pFloat );
-		addType( *pDouble );
-		addType( *pFloat16 );
-		addType( *pFloat32 );
-		addType( *pFloat64 );
+		ok &= addType( *pHalf );
+		ok &= addType( *pFloat );
+		ok &= addType( *pDouble );
+		ok &= addType( *pFloat16 );
+		ok &= addType( *pFloat32 );
+		ok &= addType( *pFloat64 );
 
-		addType( *pCrc32 );
-		addType( *pTimeMS );
+		ok &= addType( *pCrc32 );
+		ok &= addType( *pTimeMS );
 
 		GenericDataTypeValueType* pBoolean	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "bool", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_Boolean );
 		GenericDataTypeValueType* pString	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "string", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_String );
 
-		addType( *pBoolean );
-		addType( *pString );
+		ok &= addType( *pBoolean );
+		ok &= addType( *pString );
 
 		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, "GenericDataTypeMode", GenericDataTypeMode_ToolOnly, *pUInt8 );
 		pGenericDataTypeMode->addValue( "Invalid",			0, GenericDataTypeMode_ToolOnly );
@@ -606,7 +522,9 @@ namespace tiki
 		pGenericDataTypeMode->addValue( "ToolAndRuntime",	3, GenericDataTypeMode_ToolOnly );
 		m_pModeEnum = pGenericDataTypeMode;
 
-		addType( *pGenericDataTypeMode );
+		ok &= addType( *pGenericDataTypeMode );
+
+		return ok;
 	}
 
 	void GenericDataTypeCollection::findFiles( const string& path, List< string >& files, const string& ext ) const
@@ -629,6 +547,121 @@ namespace tiki
 		{
 			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );
 		}		
+	}
+
+	bool GenericDataTypeCollection::parseFile( XmlReader& reader, const string& fileName, const string& moduleName )
+	{
+		const XmlElement* pRoot = reader.findNodeByName( "tikigenerictypes" );
+		if ( pRoot == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", fileName.cStr() );
+			return false;
+		}
+
+		bool ok = true;
+		const XmlElement* pChildNode = pRoot->elements;
+		while ( pChildNode != nullptr )
+		{
+			const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildNode );
+			const XmlAttribute* pBaseAtt = reader.findAttributeByName( "base", pChildNode );
+			const XmlAttribute* pModeAtt = reader.findAttributeByName( "mode", pChildNode );
+
+			if ( pNameAtt != nullptr )
+			{
+				const GenericDataType* pBaseType = nullptr;
+				if ( pBaseAtt != nullptr )
+				{
+					pBaseType = parseType( pBaseAtt->content );
+				}
+
+				GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime;
+				if ( pModeAtt != nullptr )
+				{
+					mode = findModeByName( pModeAtt->content );
+					if ( mode == GenericDataTypeMode_Invalid )
+					{
+						TIKI_TRACE_WARNING( "[GenericDataTypeCollection::create] type named '%s' has a invalid mode(%s).\n", pNameAtt->content, pModeAtt->content );
+						mode = GenericDataTypeMode_ToolAndRuntime;
+					}
+				}
+
+				GenericDataTypeType type = GenericDataTypeType_Invalid;
+				if ( isStringEquals( pChildNode->name, "enum" ) )
+				{
+					type = GenericDataTypeType_Enum;
+				}
+				else if ( isStringEquals( pChildNode->name, "struct" ) )
+				{
+					type = GenericDataTypeType_Struct;
+				}
+				else if ( isStringEquals( pChildNode->name, "resource" ) )
+				{
+					type = GenericDataTypeType_Resource;
+				}
+
+				GenericDataType* pType = nullptr;
+				switch ( type )
+				{
+				case GenericDataTypeType_Enum:
+					{
+						if ( pBaseType == nullptr )
+						{
+							pBaseType = findTypeByName( "int" );
+						}
+
+						pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, *pBaseType );
+					}
+					break;
+
+				case GenericDataTypeType_Struct:
+					{
+						pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeStruct )( *this, pNameAtt->content, mode, pBaseType );
+					}
+					break;
+
+				case GenericDataTypeType_Resource:
+					{
+						if ( pBaseType != nullptr )
+						{
+							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, pNameAtt->content, mode, pBaseType );
+						}
+						else
+						{
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Resource types requires an base Type. Typename: %s\n", pNameAtt->content );
+							ok = false;
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+
+				if ( pType != nullptr )
+				{
+					if ( pType->loadFromXml( reader, pChildNode ) )
+					{
+						pType->setModule( moduleName );
+						addType( *pType );
+					}
+					else
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to load type with name '%s' from xml.\n", pType->getName().cStr() );
+						TIKI_MEMORY_DELETE_OBJECT( pType );
+						ok = false;
+					}
+				}
+			}
+			else if ( pChildNode->name != nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] node has no name attribute and will be ignored.\n" );
+				ok = false;
+			}
+
+			pChildNode = pChildNode->next;
+		}
+
+		return ok;
 	}
 
 	bool GenericDataTypeCollection::parseToken( ModifierDescription& outModifier, const string& text )

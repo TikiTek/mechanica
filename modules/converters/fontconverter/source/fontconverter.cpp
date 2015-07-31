@@ -24,9 +24,10 @@ namespace tiki
 		return 2u;
 	}
 
-	crc32 FontConverter::getInputType() const
+	bool FontConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "font" );
+		static const crc32 s_typeCrc = crcString( "font" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 FontConverter::getOutputType() const

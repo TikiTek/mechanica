@@ -26,9 +26,10 @@ namespace tiki
 		return 1u;
 	}
 
-	crc32 AnimationConverter::getInputType() const
+	bool AnimationConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "animation" );
+		static const crc32 s_typeCrc = crcString( "animation" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 AnimationConverter::getOutputType() const

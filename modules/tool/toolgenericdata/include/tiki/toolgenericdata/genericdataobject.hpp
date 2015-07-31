@@ -17,6 +17,7 @@ namespace tiki
 	class GenericDataValue;
 	class ResourceWriter;
 	class XmlReader;
+	struct ReferenceKey;
 
 	class GenericDataObject : public GenericDataContainer
 	{
@@ -38,8 +39,7 @@ namespace tiki
 		const GenericDataValue&			getFieldValue( const string& name ) const;
 		bool							setFieldValue( const string& name, const GenericDataValue& value );
 
-		// TODO: bool					exportToXml( XmlWriter& writer ) const;
-		bool							exportToResource( ResourceWriter& writer ) const;
+		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
 
 	protected:
 

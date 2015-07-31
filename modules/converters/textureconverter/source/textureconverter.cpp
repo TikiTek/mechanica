@@ -21,9 +21,10 @@ namespace tiki
 		return 5u;
 	}
 
-	crc32 TextureConverter::getInputType() const
+	bool TextureConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "texture" );
+		static const crc32 s_typeCrc = crcString( "texture" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 TextureConverter::getOutputType() const

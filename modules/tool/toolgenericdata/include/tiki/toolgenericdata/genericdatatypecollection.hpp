@@ -8,6 +8,7 @@
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/map.hpp"
 #include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/genericdatatypetype.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 
 namespace tiki
@@ -25,12 +26,14 @@ namespace tiki
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
-		void							create( const string& contentFolder, bool recursive );
+		bool							create( const string& contentFolder, bool recursive );
 		void							dispose();
 
 		bool							addType( GenericDataType& type );
 
 		const GenericDataType*			findTypeByName( const string& name ) const;
+		void							findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const;
+
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
 		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
@@ -57,9 +60,9 @@ namespace tiki
 		const GenericDataTypeEnum*		m_pModeEnum;
 		ValueTypeArray					m_valueTypes;
 		
-		void							registerDefaultTypes();
-		
+		bool							registerDefaultTypes();		
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
+		bool							parseFile( XmlReader& reader, const string& fileName, const string& moduleName );
 
 		bool							parseToken( ModifierDescription& outModifier, const string& text );
 
