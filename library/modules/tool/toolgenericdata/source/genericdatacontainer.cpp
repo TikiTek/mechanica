@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
+#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
@@ -60,6 +61,29 @@ namespace tiki
 		}
 
 		return true; 
+	}
+
+	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const
+	{
+		const GenericDataType* pType = value.getType();
+
+		writer.writeAlignment( pType->getAlignment() );
+
+		switch (value.getValueType())
+		{
+		case GenericDataValueType_Boolean:
+			{
+				bool b;
+				if ( value.getBoolean( b ) )
+				{
+					writer.writeUInt8( b );
+					return true;
+				}
+			}
+			break;
+		}
+
+		return false;
 	}
 
 	bool GenericDataContainer::loadValueFromXml( GenericDataValue& outValue, XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pElementType )

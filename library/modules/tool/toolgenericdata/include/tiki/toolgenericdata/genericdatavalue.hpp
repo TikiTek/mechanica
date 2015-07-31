@@ -53,18 +53,27 @@ namespace tiki
 		void					dispose();
 
 		const GenericDataType*	getType() const;
+		GenericDataValueType	getValueType() const;
 
+		bool					getBoolean( bool& value ) const;
 		bool					setBoolean( bool value, const GenericDataType* pType );
 
+		bool					getSignedValue( sint64& value ) const;
 		bool					setSignedValue( sint64 value, const GenericDataType* pType );
+		bool					getUnsignedValue( uint64& value ) const;
 		bool					setUnsignedValue( uint64 value, const GenericDataType* pType );
+		bool					getFloatingPoint( float64& value ) const;
 		bool					setFloatingPoint( float64 value, const GenericDataType* pType );
 
+		bool					getString( string& value ) const;
 		bool					setString( const string& value, const GenericDataType* pType );
 
+		bool					getObject( GenericDataObject*& pValue ) const;
 		bool					setObject( GenericDataObject* pValue );
+		bool					getArray( GenericDataArray*& pValue ) const;
 		bool					setArray( GenericDataArray* pValue );
 
+		bool					getEnum( string& enumName, sint64& enumValue ) const;
 		bool					setEnum( const string& valueName, const GenericDataType* pType );
 
 	private:

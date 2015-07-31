@@ -66,6 +66,22 @@ namespace tiki
 		return m_pType;
 	}
 
+	GenericDataValueType GenericDataValue::getValueType() const
+	{
+		return m_valueType;
+	}
+
+	bool GenericDataValue::getBoolean( bool& value ) const
+	{
+		if ( m_valueType == GenericDataValueType_Boolean )
+		{
+			value = m_value.b;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setBoolean( bool value, const GenericDataType* pType )
 	{
 		if ( !setType( pType, GenericDataTypeType_ValueType ) )
@@ -76,6 +92,33 @@ namespace tiki
 		m_value.b = value;
 
 		return true;
+	}
+
+	bool GenericDataValue::getSignedValue( sint64& value ) const
+	{
+		switch ( m_valueType )
+		{
+		case GenericDataValueType_SingedInteger8:
+			value = m_value.s8;
+			return true;
+
+		case GenericDataValueType_SingedInteger16:
+			value = m_value.s16;
+			return true;
+
+		case GenericDataValueType_SingedInteger32:
+			value = m_value.s32;
+			return true;
+
+		case GenericDataValueType_SingedInteger64:
+			value = m_value.s64;
+			return true;
+
+		default:
+			break;
+		}
+
+		return false;
 	}
 
 	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType )
@@ -98,6 +141,33 @@ namespace tiki
 
 		case 8:
 			return rangeCheckCast( m_value.s64, value );
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::getUnsignedValue( uint64& value ) const
+	{
+		switch ( m_valueType )
+		{
+		case GenericDataValueType_UnsingedInteger8:
+			value = m_value.u8;
+			return true;
+
+		case GenericDataValueType_UnsingedInteger16:
+			value = m_value.u16;
+			return true;
+
+		case GenericDataValueType_UnsingedInteger32:
+			value = m_value.u32;
+			return true;
+
+		case GenericDataValueType_UnsingedInteger64:
+			value = m_value.u64;
+			return true;
 
 		default:
 			break;
@@ -134,6 +204,29 @@ namespace tiki
 		return false;
 	}
 
+	bool GenericDataValue::getFloatingPoint( float64& value ) const
+	{
+		switch ( m_valueType )
+		{
+		case GenericDataValueType_FloatingPoint16:
+			value = m_value.f16;
+			return true;
+
+		case GenericDataValueType_FloatingPoint32:
+			value = m_value.f32;
+			return true;
+
+		case GenericDataValueType_FloatingPoint64:
+			value = m_value.f64;
+			return true;
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setFloatingPoint( float64 value, const GenericDataType* pType )
 	{
 		if ( !setType( pType, GenericDataTypeType_ValueType ) )
@@ -160,6 +253,17 @@ namespace tiki
 		return false;
 	}
 
+	bool GenericDataValue::getString( string& value ) const
+	{
+		if ( m_valueType == GenericDataValueType_String )
+		{
+			value = m_text;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setString( const string& value, const GenericDataType* pType )
 	{
 		if ( !setType( pType, GenericDataTypeType_ValueType ) )
@@ -172,6 +276,17 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataValue::getObject( GenericDataObject*& pValue ) const
+	{
+		if ( m_valueType == GenericDataValueType_Object )
+		{
+			pValue = m_value.pObject;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setObject( GenericDataObject* pValue )
 	{
 		if ( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Struct ) )
@@ -182,6 +297,17 @@ namespace tiki
 		m_value.pObject = pValue;
 
 		return true;
+	}
+
+	bool GenericDataValue::getArray( GenericDataArray*& pValue ) const
+	{
+		if ( m_valueType == GenericDataValueType_Array )
+		{
+			pValue = m_value.pArray;
+			return true;
+		}
+
+		return false;
 	}
 
 	bool GenericDataValue::setArray( GenericDataArray* pValue )
@@ -215,6 +341,18 @@ namespace tiki
 		m_value.s64	= *pValue;
 
 		return true;
+	}
+
+	bool GenericDataValue::getEnum( string& enumName, sint64& enumValue ) const
+	{
+		if ( m_valueType == GenericDataValueType_Enum )
+		{
+			enumName	= m_text;
+			enumValue	= m_value.s64;
+			return true;
+		}
+
+		return false;
 	}
 
 	bool GenericDataValue::setType( const GenericDataType* pType, GenericDataTypeType expectedType )
