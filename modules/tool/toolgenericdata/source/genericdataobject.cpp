@@ -90,6 +90,11 @@ namespace tiki
 
 	bool GenericDataObject::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
+		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		{
+
+		}
+
 		return true;
 	}
 
