@@ -11,7 +11,6 @@ namespace tiki
 		GenericDataTypeType_Enum,
 		GenericDataTypeType_Struct,
 		GenericDataTypeType_ValueType,
-		GenericDataTypeType_Union,
 		GenericDataTypeType_Resource,
 		GenericDataTypeType_Array,
 		GenericDataTypeType_Reference,

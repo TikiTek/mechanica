@@ -24,9 +24,9 @@ namespace tiki
 		return 1u;
 	}
 
-	crc32 GenericDataConverter::getInputType() const
+	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "genericdata" ); 
+		return m_resourceTypeMap.hasKey( typeCrc );
 	}
 
 	crc32 GenericDataConverter::getOutputType() const
@@ -40,18 +40,35 @@ namespace tiki
 
 	bool GenericDataConverter::initializeConverter()
 	{
-		m_collection.create( getManager()->getSourcePath(), true );
+		if ( !m_collection.create( getManager()->getSourcePath(), true ) )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataConverter::initializeConverter] Unable to initialize Type collection.\n" );
+			return false;
+		}
+
+		List< const GenericDataType* > resourceTypes;
+		m_collection.findTypesByType( resourceTypes, GenericDataTypeType_Resource );
+
+		for (uint i = 0u; i < resourceTypes.getCount(); ++i)
+		{
+			const GenericDataTypeResource* pResourceType = static_cast< const GenericDataTypeResource* >( resourceTypes[ i ] );
+
+			const crc32 typeCrc = crcString( pResourceType->getPostFix() );
+			m_resourceTypeMap.set( typeCrc, pResourceType );
+		}
 
 		return true;
 	}
 
 	void GenericDataConverter::disposeConverter()
 	{
+		m_resourceTypeMap.dispose();
 		m_collection.dispose();
 	}
 
 	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
+		bool ok = true;
 		for( size_t i = 0u; i < parameters.inputFiles.getCount(); ++i )
 		{
 			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
@@ -67,6 +84,7 @@ namespace tiki
 			if ( !document.importFromXml( reader ) )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", file.fileName.cStr() );
+				ok = false;
 				continue;
 			}
 
@@ -78,7 +96,12 @@ namespace tiki
 			writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), 1u );
 
 			ReferenceKey dataKey;
-			document.writeToResource( dataKey, writer );
+			if ( !document.writeToResource( dataKey, writer ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
+				ok = false;
+				continue;
+			}
 
 			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
 			writer.writeReference( &dataKey );
@@ -88,6 +111,7 @@ namespace tiki
 
 			closeResourceWriter( writer );
 		}
-		return true;
+
+		return ok;
 	}
 }

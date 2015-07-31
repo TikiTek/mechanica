@@ -5,12 +5,12 @@
 		<value name="TimeInterval" />
 		<value name="External" />
 	</enum>
-	<union name="ParticleEmitterSpawnData">
+	<struct name="ParticleEmitterSpawnData">
 		<field name="timeInTimeLine" type="timems" />
 		<field name="timeInterval" type="timems" />
 		<field name="spawnToken" type="string" mode="ToolOnly" />
 		<field name="spawnToken" type="crc32" mode="RuntimeOnly" />
-	</union>
+	</struct>
 	<struct name="ParticleEmitterData">
 		<field name="type" type="ParticleEmitterSpawnType" />
 		<field name="particleType" type="string" mode="ToolOnly" />
@@ -35,12 +35,12 @@
 		<field name="dimensions" type="uint8" />
 		<field name="type" type="ParticleFieldType" />
 	</struct>
-	<!--union name="ParticleEmitterSpawnData">
+	<!--struct name="ParticleEmitterSpawnData">
 		<field name="timeInTimeLine" type="timems" />
 		<field name="timeInterval" type="timems" />
 		<field name="spawnToken" type="string" mode="ToolOnly" />
 		<field name="spawnToken" type="crc32" mode="RuntimeOnly" />
-	</union-->	
+	</struct-->	
 	<struct name="ParticleParticleData">
 		<field name="type" type="ParticleType" />
 		<field name="fields" type="{array ParticleParticleFieldData}" />

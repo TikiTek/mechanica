@@ -21,7 +21,8 @@ namespace tiki
 
 		virtual uint16			getConverterRevision() const TIKI_OVERRIDE;
 
-		virtual crc32			getInputType() const TIKI_OVERRIDE;
+		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE;
+
 		virtual crc32			getOutputType() const TIKI_OVERRIDE;
 		virtual void			getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE;
 

@@ -22,9 +22,10 @@ namespace tiki
 		return 1u;
 	}
 
-	crc32 MaterialConverter::getInputType() const
+	bool MaterialConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return crcString( "material" ); 
+		static const crc32 s_typeCrc = crcString( "material" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 MaterialConverter::getOutputType() const

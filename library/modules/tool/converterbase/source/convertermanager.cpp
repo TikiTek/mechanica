@@ -338,9 +338,11 @@ namespace tiki
 
 			for (size_t converterIndex = 0u; converterIndex < m_converters.getCount(); ++converterIndex )
 			{
-				if ( m_converters[ converterIndex ]->getInputType() == fileDesc.fileType )
+				const ConverterBase* pConverter = m_converters[ converterIndex ];
+
+				if ( pConverter->canConvertType( fileDesc.fileType ) )
 				{
-					task.pConverter = m_converters[ converterIndex ];
+					task.pConverter = pConverter;
 					break;
 				}
 			}
@@ -357,7 +359,7 @@ namespace tiki
 			task.parameters.targetPlatform	= platform::getHostPlatform();
 			task.parameters.targetApi		= platform::getHostGraphicsApi();
 			task.parameters.sourceFile		= fileDesc.fullFileName;
-			task.parameters.typeCrc			= task.pConverter->getInputType();
+			task.parameters.typeCrc			= fileDesc.fileType;
 
 			if ( !readDataFromXasset( task, fileDesc ) )
 			{

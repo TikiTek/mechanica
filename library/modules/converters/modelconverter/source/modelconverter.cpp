@@ -25,9 +25,10 @@ namespace tiki
 		return 1u;
 	}
 
-	crc32 ModelConverter::getInputType() const
+	bool ModelConverter::canConvertType( crc32 typeCrc ) const 
 	{
-		return crcString( "model" );
+		static const crc32 s_typeCrc = crcString( "model" );
+		return typeCrc == s_typeCrc;
 	}
 
 	crc32 ModelConverter::getOutputType() const
