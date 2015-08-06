@@ -3,7 +3,8 @@
 
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/material.hpp"
-#include "tiki/graphics/rendereffectdata.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {
@@ -107,7 +108,7 @@ namespace tiki
 
 		if ( pMaterial == nullptr )
 		{
-			static RenderEffectData fallbackRenderEffectData = { (uint16)RenderEffectId_Invalid, 0xffffu, 0x0000u, RenderEffectDataInvalidTextureOffset };
+			static RenderEffectData fallbackRenderEffectData = { (uint16)RenderEffectId_Invalid, 0xffffu, 0x0000u, RenderEffectValues_InvalidTextureOffset };
 			pCommand->pRenderEffectData = &fallbackRenderEffectData;
 		}
 		else

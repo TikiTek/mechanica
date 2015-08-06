@@ -3,7 +3,8 @@
 
 #include "tiki/renderer/renderbatch.hpp"
 #include "tiki/renderer/rendereffect.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

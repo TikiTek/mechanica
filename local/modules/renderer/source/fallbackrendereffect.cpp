@@ -8,10 +8,11 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/graphics/graphicstypes.hpp"
-#include "tiki/renderer/fallbackrendereffectdata.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

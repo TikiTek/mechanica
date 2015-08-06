@@ -17,6 +17,7 @@ namespace tiki
 	class GenericDataValue;
 	class ResourceWriter;
 	class XmlReader;
+	struct ReferenceKey;
 
 	class GenericDataArray : public GenericDataContainer
 	{
@@ -42,7 +43,7 @@ namespace tiki
 		bool							removeElement( uint index );
 
 		// TODO: bool					exportToXml( XmlWriter& writer ) const;
-		bool							exportToResource( ResourceWriter& writer ) const;
+		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
 
 	protected:
 

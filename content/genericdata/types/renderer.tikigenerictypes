@@ -1,0 +1,39 @@
+<tikigenerictypes base="graphics">
+	<enum name="RenderEffectId">
+		<value name="Fallback" />
+		<value name="Scene" />
+	</enum>
+	<enum name="RenderPass">
+		<value name="Geometry" />
+		<value name="ShadowVolume" />
+	</enum>
+	<enum name="RenderPassMask">
+		<value name="Geometry" value="{bit {enum RenderPass.Geometry}}" />
+		<value name="ShadowVolume" value="{bit {enum RenderPass.ShadowVolume}}" />
+	</enum>
+	<enum name="RenderEffectValues">
+		<value name="InvalidTextureOffset" value="0xffff" />
+	</enum>
+	<struct name="RenderEffectData">
+		<field type="uint16" name="renderEffectId" />
+		<field type="uint16" name="renderPassMask" />
+		<field type="uint16" name="renderFlags" />
+		<field type="uint16" name="defaultTextureOffset" />
+	</struct>	
+	<struct name="FallbackRenderEffectData" base="RenderEffectData">
+		<value type="uint16" name="renderEffectId" value="{enum RenderEffectId.Fallback}" />
+		<value type="uint16" name="defaultTextureOffset" value="{offset defaultTexture}" />
+		<field type="{reference Texture}" name="defaultTexture" />
+	</struct>
+	<struct name="SceneRenderEffectData" base="RenderEffectData">
+		<value type="uint16" name="renderEffectId" value="{enum RenderEffectId.Scene}" />
+		<value type="uint16" name="defaultTextureOffset" value="{offset diffuseMap}" />
+		<field type="{reference Texture}" name="diffuseMap" />
+		<field type="{reference Texture}" name="normalMap" />
+		<field type="{reference Texture}" name="specularMap" />
+		<field type="{reference Texture}" name="glossMap" />
+		<field type="float" name="selfIlluminationFactor" value="1.0" />
+		<field type="float" name="specluarIntensity" />
+		<field type="float" name="specluarPower" />
+	</struct>	
+</tikigenerictypes> 

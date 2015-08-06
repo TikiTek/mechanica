@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 
+#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
@@ -46,7 +47,11 @@ namespace tiki
 
 	void GenericDataObject::dispose()
 	{
-
+		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		{
+			Map< string, GenericDataValue >::Pair& kvp = m_fields.getPairAt( i );
+			kvp.value.dispose();
+		}
 	}
 
 	const GenericDataTypeStruct* GenericDataObject::getType() const
@@ -90,12 +95,18 @@ namespace tiki
 
 	bool GenericDataObject::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
+		writer.openDataSection( 0u, AllocatorType_MainMemory );
+		dataKey = writer.addDataPoint();
+
+		bool ok = true;
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
-
+			ok &= writeValueToResource( writer, m_fields.getValueAt( i ) );
 		}
 
-		return true;
+		writer.closeDataSection();
+
+		return ok;
 	}
 
 	const char* GenericDataObject::getElementName() const

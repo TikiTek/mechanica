@@ -3,7 +3,8 @@
 #define __TIKI_RENDEREFFECT_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

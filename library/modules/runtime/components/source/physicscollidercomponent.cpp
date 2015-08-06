@@ -3,7 +3,6 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/physics/physicscapsuleshape.hpp"
 #include "tiki/physics/physicscollider.hpp"
@@ -11,6 +10,8 @@
 #include "tiki/physics/physicsworld.hpp"
 
 #include "physicscomponents_shared.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {

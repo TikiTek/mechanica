@@ -3,22 +3,11 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/skinnedmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/math/matrix.hpp"
 
-//
-//#include "tiki/base/debugprop.hpp"
-//#include "tiki/gamecore/meshrenderer.hpp"
-//#include "tiki/gamecore/transform.hpp"
-//#include "tiki/graphics/gpucontext.hpp"
-//#include "tiki/graphics/primitivetopologies.hpp"
-//
-//#include "tiki/framework/framework.hpp"
-//#include "tiki/resource/resourcemanager.hpp"
-
-//TIKI_DEBUGPROP_BOOL( s_drawHierarchy, "DrawHierarchy", false );
+#include "components.hpp"
 
 namespace tiki
 {

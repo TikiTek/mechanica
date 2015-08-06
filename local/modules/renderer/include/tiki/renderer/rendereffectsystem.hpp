@@ -4,7 +4,8 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/fixedarray.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

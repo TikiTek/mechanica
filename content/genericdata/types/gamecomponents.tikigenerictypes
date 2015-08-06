@@ -1,0 +1,5 @@
+<tikigenerictypes base="base">
+	<struct name="PlayerControlComponentInitData">
+		<field type="float" name="speed" />
+	</struct>
+</tikigenerictypes> 

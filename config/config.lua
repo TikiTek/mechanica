@@ -54,7 +54,8 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" then
 	
 	module:set_define( "_CRT_SECURE_NO_WARNINGS" );
 	module:set_define( "_WINSOCK_DEPRECATED_NO_WARNINGS" );	
-
+	module:set_define( "_HAS_EXCEPTIONS", "0" );	
+	
 	module:set_flag("MultiProcessorCompile");
 	
 	use_msvc	= true;

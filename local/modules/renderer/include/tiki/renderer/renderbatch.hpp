@@ -5,7 +5,8 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/renderer/rendercommand.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

@@ -114,6 +114,7 @@ namespace tiki
 
 		ResourceData*			m_pCurrentResource;
 		SectionData*			m_pCurrentSection;
+		List< uint >			m_sectionStack;
 
 		List< ResourceData >	m_resources;
 

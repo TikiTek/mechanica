@@ -3,7 +3,6 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/physicscomponents_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
@@ -14,6 +13,8 @@
 #include "tiki/physics/physicsworld.hpp"
 
 #include "physicscomponents_shared.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {

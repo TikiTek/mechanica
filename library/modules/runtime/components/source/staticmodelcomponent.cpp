@@ -3,9 +3,10 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/staticmodelcomponent_initdata.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/renderer/gamerenderer.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {

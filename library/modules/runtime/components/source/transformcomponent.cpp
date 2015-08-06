@@ -3,10 +3,11 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent_initdata.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {

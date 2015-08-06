@@ -2,9 +2,9 @@
 #ifndef __TIKI_PHYSICSCOMPONENTS_SHARED_HPP_INCLUDED__
 #define __TIKI_PHYSICSCOMPONENTS_SHARED_HPP_INCLUDED__
 
-#include "tiki/components/physicscomponents_initdata.hpp"
-
 #include "tiki/math/vector.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {
@@ -19,23 +19,23 @@ namespace tiki
 
 	TIKI_INLINE PhysicsShape* createPhysicsComponentShape( PhysicsComponentShape& shape, const PhysicsComponentShapeInitData& initData )
 	{
-		shape.shapeType	= initData.shapeType;
+		shape.shapeType	= initData.type;
 
 		PhysicsShape* pShape = nullptr;
 		switch ( shape.shapeType )
 		{
-		case ShapeType_Box:
-			shape.boxShape.create( vector::create( initData.shapeBoxSize ) );
+		case PhysicsShapeType_Box:
+			shape.boxShape.create( vector::create( initData.boxSize ) );
 			pShape = &shape.boxShape;
 			break;
 
-		case ShapeType_Capsule:
-			shape.capsuleShape.create( initData.shapeCapsuleHeight, initData.shapeCapsuleRadius );
+		case PhysicsShapeType_Capsule:
+			shape.capsuleShape.create( initData.capsuleHeight, initData.capsuleRadius );
 			pShape = &shape.capsuleShape;
 			break;
 
-		case ShapeType_Sphere:
-			shape.sphereShape.create( initData.shapeSphereRadius );
+		case PhysicsShapeType_Sphere:
+			shape.sphereShape.create( initData.sphereRadius );
 			pShape = &shape.sphereShape;
 			break;
 
@@ -51,15 +51,15 @@ namespace tiki
 	{
 		switch ( shape.shapeType )
 		{
-		case ShapeType_Box:
+		case PhysicsShapeType_Box:
 			shape.boxShape.dispose();
 			break;
 
-		case ShapeType_Capsule:
+		case PhysicsShapeType_Capsule:
 			shape.capsuleShape.dispose();
 			break;
 
-		case ShapeType_Sphere:
+		case PhysicsShapeType_Sphere:
 			shape.sphereShape.dispose();
 			break;
 

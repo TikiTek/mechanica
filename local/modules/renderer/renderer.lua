@@ -9,7 +9,6 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "graphics" );
 module:add_dependency( "graphicsresources" );
-module:add_dependency( "rendereffectdata" );
 module:add_dependency( "renderershader" );
 
 local module = Module:new( "renderershader" );
