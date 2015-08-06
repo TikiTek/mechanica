@@ -6,13 +6,14 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
-#include "tiki/graphics/rendereffectdata.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/lighting_shader.hpp"
 #include "tiki/graphics/shader/cameraparameter.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

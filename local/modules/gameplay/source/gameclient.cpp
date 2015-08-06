@@ -2,13 +2,10 @@
 #include "tiki/gameplay/gameclient.hpp"
 
 #include "tiki/components/entitytemplate.hpp"
-#include "tiki/components/lifetimecomponent_initdata.hpp"
-#include "tiki/components/physicscomponents_initdata.hpp"
-#include "tiki/components/staticmodelcomponent_initdata.hpp"
-#include "tiki/components/transformcomponent_initdata.hpp"
-#include "tiki/gamecomponents/coincomponent_initdata.hpp"
-#include "tiki/gamecomponents/playercontrolcomponent_initdata.hpp"
 #include "tiki/math/vector.hpp"
+
+#include "components.hpp"
+#include "gamecomponents.hpp"
 
 namespace tiki
 {
@@ -109,10 +106,10 @@ namespace tiki
 
 		PhysicsCharacterControllerComponentInitData controllerInitData;
 		createFloat3( controllerInitData.position, position.x, position.y, position.z );
-		controllerInitData.shape.shapeType = ShapeType_Capsule;
-		controllerInitData.shape.shapeCapsuleRadius = 0.5f;
-		controllerInitData.shape.shapeCapsuleHeight = 1.0f;
-		controllerInitData.gravity = 0.00001f;
+		controllerInitData.gravity				= 0.00001f;
+		controllerInitData.shape.type			= PhysicsShapeType_Capsule;
+		controllerInitData.shape.capsuleRadius	= 0.5f;
+		controllerInitData.shape.capsuleHeight	= 1.0f;
 
 		PlayerControlComponentInitData playerControlInitData;
 		playerControlInitData.speed = 0.1f;
@@ -169,11 +166,11 @@ namespace tiki
 		createFloat3( bodyInitData.position, position.x, position.y, position.z );
 		bodyInitData.mass			= 100.0f;
 		bodyInitData.freeRotation	= true;
-		bodyInitData.shape.shapeType = ShapeType_Box;
-		createFloat3( bodyInitData.shape.shapeBoxSize, 1.0f, 1.0f, 1.0f );
+		bodyInitData.shape.type		= PhysicsShapeType_Box;
+		createFloat3( bodyInitData.shape.boxSize, 1.0f, 1.0f, 1.0f );
 
 		LifeTimeComponentInitData lifeTimeInitData;
-		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
+		lifeTimeInitData.lifeTimeInMs = 60000;
 
 		EntityTemplateComponent entityComponents[] =
 		{
@@ -204,11 +201,11 @@ namespace tiki
 		createFloat3( bodyInitData.position, position.x, position.y, position.z );
 		bodyInitData.mass			= 100.0f;
 		bodyInitData.freeRotation	= true;
-		bodyInitData.shape.shapeType = ShapeType_Box;
-		createFloat3( bodyInitData.shape.shapeBoxSize, 0.5f, 0.5f, 0.5f );
+		bodyInitData.shape.type		= PhysicsShapeType_Box;
+		createFloat3( bodyInitData.shape.boxSize, 0.5f, 0.5f, 0.5f );
 
 		LifeTimeComponentInitData lifeTimeInitData;
-		lifeTimeInitData.lifeTimeInSeconds = 60.0f;
+		lifeTimeInitData.lifeTimeInMs = 60000;
 
 		CoinComponentInitData coinInitData;
 		coinInitData.value = 1.0f;
@@ -241,8 +238,8 @@ namespace tiki
 
 		PhysicsColliderComponentInitData colliderInitData;
 		createFloat3( colliderInitData.position, position.x, position.y + 0.005f, position.z );
-		colliderInitData.shape.shapeType = ShapeType_Box;
-		createFloat3( colliderInitData.shape.shapeBoxSize, 100.00f, 0.01f, 100.0f );
+		colliderInitData.shape.type = PhysicsShapeType_Box;
+		createFloat3( colliderInitData.shape.boxSize, 100.00f, 0.01f, 100.0f );
 
 		EntityTemplateComponent entityComponents[] =
 		{

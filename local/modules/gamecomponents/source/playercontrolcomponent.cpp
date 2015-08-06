@@ -6,11 +6,12 @@
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
-#include "tiki/gamecomponents/playercontrolcomponent_initdata.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
+
+#include "gamecomponents.hpp"
 
 namespace tiki
 {

@@ -11,10 +11,11 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
-#include "tiki/renderer/scenerendereffectdata.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/scene_shader.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {

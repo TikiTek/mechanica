@@ -6,9 +6,10 @@
 #include "tiki/components/lifetimecomponent.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
-#include "tiki/gamecomponents/coincomponent_initdata.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/physics/physicsworld.hpp"
+
+#include "gamecomponents.hpp"
 
 namespace tiki
 {

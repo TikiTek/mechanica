@@ -7,7 +7,8 @@
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/renderer/rendererdefinition.hpp"
+
+#include "renderer.hpp"
 
 namespace tiki
 {
