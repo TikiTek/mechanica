@@ -43,7 +43,6 @@ namespace tiki
 		m_animationConverter.create( &m_manager );
 		m_fontConverter.create( &m_manager );
 		m_genericDataConverter.create( &m_manager );
-		m_materialConverter.create( &m_manager );
 		m_modelConverter.create( &m_manager );
 		m_shaderConverter.create( &m_manager );
 		m_textureConverter.create( &m_manager );
@@ -62,7 +61,6 @@ namespace tiki
 		m_animationConverter.dispose();
 		m_fontConverter.dispose();
 		m_genericDataConverter.dispose();
-		m_materialConverter.dispose();
 		m_modelConverter.dispose();
 		m_shaderConverter.dispose();
 		m_textureConverter.dispose();

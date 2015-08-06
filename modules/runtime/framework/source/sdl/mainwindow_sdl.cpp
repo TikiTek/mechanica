@@ -8,8 +8,6 @@
 
 namespace tiki
 {
-	bool MainWindow::s_mainWindowCreated = false;
-	
 	MainWindow::MainWindow()
 	{
 	}
@@ -20,9 +18,6 @@ namespace tiki
 	
 	bool MainWindow::create( const WindowParameters& params )
 	{
-		TIKI_ASSERT( !s_mainWindowCreated );
-		s_mainWindowCreated = true;
-
 		m_platformData.pWindow = SDL_CreateWindow(
 			params.pWindowTitle,
 			SDL_WINDOWPOS_UNDEFINED,
@@ -41,8 +36,6 @@ namespace tiki
 		m_platformData.pWindow = nullptr;
 
 		m_eventBuffer.dispose();
-
-		s_mainWindowCreated	= false;
 	}
 
 	void MainWindow::update()

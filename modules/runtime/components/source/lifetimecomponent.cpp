@@ -3,8 +3,9 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/lifetimecomponent_initdata.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
+
+#include "components.hpp"
 
 namespace tiki
 {

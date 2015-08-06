@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 
+#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
@@ -42,15 +43,18 @@ namespace tiki
 
 	void GenericDataArray::dispose()
 	{
-
+		for (uint i = 0u; i < m_array.getCount(); ++i)
+		{
+			GenericDataValue& element = m_array[ i ];
+			element.dispose();
+		}
 	}
 
 	const GenericDataTypeArray* GenericDataArray::getType() const
 	{
 		return m_pType;
 	}
-
-
+	
 	uint GenericDataArray::getCount() const
 	{
 		return m_array.getCount();
@@ -106,9 +110,21 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataArray::exportToResource( ResourceWriter& writer ) const
+	bool GenericDataArray::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
-		return true;
+		writer.openDataSection( 0u, AllocatorType_MainMemory );
+		dataKey = writer.addDataPoint();
+
+		bool ok = true;
+		for (uint i = 0u; i < m_array.getCount(); ++i)
+		{
+			const GenericDataValue& value = m_array[ i ];
+			ok &= writeValueToResource( writer, value );
+		}
+
+		writer.closeDataSection();
+
+		return ok;
 	}
 
 	const char* GenericDataArray::getElementName() const

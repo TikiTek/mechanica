@@ -7,6 +7,7 @@
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
 
@@ -69,7 +70,7 @@ namespace tiki
 
 		writer.writeAlignment( pType->getAlignment() );
 
-		switch (value.getValueType())
+		switch ( value.getValueType() )
 		{
 		case GenericDataValueType_Boolean:
 			{
@@ -78,6 +79,272 @@ namespace tiki
 				{
 					writer.writeUInt8( b );
 					return true;
+				}
+			}
+			break;
+
+		case GenericDataValueType_SingedInteger8:
+		case GenericDataValueType_SingedInteger16:
+		case GenericDataValueType_SingedInteger32:
+		case GenericDataValueType_SingedInteger64:
+			{
+				sint64 s;
+				if ( value.getSignedValue( s ) )
+				{
+					switch ( value.getValueType() )
+					{
+					case GenericDataValueType_SingedInteger8:
+						{
+							sint8 s8;
+							if ( rangeCheckCast( s8, s ) )
+							{
+								writer.writeSInt8( s8 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_SingedInteger16:
+						{
+							sint16 s16;
+							if ( rangeCheckCast( s16, s ) )
+							{
+								writer.writeSInt16( s16 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_SingedInteger32:
+						{
+							sint32 s32;
+							if ( rangeCheckCast( s32, s ) )
+							{
+								writer.writeSInt32( s32 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_SingedInteger64:
+						{
+							sint64 s64;
+							if ( rangeCheckCast( s64, s ) )
+							{
+								writer.writeSInt64( s64 );
+								return true;
+							}
+						}
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_UnsingedInteger8:
+		case GenericDataValueType_UnsingedInteger16:
+		case GenericDataValueType_UnsingedInteger32:
+		case GenericDataValueType_UnsingedInteger64:
+			{
+				uint64 u;
+				if ( value.getUnsignedValue( u ) )
+				{
+					switch ( value.getValueType() )
+					{
+					case GenericDataValueType_UnsingedInteger8:
+						{
+							uint8 u8;
+							if ( rangeCheckCast( u8, u ) )
+							{
+								writer.writeUInt8( u8 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_UnsingedInteger16:
+						{
+							uint16 u16;
+							if ( rangeCheckCast( u16, u ) )
+							{
+								writer.writeUInt16( u16 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_UnsingedInteger32:
+						{
+							uint32 u32;
+							if ( rangeCheckCast( u32, u ) )
+							{
+								writer.writeUInt32( u32 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_UnsingedInteger64:
+						{
+							uint64 u64;
+							if ( rangeCheckCast( u64, u ) )
+							{
+								writer.writeUInt64( u64 );
+								return true;
+							}
+						}
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_FloatingPoint16:
+		case GenericDataValueType_FloatingPoint32:
+		case GenericDataValueType_FloatingPoint64:
+			{
+				float64 f;
+				if ( value.getFloatingPoint( f ) )
+				{
+					switch ( value.getValueType() )
+					{
+					case GenericDataValueType_UnsingedInteger16:
+						{
+							float16 f16;
+							if ( rangeCheckCast( f16, f ) )
+							{
+								writer.writeUInt16( f16 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_UnsingedInteger32:
+						{
+							float32 f32;
+							if ( rangeCheckCast( f32, f ) )
+							{
+								writer.writeFloat( f32 );
+								return true;
+							}
+						}
+						break;
+
+					case GenericDataValueType_UnsingedInteger64:
+						{
+							float64 f64;
+							if ( rangeCheckCast( f64, f ) )
+							{
+								writer.writeDouble( f64 );
+								return true;
+							}
+						}
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_String:
+			{
+				string t;
+				if ( value.getString( t ) )
+				{
+					ReferenceKey key = writer.addString( StringType_UTF8, t );
+					writer.writeReference( &key );
+					return true;
+				}
+				
+			}
+			break;
+
+		case GenericDataValueType_Object:
+			{
+				GenericDataObject* pObject = nullptr;
+				if ( value.getObject( pObject ) )
+				{
+					if ( pObject != nullptr )
+					{
+						ReferenceKey key;
+						if ( pObject->writeToResource( key, writer ) )
+						{
+							writer.writeReference( &key );
+							return true;
+						}
+						else
+						{
+							writer.writeReference( nullptr );
+						}
+					}
+					else
+					{
+						writer.writeReference( nullptr );
+						return true;
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_Array:
+			{
+				GenericDataArray* pArray = nullptr;
+				if ( value.getArray( pArray ) )
+				{
+					if ( pArray != nullptr )
+					{
+						ReferenceKey key;
+						if ( pArray->writeToResource( key, writer ) )
+						{
+							writer.writeReference( &key );
+							return true;
+						}
+						else
+						{
+							writer.writeReference( nullptr );
+						}
+					}
+					else
+					{
+						writer.writeReference( nullptr );
+						return true;
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_Enum:
+			{
+				string enumName;
+				sint64 enumValue;
+				if ( value.getEnum( enumName, enumValue ) )
+				{
+					const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)value.getType();
+					const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pEnumType->getBaseType();
+
+					GenericDataValue writeValue;
+					if ( pValueType->isSignedInteger() )
+					{
+						if ( writeValue.setSignedValue( enumValue, pValueType ) )
+						{
+							return writeValueToResource( writer, writeValue );
+						}						
+					}
+					else if ( pValueType->isUnsignedInteger() )
+					{
+						if ( writeValue.setUnsignedValue( (uint64)enumValue, pValueType ) )
+						{
+							return writeValueToResource( writer, value );
+						}
+					}
 				}
 			}
 			break;

@@ -110,6 +110,8 @@ namespace tiki
 			writer.closeResource();
 
 			closeResourceWriter( writer );
+
+			reader.dispose();
 		}
 
 		return ok;

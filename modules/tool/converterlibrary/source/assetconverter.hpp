@@ -14,7 +14,6 @@
 #include "tiki/animationconverter/animationconverter.hpp"
 #include "tiki/fontconverter/fontconverter.hpp"
 #include "tiki/genericdataconverter/genericdataconverter.hpp"
-#include "tiki/materialconverter/materialconverter.hpp"
 #include "tiki/modelconverter/modelconverter.hpp"
 #include "tiki/shaderconverter/shaderconverter.hpp"
 #include "tiki/textureconverter/textureconverter.hpp"
@@ -57,7 +56,6 @@ namespace tiki
 		AnimationConverter		m_animationConverter;
 		FontConverter			m_fontConverter;
 		GenericDataConverter	m_genericDataConverter;
-		MaterialConverter		m_materialConverter;
 		ModelConverter			m_modelConverter;
 		ShaderConverter			m_shaderConverter;
 		TextureConverter		m_textureConverter;

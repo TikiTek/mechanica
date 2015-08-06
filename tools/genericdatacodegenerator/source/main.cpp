@@ -3,7 +3,7 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/genericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 int tiki::mainEntryPoint()
 {
