@@ -34,7 +34,7 @@ int tiki::mainEntryPoint()
 		{
 			TIKI_TRACE_ERROR( "[genericdatacodegenerator] code generation finish with some errors.\n" );
 
-			retValue = 1;
+			retValue = -1;
 		}
 		else
 		{

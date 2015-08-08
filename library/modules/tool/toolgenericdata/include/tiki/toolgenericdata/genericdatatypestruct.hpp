@@ -5,6 +5,7 @@
 #include "tiki/toolgenericdata/genericdatatype.hpp"
 
 #include "tiki/toolbase/list.hpp"
+#include "tiki/toolgenericdata/genericdatavalue.hpp"
 
 namespace tiki
 {
@@ -12,7 +13,7 @@ namespace tiki
 	{
 		string					name;
 		const GenericDataType*	pType;
-		bool					isArray;
+		GenericDataValue		defaultValue;
 		GenericDataTypeMode		mode;
 	};
 
@@ -33,7 +34,7 @@ namespace tiki
 		virtual uint							getSize() const TIKI_OVERRIDE;
 		virtual string							getExportName() const TIKI_OVERRIDE;
 
-		void									addField( const string& name, const GenericDataType* pType, bool isArray = false, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
+		void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
 		void									removeField( const string& name );
 
 		const List< GenericDataStructField >&	getFields() const;

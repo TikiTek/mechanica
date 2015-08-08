@@ -26,6 +26,11 @@ namespace tiki
 
 		static sint64 parseInt64( cstring string )
 		{
+			if ( string[ 0u ] == '0' && string[ 1u ] == 'x' )
+			{
+				return parseSingedHex( string );
+			}
+
 			return (sint64)atol( string );
 			//return parseSigedInteger<char, sint64>(string);
 		}
@@ -44,8 +49,23 @@ namespace tiki
 
 		static uint64 parseUInt64( cstring string )
 		{
+			if ( string[ 0u ] == '0' && string[ 1u ] == 'x' )
+			{
+				return parseUnsingedHex( string );
+			}
+
 			return (uint64)atol( string );
 			//return parseUnsigedInteger<char, uint64>(string);
+		}
+
+		static sint64 parseSingedHex(cstring string)
+		{
+			return (sint64)strtol( string, nullptr, 16 );
+		}
+
+		static uint64 parseUnsingedHex(cstring string)
+		{
+			return (uint64)strtol( string, nullptr, 16 );
 		}
 
 		static float parseSingle( cstring string )

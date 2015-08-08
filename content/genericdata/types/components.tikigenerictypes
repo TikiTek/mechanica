@@ -10,11 +10,6 @@
 	<struct name="SkinnedModelComponentInitData">
 		<field type="{reference Model}" name="model" />
 	</struct>
-	<struct name="ParticleParticleFieldData">
-		<field type="string" name="name" mode="ToolOnly" />
-		<field type="uint8" name="dimensions" />
-		<field type="ParticleFieldType" name="type" />
-	</struct>
 	<struct name="LifeTimeComponentInitData">
 		<field type="timems" name="lifeTimeInMs" />
 	</struct>

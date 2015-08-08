@@ -15,7 +15,10 @@ namespace tiki
 {
 	class GenericDataTypeArray;
 	class GenericDataTypeEnum;
+	class GenericDataTypeReference;
+	class GenericDataTypeResource;
 	class GenericDataValue;
+	struct GenericDataModuleData;
 
 	class GenericDataTypeCollection
 	{
@@ -37,6 +40,7 @@ namespace tiki
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
 		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
+		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 
 		const GenericDataType*			parseType( const string& typeString );
 		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType );
@@ -45,24 +49,28 @@ namespace tiki
 
 	private:
 
-		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
-		typedef FixedArray< const GenericDataTypeValueType*, GenericDataTypeValueTypeType_Count > ValueTypeArray;
-
 		struct ModifierDescription
 		{
 			string	modifier;
 			string	content;
 		};
-				
+
+		typedef Map< string, GenericDataModuleData > ModuleMap;
+		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
+		typedef Map< const GenericDataTypeResource*, const GenericDataTypeReference* > TypeReferenceMap;
+
 		LinkedList< GenericDataType >	m_types;
 		TypeArrayMap					m_arrays;
+		TypeReferenceMap				m_references;
 
 		const GenericDataTypeEnum*		m_pModeEnum;
-		ValueTypeArray					m_valueTypes;
+
+		ModuleMap						m_modules;
 		
-		bool							registerDefaultTypes();		
+		bool							registerDefaultValueTypes();
+		bool							registerDefaultResourceTypes();
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
-		bool							parseFile( XmlReader& reader, const string& fileName, const string& moduleName );
+		bool							parseFile( XmlReader& reader, const _XmlElement* pRootNode, const string& fileName, const string& moduleName );
 
 		bool							parseToken( ModifierDescription& outModifier, const string& text );
 
