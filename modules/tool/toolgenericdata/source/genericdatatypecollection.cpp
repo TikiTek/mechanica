@@ -3,6 +3,7 @@
 
 #include "tiki/base/directory.hpp"
 #include "tiki/base/file.hpp"
+#include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/base/stringconvert.hpp"
@@ -13,6 +14,7 @@
 #include "tiki/toolbase/map.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/genericdatatypereference.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
@@ -20,6 +22,21 @@
 
 namespace tiki
 {
+	struct GenericDataModuleData
+	{
+		string			name;
+		List< string >	dependencies;
+	};
+
+	struct GenericDataModuleLoadingData
+	{
+		string					fileName;
+		XmlReader				reader;
+		const XmlElement*		pRootNode;
+		bool					isLoaded;
+		GenericDataModuleData	data;
+	};
+
 	GenericDataTypeCollection::GenericDataTypeCollection()
 	{
 		m_pModeEnum = nullptr;
@@ -31,7 +48,13 @@ namespace tiki
 
 	bool GenericDataTypeCollection::create( const string& contentFolder, bool recursive )
 	{
-		if ( !registerDefaultTypes() )
+		if ( !registerDefaultValueTypes() )
+		{
+			dispose();
+			return false;
+		}
+
+		if ( !registerDefaultResourceTypes() )
 		{
 			dispose();
 			return false;
@@ -40,29 +63,85 @@ namespace tiki
 		List< string > files;
 		findFiles( contentFolder, files, ".tikigenerictypes" );
 
+		Array< GenericDataModuleLoadingData > modules;
+		if ( !modules.create( files.getCount() ) )
+		{
+			dispose();
+			return false;
+		}
+
 		bool ok = true;
 		for (uint i = 0u; i < files.getCount(); ++i)
 		{
-			const string& fileName = files[ i ];
-			const string moduleName = path::getFilenameWithoutExtension( fileName );
+			GenericDataModuleLoadingData& data = modules[ i ];
+			data.fileName		= files[ i ];
+			data.pRootNode		= nullptr;
+			data.isLoaded		= false;
+			data.data.name		= path::getFilenameWithoutExtension( data.fileName );
 
-			XmlReader reader;
-			if ( reader.create( fileName.cStr() ) )
+			if ( data.reader.create( data.fileName.cStr() ) )
 			{
-				if ( !parseFile( reader, fileName, moduleName ) )
+				data.pRootNode = data.reader.findNodeByName( "tikigenerictypes" );
+				if ( data.pRootNode == nullptr )
 				{
-					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", fileName.cStr() );
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", data.fileName.cStr() );
 					ok = false;
+					continue;
+				}
+
+				const XmlAttribute* pRootBaseAtt = data.reader.findAttributeByName( "base", data.pRootNode );
+				if ( pRootBaseAtt != nullptr )
+				{
+					data.data.dependencies.add( pRootBaseAtt->content );
 				}
 			}
 			else
 			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be parsed.\n", fileName.cStr() );
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be parsed.\n", data.fileName.cStr() );
+				ok = false;
+			}
+		}
+
+		for (uint moduleIndex = 0u; moduleIndex < modules.getCount(); ++moduleIndex )
+		{
+			GenericDataModuleLoadingData& data = modules[ moduleIndex ];
+
+			if ( data.pRootNode == nullptr )
+			{
+				continue;
+			}
+
+			bool hasAllDependencies = true;
+			for (uint depIndex = 0u; depIndex < data.data.dependencies.getCount(); ++depIndex )
+			{
+				for (uint depModIndex = 0u; depModIndex < modules.getCount(); ++depModIndex )
+				{
+					GenericDataModuleLoadingData& depModData = modules[ depModIndex ];
+					if ( depModData.data.name == data.data.dependencies[ depIndex ] )
+					{
+						hasAllDependencies &= depModData.isLoaded;
+					}
+				}
+			}
+
+			if ( !hasAllDependencies )
+			{
+				continue;
+			}
+				
+			if ( !parseFile( data.reader, data.pRootNode, data.fileName, data.data.name ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", data.fileName.cStr() );
 				ok = false;
 			}
 
-			reader.dispose();
+			m_modules[ data.data.name ] = data.data;
+			data.pRootNode = nullptr;
+			data.reader.dispose();
+			data.isLoaded = true;
 		}
+
+		modules.dispose();
 
 		if ( !ok )
 		{
@@ -160,6 +239,23 @@ namespace tiki
 		return pArrayType;
 	}
 
+	const GenericDataTypeReference* GenericDataTypeCollection::makeReferenceType( const GenericDataTypeResource* pBaseType )
+	{
+		GenericDataTypeReference* pReferenceType = nullptr;
+		if ( !m_references.findValue( const_cast< const GenericDataTypeReference** >( &pReferenceType ), pBaseType ) )
+		{
+			string name = pBaseType->getName();
+			name += "&";
+
+			pReferenceType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeReference )( *this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType );
+			m_references.set( pBaseType, pReferenceType );
+
+			TIKI_VERIFY( addType( *pReferenceType ) );
+		}
+
+		return pReferenceType;
+	}
+
 	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
 	{
 		List< ModifierDescription > modifiers;
@@ -188,7 +284,6 @@ namespace tiki
 				if ( pType == nullptr )
 				{
 					pType = findTypeByName( modifier.content );
-
 					if ( pType == nullptr )
 					{
 						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
@@ -197,6 +292,29 @@ namespace tiki
 				}
 
 				pType = makeArrayType( pType );
+			}
+			else if ( modifier.modifier == "reference" )
+			{
+				const GenericDataTypeResource* pTypedType = nullptr;
+				if ( pType == nullptr )
+				{
+					pType = findTypeByName( modifier.content );
+					if ( pType == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
+						return nullptr;
+					}
+
+					if ( pType->getType() != GenericDataTypeType_Resource )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Reference needs a Resource type as base. '%s' is not a resource.\n", modifier.content.cStr() );
+						return nullptr;
+					}
+
+					pTypedType = (const GenericDataTypeResource*)pType;
+				}
+
+				pType = makeReferenceType( pTypedType );
 			}
 			else
 			{
@@ -457,7 +575,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTypeCollection::registerDefaultTypes()
+	bool GenericDataTypeCollection::registerDefaultValueTypes()
 	{
 		bool ok = true;
 
@@ -527,6 +645,25 @@ namespace tiki
 		return ok;
 	}
 
+	bool GenericDataTypeCollection::registerDefaultResourceTypes()
+	{
+		bool ok = true;
+
+		GenericDataTypeResource* pAnimation	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, "Animation",	GenericDataTypeMode_ToolAndRuntime, "animation",	TIKI_FOURCC( 'A', 'N', 'I', 'M' ) );
+		GenericDataTypeResource* pFont		= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, "Font",			GenericDataTypeMode_ToolAndRuntime, "font",			TIKI_FOURCC( 'F', 'O', 'N', 'T' ) );
+		GenericDataTypeResource* pModel		= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, "Model",		GenericDataTypeMode_ToolAndRuntime, "model",		TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
+		GenericDataTypeResource* pShader	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, "ShaderSet",	GenericDataTypeMode_ToolAndRuntime, "shader",		TIKI_FOURCC( 'T', 'G', 'S', 'S' ) );
+		GenericDataTypeResource* pTexture	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, "Texture",		GenericDataTypeMode_ToolAndRuntime, "texture",		TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
+
+		ok &= addType( *pAnimation );
+		ok &= addType( *pFont );
+		ok &= addType( *pModel );
+		ok &= addType( *pShader );
+		ok &= addType( *pTexture );
+
+		return ok;
+	}
+
 	void GenericDataTypeCollection::findFiles( const string& path, List< string >& files, const string& ext ) const
 	{
 		List< string > dirFiles;
@@ -549,17 +686,10 @@ namespace tiki
 		}		
 	}
 
-	bool GenericDataTypeCollection::parseFile( XmlReader& reader, const string& fileName, const string& moduleName )
+	bool GenericDataTypeCollection::parseFile( XmlReader& reader, const _XmlElement* pRootNode, const string& fileName, const string& moduleName )
 	{
-		const XmlElement* pRoot = reader.findNodeByName( "tikigenerictypes" );
-		if ( pRoot == nullptr )
-		{
-			TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", fileName.cStr() );
-			return false;
-		}
-
 		bool ok = true;
-		const XmlElement* pChildNode = pRoot->elements;
+		const XmlElement* pChildNode = pRootNode->elements;
 		while ( pChildNode != nullptr )
 		{
 			const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildNode );
@@ -650,6 +780,11 @@ namespace tiki
 						TIKI_MEMORY_DELETE_OBJECT( pType );
 						ok = false;
 					}
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to resove type: '%s'.\n", pChildNode->name );
+					ok = false;
 				}
 			}
 			else if ( pChildNode->name != nullptr )

@@ -12,6 +12,19 @@ namespace tiki
 		m_pBaseType = pBaseType;
 	}
 
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
+		: GenericDataType( collection, name, mode )
+	{
+		m_pBaseType = nullptr;
+		m_postFix	= postFix;
+
+		const uint8* pFourCC = (const uint8*)&fourCC;
+		for (uint i = 0u; i < 4u; ++i )
+		{
+			m_fourCC[ i ] = pFourCC[ i ];
+		}
+	}
+
 	GenericDataTypeResource::~GenericDataTypeResource()
 	{
 	}

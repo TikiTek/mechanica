@@ -39,7 +39,7 @@ namespace tiki
 		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = fields[ i ];
-			m_fields.set( field.name, GenericDataValue( field.pType ) );
+			m_fields.set( field.name, field.defaultValue );
 		}
 
 		return true;

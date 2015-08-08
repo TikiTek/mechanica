@@ -46,15 +46,15 @@ namespace tiki
 					const GenericDataType* pType = m_collection.parseType( pTypeAtt->content );
 					if ( pType == nullptr )
 					{
-						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] the type(%s) of field or array with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->content, pNameAtt->content );
+						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] Type(%s) for field with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->content, pNameAtt->content );
 						return false;
 					}
 
 					GenericDataStructField& field = m_fields.add();
-					field.name		= pNameAtt->content;
-					field.pType		= pType;
-					field.isArray	= isArray;
-					field.mode		= GenericDataTypeMode_ToolAndRuntime;
+					field.name			= pNameAtt->content;
+					field.pType			= pType;
+					field.defaultValue	= GenericDataValue( pType );
+					field.mode			= GenericDataTypeMode_ToolAndRuntime;
 
 					if ( pModeAtt != nullptr )
 					{
@@ -71,7 +71,10 @@ namespace tiki
 
 					if ( pValueAtt != nullptr )
 					{
-						TIKI_TRACE_INFO( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a value attribute. thats currently not supported.\n", getName().cStr(), pNameAtt->content );
+						if ( !m_collection.parseValue( field.defaultValue, pValueAtt->content, pType ) )
+						{
+							TIKI_TRACE_INFO( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
+						}
 					}
 				}
 				else
@@ -156,15 +159,15 @@ namespace tiki
 		return getName();
 	}
 
-	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, bool isArray /* = false */, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
+	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		TIKI_ASSERT( pType != nullptr );
 
 		GenericDataStructField& field = m_fields.add();
-		field.name		= name;
-		field.pType		= pType;
-		field.isArray	= isArray;
-		field.mode		= mode;
+		field.name			= name;
+		field.pType			= pType;
+		field.defaultValue	= GenericDataValue( pType );
+		field.mode			= mode;
 	}
 
 	void GenericDataTypeStruct::removeField( const string& name )

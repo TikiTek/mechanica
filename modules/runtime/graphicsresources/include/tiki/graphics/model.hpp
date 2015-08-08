@@ -25,8 +25,6 @@ namespace tiki
 		const Material*						getMaterial() const { return m_pMaterial; }
 		const ModelHierarchy*				getHierarchy() const { return m_pHierarchy; }
 
-		void								setMaterial( Material* pMaterial );
-
 		const ModelGeometry&				getGeometryByIndex( size_t index ) const { return m_geometries[ index ]; }
 		size_t								getGeometryCount() const { return m_geometries.getCount(); }
 
