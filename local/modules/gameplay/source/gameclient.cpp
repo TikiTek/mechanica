@@ -2,6 +2,7 @@
 #include "tiki/gameplay/gameclient.hpp"
 
 #include "tiki/components/entitytemplate.hpp"
+#include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
 
 #include "components.hpp"

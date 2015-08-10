@@ -158,7 +158,7 @@ namespace tiki
 							graphicsContext.setPixelShaderTexture( 0u, &pTexture->getTextureData() );
 						}
 					}
-					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectDataInvalidTextureOffset )
+					else if ( command.pRenderEffectData->defaultTextureOffset != RenderEffectValues_InvalidTextureOffset )
 					{
 						const Texture* pDefaultTexture = *addPtrCast< const Texture* >( command.pRenderEffectData, command.pRenderEffectData->defaultTextureOffset );
 
