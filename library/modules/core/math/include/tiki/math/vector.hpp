@@ -4,8 +4,9 @@
 
 #include "tiki/base/float32.hpp"
 #include "tiki/base/inline.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
+
+#include "base.hpp"
 
 namespace tiki
 {

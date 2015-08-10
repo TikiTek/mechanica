@@ -74,6 +74,8 @@ namespace tiki
 
 		bool							parseToken( ModifierDescription& outModifier, const string& text );
 
+		void							writeToFileIfNotEquals( const string& fileName, const string& content );
+
 	};
 }
 

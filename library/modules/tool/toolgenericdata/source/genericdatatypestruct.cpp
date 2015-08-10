@@ -112,6 +112,15 @@ namespace tiki
 
 			targetData.containsArray	|= (field.pType->getType() == GenericDataTypeType_Array);
 			targetData.containsString	|= (field.pType->getName() == "string");
+			
+			if (field.pType->getType() == GenericDataTypeType_Reference)
+			{
+				const GenericDataTypeReference* pRefType = (const GenericDataTypeReference*)field.pType;
+				if ( !targetData.references.contains( pRefType ) )
+				{
+					targetData.references.add( pRefType );
+				}				
+			}
 
 			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
 		}
@@ -122,7 +131,7 @@ namespace tiki
 			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
 		}
 
-		targetData.code += formatString( s_pBaseFormat, getNodeName(), baseTypeCode.cStr(), getExportName().cStr(), fieldsCode.cStr() );
+		targetData.code += formatString( s_pBaseFormat, getNodeName(), getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
 
 		return true;
 	}

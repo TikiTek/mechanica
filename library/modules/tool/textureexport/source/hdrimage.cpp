@@ -4,10 +4,11 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/float32.hpp"
 #include "tiki/base/sizedarray.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/graphics/color.hpp"
 
 #include "libpsd.h"
+
+#include "base.hpp"
 
 namespace tiki
 {

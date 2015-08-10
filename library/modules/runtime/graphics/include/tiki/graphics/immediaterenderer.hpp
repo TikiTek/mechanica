@@ -4,13 +4,14 @@
 
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/math/intersection.hpp"
+
+#include "base.hpp"
 
 namespace tiki
 {

@@ -3,7 +3,7 @@
 #define TIKI_TOOLMODELHIERARCHY_HPP
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/string.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 

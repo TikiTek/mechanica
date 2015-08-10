@@ -4,16 +4,16 @@ local module = Module:new( "genericdata" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( path.join( global_configuration.root_path, "content/genericdata/types/*.*" ) );
 module:add_include_dir( "include" );
 
 module:add_dependency( "resource" );
 
-module.import_func = function()
+module.import_func = function(project)
 	local output_path = path.getabsolute( _OPTIONS[ "genericdata_dir" ] );
-
-	module:add_include_dir( output_path );
-	module:add_files( path.join( output_path, "*.cpp" ) );
-	module:add_files( path.join( output_path, "*.hpp" ) );
+	
+	includedirs( { output_path } );
+	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
 	
 	local exe_path = path.join( global_configuration.root_path, "library/buildtools/genericdatacodegenerator/genericdatacodegenerator.exe" );
 	local content_path = path.join( global_configuration.root_path, "content" );

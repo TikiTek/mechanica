@@ -3,12 +3,13 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/reflection.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/modelexport/toolmodelvertexformat.hpp"
+
+#include "base.hpp"
 
 namespace tiki
 {

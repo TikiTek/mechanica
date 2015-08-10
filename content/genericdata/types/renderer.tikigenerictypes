@@ -1,4 +1,4 @@
-<tikigenerictypes base="graphics">
+<tikigenerictypes>
 	<enum name="RenderEffectId">
 		<value name="Fallback" />
 		<value name="Scene" />

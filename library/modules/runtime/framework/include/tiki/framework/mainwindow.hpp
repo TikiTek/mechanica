@@ -4,7 +4,6 @@
 
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/runtimeshared/windoweventbuffer.hpp"
 
@@ -15,6 +14,8 @@
 #else
 #	error Platform not supported
 #endif
+
+#include "base.hpp"
 
 namespace tiki
 {

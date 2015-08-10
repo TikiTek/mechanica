@@ -1,10 +1,12 @@
 #ifndef TIKI_COLOR_HPP__
 #define TIKI_COLOR_HPP__
 
-#include "tiki/base/types.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/base/inline.hpp"
-#include "tiki/base/structs.hpp"
+#include "tiki/base/types.hpp"
+#include "tiki/math/basetypes.hpp"
+
+#include "base.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	define TIKI_COLORMODE_ABGR	TIKI_ON
