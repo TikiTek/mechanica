@@ -38,7 +38,7 @@ int tiki::mainEntryPoint()
 		}
 		else
 		{
-			TIKI_TRACE_INFO( "[genericdatacodegenerator] code generation successfully.\n" );
+			TIKI_TRACE_INFO( "[genericdatacodegenerator] code generation successfull.\n" );
 		}
 
 		collection.dispose();
