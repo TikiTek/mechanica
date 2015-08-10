@@ -1,6 +1,8 @@
 
 #include "uploadheap_d3d12.hpp"
 
+#include "graphicssystem_internal_d3d12.hpp"
+
 namespace tiki
 {
 	UploadHeapD3d12::UploadHeapD3d12()

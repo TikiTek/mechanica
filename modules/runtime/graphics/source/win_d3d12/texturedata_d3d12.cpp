@@ -6,6 +6,7 @@
 #include "tiki/base/memory.hpp"
 
 #include "graphicssystem_internal_d3d12.hpp"
+#include "uploadheap_d3d12.hpp"
 
 namespace tiki
 {

@@ -8,7 +8,7 @@
 
 #define TIKI_MINIMUM_ALIGNMENT TIKI_SIZE_T_BYTES
 
-#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && 0
 #	define TIKI_DECLARE_STACKANDZERO( type, name ) type name = { }
 #else
 #	define TIKI_DECLARE_STACKANDZERO( type, name ) type name; memory::zero( &name, sizeof( type ) )
