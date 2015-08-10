@@ -1,6 +1,7 @@
 
 #include "tiki/graphics/rendertarget.hpp"
 
+#include "tiki/base/memory.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
 #include "graphicssystem_internal_d3d12.hpp"

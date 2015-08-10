@@ -2,6 +2,7 @@
 #include "tiki/graphics/graphicscontext.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
@@ -12,13 +13,13 @@
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
+#include "tiki/graphics/shadertype.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
-#include "tiki/graphics/shadertype.hpp"
-#include "tiki/math/rectangle.hpp"
 #include "tiki/graphics/viewport.hpp"
+#include "tiki/math/rectangle.hpp"
 
 #include "graphicssystem_internal_d3d12.hpp"
 
@@ -88,20 +89,20 @@ namespace tiki
 
 	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
 	{
-		D3D12_CLEAR_FLAG depthClearFlags = (D3D12_CLEAR_FLAG)0u;
+		D3D12_CLEAR_FLAGS depthClearFlags = (D3D12_CLEAR_FLAGS)0u;
 		if ( isBitSet( clearMask, ClearMask_Depth ) )
 		{
-			depthClearFlags |= D3D12_CLEAR_DEPTH;
+			depthClearFlags |= D3D12_CLEAR_FLAG_DEPTH;
 		}
 
 		if ( isBitSet( clearMask, ClearMask_Stencil ) )
 		{
-			depthClearFlags |= D3D12_CLEAR_STENCIL;
+			depthClearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 		}
 
 		if ( depthClearFlags != 0u && renderTarget.m_platformData.pDepthHeap != nullptr )
 		{
-			m_platformData.pCommandList->ClearDepthStencilView( renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(), depthClearFlags, depthValue, stencilValue, nullptr, 0u );
+			m_platformData.pCommandList->ClearDepthStencilView( renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(), depthClearFlags, depthValue, stencilValue, 0u, nullptr );
 		}
 
 		if( renderTarget.m_platformData.pColorHeap != nullptr )
@@ -109,7 +110,7 @@ namespace tiki
 			float4 floatColor;
 			color::toFloat4( floatColor, color );
 
-			m_platformData.pCommandList->ClearRenderTargetView( renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(), &floatColor.x, nullptr, 0u );
+			m_platformData.pCommandList->ClearRenderTargetView( renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(), &floatColor.x, 0u, nullptr );
 		}
 	}
 
@@ -128,11 +129,11 @@ namespace tiki
 		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 		
-		m_platformData.pCommandList->SetRenderTargets(
-			&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(),
-			TRUE,
+		m_platformData.pCommandList->OMSetRenderTargets(
 			(UINT)renderTarget.m_colorBufferCount,
-			&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart()
+			&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(),
+			TRUE,
+			&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart()
 		);
 
 		D3D12_VIEWPORT viewPort;

@@ -11,6 +11,7 @@ namespace tiki
 	class GraphicsSystem;
 	class UploadHeapD3d12;
 	struct GraphicsSystemPlatformData;
+	enum IndexType;
 
 	namespace graphics
 	{

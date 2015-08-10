@@ -1,7 +1,8 @@
 #ifndef TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 #define TIKI_GRAPHICSSTATES_D3D12_HPP__INCLUDED__
 
-#include "tiki/graphics/graphissystemlimits.hpp"
+#include "tiki/base/memory.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 
 #include <d3d12.h>
 
