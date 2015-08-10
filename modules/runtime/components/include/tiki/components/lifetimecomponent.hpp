@@ -22,7 +22,7 @@ namespace tiki
 		bool				create();
 		void				dispose();
 
-		void				update( EntitySystem& entitySystem, float timeDelta );
+		void				update( EntitySystem& entitySystem, timems timeMs );
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;

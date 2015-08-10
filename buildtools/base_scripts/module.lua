@@ -116,12 +116,12 @@ function Module:resolve_dependency( target_list )
 	end
 end
 
-function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform )
+function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
 	self.module_type = ModuleTypes.FilesModule;
 	
 	if ( configuration_obj == nil and platform == nil ) then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
-			self.import_func();
+			self.import_func(project);
 		end
 
 		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then

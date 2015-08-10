@@ -42,7 +42,7 @@ namespace tiki
 
 	string GenericDataTypeReference::getExportName() const
 	{
-		return formatString( "ResRef< %s >", m_pBaseType->getExportName().cStr() );
+		return m_pBaseType->getExportName();
 	}
 
 	const GenericDataTypeResource* GenericDataTypeReference::getBaseType() const

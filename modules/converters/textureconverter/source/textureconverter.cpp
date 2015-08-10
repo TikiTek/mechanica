@@ -4,7 +4,6 @@
 #include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
@@ -13,6 +12,8 @@
 #include "tiki/base/reflection.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
+
+#include "base.hpp"
 
 namespace tiki
 {

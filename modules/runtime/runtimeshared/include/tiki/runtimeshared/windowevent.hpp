@@ -2,10 +2,11 @@
 #ifndef TIKI_WINDOWEVENT_HPP
 #define TIKI_WINDOWEVENT_HPP
 
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/input/keyboardkey.hpp"
 #include "tiki/input/mousebutton.hpp"
+
+#include "base.hpp"
 
 namespace tiki
 {

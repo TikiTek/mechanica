@@ -473,26 +473,33 @@ namespace tiki
 											"%s"
 											"%s"
 											"%s"
+											"%s"
 											"\n"
+											"%s"
 											"namespace tiki\n"
 											"{\n"
 											"\t#pragma warning( push )\n"
 											"\t#pragma warning( disable: 4309 4369 4340 )\n"
 											"\t\n"
-											"%s\n"
+											"%s"
+											"%s"
 											"\t\n"
 											"\t#pragma warning( pop )\n"
 											"}\n"
 											"\n"
 											"#endif // TIKI_%s_INCLUDED__\n";
 
+		static const char* s_pReference			= "\tclass %s;\n";
 		static const char* s_pStringInclude		= "#include \"tiki/base/basicstring.hpp\"\n";
 		static const char* s_pArrayInclude		= "#include \"tiki/base/staticarray.hpp\"\n";
 		static const char* s_pResourceInclude	= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
+		static const char* s_pReferenceInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
+		static const char* s_pDependencyInclude	= "#include \"%s.hpp\"\n";
 
-		for (uint i = 0u; i < moduleCode.getCount(); ++i)
+		for (uint moduleIndex = 0u; moduleIndex < moduleCode.getCount(); ++moduleIndex)
 		{
-			const auto& kvp = moduleCode.getPairAt( i );
+			const auto& kvp = moduleCode.getPairAt( moduleIndex );
+			const auto& moduleData = m_modules[ kvp.key ];
 
 			const string fileName		= kvp.key + ".hpp";
 			const string fileNameDefine	= fileName.toUpper().replace('.', '_');
@@ -503,6 +510,22 @@ namespace tiki
 				factoriesIncludeCode += formatString( s_pFactoriesIncludeFormat, fileName.cStr() );
 			}
 
+			string referencesCode;
+			for (uint refIndex = 0u; refIndex < kvp.value.references.getCount(); ++refIndex)
+			{
+				referencesCode += formatString( s_pReference, kvp.value.references[ refIndex ]->getBaseType()->getName().cStr() );
+			}
+
+			string dependenciesIncludeCode;
+			for (uint depIndex = 0u; depIndex < moduleData.dependencies.getCount(); ++depIndex)
+			{
+				dependenciesIncludeCode += formatString( s_pDependencyInclude, moduleData.dependencies[ depIndex ].cStr() );
+			}
+			if ( !moduleData.dependencies.isEmpty() )
+			{
+				dependenciesIncludeCode += "\n";
+			}			
+
 			string finalCode = formatString(
 				s_pBaseFormat,
 				fileNameDefine.cStr(),
@@ -510,11 +533,14 @@ namespace tiki
 				(kvp.value.containsString ? s_pStringInclude : ""),
 				(kvp.value.containsArray ? s_pArrayInclude : ""),
 				(kvp.value.containsResource ? s_pResourceInclude : ""),
+				(!kvp.value.references.isEmpty() ? s_pReferenceInclude : ""),
+				dependenciesIncludeCode.cStr(),
+				referencesCode.cStr(),
 				kvp.value.code.cStr(),
 				fileNameDefine.cStr()
 			);
 
-			file::writeAllBytes( fullPath.cStr(), (const uint8*)finalCode.cStr(), finalCode.getLength() );
+			writeToFileIfNotEquals( fullPath, finalCode );
 		}
 
 		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
@@ -569,8 +595,8 @@ namespace tiki
 		const string headerFinalCode	= formatString( s_pFactoriesHeaderFormat );
 		const string sourceFinalCode	= formatString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
-		file::writeAllBytes( headerFullPath.cStr(), (const uint8*)headerFinalCode.cStr(), headerFinalCode.getLength() );
-		file::writeAllBytes( sourceFullPath.cStr(), (const uint8*)sourceFinalCode.cStr(), sourceFinalCode.getLength() );
+		writeToFileIfNotEquals( headerFullPath, headerFinalCode );
+		writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
 
 		return true;
 	}
@@ -816,5 +842,28 @@ namespace tiki
 		outModifier.content		= text.subString( contentBeginIndex + 1, text.getLength() - contentBeginIndex - 2 );
 
 		return true;
+	}
+
+	void GenericDataTypeCollection::writeToFileIfNotEquals( const string& fileName, const string& content )
+	{
+		Array< char > currentContent;
+		file::readAllText( fileName.cStr(), currentContent );
+		const uint currentContentLength = currentContent.getCount() - 1;
+
+		bool isEquals = (content.getLength() == currentContentLength);
+		if (isEquals)
+		{
+			for (uint i = 0u; i < content.getLength() && isEquals; ++i)
+			{
+				isEquals &= content[ i ] == currentContent[ i ];
+			}
+		}
+
+		if (!isEquals)
+		{
+			file::writeAllBytes( fileName.cStr(), (const uint8*)content.cStr(), content.getLength() );
+		}
+
+		currentContent.dispose();
 	}
 }

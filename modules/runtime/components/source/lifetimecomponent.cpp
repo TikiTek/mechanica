@@ -11,7 +11,7 @@ namespace tiki
 {
 	struct LifeTimeComponentState : public ComponentState
 	{
-		float	timeToLifeInSeconds;
+		timems	timeToLifeInMs;
 	};
 
 	LifeTimeComponent::LifeTimeComponent()
@@ -31,16 +31,16 @@ namespace tiki
 	{
 	}
 
-	void LifeTimeComponent::update( EntitySystem& entitySystem, float timeDelta )
+	void LifeTimeComponent::update( EntitySystem& entitySystem, timems timeMs )
 	{
 		Iterator componentStates = getIterator();
 
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			pState->timeToLifeInSeconds -= timeDelta;
+			pState->timeToLifeInMs -= timeMs;
 
-			if ( pState->timeToLifeInSeconds <= 0.0f )
+			if ( pState->timeToLifeInMs <= 0.0f )
 			{
 				entitySystem.disposeEntity( pState->entityId );
 			}
@@ -64,13 +64,13 @@ namespace tiki
 
 	bool LifeTimeComponent::internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pState, const LifeTimeComponentInitData* pInitData )
 	{
-		pState->timeToLifeInSeconds = pInitData->lifeTimeInSeconds;
+		pState->timeToLifeInMs = pInitData->lifeTimeInMs;
 
 		return true;
 	}
 
 	void LifeTimeComponent::internalDisposeState( LifeTimeComponentState* pState )
 	{
-		pState->timeToLifeInSeconds = 0.0f;
+		pState->timeToLifeInMs = 0;
 	}
 }

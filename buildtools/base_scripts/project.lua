@@ -135,10 +135,10 @@ function Project:finalize()
 	local binary_global_files = {};
 	self.module:resolve_dependency( modules );
 
-	self.module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files );
+	self.module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files, nil, nil, self );
 	for i,cur_module in pairs( modules ) do
 		--print( "Module: "..cur_module.name );
-		cur_module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files );
+		cur_module:finalize( shader_global_dirs, binary_global_dirs, binary_global_files, nil, nil, self );
 	end
 	self:finalize_binary( { binary_global_dirs }, { binary_global_files } );
 
@@ -151,10 +151,10 @@ function Project:finalize()
 		binary_platform_dirs[ var_platform ] = {};
 		binary_platform_files[ var_platform ] = {};
 
-		self.module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
+		self.module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform, self );
 
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform );
+			cur_module:finalize( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform, self );
 		end
 
 		local project_config = self.config:get_config( nil, var_platform );
@@ -174,10 +174,10 @@ function Project:finalize()
 		binary_configuration_dirs[ var_configuration ] = {};
 		binary_configuration_files[ var_configuration ] = {};
 
-		self.module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
+		self.module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration, nil, self );
 
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration );
+			cur_module:finalize( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration, nil, self );
 		end
 
 		local project_config = self.config:get_config( var_configuration );
@@ -207,10 +207,10 @@ function Project:finalize()
 			binary_pc_dirs[ var_platform ][ var_configuration ] = {};
 			binary_pc_files[ var_platform ][ var_configuration ] = {};
 			
-			self.module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
+			self.module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform, self );
 
 			for k,cur_module in pairs( modules ) do
-				cur_module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform );
+				cur_module:finalize( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform, self );
 			end	
 			
 			local project_config = self.config:get_config( var_configuration, var_platform );

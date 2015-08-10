@@ -5,6 +5,7 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/linkedlist.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/toolbase/list.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"
 
 struct _XmlElement;
@@ -13,6 +14,7 @@ namespace tiki
 {
 	class GenericDataTypeCollection;
 	class XmlReader;
+	class GenericDataTypeReference;
 
 	enum GenericDataTypeMode
 	{
@@ -32,10 +34,11 @@ namespace tiki
 			containsString		= false;
 		}
 
-		string	code;
-		bool	containsResource;
-		bool	containsArray;
-		bool	containsString;
+		string									code;
+		List< const GenericDataTypeReference* >	references;
+		bool									containsResource;
+		bool									containsArray;
+		bool									containsString;
 	};
 
 	class GenericDataType : public LinkedItem< GenericDataType >

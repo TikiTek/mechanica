@@ -2,7 +2,6 @@
 #ifndef TIKI_GRAPHICSYSTEM_HPP
 #define TIKI_GRAPHICSYSTEM_HPP
 
-#include "tiki/base/structs.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/depthstencilstate.hpp"
@@ -25,6 +24,8 @@
 #else
 #	error Platform not implemented
 #endif
+
+#include "base.hpp"
 
 namespace tiki
 {

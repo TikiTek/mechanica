@@ -4,7 +4,6 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/numbers.hpp"
-#include "tiki/base/structs.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphics/fontchar.hpp"
@@ -16,6 +15,8 @@
 #include FT_FREETYPE_H
 
 #include <math.h>
+
+#include "base.hpp"
 
 namespace tiki
 {

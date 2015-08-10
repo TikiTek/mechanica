@@ -3,7 +3,6 @@
 #define TIKI_FONTRECTANGLE_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/structs.hpp"
 
 namespace tiki
 {

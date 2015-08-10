@@ -2,7 +2,7 @@
 #ifndef __TIKI_STOCKVERTEX_HPP_INCLUDED__
 #define __TIKI_STOCKVERTEX_HPP_INCLUDED__
 
-#include "tiki/base/structs.hpp"
+#include "base.hpp"
 
 namespace tiki
 {
