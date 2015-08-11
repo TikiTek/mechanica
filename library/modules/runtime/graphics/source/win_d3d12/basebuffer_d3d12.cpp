@@ -89,8 +89,6 @@ namespace tiki
 		const D3D12_HEAP_TYPE heapType				= getD3dHeapType( binding, dynamic );
 		const D3D12_RESOURCE_USAGE resourceUsage	= getD3dResourceUsage( binding, dynamic );
 
-		D3D12_RESOURCE_DESC
-
 		HRESULT result = pDevice->CreateCommittedResource(
 			&CD3D12_HEAP_PROPERTIES( heapType ),
 			D3D12_HEAP_MISC_NONE,

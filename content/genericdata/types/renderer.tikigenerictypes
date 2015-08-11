@@ -18,16 +18,14 @@
 		<field type="uint16" name="renderEffectId" />
 		<field type="uint16" name="renderPassMask" />
 		<field type="uint16" name="renderFlags" />
-		<field type="uint16" name="defaultTextureOffset" />
+		<field type="uint16" name="defaultTextureOffset" value="{enum RenderEffectValues.InvalidTextureOffset}" />
 	</struct>	
 	<struct name="FallbackRenderEffectData" base="RenderEffectData">
+		<field type="{reference Texture}" name="defaultTexture" />
 		<value type="uint16" name="renderEffectId" value="{enum RenderEffectId.Fallback}" />
 		<value type="uint16" name="defaultTextureOffset" value="{offset defaultTexture}" />
-		<field type="{reference Texture}" name="defaultTexture" />
 	</struct>
 	<struct name="SceneRenderEffectData" base="RenderEffectData">
-		<value type="uint16" name="renderEffectId" value="{enum RenderEffectId.Scene}" />
-		<value type="uint16" name="defaultTextureOffset" value="{offset diffuseMap}" />
 		<field type="{reference Texture}" name="diffuseMap" />
 		<field type="{reference Texture}" name="normalMap" />
 		<field type="{reference Texture}" name="specularMap" />
@@ -35,5 +33,8 @@
 		<field type="float" name="selfIlluminationFactor" value="1.0" />
 		<field type="float" name="specluarIntensity" />
 		<field type="float" name="specluarPower" />
-	</struct>	
+		<value type="uint16" name="renderEffectId" value="{enum RenderEffectId.Scene}" />
+		<value type="uint16" name="defaultTextureOffset" value="{offset diffuseMap}" />
+	</struct>
+	<resource name="Material" base="RenderEffectData" postfix="material" fourcc="MATE" />
 </tikigenerictypes> 

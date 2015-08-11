@@ -120,6 +120,11 @@ namespace tiki
 		return "field";
 	}
 
+	const GenericDataType* GenericDataObject::getParentType() const
+	{
+		return m_pType;
+	}
+
 	bool GenericDataObject::applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
 	{
 		const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pElement );

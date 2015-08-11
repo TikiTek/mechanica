@@ -326,7 +326,7 @@ namespace tiki
 		return pType;
 	}
 
-	bool GenericDataTypeCollection::parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType )
+	bool GenericDataTypeCollection::parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
 	{
 		if ( pType == nullptr )
 		{
@@ -355,16 +355,21 @@ namespace tiki
 			{
 				const ModifierDescription& modifier = modifiers[ i ];
 
+				if ( i == 0 )
+				{
+					content = modifier.content;
+				}
+
 				if ( modifier.modifier == "enum" )
 				{
-					const int dotIndex = modifier.content.indexOf( '.' );
+					const int dotIndex = content.indexOf( '.' );
 					if ( dotIndex == -1 )
 					{
 						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please {enum TypeName.ValueName} for enum modfiers.\n" );
 						return false;
 					}
 
-					const string enumTypeName = modifier.content.subString( 0u, dotIndex );
+					const string enumTypeName = content.subString( 0u, dotIndex );
 					const GenericDataType* pEnumType = findTypeByName( enumTypeName );
 					if ( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
 					{
@@ -372,7 +377,7 @@ namespace tiki
 						return false;
 					}
 
-					enumValueName = modifier.content.subString( dotIndex + 1 );
+					enumValueName = content.subString( dotIndex + 1 );
 
 					const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
 					const sint64* pValue = pTypedEnumType->getValueByName( enumValueName );
@@ -388,9 +393,53 @@ namespace tiki
 				{
 
 				}
+				else if ( modifier.modifier == "bit" )
+				{
+					const sint64 shift = ParseString::parseInt64( content.cStr() );
+					const sint64 value = 1 << shift;
+
+					content = StringConvert::ToString( value );
+				}
+				else if ( modifier.modifier == "offset" )
+				{
+					if ( pParentType != nullptr && pParentType->getType() == GenericDataTypeType_Struct )
+					{
+						const GenericDataTypeStruct* pTypedParent = (const GenericDataTypeStruct*)pParentType;
+						const List< GenericDataStructField >& fields = pTypedParent->getFields();
+
+						bool found = false;
+						sint64 offset = 0;
+						for (uint i = 0u; i < fields.getCount(); ++i)
+						{
+							const GenericDataStructField& field = fields[ i ];
+
+							offset = alignValue( offset, (sint64)field.pType->getAlignment() );
+
+							if ( field.name == content )
+							{
+								content = StringConvert::ToString( offset );
+								found = true;
+								break;
+							}
+
+							offset += field.pType->getSize();							
+						}
+
+						if ( !found )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] field with name '%s' for modifier '%s' not found.\n", content.cStr(), modifier.modifier.cStr() );
+							return false;
+						}
+					}
+					else
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' must have a struct type. '%s' is not a struct.\n", modifier.modifier.cStr(), pParentType->getName().cStr() );
+						return false;
+					}
+				}
 				else
 				{
-					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Modifier(%s) not supported.\n", modifier.modifier.cStr() );
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' not supported.\n", modifier.modifier.cStr() );
 					return false;
 				}
 			}
@@ -623,10 +672,10 @@ namespace tiki
 		GenericDataTypeValueType* pSInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "sint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
 		GenericDataTypeValueType* pSInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "sint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
-		GenericDataTypeValueType* pUInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint8",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger8 );
-		GenericDataTypeValueType* pUInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
-		GenericDataTypeValueType* pUInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
-		GenericDataTypeValueType* pUInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
+		GenericDataTypeValueType* pUInt8	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint8",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger8 );
+		GenericDataTypeValueType* pUInt16	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger16 );
+		GenericDataTypeValueType* pUInt32	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
+		GenericDataTypeValueType* pUInt64	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "uint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger64 );
 
 		GenericDataTypeValueType* pHalf		= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "half",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );		
 		GenericDataTypeValueType* pFloat	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "float",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
@@ -774,25 +823,44 @@ namespace tiki
 							pBaseType = findTypeByName( "int" );
 						}
 
-						pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, *pBaseType );
+						if ( pBaseType->getType() == GenericDataTypeType_ValueType )
+						{
+							const GenericDataTypeValueType* pTypesBase = (const GenericDataTypeValueType*)pBaseType;
+							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, *pTypesBase );
+						}
+						else
+						{
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Enum types requires a value type as base type. Typename: %s\n", pNameAtt->content );
+							ok = false;
+						}
 					}
 					break;
 
 				case GenericDataTypeType_Struct:
 					{
-						pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeStruct )( *this, pNameAtt->content, mode, pBaseType );
+						if ( pBaseType == nullptr || pBaseType->getType() == GenericDataTypeType_Struct )
+						{
+							const GenericDataTypeStruct* pTypesBase = (const GenericDataTypeStruct*)pBaseType;
+							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeStruct )( *this, pNameAtt->content, mode, pTypesBase );
+						}
+						else
+						{
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Struct types requires a struct as base type. Typename: %s\n", pNameAtt->content );
+							ok = false;
+						}
 					}
 					break;
 
 				case GenericDataTypeType_Resource:
 					{
-						if ( pBaseType != nullptr )
+						if ( pBaseType != nullptr && pBaseType->getType() == GenericDataTypeType_Struct )
 						{
-							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, pNameAtt->content, mode, pBaseType );
+							const GenericDataTypeStruct* pTypesBase = (const GenericDataTypeStruct*)pBaseType;
+							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeResource )( *this, pNameAtt->content, mode, pTypesBase );
 						}
 						else
 						{
-							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Resource types requires an base Type. Typename: %s\n", pNameAtt->content );
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] Resource types requires a struct as base type. Typename: %s\n", pNameAtt->content );
 							ok = false;
 						}
 					}

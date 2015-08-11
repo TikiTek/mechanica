@@ -132,6 +132,11 @@ namespace tiki
 		return "element";
 	}
 
+	const GenericDataType* GenericDataArray::getParentType() const
+	{
+		return m_pType;
+	}
+
 	bool GenericDataArray::applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
 	{
 		return addElement( value );

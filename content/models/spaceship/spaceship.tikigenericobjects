@@ -1,0 +1,12 @@
+<tikigenericobjects>
+	<resource type="Material">
+		<object type="SceneRenderEffectData">
+			<field type="{reference Texture}" name="diffuseMap" value="TEXR:spaceship_diffuse.texture" />
+			<field type="{reference Texture}" name="normalMap" value="TEXR:spaceship_normal.texture" />
+			<field type="{reference Texture}" name="specularMap" value="TEXR:spaceship_spec.texture" />
+			<field type="{reference Texture}" name="glossMap" value="TEXR:spaceship_gloss.texture" />
+			<field type="float" name="specluarIntensity" value="0.9" />	
+			<field type="float" name="specluarPower" value="0.3" />	
+		</object>
+	</resource>
+</tikigenericobjects>

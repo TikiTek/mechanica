@@ -1,9 +1,0 @@
-<tikimaterial>
-	<type>SceneRenderEffectData</type>
-	<field name="diffuseMap" type="resource">TEXR:spaceship_diffuse.texture</field>
-	<field name="normalMap" type="resource">TEXR:spaceship_normal.texture</field>
-	<field name="specularMap" type="resource">TEXR:spaceship_spec.texture</field>
-	<field name="glossMap" type="resource">TEXR:spaceship_gloss.texture</field>
-	<field name="specluarIntensity" type="float">0.9</field>	
-	<field name="specluarPower" type="float">0.3</field>	
-</tikimaterial>
