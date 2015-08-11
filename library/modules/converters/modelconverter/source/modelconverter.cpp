@@ -12,6 +12,8 @@
 
 namespace tiki
 {
+	static const crc32 s_typeCrc = crcString( "model" );
+
 	ModelConverter::ModelConverter()
 	{
 	}
@@ -20,20 +22,19 @@ namespace tiki
 	{
 	}
 
-	uint16 ModelConverter::getConverterRevision() const
+	uint32 ModelConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		return 1u;
 	}
 
 	bool ModelConverter::canConvertType( crc32 typeCrc ) const 
 	{
-		static const crc32 s_typeCrc = crcString( "model" );
 		return typeCrc == s_typeCrc;
 	}
 
 	crc32 ModelConverter::getOutputType() const
 	{
-		return crcString( "model" );
+		return s_typeCrc;
 	}
 
 	void ModelConverter::getDependingType( List< crc32 >& types ) const
@@ -67,7 +68,7 @@ namespace tiki
 			ResourceWriter writer;
 			openResourceWriter( writer, result, parameters.outputName, "model", parameters.targetPlatform );
 			
-			writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision() );
+			writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision( s_typeCrc ) );
 
 			// write hierarchy
 			const ReferenceKey* pHierarchyKey = nullptr;

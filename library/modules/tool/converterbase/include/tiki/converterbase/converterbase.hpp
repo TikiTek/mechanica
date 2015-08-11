@@ -40,11 +40,11 @@ namespace tiki
 		TaskId					queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
 		void					waitForTask( TaskId taskId ) const;
 
+		virtual uint32			getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
 		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_PURE;
 
 		virtual crc32			getOutputType() const TIKI_PURE;
 		virtual void			getDependingType( List< crc32 >& types ) const TIKI_PURE;
-		virtual uint16			getConverterRevision() const TIKI_PURE;
 
 		virtual bool			initializeConverter() TIKI_PURE;
 		virtual void			disposeConverter() TIKI_PURE;

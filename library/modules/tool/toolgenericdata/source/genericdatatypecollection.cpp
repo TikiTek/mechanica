@@ -384,6 +384,15 @@ namespace tiki
 
 					content = StringConvert::ToString( *pValue );
 				}
+				else if ( modifier.modifier == "reference" )
+				{
+
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Modifier(%s) not supported.\n", modifier.modifier.cStr() );
+					return false;
+				}
 			}
 		}
 

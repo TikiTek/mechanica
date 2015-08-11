@@ -43,6 +43,11 @@ namespace tiki
 		return formatString( "StaticArray< %s >", m_pBaseType->getName().cStr() );
 	}
 
+	crc32 GenericDataTypeArray::getTypeCrc() const
+	{
+		return m_pBaseType->getTypeCrc();
+	}
+
 	const GenericDataType* GenericDataTypeArray::getBaseType() const
 	{
 		return m_pBaseType;

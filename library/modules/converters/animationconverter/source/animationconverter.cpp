@@ -13,6 +13,8 @@
 
 namespace tiki
 {
+	static const crc32 s_typeCrc = crcString( "animation" );
+
 	AnimationConverter::AnimationConverter()
 	{
 	}
@@ -21,20 +23,19 @@ namespace tiki
 	{
 	}
 	
-	uint16 AnimationConverter::getConverterRevision() const 
+	uint32 AnimationConverter::getConverterRevision( crc32 typeCrc ) const 
 	{
 		return 1u;
 	}
 
 	bool AnimationConverter::canConvertType( crc32 typeCrc ) const
 	{
-		static const crc32 s_typeCrc = crcString( "animation" );
 		return typeCrc == s_typeCrc;
 	}
 
 	crc32 AnimationConverter::getOutputType() const
 	{
-		return crcString( "animation" );
+		return s_typeCrc;
 	}
 
 	void AnimationConverter::getDependingType( List< crc32 >& types ) const
@@ -159,7 +160,7 @@ namespace tiki
 
 			ResourceWriter resourceWriter;
 			openResourceWriter( resourceWriter, result, parameters.outputName, "animation", PlatformType_Win );
-			resourceWriter.openResource( parameters.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), getConverterRevision() );
+			resourceWriter.openResource( parameters.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), getConverterRevision( s_typeCrc ) );
 
 			ReferenceKey dataKey;
 			builder.writeToResource( resourceWriter, dataKey );

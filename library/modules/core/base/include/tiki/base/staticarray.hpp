@@ -26,8 +26,8 @@ namespace tiki
 		TIKI_FORCE_INLINE void				create( T* pData, uint count );
 		TIKI_FORCE_INLINE void				dispose();
 
-		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
-		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_count; }
+		TIKI_FORCE_INLINE uint				getCount() const	{ return (uint)m_count; }
+		TIKI_FORCE_INLINE uint				getCapacity() const	{ return (uint)m_count; }
 
 		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_pData; }
 		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_pData; }
@@ -56,7 +56,7 @@ namespace tiki
 	private:
 
 		T*			m_pData;
-		uint		m_count;
+		uint64		m_count;
 
 	};
 }

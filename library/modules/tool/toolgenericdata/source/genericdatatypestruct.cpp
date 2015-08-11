@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
@@ -166,6 +167,18 @@ namespace tiki
 	string GenericDataTypeStruct::getExportName() const
 	{
 		return getName();
+	}
+
+	crc32 GenericDataTypeStruct::getTypeCrc() const
+	{
+		string typeString;
+		for (size_t i = 0u; i < m_fields.getCount(); ++i)
+		{
+			const GenericDataStructField& field = m_fields[ i ];
+			typeString += formatString( "%s%08x", field.name, field.pType->getTypeCrc() );
+		}
+
+		return crcString( typeString );
 	}
 
 	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )

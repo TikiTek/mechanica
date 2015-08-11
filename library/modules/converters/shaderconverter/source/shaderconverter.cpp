@@ -25,6 +25,8 @@
 
 namespace tiki
 {
+	static const crc32 s_typeCrc = crcString( "shader" );
+
 	struct ShaderVariantData
 	{
 		ShaderType		type;
@@ -230,20 +232,19 @@ namespace tiki
 
 	static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
 
-	uint16 ShaderConverter::getConverterRevision() const
+	uint32 ShaderConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		return 1u;
 	}
 
 	bool ShaderConverter::canConvertType( crc32 typeCrc ) const
 	{
-		static const crc32 s_typeCrc = crcString( "shader" );
 		return typeCrc == s_typeCrc;
 	}
 
 	crc32 ShaderConverter::getOutputType() const
 	{
-		return crcString( "shader" );
+		return s_typeCrc;
 	}
 
 	void ShaderConverter::getDependingType( List< crc32 >& types ) const
@@ -318,7 +319,7 @@ namespace tiki
 
 			ResourceWriter writer;
 			openResourceWriter( writer, result, parameters.outputName, "shader", parameters.targetPlatform );
-			writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision() );
+			writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision( s_typeCrc ) );
 
 			List< ShaderVariantData > shaderVariants;
 			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )

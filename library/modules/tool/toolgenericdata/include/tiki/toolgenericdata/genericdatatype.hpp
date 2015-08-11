@@ -61,6 +61,7 @@ namespace tiki
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
 		virtual string				getExportName() const TIKI_PURE;
+		virtual crc32				getTypeCrc() const TIKI_PURE;
 
 		const string&				getModule() const;
 		void						setModule( const string& value );

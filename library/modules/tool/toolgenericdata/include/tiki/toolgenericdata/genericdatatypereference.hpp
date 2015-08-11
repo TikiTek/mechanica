@@ -25,6 +25,7 @@ namespace tiki
 		virtual uint					getAlignment() const TIKI_OVERRIDE;
 		virtual uint					getSize() const TIKI_OVERRIDE;
 		virtual string					getExportName() const TIKI_OVERRIDE;
+		virtual crc32					getTypeCrc() const TIKI_OVERRIDE;
 
 		const GenericDataTypeResource*	getBaseType() const;
 

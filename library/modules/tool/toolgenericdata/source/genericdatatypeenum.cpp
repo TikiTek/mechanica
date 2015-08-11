@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
@@ -143,6 +144,17 @@ namespace tiki
 	string GenericDataTypeEnum::getExportName() const
 	{
 		return getName();
+	}
+
+	crc32 GenericDataTypeEnum::getTypeCrc() const
+	{
+		string typeString;
+		for (size_t i = 0u; i < m_values.getCount(); ++i)
+		{
+			typeString += m_values[ i ].name;
+		}
+
+		return crcString( typeString );
 	}
 
 	const GenericDataType* GenericDataTypeEnum::getBaseType() const
