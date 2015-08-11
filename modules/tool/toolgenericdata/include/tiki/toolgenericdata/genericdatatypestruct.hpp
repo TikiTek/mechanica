@@ -23,7 +23,7 @@ namespace tiki
 
 	public:
 
-												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
+												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
 		virtual									~GenericDataTypeStruct();
 
 		virtual bool							loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
@@ -35,26 +35,23 @@ namespace tiki
 		virtual string							getExportName() const TIKI_OVERRIDE;
 		virtual crc32							getTypeCrc() const TIKI_OVERRIDE;
 
+		const GenericDataTypeStruct*			getBaseType() const;
+
 		void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
 		void									removeField( const string& name );
 
 		const List< GenericDataStructField >&	getFields() const;
 		const GenericDataType*					getFieldTypeByName( const string& name ) const;
 
-	protected:
-
-		uint							m_size;
-
-		virtual cstring					getNodeName() const;
-
 	private:
 
-		const GenericDataType*			m_pBaseType;
+		const GenericDataTypeStruct*			m_pBaseType;
 
-		uint							m_alignment;	
+		uint									m_alignment;
+		uint									m_size;
 
-		List< GenericDataStructField >	m_fields;
-
+		List< GenericDataStructField >			m_fields;
+		
 	};
 }
 

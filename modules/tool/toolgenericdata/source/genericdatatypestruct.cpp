@@ -8,10 +8,18 @@
 
 namespace tiki
 {
-	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
+		if ( m_pBaseType != nullptr )
+		{
+			const List< GenericDataStructField >& fields = m_pBaseType->getFields();
+			for (uint i = 0u; i < fields.getCount(); ++i)
+			{
+				m_fields.add( fields[ i ] );
+			}
+		}
 	}
 
 	GenericDataTypeStruct::~GenericDataTypeStruct()
@@ -25,9 +33,9 @@ namespace tiki
 			return false;
 		}
 
-		if ( !isStringEquals( pTypeRoot->name, getNodeName() ) )
+		if ( !isStringEquals( pTypeRoot->name, "struct" ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != '%s') \n", getName().cStr(), pTypeRoot->name, getNodeName() );
+			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'struct') \n", getName().cStr(), pTypeRoot->name );
 			return false;
 		}
 
@@ -35,8 +43,8 @@ namespace tiki
 		while ( pChildElement != nullptr )
 		{
 			const bool isField	= isStringEquals( pChildElement->name, "field" );
-			const bool isArray	= isStringEquals( pChildElement->name, "array" );
-			if ( isField || isArray )
+			const bool isValue	= isStringEquals( pChildElement->name, "value" );
+			if ( isField || isValue )
 			{
 				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildElement );
 				const XmlAttribute* pTypeAtt = reader.findAttributeByName( "type", pChildElement );
@@ -51,28 +59,65 @@ namespace tiki
 						return false;
 					}
 
-					GenericDataStructField& field = m_fields.add();
-					field.name			= pNameAtt->content;
-					field.pType			= pType;
-					field.defaultValue	= GenericDataValue( pType );
-					field.mode			= GenericDataTypeMode_ToolAndRuntime;
+					GenericDataStructField* pValueField = nullptr;
+					const string fieldName = pNameAtt->content;
+					if ( isValue )
+					{						
+						for (uint i = 0u; i < m_fields.getCount(); ++i)
+						{
+							GenericDataStructField& field = m_fields[ i ];
+							if ( field.name == fieldName )
+							{
+								pValueField = &field;
+								break;
+							}
+						}
+
+						if ( pValueField == nullptr )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' can't found in base class.\n", getName().cStr(), pNameAtt->content );
+							return false;
+						}
+					}
+
+					GenericDataStructField& field = (isValue ? *pValueField : m_fields.add());
+					if ( isField )
+					{
+						field.name			= fieldName;
+						field.pType			= pType;
+						field.defaultValue	= GenericDataValue( pType );
+						field.mode			= GenericDataTypeMode_ToolAndRuntime;
+					}
+					
+					if ( isValue && field.pType != pType )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' must have the same type like in base class.\n", getName().cStr(), pNameAtt->content );
+						return false;
+					}
 
 					if ( pModeAtt != nullptr )
 					{
-						GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
-						if ( mode == GenericDataTypeMode_Invalid )
+						if ( !isValue )
 						{
-							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );
+							GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
+							if ( mode == GenericDataTypeMode_Invalid )
+							{
+								TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );
+							}
+							else
+							{
+								field.mode = mode;
+							}
 						}
 						else
 						{
-							field.mode = mode;
+							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] can't override mode in value(%s).\n", getName().cStr(), pNameAtt->content );
 						}
 					}
 
 					if ( pValueAtt != nullptr )
 					{
-						if ( !m_collection.parseValue( field.defaultValue, pValueAtt->content, pType ) )
+						if ( !m_collection.parseValue( field.defaultValue, pValueAtt->content, pType, this ) )
 						{
 							TIKI_TRACE_INFO( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
 						}
@@ -94,7 +139,7 @@ namespace tiki
 	bool GenericDataTypeStruct::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat		= "\n"
-												  "\t%s %s%s\n"
+												  "\tstruct %s%s\n"
 												  "\t{\n"
 												  "%s"
 												  "\t};\n";
@@ -132,7 +177,7 @@ namespace tiki
 			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
 		}
 
-		targetData.code += formatString( s_pBaseFormat, getNodeName(), getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
+		targetData.code += formatString( s_pBaseFormat, getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
 
 		return true;
 	}
@@ -181,6 +226,11 @@ namespace tiki
 		return crcString( typeString );
 	}
 
+	const GenericDataTypeStruct* GenericDataTypeStruct::getBaseType() const
+	{
+		return m_pBaseType;
+	}
+
 	void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		TIKI_ASSERT( pType != nullptr );
@@ -220,10 +270,5 @@ namespace tiki
 		}
 
 		return nullptr;
-	}
-
-	cstring GenericDataTypeStruct::getNodeName() const
-	{
-		return "struct";
 	}
 }

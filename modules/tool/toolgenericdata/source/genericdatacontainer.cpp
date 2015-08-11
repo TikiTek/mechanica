@@ -47,7 +47,7 @@ namespace tiki
 				else
 				{
 					GenericDataValue value;
-					if ( !loadValueFromXml( value, reader, pElement, pElementType ) )
+					if ( !loadValueFromXml( value, reader, pElement, pElementType, getParentType() ) )
 					{
 						result = false;
 					}
@@ -338,12 +338,12 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataContainer::loadValueFromXml( GenericDataValue& outValue, XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pElementType )
+	bool GenericDataContainer::loadValueFromXml( GenericDataValue& outValue, XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pElementType, const GenericDataType* pParentType )
 	{
 		const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pElement );
 		if ( pValueAtt != nullptr )
 		{
-			return m_collection.parseValue( outValue, pValueAtt->content, pElementType );
+			return m_collection.parseValue( outValue, pValueAtt->content, pElementType, pParentType );
 		}
 		else
 		{

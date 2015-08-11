@@ -43,7 +43,7 @@ namespace tiki
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 
 		const GenericDataType*			parseType( const string& typeString );
-		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType );
+		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
