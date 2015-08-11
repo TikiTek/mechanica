@@ -265,12 +265,14 @@ namespace tiki
 	{
 		m_entitySystem.update();
 
+		const timems timeMs = timems( updateContext.timeDelta * 1000.0f );
+
 		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
 		m_playerControlComponent.update( updateContext.timeDelta );
-		m_lifeTimeComponent.update( m_entitySystem, updateContext.timeDelta );
+		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 		m_coinComponent.update( updateContext.pPlayerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
 
 		m_transformComponent.update();
