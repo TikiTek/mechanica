@@ -272,23 +272,13 @@ namespace tiki
 				GenericDataObject* pObject = nullptr;
 				if ( value.getObject( pObject ) )
 				{
-					if ( pObject != nullptr )
+					if ( pObject != nullptr && pObject->writeToResource( nullptr, writer ) )
 					{
-						ReferenceKey key;
-						if ( pObject->writeToResource( key, writer ) )
-						{
-							writer.writeReference( &key );
-							return true;
-						}
-						else
-						{
-							writer.writeReference( nullptr );
-						}
+						return true;
 					}
 					else
 					{
-						writer.writeReference( nullptr );
-						return true;
+						return false;
 					}
 				}
 			}
@@ -299,23 +289,18 @@ namespace tiki
 				GenericDataArray* pArray = nullptr;
 				if ( value.getArray( pArray ) )
 				{
-					if ( pArray != nullptr )
+					ReferenceKey key;
+					if ( pArray != nullptr && pArray->writeToResource( key, writer ) )
 					{
-						ReferenceKey key;
-						if ( pArray->writeToResource( key, writer ) )
-						{
-							writer.writeReference( &key );
-							return true;
-						}
-						else
-						{
-							writer.writeReference( nullptr );
-						}
+						writer.writeReference( &key );
+						writer.writeUInt64( pArray->getCount() );
+						return true;
 					}
 					else
 					{
 						writer.writeReference( nullptr );
-						return true;
+						writer.writeUInt64( 0u );
+						return false;
 					}
 				}
 			}

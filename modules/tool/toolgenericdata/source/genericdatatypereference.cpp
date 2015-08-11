@@ -45,6 +45,11 @@ namespace tiki
 		return m_pBaseType->getExportName();
 	}
 
+	crc32 GenericDataTypeReference::getTypeCrc() const
+	{
+		return m_pBaseType->getTypeCrc();
+	}
+
 	const GenericDataTypeResource* GenericDataTypeReference::getBaseType() const
 	{
 		return m_pBaseType;

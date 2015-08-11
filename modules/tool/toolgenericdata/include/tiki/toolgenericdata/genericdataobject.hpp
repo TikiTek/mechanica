@@ -39,7 +39,7 @@ namespace tiki
 		const GenericDataValue&			getFieldValue( const string& name ) const;
 		bool							setFieldValue( const string& name, const GenericDataValue& value );
 
-		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
+		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;
 
 	protected:
 

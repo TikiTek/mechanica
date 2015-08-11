@@ -20,20 +20,21 @@
 
 namespace tiki
 {
-	uint16 FontConverter::getConverterRevision() const
+	static const crc32 s_typeCrc = crcString( "font" );
+
+	uint32 FontConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		return 2u;
 	}
 
 	bool FontConverter::canConvertType( crc32 typeCrc ) const
 	{
-		static const crc32 s_typeCrc = crcString( "font" );
 		return typeCrc == s_typeCrc;
 	}
 
 	crc32 FontConverter::getOutputType() const
 	{
-		return crcString( "font" );
+		return s_typeCrc;
 	}
 
 	void FontConverter::getDependingType( List< crc32 >& types ) const
@@ -182,7 +183,7 @@ namespace tiki
 
 			ResourceWriter writer;
 			openResourceWriter( writer, result, parameters.outputName, "font", parameters.targetPlatform );
-			writer.openResource( parameters.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision() );
+			writer.openResource( parameters.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision( s_typeCrc ) );
 
 			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
 

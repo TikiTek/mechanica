@@ -20,8 +20,7 @@ namespace tiki
 
 	protected:
 
-		virtual uint16			getConverterRevision() const TIKI_OVERRIDE;
-
+		virtual uint32			getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE;
 		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE;
 
 		virtual crc32			getOutputType() const TIKI_OVERRIDE;

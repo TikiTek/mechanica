@@ -19,9 +19,15 @@ namespace tiki
 	{
 	}
 
-	uint16 GenericDataConverter::getConverterRevision() const 
+	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const 
 	{
-		return 1u;
+		const GenericDataType* pType = nullptr;
+		if ( m_resourceTypeMap.findValue( &pType, typeCrc ) )
+		{
+			return pType->getTypeCrc();
+		}
+
+		return (uint32)-1;
 	}
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const

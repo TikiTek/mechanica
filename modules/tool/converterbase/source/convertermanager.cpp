@@ -368,7 +368,7 @@ namespace tiki
 			}
 
 			task.pManager = this;
-			task.result.addDependency( ConversionResult::DependencyType_Converter, "", task.pConverter->getConverterRevision() );
+			task.result.addDependency( ConversionResult::DependencyType_Converter, "", task.pConverter->getConverterRevision( fileDesc.fileType ) );
 			task.result.addDependency( ConversionResult::DependencyType_File, task.parameters.sourceFile, 0u );
 
 			for (uint inputIndex = 0u; inputIndex < task.parameters.inputFiles.getCount(); ++inputIndex )
@@ -677,7 +677,8 @@ namespace tiki
 				{
 				case ConversionResult::DependencyType_Converter:
 					{
-						if ( (uint)valueInt != pTask->pConverter->getConverterRevision() || pTask->pConverter->getConverterRevision() == TIKI_SIZE_T_MAX )
+						const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->parameters.typeCrc );
+						if ( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
 						{
 							pTask->parameters.isBuildRequired = true;
 						}

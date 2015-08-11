@@ -1,6 +1,8 @@
 
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 
+#include "tiki/base/crc32.hpp"
+
 namespace tiki
 {
 	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
@@ -59,6 +61,11 @@ namespace tiki
 	string GenericDataTypeValueType::getExportName() const
 	{
 		return getName();
+	}
+
+	crc32 GenericDataTypeValueType::getTypeCrc() const
+	{
+		return crcString( getName() );
 	}
 
 	bool GenericDataTypeValueType::isBoolean() const

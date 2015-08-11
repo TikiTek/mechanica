@@ -17,20 +17,21 @@
 
 namespace tiki
 {
-	uint16 TextureConverter::getConverterRevision() const
+	static const crc32 s_typeCrc = crcString( "texture" );
+
+	uint32 TextureConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		return 5u;
 	}
 
 	bool TextureConverter::canConvertType( crc32 typeCrc ) const
 	{
-		static const crc32 s_typeCrc = crcString( "texture" );
 		return typeCrc == s_typeCrc;
 	}
 
 	crc32 TextureConverter::getOutputType() const
 	{
-		return crcString( "texture" );
+		return s_typeCrc;
 	}
 
 	void TextureConverter::getDependingType( List< crc32 >& types ) const
@@ -169,7 +170,7 @@ namespace tiki
 
 			ResourceWriter writer;
 			openResourceWriter( writer, result, params.outputName, "texture", params.targetPlatform );
-			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision() );
+			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision( s_typeCrc ) );
 
 			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
 

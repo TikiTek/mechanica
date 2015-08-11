@@ -93,10 +93,13 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataObject::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
+	bool GenericDataObject::writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const
 	{
-		writer.openDataSection( 0u, AllocatorType_MainMemory );
-		dataKey = writer.addDataPoint();
+		if ( pDataKey != nullptr )
+		{
+			writer.openDataSection( 0u, AllocatorType_MainMemory );
+			*pDataKey = writer.addDataPoint();
+		}
 
 		bool ok = true;
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
@@ -104,7 +107,10 @@ namespace tiki
 			ok &= writeValueToResource( writer, m_fields.getValueAt( i ) );
 		}
 
-		writer.closeDataSection();
+		if ( pDataKey != nullptr )
+		{
+			writer.closeDataSection();
+		}
 
 		return ok;
 	}

@@ -96,6 +96,11 @@ namespace tiki
 		return formatString( "ResRef< %s >", getName().cStr() );
 	}
 
+	crc32 GenericDataTypeResource::getTypeCrc() const
+	{
+		return m_pBaseType->getTypeCrc();
+	}
+
 	const GenericDataType* GenericDataTypeResource::getBaseType() const
 	{
 		return m_pBaseType;
