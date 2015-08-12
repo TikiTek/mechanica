@@ -1,12 +1,18 @@
 
 #include "tiki/graphics/material.hpp"
 
+#include "tiki/resource/resourcefile.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
 {
 	struct MaterialFactoryContext : public FactoryContextGenericBase< Material >
 	{
+	};
+
+	struct MaterialInitData
+	{
+		ResRef< RenderEffectData >	renderEffectData;
 	};
 
 	void Material::registerResourceType( ResourceManager& resourceManager )
@@ -30,7 +36,9 @@ namespace tiki
 
 	bool Material::createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		m_pData = *(const RenderEffectData**)initData.pData;
+		const MaterialInitData* pInitData = (MaterialInitData*)initData.pData;
+
+		m_pData = pInitData->renderEffectData.getData();
 		return m_pData != nullptr;
 	}
 

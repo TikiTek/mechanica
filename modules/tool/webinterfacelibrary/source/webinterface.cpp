@@ -1,7 +1,6 @@
 
 #include "webinterface.hpp"
 
-#include "tiki/base/reflection.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/threading/thread.hpp"
 
@@ -11,14 +10,12 @@ namespace tiki
 {
 	IWebInterface* createWebInterface()
 	{
-		reflection::initialize();
 		return TIKI_MEMORY_NEW_OBJECT( WebInterface );
 	}
 
 	void disposeWebInterface( IWebInterface* pObject )
 	{
 		TIKI_MEMORY_DELETE_OBJECT( pObject );
-		reflection::shutdown();
 		Thread::shutdownSystem();
 	}
 
