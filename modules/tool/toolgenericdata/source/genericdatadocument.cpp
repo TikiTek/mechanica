@@ -36,8 +36,12 @@ namespace tiki
 	{
 		m_pType = nullptr;
 
-		TIKI_MEMORY_DELETE_OBJECT( m_pObject );
-		m_pObject = nullptr;
+		if ( m_pObject != nullptr )
+		{
+			m_pObject->dispose();
+			TIKI_MEMORY_DELETE_OBJECT( m_pObject );
+			m_pObject = nullptr;
+		}
 	}
 
 	const GenericDataTypeResource* GenericDataDocument::getType() const

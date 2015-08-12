@@ -104,7 +104,16 @@ namespace tiki
 		bool ok = true;
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
-			ok &= writeValueToResource( writer, m_fields.getValueAt( i ) );
+			const GenericDataValue& value = m_fields.getValueAt( i );
+
+			if ( value.getValueType() != GenericDataValueType_Invalid )
+			{
+				ok &= writeValueToResource( writer, value );
+			}
+			else
+			{
+				ok = false;
+			}
 		}
 
 		if ( pDataKey != nullptr )

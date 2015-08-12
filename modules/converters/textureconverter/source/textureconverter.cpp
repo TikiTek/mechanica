@@ -9,7 +9,6 @@
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 
-#include "tiki/base/reflection.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
 

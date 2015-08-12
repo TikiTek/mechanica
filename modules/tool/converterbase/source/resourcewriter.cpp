@@ -179,14 +179,13 @@ namespace tiki
 
 	void ResourceWriter::openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
-		{
-			alignment = 16u;
-		}
-
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
-		TIKI_ASSERT( m_pCurrentSection == nullptr );
 		TIKI_ASSERT( isPowerOfTwo( alignment ) );
+
+		if ( m_pCurrentSection != nullptr )
+		{
+			m_sectionStack.add( m_pCurrentSection->id );
+		}
 
 		const uint id = m_pCurrentResource->sections.getCount();
 		SectionData& section = m_pCurrentResource->sections.add();
@@ -195,14 +194,25 @@ namespace tiki
 		section.allocatorId		= allocatorId;
 		section.allocatorType	= allocatorType;
 
-		m_pCurrentSection = &section;
+		m_pCurrentSection = &section;		
 	}
 
 	void ResourceWriter::closeDataSection()
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection = nullptr;
+
+		if ( m_sectionStack.isEmpty() )
+		{
+			m_pCurrentSection = nullptr;
+		}
+		else
+		{
+			const uint sectionId = m_sectionStack.getLast();
+			m_sectionStack.removeSortedAtIndex( m_sectionStack.getCount() - 1u );
+
+			m_pCurrentSection = &m_pCurrentResource->sections[ sectionId ];
+		}
 	}
 
 	ReferenceKey ResourceWriter::addString( StringType type, const string& text )

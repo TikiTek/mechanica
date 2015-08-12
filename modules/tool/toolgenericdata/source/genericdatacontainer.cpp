@@ -327,7 +327,7 @@ namespace tiki
 					{
 						if ( writeValue.setUnsignedValue( (uint64)enumValue, pValueType ) )
 						{
-							return writeValueToResource( writer, value );
+							return writeValueToResource( writer, writeValue );
 						}
 					}
 				}

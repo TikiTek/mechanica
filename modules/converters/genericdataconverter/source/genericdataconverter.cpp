@@ -32,7 +32,12 @@ namespace tiki
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return m_resourceTypeMap.hasKey( typeCrc );
+		if ( m_resourceTypeMap.hasKey( typeCrc ) )
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	crc32 GenericDataConverter::getOutputType() const
@@ -58,6 +63,10 @@ namespace tiki
 		for (uint i = 0u; i < resourceTypes.getCount(); ++i)
 		{
 			const GenericDataTypeResource* pResourceType = static_cast< const GenericDataTypeResource* >( resourceTypes[ i ] );
+			if ( pResourceType->getBaseType() == nullptr )
+			{
+				continue;
+			}
 
 			const crc32 typeCrc = crcString( pResourceType->getPostFix() );
 			m_resourceTypeMap.set( typeCrc, pResourceType );
@@ -87,35 +96,36 @@ namespace tiki
 			}
 
 			GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
-			if ( !document.importFromXml( reader ) )
+			if ( document.importFromXml( reader ) )
+			{
+				const string& extension = document.getType()->getPostFix();
+
+				ResourceWriter writer;
+				openResourceWriter( writer, result, parameters.outputName, extension, PlatformType_Win );
+
+				writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), 1u );
+
+				ReferenceKey dataKey;
+				if ( document.writeToResource( dataKey, writer ) )
+				{
+					writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+					writer.writeReference( &dataKey );
+					writer.closeDataSection();
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
+					ok = false;
+				}
+
+				writer.closeResource();
+				closeResourceWriter( writer );
+			}
+			else
 			{
 				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", file.fileName.cStr() );
 				ok = false;
-				continue;
 			}
-
-			const string& extension = document.getType()->getPostFix();
-
-			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, extension, PlatformType_Win );
-
-			writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), 1u );
-
-			ReferenceKey dataKey;
-			if ( !document.writeToResource( dataKey, writer ) )
-			{
-				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
-				ok = false;
-				continue;
-			}
-
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeReference( &dataKey );
-			writer.closeDataSection();
-
-			writer.closeResource();
-
-			closeResourceWriter( writer );
 
 			reader.dispose();
 		}
