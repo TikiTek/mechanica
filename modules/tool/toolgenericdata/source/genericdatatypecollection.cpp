@@ -478,6 +478,10 @@ namespace tiki
 		{
 			return outValue.setEnum( enumValueName, pType );
 		}
+		else if ( pType->getType() == GenericDataTypeType_Reference )
+		{
+			return outValue.setReference( content, pType );
+		}
 
 		return false;
 	}

@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
+#include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataarray.hpp"
@@ -329,6 +330,21 @@ namespace tiki
 						{
 							return writeValueToResource( writer, writeValue );
 						}
+					}
+				}
+			}
+			break;
+
+		case GenericDataValueType_Reference:
+			{
+				string refText;
+				if ( value.getReference( refText ) )
+				{
+					ReferenceKey key;
+					if ( readResourceReference( writer, refText, key ) )
+					{
+						writer.writeReference( &key );
+						return true;
 					}
 				}
 			}
