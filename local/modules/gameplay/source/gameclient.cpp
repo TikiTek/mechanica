@@ -124,10 +124,11 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
-		entityTemplate.pComponents		= entityComponents;
+		entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
 
-		return m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
+		const EntityId result = m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
+		entityTemplate.components.dispose();
+		return result;
 	}
 
 	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
@@ -147,10 +148,11 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
-		entityTemplate.pComponents		= entityComponents;
+		entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		const EntityId result = m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		entityTemplate.components.dispose();
+		return result;
 	}
 	
 	EntityId GameClient::createBoxEntity( const Model* pModel, const Vector3& position )
@@ -182,10 +184,11 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
-		entityTemplate.pComponents		= entityComponents;
+		entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		const EntityId result = m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		entityTemplate.components.dispose();
+		return result;
 	}
 	
 	EntityId GameClient::createCoinEntity( const Model* pModel, const Vector3& position )
@@ -221,10 +224,11 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
-		entityTemplate.pComponents		= entityComponents;
+		entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		const EntityId result = m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		entityTemplate.components.dispose();
+		return result;
 	}
 
 	EntityId GameClient::createPlaneEntity( const Model* pModel, const Vector3& position )
@@ -250,10 +254,11 @@ namespace tiki
 		};
 
 		EntityTemplate entityTemplate;
-		entityTemplate.componentCount	= TIKI_COUNT( entityComponents );
-		entityTemplate.pComponents		= entityComponents;
+		entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
 
-		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		const EntityId result = m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+		entityTemplate.components.dispose();
+		return result;
 	}
 
 	void GameClient::disposeEntity( EntityId entityId )
