@@ -33,20 +33,12 @@ namespace tiki
 #include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
 
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-#	include "tiki/base/reflection.hpp"
-#endif
-
 #include "platform_internal.hpp"
 
 namespace tiki
 {
 	int platform::startApplication()
 	{
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-		reflection::initialize();
-#endif
-
 		{
 			const string currentPath = path::getCurrentDir();
 			const string exePath = path::getExecutablePath();
@@ -59,10 +51,6 @@ namespace tiki
 		{
 			returnValue = mainEntryPoint();
 		}
-
-#if TIKI_ENABLED( TIKI_BUILD_TOOLS )
-		reflection::shutdown();
-#endif
 
 		debug::dumpMemoryStats();
 

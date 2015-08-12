@@ -1,3 +1,3 @@
 <tikiasset>
-  <input file="player.tikimaterial" type="material" />
+  <input file="player.tikigenericobjects" type="material" />
 </tikiasset>

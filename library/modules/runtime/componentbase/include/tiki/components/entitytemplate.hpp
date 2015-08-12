@@ -2,21 +2,21 @@
 #ifndef __TIKI_ENTITYTEMPLATE_HPP_INCLUDED__
 #define __TIKI_ENTITYTEMPLATE_HPP_INCLUDED__
 
-#include "tiki/base/reflection.hpp"
+#include "tiki/base/types.hpp"
+#include "tiki/base/staticarray.hpp"
 
 namespace tiki
 {
-	TIKI_REFLECTION_STRUCT(
-		EntityTemplateComponent,
-		TIKI_REFLECTION_FIELD( crc32, typeCrc )
-		TIKI_REFLECTION_FIELD( void*, pInitData )
-	);
+	struct EntityTemplateComponent
+	{
+		crc32		typeCrc;
+		const void*	pInitData;
+	};
 
-	TIKI_REFLECTION_STRUCT(
-		EntityTemplate,
-		TIKI_REFLECTION_FIELD( uint32, componentCount )
-		TIKI_REFLECTION_FIELD( EntityTemplateComponent*, pComponents )
-	);
+	struct EntityTemplate
+	{
+		StaticArray< const EntityTemplateComponent > components;
+	};
 }
 
 #endif // __TIKI_ENTITYTEMPLATE_HPP_INCLUDED__

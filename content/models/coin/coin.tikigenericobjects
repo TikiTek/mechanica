@@ -1,0 +1,13 @@
+<tikigenericobjects>
+	<resource type="Material">
+		<object type="SceneRenderEffectData">
+			<field type="{reference Texture}" name="diffuseMap" value="TEXR:coin_diffuse.texture" />
+			<field type="{reference Texture}" name="normalMap" value="TEXR:coin_normal.texture" />
+			<field type="{reference Texture}" name="specularMap" value="TEXR:test_selfillu.texture" />
+			<field type="{reference Texture}" name="glossMap" value="TEXR:test_selfillu.texture" />
+			<field type="float" name="specluarIntensity" value="0.5" />	
+			<field type="float" name="specluarPower" value="0.05" />	
+			<field type="float" name="selfIlluminationFactor" value="2.0" />	
+		</object>
+	</resource>
+</tikigenericobjects>

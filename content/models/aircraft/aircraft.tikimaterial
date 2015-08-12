@@ -1,4 +1,0 @@
-<tikimaterial>
-	<type>FallbackRenderEffectData</type>
-	<field name="defaultTexture" type="resource">TEXR:checker.texture</field>
-</tikimaterial>

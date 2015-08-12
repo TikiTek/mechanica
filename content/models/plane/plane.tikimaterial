@@ -1,8 +1,0 @@
-<tikimaterial>
-	<type>SceneRenderEffectData</type>
-	<field name="diffuseMap" type="resource">TEXR:plane_diffuse.texture</field>
-	<field name="normalMap" type="resource">TEXR:plane_normal.texture</field>
-	<field name="specularMap" type="resource">TEXR:test_selfillu.texture</field>
-	<field name="specluarIntensity" type="float">0.0</field>	
-	<field name="specluarPower" type="float">0.2</field>	
-</tikimaterial>

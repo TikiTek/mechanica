@@ -176,9 +176,9 @@ namespace tiki
 		// create components
 		ComponentState* pLastState = nullptr;
 		ComponentState* pFirstState = nullptr;
-		for (uint i = 0u; i < entityTemplate.componentCount; ++i)
+		for (uint i = 0u; i < entityTemplate.components.getCount(); ++i)
 		{
-			const EntityTemplateComponent& entityComponent = entityTemplate.pComponents[ i ];
+			const EntityTemplateComponent& entityComponent = entityTemplate.components[ i ];
 
 			ComponentTypeId typeId;
 			if ( !m_typeMapping.findValue( &typeId, entityComponent.typeCrc ) )
