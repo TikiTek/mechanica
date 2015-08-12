@@ -2,21 +2,18 @@
 #include "assetconverter.hpp"
 
 #include "tiki/base/path.hpp"
-#include "tiki/base/reflection.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
 
 namespace tiki
 {
 	IAssetConverter* createAssetConverter()
 	{
-		reflection::initialize();
 		return TIKI_MEMORY_NEW_OBJECT( AssetConverter );
 	}
 
 	void disposeAssetConverter( IAssetConverter* pObject )
 	{
 		TIKI_MEMORY_DELETE_OBJECT( pObject );
-		reflection::shutdown();
 		Thread::shutdownSystem();
 	}
 

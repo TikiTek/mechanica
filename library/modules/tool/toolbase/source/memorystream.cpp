@@ -124,8 +124,12 @@ namespace tiki
 
 	void MemoryStream::writeAlignment( uint alignment )
 	{
-		uint bytesToWrite = alignment - ( m_length % alignment );
+		if ( alignment == 0u )
+		{
+			return;
+		}
 
+		uint bytesToWrite = alignment - ( m_length % alignment );
 		if ( bytesToWrite == alignment )
 		{
 			return;

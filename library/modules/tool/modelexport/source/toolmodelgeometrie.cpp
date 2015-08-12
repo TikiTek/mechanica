@@ -2,7 +2,6 @@
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/reflection.hpp"
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/math/basetypes.hpp"
@@ -14,8 +13,6 @@
 
 namespace tiki
 {
-	TIKI_REFLECTION_CPPDECLARE( ToolModelVertex );
-
 	ToolModelSourceBase* setSourceSemantic( Array< ToolModelSourceBase* >& sources, string id, string semantic )
 	{
 		TIKI_ASSERT( id[ 0u ] == '#' );
@@ -374,8 +371,6 @@ namespace tiki
 					continue;
 				}
 
-				const reflection::StructType* pBaseType = ToolModelVertex::getStaticType();
-
 				uint indexOffset = 0u;
 				for (uint j= 0u; j < i; ++j)
 				{
@@ -384,14 +379,51 @@ namespace tiki
 
 				for (uint j = 0u; j < source.stride; ++j)
 				{
-					string fieldPath = source.target + "." + source.techniques[ j ].name;
-					List< const reflection::FieldMember* > wayToField;
-					pBaseType->findFieldRecursve( wayToField, fieldPath );
-
 					uint offset = 0u;
-					for (uint k = 0u; k < wayToField.getCount(); ++k)
+					if ( source.target == "position" )
 					{
-						offset += wayToField[ k ]->getOffset();
+						offset = TIKI_OFFSETOF( ToolModelVertex, position );
+					}
+					else if ( source.target == "normal" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, normal );
+					}
+					else if ( source.target == "tangent" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, tangent );
+					}
+					else if ( source.target == "binormal" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, binormal );
+					}
+					else if ( source.target == "texcoord" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, texcoord );
+					}
+					else if ( source.target == "color" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, color );
+					}
+					else if ( source.target == "jointIndices" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, jointIndices );
+					}
+					else if ( source.target == "jointWeights" )
+					{
+						offset = TIKI_OFFSETOF( ToolModelVertex, jointWeights );
+					}
+
+					if ( source.techniques[ j ].name == "y" )
+					{
+						offset += 4u;
+					}
+					else if ( source.techniques[ j ].name == "z" )
+					{
+						offset += 4u;
+					}
+					else if ( source.techniques[ j ].name == "w" )
+					{
+						offset += 4u;
 					}
 					TIKI_ASSERT( offset < sizeof( ToolModelVertex ) );
 

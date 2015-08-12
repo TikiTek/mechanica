@@ -12,11 +12,20 @@ namespace tiki
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
+		m_alignment	= 0u;
+		m_size		= 0u;
+
 		if ( m_pBaseType != nullptr )
 		{
 			const List< GenericDataStructField >& fields = m_pBaseType->getFields();
 			for (uint i = 0u; i < fields.getCount(); ++i)
 			{
+				const GenericDataStructField& field = fields[ i ];
+
+				m_alignment	= max( m_alignment, field.pType->getAlignment() );
+				m_size		= alignValue( m_size, field.pType->getAlignment() );
+				m_size		= m_size + field.pType->getSize();
+
 				m_fields.add( fields[ i ] );
 			}
 		}
@@ -87,6 +96,10 @@ namespace tiki
 						field.pType			= pType;
 						field.defaultValue	= GenericDataValue( pType );
 						field.mode			= GenericDataTypeMode_ToolAndRuntime;
+
+						m_alignment	= max( m_alignment, field.pType->getAlignment() );
+						m_size		= alignValue( m_size, field.pType->getAlignment() );
+						m_size		= m_size + field.pType->getSize();
 					}
 					
 					if ( isValue && field.pType != pType )
@@ -189,24 +202,12 @@ namespace tiki
 
 	uint GenericDataTypeStruct::getAlignment() const
 	{
-		uint alignment = m_alignment;
-		if ( m_pBaseType != nullptr )
-		{
-			alignment = TIKI_MAX( alignment, m_pBaseType->getAlignment() );
-		}
-
-		return alignment;
+		return m_alignment;
 	}
 
 	uint GenericDataTypeStruct::getSize() const
 	{
-		uint size = m_size;
-		if ( m_pBaseType != nullptr )
-		{
-			size += m_pBaseType->getSize();
-		}
-
-		return size;
+		return m_size;
 	}
 
 	string GenericDataTypeStruct::getExportName() const

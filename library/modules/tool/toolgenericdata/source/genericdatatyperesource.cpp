@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/io/xmlreader.hpp"
 
@@ -98,7 +99,14 @@ namespace tiki
 
 	crc32 GenericDataTypeResource::getTypeCrc() const
 	{
-		return m_pBaseType->getTypeCrc();
+		if ( m_pBaseType )
+		{
+			return m_pBaseType->getTypeCrc();
+		}
+		else 
+		{
+			return crcString( getName() );
+		}
 	}
 
 	const GenericDataType* GenericDataTypeResource::getBaseType() const

@@ -2,7 +2,7 @@
 #define TIKI_TOOLMODELGEOMETRIE_HPP__
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/reflection.hpp"
+#include "tiki/base/basicstring.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
@@ -16,20 +16,20 @@ namespace tiki
 	class ToolModelHierarchy;
 	struct ToolModelGeometryInstance;
 
-	TIKI_REFLECTION_STRUCT(
-		ToolModelVertex,
-		TIKI_REFLECTION_FIELD( float3, position )
+	struct ToolModelVertex
+	{
+		float3	position;
 
-		TIKI_REFLECTION_FIELD( float3, normal )
-		TIKI_REFLECTION_FIELD( float4, tangent )
-		TIKI_REFLECTION_FIELD( float3, binormal )
+		float3	normal;
+		float4	tangent;
+		float3	binormal;
 
-		TIKI_REFLECTION_FIELD( float2, texcoord )
-		TIKI_REFLECTION_FIELD( float3, color )
+		float2	texcoord;
+		float3	color;
 
-		TIKI_REFLECTION_FIELD( uint4, jointIndices )
-		TIKI_REFLECTION_FIELD( float4, jointWeights )
-	);
+		uint4	jointIndices;
+		float4	jointWeights;
+	};
 
 	struct ToolModelGeometrieDesc
 	{
