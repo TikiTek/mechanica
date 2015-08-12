@@ -39,6 +39,8 @@ namespace tiki
 
 		GenericDataValueType_Enum,
 
+		GenericDataValueType_Reference,
+
 		GenericDataValueType_Count
 	};
 
@@ -75,6 +77,9 @@ namespace tiki
 
 		bool					getEnum( string& enumName, sint64& enumValue ) const;
 		bool					setEnum( const string& valueName, const GenericDataType* pType );
+
+		bool					getReference( string& refText ) const;
+		bool					setReference( const string& refText, const GenericDataType* pType );
 
 	private:
 

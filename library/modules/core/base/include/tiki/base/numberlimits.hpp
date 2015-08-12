@@ -59,7 +59,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T min()
 		{
-			return (T)0xff;
+			return (T)0x80;
 		}
 
 		TIKI_FORCE_INLINE static T max()
@@ -87,7 +87,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T min()
 		{
-			return (T)0xffff;
+			return (T)0x8000;
 		}
 
 		TIKI_FORCE_INLINE static T max()
@@ -115,7 +115,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T min()
 		{
-			return (T)0xffffffff;
+			return (T)0x80000000;
 		}
 
 		TIKI_FORCE_INLINE static T max()
@@ -143,7 +143,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T min()
 		{
-			return (T)0xffffffffffffffff;
+			return (T)0x8000000000000000;
 		}
 
 		TIKI_FORCE_INLINE static T max()

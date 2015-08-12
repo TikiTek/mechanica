@@ -326,6 +326,18 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataValue::getEnum( string& enumName, sint64& enumValue ) const
+	{
+		if ( m_valueType == GenericDataValueType_Enum )
+		{
+			enumName	= m_text;
+			enumValue	= m_value.s64;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType )
 	{
 		if ( !setType( pType, GenericDataTypeType_Enum ) )
@@ -347,16 +359,27 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getEnum( string& enumName, sint64& enumValue ) const
+	bool GenericDataValue::getReference(string& refText) const
 	{
-		if ( m_valueType == GenericDataValueType_Enum )
+		if ( m_valueType == GenericDataValueType_Reference )
 		{
-			enumName	= m_text;
-			enumValue	= m_value.s64;
+			refText	= m_text;
 			return true;
 		}
 
 		return false;
+	}
+
+	bool GenericDataValue::setReference(const string& refText, const GenericDataType* pType)
+	{
+		if ( !setType( pType, GenericDataTypeType_Reference ) )
+		{
+			return false;
+		}
+
+		m_text = refText;
+
+		return true;
 	}
 
 	bool GenericDataValue::setType( const GenericDataType* pType, GenericDataTypeType expectedType )
@@ -401,6 +424,13 @@ namespace tiki
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Enum;
+
+				return true;
+			}
+			else if ( typeType == GenericDataTypeType_Reference )
+			{
+				m_pType		= pType;
+				m_valueType	= GenericDataValueType_Reference;
 
 				return true;
 			}
