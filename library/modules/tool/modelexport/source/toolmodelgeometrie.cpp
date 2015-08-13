@@ -419,11 +419,11 @@ namespace tiki
 					}
 					else if ( source.techniques[ j ].name == "z" )
 					{
-						offset += 4u;
+						offset += 8u;
 					}
 					else if ( source.techniques[ j ].name == "w" )
 					{
-						offset += 4u;
+						offset += 12u;
 					}
 					TIKI_ASSERT( offset < sizeof( ToolModelVertex ) );
 
