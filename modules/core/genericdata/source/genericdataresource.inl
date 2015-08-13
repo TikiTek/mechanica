@@ -57,7 +57,7 @@ namespace tiki
 		{
 			m_pData = pInitData->data.getData();
 
-			return true;
+			return m_pData != nullptr;
 		}
 
 		return false;
