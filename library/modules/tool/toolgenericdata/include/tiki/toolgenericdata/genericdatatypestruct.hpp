@@ -15,6 +15,7 @@ namespace tiki
 		const GenericDataType*	pType;
 		GenericDataValue		defaultValue;
 		GenericDataTypeMode		mode;
+		bool					isInherited;
 	};
 
 	class GenericDataTypeStruct : public GenericDataType

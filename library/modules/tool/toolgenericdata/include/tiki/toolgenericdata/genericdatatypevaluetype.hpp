@@ -49,6 +49,8 @@ namespace tiki
 		virtual string				getExportName() const TIKI_OVERRIDE;
 		virtual crc32				getTypeCrc() const TIKI_OVERRIDE;
 
+		GenericDataValueTypeType	getValueType() const;
+
 		bool						isBoolean() const;
 		bool						isSignedInteger() const;
 		bool						isUnsignedInteger() const;
