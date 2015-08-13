@@ -20,13 +20,13 @@ namespace tiki
 			const List< GenericDataStructField >& fields = m_pBaseType->getFields();
 			for (uint i = 0u; i < fields.getCount(); ++i)
 			{
-				const GenericDataStructField& field = fields[ i ];
+				GenericDataStructField& field = m_fields.add();
+				field				= fields[ i ];
+				field.isInherited	= true;
 
 				m_alignment	= max( m_alignment, field.pType->getAlignment() );
 				m_size		= alignValue( m_size, field.pType->getAlignment() );
-				m_size		= m_size + field.pType->getSize();
-
-				m_fields.add( fields[ i ] );
+				m_size		= m_size + field.pType->getSize();				
 			}
 		}
 	}
@@ -96,6 +96,7 @@ namespace tiki
 						field.pType			= pType;
 						field.defaultValue	= GenericDataValue( pType );
 						field.mode			= GenericDataTypeMode_ToolAndRuntime;
+						field.isInherited	= false;
 
 						m_alignment	= max( m_alignment, field.pType->getAlignment() );
 						m_size		= alignValue( m_size, field.pType->getAlignment() );
@@ -164,7 +165,7 @@ namespace tiki
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
-			if ( !isBitSet( field.mode, mode ) )
+			if ( !isBitSet( field.mode, mode ) || field.isInherited )
 			{
 				continue;
 			}
@@ -241,6 +242,7 @@ namespace tiki
 		field.pType			= pType;
 		field.defaultValue	= GenericDataValue( pType );
 		field.mode			= mode;
+		field.isInherited	= false;
 	}
 
 	void GenericDataTypeStruct::removeField( const string& name )

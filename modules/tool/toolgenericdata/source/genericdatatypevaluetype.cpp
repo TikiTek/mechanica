@@ -68,6 +68,11 @@ namespace tiki
 		return crcString( getName() );
 	}
 
+	GenericDataValueTypeType GenericDataTypeValueType::getValueType() const
+	{
+		return m_type;
+	}
+
 	bool GenericDataTypeValueType::isBoolean() const
 	{
 		return m_type == GenericDataTypeValueTypeType_Boolean;

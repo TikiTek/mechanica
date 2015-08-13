@@ -402,7 +402,7 @@ namespace tiki
 				const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pType;
 				
 				m_pType		= pType;
-				m_valueType	= (GenericDataValueType)pValueType->getType();
+				m_valueType	= (GenericDataValueType)pValueType->getValueType();
 
 				return true;
 			}

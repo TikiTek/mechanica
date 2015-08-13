@@ -102,9 +102,17 @@ namespace tiki
 		}
 
 		bool ok = true;
-		for (uint i = 0u; i < m_fields.getCount(); ++i)
+
+		const List< GenericDataStructField >& fields = m_pType->getFields();
+		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
-			const GenericDataValue& value = m_fields.getValueAt( i );
+			const GenericDataStructField& field = fields[ i ];
+						
+			GenericDataValue value;
+			if ( !m_fields.findValue( &value, field.name ) )
+			{
+				value = field.defaultValue;
+			}
 
 			if ( value.getValueType() != GenericDataValueType_Invalid )
 			{

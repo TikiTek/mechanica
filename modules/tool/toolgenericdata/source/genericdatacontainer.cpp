@@ -215,7 +215,7 @@ namespace tiki
 				{
 					switch ( value.getValueType() )
 					{
-					case GenericDataValueType_UnsingedInteger16:
+					case GenericDataValueType_FloatingPoint16:
 						{
 							float16 f16;
 							if ( rangeCheckCast( f16, f ) )
@@ -226,7 +226,7 @@ namespace tiki
 						}
 						break;
 
-					case GenericDataValueType_UnsingedInteger32:
+					case GenericDataValueType_FloatingPoint32:
 						{
 							float32 f32;
 							if ( rangeCheckCast( f32, f ) )
@@ -237,7 +237,7 @@ namespace tiki
 						}
 						break;
 
-					case GenericDataValueType_UnsingedInteger64:
+					case GenericDataValueType_FloatingPoint64:
 						{
 							float64 f64;
 							if ( rangeCheckCast( f64, f ) )

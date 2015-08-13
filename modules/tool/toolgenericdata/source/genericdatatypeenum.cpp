@@ -32,7 +32,7 @@ namespace tiki
 		}
 
 		const XmlElement* pChildElement = pTypeRoot->elements;
-		sint64 lastValue = 0;
+		sint64 currentValue = 0;
 		while ( pChildElement != nullptr )
 		{
 			const bool isValue = isStringEquals( pChildElement->name, "value" );
@@ -48,7 +48,7 @@ namespace tiki
 					field.name		= pNameAtt->content;
 					field.mode		= GenericDataTypeMode_ToolAndRuntime;
 					field.hasValue	= false;
-					field.value		= ++lastValue;
+					field.value		= currentValue++;
 
 					if ( pModeAtt != nullptr )
 					{
@@ -68,7 +68,7 @@ namespace tiki
 						field.hasValue	= true;
 						field.value		= ParseString::parseInt64( pValueAtt->content );
 
-						lastValue = field.value;
+						currentValue = field.value + 1;
 					}
 				}
 				else
