@@ -81,5 +81,4 @@
 		<field name="evals" type="{array ParticleEvalData}" />
 		<field name="simulateWhenInvisible" type="bool" />
 	</struct>
-	<resource name="ParticleEffect" base="ParticleEffectData" postfix="particle" fourcc="PAFX" />
 </tikigenerictypes>
