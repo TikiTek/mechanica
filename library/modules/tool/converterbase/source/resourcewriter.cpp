@@ -14,10 +14,9 @@ namespace tiki
 		TIKI_ASSERT( m_resources.isEmpty() );
 	}
 
-	void ResourceWriter::create( const string& fileName, PlatformType platform )
+	void ResourceWriter::create( const string& fileName )
 	{
 		m_fileName	= fileName;
-		m_platform	= platform;
 
 		m_pCurrentResource	= nullptr;
 		m_pCurrentSection	= nullptr;
@@ -39,9 +38,10 @@ namespace tiki
 			const ResourceData& resource = m_resources[ i ];
 
 			ResourceHeader& header = resourceHeaders.add();
-			header.type		= resource.type;
-			header.key		= crcString( resource.name );
-			header.version	= resource.version;
+			header.type			= resource.type;
+			header.key			= crcString( resource.name );
+			header.definition	= resource.definition.definitionMask;
+			header.version		= resource.version;
 
 			header.linkCount	= uint16( resource.links.getCount() );
 			header.sectionCount	= uint16( resource.sections.getCount() );
@@ -154,10 +154,9 @@ namespace tiki
 
 		m_resources.dispose();
 		m_fileName	= "";
-		m_platform	= PlatformType_Invalid;
 	}
 
-	void ResourceWriter::openResource( const string& name, fourcc type, uint16 resourceFormatVersion )
+	void ResourceWriter::openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
 	{
 		TIKI_ASSERT( m_pCurrentResource == nullptr );
 		TIKI_ASSERT( m_pCurrentSection == nullptr );
@@ -165,6 +164,7 @@ namespace tiki
 		ResourceData& resource = m_resources.add();
 		resource.name		= name;
 		resource.type		= type;
+		resource.definition	= definition;
 		resource.version	= resourceFormatVersion;
 
 		m_pCurrentResource = &resource;

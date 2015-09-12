@@ -158,10 +158,7 @@ namespace tiki
 		m_taskSystem.waitForAllTasks();
 
 		const bool converionResult = finalizeTasks( *pOutputFiles );
-		if ( converionResult )
-		{
-			m_resourceMap.writeToFile();
-		}
+		m_resourceMap.writeToFile();
 
 		return converionResult;
 	}
@@ -356,8 +353,6 @@ namespace tiki
 
 			task.parameters.assetId			= TIKI_SIZE_T_MAX;
 			task.parameters.isBuildRequired	= false;
-			task.parameters.targetPlatform	= platform::getHostPlatform();
-			task.parameters.targetApi		= platform::getHostGraphicsApi();
 			task.parameters.sourceFile		= fileDesc.fullFileName;
 			task.parameters.typeCrc			= fileDesc.fileType;
 

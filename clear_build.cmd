@@ -8,8 +8,12 @@ call:delete_folter library/tests/libraryunittests/build
 
 call:delete_folter local/game/build
 
+goto end
+
 :delete_folter
 if exist %~1 (
   rmdir /s /q %~1
 )
 goto:eof
+
+:end

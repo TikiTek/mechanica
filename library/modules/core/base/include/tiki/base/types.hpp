@@ -83,9 +83,9 @@ namespace tiki
 	
 #endif
 
-#define TIKI_DEFAULT_ALIGNMENT 0u
-
-#define TIKI_INVALID_CRC32 0xffffffffu
+#define TIKI_DEFAULT_ALIGNMENT	0u
+#define TIKI_INVALID_CRC32		0xffffffffu
+#define TIKI_MAX_PATH			512u
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 

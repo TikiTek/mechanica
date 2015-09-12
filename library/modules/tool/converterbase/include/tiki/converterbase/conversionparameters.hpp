@@ -48,8 +48,6 @@ namespace tiki
 		uint					assetId;
 		bool					isBuildRequired;
 
-		PlatformType			targetPlatform;
-		GraphicsApi				targetApi;
 		crc32					typeCrc;
 
 		string					sourceFile;

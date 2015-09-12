@@ -62,6 +62,12 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void				operator=( const List<T>& copy );
 
+		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
+
+		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
+
 	protected:
 
 		T*		m_pData;

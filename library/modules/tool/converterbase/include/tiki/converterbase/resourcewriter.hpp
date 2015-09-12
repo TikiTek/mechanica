@@ -2,9 +2,10 @@
 #ifndef TIKI_RESOURCEWRITER_HPP
 #define TIKI_RESOURCEWRITER_HPP
 
-#include "tiki/base/platform.hpp"
 #include "tiki/base/basicstring.hpp"
+#include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/resource/resourcedefinition.hpp"
 #include "tiki/resource/resourcefile.hpp"
 #include "tiki/toolbase/list.hpp"
 #include "tiki/toolbase/memorystream.hpp"
@@ -34,7 +35,7 @@ namespace tiki
 
 		~ResourceWriter();
 
-		void			openResource( const string& name, fourcc type, uint16 resourceFormatVersion );
+		void			openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion );
 		void			closeResource();
 
 		void			openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
@@ -68,7 +69,7 @@ namespace tiki
 		struct ReferenceData
 		{
 			ReferenceKey	key;
-
+			
 			uint32			position;
 		};
 
@@ -102,6 +103,8 @@ namespace tiki
 		{
 			fourcc						type;
 			string						name;
+			ResourceDefinition			definition;
+
 			uint16						version;
 
 			List< SectionData >			sections;
@@ -118,7 +121,7 @@ namespace tiki
 
 		List< ResourceData >	m_resources;
 
-		void					create( const string& fileName, PlatformType platform );
+		void					create( const string& fileName );
 		void					dispose();
 
 	};
