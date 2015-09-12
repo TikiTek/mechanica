@@ -34,8 +34,8 @@ namespace tiki
 		const string userName = buffer;
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
-			//return TikiArenaGameStates_BasicTest;
-			return GameStates_Play;
+			return GameStates_BasicTest;
+			//return GameStates_Play;
 		}
 #endif
 
