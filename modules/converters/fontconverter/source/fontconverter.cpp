@@ -170,39 +170,47 @@ namespace tiki
 			TextureWriterParameters writerParameters;
 			writerParameters.targetFormat	= PixelFormat_R8;
 			writerParameters.targetType		= (mode3D ? TextureType_3d : TextureType_2d );
-			writerParameters.targetApi		= parameters.targetApi;
 			writerParameters.mipMapCount	= 1u;
 			writerParameters.data.texture3d.sliceWidth	= fontSize;
 			writerParameters.data.texture3d.sliceHeight	= imageHeight;
 
-			TextureWriter textureWriter;
-			if ( !textureWriter.create( image, writerParameters ) )
-			{
-				continue;
-			}
-
 			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "font", parameters.targetPlatform );
-			writer.openResource( parameters.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), getConverterRevision( s_typeCrc ) );
+			openResourceWriter( writer, result, parameters.outputName, "font" );
 
-			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
+			for (const ResourceDefinition& definition : getResourceDefinitions())
+			{
+				writerParameters.targetApi = definition.getGraphicsApi();
 
-			// write chars
-			writer.openDataSection( 0u, AllocatorType_MainMemory );
-			const ReferenceKey charArrayKey = writer.addDataPoint();
-			writer.writeData( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
-			writer.closeDataSection();
+				TextureWriter textureWriter;
+				if ( !textureWriter.create( image, writerParameters ) )
+				{
+					continue;
+				}
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
-			writer.writeReference( &textureDataKey );
-			writer.writeUInt32( uint32( chars.getCount() ) );
-			writer.writeReference( &charArrayKey );
-			writer.closeDataSection();
+				writer.openResource( parameters.outputName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), definition, getConverterRevision( s_typeCrc ) );
 
+				const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
+
+				// write chars
+				writer.openDataSection( 0u, AllocatorType_MainMemory );
+				const ReferenceKey charArrayKey = writer.addDataPoint();
+				writer.writeData( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
+				writer.closeDataSection();
+
+				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+				writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
+				writer.writeReference( &textureDataKey );
+				writer.writeUInt32( uint32( chars.getCount() ) );
+				writer.writeReference( &charArrayKey );
+				writer.closeDataSection();
+
+				writer.closeResource();
+
+				textureWriter.dispose();
+			}
+			
 			closeResourceWriter( writer );
 
-			textureWriter.dispose();
 			image.dispose();
 		}
 

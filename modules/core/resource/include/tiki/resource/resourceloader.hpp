@@ -5,6 +5,7 @@
 #include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
+#include "tiki/resource/resourcedefinition.hpp"
 #include "tiki/resource/resourcenamemapper.hpp"
 
 namespace tiki
@@ -67,6 +68,8 @@ namespace tiki
 		ResourceStorage*		m_pStorage;
 		ResourceNameMapper		m_nameMapper;
 		FactoryMap				m_factories;
+
+		ResourceDefinition		m_definition;
 
 		ZoneAllocator			m_bufferAllocator;
 		

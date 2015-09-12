@@ -15,6 +15,7 @@ namespace tiki
 	class ConverterManager;
 	class ResourceWriter;
 	struct ConversionParameters;
+	struct ResourceDefinition;
 
 	class ConverterBase
 	{
@@ -22,38 +23,40 @@ namespace tiki
 
 	public:
 
-								ConverterBase();
-		virtual					~ConverterBase();
+									ConverterBase();
+		virtual						~ConverterBase();
 
-		void					create( ConverterManager* pManager );
-		void					dispose();
+		void						create( ConverterManager* pManager );
+		void						dispose();
 
-		void					convert( ConversionResult& result, const ConversionParameters& params ) const;
+		void						convert( ConversionResult& result, const ConversionParameters& params ) const;
 
-		ConverterManager*		getManager() { return m_pManager; }
+		ConverterManager*			getManager() { return m_pManager; }
 
 	protected:
 
-		void					openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension, PlatformType platform ) const;
-		void					closeResourceWriter( ResourceWriter& writer ) const;
+		void						openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension ) const;
+		void						closeResourceWriter( ResourceWriter& writer ) const;
 
-		TaskId					queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
-		void					waitForTask( TaskId taskId ) const;
+		TaskId						queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
+		void						waitForTask( TaskId taskId ) const;
 
-		virtual uint32			getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
-		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_PURE;
+		List< ResourceDefinition >	getResourceDefinitions() const;
 
-		virtual crc32			getOutputType() const TIKI_PURE;
-		virtual void			getDependingType( List< crc32 >& types ) const TIKI_PURE;
+		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
+		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_PURE;
 
-		virtual bool			initializeConverter() TIKI_PURE;
-		virtual void			disposeConverter() TIKI_PURE;
+		virtual crc32				getOutputType() const TIKI_PURE;
+		virtual void				getDependingType( List< crc32 >& types ) const TIKI_PURE;
 
-		virtual bool			startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_PURE;
+		virtual bool				initializeConverter() TIKI_PURE;
+		virtual void				disposeConverter() TIKI_PURE;
+
+		virtual bool				startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_PURE;
 
 	private:
 
-		ConverterManager*		m_pManager;
+		ConverterManager*			m_pManager;
 
 	};
 }

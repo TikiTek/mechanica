@@ -318,80 +318,85 @@ namespace tiki
 			preprocessor.create( sourceCode );
 
 			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "shader", parameters.targetPlatform );
-			writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), getConverterRevision( s_typeCrc ) );
+			openResourceWriter( writer, result, parameters.outputName, "shader" );
 
-			List< ShaderVariantData > shaderVariants;
-			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
+			for (const ResourceDefinition& definition : getResourceDefinitions())
 			{
-				const ShaderType type = (ShaderType)typeIndex;
+				writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
 
-				if ( preprocessor.isTypeEnabled( type ) == false )
+				List< ShaderVariantData > shaderVariants;
+				for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
 				{
-					continue;
-				}
+					const ShaderType type = (ShaderType)typeIndex;
 
-				const uint variantCount = preprocessor.getVariantCount( type );
-				for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
-				{
-					const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
-
-					ShaderArguments args;
-					args.type		= type;
-
-					args.fileName	= file.fileName;
-					args.outputName	= parameters.outputName;
-
-					args.entryPoint	= functionNames[ type ];
-					args.version	= shaderStart[ type ] + "_4_0";
-					args.debugMode	= debugMode;
-
-					args.defineCode = m_baseSourceCode;
-					args.defineCode += variant.defineCode;
-
-					for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
+					if ( preprocessor.isTypeEnabled( type ) == false )
 					{
-						args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
+						continue;
 					}
 
-					Array< uint8 > variantData;
-					if ( compilePlatformShader( variantData, args, includeHandler, parameters.targetApi ) )
+					const uint variantCount = preprocessor.getVariantCount( type );
+					for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
 					{
-						uint32 keyData[] = { (uint32)type, variant.bitMask };
+						const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
 
-						ShaderVariantData& variantVarName = shaderVariants.add();
-						variantVarName.type			= type;
-						variantVarName.codeLength	= uint32( variantData.getCount() );
-						variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
+						ShaderArguments args;
+						args.type		= type;
 
-						writer.openDataSection( 0u, AllocatorType_MainMemory );
-						variantVarName.key = writer.addDataPoint();
-						writer.writeData( variantData.getBegin(), variantData.getCount() );
-						writer.closeDataSection();
+						args.fileName	= file.fileName;
+						args.outputName	= parameters.outputName;
 
-						variantData.dispose();
+						args.entryPoint	= functionNames[ type ];
+						args.version	= shaderStart[ type ] + "_4_0";
+						args.debugMode	= debugMode;
+
+						args.defineCode = m_baseSourceCode;
+						args.defineCode += variant.defineCode;
+
+						for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
+						{
+							args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
+						}
+
+						Array< uint8 > variantData;
+						if ( compilePlatformShader( variantData, args, includeHandler, definition.getGraphicsApi() ) )
+						{
+							uint32 keyData[] = { (uint32)type, variant.bitMask };
+
+							ShaderVariantData& variantVarName = shaderVariants.add();
+							variantVarName.type			= type;
+							variantVarName.codeLength	= uint32( variantData.getCount() );
+							variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
+
+							writer.openDataSection( 0u, AllocatorType_MainMemory );
+							variantVarName.key = writer.addDataPoint();
+							writer.writeData( variantData.getBegin(), variantData.getCount() );
+							writer.closeDataSection();
+
+							variantData.dispose();
+						}
 					}
 				}
+
+				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+
+				writer.writeUInt32( uint32( shaderVariants.getCount() ) );
+				writer.writeAlignment( 8u );
+
+				for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
+				{
+					const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
+
+					writer.writeUInt32( shaderVarName.type );
+					writer.writeUInt32( shaderVarName.codeLength );
+					writer.writeUInt32( shaderVarName.variantKey );
+					writer.writeReference( &shaderVarName.key );
+				}
+
+				writer.closeDataSection();
+
+				writer.closeResource();
 			}
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-
-			writer.writeUInt32( uint32( shaderVariants.getCount() ) );
-			writer.writeAlignment( 8u );
-
-			for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
-			{
-				const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
-
-				writer.writeUInt32( shaderVarName.type );
-				writer.writeUInt32( shaderVarName.codeLength );
-				writer.writeUInt32( shaderVarName.variantKey );
-				writer.writeReference( &shaderVarName.key );
-			}
-
-			writer.closeDataSection();
-
-			writer.closeResource();
 			closeResourceWriter( writer );
 
 			preprocessor.dispose();

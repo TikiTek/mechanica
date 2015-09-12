@@ -53,6 +53,8 @@ namespace tiki
 		m_pFileSystem	= pFileSystem;
 		m_pStorage		= pStorage;
 
+		m_definition.applyHostValues();
+
 		reloadResourceMapping();
 
 		m_factories.create( MaxFactoryCount );
@@ -252,7 +254,7 @@ namespace tiki
 		{
 			const ResourceHeader& header = context.pResourceHeaders[ i ];
 
-			if ( header.key == resourceKey )
+			if ( header.key == resourceKey && header.definition )
 			{				
 				context.resourceHeaderIndex = i;
 				return ResourceLoaderResult_Success;

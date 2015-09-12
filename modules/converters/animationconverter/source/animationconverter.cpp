@@ -159,17 +159,22 @@ namespace tiki
 			}
 
 			ResourceWriter resourceWriter;
-			openResourceWriter( resourceWriter, result, parameters.outputName, "animation", PlatformType_Win );
-			resourceWriter.openResource( parameters.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), getConverterRevision( s_typeCrc ) );
+			openResourceWriter( resourceWriter, result, parameters.outputName, "animation" );
 
-			ReferenceKey dataKey;
-			builder.writeToResource( resourceWriter, dataKey );
+			for (const ResourceDefinition& definition : getResourceDefinitions())
+			{
+				resourceWriter.openResource( parameters.outputName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), definition, getConverterRevision( s_typeCrc ) );
 
-			resourceWriter.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			resourceWriter.writeReference( &dataKey );
-			resourceWriter.closeDataSection();
+				ReferenceKey dataKey;
+				builder.writeToResource( resourceWriter, dataKey );
 
-			resourceWriter.closeResource();				
+				resourceWriter.openDataSection( 0u, AllocatorType_InitializaionMemory );
+				resourceWriter.writeReference( &dataKey );
+				resourceWriter.closeDataSection();
+
+				resourceWriter.closeResource();				
+			}
+
 			closeResourceWriter( resourceWriter );
 
 			builder.dispose();
