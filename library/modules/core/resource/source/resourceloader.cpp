@@ -55,8 +55,6 @@ namespace tiki
 
 		m_definition.applyHostValues();
 
-		reloadResourceMapping();
-
 		m_factories.create( MaxFactoryCount );
 		m_bufferAllocator.create( InitializationDataBufferSize, 128u );
 	}
@@ -65,30 +63,8 @@ namespace tiki
 	{
 		m_pFileSystem = nullptr;
 
-		m_nameMapper.dispose();
 		m_factories.dispose();
 		m_bufferAllocator.dispose();
-	}
-
-	void ResourceLoader::reloadResourceMapping()
-	{
-		m_nameMapper.dispose();
-
-		if ( m_pFileSystem->exists( "resourcenamemap.rnm" ) )
-		{
-			DataStream* pStream = m_pFileSystem->open( "resourcenamemap.rnm", DataAccessMode_Read );
-			if ( pStream != nullptr )
-			{
-				Array< uint8 > binaryData;
-				binaryData.create( (uint)pStream->getLength() );
-				pStream->read( binaryData.getBegin(), binaryData.getCount() );
-				pStream->close();
-
-				m_nameMapper.create( binaryData.getBegin() );
-
-				binaryData.dispose();
-			}
-		}
 	}
 
 	void ResourceLoader::registerResourceType( fourcc type, const FactoryContext& factoryContext )
@@ -197,11 +173,13 @@ namespace tiki
 	
 	ResourceLoaderResult ResourceLoader::initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
 	{
-		const char* pFileName = m_nameMapper.getResourceName( crcFileName );
-		if ( pFileName == nullptr || m_pFileSystem->exists( pFileName ) == false )
+		const char* pFileName = m_pFileSystem->getFilenameByCrc( crcFileName );
+		if ( pFileName == nullptr )
 		{
 			return ResourceLoaderResult_FileNotFound;
 		}
+
+		TIKI_ASSERT( m_pFileSystem->exists( pFileName ) );
 
 		context.resourceType		= resourceType;
 		context.streamOwner			= true;

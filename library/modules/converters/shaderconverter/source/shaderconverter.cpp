@@ -41,39 +41,88 @@ namespace tiki
 		string	name;
 	};
 
-	class BasicIncludeHandler
+	class ShaderFileStorage
 	{
-        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
+		TIKI_NONCOPYABLE_CLASS( ShaderFileStorage );
 
-    public:
+	public:
 
-        BasicIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
-			: m_result( result ),
-			m_includeDirs( includeDirs )
+		ShaderFileStorage( const List< string >& includeDirs )
+			: m_includeDirs( includeDirs )
+			, m_jobCount(0u)
 		{
+			m_mutex.create();
 		}
 
-		virtual ~BasicIncludeHandler()
+		~ShaderFileStorage()
 		{
-			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
+			m_mutex.dispose();
+		}
+		
+		void beginJob()
+		{
+			m_jobCount++;
+		}
+
+		void endJob()
+		{
+			m_jobCount--;
+			if ( !m_jobCount )
 			{
-				if ( m_fileData[ i ].getCount() > 0u )
+				m_fileMap.clear();
+			}
+		}
+
+		bool getFile( const char* pFileName, string& fullName, const void** ppData, uint* pSizeInBytes )
+		{
+			TIKI_ASSERT( ppData != nullptr );
+			TIKI_ASSERT( pSizeInBytes != nullptr );
+
+			FileData data;
+
+			m_mutex.lock();
+			const bool found = m_fileMap.findValue( &data, pFileName );
+			m_mutex.unlock();
+
+			if ( !found )
+			{
+				if ( !loadFile( pFileName, data.fullName, data.data ) )
 				{
-					m_fileData[ i ].dispose();
+					return false;
 				}
 			}
 
-			m_includeDirs.dispose();
+			fullName		= data.fullName;
+			*ppData			= data.data.cStr();
+			*pSizeInBytes	= data.data.getLength();
+
+			return true;
 		}
 
-		bool loadFile( const char* pFileName, void** ppData, uint* pSizeInBytes )
+		const List< string >& getIncludeDirs() const
 		{
-		    TIKI_ASSERT( ppData != nullptr );
-		    TIKI_ASSERT( pSizeInBytes != nullptr );
+			return m_includeDirs;
+		}
 
+	private:
+
+		struct FileData
+		{
+			string	fullName;
+			string	data;
+		};
+
+		Mutex					m_mutex;
+		volatile uint			m_jobCount;
+
+		List< string >			m_includeDirs;
+		Map< string, FileData >	m_fileMap;
+
+		bool loadFile( const char* pFileName, string& fullName, string& data )
+		{
 			bool found = false;
 			const string inputFilename = pFileName;
-			string fullName = inputFilename;
+			fullName = inputFilename;
 
 			if ( file::exists( fullName.cStr() ) )
 			{
@@ -95,32 +144,24 @@ namespace tiki
 
 			if ( found )
 			{
-				m_result.addDependency( ConversionResult::DependencyType_File, fullName, 0u );
-
-				uint freeStreamIndex = TIKI_SIZE_T_MAX;
-				for (uint j = 0u; j < TIKI_COUNT( m_fileData ); ++j)
-				{
-					if ( m_fileData[ j ].getCount() == 0u )
-					{
-						freeStreamIndex = j;
-						break;
-					}
-				}
-
-				if ( freeStreamIndex == TIKI_SIZE_T_MAX )
-				{
-					TIKI_TRACE_ERROR( "No free file stream.\n" );
-					return false;
-				}
-
-				if ( !file::readAllBytes( fullName.cStr(), m_fileData[ freeStreamIndex ] ) )
+				Array< char > text;
+				if ( !file::readAllText( fullName.cStr(), text ) )
 				{
 					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
 					return false;
 				}
 
-				*ppData = m_fileData[ freeStreamIndex ].getBegin();
-				*pSizeInBytes = m_fileData[ freeStreamIndex ].getCount();
+				data = text.getBegin();
+				text.dispose();
+
+				FileData fileData;
+				fileData.fullName	= fullName;
+				fileData.data		= data;
+
+				m_mutex.lock();
+				m_fileMap.set( pFileName, fileData );
+				m_mutex.unlock();
+
 				return true;
 			}
 
@@ -128,38 +169,55 @@ namespace tiki
 			return false;
 		}
 
+	};
+
+	class BasicIncludeHandler
+	{
+        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
+
+    public:
+
+        BasicIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
+			: m_result( result )
+			, m_storage( storage )
+		{
+			m_storage.beginJob();
+		}
+
+		virtual ~BasicIncludeHandler()
+		{
+			m_storage.endJob();
+		}
+
+		bool loadFile( const char* pFileName, const void** ppData, uint* pSizeInBytes )
+		{
+			string fullName;
+			if ( m_storage.getFile( pFileName, fullName, ppData, pSizeInBytes ) )
+			{
+				m_result.addDependency( ConversionResult::DependencyType_File, fullName, 0u );
+
+				return true;
+			}
+			
+			return false;
+		}
+
 		bool freeFile( const void* pData )
 		{
-		    TIKI_ASSERT( pData != nullptr );
+			// nothing to do
 
-			for (uint i = 0u; i < TIKI_COUNT( m_fileData ); ++i)
-			{
-				if ( m_fileData[ i ].getBegin() == pData )
-				{
-					m_fileData[ i ].dispose();
-					return true;
-				}
-			}
-
-			return false;
+			return true;
 		}
 
 		const List< string >& getIncludeDirs() const
 		{
-			return m_includeDirs;
+			return m_storage.getIncludeDirs();
 		}
 
 	private:
 
-		enum
-		{
-			MaxFileStreams = 8u
-		};
-
 		ConversionResult&	m_result;
-
-		List< string >		m_includeDirs;
-		Array< uint8 >		m_fileData[ MaxFileStreams ];
+		ShaderFileStorage&	m_storage;
 
 	};
 
@@ -170,14 +228,14 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
-            : BasicIncludeHandler( result, includeDirs )
+		ShaderIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
+            : BasicIncludeHandler( result, storage )
 		{
 		}
 
 		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
 		{
-		    void* pData = nullptr;
+		    const void* pData = nullptr;
 		    uint dataSize = 0u;
 		    if ( loadFile( pFileName, &pData, &dataSize ) )
             {
@@ -232,6 +290,16 @@ namespace tiki
 
 	static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
 
+	ShaderConverter::ShaderConverter()
+	{
+		m_pFileStorage = nullptr;
+	}
+
+	ShaderConverter::~ShaderConverter()
+	{
+		TIKI_ASSERT( m_pFileStorage == nullptr );
+	}
+
 	uint32 ShaderConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		return 1u;
@@ -277,17 +345,26 @@ namespace tiki
 		}
 		charArray.dispose();
 
+		m_pFileStorage = TIKI_MEMORY_NEW_OBJECT( ShaderFileStorage )( m_includeDirs );
+
+		m_openGlMutex.create();
+
 		return true;
 	}
 
 	void ShaderConverter::disposeConverter()
 	{
+		m_openGlMutex.dispose();
+
+		TIKI_MEMORY_DELETE_OBJECT( m_pFileStorage );
+		m_pFileStorage = nullptr;
+
 		m_includeDirs.dispose();
 	}
 
 	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
 	{
-		ShaderIncludeHandler includeHandler( result, m_includeDirs );
+		ShaderIncludeHandler includeHandler( result, *m_pFileStorage );
 
 		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		const string shaderDefine[]	= { "", "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
@@ -495,6 +572,8 @@ namespace tiki
 
 	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const
 	{
+		m_openGlMutex.lock();
+
 		string sourceCode = "#version 440\n" + args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 		List< ShaderConstantInfo > constants;
 
@@ -577,6 +656,8 @@ namespace tiki
 		}
 
 		stream.write( sourceCode.cStr(), sourceCode.getLength() + 1u );
+
+		m_openGlMutex.unlock();
 
 		return targetData.create( static_cast< const uint8* >( stream.getData() ), stream.getLength() );
 	}

@@ -3,7 +3,6 @@
 
 #include <cstdarg>
 #include <cstdio>
-
 #include <windows.h>
 
 namespace tiki

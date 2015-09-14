@@ -24,8 +24,10 @@ namespace tiki
 
 	public:
 
-		virtual bool			exists( cstring pFileName ) const = 0;
-		virtual DataStream*		open( cstring pFileName, DataAccessMode accessMode ) = 0;
+		virtual const char*		getFilenameByCrc( crc32 filenameCrc ) const TIKI_PURE;
+
+		virtual bool			exists( const char* pFileName ) const TIKI_PURE;
+		virtual DataStream*		open( const char* pFileName, DataAccessMode accessMode ) TIKI_PURE;
 
 	};
 }

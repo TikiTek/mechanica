@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE uint getStringLength( cstring pSource )
+	TIKI_FORCE_INLINE uint getStringSize( cstring pSource )
 	{
 		uint length = (uint)-1;		
 		while ( pSource[ ++length ] != '\0' );
@@ -12,9 +12,23 @@ namespace tiki
 		return length;
 	}
 
+	TIKI_FORCE_INLINE uint getStringLength( const char* pSource )
+	{
+		uint index = 0;
+		uint length = (uint)-1;
+
+		while ( pSource[ index ] != '\0' )
+		{
+			length += !(pSource[ index ] % 0x80);
+			index++;
+		}
+
+		return length;
+	}
+
 	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, cstring pSourceBuffer )
 	{
-		const uint sourceLength = TIKI_MIN( bufferSize - 1u, getStringLength( pSourceBuffer ) );
+		const uint sourceLength = TIKI_MIN( bufferSize - 1u, getStringSize( pSourceBuffer ) );
 
 		uint64* pTarget64 = reinterpret_cast< uint64* >( pTargetBuffer );
 		const uint64* pSource64 = reinterpret_cast< const uint64* >( pSourceBuffer );
@@ -83,8 +97,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint stringIndexOf( cstring pString, cstring pSearch, uint index /*= 0*/ )
 	{
-		const uint stringLength = getStringLength( pString );
-		const uint searchLength = getStringLength( pSearch );
+		const uint stringLength = getStringSize( pString );
+		const uint searchLength = getStringSize( pSearch );
 
 		if ( searchLength > stringLength )
 		{
@@ -128,7 +142,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint stringLastIndexOf( cstring pString, char c, uint index /*= TIKI_SIZE_T_MAX*/ )
 	{
-		const uint stringLength = getStringLength( pString );
+		const uint stringLength = getStringSize( pString );
 
 		index = TIKI_MIN( index, stringLength - 1 );
 		while (index < stringLength)
@@ -146,8 +160,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint stringLastIndexOf( cstring pString, cstring pSearch, uint index /*= TIKI_SIZE_T_MAX*/ )
 	{
-		const uint stringLength = getStringLength( pString );
-		const uint searchLength = getStringLength( pSearch );
+		const uint stringLength = getStringSize( pString );
+		const uint searchLength = getStringSize( pSearch );
 
 		const uint maxSearchIndex = searchLength - 1u;
 

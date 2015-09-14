@@ -38,7 +38,6 @@ namespace tiki
 		m_sourcePath	= parameters.sourcePath;
 		m_outputPath	= parameters.outputPath;
 		m_rebuildForced	= parameters.forceRebuild;
-		m_resourceMap.create( path::combine( m_outputPath, "resourcenamemap.rnm" ) );
 
 		TaskSystemParameters taskParameters;
 		m_taskSystem.create( taskParameters );
@@ -61,6 +60,7 @@ namespace tiki
 
 			cstring pCreateTableSql[] =
 			{
+				"CREATE TABLE builds (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, buildtime DATETIME, has_error BOOL);",
 				"CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, filename TEXT NOT NULL, path TEXT NOT NULL, type INTEGER NOT NULL, has_error BOOL);",
 				"CREATE TABLE dependencies (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, type INTEGER, identifier TEXT, value_int BIGINT);",
 				"CREATE TABLE input_files (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, filename TEXT NOT NULL, type INTEGER NOT NULL);",
@@ -72,13 +72,26 @@ namespace tiki
 			{
 				if ( m_dataBase.executeCommand( pCreateTableSql[ i ] ) == false )
 				{
-					TIKI_TRACE_ERROR( "[convertermanager] Could create Table. Error: %s\n", m_dataBase.getLastError().cStr() );
+					TIKI_TRACE_ERROR( "[convertermanager] Could not create Table. Error: %s\n", m_dataBase.getLastError().cStr() );
 					m_dataBase.dispose();
 					break;
 				}
 			}
 		}
-
+		else
+		{
+			SqliteQuery query;
+			if ( query.create( m_dataBase, "SELECT * FROM builds WHERE has_error = 0 LIMIT 1;" ) )
+			{
+				m_isNewDatabase = !query.nextRow();
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[convertermanager] Unable to read from builds table. Error: %s\n", m_dataBase.getLastError().cStr() );
+				m_dataBase.dispose();
+			}
+			query.dispose();
+		}		
 		m_loggingMutex.create();
 		m_loggingStream.open( "converter.log", DataAccessMode_WriteAppend );
 
@@ -95,9 +108,6 @@ namespace tiki
 		debug::setTraceCallback( nullptr );
 
 		m_taskSystem.dispose();
-
-		m_resourceMap.writeToFile();
-		m_resourceMap.dispose();
 
 		m_loggingStream.close();
 		m_loggingMutex.dispose();
@@ -157,10 +167,7 @@ namespace tiki
 
 		m_taskSystem.waitForAllTasks();
 
-		const bool converionResult = finalizeTasks( *pOutputFiles );
-		m_resourceMap.writeToFile();
-
-		return converionResult;
+		return finalizeTasks( *pOutputFiles );
 	}
 
 	void ConverterManager::registerConverter( const ConverterBase* pConverter )
@@ -325,7 +332,6 @@ namespace tiki
 		for (uint fileIndex = 0u; fileIndex < filesToBuild.getCount(); ++fileIndex )
 		{
 			const FileDescription& fileDesc = filesToBuild[ fileIndex ];
-			ConversionTask task;
 
 			if ( !file::exists( fileDesc.fullFileName.cStr() ) )
 			{
@@ -333,6 +339,7 @@ namespace tiki
 				continue;
 			}
 
+			ConversionTask task;
 			for (size_t converterIndex = 0u; converterIndex < m_converters.getCount(); ++converterIndex )
 			{
 				const ConverterBase* pConverter = m_converters[ converterIndex ];
@@ -768,6 +775,11 @@ namespace tiki
 				}
 			}
 
+			if ( hasError )
+			{
+				TIKI_TRACE_ERROR( "[ConverterManager] Conversion of '%s' failed!\n", path::getFilename( task.parameters.sourceFile ).cStr() );
+			}
+
 			// output files
 			{
 				const List< string >& outputFiles = task.result.getOutputFiles();
@@ -787,7 +799,6 @@ namespace tiki
 					);
 
 					externOutputFiles.add( outputFile );
-					m_resourceMap.registerResource( path::getFilename( outputFile ) );
 				}
 			}
 
@@ -868,6 +879,15 @@ namespace tiki
 				hasGlobalError = true;
 			}
 		}
+
+		{
+			const string hasErrorString = (hasGlobalError ? "1" : "0");
+			if ( !m_dataBase.executeCommand( "INSERT INTO builds (buildtime, has_error) VALUES (date('now'), " + hasErrorString + ");" ) )
+			{
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				hasGlobalError = true;
+			}
+		}		
 
 		return !hasGlobalError;
 	}

@@ -42,7 +42,7 @@ namespace tiki
 	Vector2 DebugGuiButton::getMinimumSize()
 	{
 		Vector2 textSize;
-		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringLength( m_aText ) );
+		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringSize( m_aText ) );
 		
 		return vector::add( textSize, getPadding().getWidthHeight() );
 	}

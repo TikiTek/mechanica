@@ -6,7 +6,6 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/resource/resourcedefinition.hpp"
-#include "tiki/resource/resourcenamemapper.hpp"
 
 namespace tiki
 {
@@ -51,7 +50,6 @@ namespace tiki
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 
 			ResourceLoaderResult	reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
-			void					reloadResourceMapping();
 			
 	private:
 
@@ -66,7 +64,6 @@ namespace tiki
 
 		FileSystem*				m_pFileSystem;
 		ResourceStorage*		m_pStorage;
-		ResourceNameMapper		m_nameMapper;
 		FactoryMap				m_factories;
 
 		ResourceDefinition		m_definition;

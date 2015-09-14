@@ -118,7 +118,10 @@ namespace tiki
 			return false;
 		}
 
-		m_frameworkData.gamebuildFileSystem.create( m_parameters.pGamebuildPath );
+		if ( !m_frameworkData.gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
+		{
+			return false;
+		}
 
 		ResourceManagerParameters resourceParams;
 		resourceParams.pFileSystem = &m_frameworkData.gamebuildFileSystem;
