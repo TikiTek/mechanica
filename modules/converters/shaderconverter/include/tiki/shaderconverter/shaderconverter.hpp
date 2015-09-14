@@ -9,14 +9,18 @@
 
 namespace tiki
 {
-	enum GraphicsApi;
+	class ShaderFileStorage;
 	class ShaderIncludeHandler;
+	enum GraphicsApi;
 
 	class ShaderConverter : public ConverterBase
 	{
+		TIKI_NONCOPYABLE_CLASS( ShaderConverter );
+
 	public:
 
-		virtual					~ShaderConverter() {}
+								ShaderConverter();
+		virtual					~ShaderConverter();
 
 	protected:
 
@@ -48,7 +52,11 @@ namespace tiki
 		};
 
 		string					m_baseSourceCode;
+
 		List< string >			m_includeDirs;
+		ShaderFileStorage*		m_pFileStorage;
+
+		mutable Mutex			m_openGlMutex;
 
 		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
 		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;

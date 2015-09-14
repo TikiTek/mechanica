@@ -6,7 +6,6 @@
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
-#include "tiki/converterbase/converterresourcemap.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/threading/mutex.hpp"
@@ -111,7 +110,6 @@ namespace tiki
 
 		TemplateMap					m_templates;
 		ConverterList				m_converters;
-		ConverterResourceMap		m_resourceMap;
 
 		List< string >				m_files;
 

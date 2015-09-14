@@ -7,7 +7,8 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE uint	getStringLength( cstring pSource );
+	TIKI_FORCE_INLINE uint	getStringSize( const char* pSource );		///< returns the string size in bytes
+	TIKI_FORCE_INLINE uint	getStringLength( const char* pSource );		///< returns the string length in chars(for UTF8)
 	TIKI_FORCE_INLINE uint	copyString( char* pTargetBuffer, uint bufferSize, cstring pSource );
 
 	TIKI_FORCE_INLINE bool	isStringEquals( cstring pString1, cstring pString2 );

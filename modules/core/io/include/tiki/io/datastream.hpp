@@ -8,29 +8,23 @@ namespace tiki
 {
 	typedef uint64	FileSize;
 
-	enum
-	{
-		MaxPathLength		= 256u,
-		MaxFileNameLength	= 64u
-	};
-
 	class DataStream
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DataStream );
 
 	public:
 
-		virtual void		close() = 0;
+		virtual void		close() TIKI_PURE;
 
-		virtual FileSize	read( void* pTargetData, uint bytesToRead ) = 0;
-		virtual FileSize	write( const void* pSourceData, uint bytesToRead ) = 0;
+		virtual FileSize	read( void* pTargetData, uint bytesToRead ) TIKI_PURE;
+		virtual FileSize	write( const void* pSourceData, uint bytesToRead ) TIKI_PURE;
 		
-		virtual FileSize	getPosition() = 0;
-		virtual void		setPosition( FileSize position ) = 0;
-		virtual FileSize	seekPosition( FileSize seek ) = 0;
+		virtual FileSize	getPosition() TIKI_PURE;
+		virtual void		setPosition( FileSize position ) TIKI_PURE;
+		virtual FileSize	seekPosition( FileSize seek ) TIKI_PURE;
 
-		virtual FileSize	getLength() = 0;
-		virtual void		setLength( FileSize length ) = 0;
+		virtual FileSize	getLength() const TIKI_PURE;
+		virtual void		setLength( FileSize length ) TIKI_PURE;
 
 	};
 }

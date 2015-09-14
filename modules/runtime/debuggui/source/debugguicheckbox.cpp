@@ -38,7 +38,7 @@ namespace tiki
 	Vector2 DebugGuiCheckBox::getMinimumSize()
 	{
 		Vector2 textSize;
-		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringLength( m_aText ) );
+		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringSize( m_aText ) );
 		textSize.x += ( 5.0f * getPadding().left ) + getPadding().right;
 		textSize.y = ( 4.0f * getPadding().top ) + getPadding().bottom;
 

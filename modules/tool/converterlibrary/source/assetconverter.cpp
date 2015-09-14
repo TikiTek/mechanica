@@ -25,7 +25,7 @@ namespace tiki
 	{
 	}
 
-	void AssetConverter::create( const AssetConverterParamter& parameters )
+	bool AssetConverter::create( const AssetConverterParamter& parameters )
 	{
 		m_sourcePath	= parameters.sourcePath;
 
@@ -48,8 +48,15 @@ namespace tiki
 
 		if ( m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase )
 		{
-			convertAll();
+			if ( !convertAll() )
+			{
+				TIKI_TRACE_ERROR( "AssetConverter: Initial Asset conversion failed. Shutting down!\n" );
+
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	void AssetConverter::dispose()
@@ -87,7 +94,7 @@ namespace tiki
 		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
 		const bool result = m_manager.startConversion( nullptr, &m_converterMutex );
-		TIKI_TRACE_INFO( "[AssetConverter] Conversion finish!\n" );
+		TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
 
 		return result;
 	}
@@ -104,9 +111,12 @@ namespace tiki
 
 	void AssetConverter::stopWatch()
 	{
-		m_watchThread.requestExit();
-		m_watchThread.waitForExit();
-		m_watchThread.dispose();
+		if ( m_watchThread.isCreated() )
+		{
+			m_watchThread.requestExit();
+			m_watchThread.waitForExit();
+			m_watchThread.dispose();
+		}
 
 		m_fileWatcher.dispose();
 	}

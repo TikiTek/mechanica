@@ -1,6 +1,9 @@
 
 #include "tiki/io/directoryiterator.hpp"
 
+#include "tiki/base/path.hpp"
+#include "tiki/base/string.hpp"
+
 namespace tiki
 {
 	DirectoryIterator::DirectoryIterator()
@@ -13,14 +16,24 @@ namespace tiki
 
 	bool DirectoryIterator::create( const char* pPath )
 	{
-		convertUtf8ToWidecharString( m_platformData.aPathBuffer, TIKI_COUNT( m_platformData.aPathBuffer ), pPath );
+		string finalPath = pPath;
+		if ( !finalPath.endsWith( '/' ) )
+		{
+			finalPath += '/';
+		}
+		finalPath += "*.*";
+
+		if ( !convertToPlatformPath( m_platformData.aPathBuffer, TIKI_COUNT( m_platformData.aPathBuffer ), finalPath.cStr() ) )
+		{
+			return false;
+		}
 
 		return true;
 	}
 
 	void DirectoryIterator::dispose()
 	{
-		CloseHandle( m_platformData.searchHandle );
+		FindClose( m_platformData.searchHandle );
 		m_platformData.searchHandle = INVALID_HANDLE_VALUE;
 	}
 
@@ -34,7 +47,7 @@ namespace tiki
 		}
 		else
 		{
-			result = FindNextFileW( m_platformData.searchHandle, &m_platformData.searchData );
+			result = (FindNextFileW( m_platformData.searchHandle, &m_platformData.searchData ) != 0);
 
 			if ( !result )
 			{
@@ -44,7 +57,16 @@ namespace tiki
 
 		if ( result )
 		{
-			convertWidecharToUtf8String( m_platformData.aCurrentFileBuffer, TIKI_COUNT( m_platformData.aCurrentFileBuffer ), m_platformData.searchData.cFileName );
+			const uint length = wcslen( m_platformData.searchData.cFileName );
+			if( (length == 1 && m_platformData.searchData.cFileName[ 0u ] == L'.') ||
+				(length == 2 && m_platformData.searchData.cFileName[ 0u ] == L'.' && m_platformData.searchData.cFileName[ 1u ] == L'.') )
+			{
+				return findNextFile();
+			}
+			else
+			{
+				convertWidecharToUtf8String( m_platformData.aCurrentFileBuffer, TIKI_COUNT( m_platformData.aCurrentFileBuffer ), m_platformData.searchData.cFileName );
+			}
 		}
 
 		return result;

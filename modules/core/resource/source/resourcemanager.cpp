@@ -35,11 +35,12 @@ namespace tiki
 		converterParameters.outputPath	= "../../../../../gamebuild";
 
 		m_pAssetConverter = createAssetConverter();
-		m_pAssetConverter->create( converterParameters );
-		//m_pAssetConverter->convertAll();
-
-		m_resourceLoader.reloadResourceMapping();
-
+		if ( !m_pAssetConverter->create( converterParameters ) )
+		{
+			dispose();
+			return false;
+		}
+		
 		if ( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->startWatch();
