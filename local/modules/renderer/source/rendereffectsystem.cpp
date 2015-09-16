@@ -43,7 +43,6 @@ namespace tiki
 
 	void RenderEffectSystem::registerRenderEffect( RenderEffect* pRenderEffect )
 	{
-		TIKI_ASSERT( m_pRendererContext != nullptr );
 		TIKI_ASSERT( pRenderEffect != nullptr );
 
 		const RenderEffectId renderEffectId = pRenderEffect->getRenderEffectId();
@@ -52,7 +51,6 @@ namespace tiki
 	
 	void RenderEffectSystem::unregisterRenderEffect( RenderEffect* pRenderEffect )
 	{
-		TIKI_ASSERT( m_pRendererContext != nullptr );
 		TIKI_ASSERT( pRenderEffect != nullptr );
 
 		const RenderEffectId renderEffectId = pRenderEffect->getRenderEffectId();

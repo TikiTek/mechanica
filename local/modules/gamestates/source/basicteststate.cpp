@@ -14,24 +14,65 @@ namespace tiki
 {
 	void BasicTestState::create()
 	{
-		m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
-
-		m_pTestTexture = framework::getResourceManager().loadResource< Texture >( "checker.texture" );
-		m_pTestFont = framework::getResourceManager().loadResource< Font >( "debug.font" );
-		TIKI_ASSERT( m_pTestTexture != nullptr );
-		TIKI_ASSERT( m_pTestFont != nullptr );
+		m_pTestTexture	= nullptr;
+		m_pTestFont		= nullptr;
 	}
 
 	void BasicTestState::dispose()
 	{
-		framework::getResourceManager().unloadResource( m_pTestTexture );
-		framework::getResourceManager().unloadResource( m_pTestFont );
-
-		m_renderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
 	}
 
 	TransitionState BasicTestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
 	{
+		switch ( currentStep )
+		{
+		case BasicTestStateTransitionSteps_CreateRenderer:
+			{
+				TIKI_ASSERT( isInital );
+
+				if ( isCreating )
+				{
+					if ( !m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+					{
+						return TransitionState_Error;
+					}
+				}
+				else
+				{
+					m_renderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+				}
+			}
+			break;
+
+		case BasicTestStateTransitionSteps_LoadResources:
+			{
+				TIKI_ASSERT( isInital );
+
+				if ( isCreating )
+				{
+					m_pTestTexture = framework::getResourceManager().loadResource< Texture >( "checker.texture" );
+					m_pTestFont = framework::getResourceManager().loadResource< Font >( "debug.font" );
+
+					bool ok = true;
+					ok &= ( m_pTestTexture != nullptr );
+					ok &= ( m_pTestFont != nullptr );
+
+					if ( !ok )
+					{
+						return TransitionState_Error;
+					}
+				}
+				else
+				{
+					framework::getResourceManager().unloadResource( m_pTestTexture );
+					framework::getResourceManager().unloadResource( m_pTestFont );
+					m_pTestTexture	= nullptr;
+					m_pTestFont		= nullptr;
+				}
+			}
+			break;
+		}
+
 		return TransitionState_Finish;
 	}
 

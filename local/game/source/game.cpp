@@ -34,7 +34,8 @@ namespace tiki
 		const string userName = buffer;
 		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
 		{
-			return GameStates_BasicTest;
+			return GameStates_Test;
+			//return GameStates_BasicTest;
 			//return GameStates_Play;
 		}
 #endif
@@ -130,8 +131,13 @@ namespace tiki
 		}
 	}
 
-	void Game::update()
+	void Game::update( bool wantToShutdown )
 	{
+		if ( wantToShutdown )
+		{
+			m_gameFlow.startTransition( 0u );
+		}
+
 		m_touchSystem.update( (float)framework::getFrameTimer().getElapsedTime(), framework::getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
@@ -139,6 +145,11 @@ namespace tiki
 		} 
 
 		m_gameFlow.update();
+
+		if ( !m_gameFlow.isInTransition() && m_gameFlow.getCurrentState() == 0u )
+		{
+			m_running = false;
+		}
 	}
 
 	void Game::render( GraphicsContext& graphicsContext ) const

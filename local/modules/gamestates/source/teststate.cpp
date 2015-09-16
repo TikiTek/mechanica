@@ -34,6 +34,14 @@ namespace tiki
 	{
 		m_pParentState	= pParentState;
 
+		m_pFont					= nullptr;
+		m_pFontBig				= nullptr;
+		m_pModelBox				= nullptr;
+		m_pModelBoxes			= nullptr;
+		m_pModelPlane			= nullptr;
+		m_pModelPlayer			= nullptr;
+		m_pAnimationPlayer		= nullptr;
+
 		m_drawPlayer			= false;
 		m_enableBloom			= true;
 		m_gbufferIndex			= -1;
@@ -101,13 +109,19 @@ namespace tiki
 					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
 					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
 					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
-					TIKI_ASSERT( m_pFont != nullptr );
-					TIKI_ASSERT( m_pFontBig != nullptr );
-					TIKI_ASSERT( m_pModelBox != nullptr );
-					TIKI_ASSERT( m_pModelBoxes != nullptr );
-					TIKI_ASSERT( m_pModelPlane != nullptr );
-					TIKI_ASSERT( m_pModelPlayer != nullptr );
-					TIKI_ASSERT( m_pAnimationPlayer != nullptr );
+					
+					bool ok = true;
+					ok &= ( m_pFont != nullptr );
+					ok &= ( m_pFontBig != nullptr );
+					ok &= ( m_pModelBox != nullptr );
+					ok &= ( m_pModelBoxes != nullptr );
+					ok &= ( m_pModelPlane != nullptr );
+					ok &= ( m_pModelPlayer != nullptr );
+					ok &= ( m_pAnimationPlayer != nullptr );
+					if ( !ok )
+					{
+						return TransitionState_Error;
+					}
 
 					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
 					m_skinningData.matrices.create( framework::getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
@@ -132,7 +146,14 @@ namespace tiki
 				framework::getResourceManager().unloadResource( m_pModelBox );
 				framework::getResourceManager().unloadResource( m_pFontBig );
 				framework::getResourceManager().unloadResource( m_pFont );
-
+				m_pFont					= nullptr;
+				m_pFontBig				= nullptr;
+				m_pModelBox				= nullptr;
+				m_pModelBoxes			= nullptr;
+				m_pModelPlane			= nullptr;
+				m_pModelPlayer			= nullptr;
+				m_pAnimationPlayer		= nullptr;
+				
 				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
 				m_animationData.dispose();
 
