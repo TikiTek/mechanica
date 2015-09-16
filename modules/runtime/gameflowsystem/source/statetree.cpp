@@ -55,14 +55,16 @@ namespace tiki
 	{
 		TIKI_ASSERT( targetStateIndex < m_stateDefinition.getCount() );
 
+		const uint currentState = isInTransition() ? m_transition.getCurrentTransitionState() : m_currentState;
+
 		if ( m_currentState == targetStateIndex && !isInTransition() )
 		{
 			return;
 		}
-		m_transition.sourceState		= m_currentState;
+		m_transition.sourceState		= currentState;
 		m_transition.destinationState	= targetStateIndex;
 		
-		const StateDefinition& sourceDefinition			= m_stateDefinition[ m_currentState ];
+		const StateDefinition& sourceDefinition			= m_stateDefinition[ currentState ];
 		const StateDefinition& destinationDefinition	= m_stateDefinition[ targetStateIndex ];
 
 		uint sourceMatchIndex		= 0u;
@@ -93,7 +95,7 @@ namespace tiki
 			m_transition.path.push( destinationDefinition.stateHierarchy[ i ] );
 		}
 
-		TIKI_TRACE_DEBUG( "[statetree] start transition to: %i -> %i, path:", m_currentState, targetStateIndex );
+		TIKI_TRACE_DEBUG( "[statetree] start transition to: %i -> %i, path:", currentState, targetStateIndex );
 		for (uint i = 0u; i < m_transition.path.getCount(); ++i)
 		{
 			TIKI_TRACE_DEBUG( " %i", m_transition.path[ i ] );
@@ -101,14 +103,19 @@ namespace tiki
 		TIKI_TRACE_DEBUG( "\n" );
 
 		m_transition.pathIndex		= 0u;
-		m_transition.currentState	= m_currentState;
+		m_transition.currentState	= currentState;
 		
 		const bool forward			= m_transition.isInForwardTransition();
-		const uint transitionState	= ( forward ? m_transition.getCurrentTransitionState() : m_currentState );
-		m_transition.currentStep	= ( forward ? 0u : m_stateDefinition[ m_currentState ].transitionStepCount - 1u );
+		const uint transitionState	= ( forward ? m_transition.getCurrentTransitionState() : currentState );
+
+		if ( !isInTransition() )
+		{
+			m_transition.currentStep = ( forward ? 0u : m_stateDefinition[ currentState ].transitionStepCount - 1u );
+		}
+
 		m_transition.targetStep		= ( forward ? m_stateDefinition[ transitionState ].transitionStepCount : InvalidTransitionStep );
 		m_isInitial					= true;
-		m_currentState				= TIKI_SIZE_T_MAX;
+		m_currentState				= InvalidStateIndex;
 	}
 
 	void StateTree::updateTree( TransitionState newState )
@@ -167,7 +174,7 @@ namespace tiki
 					break;
 				}
 
-				//startTransition( m_transition.sourceState );
+				startTransition( m_transition.sourceState );
 			}
 			break;
 
