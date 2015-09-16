@@ -232,7 +232,7 @@ namespace tiki
 		{
 			const ResourceHeader& header = context.pResourceHeaders[ i ];
 
-			if ( header.key == resourceKey && header.definition )
+			if ( header.key == resourceKey && header.definition == m_definition.definitionMask )
 			{				
 				context.resourceHeaderIndex = i;
 				return ResourceLoaderResult_Success;
@@ -262,14 +262,12 @@ namespace tiki
 		ResourceLoaderResult result = loadResourceData( context );
 		if ( result != ResourceLoaderResult_Success )
 		{
-			m_pStorage->freeReferenceFromResource( context.pResource );
 			return result;
 		}
 
 		result = initializeResource( context );
 		if ( result != ResourceLoaderResult_Success )
 		{
-			m_pStorage->freeReferenceFromResource( context.pResource );
 			return result;
 		}
 
@@ -467,13 +465,31 @@ namespace tiki
 			m_bufferAllocator.clear();
 		}
 
+		disposeResourceData( context.sectionData );
+
 		context.pFactory = nullptr;
 	}
 
 	void ResourceLoader::disposeResource( Resource* pResource, fourcc resourceType, bool freeResourceObject )
 	{
-		const ResourceSectionData&  sectionData = pResource->m_sectionData;
+		disposeResourceData( pResource->m_sectionData );
 
+		const FactoryContext* pFactory = findFactory( resourceType );		
+		if ( pFactory == nullptr )
+		{
+			return;
+		}
+
+		pResource->dispose( *pFactory );
+
+		if ( freeResourceObject )
+		{
+			pFactory->pDisposeResource( pResource );
+		}
+	}
+
+	void ResourceLoader::disposeResourceData( const ResourceSectionData& sectionData )
+	{
 		for (uint i = 0u; i < sectionData.sectorCount; ++i)
 		{
 			TIKI_MEMORY_FREE( sectionData.ppSectorPointers[ i ] );
@@ -495,18 +511,6 @@ namespace tiki
 		} 
 
 		TIKI_MEMORY_FREE( sectionData.ppLinkedResources );
-
-		const FactoryContext* pFactory = findFactory( resourceType );		
-		if ( pFactory == nullptr )
-		{
-			return;
-		}
-
-		pResource->dispose( *pFactory );
-
-		if ( freeResourceObject )
-		{
-			pFactory->pDisposeResource( pResource );
-		}
 	}
+
 }

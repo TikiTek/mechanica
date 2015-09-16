@@ -79,6 +79,7 @@ namespace tiki
 		void					cancelOperation( ResourceLoaderContext& context );
 
 		void					disposeResource( Resource* pResource, fourcc resourceType, bool freeResourceObject );
+		void					disposeResourceData( const ResourceSectionData& sectionData );
 
 	};
 }

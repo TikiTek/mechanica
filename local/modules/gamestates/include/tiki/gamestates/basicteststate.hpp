@@ -14,6 +14,9 @@ namespace tiki
 
 	enum BasicTestStateTransitionSteps
 	{
+		BasicTestStateTransitionSteps_CreateRenderer,
+		BasicTestStateTransitionSteps_LoadResources,
+
 		BasicTestStateTransitionSteps_Count
 	};
 
