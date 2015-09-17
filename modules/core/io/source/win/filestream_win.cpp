@@ -3,6 +3,8 @@
 
 #include "tiki/base/assert.hpp"
 
+#include "platformdata_win.hpp"
+
 #include <windows.h>
 
 namespace tiki
@@ -35,10 +37,13 @@ namespace tiki
 		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
 	}
 
-	bool FileStream::open( cstring pFileName, DataAccessMode accessMode )
+	bool FileStream::open( const char* pFileName, DataAccessMode accessMode )
 	{
+		wchar_t finalPath[ TIKI_MAX_PATH ];
+		convertToPlatformPath( finalPath, TIKI_COUNT( finalPath ), pFileName );
+
 		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
-		m_fileHandle = CreateFileA( pFileName, s_accessMapping[ accessMode ], 0u, nullptr, s_creationMapping[ accessMode ], FILE_ATTRIBUTE_NORMAL, nullptr );
+		m_fileHandle = CreateFileW( finalPath, s_accessMapping[ accessMode ], 0u, nullptr, s_creationMapping[ accessMode ], FILE_ATTRIBUTE_NORMAL, nullptr );
 
 		return m_fileHandle != INVALID_HANDLE_VALUE;
 	}
@@ -96,7 +101,7 @@ namespace tiki
 		return 0;
 	}
 
-	FileSize FileStream::getLength()
+	FileSize FileStream::getLength() const
 	{
 		return GetFileSize( m_fileHandle, nullptr );
 	}

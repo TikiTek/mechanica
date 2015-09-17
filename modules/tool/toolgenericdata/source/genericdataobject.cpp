@@ -116,7 +116,11 @@ namespace tiki
 
 			if ( value.getValueType() != GenericDataValueType_Invalid )
 			{
-				ok &= writeValueToResource( writer, value );
+				if ( !writeValueToResource( writer, value ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", field.name.cStr() );
+					ok = false;
+				}
 			}
 			else
 			{

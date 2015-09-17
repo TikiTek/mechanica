@@ -76,7 +76,7 @@ namespace tiki
 
 	 TIKI_FORCE_INLINE crc32 crcString( const char* pString )
 	 {
-		 return crcBytes( (const uint8*)pString, getStringLength( pString ) );
+		 return crcBytes( (const uint8*)pString, getStringSize( pString ) );
 	 }
 
 	 TIKI_FORCE_INLINE crc32 crcString( const string& str )

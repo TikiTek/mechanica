@@ -50,7 +50,7 @@ namespace tiki
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension, PlatformType platform ) const
+	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension ) const
 	{
 		TIKI_ASSERT( m_pManager != nullptr );
 
@@ -58,7 +58,7 @@ namespace tiki
 		const string fullPath = path::getAbsolutePath( path::combine( m_pManager->getOutputPath(), realName ) );
 
 		result.addOutputFile( fullPath );
-		writer.create( fullPath, platform );
+		writer.create( fullPath );
 	}
 
 	void ConverterBase::closeResourceWriter( ResourceWriter& writer ) const
@@ -79,4 +79,22 @@ namespace tiki
 
 		m_pManager->waitForTask( taskId );
 	}
+
+	List< ResourceDefinition > ConverterBase::getResourceDefinitions() const
+	{
+		List< ResourceDefinition > definitions;
+
+		for (uint platformIndex = 0u; platformIndex < PlatformType_Count; ++platformIndex)
+		{
+			for (uint graphicsIndex = 0u; graphicsIndex < GraphicsApi_Count; ++graphicsIndex)
+			{
+				ResourceDefinition& definition = definitions.add();
+				definition.setPlatformType( (PlatformType)platformIndex );
+				definition.setGraphicsApi( (GraphicsApi)graphicsIndex );
+			}
+		}
+
+		return definitions;
+	}
+
 }

@@ -19,20 +19,20 @@ namespace tiki
 		FileStream();
 		~FileStream();
 
-		bool				open( cstring pFileName, DataAccessMode accessMode );
-		virtual void		close();
+		bool				open( const char* pFileName, DataAccessMode accessMode );
+		virtual void		close() TIKI_OVERRIDE;
 
 		bool				isOpen() const;
 
-		virtual FileSize	read( void* pTargetData, uint bytesToRead );
-		virtual FileSize	write( const void* pSourceData, uint bytesToWrite );
+		virtual FileSize	read( void* pTargetData, uint bytesToRead ) TIKI_OVERRIDE;
+		virtual FileSize	write( const void* pSourceData, uint bytesToWrite ) TIKI_OVERRIDE;
 
-		virtual FileSize	getPosition();
-		virtual void		setPosition( FileSize position );
-		virtual FileSize	seekPosition( FileSize seek );
+		virtual FileSize	getPosition() TIKI_OVERRIDE;
+		virtual void		setPosition( FileSize position ) TIKI_OVERRIDE;
+		virtual FileSize	seekPosition( FileSize seek ) TIKI_OVERRIDE;
 
-		virtual FileSize	getLength();
-		virtual void		setLength( FileSize length );
+		virtual FileSize	getLength() const TIKI_OVERRIDE;
+		virtual void		setLength( FileSize length ) TIKI_OVERRIDE;
 
 	private:
 

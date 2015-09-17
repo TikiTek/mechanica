@@ -5,6 +5,7 @@
 #include "tiki/io/filesystem.hpp"
 
 #include "tiki/base/array.hpp"
+#include "tiki/base/linkedlist.hpp"
 #include "tiki/io/filestream.hpp"
 
 namespace tiki
@@ -15,15 +16,26 @@ namespace tiki
 
 	public:
 
-		void				create( cstring pGamebuildPath, uint maxStreamCount = 4u );
+		bool				create( const char* pGamebuildPath, uint maxStreamCount = 4u );
 		void				dispose();
 
-		virtual bool		exists( cstring pFileName ) const;
-		virtual DataStream*	open( cstring pFileName, DataAccessMode accessMode );
+		virtual const char*	getFilenameByCrc( crc32 filenameCrc ) const TIKI_OVERRIDE TIKI_FINAL;
+
+		virtual bool		exists( const char* pFileName ) const TIKI_OVERRIDE TIKI_FINAL;
+		virtual DataStream*	open( const char* pFileName, DataAccessMode accessMode ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 
-		char				m_gamebuildPath[ MaxPathLength ];
+		struct GamebuildFile : LinkedItem< GamebuildFile >
+		{
+			crc32	filenameCrc;
+			char	aFileName[ 1u ];
+		};
+		typedef LinkedList< GamebuildFile > GamebuildFileList;
+
+		char				m_gamebuildPath[ TIKI_MAX_PATH ];
+		GamebuildFileList	m_files;
+
 		Array< FileStream >	m_fileStreams;
 
 	};

@@ -83,9 +83,9 @@ namespace tiki
 	
 #endif
 
-#define TIKI_DEFAULT_ALIGNMENT 0u
-
-#define TIKI_INVALID_CRC32 0xffffffffu
+#define TIKI_DEFAULT_ALIGNMENT	0u
+#define TIKI_INVALID_CRC32		0xffffffffu
+#define TIKI_MAX_PATH			512u
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
@@ -150,6 +150,7 @@ namespace tiki
 #	define TIKI_ALIGNOF( type )		( __alignof( type ) )
 
 #	define TIKI_OVERRIDE			override
+#	define TIKI_FINAL				sealed
 
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
 
@@ -158,6 +159,7 @@ namespace tiki
 #	define TIKI_ALIGNOF( type )		( __alignof( type ) )
 
 #	define TIKI_OVERRIDE			override
+#	define TIKI_FINAL				sealed
 
 #elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
@@ -167,8 +169,10 @@ namespace tiki
 
 #if __cplusplus <= 199711L
 #	define TIKI_OVERRIDE			override
+#	define TIKI_FINAL				final
 #else
 #	define TIKI_OVERRIDE
+#	define TIKI_FINAL
 #endif
 
 #endif

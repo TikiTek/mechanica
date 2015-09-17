@@ -66,53 +66,57 @@ namespace tiki
 			model.parseGeometies( calcTangents );
 
 			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "model", parameters.targetPlatform );
-			
-			writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), getConverterRevision( s_typeCrc ) );
+			openResourceWriter( writer, result, parameters.outputName, "model" );
 
-			// write hierarchy
-			const ReferenceKey* pHierarchyKey = nullptr;
-			ReferenceKey hierarchyKey;
-			if ( model.getHierarchy().isCreated() )
+			for (const ResourceDefinition& definition : getResourceDefinitions())
 			{
-				hierarchyKey = writeHierarchy( writer, model.getHierarchy() );
-				pHierarchyKey = &hierarchyKey;
-			}
+				writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_typeCrc ) );
 
-			// write vertex data
-			List< ReferenceKey > geometryKeys;
-
-			bool wrongSkinned = false;
-			for (uint geometryIndex = 0u; geometryIndex < model.getGeometyCount(); ++geometryIndex )
-			{
-				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( geometryIndex ) );
-				geometryKeys.add( key );
-
-				for (uint k = 0u; k < model.getGeometyCount(); ++k)
+				// write hierarchy
+				const ReferenceKey* pHierarchyKey = nullptr;
+				ReferenceKey hierarchyKey;
+				if ( model.getHierarchy().isCreated() )
 				{
-					if ( model.getGeometryByIndex( geometryIndex ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
+					hierarchyKey = writeHierarchy( writer, model.getHierarchy() );
+					pHierarchyKey = &hierarchyKey;
+				}
+
+				// write vertex data
+				List< ReferenceKey > geometryKeys;
+
+				bool wrongSkinned = false;
+				for (uint geometryIndex = 0u; geometryIndex < model.getGeometyCount(); ++geometryIndex )
+				{
+					const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( geometryIndex ) );
+					geometryKeys.add( key );
+
+					for (uint k = 0u; k < model.getGeometyCount(); ++k)
 					{
-						wrongSkinned = true;
+						if ( model.getGeometryByIndex( geometryIndex ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
+						{
+							wrongSkinned = true;
+						}
 					}
 				}
+
+				if ( wrongSkinned )
+				{
+					TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
+				}
+
+				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+				writeResourceReference( writer, material );
+				writer.writeReference( pHierarchyKey );
+				writer.writeUInt32( uint32( model.getGeometyCount() ) );
+				for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
+				{
+					writer.writeReference( &geometryKeys[ geometryIndex ] );
+				}			
+				writer.closeDataSection();
+
+				writer.closeResource();
 			}
-
-			if ( wrongSkinned )
-			{
-				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
-			}
-
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writeResourceReference( writer, material );
-			writer.writeReference( pHierarchyKey );
-			writer.writeUInt32( uint32( model.getGeometyCount() ) );
-			for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
-			{
-				writer.writeReference( &geometryKeys[ geometryIndex ] );
-			}			
-			writer.closeDataSection();
-
-			writer.closeResource();
+			
 			closeResourceWriter( writer );
 
 			model.dispose();

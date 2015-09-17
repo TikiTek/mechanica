@@ -31,7 +31,7 @@ namespace tiki
 	tiki::Vector2 DebugGuiLabel::getMinimumSize()
 	{
 		Vector2 textSize;
-		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringLength( m_aText ) );
+		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringSize( m_aText ) );
 		return textSize;
 	}
 

@@ -56,15 +56,17 @@ namespace tiki
 
 	protected:
 
-		virtual void				fillParameters( GameFrameworkParamters& parameters ) = 0;
-		virtual bool				initializeGame() = 0;
-		virtual void				shutdownGame() = 0;
+		virtual void				fillParameters( GameFrameworkParamters& parameters ) TIKI_PURE;
+		virtual bool				initializeGame() TIKI_PURE;
+		virtual void				shutdownGame() TIKI_PURE;
 
-		virtual void				update() = 0;
-		virtual void				render( GraphicsContext& graphicsContext ) const = 0;
+		virtual void				update( bool wantToShutdown ) TIKI_PURE;
+		virtual void				render( GraphicsContext& graphicsContext ) const TIKI_PURE;
 
-		virtual bool				processInputEvent( const InputEvent& inputEvent ) = 0;
-		virtual void				processWindowEvent( const WindowEvent& windowEvent ) = 0;
+		virtual bool				processInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
+		virtual void				processWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+
+		bool						m_running;
 
 	private:
 		

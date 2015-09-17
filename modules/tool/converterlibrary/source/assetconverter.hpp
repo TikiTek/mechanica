@@ -28,7 +28,7 @@ namespace tiki
 		AssetConverter();
 		~AssetConverter();
 
-		virtual void	create( const AssetConverterParamter& parameters ) TIKI_OVERRIDE;
+		virtual bool	create( const AssetConverterParamter& parameters ) TIKI_OVERRIDE;
 		virtual void	dispose() TIKI_OVERRIDE;
 
 		virtual bool	convertAll() TIKI_OVERRIDE;

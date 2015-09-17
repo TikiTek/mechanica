@@ -108,7 +108,7 @@ namespace tiki
 	Vector2 DebugGuiWindow::getMinimumSize()
 	{
 		Vector2 minSize;
-		getDefaultFont()->calcuateTextSize( minSize, m_aTitle, getStringLength( m_aTitle ) );
+		getDefaultFont()->calcuateTextSize( minSize, m_aTitle, getStringSize( m_aTitle ) );
 		minSize.y = ( 2.0f * DebugGui_DefaultPadding ) + TitleHeight;
 
 		const Vector2 layoutMinSize = m_pLayout->getMinimumSize();

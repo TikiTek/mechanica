@@ -27,9 +27,10 @@ namespace tiki
 
 		GraphicsApi_D3D11,
 		GraphicsApi_D3D12,
-		GraphicsApi_OpenGL4,
 
-		GraphicsApi_Count
+		GraphicsApi_Count,
+
+		GraphicsApi_OpenGL4,
 	};
 
 	namespace platform
