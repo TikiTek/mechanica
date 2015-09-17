@@ -40,7 +40,7 @@ namespace tiki
 				return false;
 			}
 
-			discr = a0 - a1 * a1;
+			discr = a1 * a1 - a0;
 			if ( discr < 0.f )
 			{
 				return false;
