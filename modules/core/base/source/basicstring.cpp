@@ -78,30 +78,6 @@ namespace tiki
 	}
 
 #endif
-
-	wstring convertString( const string& str )
-	{
-		wstring result( str.getLength() );
-
-		for (size_t i = 0u; i < str.getLength(); ++i)
-		{
-			result[ i ] = str[ i ];
-		}
-
-		return result;
-	}
-
-	string convertString( const wstring& str )
-	{
-		string result( str.getLength() );
-
-		for (size_t i = 0u; i < str.getLength(); ++i)
-		{
-			result[ i ] = (char)str[ i ];
-		}
-
-		return result;
-	}
 }
 
 

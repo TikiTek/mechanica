@@ -33,6 +33,7 @@ namespace tiki
 		void							dispose();
 
 		bool							addType( GenericDataType& type );
+		bool							removeType( GenericDataType& type );
 
 		const GenericDataType*			findTypeByName( const string& name ) const;
 		void							findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const;

@@ -15,11 +15,11 @@ namespace tiki
 	TIKI_FORCE_INLINE uint getStringLength( const char* pSource )
 	{
 		uint index = 0;
-		uint length = (uint)-1;
+		uint length = 0;
 
 		while ( pSource[ index ] != '\0' )
 		{
-			length += !(pSource[ index ] % 0x80);
+			length += !(pSource[ index ] & 0x80);
 			index++;
 		}
 

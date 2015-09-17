@@ -187,6 +187,21 @@ namespace tiki
 		}		
 	}
 
+	bool GenericDataTypeCollection::removeType( GenericDataType& type )
+	{
+		if ( findTypeByName( type.getName() ) != nullptr )
+		{
+			m_types.removeSortedByValue( type );
+
+			return true;
+		}
+		else
+		{
+			TIKI_TRACE_ERROR( "[GenericDataTypeCollection::removeType] can't find type with name: '%s'\n", type.getName().cStr() );
+			return false;
+		}
+	}
+
 	const GenericDataType* GenericDataTypeCollection::findTypeByName( const string& name ) const
 	{
 		for (const GenericDataType& type : m_types)
@@ -876,15 +891,25 @@ namespace tiki
 
 				if ( pType != nullptr )
 				{
-					if ( pType->loadFromXml( reader, pChildNode ) )
+					pType->setModule( moduleName );
+					if ( addType( *pType ) )
 					{
-						pType->setModule( moduleName );
-						addType( *pType );
+						if ( !pType->loadFromXml( reader, pChildNode ) )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to load type with name '%s' from xml.\n", pType->getName().cStr() );
+
+							removeType( *pType );
+							TIKI_MEMORY_DELETE_OBJECT( pType );
+							pType = nullptr;
+
+							ok = false;
+						}
 					}
 					else
 					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to load type with name '%s' from xml.\n", pType->getName().cStr() );
 						TIKI_MEMORY_DELETE_OBJECT( pType );
+						pType = nullptr;
+
 						ok = false;
 					}
 				}

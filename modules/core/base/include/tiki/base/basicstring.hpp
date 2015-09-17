@@ -102,15 +102,10 @@ namespace tiki
 	};
 
 	TIKI_FORCE_INLINE BasicString< char >				operator+( const char* str1, const BasicString< char >& str2 );
-	TIKI_FORCE_INLINE BasicString< wchar_t >			operator+( const wchar_t* str1, const BasicString< wchar_t >& str2 );
 
 	typedef BasicString< char >		string;
-	typedef BasicString< wchar_t >	wstring;
 
 	string					formatString( cstring format, ... );
-
-	wstring					convertString( const string& str );
-	string					convertString( const wstring& str );
 
 }
 
