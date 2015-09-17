@@ -15,7 +15,7 @@ How to compile
 --------------
 
 1. Goto '/local/game'
-2. Execute 'create_vcproj.cmd' batch-file
+2. Execute 'create_visualstudio.cmd' batch-file
 3. Goto 'build' folder and open Solution file
 4. Build
 

@@ -41,10 +41,11 @@ namespace tiki
 
 	void ZoneAllocator::dispose()
 	{
-		if ( m_pCurrent != nullptr )
-		{
-			TIKI_MEMORY_FREE( m_pMemory );
-		}
+		TIKI_MEMORY_FREE( m_pMemory );
+		m_pMemory		= nullptr;
+		m_pCurrent		= nullptr;
+		m_size			= 0u;
+		m_baseAlignment	= 0u;
 	}
 
 	void* ZoneAllocator::allocate( uint sizeInBytes, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )

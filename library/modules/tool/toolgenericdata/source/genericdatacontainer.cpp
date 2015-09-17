@@ -301,6 +301,13 @@ namespace tiki
 					{
 						writer.writeReference( nullptr );
 						writer.writeUInt64( 0u );
+
+						if ( pArray == nullptr )
+						{
+							TIKI_TRACE_WARNING( "[GenericDataContainer::writeValueToResource] Write empty array. This can be indended but is no good idea.\n" );
+							return true;
+						}
+
 						return false;
 					}
 				}

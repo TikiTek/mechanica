@@ -28,6 +28,7 @@ namespace tiki
 	{
 		fourcc	type;
 		crc32	key;
+		uint32	definition;
 
 		uint32	offsetInFile;
 

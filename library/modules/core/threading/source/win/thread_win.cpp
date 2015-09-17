@@ -98,7 +98,7 @@ namespace tiki
 		m_pArgument = pArgument;
 		ResumeThread( m_platformData.threadHandle );
 
-		if( getStringLength( m_platformData.name ) > 0u )
+		if( getStringSize( m_platformData.name ) > 0u )
 		{
 			THREADNAME_INFO info;
 			info.dwType		= 0x1000;

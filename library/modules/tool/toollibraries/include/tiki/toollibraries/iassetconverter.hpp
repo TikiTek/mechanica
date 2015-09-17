@@ -31,17 +31,17 @@ namespace tiki
 						IAssetConverter() {}
 		virtual			~IAssetConverter() {}
 
-		virtual void	create( const AssetConverterParamter& parameters ) = 0;
-		virtual void	dispose() = 0;
+		virtual bool	create( const AssetConverterParamter& parameters ) TIKI_PURE;
+		virtual void	dispose() TIKI_PURE;
 
-		virtual bool	convertAll() = 0;
+		virtual bool	convertAll() TIKI_PURE;
 
-		virtual void	startWatch() = 0;
-		virtual void	stopWatch() = 0;
-		virtual bool	getChangedFiles( Array< string >& changedFiles ) = 0;
+		virtual void	startWatch() TIKI_PURE;
+		virtual void	stopWatch() TIKI_PURE;
+		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_PURE;
 
-		virtual void	lockConversion() = 0;
-		virtual void	unlockConversion() = 0;
+		virtual void	lockConversion() TIKI_PURE;
+		virtual void	unlockConversion() TIKI_PURE;
 		
 	};
 

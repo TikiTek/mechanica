@@ -16,6 +16,7 @@ namespace tiki
 
 	GameFramework::GameFramework()
 	{
+		m_running		= false;
 		m_isInitialized = false;
 	}
 
@@ -29,6 +30,8 @@ namespace tiki
 
 		if ( initialize() )
 		{
+			m_running = true;
+
 			// HACK: to handle device connect events
 			InputEvent inputEvent;
 			while ( m_frameworkData.inputSystem.popEvent( inputEvent ) )
@@ -36,7 +39,7 @@ namespace tiki
 				processInputEvent( inputEvent );
 			}
 
-			while ( frame() ) { }
+			while ( frame() );
 		}
 		else
 		{
@@ -118,7 +121,10 @@ namespace tiki
 			return false;
 		}
 
-		m_frameworkData.gamebuildFileSystem.create( m_parameters.pGamebuildPath );
+		if ( !m_frameworkData.gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
+		{
+			return false;
+		}
 
 		ResourceManagerParameters resourceParams;
 		resourceParams.pFileSystem = &m_frameworkData.gamebuildFileSystem;
@@ -210,7 +216,7 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_WEB_INTERFACE )
 		m_frameworkData.pWebInterface->update();
 #endif
-
+		bool wantToShutdown = false;
 		const uint windowEventCount = m_frameworkData.mainWindow.getEventBuffer().getEventCount();
 		for (uint i = 0u; i < windowEventCount; ++i)
 		{
@@ -218,7 +224,7 @@ namespace tiki
 
 			if ( windowEvent.type == WindowEventType_Destroy )
 			{
-				return false;
+				wantToShutdown = true;
 			}
 			else if ( windowEvent.type == WindowEventType_SizeChanged )
 			{
@@ -240,7 +246,7 @@ namespace tiki
 		{
 			if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_Escape )
 			{
-				return false;
+				wantToShutdown = true;
 			}
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -276,7 +282,7 @@ namespace tiki
 			}
 		}
 
-		update();
+		update( wantToShutdown );
 
 		// render
 		{
@@ -293,6 +299,6 @@ namespace tiki
 
 		m_frameworkData.inputSystem.endFrame();
 
-		return true;
+		return m_running;
 	}
 }

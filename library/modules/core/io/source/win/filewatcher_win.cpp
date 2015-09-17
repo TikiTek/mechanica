@@ -4,10 +4,11 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/file.hpp"
 #include "tiki/base/path.hpp"
+#include "tiki/base/string.hpp"
 
 namespace tiki
 {
-	static void createEvents( Queue< FileWatcherEvent >& events, const string& basePath, const void* pData )
+	static void createEvents( Queue< FileWatcherEvent >& events, const char* pBasePath, const void* pData )
 	{
 		static FileWatcherEventType eventTypeMapping[] =
 		{
@@ -29,7 +30,7 @@ namespace tiki
 
 		do
 		{
-			const string fileName = path::combine( basePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
+			const string fileName = path::combine( pBasePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
 			if ( file::exists( fileName.cStr() ) )
 			{
 				uint32 counter = 0;
@@ -78,12 +79,19 @@ namespace tiki
 
 	bool FileWatcher::create( const char* pPath, uint maxEventCount )
 	{
-		m_platformData.basePath		= pPath;
+		copyString( m_platformData.aPathBuffer, TIKI_COUNT( m_platformData.aPathBuffer ), pPath );
+
 		m_platformData.running		= false;
 		m_platformData.requiredSize	= 0u;
 
-		m_platformData.dirHandle = CreateFile(
-			pPath,
+		wchar_t widePathBuffer[ TIKI_MAX_PATH ];
+		if ( !convertUtf8ToWidecharString( widePathBuffer, TIKI_COUNT( widePathBuffer ), pPath ) )
+		{
+			return false;
+		}
+
+		m_platformData.dirHandle = CreateFileW(
+			widePathBuffer,
 			FILE_LIST_DIRECTORY,
 			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 			NULL,
@@ -91,6 +99,7 @@ namespace tiki
 			FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
 			NULL
 		);
+
 		if ( m_platformData.dirHandle == INVALID_HANDLE_VALUE )
 		{
 			dispose();
@@ -128,7 +137,7 @@ namespace tiki
 
 		m_events.dispose();
 
-		m_platformData.basePath = "";
+		m_platformData.aPathBuffer[ 0u ] = '\0';
 	}
 
 	bool FileWatcher::popEvent( FileWatcherEvent& fileEvent )
@@ -185,7 +194,7 @@ namespace tiki
 		const DWORD lastError = GetLastError();
 		if ( success )
 		{
-			createEvents( m_events, m_platformData.basePath, m_platformData.dataBuffer );
+			createEvents( m_events, m_platformData.aPathBuffer, m_platformData.dataBuffer );
 			m_platformData.running = false;
 			return true;
 		}

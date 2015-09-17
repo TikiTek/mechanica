@@ -347,7 +347,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
-		const uint textLength = getStringLength( pText );
+		const uint textLength = getStringSize( pText );
 		if ( textLength == 0u )
 		{
 			return;

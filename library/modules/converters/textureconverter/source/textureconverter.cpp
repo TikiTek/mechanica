@@ -128,8 +128,7 @@ namespace tiki
 
 			TextureWriterParameters writerParameters;
 			writerParameters.targetFormat	= PixelFormat_R8G8B8A8;
-			writerParameters.targetApi		= params.targetApi;
-				
+							
 			writerParameters.mipMapCount = 1u;
 			if ( params.arguments.getOptionalBool( "generate_mipmaps", true ) )
 			{
@@ -161,27 +160,35 @@ namespace tiki
 				continue;
 			}
 
-			TextureWriter textureWriter;
-			if ( !textureWriter.create( image, writerParameters ) )
+			ResourceWriter writer;
+			openResourceWriter( writer, result, params.outputName, "texture" );
+
+			for (const ResourceDefinition& definition : getResourceDefinitions())
 			{
-				continue;
+				writerParameters.targetApi = definition.getGraphicsApi();
+
+				TextureWriter textureWriter;
+				if ( !textureWriter.create( image, writerParameters ) )
+				{
+					continue;
+				}
+
+				writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );
+
+				const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
+
+				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+				writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
+				writer.writeReference( &textureDataKey );
+				writer.closeDataSection();
+
+				writer.closeResource();
+
+				textureWriter.dispose();
 			}
 
-			ResourceWriter writer;
-			openResourceWriter( writer, result, params.outputName, "texture", params.targetPlatform );
-			writer.openResource( params.outputName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), getConverterRevision( s_typeCrc ) );
-
-			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
-
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
-			writer.writeReference( &textureDataKey );
-			writer.closeDataSection();
-
-			writer.closeResource();
 			closeResourceWriter( writer );
 
-			textureWriter.dispose();
 			image.dispose();
 		}
 

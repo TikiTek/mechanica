@@ -101,25 +101,28 @@ namespace tiki
 				const string& extension = document.getType()->getPostFix();
 
 				ResourceWriter writer;
-				openResourceWriter( writer, result, parameters.outputName, extension, PlatformType_Win );
+				openResourceWriter( writer, result, parameters.outputName, extension );
 
-				writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), 1u );
-
-				ReferenceKey dataKey;
-				if ( document.writeToResource( dataKey, writer ) )
+				for (const ResourceDefinition& definition : getResourceDefinitions())
 				{
-					writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-					writer.writeReference( &dataKey );
-					writer.closeDataSection();
-				}
-				else
-				{
-					TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
-					ok = false;
-				}
+					writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
 
-				writer.closeResource();
-				closeResourceWriter( writer );
+					ReferenceKey dataKey;
+					if ( document.writeToResource( dataKey, writer ) )
+					{
+						writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+						writer.writeReference( &dataKey );
+						writer.closeDataSection();
+					}
+					else
+					{
+						TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
+						ok = false;
+					}
+
+					writer.closeResource();
+					closeResourceWriter( writer );
+				}
 			}
 			else
 			{
