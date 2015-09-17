@@ -30,6 +30,7 @@ namespace tiki
 	{
 		m_inputAction	= InputAction_Invalid;
 		m_inputTimer	= 0.0;
+		m_holdTimer		= 0.0;
 		m_pInputNode	= nullptr;
 		m_pSelectedNode	= nullptr;
 
@@ -211,7 +212,9 @@ namespace tiki
 	{
 		if ( m_inputAction != InputAction_Invalid )
 		{
-			m_inputTimer -= framework::getFrameTimer().getElapsedTime();
+			m_inputTimer	-= framework::getFrameTimer().getElapsedTime();
+			m_holdTimer		+= framework::getFrameTimer().getElapsedTime();
+
 			if ( m_inputTimer < 0.0 )
 			{
 				switch ( m_inputAction )
@@ -272,7 +275,7 @@ namespace tiki
 					break;
 				}
 
-				m_inputTimer = 1.0;
+				m_inputTimer = 0.35 / TIKI_MAX( 1.0, m_holdTimer );
 			}
 		}
 
@@ -337,8 +340,9 @@ namespace tiki
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
 		{
-			m_inputAction = InputAction_Invalid;
-			m_inputTimer = 0.0;
+			m_inputAction	= InputAction_Invalid;
+			m_inputTimer	= 0.0;
+			m_holdTimer		= 0.0;
 		}
 
 		return DebugGuiWindow::processInputEvent( inputEvent, state );
@@ -455,7 +459,9 @@ namespace tiki
 			{
 				DebugPropFloat* pFloatProperty = (DebugPropFloat*)node.pProperty;
 
-				float value = pFloatProperty->getValue() + (increase ? 1.0f : -1.0f);
+				const float modifier = float( m_holdTimer / 10.0 );
+
+				float value = pFloatProperty->getValue() + (increase ? modifier : -modifier);
 				value = TIKI_MIN( value, pFloatProperty->getMaxValue() );
 				value = TIKI_MAX( value, pFloatProperty->getMinValue() );
 
@@ -469,7 +475,7 @@ namespace tiki
 
 		setDebugPropText( node.valueLabel, *node.pProperty );
 
-		m_inputTimer = 500;
+		m_inputTimer = 0.35 / TIKI_MAX( 1.0, m_holdTimer );
 	}
 
 	void DebugGuiWindowDebugProp::setDebugPropText( DebugGuiLabel& targetLabel, const DebugProp& prop )

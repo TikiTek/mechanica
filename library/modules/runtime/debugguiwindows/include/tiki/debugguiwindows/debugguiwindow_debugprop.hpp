@@ -94,6 +94,7 @@ namespace tiki
 
 		InputAction					m_inputAction;
 		double						m_inputTimer;
+		double						m_holdTimer;
 		TreeNode*					m_pInputNode;
 		
 		void						setLayoutParameters( DebugGuiHorizontalLayout& layout );
