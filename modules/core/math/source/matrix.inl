@@ -529,26 +529,6 @@ namespace tiki
 		);
 	}
 
-
-	TIKI_FORCE_INLINE void matrix::transformNormal( Vector3& vec, const Matrix43& mtx )
-	{
-		// TODO: check if this works
-		TIKI_ASSERT( false );
-		matrix::transform( vec, mtx.rot );
-	}
-
-	TIKI_FORCE_INLINE void matrix::transformCoordinate( Vector3& vec, const Matrix44& mtx )
-	{
-		float w = 1 / ( ( ( ( vec.x * mtx.x.w ) + ( vec.y * mtx.y.w ) ) + ( vec.z * mtx.z.w ) ) + mtx.w.w );
-
-		vector::set(
-			vec,
-			( ( ( ( vec.x * mtx.x.x ) + ( vec.y * mtx.y.x ) ) + ( vec.z * mtx.z.x ) ) + mtx.w.x ) * w,
-			( ( ( ( vec.x * mtx.x.y ) + ( vec.y * mtx.y.y ) ) + ( vec.z * mtx.z.y ) ) + mtx.w.y ) * w,
-			( ( ( ( vec.x * mtx.x.z ) + ( vec.y * mtx.y.z ) ) + ( vec.z * mtx.z.z ) ) + mtx.w.z ) * w
-			);
-	}
-
 	TIKI_FORCE_INLINE void matrix::project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
 	{
 		transform( vec, mtx );
@@ -569,7 +549,7 @@ namespace tiki
 				   -( ( ( ( vec.y - y ) / height ) * 2.0f ) - 1.0f ),
 					( vec.z - minZ ) / ( maxZ - minZ ) );
 
-		transformCoordinate( vec, inverseMtx );
+		transform( vec, inverseMtx );
 	}
 
 }
