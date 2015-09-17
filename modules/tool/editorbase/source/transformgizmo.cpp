@@ -439,7 +439,7 @@ namespace tiki
 				current = AxisType::RZ;
 			}
 
-			if ( intersection::intersectRaySpere( m_pCamera->getMouseRay( ), m_pRotateBounds[ i ], intersection ) )
+			if ( intersection::intersectRaySphere( m_pCamera->getMouseRay( ), m_pRotateBounds[ i ], intersection ) )
 			{
 				m_SelectedAxis	= current;
 				picked			= true;
