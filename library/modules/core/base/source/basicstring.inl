@@ -472,7 +472,7 @@ namespace tiki
 		{
 			int b = 0;
 			bool found = true;
-			while (b < str.data->stringLength)
+			while (b < (int)str.data->stringLength)
 			{
 				if (data->pData[i + b] != str.data->pData[b])
 				{
