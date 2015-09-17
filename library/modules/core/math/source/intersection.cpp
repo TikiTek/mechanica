@@ -6,7 +6,7 @@ namespace tiki
 {
 	namespace intersection
 	{
-		bool intersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint )
+		bool intersectRaySphere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint )
 		{
 			float rayParameters[ 2 ];
 
@@ -40,7 +40,7 @@ namespace tiki
 				return false;
 			}
 
-			discr = a1 * a1 - a0;
+			discr = a0 - a1 * a1;
 			if ( discr < 0.f )
 			{
 				return false;
