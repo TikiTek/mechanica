@@ -51,7 +51,7 @@ namespace tiki
 
 	namespace intersection
 	{
-		bool	intersectRaySpere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint );
+		bool	intersectRaySphere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint );
 		bool	intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3& intersectionPoint );
 
 		bool    intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint);

@@ -106,11 +106,11 @@ namespace tiki
 
 		Vector3 origin;
 		vector::set( origin, mouseX, mouseY, 0.0f );
-		matrix::unproject( origin, 0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f, m_viewProjection );
+		matrix::unproject( origin, 0.0f, 0.0f, (float)width, (float)height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
 
 		Vector3 direction;
 		vector::set( direction, mouseX, mouseY, 1.0f );
-		matrix::unproject( direction, 0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f, m_viewProjection );
+		matrix::unproject( direction, 0.0f, 0.0f, (float)width, (float)height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
 
 		vector::sub( direction, origin );
 		vector::normalize( direction );
