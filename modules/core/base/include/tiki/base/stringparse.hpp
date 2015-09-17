@@ -82,35 +82,34 @@ namespace tiki
 
 	private:
 
-		template <typename TString>
-		static bool getSiged(BasicString<TString>& string)
+		static bool getSiged(string& str)
 		{
-			if (string[0] == BasicString<TString>::numberPlus)
+			if (str[0] == string::numberPlus)
 			{
-				string = string.subString( 1u );
+				str = str.subString( 1u );
 			}
 
-			if (string[0] == BasicString<TString>::numberMinus)
+			if (str[0] == string::numberMinus)
 			{
-				string = string.subString( 1u );
+				str = str.subString( 1u );
 				return false;
 			}
 
 			return true;
 		}
 
-		template<typename TString, typename TUInt>
-		static TUInt parseUnsigedInteger(const BasicString<TString>& string)
+		template<typename TUInt>
+		static TUInt parseUnsigedInteger(const string& str)
 		{
 			TUInt num = 0;
 
 			uint32 i = 0;
-			while (i < string.data->stringLength)
+			while (i < str.data->stringLength)
 			{
-				if (string[i] >= BasicString<TString>::numberZero && string[i] <= BasicString<TString>::numberNine)
+				if (str[i] >= BasicString<TString>::numberZero && str[i] <= BasicString<TString>::numberNine)
 				{
-					int p = int( string.data->stringLength - ( i + 1 ) );
-					TUInt c = string[i] - BasicString<TString>::numberZero;
+					int p = int( str.data->stringLength - ( i + 1 ) );
+					TUInt c = str[i] - BasicString<TString>::numberZero;
 
 					num += c * (TUInt)pow(10.0, p);
 				}
@@ -125,47 +124,47 @@ namespace tiki
 			return num;
 		}
 
-		template<typename TString, typename TInt>
-		static TInt parseSigedInteger(const BasicString<TString>& string)
+		template<typename TInt>
+		static TInt parseSigedInteger(const string& inStr)
 		{
-			BasicString<TString> str = string;
+			string str = inStr;
 			TInt mul = (getSiged(str) ? 1 : -1);
 
-			return parseUnsigedInteger<TString, TInt>(str) * mul;
+			return parseUnsigedInteger<TInt>(str) * mul;
 		}
 
-		template <typename TString, typename TFloat>
-		static TFloat parseFloat(const BasicString<TString>& string)
+		template <typename TFloat>
+		static TFloat parseFloat(const string& str)
 		{
-			return (TFloat)atof( string.cStr() );
+			return (TFloat)atof( str.cStr() );
 
-			BasicString<TString> str = string;
-			TFloat mul = (TFloat)(getSiged(str) ? 1.0 : -1.0);
-			TFloat num = 0;
+			//BasicString<TString> str = string;
+			//TFloat mul = (TFloat)(getSiged(str) ? 1.0 : -1.0);
+			//TFloat num = 0;
 
-			uint32 i = 0;
-			uint32 dotIndex = str.indexOf(BasicString<TString>::numberDot);
-			while ( i < str.data->stringLength )
-			{
-				if (str[i] >= BasicString<TString>::numberZero && str[i] <= BasicString<TString>::numberNine)
-				{
-					int p = dotIndex - (i < dotIndex ? i + 1 : i);
-					TFloat c = (TFloat)(str[i] - BasicString<TString>::numberZero);
+			//uint32 i = 0;
+			//uint32 dotIndex = str.indexOf(BasicString<TString>::numberDot);
+			//while ( i < str.data->stringLength )
+			//{
+			//	if (str[i] >= BasicString<TString>::numberZero && str[i] <= BasicString<TString>::numberNine)
+			//	{
+			//		int p = dotIndex - (i < dotIndex ? i + 1 : i);
+			//		TFloat c = (TFloat)(str[i] - BasicString<TString>::numberZero);
 
-					num += c * (TFloat)pow(10.0, p);
-				}
-				else
-				{
-					return (TFloat)-1.0;
-				}
+			//		num += c * (TFloat)pow(10.0, p);
+			//	}
+			//	else
+			//	{
+			//		return (TFloat)-1.0;
+			//	}
 
-				i++;
+			//	i++;
 
-				if (i == dotIndex)
-					i++;
-			}
+			//	if (i == dotIndex)
+			//		i++;
+			//}
 
-			return num * mul;
+			//return num * mul;
 		}
 	};
 }
