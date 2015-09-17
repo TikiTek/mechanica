@@ -8,104 +8,116 @@
 
 namespace tiki
 {
-	template<typename TChar>
-	struct StringRefData;
-
-	template<typename TChar>
 	class BasicString
 	{
 		friend class ParseString;
 		friend class StringConvert;
-		friend struct StringRefData< TChar >;
 
 	public:
 
-														BasicString();
-														BasicString( uint len );
-														BasicString( const TChar* string );
-														BasicString( const TChar* string, sint length );
-														BasicString( const BasicString<TChar>& copy );
-														~BasicString();
+		TIKI_FORCE_INLINE					BasicString();
+		TIKI_FORCE_INLINE					BasicString( uint len );
+		TIKI_FORCE_INLINE					BasicString( const char* pString );
+		TIKI_FORCE_INLINE					BasicString( const char* pString, sint length );
+		TIKI_FORCE_INLINE					BasicString( const BasicString& copy );
+		TIKI_FORCE_INLINE					~BasicString();
 
-		TIKI_FORCE_INLINE uint							getLength() const;
-		TIKI_FORCE_INLINE bool							isEmpty() const;
+		TIKI_FORCE_INLINE uint				getLength() const;
+		TIKI_FORCE_INLINE bool				isEmpty() const;
 
-		TIKI_FORCE_INLINE const TChar*					cStr() const;
+		TIKI_FORCE_INLINE const char*		cStr() const;
 
-		TIKI_FORCE_INLINE void							split( Array< BasicString< TChar > >& output, const BasicString<TChar>& seperator ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			replace( TChar oldValue, TChar newValue ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			replace( const BasicString<TChar>& oldValue, const BasicString<TChar>& newValue ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			subString( uint startIndex, sint length = -1 ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			trim() const;
+		TIKI_FORCE_INLINE void				split( Array< BasicString >& output, const BasicString& seperator ) const;
+		TIKI_FORCE_INLINE BasicString		replace( char oldValue, char newValue ) const;
+		TIKI_FORCE_INLINE BasicString		replace( const BasicString& oldValue, const BasicString& newValue ) const;
+		TIKI_FORCE_INLINE BasicString		subString( uint startIndex, sint length = -1 ) const;
+		TIKI_FORCE_INLINE BasicString		trim() const;
 
-		TIKI_FORCE_INLINE BasicString<TChar>			insert( const BasicString<TChar>& str, uint index ) const;
-		TIKI_FORCE_INLINE BasicString<TChar>			remove( uint startIndex, uint len ) const;
+		TIKI_FORCE_INLINE BasicString		insert( const BasicString& str, uint index ) const;
+		TIKI_FORCE_INLINE BasicString		remove( uint startIndex, uint len ) const;
 
-		TIKI_FORCE_INLINE BasicString<TChar>			toLower() const;
-		TIKI_FORCE_INLINE BasicString<TChar>			toUpper() const;
+		TIKI_FORCE_INLINE BasicString		toLower() const;
+		TIKI_FORCE_INLINE BasicString		toUpper() const;
 
-		TIKI_FORCE_INLINE uint							countSubstring( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE int							indexOf( TChar c ) const;
-		TIKI_FORCE_INLINE int							indexOf( TChar c, uint index ) const;
-		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE int							indexOf( const BasicString<TChar>& str, uint index ) const;
-		TIKI_FORCE_INLINE int							lastIndexOf( TChar c ) const;
-		TIKI_FORCE_INLINE int							lastIndexOf( TChar c, uint index ) const;
-		TIKI_FORCE_INLINE int							lastIndexOf( const BasicString<TChar>& str ) const;
-		TIKI_FORCE_INLINE int							lastIndexOf( const BasicString<TChar>& str, uint index ) const;
+		TIKI_FORCE_INLINE uint				countSubstring( const BasicString& str ) const;
+		TIKI_FORCE_INLINE int				indexOf( char c ) const;
+		TIKI_FORCE_INLINE int				indexOf( char c, uint index ) const;
+		TIKI_FORCE_INLINE int				indexOf( const BasicString& str ) const;
+		TIKI_FORCE_INLINE int				indexOf( const BasicString& str, uint index ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( char c ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( char c, uint index ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( const BasicString& str ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( const BasicString& str, uint index ) const;
 
-		TIKI_FORCE_INLINE bool							contains(TChar c) const;
-		TIKI_FORCE_INLINE bool							contains(const BasicString<TChar>& str) const;
+		TIKI_FORCE_INLINE bool				contains(char c) const;
+		TIKI_FORCE_INLINE bool				contains(const BasicString& str) const;
 
-		TIKI_FORCE_INLINE bool							startsWith(TChar c) const;
-		TIKI_FORCE_INLINE bool							startsWith(const BasicString<TChar>& str) const;
-		TIKI_FORCE_INLINE bool							endsWith(TChar c) const;
-		TIKI_FORCE_INLINE bool							endsWith(const BasicString<TChar>& str) const;
+		TIKI_FORCE_INLINE bool				startsWith(char c) const;
+		TIKI_FORCE_INLINE bool				startsWith(const BasicString& str) const;
+		TIKI_FORCE_INLINE bool				endsWith(char c) const;
+		TIKI_FORCE_INLINE bool				endsWith(const BasicString& str) const;
 
-		TIKI_FORCE_INLINE const TChar*					operator*() const;
-		TIKI_FORCE_INLINE TChar							operator[](uint index) const;
-		TIKI_FORCE_INLINE TChar&						operator[](uint index);
+		TIKI_FORCE_INLINE const char*		operator*() const;
+		TIKI_FORCE_INLINE char				operator[](uint index) const;
+		TIKI_FORCE_INLINE char&				operator[](uint index);
 
-		TIKI_FORCE_INLINE bool							operator==(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE bool							operator!=(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE BasicString< TChar >&			operator=(const BasicString<TChar>& rhs);
+		TIKI_FORCE_INLINE bool				operator==(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE bool				operator!=(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE BasicString&		operator=(const BasicString& rhs);
 
-		TIKI_FORCE_INLINE BasicString<TChar>			operator+(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE BasicString<TChar>&			operator+=(const BasicString<TChar>& rhs);
+		TIKI_FORCE_INLINE BasicString		operator+(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE BasicString&		operator+=(const BasicString& rhs);
 
-		TIKI_FORCE_INLINE bool							operator>(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE bool							operator>=(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE bool							operator<(const BasicString<TChar>& rhs) const;
-		TIKI_FORCE_INLINE bool							operator<=(const BasicString<TChar>& rhs) const;
+		TIKI_FORCE_INLINE bool				operator>(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE bool				operator>=(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE bool				operator<(const BasicString& rhs) const;
+		TIKI_FORCE_INLINE bool				operator<=(const BasicString& rhs) const;
 
 	private:
 
-		StringRefData< TChar >*							data;
+		struct StringRefData
+		{
+			char*					pData;
+			uint					dataLength;
+			uint					stringLength;
 
-		static const TChar								letterBigA;
-		static const TChar								letterBigZ;
-		static const TChar								letterLittleA;
-		static const TChar								letterLittleZ;
-		static const TChar								numberDot;
-		static const TChar								numberZero;
-		static const TChar								numberNine;
-		static const TChar								numberPlus;
-		static const TChar								numberMinus;
-		static const TChar								whiteSpaces[ 4u ];
-		static StringRefData< TChar >					emptyData;
+			sint	    			refCount;
 
-		TIKI_FORCE_INLINE void							allocData( const TChar* string, sint length );
+			static const char*		s_pEmptyString;
 
-		TIKI_FORCE_INLINE uint							stringLength( const TChar* string ) const;
-		TIKI_FORCE_INLINE uint							calcLength( uint neededLen ) const;
+			TIKI_FORCE_INLINE		StringRefData();
+			TIKI_FORCE_INLINE		StringRefData( uint strLen, uint dataLen );
+			TIKI_FORCE_INLINE		StringRefData( uint strLen, uint dataLen, const char* pBaseData, sint baseDataLen = -1 );
+			TIKI_FORCE_INLINE		~StringRefData();
+
+			TIKI_FORCE_INLINE sint	addRef();
+			TIKI_FORCE_INLINE sint	releaseRef();
+		};
+
+		StringRefData*				data;
+
+		static const char			letterBigA;
+		static const char			letterBigZ;
+		static const char			letterLittleA;
+		static const char			letterLittleZ;
+		static const char			numberDot;
+		static const char			numberZero;
+		static const char			numberNine;
+		static const char			numberPlus;
+		static const char			numberMinus;
+		static const char			whiteSpaces[ 4u ];
+		static StringRefData		emptyData;
+
+		TIKI_FORCE_INLINE void		allocData( const char* pString, sint length );
+		TIKI_FORCE_INLINE uint		calcLength( uint neededLen ) const;
 
 	};
 
-	TIKI_FORCE_INLINE BasicString< char >				operator+( const char* str1, const BasicString< char >& str2 );
+	typedef BasicString string;
 
-	typedef BasicString< char >		string;
+	TIKI_FORCE_INLINE string		operator+( const char* str1, const string& str2 );
 
-	string					formatString( cstring format, ... );
+	string							formatString( cstring format, ... );
 
 }
 

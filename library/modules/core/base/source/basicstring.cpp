@@ -7,32 +7,19 @@
 
 namespace tiki
 {
-	template<> const char* tiki::StringRefData<char>::s_pEmptyString		= "";
-	template<> const wchar_t* tiki::StringRefData<wchar_t>::s_pEmptyString	= L"";
+	const char* BasicString::StringRefData::s_pEmptyString	= "";
 
-	template<> const char BasicString<char>::letterBigA				= 'A';
-	template<> const char BasicString<char>::letterBigZ				= 'Z';
-	template<> const char BasicString<char>::letterLittleA			= 'a';
-	template<> const char BasicString<char>::letterLittleZ			= 'z';
-	template<> const char BasicString<char>::numberDot				= '.';
-	template<> const char BasicString<char>::numberZero				= '0';
-	template<> const char BasicString<char>::numberNine				= '9';
-	template<> const char BasicString<char>::numberPlus				= '+';
-	template<> const char BasicString<char>::numberMinus			= '-';
-	template<> const char BasicString<char>::whiteSpaces[ 4u ]		= { ' ', '\t', '\r', '\n' };
-	template<> StringRefData<char> BasicString<char>::emptyData		= StringRefData<char>();
-
-	template<> const wchar_t BasicString<wchar_t>::letterBigA			= L'A';
-	template<> const wchar_t BasicString<wchar_t>::letterBigZ			= L'Z';
-	template<> const wchar_t BasicString<wchar_t>::letterLittleA		= L'a';
-	template<> const wchar_t BasicString<wchar_t>::letterLittleZ		= L'z';
-	template<> const wchar_t BasicString<wchar_t>::numberDot			= L'.';
-	template<> const wchar_t BasicString<wchar_t>::numberZero			= L'0';
-	template<> const wchar_t BasicString<wchar_t>::numberNine			= L'9';
-	template<> const wchar_t BasicString<wchar_t>::numberPlus			= L'+';
-	template<> const wchar_t BasicString<wchar_t>::numberMinus			= L'-';
-	template<> const wchar_t BasicString<wchar_t>::whiteSpaces[ 4u ]	= { L' ', L'\t', L'\r', L'\n' };
-	template<> StringRefData<wchar_t> BasicString<wchar_t>::emptyData	= StringRefData<wchar_t>();
+	const char BasicString::letterBigA						= 'A';
+	const char BasicString::letterBigZ						= 'Z';
+	const char BasicString::letterLittleA					= 'a';
+	const char BasicString::letterLittleZ					= 'z';
+	const char BasicString::numberDot						= '.';
+	const char BasicString::numberZero						= '0';
+	const char BasicString::numberNine						= '9';
+	const char BasicString::numberPlus						= '+';
+	const char BasicString::numberMinus						= '-';
+	const char BasicString::whiteSpaces[ 4u ]				= { ' ', '\t', '\r', '\n' };
+	BasicString::StringRefData BasicString::emptyData		= StringRefData();
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 

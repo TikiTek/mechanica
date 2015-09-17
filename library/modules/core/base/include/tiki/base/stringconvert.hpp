@@ -11,48 +11,48 @@ namespace tiki
 
 		static string ToString(sint16 value)
 		{
-			return sintegerToString<char, sint16>(value);
+			return sintegerToString<sint16>(value);
 		}
 
 		static string ToString(sint32 value)
 		{
-			return sintegerToString<char, sint32>(value);
+			return sintegerToString<sint32>(value);
 		}
 
 		static string ToString(sint64 value)
 		{
-			return sintegerToString<char, sint64>(value);
+			return sintegerToString<sint64>(value);
 		}
 
 		static string ToString(uint16 value)
 		{
-			return sintegerToString<char, uint16>(value);
+			return sintegerToString<uint16>(value);
 		}
 
 		static string ToString(uint32 value)
 		{
-			return sintegerToString<char, uint32>(value);
+			return sintegerToString<uint32>(value);
 		}
 
 		static string ToString(uint64 value)
 		{
-			return sintegerToString<char, uint64>(value);
+			return sintegerToString<uint64>(value);
 		}
 
 		static string ToString(float value)
 		{
-			return floatToString<char, float>(value);
+			return floatToString<float>(value);
 		}
 
 		static string ToString(double value)
 		{
-			return floatToString<char, double>(value);
+			return floatToString<double>(value);
 		}
 
 	private:
 
-		template <typename TString, typename TInt>
-		static BasicString<TString> sintegerToString(TInt value)
+		template <typename TInt>
+		static string sintegerToString(TInt value)
 		{
 			uint32 len = 0;
 			TInt val = (TInt)abs((sint32)value);
@@ -61,7 +61,7 @@ namespace tiki
 				len++;
 
 			if (value == 0)
-				return BasicString<TString>::numberZero;
+				return string::numberZero;
 
 			TInt i = 1;
 			TInt i2 = i;
@@ -76,12 +76,12 @@ namespace tiki
 				if (i < i2) break;
 			}
 
-			BasicString<TString> str = BasicString<TString>(len);
+			string str = string(len);
 
 			uint32 a = 0;
 			if (value < 0)
 			{
-				str[0] = BasicString<TString>::numberMinus;
+				str[0] = string::numberMinus;
 				a++;
 			}
 
@@ -94,7 +94,7 @@ namespace tiki
 				i3 += i2;
 				i3 *= 10;
 
-				str[a] = BasicString<TString>::numberZero + (TString)i2;
+				str[a] = string::numberZero + (char)i2;
 
 				i++;
 				a++;
@@ -103,21 +103,13 @@ namespace tiki
 			return str;
 		}
 
-		template <typename TString, typename TFloat>
-		static BasicString<TString> floatToString(TFloat value)
+		template <typename TFloat>
+		static string floatToString(TFloat value)
 		{
-			TString buffer[ 64u ];
+			char buffer[ 64u ];
+			_snprintf_s((char*)buffer, 64, 64, "%f", value);
 
-			if (sizeof(TString) == 1)
-			{
-				_snprintf_s((char*)buffer, 64, 64, "%f", value);
-			}
-			else
-			{
-				_snwprintf_s((wchar_t*)buffer, 64, 64, L"%f", value);
-			}
-
-			return BasicString<TString>(buffer);
+			return string(buffer);
 		}
 
 	};
