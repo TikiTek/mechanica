@@ -30,7 +30,10 @@ namespace tiki
 
 		do
 		{
-			const string fileName = path::combine( pBasePath, convertString( wstring( pNotifyInfo->FileName, pNotifyInfo->FileNameLength / sizeof( wchar_t ) ) ) );
+			char utf8Buffer[ TIKI_MAX_PATH ];
+			convertWidecharToUtf8String( utf8Buffer, TIKI_COUNT(utf8Buffer ), pNotifyInfo->FileName );
+
+			const string fileName = path::combine( pBasePath, utf8Buffer );
 			if ( file::exists( fileName.cStr() ) )
 			{
 				uint32 counter = 0;

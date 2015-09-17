@@ -20,11 +20,11 @@ int tiki::mainEntryPoint()
 
 			if ( arg.startsWith( "--content-dir=" ) )
 			{
-				sourceDir = arg.subString( getStringLength( "--content-dir=" ) );
+				sourceDir = arg.subString( getStringSize( "--content-dir=" ) );
 			}
 			else if ( arg.startsWith( "--target-dir=" ) )
 			{
-				targetDir = arg.subString( getStringLength( "--target-dir=" ) );
+				targetDir = arg.subString( getStringSize( "--target-dir=" ) );
 			}
 		}
 

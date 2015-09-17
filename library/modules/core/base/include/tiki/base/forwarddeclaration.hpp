@@ -16,7 +16,6 @@ namespace tiki
 	TIKI_FORWARD_TEMPLATE( BasicString );
 
 	typedef BasicString< char > string;
-	typedef BasicString< wchar_t > wstring;
 }
 
 #endif // __TIKI_FORWARDDECLARATION_HPP_INCLUDED__

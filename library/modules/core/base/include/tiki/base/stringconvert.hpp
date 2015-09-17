@@ -48,45 +48,6 @@ namespace tiki
 		{
 			return floatToString<char, double>(value);
 		}
-		static wstring ToWString(sint16 value)
-		{
-			return sintegerToString<wchar_t, sint16>(value);
-		}
-
-		static wstring ToWString(sint32 value)
-		{
-			return sintegerToString<wchar_t, sint32>(value);
-		}
-
-		static wstring ToWString(sint64 value)
-		{
-			return sintegerToString<wchar_t, sint64>(value);
-		}
-
-		static wstring ToWString(uint16 value)
-		{
-			return sintegerToString<wchar_t, uint16>(value);
-		}
-
-		static wstring ToWString(uint32 value)
-		{
-			return sintegerToString<wchar_t, uint32>(value);
-		}
-
-		static wstring ToWString(uint64 value)
-		{
-			return sintegerToString<wchar_t, uint64>(value);
-		}
-
-		static wstring ToWString(float value)
-		{
-			return floatToString<wchar_t, float>(value);
-		}
-
-		static wstring ToWString(double value)
-		{
-			return floatToString<wchar_t, double>(value);
-		}
 
 	private:
 
