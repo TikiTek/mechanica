@@ -8,8 +8,8 @@ module.import_func = function()
 	end
 end
 
-module:set_define( "TIKI_ON", "2-" );
-module:set_define( "TIKI_OFF", "1-" );
+module:set_define( "TIKI_ON", "2" );
+module:set_define( "TIKI_OFF", "1" );
 
 module:set_define( "DEBUG", nil, "Debug" );
 module:set_define( "TIKI_BUILD_DEBUG", "TIKI_ON", "Debug" );
