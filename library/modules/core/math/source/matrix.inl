@@ -335,14 +335,14 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Matrix33& matrix::invert( Matrix33& mtx, const Matrix33& source )
 	{
-		const float det =
-			source.x.x * source.y.y * source.z.z +
-			source.x.y * source.y.z * source.z.x +
-			source.x.z * source.y.x * source.z.y -
-			source.z.x * source.y.y * source.x.z -
-			source.z.y * source.y.z * source.x.x -
-			source.z.z * source.y.x * source.x.y;
+		const float det =	source.x.x * source.y.y * source.z.z +
+							source.x.y * source.y.z * source.z.x +
+							source.x.z * source.y.x * source.z.y -
+							source.z.x * source.y.y * source.x.z -
+							source.z.y * source.y.z * source.x.x -
+							source.z.z * source.y.x * source.x.y;
 		TIKI_ASSERT( f32::isZero( det ) == false );
+
 		mtx.x.x = source.y.y * source.z.z - source.y.z * source.z.y;
 		mtx.x.y = source.x.z * source.z.y - source.x.y * source.z.z;
 		mtx.x.z = source.x.y * source.y.z - source.x.z * source.y.y;
@@ -352,6 +352,7 @@ namespace tiki
 		mtx.z.x = source.y.x * source.z.y - source.y.y * source.z.x;
 		mtx.z.y = source.x.y * source.z.x - source.x.x * source.z.y;
 		mtx.z.z = source.x.x * source.y.y - source.x.y * source.y.x;
+
 		return scale( mtx, 1.0f / det );
 	}
 
@@ -364,7 +365,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Matrix44& matrix::invert( Matrix44& mtx, const Matrix44& source )
 	{
-		// source: https://github.com/sharpdx/SharpDX/blob/master/Source/SharpDX/Matrix.cs
+		// source: https://github.com/sharpdx/SharpDX/blob/master/Source/SharpDX.Mathematics/Matrix.cs
 
 		const float b0 = (source.z.x * source.w.y) - (source.z.y * source.w.x);
 		const float b1 = (source.z.x * source.w.z) - (source.z.z * source.w.x);
@@ -386,27 +387,27 @@ namespace tiki
 		}
 		const float inverseDet = 1.0f / det;
 
-		float a0 = (source.x.x * source.y.y) - (source.x.y * source.y.x);
-		float a1 = (source.x.x * source.y.z) - (source.x.z * source.y.x);
-		float a2 = (source.x.w * source.y.x) - (source.x.x * source.y.w);
-		float a3 = (source.x.y * source.y.z) - (source.x.z * source.y.y);
-		float a4 = (source.x.w * source.y.y) - (source.x.y * source.y.w);
-		float a5 = (source.x.z * source.y.w) - (source.x.w * source.y.z);
+		const float a0 = (source.x.x * source.y.y) - (source.x.y * source.y.x);
+		const float a1 = (source.x.x * source.y.z) - (source.x.z * source.y.x);
+		const float a2 = (source.x.w * source.y.x) - (source.x.x * source.y.w);
+		const float a3 = (source.x.y * source.y.z) - (source.x.z * source.y.y);
+		const float a4 = (source.x.w * source.y.y) - (source.x.y * source.y.w);
+		const float a5 = (source.x.z * source.y.w) - (source.x.w * source.y.z);
 
-		float d21 = source.x.y * b5 + source.x.z * b4 + source.x.w * b3;
-		float d22 = source.x.x * b5 + source.x.z * b2 + source.x.w * b1;
-		float d23 = source.x.x * -b4 + source.x.y * b2 + source.x.w * b0;
-		float d24 = source.x.x * b3 + source.x.y * -b1 + source.x.z * b0;
+		const float d21 = source.x.y * b5 + source.x.z * b4 + source.x.w * b3;
+		const float d22 = source.x.x * b5 + source.x.z * b2 + source.x.w * b1;
+		const float d23 = source.x.x * -b4 + source.x.y * b2 + source.x.w * b0;
+		const float d24 = source.x.x * b3 + source.x.y * -b1 + source.x.z * b0;
 
-		float d31 = source.w.y * a5 + source.w.z * a4 + source.w.w * a3;
-		float d32 = source.w.x * a5 + source.w.z * a2 + source.w.w * a1;
-		float d33 = source.w.x * -a4 + source.w.y * a2 + source.w.w * a0;
-		float d34 = source.w.x * a3 + source.w.y * -a1 + source.w.z * a0;
+		const float d31 = source.w.y * a5 + source.w.z * a4 + source.w.w * a3;
+		const float d32 = source.w.x * a5 + source.w.z * a2 + source.w.w * a1;
+		const float d33 = source.w.x * -a4 + source.w.y * a2 + source.w.w * a0;
+		const float d34 = source.w.x * a3 + source.w.y * -a1 + source.w.z * a0;
 
-		float d41 = source.z.y * a5 + source.z.z * a4 + source.z.w * a3;
-		float d42 = source.z.x * a5 + source.z.z * a2 + source.z.w * a1;
-		float d43 = source.z.x * -a4 + source.z.y * a2 + source.z.w * a0;
-		float d44 = source.z.x * a3 + source.z.y * -a1 + source.z.z * a0;
+		const float d41 = source.z.y * a5 + source.z.z * a4 + source.z.w * a3;
+		const float d42 = source.z.x * a5 + source.z.z * a2 + source.z.w * a1;
+		const float d43 = source.z.x * -a4 + source.z.y * a2 + source.z.w * a0;
+		const float d44 = source.z.x * a3 + source.z.y * -a1 + source.z.z * a0;
 
 		mtx.x.x = +d11 * inverseDet; mtx.x.y = -d21 * inverseDet; mtx.x.z = +d31 * inverseDet; mtx.x.w = -d41 * inverseDet;
 		mtx.y.x = -d12 * inverseDet; mtx.y.y = +d22 * inverseDet; mtx.y.z = -d32 * inverseDet; mtx.y.w = +d42 * inverseDet;
@@ -421,6 +422,7 @@ namespace tiki
 		vector::lerp( mtx.x, start.x, end.x, amount );
 		vector::lerp( mtx.y, start.y, end.y, amount );
 		vector::lerp( mtx.z, start.z, end.z, amount );
+
 		return mtx;
 	}
 
@@ -428,6 +430,7 @@ namespace tiki
 	{
 		matrix::lerp( mtx.rot, start.rot, end.rot, amount );
 		vector::lerp( mtx.pos, start.pos, end.pos, amount );
+
 		return mtx;
 	}
 
@@ -437,6 +440,7 @@ namespace tiki
 		vector::lerp( mtx.y, start.y, end.y, amount );
 		vector::lerp( mtx.z, start.z, end.z, amount );
 		vector::lerp( mtx.w, start.w, end.w, amount );
+
 		return mtx;
 	}
 
@@ -448,12 +452,14 @@ namespace tiki
 		const float yz = mtx.z.y;
 		const float zx = mtx.x.z;
 		const float zy = mtx.y.z;
+
 		mtx.x.y = xy;
 		mtx.x.z = xz;
 		mtx.y.x = yx;
 		mtx.y.z = yz;
 		mtx.z.x = zx;
 		mtx.z.y = zy;
+
 		return mtx;
 	}
 
@@ -471,6 +477,7 @@ namespace tiki
 		const float wx = mtx.x.w;
 		const float wy = mtx.y.w;
 		const float wz = mtx.z.w;
+
 		mtx.x.y = xy;
 		mtx.x.z = xz;
 		mtx.x.w = xw;
@@ -483,6 +490,7 @@ namespace tiki
 		mtx.w.x = wx;
 		mtx.w.y = wy;
 		mtx.w.z = wz;
+
 		return mtx;
 	}
 

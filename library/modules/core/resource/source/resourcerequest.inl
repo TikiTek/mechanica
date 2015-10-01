@@ -1,0 +1,10 @@
+#pragma once
+#ifndef TIKI_RESOURCEREQUEST_INL_INCLUDED__
+#define TIKI_RESOURCEREQUEST_INL_INCLUDED__
+
+namespace tiki
+{
+
+}
+
+#endif // TIKI_RESOURCEREQUEST_INL_INCLUDED__

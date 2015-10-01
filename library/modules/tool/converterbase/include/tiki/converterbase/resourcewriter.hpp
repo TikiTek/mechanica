@@ -5,10 +5,10 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/list.hpp"
+#include "tiki/io/memorystream.hpp"
 #include "tiki/resource/resourcedefinition.hpp"
 #include "tiki/resource/resourcefile.hpp"
-#include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/memorystream.hpp"
 
 namespace tiki
 {

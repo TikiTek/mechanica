@@ -63,7 +63,7 @@ int vms_show = 0;
 #endif
 
 /* if we build a static library for unit tests, there is no main() function */
-#ifndef UNITTESTS
+#ifdef MAIN
 
 /*
  * Ensure that file descriptors 0, 1 and 2 (stdin, stdout, stderr) are

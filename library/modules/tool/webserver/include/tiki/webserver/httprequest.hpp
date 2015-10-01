@@ -3,7 +3,7 @@
 #define TIKI_HTTPREQUEST_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/webserver/url.hpp"
+#include "tiki/net/url.hpp"
 
 namespace tiki
 {

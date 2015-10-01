@@ -2,10 +2,10 @@
 #include "tiki/io/gamebuildfilesystem.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/directoryiterator.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 
 namespace tiki
 {
@@ -88,7 +88,7 @@ namespace tiki
 
 			if ( !stream.isOpen() )
 			{
-				if ( stream.open( fullPath.cStr(), accessMode ) )
+				if ( stream.create( fullPath.cStr(), accessMode ) )
 				{
 					return &stream;
 				}

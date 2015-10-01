@@ -1,8 +1,8 @@
 
 #include "tiki/io/xmlreader.hpp"
 
-#include "tiki/base/file.hpp"
 #include "tiki/base/memory.hpp"
+#include "tiki/io/file.hpp"
 
 namespace tiki
 {

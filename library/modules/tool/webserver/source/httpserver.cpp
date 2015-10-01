@@ -2,10 +2,10 @@
 #include "tiki/webserver/httpserver.hpp"
 
 #include "tiki/base/string.hpp"
+#include "tiki/net/url.hpp"
 #include "tiki/webserver/httprequest.hpp"
 #include "tiki/webserver/httprequesthandler.hpp"
 #include "tiki/webserver/httpresponse.hpp"
-#include "tiki/webserver/url.hpp"
 
 #include "mongoose.h"
 

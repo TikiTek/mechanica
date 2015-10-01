@@ -3,11 +3,11 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 
 namespace tiki
 {

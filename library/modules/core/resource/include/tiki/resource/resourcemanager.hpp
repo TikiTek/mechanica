@@ -20,6 +20,7 @@ namespace tiki
 	class FactoryBase;
 	class IAssetConverter;
 	class Resource;
+	class ResourceRequest;
 	struct ResourceId;
 
 	struct ResourceManagerParameters
@@ -42,27 +43,32 @@ namespace tiki
 
 	public:
 
-		ResourceManager();
-		~ResourceManager();
+													ResourceManager();
+													~ResourceManager();
 
-		bool						create( const ResourceManagerParameters& params );
-		void						dispose();
+		bool										create( const ResourceManagerParameters& params );
+		void										dispose();
 
-		void						update();
+		void										update();
 
-		void						registerResourceType( fourcc type, const FactoryContext& factoryContext );
-		void						unregisterResourceType( fourcc type );
+		void										registerResourceType( fourcc type, const FactoryContext& factoryContext );
+		void										unregisterResourceType( fourcc type );
 		
 		template<typename T>
-		TIKI_FORCE_INLINE const T*	loadResource( const string& fileName );
+		TIKI_FORCE_INLINE const T*					loadResource( const string& fileName );
+		template<typename T>
+		TIKI_FORCE_INLINE void						unloadResource( const T* pResource );
 
 		template<typename T>
-		TIKI_FORCE_INLINE void		unloadResource( const T* pResource );
+		TIKI_FORCE_INLINE const ResourceRequest&	beginResourceLoading( const string& fileName );
+		void										endResourceLoading( const ResourceRequest& request );
 
 	private:
 
 		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
+
+		//Pool< ResourceRequest >		m_resourceRequests;
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		IAssetConverter*			m_pAssetConverter;

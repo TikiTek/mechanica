@@ -2,9 +2,9 @@
 #include "tiki/io/filewatcher.hpp"
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 
 namespace tiki
 {

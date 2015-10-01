@@ -100,7 +100,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T nextPowerOfTwo( T value )
+	TIKI_FORCE_INLINE T getNextPowerOfTwo( T value )
 	{
 		const T shift = (T)( 64u - countLeadingZeros64( value - 1 ) );
 		return T( 1 ) << shift;

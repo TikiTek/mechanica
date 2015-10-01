@@ -145,11 +145,11 @@ namespace tiki
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		FileStream fileStream;
-		fileStream.open( m_fileName.cStr(), DataAccessMode_Write );
+		fileStream.create( m_fileName.cStr(), DataAccessMode_Write );
 
 		fileStream.write( stream.getData(), stream.getLength() );
 
-		fileStream.close();
+		fileStream.dispose();
 		stream.dispose();
 
 		m_resources.dispose();
@@ -256,7 +256,7 @@ namespace tiki
 		ReferenceKey key;
 		key.type					= ReferenceType_Pointer;
 		key.identifier				= m_pCurrentSection->id;
-		key.offsetInTargetSection	= m_pCurrentSection->binaryData.getLength();
+		key.offsetInTargetSection	= (uint)m_pCurrentSection->binaryData.getLength();
 
 		return key;
 	}
@@ -359,6 +359,6 @@ namespace tiki
 	uint ResourceWriter::getSizeOfCurrentSection() const
 	{
 		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		return m_pCurrentSection->binaryData.getLength();
+		return (uint)m_pCurrentSection->binaryData.getLength();
 	}
 }

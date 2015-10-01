@@ -3,9 +3,9 @@
 
 #include "tiki/base/autodispose.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/directory.hpp"
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
+#include "tiki/io/directory.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
@@ -93,7 +93,7 @@ namespace tiki
 			query.dispose();
 		}		
 		m_loggingMutex.create();
-		m_loggingStream.open( "converter.log", DataAccessMode_WriteAppend );
+		m_loggingStream.create( "converter.log", DataAccessMode_WriteAppend );
 
 		s_pInstance = this;
 		debug::setTraceCallback( globalTraceCallback );
@@ -109,7 +109,7 @@ namespace tiki
 
 		m_taskSystem.dispose();
 
-		m_loggingStream.close();
+		m_loggingStream.dispose();
 		m_loggingMutex.dispose();
 
 		m_dataBase.dispose();
