@@ -3,11 +3,11 @@
 #define __TIKI_DEFINES_HPP_INCLUDED__
 
 #ifndef TIKI_ON
-#	define TIKI_ON 2-
+#	define TIKI_ON 2
 #endif
 
 #ifndef TIKI_OFF
-#	define TIKI_OFF 1-
+#	define TIKI_OFF 1
 #endif
 
 #ifndef TIKI_BUILD_DEBUG

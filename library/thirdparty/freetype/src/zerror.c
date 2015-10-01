@@ -1,7 +1,7 @@
 
 #ifdef DEBUG
 
-#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )
+#define TIKI_ENABLED( value ) ( ( 0 + value ) == 2 )
 
 int z_verbose;
 void z_error(char *m)
