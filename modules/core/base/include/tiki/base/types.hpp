@@ -4,8 +4,8 @@
 
 #include "tiki/base/defines.hpp"
 
-#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )
-#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )
+#define TIKI_ENABLED( value ) ( ( 0 + value ) == 2 )
+#define TIKI_DISABLED( value ) ( ( 0 + value ) != 2 )
 
 namespace tiki
 {
