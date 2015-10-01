@@ -2,10 +2,10 @@
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
 #include "tiki/base/bits.hpp"
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/base/stringparse.hpp"
-#include "tiki/toolbase/list.hpp"
+#include "tiki/container/list.hpp"
 
 #include "trexpp.h"
 

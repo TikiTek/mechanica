@@ -23,8 +23,6 @@ namespace tiki
 		friend class GraphicsContext;
 		friend class GraphicsSystem;
 		friend class VertexInputBinding;
-		template<typename T>
-		friend class PoolAllocator;
 
 	public:
 

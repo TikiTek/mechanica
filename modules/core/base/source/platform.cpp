@@ -30,8 +30,8 @@ namespace tiki
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/debug.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/io/path.hpp"
 
 #include "platform_internal.hpp"
 

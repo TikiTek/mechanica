@@ -9,7 +9,7 @@
 #include "tiki/graphics/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
-#include "tiki/toolbase/list.hpp"
+#include "tiki/container/list.hpp"
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
@@ -90,7 +90,7 @@ namespace tiki
 			FT_GlyphSlot slot = face->glyph;
 
 			const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
-			const size_t imageSize	= nextPowerOfTwo( baseSize );
+			const size_t imageSize	= getNextPowerOfTwo( baseSize );
 			const float floatSize	= (float)imageSize;
 
 			const uint imageWidth	= ( mode3D ? fontSize * allChars.getLength() : imageSize );

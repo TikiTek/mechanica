@@ -2,13 +2,13 @@
 #ifndef TIKI_CONVERSIONPARAMETERS_HPP
 #define TIKI_CONVERSIONPARAMETERS_HPP
 
-#include "tiki/base/file.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolbase/list.hpp"
-#include "tiki/toolbase/map.hpp"
+#include "tiki/container/list.hpp"
+#include "tiki/container/map.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 
 namespace tiki
 {

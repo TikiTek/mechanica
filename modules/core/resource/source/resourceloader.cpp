@@ -104,7 +104,7 @@ namespace tiki
 		}
 		else
 		{
-			context.pStream->close();
+			context.pStream->dispose();
 			context.pStream = nullptr;
 
 			*ppTargetResource = context.pResource;
@@ -154,7 +154,7 @@ namespace tiki
 			cancelOperation( context );
 		}
 
-		context.pStream->close();
+		context.pStream->dispose();
 		context.pStream = nullptr;
 
 		return result;
@@ -459,7 +459,7 @@ namespace tiki
 
 		if ( context.pStream != nullptr && context.streamOwner )
 		{
-			context.pStream->close();
+			context.pStream->dispose();
 			context.pStream = nullptr;
 
 			m_bufferAllocator.clear();

@@ -2,9 +2,9 @@
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "tiki/base/debugprop.hpp"
-#include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/path.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
 #include "tiki/toollibraries/iassetconverter.hpp"

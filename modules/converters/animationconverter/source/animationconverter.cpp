@@ -3,12 +3,12 @@
 
 #include "tiki/animationconverter/animationbuilder.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
 
 namespace tiki

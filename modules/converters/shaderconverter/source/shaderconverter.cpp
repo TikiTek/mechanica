@@ -3,16 +3,16 @@
 
 #include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/file.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/base/path.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphics/shadertype.hpp"
+#include "tiki/io/file.hpp"
 #include "tiki/io/filestream.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )

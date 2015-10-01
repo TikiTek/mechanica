@@ -1,7 +1,7 @@
 
 #include "assetconverter.hpp"
 
-#include "tiki/base/path.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
 
 namespace tiki
