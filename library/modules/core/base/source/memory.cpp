@@ -26,21 +26,13 @@ namespace tiki
 		void* pMemory = nullptr;
 
 #if TIKI_ENABLED( TIKI_BUILD_MINGW )
-
 		pMemory = malloc( size );
-
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
-
 #	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-
 		pMemory = _aligned_malloc_dbg( size, alignment, pFileName, lineNumber );
-
 #	else
-
 		pMemory = _aligned_malloc( size, alignment );
-
 #	endif
-
 #endif
 
 		TIKI_ASSERT( (uint)pMemory % alignment == 0u );
@@ -50,21 +42,13 @@ namespace tiki
 	void memory::freeAligned( void* pPtr )
 	{
 #if TIKI_ENABLED( TIKI_BUILD_MINGW )
-
 		return free( pPtr );
-
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
-
-#	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		
+#	if TIKI_ENABLED( TIKI_BUILD_DEBUG )		
 		_aligned_free_dbg( pPtr );
-
 #	else
-
 		_aligned_free( pPtr );
-
 #	endif
-
 #endif
 	}
 

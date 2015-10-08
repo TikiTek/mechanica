@@ -68,18 +68,17 @@ namespace tiki
 		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
 		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
 
-	protected:
-
-		T*		m_pData;
-		uint	m_count;
-		uint	m_capacity;
-
-		bool	m_isReadOnly;
-
 	private:
 
-		TIKI_FORCE_INLINE uint		getNextSize( uint targetSize );
-		TIKI_FORCE_INLINE void		checkArraySize( uint neddedSize );
+		T*									m_pData;
+		uint								m_count;
+		uint								m_capacity;
+
+		bool								m_isReadOnly;
+
+		TIKI_FORCE_INLINE uint				getNextSize( uint targetSize );
+		TIKI_FORCE_INLINE void				checkArraySize( uint neddedSize );
+
 	};
 }
 

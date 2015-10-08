@@ -3,19 +3,26 @@
 #define TIKI_RESOURCEREQUEST_HPP_INCLUDED__
 
 #include "tiki/base/linkedlist.hpp"
+#include "tiki/base/sizedarray.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class ResourceRequest : public LinkedItem< ResourceRequest > TIKI_FINAL
+	class Resource;
+
+	class ResourceRequest : private LinkedItem< ResourceRequest >
 	{
 		TIKI_NONCOPYABLE_CLASS( ResourceRequest );
 		friend class ResourceManager;
 
 	public:
 
-		TIKI_FORCE_INLINE			ResourceRequest();
-		TIKI_FORCE_INLINE			~ResourceRequest();
-				
+									ResourceRequest();
+									~ResourceRequest();
+		
+		void						create(uint resourceCount);
+		void						dispose();
+
 		TIKI_FORCE_INLINE bool		isLoading() const;
 		TIKI_FORCE_INLINE bool		isFinish() const;
 		TIKI_FORCE_INLINE bool		isSuccessful() const;
@@ -25,17 +32,24 @@ namespace tiki
 
 	private: // friend
 
-		TIKI_FORCE_INLINE void		create( const char* pFileName, fourcc resourceType );
+		void		create( const char* pFileName, fourcc resourceType );
 
 	private:
 
-		crc32			m_fileNameCrc;
-		fourcc			m_resourceType;
+		struct ResourceDesc
+		{
+			crc32			fileNameCrc;
+			fourcc			resourceType;
+			const Resource*	pResource;
+		};
 
-		volatile bool	m_isLoading;
-		volatile bool	m_isFinish;
+		SizedArray< ResourceDesc >	m_resources;
 
-		const Resource*	m_pResource;
+		volatile bool				m_isLoading;
+		volatile bool				m_isFinish;
+		volatile bool				m_isSuccessful;
+
+		
 
 	};
 }
