@@ -2,10 +2,11 @@
 #ifndef TIKI_RESOURCEMANAGER_HPP
 #define TIKI_RESOURCEMANAGER_HPP
 
+#include "tiki/base/basicstring.hpp"
 #include "tiki/base/inline.hpp"
 #include "tiki/base/sizedarray.hpp"
-#include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/pool.hpp"
 #include "tiki/resource/resourceloader.hpp"
 #include "tiki/resource/resourcestorage.hpp"
 
@@ -68,7 +69,7 @@ namespace tiki
 		ResourceLoader				m_resourceLoader;
 		ResourceStorage				m_resourceStorage;
 
-		//Pool< ResourceRequest >		m_resourceRequests;
+		Pool< ResourceRequest >		m_resourceRequests;
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		IAssetConverter*			m_pAssetConverter;
