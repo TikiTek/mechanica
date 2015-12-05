@@ -94,6 +94,12 @@ namespace tiki
 			const uint stateIndex = m_activeStates[ i ];
 			m_states[ stateIndex ].pState->render( graphicsContext );
 		}
+
+		for (uint i = 0u; i < m_activeStateCount; ++i)
+		{
+			const uint stateIndex = m_activeStates[ i ];
+			m_states[ stateIndex ].pState->postRender( graphicsContext );
+		}
 	}
 
 	bool GameFlowSystem::processInputEvent( const InputEvent& inputEvent )

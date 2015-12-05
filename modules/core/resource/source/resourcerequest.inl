@@ -27,6 +27,13 @@ namespace tiki
 		return m_pResource != nullptr;
 	}
 
+	template<>
+	TIKI_FORCE_INLINE const Resource* ResourceRequest::getResource() const
+	{
+		TIKI_ASSERT( m_pResource != nullptr );
+		return m_pResource;
+	}
+
 	template< class T >
 	TIKI_FORCE_INLINE const T* ResourceRequest::getResource() const
 	{

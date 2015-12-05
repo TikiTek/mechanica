@@ -21,6 +21,12 @@ namespace tiki
 	{
 		return beginGenericResourceLoading( pFileName, T::getResourceType(), crcString( pFileName ) );
 	}
+	
+	template< typename T >
+	void tiki::ResourceManager::unloadResource( const T*& pResource )
+	{
+		unloadGenericResource( (const Resource**)&pResource );
+	}
 }
 
 #endif // TIKI_RESOURCEMANAGER_INL

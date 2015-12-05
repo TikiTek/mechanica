@@ -14,6 +14,7 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_CLASS( ResourceRequest );
 		friend class ResourceManager;
+		friend class LinkedList< ResourceRequest >;
 
 	public:
 
@@ -34,6 +35,10 @@ namespace tiki
 		const Resource*				m_pResource;
 
 		volatile bool				m_isLoading;
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		const char*					m_pFileName;
+#endif
 		
 	};
 }
