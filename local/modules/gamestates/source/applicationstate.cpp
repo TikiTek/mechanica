@@ -3,7 +3,9 @@
 
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
+#include "tiki/game/framework_game.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
 {
@@ -21,35 +23,58 @@ namespace tiki
 		{
 		case ApplicationStateTransitionSteps_CreateGameRenderer:
 			{
-				TIKI_ASSERT( isInital );
+				GraphicsSystem& graphicsSystem = framework::getGraphicsSystem();
+				ResourceRequestPool& resourceRequestPool = framework::getResourceRequestPool();
 
 				if ( isCreating )
 				{
-					GameRendererParamaters params;
-					params.rendererWidth	= framework::getGraphicsSystem().getBackBuffer().getWidth();
-					params.rendererHeight	= framework::getGraphicsSystem().getBackBuffer().getHeight();
-
-					if ( !m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager(), params ) )
+					if ( isInital )
 					{
-						TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
-						return TransitionState_Error;
+						resourceRequestPool.resetError();
+
+						GameRendererParamaters params;
+						params.rendererWidth	= graphicsSystem.getBackBuffer().getWidth();
+						params.rendererHeight	= graphicsSystem.getBackBuffer().getHeight();
+
+						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, params ) )
+						{
+							TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
+							return TransitionState_Error;
+						}
+
+						if( !m_renderer.registerRenderEffect( m_fallbackRenderEffect, resourceRequestPool ) ||
+							!m_renderer.registerRenderEffect( m_sceneRenderEffect, resourceRequestPool ) )
+						{
+							return TransitionState_Error;
+						}
 					}
 
-					RendererContext& rendererContext = m_renderer.getRendererContext();
-					m_fallbackRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
-					m_sceneRenderEffect.create( rendererContext, framework::getGraphicsSystem(), framework::getResourceManager() );
+					if ( resourceRequestPool.isFinish() )
+					{
+						if ( resourceRequestPool.hasError() )
+						{
+							return TransitionState_Error;
+						}
 
-					m_renderer.registerRenderEffect( &m_fallbackRenderEffect );
-					m_renderer.registerRenderEffect( &m_sceneRenderEffect );
+						if ( !m_renderer.createShaderResources( graphicsSystem, resourceRequestPool ) )
+						{
+							TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer shaders.\n" );
+							return TransitionState_Error;
+						}
+
+						return TransitionState_Finish;
+					}
+
+					return TransitionState_InProcess;
 				}
 				else
 				{
-					m_renderer.unregisterRenderEffect( &m_sceneRenderEffect );
-					m_renderer.unregisterRenderEffect( &m_fallbackRenderEffect );
-					m_sceneRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-					m_fallbackRenderEffect.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+					TIKI_ASSERT( isInital );
 
-					m_renderer.dispose( framework::getResourceManager() );
+					m_renderer.unregisterRenderEffect( m_sceneRenderEffect, resourceRequestPool );
+					m_renderer.unregisterRenderEffect( m_fallbackRenderEffect, resourceRequestPool );
+
+					m_renderer.dispose( resourceRequestPool );
 				}
 
 				return TransitionState_Finish;
@@ -66,7 +91,7 @@ namespace tiki
 		m_renderer.update();
 	}
 
-	void ApplicationState::render( GraphicsContext& graphicsContext )
+	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
 		m_renderer.render( graphicsContext );
 	}
@@ -82,7 +107,7 @@ namespace tiki
 		{
 			if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
 			{
-				m_renderer.dispose( framework::getResourceManager() );				
+				m_renderer.dispose( framework::getResourceRequestPool() );				
 			}
 		}
 	}

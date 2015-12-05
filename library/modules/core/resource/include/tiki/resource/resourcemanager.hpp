@@ -59,24 +59,22 @@ namespace tiki
 		void										registerResourceType( fourcc type, const FactoryContext& factoryContext );
 		void										unregisterResourceType( fourcc type );
 		
-		template<typename T>
+		template< typename T >
 		TIKI_FORCE_INLINE const T*					loadResource( const char* pFileName );
-		void										unloadResource( const Resource* pResource );
+		template< typename T >
+		void										unloadResource( const T*& pResource );
 
-		template<typename T>
+		template< typename T >
 		TIKI_FORCE_INLINE const ResourceRequest&	beginResourceLoading( const char* pFileName );
 		void										endResourceLoading( const ResourceRequest& request );
 
 	private:
 
-		struct ResourceRequestData;
-
 		ResourceLoader						m_resourceLoader;
 		ResourceStorage						m_resourceStorage;
 
-		Pool< ResourceRequestData >			m_resourceRequests;
-		LinkedList< ResourceRequestData >	m_runningRequests;
-		//SPSCQueue							m_runningRequests;
+		Pool< ResourceRequest >				m_resourceRequests;
+		LinkedList< ResourceRequest >		m_runningRequests;
 
 		Thread								m_loadingThread;
 		Mutex								m_loadingMutex;
@@ -85,10 +83,9 @@ namespace tiki
 		IAssetConverter*					m_pAssetConverter;
 #endif
 
-		ResourceRequestData&				getDataFromRequest( const ResourceRequest& request ) const;
-
 		const Resource*						loadGenericResource( const char* pFileName, fourcc type, crc32 resourceKey );
 		const ResourceRequest&				beginGenericResourceLoading( const char* pFileName, fourcc type, crc32 resourceKey );
+		void								unloadGenericResource( const Resource** ppResource );
 
 		void								traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 

@@ -21,13 +21,14 @@ namespace tiki
 								GameFlowState()		{ }
 		virtual					~GameFlowState()	{ }
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) = 0;
+		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_PURE;
 
-		virtual void			update() = 0;
-		virtual void			render( GraphicsContext& graphicsContext ) = 0;
+		virtual void			update() TIKI_PURE;
+		virtual void			render( GraphicsContext& graphicsContext ) { };
+		virtual void			postRender( GraphicsContext& graphicsContext ) { }
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) = 0;
-		virtual void			processWindowEvent( const WindowEvent& windowEvent ) {};
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
+		virtual void			processWindowEvent( const WindowEvent& windowEvent ) { }
 
 	};
 }

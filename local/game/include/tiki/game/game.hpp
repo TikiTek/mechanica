@@ -4,10 +4,11 @@
 
 #include "tiki/framework/gameapplication.hpp"
 
-#include "tiki/runtimeshared/frameworkfactories.hpp"
 #include "tiki/framework/touchgamesystem.hpp"
 #include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
+#include "tiki/runtimeshared/frameworkfactories.hpp"
 
 namespace tiki
 {
@@ -31,6 +32,7 @@ namespace tiki
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
 		friend GameFlowSystem& framework::getGameFlowSystem();
+		friend ResourceRequestPool& framework::getResourceRequestPool();
 
 	protected:
 
@@ -47,12 +49,14 @@ namespace tiki
 	private: // friend
 
 		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
+		ResourceRequestPool&	getResourceRequestPool() { return m_resourceRequestPool; }
 
 	private:
 
 		FrameworkFactories		m_factories;
 
 		GameFlowSystem			m_gameFlow;
+		ResourceRequestPool		m_resourceRequestPool;
 		States*					m_pStates;
 
 		TouchGameSystem			m_touchSystem;

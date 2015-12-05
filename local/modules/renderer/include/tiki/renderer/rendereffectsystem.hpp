@@ -10,8 +10,10 @@
 namespace tiki
 {
 	class GraphicsContext;
+	class GraphicsSystem;
 	class RenderBatch;
 	class RenderEffect;
+	class ResourceRequestPool;
 	struct FrameData;
 	struct RendererContext;
 
@@ -25,6 +27,7 @@ namespace tiki
 		~RenderEffectSystem();
 
 		bool			create( const RendererContext& rendererContext );
+		bool			createShaderResourcees( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
 		void			dispose();
 
 		void			registerRenderEffect( RenderEffect* pRenderEffect );

@@ -8,7 +8,9 @@
 #include "tiki/graphics/model.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
+#include "tiki/renderer/rendereffect.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 #include "shader/lighting_shader.hpp"
 #include "tiki/graphics/shader/cameraparameter.hpp"
@@ -50,7 +52,7 @@ namespace tiki
 	{
 	}
 
-	bool GameRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const GameRendererParamaters& parameters )
+	bool GameRenderer::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool, const GameRendererParamaters& parameters )
 	{
 		m_context.pGraphicsSystem		= &graphicsSystem;
 		m_context.rendererWidth			= parameters.rendererWidth;
@@ -67,25 +69,25 @@ namespace tiki
 
 		if ( m_renderBatch.create( parameters.maxSeqeuenceCount, parameters.maxRenderCommandCount ) == false )
 		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 
 		if ( m_renderEffectSystem.create( m_context ) == false )
 		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 
 		if ( createTextureData() == false )
 		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 
 		if ( createRenderTargets() == false )
 		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 
@@ -98,50 +100,53 @@ namespace tiki
 		
 		if ( m_pBlendStateAdd == nullptr || m_pBlendStateSet == nullptr || m_pDepthStencilState == nullptr || m_pRasterizerState == nullptr || m_pSamplerLinear == nullptr || m_pSamplerNearst == nullptr )
 		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 
-		m_pLightingShader		= resourceManager.loadResource< ShaderSet >( "lighting.shader" );
-		m_pReflectionTexture	= resourceManager.loadResource< Texture >( "skybox_sea.texture" );
-		if ( m_pLightingShader == nullptr || m_pReflectionTexture == nullptr )
+		if( !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) ) ||
+			!m_cameraParameterConstants.create( graphicsSystem, sizeof( CameraParameter ) ) )
 		{
-			dispose( resourceManager );
-			return false;
-		}
-
-		m_pLightingInputBinding = graphicsSystem.createVertexInputBinding( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
-
-		if( m_pLightingInputBinding == nullptr
-			|| !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) )
-			|| !m_cameraParameterConstants.create( graphicsSystem, sizeof( CameraParameter ) ) )
-		{
-			dispose( resourceManager );
+			dispose( resourceRequestPool );
 			return false;
 		}
 		
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		m_pVisualizationShader = resourceManager.loadResource< ShaderSet >( "visualization.shader" );
-		if ( m_pVisualizationShader == nullptr )
-		{
-			dispose( resourceManager );
-			return false;
-		}
-
-		m_pVisualizationInputBinding = graphicsSystem.createVertexInputBinding( m_pVisualizationShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
-		if ( m_pVisualizationInputBinding == nullptr )
-		{
-			dispose( resourceManager );
-			return false;
-		}
-
 		m_visualizationMode = VisualizationMode_Invalid;
+
+		resourceRequestPool.beginLoadResource< ShaderSet >( &m_pVisualizationShader, "visualization.shader" );
 #endif
+
+		resourceRequestPool.beginLoadResource< ShaderSet >( &m_pLightingShader, "lighting.shader" );
+		resourceRequestPool.beginLoadResource< Texture >( &m_pReflectionTexture, "skybox_sea.texture" );
 
 		return true;
 	}
 
-	void GameRenderer::dispose( ResourceManager& resourceManager )
+	bool GameRenderer::createShaderResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
+	{
+		m_pLightingInputBinding = graphicsSystem.createVertexInputBinding( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if( m_pLightingInputBinding == nullptr )
+		{
+			dispose( resourceRequestPool );
+			return false;
+		}
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		m_pVisualizationInputBinding = graphicsSystem.createVertexInputBinding( m_pVisualizationShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if ( m_pVisualizationInputBinding == nullptr )
+		{
+			dispose( resourceRequestPool );
+			return false;
+		}
+#endif
+
+		m_renderEffectSystem.createShaderResourcees( graphicsSystem, resourceRequestPool );
+
+		return true;
+	}
+
+	void GameRenderer::dispose( ResourceRequestPool& resourceRequestPool )
 	{
 		TIKI_ASSERT( m_context.pGraphicsSystem != nullptr );
 		GraphicsSystem& graphicsSystem = *m_context.pGraphicsSystem;
@@ -150,8 +155,7 @@ namespace tiki
 		graphicsSystem.disposeVertexInputBinding( m_pVisualizationInputBinding );
 		m_pVisualizationInputBinding = nullptr;
 
-		resourceManager.unloadResource( m_pVisualizationShader );
-		m_pVisualizationShader = nullptr;
+		resourceRequestPool.unloadResource( m_pVisualizationShader );
 #endif
 
 		m_cameraParameterConstants.dispose( graphicsSystem );
@@ -160,11 +164,8 @@ namespace tiki
 		graphicsSystem.disposeVertexInputBinding( m_pLightingInputBinding );
 		m_pLightingInputBinding = nullptr;
 
-		resourceManager.unloadResource( m_pReflectionTexture );
-		m_pReflectionTexture = nullptr;
-
-		resourceManager.unloadResource( m_pLightingShader );
-		m_pLightingShader = nullptr;
+		resourceRequestPool.unloadResource( m_pReflectionTexture );
+		resourceRequestPool.unloadResource( m_pLightingShader );
 
 		graphicsSystem.disposeBlendState( m_pBlendStateAdd );
 		graphicsSystem.disposeBlendState( m_pBlendStateSet );
@@ -189,7 +190,6 @@ namespace tiki
 		m_renderBatch.dispose();
 	}
 
-
 	bool GameRenderer::resize( uint width, uint height )
 	{
 		disposeRenderTargets();
@@ -208,14 +208,23 @@ namespace tiki
 		return true;
 	}
 
-	void GameRenderer::registerRenderEffect( RenderEffect* pRenderEffect )
+	bool GameRenderer::registerRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool )
 	{
-		m_renderEffectSystem.registerRenderEffect( pRenderEffect );
+		if ( !renderEffect.create( m_context, *m_context.pGraphicsSystem, resourceRequestPool ) )
+		{
+			return false;
+		}
+
+		m_renderEffectSystem.registerRenderEffect( &renderEffect );
+
+		return true;
 	}
 
-	void GameRenderer::unregisterRenderEffect( RenderEffect* pRenderEffect )
+	void GameRenderer::unregisterRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool )
 	{
-		m_renderEffectSystem.unregisterRenderEffect( pRenderEffect );
+		m_renderEffectSystem.unregisterRenderEffect( &renderEffect );
+
+		renderEffect.dispose( *m_context.pGraphicsSystem, resourceRequestPool );
 	}
 	
 	void GameRenderer::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/, const SkinningData** ppSkinningData /*= nullptr*/ )

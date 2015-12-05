@@ -7,6 +7,11 @@ namespace tiki
 {
 	GameFlowSystem& framework::getGameFlowSystem()
 	{
-		return static_cast<Game&>(framework::getGame()).getGameFlowSystem();
+		return static_cast< Game& >( framework::getGame() ).getGameFlowSystem();
+	}
+
+	ResourceRequestPool& framework::getResourceRequestPool()
+	{
+		return static_cast< Game& >( framework::getGame() ).getResourceRequestPool();
 	}
 }
