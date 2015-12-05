@@ -14,4 +14,11 @@ namespace tiki
 	{
 		return static_cast< Game& >( framework::getGame() ).getResourceRequestPool();
 	}
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+	ImmediateRenderer& framework::getImmediateRenderer()
+	{
+		return static_cast< Game& >( framework::getGame() ).getImmediateRenderer();
+	}
+#endif
 }

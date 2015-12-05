@@ -8,7 +8,6 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/postskybox.hpp"
@@ -69,7 +68,6 @@ namespace tiki
 		SkinningData				m_skinningData;
 
 		GameRenderer*				m_pGameRenderer;
-		ImmediateRenderer			m_immediateRenderer;
 		FreeCamera					m_freeCamera;
 
 		DebugGuiTestWindow			m_testWindow;

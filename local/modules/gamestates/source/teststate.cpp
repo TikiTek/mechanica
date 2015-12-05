@@ -76,14 +76,10 @@ namespace tiki
 					framework::getResourceManager()
 				) );
 
-				m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() );
-
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
-
 				m_skybox.dispose(
 					framework::getGraphicsSystem(),
 					framework::getResourceManager()
@@ -183,8 +179,10 @@ namespace tiki
 					frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
-					
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )					
 					m_testWindow.create( framework::getDebugGui() );
+#endif
 					//m_lightingWindow.create( framework::getDebugGui() );
 
 					m_testWindow.setRectangle( Rectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
@@ -310,6 +308,9 @@ namespace tiki
 
 	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		ImmediateRenderer& immediateRenderer = framework::getImmediateRenderer();
+
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
 		//AnimationJoint::buildPoseMatrices( matrices, TIKI_COUNT( matrices ), m_animationData.getBegin(), *m_pModelPlayer->getHierarchy() );
@@ -330,47 +331,44 @@ namespace tiki
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		m_immediateRenderer.beginRendering( graphicsContext );
-		m_immediateRenderer.beginRenderPass();
+		immediateRenderer.beginRendering( graphicsContext );
+		immediateRenderer.beginRenderPass();
 
 		if ( m_gbufferIndex != -1 )
 		{
 			const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			m_immediateRenderer.drawTexturedRectangle( texture, rect );
+			immediateRenderer.drawTexturedRectangle( texture, rect );
 		}
 		else
 		{
 			const TextureData& texture = m_pGameRenderer->getAccumulationBuffer();
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
-			m_immediateRenderer.drawTexturedRectangle( texture, rect );
+			immediateRenderer.drawTexturedRectangle( texture, rect );
 		}
 
 		if ( m_enableBloom )
 		{
 			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
-			m_immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
+			immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
 		}
 
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
-		//m_immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
+		//immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
 
 		char buffer[ 128u ];
 		formatStringBuffer( buffer, TIKI_COUNT( buffer ), " FPS: %.2f", 1.0f / timeDelta );
 
-		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
-#endif
+		immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
 
-		m_immediateRenderer.endRenderPass();
-		m_immediateRenderer.endRendering();
+		immediateRenderer.endRenderPass();
+		immediateRenderer.endRendering();
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_enablePhysicsDebug )
 		{
-			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, m_immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
 		}
 #endif
 	}

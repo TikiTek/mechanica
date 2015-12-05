@@ -61,9 +61,13 @@ namespace tiki
 
 	bool Game::initializeGame()
 	{
-		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
+		GraphicsSystem& graphicsSystem		= framework::getGraphicsSystem();
+		ResourceManager& resourceManager	= framework::getResourceManager();
 
-		m_resourceRequestPool.create( framework::getResourceManager() );
+		m_factories.create( resourceManager, graphicsSystem );
+
+		m_resourceRequestPool.create( resourceManager );
+		m_immediateRenderer.create( graphicsSystem, resourceManager );
 
 		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
 		m_pStates->applicationState.create();
@@ -88,7 +92,7 @@ namespace tiki
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
 
-		if ( !m_touchSystem.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+		if ( !m_touchSystem.create( graphicsSystem, resourceManager ) )
 		{
 			return false;
 		}
@@ -98,7 +102,10 @@ namespace tiki
 
 	void Game::shutdownGame()
 	{
-		m_touchSystem.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+		GraphicsSystem& graphicsSystem		= framework::getGraphicsSystem();
+		ResourceManager& resourceManager	= framework::getResourceManager();
+
+		m_touchSystem.dispose( graphicsSystem, resourceManager );
 
 		if ( m_gameFlow.isCreated() )
 		{
@@ -131,6 +138,7 @@ namespace tiki
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
 
+		m_immediateRenderer.dispose( graphicsSystem, resourceManager );
 		m_resourceRequestPool.dispose();
 	}
 

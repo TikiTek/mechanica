@@ -7,6 +7,7 @@
 #include "tiki/framework/touchgamesystem.hpp"
 #include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 #include "tiki/runtimeshared/frameworkfactories.hpp"
 
@@ -33,6 +34,9 @@ namespace tiki
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
 		friend GameFlowSystem& framework::getGameFlowSystem();
 		friend ResourceRequestPool& framework::getResourceRequestPool();
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		friend ImmediateRenderer& framework::getImmediateRenderer();
+#endif
 
 	protected:
 
@@ -50,13 +54,19 @@ namespace tiki
 
 		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
 		ResourceRequestPool&	getResourceRequestPool() { return m_resourceRequestPool; }
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		ImmediateRenderer&		getImmediateRenderer() { return m_immediateRenderer; }
+#endif
 
 	private:
 
 		FrameworkFactories		m_factories;
 
-		GameFlowSystem			m_gameFlow;
+		ImmediateRenderer		m_immediateRenderer;
+
 		ResourceRequestPool		m_resourceRequestPool;
+
+		GameFlowSystem			m_gameFlow;
 		States*					m_pStates;
 
 		TouchGameSystem			m_touchSystem;
