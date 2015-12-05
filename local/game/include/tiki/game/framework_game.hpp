@@ -5,10 +5,13 @@
 namespace tiki
 {
 	class GameFlowSystem;
+	class ResourceRequestPool;
 
 	namespace framework
 	{
-		GameFlowSystem&	getGameFlowSystem();
+		GameFlowSystem&			getGameFlowSystem();
+
+		ResourceRequestPool&	getResourceRequestPool();
 	}
 }
 

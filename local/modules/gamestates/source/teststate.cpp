@@ -5,6 +5,7 @@
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
+#include "tiki/game/framework_game.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
@@ -19,7 +20,7 @@
 #include "tiki/math/rectangle.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/renderer/renderercontext.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
 {
@@ -100,25 +101,22 @@ namespace tiki
 		case TestStateTransitionSteps_LoadResources:
 			if ( isCreating )
 			{
+				ResourceRequestPool& resourceRequestPool = framework::getResourceRequestPool();
+
 				if ( isInital )
 				{
-					m_pFont				= framework::getResourceManager().loadResource< Font >( "debug.font" );
-					m_pFontBig			= framework::getResourceManager().loadResource< Font >( "big.font" );
-					m_pModelBox			= framework::getResourceManager().loadResource< Model >( "box.model" );
-					m_pModelBoxes		= framework::getResourceManager().loadResource< Model >( "spaceship.model" );
-					m_pModelPlane		= framework::getResourceManager().loadResource< Model >( "plane.model" );
-					m_pModelPlayer		= framework::getResourceManager().loadResource< Model >( "player.model" );
-					m_pAnimationPlayer	= framework::getResourceManager().loadResource< Animation >( "player.run.animation" );
-					
-					bool ok = true;
-					ok &= ( m_pFont != nullptr );
-					ok &= ( m_pFontBig != nullptr );
-					ok &= ( m_pModelBox != nullptr );
-					ok &= ( m_pModelBoxes != nullptr );
-					ok &= ( m_pModelPlane != nullptr );
-					ok &= ( m_pModelPlayer != nullptr );
-					ok &= ( m_pAnimationPlayer != nullptr );
-					if ( !ok )
+					resourceRequestPool.beginLoadResource< Font >( &m_pFont,					"debug.font" );
+					resourceRequestPool.beginLoadResource< Font >( &m_pFontBig,					"big.font" );
+					resourceRequestPool.beginLoadResource< Model >( &m_pModelBox,				"box.model" );
+					resourceRequestPool.beginLoadResource< Model >( &m_pModelBoxes,				"spaceship.model" );
+					resourceRequestPool.beginLoadResource< Model >( &m_pModelPlane,				"plane.model" );
+					resourceRequestPool.beginLoadResource< Model >( &m_pModelPlayer,			"player.model" );
+					resourceRequestPool.beginLoadResource< Animation >( &m_pAnimationPlayer,	"player.run.animation" );
+				}
+
+				if ( resourceRequestPool.isFinish() )
+				{
+					if ( resourceRequestPool.hasError() )
 					{
 						return TransitionState_Error;
 					}
@@ -128,31 +126,22 @@ namespace tiki
 
 					return TransitionState_Finish;
 				}
-				else
-				{
-					// TODO: make resource manager async
 
-					return TransitionState_Error;
-				}
+				return TransitionState_InProcess;
 			}
 			else
 			{
 				TIKI_ASSERT( isInital );
 
-				framework::getResourceManager().unloadResource( m_pAnimationPlayer );
-				framework::getResourceManager().unloadResource( m_pModelPlayer );
-				framework::getResourceManager().unloadResource( m_pModelPlane );
-				framework::getResourceManager().unloadResource( m_pModelBoxes );
-				framework::getResourceManager().unloadResource( m_pModelBox );
-				framework::getResourceManager().unloadResource( m_pFontBig );
-				framework::getResourceManager().unloadResource( m_pFont );
-				m_pFont					= nullptr;
-				m_pFontBig				= nullptr;
-				m_pModelBox				= nullptr;
-				m_pModelBoxes			= nullptr;
-				m_pModelPlane			= nullptr;
-				m_pModelPlayer			= nullptr;
-				m_pAnimationPlayer		= nullptr;
+				ResourceManager& resourceManager = framework::getResourceManager();
+
+				resourceManager.unloadResource( m_pAnimationPlayer );
+				resourceManager.unloadResource( m_pModelPlayer );
+				resourceManager.unloadResource( m_pModelPlane );
+				resourceManager.unloadResource( m_pModelBoxes );
+				resourceManager.unloadResource( m_pModelBox );
+				resourceManager.unloadResource( m_pFontBig );
+				resourceManager.unloadResource( m_pFont );
 				
 				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
 				m_animationData.dispose();
@@ -300,7 +289,6 @@ namespace tiki
 		gameClientUpdateContext.timeDelta		= timeDelta;
 		gameClientUpdateContext.totalGameTime	= totalGameTime;		
 		m_gameClient.update( gameClientUpdateContext );
-		m_gameClient.render( *m_pGameRenderer );
 
 		m_freeCamera.update( frameData.mainCamera, timeDelta );
 
@@ -316,6 +304,11 @@ namespace tiki
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
+	{
+		m_gameClient.render( *m_pGameRenderer );
+	}
+
+	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
@@ -339,7 +332,7 @@ namespace tiki
 
 		m_immediateRenderer.beginRendering( graphicsContext );
 		m_immediateRenderer.beginRenderPass();
-			
+
 		if ( m_gbufferIndex != -1 )
 		{
 			const TextureData& texture = m_pGameRenderer->getGeometryBufferBxIndex( m_gbufferIndex );
@@ -370,7 +363,7 @@ namespace tiki
 
 		m_immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
 #endif
-		
+
 		m_immediateRenderer.endRenderPass();
 		m_immediateRenderer.endRendering();
 

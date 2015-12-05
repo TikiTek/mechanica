@@ -18,7 +18,7 @@ namespace tiki
 	class GraphicsSystem;
 	class Model;
 	class RasterizerState;
-	class ResourceManager;
+	class ResourceRequestPool;
 	class SamplerState;
 	class ShaderSet;
 	class Texture;
@@ -70,13 +70,14 @@ namespace tiki
 		GameRenderer();
 		~GameRenderer();
 
-		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const GameRendererParamaters& parameters );
-		void				dispose( ResourceManager& resourceManager );
+		bool				create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool, const GameRendererParamaters& parameters );
+		bool				createShaderResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
+		void				dispose( ResourceRequestPool& resourceRequestPool );
 
 		bool				resize( uint width, uint height );
 
-		void				registerRenderEffect( RenderEffect* pRenderEffect );
-		void				unregisterRenderEffect( RenderEffect* pRenderEffect );
+		bool				registerRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool );
+		void				unregisterRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool );
 
 		FrameData&			getFrameData()			{ return m_frameData; }
 		RendererContext&	getRendererContext()	{ return m_context; }

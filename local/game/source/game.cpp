@@ -63,6 +63,8 @@ namespace tiki
 	{
 		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
 
+		m_resourceRequestPool.create( framework::getResourceManager() );
+
 		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
 		m_pStates->applicationState.create();
 		m_pStates->introState.create( &m_pStates->applicationState );
@@ -128,6 +130,8 @@ namespace tiki
 
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
+
+		m_resourceRequestPool.dispose();
 	}
 
 	void Game::update( bool wantToShutdown )
@@ -143,6 +147,7 @@ namespace tiki
 			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
 		} 
 
+		m_resourceRequestPool.update();
 		m_gameFlow.update();
 
 		if ( !m_gameFlow.isInTransition() && m_gameFlow.getCurrentState() == 0u )

@@ -31,6 +31,22 @@ namespace tiki
 		return true;
 	}
 
+	bool RenderEffectSystem::createShaderResourcees( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
+	{
+		for (uint i = 0u; i < m_effects.getCount(); ++i)
+		{
+			if ( m_effects[ i ] != nullptr )
+			{
+				if ( !m_effects[ i ]->createShaderResources( graphicsSystem, resourceRequestPool ) )
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	void RenderEffectSystem::dispose()
 	{
 		m_pRendererContext = nullptr;
