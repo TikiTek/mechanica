@@ -77,7 +77,7 @@ namespace tiki
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
-		resourceManager.unloadResource< ShaderSet >( m_pShader );
+		resourceManager.unloadResource( m_pShader );
 		m_pShader = nullptr;
 
 		m_vertexConstantBuffer.dispose( graphicsSystem );

@@ -1,5 +1,6 @@
 
-#include "tiki/framework/gameframework.hpp"
+#include "tiki/base/platform.hpp"
+#include "tiki/framework/gameapplication.hpp"
 
 #include "tiki/base/debug.hpp"
 
