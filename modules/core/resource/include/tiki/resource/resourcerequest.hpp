@@ -17,40 +17,24 @@ namespace tiki
 
 	public:
 
-									ResourceRequest();
-									~ResourceRequest();
+		TIKI_FORCE_INLINE			ResourceRequest();
+		TIKI_FORCE_INLINE			~ResourceRequest();
 		
-		void						create(uint resourceCount);
-		void						dispose();
-
 		TIKI_FORCE_INLINE bool		isLoading() const;
-		TIKI_FORCE_INLINE bool		isFinish() const;
 		TIKI_FORCE_INLINE bool		isSuccessful() const;
 
 		template< class T >
 		TIKI_FORCE_INLINE const T*	getResource() const;
 
-	private: // friend
-
-		void		create( const char* pFileName, fourcc resourceType );
-
 	private:
 
-		struct ResourceDesc
-		{
-			crc32			fileNameCrc;
-			fourcc			resourceType;
-			const Resource*	pResource;
-		};
-
-		SizedArray< ResourceDesc >	m_resources;
+		crc32						m_fileNameCrc;
+		fourcc						m_resourceType;
+		crc32						m_resourceKey;
+		const Resource*				m_pResource;
 
 		volatile bool				m_isLoading;
-		volatile bool				m_isFinish;
-		volatile bool				m_isSuccessful;
-
 		
-
 	};
 }
 

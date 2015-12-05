@@ -127,6 +127,8 @@ namespace tiki
 	bool Thread::waitForExit( uint timeOut /*= TimeOutInfinity */ )
 	{
 		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.threadId != getCurrentThreadId() );
+
 		if ( WaitForSingleObject( m_platformData.threadHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
 		{
 			return false;
@@ -177,6 +179,11 @@ namespace tiki
 		}
 
 		return nullptr;
+	}
+
+	void Thread::sleepCurrentThread( timems time )
+	{
+		Sleep( DWORD( time / 1000 ) );
 	}
 
 	void Thread::shutdownSystem()

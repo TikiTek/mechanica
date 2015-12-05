@@ -7,11 +7,17 @@
 #include "tiki/io/path.hpp"
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
+#include "tiki/resource/resourcerequest.hpp"
 #include "tiki/toollibraries/iassetconverter.hpp"
 
 namespace tiki
 {
 	TIKI_DEBUGPROP_BOOL( s_enableAssetConverterWatch, "EnableAssetConverterWatch", true );
+
+	struct ResourceManager::ResourceRequestData : LinkedItem< ResourceRequestData >
+	{
+		ResourceRequest request;
+	};
 
 	ResourceManager::ResourceManager()
 	{
@@ -28,6 +34,20 @@ namespace tiki
 	{
 		m_resourceStorage.create( params.maxResourceCount );
 		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
+
+		if ( !m_resourceRequests.create( params.maxRequestCount ) )
+		{
+			dispose();
+			return false;
+		}
+
+		m_loadingMutex.create();
+		if ( !m_loadingThread.create( staticThreadEntry, 1024 * 1024, "ResourceManager" ) )
+		{
+			dispose();
+			return false;
+		}
+		m_loadingThread.start( this );
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		AssetConverterParamter converterParameters;
@@ -65,6 +85,14 @@ namespace tiki
 			m_pAssetConverter = nullptr;
 		}
 #endif
+
+		m_loadingThread.requestExit();
+		m_loadingThread.waitForExit();
+		m_loadingThread.dispose();
+		m_loadingMutex.dispose();
+
+		m_resourceRequests.dispose();
+
 
 		m_resourceLoader.dispose();
 		m_resourceStorage.dispose();
@@ -115,40 +143,63 @@ namespace tiki
 		m_resourceLoader.unregisterResourceType( type );
 	}
 
-	const Resource* ResourceManager::loadGenericResource( fourcc type, crc32 resourceKey, const char* pFileName )
-	{
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
-		if ( s_enableAssetConverterWatch )
-		{
-			m_pAssetConverter->lockConversion();
-		}
-#endif
-
-		TIKI_ASSERT( pFileName != nullptr );
-		const crc32 crcFileName = crcString( pFileName );
-
-		Resource* pResource = nullptr;
-		const ResourceLoaderResult result = m_resourceLoader.loadResource( &pResource, crcFileName, resourceKey, type );
-		traceResourceLoadResult( result, pFileName, crcFileName, type );
-
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
-		if ( s_enableAssetConverterWatch )
-		{
-			m_pAssetConverter->unlockConversion();
-		}
-#endif
-
-		return pResource;	
-	}
-
-	void ResourceManager::unloadGenericResource( fourcc type, const Resource* pResource )
+	void ResourceManager::unloadResource( const Resource* pResource )
 	{
 		if ( pResource == nullptr )
 		{
 			return;
 		}
 
-		m_resourceLoader.unloadResource( pResource, type );
+		m_resourceLoader.unloadResource( pResource, pResource->getType() );
+	}
+
+	void ResourceManager::endResourceLoading( const ResourceRequest& request )
+	{
+		TIKI_ASSERT( !request.isLoading() );
+		m_resourceRequests.removeUnsortedByValue( getDataFromRequest( request ) );
+	}
+
+	ResourceManager::ResourceRequestData& ResourceManager::getDataFromRequest( const ResourceRequest& request ) const
+	{
+		uint8* pData = (uint8*)&request;
+		pData -= sizeof( ResourceRequestData ) - sizeof( ResourceRequest );
+
+		return *(ResourceRequestData*)pData;
+	}
+
+	const Resource* ResourceManager::loadGenericResource( const char* pFileName, fourcc type, crc32 resourceKey )
+	{
+		const ResourceRequest& request = beginGenericResourceLoading( pFileName, type, resourceKey );
+
+		while (request.isLoading())
+		{
+			Thread::sleepCurrentThread( 250 );
+		}
+
+		const Resource* pResource = request.m_pResource;
+		endResourceLoading( request );
+		return pResource;
+	}
+
+	const ResourceRequest& ResourceManager::beginGenericResourceLoading( const char* pFileName, fourcc type, crc32 resourceKey )
+	{
+		TIKI_ASSERT( pFileName != nullptr );
+		const crc32 crcFileName = crcString( pFileName );
+
+		ResourceRequestData& data	= m_resourceRequests.push();
+		ResourceRequest& request	= data.request;
+
+		request.m_fileNameCrc	= crcFileName;
+		request.m_resourceType	= type;
+		request.m_resourceKey	= resourceKey;
+		request.m_pResource		= nullptr;
+		request.m_isLoading		= true;
+
+		m_loadingMutex.lock();
+		m_runningRequests.push( data );
+		m_loadingMutex.unlock();
+
+		return data.request;
 	}
 
 	void ResourceManager::traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType )
@@ -199,4 +250,56 @@ namespace tiki
 		}
 	}
 
+	void ResourceManager::threadEntry( const Thread& thread )
+	{
+		while (!thread.isExitRequested())
+		{
+			ResourceRequestData* pData = nullptr;
+
+			m_loadingMutex.lock();
+			if (!m_runningRequests.isEmpty())
+			{
+				pData = &*m_runningRequests.getBegin();
+				m_runningRequests.removeSortedByValue(*m_runningRequests.getBegin());
+			}
+			m_loadingMutex.unlock();
+
+			if ( pData == nullptr )
+			{
+				Thread::sleepCurrentThread( 500 );
+				continue;
+			}
+
+			ResourceRequest& request = pData->request;
+
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+			if ( s_enableAssetConverterWatch )
+			{
+				m_pAssetConverter->lockConversion();
+			}
+#endif
+
+			const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType );
+
+			const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
+			traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
+
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+			if ( s_enableAssetConverterWatch )
+			{
+				m_pAssetConverter->unlockConversion();
+			}
+#endif
+
+			request.m_isLoading = false;
+		}
+	}
+
+	int ResourceManager::staticThreadEntry( const Thread& thread )
+	{
+		ResourceManager* pManager = (ResourceManager*)thread.getArgument();
+		pManager->threadEntry( thread );
+
+		return 0;
+	}
 }

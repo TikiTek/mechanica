@@ -40,6 +40,8 @@ namespace tiki
 
 		uint					        getProcessorCount();
 
+		void							getUserName( char* pBuffer, uint bufferSize );
+
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 		InstanceHandle					getInstanceHandle();
 		const StaticArray< cstring >&	getArguments();

@@ -6,6 +6,7 @@
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/graphicsrenderermode.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 #include "tiki/graphics/graphicsstateobjectcollection.hpp"
 #include "tiki/graphics/rasterizerstate.hpp"
@@ -29,13 +30,6 @@
 
 namespace tiki
 {
-	enum GraphicsRendererMode
-	{
-		GraphicsRendererMode_Hardware,
-		GraphicsRendererMode_Software,
-		GraphicsRendererMode_Wrapper,
-	};
-
 	enum StockVertexFormat
 	{
 		StockVertexFormat_Pos2,
