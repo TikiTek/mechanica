@@ -5,21 +5,25 @@
 #include "tiki/base/types.hpp"
 
 #include "tiki/framework/framework.hpp"
-
-#include "../../../source/frameworkdata.hpp"
+#include "tiki/graphics/graphicsrenderermode.hpp"
 
 namespace tiki
 {
-	class GameFramework;
+	class GameApplication;
+	class GraphicsContext;
+	struct FrameworkData;
+	struct InputEvent;
+	struct WindowEvent;
 
 	namespace framework
 	{
-		GameFramework& getGame();
+		GameApplication&	getGame();
+		FrameworkData&		getFrameworkData();
 	}
 
-	struct GameFrameworkParamters
+	struct GameApplicationParamters
 	{
-		GameFrameworkParamters()
+		GameApplicationParamters()
 		{
 			screenWidth			= 900;
 			screenHeight		= 600;
@@ -42,21 +46,21 @@ namespace tiki
 
 	};
 
-	class GameFramework
+	class GameApplication
 	{
 		friend int				framework::run();
 		friend FrameworkData&	framework::getFrameworkData();
 
 	protected:
 
-									GameFramework();
-		virtual						~GameFramework();
+									GameApplication();
+		virtual						~GameApplication();
 
 		int							run();
 
 	protected:
 
-		virtual void				fillParameters( GameFrameworkParamters& parameters ) TIKI_PURE;
+		virtual void				fillParameters( GameApplicationParamters& parameters ) TIKI_PURE;
 		virtual bool				initializeGame() TIKI_PURE;
 		virtual void				shutdownGame() TIKI_PURE;
 
@@ -72,8 +76,8 @@ namespace tiki
 		
 		bool						m_isInitialized;
 		
-		GameFrameworkParamters		m_parameters;
-		FrameworkData				m_frameworkData;
+		GameApplicationParamters	m_parameters;
+		FrameworkData*				m_pFrameworkData;
 	
 		bool						initialize();
 		void						shutdown();

@@ -77,14 +77,17 @@ namespace tiki
 		m_factories.remove( type );
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
+	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
 		TIKI_ASSERT( resourceKey != TIKI_INVALID_CRC32 );
 
-		if ( m_pStorage->findResource( ppTargetResource, resourceKey ) )
+		Resource* pFoundResource = nullptr;
+		if ( m_pStorage->findResource( &pFoundResource, resourceKey ) )
 		{
-			m_pStorage->addReferenceToResource( *ppTargetResource );
+			m_pStorage->addReferenceToResource( pFoundResource );
+			*ppTargetResource = pFoundResource;
+
 			return ResourceLoaderResult_Success;
 		}
 
@@ -283,9 +286,24 @@ namespace tiki
 		context.sectionData.sectorCount			= header.sectionCount;
 		context.sectionData.stringCount			= header.stringCount;
 		context.sectionData.linkCount			= header.linkCount;
-		context.sectionData.ppLinkedResources	= reinterpret_cast< Resource** >( ppPointers );
+		context.sectionData.ppLinkedResources	= (const Resource**)ppPointers ;
 		context.sectionData.ppStringPointers	= reinterpret_cast< char** >( ppPointers + header.linkCount );
 		context.sectionData.ppSectorPointers	= ppPointers + header.linkCount + header.stringCount;
+
+		for (uint i = 0u; i < context.sectionData.sectorCount; ++i)
+		{
+			context.sectionData.ppSectorPointers[ i ] = nullptr;
+		}
+
+		for (uint i = 0u; i < context.sectionData.stringCount; ++i)
+		{
+			context.sectionData.ppStringPointers[ i ] = nullptr;
+		}
+
+		for (uint i = 0u; i < context.sectionData.linkCount; ++i)
+		{
+			context.sectionData.ppLinkedResources[ i ] = nullptr;
+		}
 
 		context.pStream->setPosition( header.offsetInFile );
 		const uint sectionHeaderSize = sizeof( SectionHeader ) * header.sectionCount;
@@ -297,21 +315,33 @@ namespace tiki
 		{
 			return ResourceLoaderResult_OutOfMemory;
 		}
-		context.pStream->read( pSectionHeaders, sectionHeaderSize );
+
+		if ( context.pStream->read( pSectionHeaders, sectionHeaderSize ) != sectionHeaderSize )
+		{
+			return ResourceLoaderResult_WrongFileFormat;
+		}
 
 		StringItem* pStringItems = static_cast< StringItem* >( m_bufferAllocator.allocate( stringItemSize ) );
 		if ( pStringItems == nullptr )
 		{
 			return ResourceLoaderResult_OutOfMemory;
 		}
-		context.pStream->read( pStringItems, stringItemSize );
+		
+		if ( context.pStream->read( pStringItems, stringItemSize ) != stringItemSize )
+		{
+			return ResourceLoaderResult_WrongFileFormat;
+		}
 
 		ResourceLinkItem* pResourceLinks = static_cast< ResourceLinkItem* >( m_bufferAllocator.allocate( resourceLinkSize ) );
 		if ( pResourceLinks == nullptr )
 		{
 			return ResourceLoaderResult_OutOfMemory;
 		}
-		context.pStream->read( pResourceLinks, resourceLinkSize );
+
+		if ( context.pStream->read( pResourceLinks, resourceLinkSize ) != resourceLinkSize )
+		{
+			return ResourceLoaderResult_WrongFileFormat;
+		}
 
 		// load section data
 		uint initDataSectionIndex = TIKI_SIZE_T_MAX;
@@ -320,9 +350,16 @@ namespace tiki
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
 
 			void* pSectionData = TIKI_MEMORY_ALLOC_ALIGNED( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
+			if ( pSectionData == nullptr )
+			{
+				return ResourceLoaderResult_OutOfMemory;
+			}
 
 			context.pStream->setPosition( header.offsetInFile + sectionHeader.offsetInResource );
-			context.pStream->read( pSectionData, sectionHeader.sizeInBytes );
+			if ( context.pStream->read( pSectionData, sectionHeader.sizeInBytes ) != sectionHeader.sizeInBytes )
+			{
+				return ResourceLoaderResult_WrongFileFormat;
+			}
 
 			context.sectionData.ppSectorPointers[ i ] = pSectionData;
 
@@ -346,8 +383,12 @@ namespace tiki
 			{
 				return ResourceLoaderResult_OutOfMemory;
 			}
+
 			context.pStream->setPosition( header.offsetInFile + header.stringOffsetInResource );
-			context.pStream->read( pBlock, header.stringSizeInBytes );
+			if ( context.pStream->read( pBlock, header.stringSizeInBytes ) != header.stringSizeInBytes )
+			{
+				return ResourceLoaderResult_WrongFileFormat;
+			}
 
 			for (uint i = 0u; i < header.stringCount; ++i)
 			{
@@ -399,14 +440,18 @@ namespace tiki
 			{
 				return ResourceLoaderResult_OutOfMemory;
 			}
+			
 			context.pStream->setPosition( header.offsetInFile + sectionHeader.offsetInResource + sectionHeader.sizeInBytes );
-			context.pStream->read( pReferenceItems, referenceItemSize );
+			if ( context.pStream->read( pReferenceItems, referenceItemSize ) != referenceItemSize )
+			{
+				return ResourceLoaderResult_WrongFileFormat;
+			}
 
 			for (uint j = 0u; j < sectionHeader.referenceCount; ++j)
 			{
 				const ReferenceItem& item = pReferenceItems[ j ];
 
-				void* pPointer = nullptr;
+				const void* pPointer = nullptr;
 				switch ( item.type )
 				{
 				case ReferenceType_Pointer:
@@ -502,8 +547,7 @@ namespace tiki
 
 		for (uint i = 0u; i < sectionData.linkCount; ++i)
 		{
-			Resource* pLinkResource = sectionData.ppLinkedResources[ i ];
-
+			const Resource* pLinkResource = sectionData.ppLinkedResources[ i ];
 			if ( pLinkResource != nullptr )
 			{
 				unloadResource( pLinkResource, pLinkResource->getType() );

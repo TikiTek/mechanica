@@ -121,8 +121,9 @@ namespace tiki
 					}
 
 					writer.closeResource();
-					closeResourceWriter( writer );
 				}
+
+				closeResourceWriter( writer );
 			}
 			else
 			{

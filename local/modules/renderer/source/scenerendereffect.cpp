@@ -125,7 +125,7 @@ namespace tiki
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat[ ModelType_Skinned ] );
 		m_pVertexFormat[ ModelType_Skinned ] = nullptr;
 
-		resourceManager.unloadResource< ShaderSet >( m_pShader );
+		resourceManager.unloadResource( m_pShader );
 		m_pShader = nullptr;
 
 		m_vertexConstantBuffer.dispose( graphicsSystem );

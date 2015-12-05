@@ -8,14 +8,14 @@
 #include "tiki/base/types.hpp"
 #include "tiki/resource/resourcebase.hpp"
 
-#define TIKI_DEFINE_RESOURCE( class_name, cc )									\
-	public:																		\
-	virtual fourcc getType() const { return s_resourceType; }					\
-	static fourcc getResourceType() { return s_resourceType; }					\
-	private:																	\
-	static const fourcc s_resourceType = cc;									\
-	friend class ResourceLoader;												\
-	friend struct FactoryContextGenericBase< class_name >;						\
+#define TIKI_DEFINE_RESOURCE( class_name, cc )											\
+	public:																				\
+	virtual fourcc getType() const TIKI_OVERRIDE TIKI_FINAL { return s_resourceType; } 	\
+	static fourcc getResourceType() { return s_resourceType; }							\
+	private:																			\
+	static const fourcc s_resourceType = cc;											\
+	friend class ResourceLoader;														\
+	friend struct FactoryContextGenericBase< class_name >;								\
 	friend void memory::deleteObjectAligned< class_name >( class_name * ptr )
 
 namespace tiki
@@ -39,15 +39,15 @@ namespace tiki
 		const char*			getFileName() const { return ""; }
 #endif
 
+		virtual fourcc		getType() const TIKI_PURE;
+
 	protected:
 
 							Resource();
 		virtual				~Resource();
 
-		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) = 0;
-		virtual void		disposeInternal( const FactoryContext& factoryContext ) = 0;
-
-		virtual fourcc		getType() const = 0;
+		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) TIKI_PURE;
+		virtual void		disposeInternal( const FactoryContext& factoryContext ) TIKI_PURE;
 
 	private:
 

@@ -1,7 +1,7 @@
 
 #include "tiki/framework/framework.hpp"
 
-#include "tiki/framework/gameframework.hpp"
+#include "tiki/framework/gameapplication.hpp"
 
 #include "frameworkdata.hpp"
 

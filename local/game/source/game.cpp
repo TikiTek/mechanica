@@ -1,6 +1,7 @@
 
 #include "tiki/game/game.hpp"
 
+#include "tiki/base/timer.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/gamestates/basicteststate.hpp"
 #include "tiki/gamestates/creditsstate.hpp"
@@ -8,8 +9,6 @@
 #include "tiki/gamestates/menustate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
-
-#include <windows.h>
 
 namespace tiki
 {
@@ -27,12 +26,12 @@ namespace tiki
 	static GameStates getStartState()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		char buffer[ 32u ];
-		DWORD length = sizeof( buffer );
-		GetUserNameA( buffer, &length );
+		char userName[ 32u ];
+		platform::getUserName( userName, TIKI_COUNT( userName ) );
 
-		const string userName = buffer;
-		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
+		if ( isStringEquals( userName, "Tim") ||
+			 isStringEquals( userName, "tim.boden" ) ||
+			 isStringEquals( userName, "mail" ) )
 		{
 			return GameStates_Test;
 			//return GameStates_BasicTest;
@@ -43,7 +42,7 @@ namespace tiki
 		return GameStates_Play;
 	}
 
-	void Game::fillParameters( GameFrameworkParamters& parameters )
+	void Game::fillParameters( GameApplicationParamters& parameters )
 	{
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
@@ -186,7 +185,7 @@ namespace tiki
 		m_gameFlow.processWindowEvent( windowEvent );
 	}
 	
-	GameFramework& framework::getGame()
+	GameApplication& framework::getGame()
 	{
 		static Game game;
 		return game;

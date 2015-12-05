@@ -13,13 +13,13 @@ namespace tiki
 	{
 		struct 
 		{
-			LONG	highLong;
 			LONG	lowLong;
+			LONG	highLong;
 		}; 
 		struct 
 		{
-			DWORD	highDoubleWord;
 			DWORD	lowDoubleWord;
+			DWORD	highDoubleWord;
 		}; 
 		FileSize	size;
 		FileOffset	offset;
@@ -88,6 +88,8 @@ namespace tiki
 
 	FileSize FileStream::read( void* pTargetData, FileSize bytesToRead ) const
 	{
+		TIKI_ASSERT( isOpen() );
+
 		DWORD bytesRead = 0u;
 		
 		if ( ReadFile( m_fileHandle, pTargetData, DWORD( bytesToRead ), &bytesRead, nullptr ) )
@@ -100,6 +102,8 @@ namespace tiki
 
 	FileSize FileStream::write( const void* pSourceData, FileSize bytesToWrite )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		DWORD bytesWritten = 0u;
 		TIKI_VERIFY( WriteFile( m_fileHandle, pSourceData, DWORD( bytesToWrite ), &bytesWritten, nullptr ) );
 
@@ -108,11 +112,14 @@ namespace tiki
 
 	FileSize FileStream::getPosition() const
 	{
+		TIKI_ASSERT( isOpen() );
 		return SetFilePointer( m_fileHandle, 0, nullptr, FILE_CURRENT );
 	}
 
 	void FileStream::setPosition( FileSize position )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepPos;
 		sepPos.size = position;
 
@@ -121,6 +128,8 @@ namespace tiki
 
 	FileSize FileStream::seekPosition( FileOffset offset, DataStreamSeek method /* = DataStreamSeek_Current */ )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepOffset;
 		sepOffset.offset = offset;
 
@@ -131,6 +140,8 @@ namespace tiki
 
 	FileSize FileStream::getLength() const
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepLength;
 		sepLength.size = 0;
 
@@ -141,6 +152,8 @@ namespace tiki
 
 	void FileStream::setLength( FileSize length )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepLength;
 		sepLength.size = 0;
 		sepLength.lowDoubleWord = SetFilePointer( m_fileHandle, 0, &sepLength.highLong, FILE_END );

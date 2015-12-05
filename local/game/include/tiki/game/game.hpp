@@ -2,7 +2,7 @@
 #ifndef TIKI_TIKIARENAGAME_HPP
 #define TIKI_TIKIARENAGAME_HPP
 
-#include "tiki/framework/gameframework.hpp"
+#include "tiki/framework/gameapplication.hpp"
 
 #include "tiki/runtimeshared/frameworkfactories.hpp"
 #include "tiki/framework/touchgamesystem.hpp"
@@ -27,14 +27,14 @@ namespace tiki
 		GameStates_Count
 	};
 
-	class Game : public GameFramework
+	class Game : public GameApplication
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
 		friend GameFlowSystem& framework::getGameFlowSystem();
 
 	protected:
 
-		virtual void			fillParameters( GameFrameworkParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			fillParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual bool			initializeGame() TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			shutdownGame() TIKI_OVERRIDE TIKI_FINAL;
 

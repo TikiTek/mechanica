@@ -39,11 +39,6 @@ namespace tiki
 		IWebInterface*		pWebInterface;
 #endif
 	};
-
-	namespace framework
-	{
-		FrameworkData&	getFrameworkData();
-	}
 }
 
 #endif // TIKI_FRAMEWORKDATA_HPP__
