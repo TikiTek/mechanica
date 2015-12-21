@@ -1,20 +1,34 @@
 
 #include "tiki/gamestates/applicationstate.hpp"
 
-#include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
-#include "tiki/game/framework_game.hpp"
+#include "tiki/game/game.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
 {
-	void ApplicationState::create()
+	ApplicationState::ApplicationState()
 	{
+		m_pGame = nullptr;
+	}
+
+	ApplicationState::~ApplicationState()
+	{
+		TIKI_ASSERT( m_pGame == nullptr );
+	}
+
+	void ApplicationState::create( Game* pGame )
+	{
+		TIKI_ASSERT( pGame != nullptr );
+		TIKI_ASSERT( m_pGame == nullptr );
+
+		m_pGame = pGame;
 	}
 
 	void ApplicationState::dispose()
 	{
+		m_pGame = nullptr;
 	}
 
 	TransitionState ApplicationState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -23,8 +37,8 @@ namespace tiki
 		{
 		case ApplicationStateTransitionSteps_CreateGameRenderer:
 			{
-				GraphicsSystem& graphicsSystem = framework::getGraphicsSystem();
-				ResourceRequestPool& resourceRequestPool = framework::getResourceRequestPool();
+				GraphicsSystem& graphicsSystem = m_pGame->getGraphicsSystem();
+				ResourceRequestPool& resourceRequestPool = m_pGame->getResourceRequestPool();
 
 				if ( isCreating )
 				{
@@ -107,7 +121,7 @@ namespace tiki
 		{
 			if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
 			{
-				m_renderer.dispose( framework::getResourceRequestPool() );				
+				m_renderer.dispose( m_pGame->getResourceRequestPool() );
 			}
 		}
 	}

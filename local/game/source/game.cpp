@@ -61,8 +61,8 @@ namespace tiki
 
 	bool Game::initializeGame()
 	{
-		GraphicsSystem& graphicsSystem		= framework::getGraphicsSystem();
-		ResourceManager& resourceManager	= framework::getResourceManager();
+		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
+		ResourceManager& resourceManager	= getResourceManager();
 
 		m_factories.create( resourceManager, graphicsSystem );
 
@@ -70,11 +70,12 @@ namespace tiki
 		m_immediateRenderer.create( graphicsSystem, resourceManager );
 
 		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
-		m_pStates->applicationState.create();
+		m_pStates->applicationState.create( this );
 		m_pStates->introState.create( &m_pStates->applicationState );
-		m_pStates->playState.create( &m_pStates->applicationState );
-		m_pStates->testState.create( &m_pStates->applicationState );
-		m_pStates->basicTestState.create();
+		m_pStates->menuState.create( this, &m_pStates->applicationState );
+		m_pStates->playState.create( this, &m_pStates->applicationState );
+		m_pStates->testState.create( this, &m_pStates->applicationState );
+		m_pStates->basicTestState.create( this );
 
 		GameStateDefinition gameDefinition[] =
 		{
@@ -102,8 +103,8 @@ namespace tiki
 
 	void Game::shutdownGame()
 	{
-		GraphicsSystem& graphicsSystem		= framework::getGraphicsSystem();
-		ResourceManager& resourceManager	= framework::getResourceManager();
+		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
+		ResourceManager& resourceManager	= getResourceManager();
 
 		m_touchSystem.dispose( graphicsSystem, resourceManager );
 
@@ -149,7 +150,7 @@ namespace tiki
 			m_gameFlow.startTransition( 0u );
 		}
 
-		m_touchSystem.update( (float)framework::getFrameTimer().getElapsedTime(), framework::getGraphicsSystem() );
+		m_touchSystem.update( (float)getFrameTimer().getElapsedTime(), getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
 			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );

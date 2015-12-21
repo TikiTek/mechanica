@@ -20,6 +20,7 @@ namespace tiki
 	class Animation;
 	class ApplicationState;
 	class Font;
+	class Game;
 	class GameRenderer;
 	class Model;
 	class Texture;
@@ -36,11 +37,14 @@ namespace tiki
 
 	class TestState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( TestState );
+		TIKI_NONCOPYABLE_CLASS( TestState );
 
-	public:								
+	public:
 
-		void					create( ApplicationState* pParentState );
+								TestState();
+		virtual					~TestState();
+
+		void					create( Game* pGame, ApplicationState* pParentState );
 		void					dispose();
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
@@ -53,6 +57,7 @@ namespace tiki
 
 	private:
 		
+		Game*						m_pGame;
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
