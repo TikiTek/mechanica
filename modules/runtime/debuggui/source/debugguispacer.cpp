@@ -18,7 +18,7 @@ namespace tiki
 		return m_minSize;
 	}
 
-	void DebugGuiSpacer::update()
+	void DebugGuiSpacer::update( double /*elapsedTime*/ )
 	{
 	}
 

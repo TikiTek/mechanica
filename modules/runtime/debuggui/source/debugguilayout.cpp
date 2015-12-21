@@ -47,11 +47,11 @@ namespace tiki
 		refreshRectangle();
 	}
 
-	void DebugGuiLayout::update()
+	void DebugGuiLayout::update( double elapsedTime )
 	{
 		for ( LinkedIterator< DebugGuiControl > it = m_childControls.getBegin(); it != m_childControls.getEnd(); ++it )
 		{
-			it->update();
+			it->update( elapsedTime );
 		}
 	}
 

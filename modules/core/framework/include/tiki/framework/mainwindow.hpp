@@ -21,13 +21,13 @@ namespace tiki
 {
 	struct WindowParameters
 	{
-		uint		width;
-		uint		height;
+		InstanceHandle	instanceHandle;
 
-		cstring		pClassName;
-		cstring		pWindowTitle;
+		uint			width;
+		uint			height;				
+		cstring			pWindowTitle;
 	};
-
+	
 	class MainWindow
 	{
 		friend class MainWindowPlatform;

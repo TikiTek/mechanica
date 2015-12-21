@@ -26,13 +26,13 @@ namespace tiki
 		void						create( DebugGui& debugGui );
 		void						dispose();
 
-		virtual void				update() TIKI_OVERRIDE;
-		virtual void				render( ImmediateRenderer& renderer ) TIKI_OVERRIDE;
+		virtual void				update( double elapsedTime ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void				render( ImmediateRenderer& renderer ) TIKI_OVERRIDE TIKI_FINAL;
 
 	protected:
 
-		virtual bool				processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE;
-		virtual bool				processGuiEvent( const DebugGuiEvent& guiEvent ) TIKI_OVERRIDE;
+		virtual bool				processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool				processGuiEvent( const DebugGuiEvent& guiEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 

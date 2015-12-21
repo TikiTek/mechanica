@@ -119,15 +119,15 @@ namespace tiki
 		return minSize;
 	}
 
-	void DebugGuiWindow::update()
+	void DebugGuiWindow::update( double elapsedTime )
 	{
 		if ( !m_isVisible )
 		{
 			return;
 		}
 
-		m_pLayout->update();
-		m_minimizeButton.update();
+		m_pLayout->update( elapsedTime );
+		m_minimizeButton.update( elapsedTime );
 	}
 
 	void DebugGuiWindow::render( ImmediateRenderer& renderer )
