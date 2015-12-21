@@ -27,11 +27,14 @@ namespace tiki
 
 	class DebugGui
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( DebugGui );
+		TIKI_NONCOPYABLE_CLASS( DebugGui );
 		friend class DebugGuiControl;
 		friend class DebugGuiWindow;
 
 	public:
+
+					DebugGui();
+					~DebugGui();
 
 		bool		create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
 		void		dispose( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager );
@@ -41,7 +44,7 @@ namespace tiki
 
 		void		setScreenSize( const Vector2& screenSize );
 
-		void		update();
+		void		update( double elapsedTime );
 		void		render( GraphicsContext& graphicsContext );
 
 		bool		processInputEvent( const InputEvent& inputEvent );

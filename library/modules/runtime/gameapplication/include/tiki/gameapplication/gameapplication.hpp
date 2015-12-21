@@ -1,24 +1,30 @@
 #pragma once
-#ifndef TIKI_GAMEFRAMEWORK_HPP
-#define TIKI_GAMEFRAMEWORK_HPP
+#ifndef TIKI_GAMEAPPLICATION_HPP_INCLUDED
+#define TIKI_GAMEAPPLICATION_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
-#include "tiki/framework/framework.hpp"
 #include "tiki/graphics/graphicsrenderermode.hpp"
 
 namespace tiki
 {
+	class DebugGui;
 	class GameApplication;
 	class GraphicsContext;
-	struct FrameworkData;
+	class GraphicsSystem;
+	class IWebInterface;
+	class InputSystem;
+	class MainWindow;
+	class ResourceManager;
+	class Timer;
+	class WindowEventBuffer;
+	struct GameApplicationkData;
 	struct InputEvent;
 	struct WindowEvent;
 
 	namespace framework
 	{
-		GameApplication&	getGame();
-		FrameworkData&		getFrameworkData();
+		GameApplication& getGame();
 	}
 
 	struct GameApplicationParamters
@@ -48,15 +54,29 @@ namespace tiki
 
 	class GameApplication
 	{
-		friend int				framework::run();
-		friend FrameworkData&	framework::getFrameworkData();
+		TIKI_NONCOPYABLE_CLASS( GameApplication );
+
+	public:
+
+		int								run();
+
+		MainWindow&						getMainWindow() const;
+		GraphicsSystem&					getGraphicsSystem() const;
+		ResourceManager&				getResourceManager() const;
+		InputSystem&					getIputSystem() const;
+		const Timer&					getFrameTimer() const;
+		const WindowEventBuffer&		getWindowEventBufer() const;
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		DebugGui&						getDebugGui() const;
+#endif
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+		IWebInterface*					getWebInterface() const;
+#endif
 
 	protected:
 
 									GameApplication();
 		virtual						~GameApplication();
-
-		int							run();
 
 	protected:
 
@@ -77,7 +97,7 @@ namespace tiki
 		bool						m_isInitialized;
 		
 		GameApplicationParamters	m_parameters;
-		FrameworkData*				m_pFrameworkData;
+		GameApplicationkData*		m_pApplicationData;
 	
 		bool						initialize();
 		void						shutdown();
@@ -97,4 +117,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_GAMEFRAMEWORK_HPP
+#endif // TIKI_GAMEAPPLICATION_HPP_INCLUDED

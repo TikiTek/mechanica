@@ -4,7 +4,7 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/runtimeshared/windoweventbuffer.hpp"
+#include "tiki/framework/mainwindow.hpp"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -13,6 +13,23 @@
 
 namespace tiki
 {
+	struct TouchInputState;
+
+	namespace input
+	{
+		static bool									initializeKeyboard( InputSystemPlatformData& platformData, const InputSystemParameters& parameters );
+		static bool									initializeMouse( InputSystemPlatformData& platformData, const InputSystemParameters& parameters );
+		static bool									initializeTouch( InputSystemPlatformData& platformData, const InputSystemParameters& parameters );
+		static bool									initializeWindow( InputSystemPlatformData& platformData, InputSystem* pInputSystem );
+
+		static bool									handleWindowMessage( void* pUserData, UINT message, WPARAM wParam, LPARAM lParam );
+
+		TIKI_FORCE_INLINE static void				checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState );
+		TIKI_FORCE_INLINE static void				checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY );
+		TIKI_FORCE_INLINE static void				checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState );
+		TIKI_FORCE_INLINE static TouchInputState	getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uint touchMappingCapacity );
+	}
+
 	struct TouchInputState
 	{
 		bool			isValid;
@@ -170,7 +187,7 @@ namespace tiki
 		MouseButton_Middle
 	};
 
-	TIKI_FORCE_INLINE static void checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
+	TIKI_FORCE_INLINE static void input::checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
 	{
 		if ( currentState != previousState )
 		{
@@ -188,7 +205,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static void checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY )
+	TIKI_FORCE_INLINE static void input::checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY )
 	{
 		if ( currentStateX != previousStateX || currentStateY != previousStateY )
 		{
@@ -212,7 +229,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static void checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState )
+	TIKI_FORCE_INLINE static void input::checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState )
 	{
 		const bool isPressed	= isBitSet( currentState, nativeButton );
 		const bool wasPressed	= isBitSet( previousState, nativeButton );
@@ -235,7 +252,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static TouchInputState getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uint touchMappingCapacity )
+	TIKI_FORCE_INLINE static TouchInputState input::getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uint touchMappingCapacity )
 	{
 		uint firstFreeIndex = TIKI_SIZE_T_MAX;
 		for (uint i = 0u; i < touchMappingCapacity; ++i)
@@ -273,6 +290,95 @@ namespace tiki
 		return state;
 	}
 
+	bool input::initializeKeyboard( InputSystemPlatformData& platformData, const InputSystemParameters& parameters )
+	{
+		for( uint i = 0u; i < TIKI_COUNT( platformData.keyboardMapping ); ++i )
+		{
+			platformData.keyboardMapping[ i ] = 0xffu;
+		}
+
+		for( uint i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i )
+		{
+			const uint8 directInputCode = s_aVirtualKeyCodeMapping[ i ];
+			platformData.keyboardMapping[ directInputCode ] = uint8( i );
+		}
+
+		HRESULT result = platformData.pInputDevice->CreateDevice( GUID_SysKeyboard, &platformData.pKeyboard, nullptr );
+		if( SUCCEEDED( result ) && platformData.pKeyboard != nullptr )
+		{
+			if( SUCCEEDED( platformData.pKeyboard->SetDataFormat( &c_dfDIKeyboard ) ) )
+			{
+				result = platformData.pKeyboard->SetCooperativeLevel( (HWND)parameters.windowHandle, DISCL_FOREGROUND | DISCL_EXCLUSIVE );
+				if( SUCCEEDED( result ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool input::initializeMouse( InputSystemPlatformData& platformData, const InputSystemParameters& parameters )
+	{
+		HRESULT result = platformData.pInputDevice->CreateDevice( GUID_SysMouse, &platformData.pMouse, nullptr );
+		if( SUCCEEDED( result ) && platformData.pMouse != nullptr )
+		{
+			result = platformData.pMouse->SetDataFormat( &c_dfDIMouse );
+			if( SUCCEEDED( result ) )
+			{
+				result = platformData.pMouse->SetCooperativeLevel( (HWND)parameters.windowHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
+				if( SUCCEEDED( result ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	bool input::initializeTouch( InputSystemPlatformData& platformData, const InputSystemParameters& parameters )
+	{
+		const int touchMask = GetSystemMetrics( SM_DIGITIZER );
+		platformData.isTouchInputReady = isBitSet( touchMask, NID_READY );
+
+		for( uint i = 0u; i < TIKI_COUNT( platformData.touchInputMapping ); ++i )
+		{
+			platformData.touchInputMapping[ i ] = InvalidTouchInputMapping;
+		}
+
+		if( platformData.isTouchInputReady )
+		{
+			RegisterTouchWindow( (HWND)platformData.windowHandle, 0 );
+
+			return true;
+		}
+
+		return false;		
+	}
+
+	bool input::initializeWindow( InputSystemPlatformData& platformData, InputSystem* pInputSystem )
+	{
+		MainWindowUserData* pUserData = (MainWindowUserData*)GetWindowLongPtr( (HWND)platformData.windowHandle, GWLP_USERDATA );
+		if( pUserData != nullptr )
+		{
+			pUserData->apUserData[ MainWindowMesageHandler_InputSystem ]		= pInputSystem;
+			pUserData->apHandlerFunction[ MainWindowMesageHandler_InputSystem ]	= input::handleWindowMessage;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool input::handleWindowMessage( void* pUserData, UINT message, WPARAM wParam, LPARAM lParam )
+	{
+		InputSystem& inputSystem = *(InputSystem*)pUserData;
+		return InputSystemPlatform::handleWindowMessage( inputSystem, message, wParam, lParam );
+	}
+
 	InputSystem::InputSystem()
 	{
 	}
@@ -291,6 +397,12 @@ namespace tiki
 		m_platformData.windowHandle			= params.windowHandle;
 		m_platformData.currentStateIndex	= 0u;
 
+		if( !input::initializeWindow( m_platformData, this ) )
+		{
+			dispose();
+			return false;
+		}
+
 		m_platformData.pStates[ 0u ] = static_cast< InputSystemState* >( TIKI_MEMORY_ALLOC( sizeof( InputSystemState ) * 2u ) );
 		m_platformData.pStates[ 1u ] = m_platformData.pStates[ 0u ] + 1u;
 		memory::zero( m_platformData.pStates[ 0u ], sizeof( InputSystemState ) * 2u );
@@ -302,56 +414,34 @@ namespace tiki
 			return false;
 		}
 
-		// keyboard
-		for (uint i = 0u; i < TIKI_COUNT( m_platformData.keyboardMapping ); ++i)
+		if( input::initializeKeyboard( m_platformData, params ) )
 		{
-			m_platformData.keyboardMapping[ i ] = 0xffu;
-		} 
-
-		for (uint i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i)
+			InputDevice device;
+			device.deviceType	= InputDeviceType_Keyboard;
+			device.deviceId		= 0u;
+			connectDevice( device );
+		}
+		else
 		{
-			const uint8 directInputCode = s_aVirtualKeyCodeMapping[ i ];
-			m_platformData.keyboardMapping[ directInputCode ] = uint8( i );
-		} 
-
-		result = m_platformData.pInputDevice->CreateDevice( GUID_SysKeyboard, &m_platformData.pKeyboard, nullptr );
-		if( SUCCEEDED( result ) && m_platformData.pKeyboard != nullptr )
-		{
-			if( SUCCEEDED( m_platformData.pKeyboard->SetDataFormat( &c_dfDIKeyboard ) ) )
-			{
-				result = m_platformData.pKeyboard->SetCooperativeLevel( (HWND)params.windowHandle, DISCL_FOREGROUND | DISCL_EXCLUSIVE );
-				if( SUCCEEDED( result ) )
-				{
-					InputDevice device;
-					device.deviceType	= InputDeviceType_Keyboard;
-					device.deviceId		= 0u;
-					connectDevice( device );
-				}
-			}
+			TIKI_TRACE_ERROR( "[input] Unable to initilaize Keyboard.\n" );
 		}
 		
-		// mouse
-		result = m_platformData.pInputDevice->CreateDevice( GUID_SysMouse, &m_platformData.pMouse, nullptr );
-		if( SUCCEEDED( result ) && m_platformData.pMouse != nullptr )
+		if( input::initializeMouse( m_platformData, params ) )
 		{
-			result = m_platformData.pMouse->SetDataFormat( &c_dfDIMouse );
-			if( SUCCEEDED( result ) )
-			{
-				result = m_platformData.pMouse->SetCooperativeLevel( (HWND)params.windowHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
-				if( SUCCEEDED( result ) )
-				{
-					InputDevice device;
-					device.deviceType	= InputDeviceType_Mouse;
-					device.deviceId		= 0u;
-					connectDevice( device );
-				}
-			}
+			InputDevice device;
+			device.deviceType	= InputDeviceType_Mouse;
+			device.deviceId		= 0u;
+			connectDevice( device );
 		}
-
-		// controller
-		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
+		else
 		{
-			if ( XInputGetState( DWORD( controllerIndex ), &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
+			TIKI_TRACE_ERROR( "[input] Unable to initilaize Mouse.\n" );
+		}
+		
+		// controller
+		for( uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex )
+		{
+			if( XInputGetState( DWORD( controllerIndex ), &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
 				m_platformData.pStates[ 0u ]->aControllerConnected[ controllerIndex ] = true;
 
@@ -360,25 +450,19 @@ namespace tiki
 				device.deviceId		= controllerIndex;
 				connectDevice( device );
 			}
-		} 
+		}
 
 		// touch
-		const int touchMask = GetSystemMetrics( SM_DIGITIZER );
-		m_platformData.isTouchInputReady = isBitSet( touchMask, NID_READY );
-
-		if ( m_platformData.isTouchInputReady )
+		if( input::initializeTouch( m_platformData, params ) )
 		{
-			RegisterTouchWindow( (HWND)m_platformData.windowHandle, 0 );
-
 			InputDevice device;
 			device.deviceType	= InputDeviceType_Touch;
 			device.deviceId		= 0u;
 			connectDevice( device );
 		}
-
-		for (uint i = 0u; i < TIKI_COUNT( m_platformData.touchInputMapping ); ++i)
+		else
 		{
-			m_platformData.touchInputMapping[ i ] = InvalidTouchInputMapping;
+			TIKI_TRACE_ERROR( "[input] Unable to initilaize Touch.\n" );
 		}
 
 		return true;
@@ -413,6 +497,13 @@ namespace tiki
 		{
 			m_platformData.pInputDevice->Release();
 			m_platformData.pInputDevice = nullptr;
+		}
+
+		MainWindowUserData* pUserData = (MainWindowUserData*)GetWindowLongPtr( (HWND)m_platformData.windowHandle, GWLP_USERDATA );
+		if( pUserData != nullptr )
+		{
+			pUserData->apUserData[ MainWindowMesageHandler_InputSystem ]		= nullptr;
+			pUserData->apHandlerFunction[ MainWindowMesageHandler_InputSystem ]	= nullptr;
 		}
 	}
 
@@ -571,17 +662,17 @@ namespace tiki
 				const XINPUT_GAMEPAD& currentState = pCurrentState->aController[ controllerIndex ].Gamepad;
 				const XINPUT_GAMEPAD& previousState = pPreviousState->aController[ controllerIndex ].Gamepad;
 
-				checkControllerTrigger( m_events, controllerIndex, 0u, currentState.bLeftTrigger, previousState.bLeftTrigger );
-				checkControllerTrigger( m_events, controllerIndex, 1u, currentState.bRightTrigger, previousState.bRightTrigger );
+				input::checkControllerTrigger( m_events, controllerIndex, 0u, currentState.bLeftTrigger, previousState.bLeftTrigger );
+				input::checkControllerTrigger( m_events, controllerIndex, 1u, currentState.bRightTrigger, previousState.bRightTrigger );
 
-				checkControllerStick( m_events, controllerIndex, 0u, currentState.sThumbLX, previousState.sThumbLX, currentState.sThumbLY, previousState.sThumbLY );
-				checkControllerStick( m_events, controllerIndex, 1u, currentState.sThumbRX, previousState.sThumbRX, currentState.sThumbRY, previousState.sThumbRY );
+				input::checkControllerStick( m_events, controllerIndex, 0u, currentState.sThumbLX, previousState.sThumbLX, currentState.sThumbLY, previousState.sThumbLY );
+				input::checkControllerStick( m_events, controllerIndex, 1u, currentState.sThumbRX, previousState.sThumbRX, currentState.sThumbRY, previousState.sThumbRY );
 
 				const uint16 currentButtons = currentState.wButtons;
 				const uint16 previousButtons = previousState.wButtons;
 				for (uint i = 0u; i < TIKI_COUNT( s_aControllerButtonMapping ); ++i)
 				{
-					checkControllerButton( m_events, controllerIndex, (ControllerButton)i, s_aControllerButtonMapping[ i ], currentButtons, previousButtons );
+					input::checkControllerButton( m_events, controllerIndex, (ControllerButton)i, s_aControllerButtonMapping[ i ], currentButtons, previousButtons );
 				}
 			}
 			else if ( pCurrentState->aControllerConnected[ controllerIndex ] )
@@ -637,27 +728,27 @@ namespace tiki
 		}
 	}
 
-	void InputSystemPlatform::processTouchEvent( InputSystem& inputSystem, WPARAM wParam, LPARAM lParam )
+	/*static*/ bool InputSystemPlatform::handleWindowMessage( InputSystem& inputSystem, UINT message, WPARAM wParam, LPARAM lParam )
 	{
-		if ( inputSystem.m_platformData.isTouchInputReady )
+		if( message == WM_TOUCH && inputSystem.m_platformData.isTouchInputReady )
 		{
 			InputSystemState* pCurrentState = inputSystem.m_platformData.pStates[ inputSystem.m_platformData.currentStateIndex ];
 
 			const HTOUCHINPUT touchHandle = (HTOUCHINPUT)lParam;
 			const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), LOWORD( wParam ) );
-			if ( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
+			if( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
 			{
-				for (uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++)
+				for( uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++ )
 				{
-					const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[touchIndex];
+					const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[ touchIndex ];
 
-					const TouchInputState state = getTouchInputMapping( touchInput.dwID, inputSystem.m_platformData.touchInputMapping, TIKI_COUNT( inputSystem.m_platformData.touchInputMapping ) );
-					if ( !state.isValid )
+					const TouchInputState state = input::getTouchInputMapping( touchInput.dwID, inputSystem.m_platformData.touchInputMapping, TIKI_COUNT( inputSystem.m_platformData.touchInputMapping ) );
+					if( !state.isValid )
 					{
 						continue;
 					}
 
-					if ( state.isNewPoint )
+					if( state.isNewPoint )
 					{
 						TIKI_ASSERT( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) );
 						inputSystem.m_platformData.touchInputMapping[ state.index ] = touchInput.dwID;
@@ -669,11 +760,11 @@ namespace tiki
 					ScreenToClient( (HWND)inputSystem.m_platformData.windowHandle, &touchPoint );
 
 					InputEventType eventType = InputEventType_Touch_PointMove;
-					if ( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) )
+					if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) )
 					{
 						eventType = InputEventType_Touch_PointDown;
 					}
-					else if ( isBitSet( touchInput.dwFlags, TOUCHEVENTF_UP ) )
+					else if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_UP ) )
 					{
 						eventType = InputEventType_Touch_PointUp;
 
@@ -696,6 +787,74 @@ namespace tiki
 			}
 
 			CloseTouchInputHandle( touchHandle );
+
+			return true;
 		}
+
+		//case WM_KEYDOWN:
+		//	{
+		//		WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyDown );
+		//		event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
+		//	}
+		//	break;
+
+		//case WM_KEYUP:
+		//	{
+		//		WindowEvent& event	= s_pEventBuffer->pushEvent( WindowEventType_KeyUp );
+		//		event.data.key.key	= (KeyboardKey)MapVirtualKey( UINT( wParam ), 0 );
+		//	}
+		//	break;
+
+		//case WM_MOUSEMOVE:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseMove );
+		//		event.data.mouseMove.position.x	= GET_X_LPARAM( lParam );
+		//		event.data.mouseMove.position.y	= GET_Y_LPARAM( lParam );
+		//	}
+		//	break;
+
+		//case WM_LBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Left;
+		//	}
+		//	break;
+
+		//case WM_MBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Middle;
+		//	}
+		//	break;
+
+		//case WM_RBUTTONDOWN:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseDown );
+		//		event.data.mouseButton.button	= MouseButton_Right;
+		//	}
+		//	break;
+
+		//case WM_LBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Left;
+		//	}
+		//	break;
+
+		//case WM_MBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Middle;
+		//	}
+		//	break;
+
+		//case WM_RBUTTONUP:
+		//	{
+		//		WindowEvent& event				= s_pEventBuffer->pushEvent( WindowEventType_MouseUp );
+		//		event.data.mouseButton.button	= MouseButton_Right;
+		//	}
+		//	break;
+
+		return false;
 	}
 }

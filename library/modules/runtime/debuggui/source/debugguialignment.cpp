@@ -36,7 +36,7 @@ namespace tiki
 		return minSize;
 	}
 
-	void DebugGuiAlignment::update()
+	void DebugGuiAlignment::update( double /*elapsedTime*/ )
 	{
 	}
 

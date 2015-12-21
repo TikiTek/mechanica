@@ -44,7 +44,7 @@ namespace tiki
 		return vector::create( 25.0f, 25.0f );
 	}
 
-	void DebugGuiSlider::update()
+	void DebugGuiSlider::update( double elapsedTime )
 	{
 	}
 

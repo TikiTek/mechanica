@@ -20,24 +20,24 @@ namespace tiki
 		virtual void	addChildControl( DebugGuiControl* pChild );
 		virtual void	removeChildControl( DebugGuiControl* pChild );
 
-		virtual void	update();
-		virtual void	render( ImmediateRenderer& renderer );
+		virtual void	update( double elapsedTime ) TIKI_OVERRIDE;
+		virtual void	render( ImmediateRenderer& renderer ) TIKI_OVERRIDE;
 
-		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
+		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE;
 
 		uint			getChildCount() const;
 
 	protected:
 
-		DebugGuiLayout();
-		~DebugGuiLayout();
+											DebugGuiLayout();
+		virtual								~DebugGuiLayout();
 		
 		LinkedIterator< DebugGuiControl >	getChildrenBegin();
 		LinkedIterator< DebugGuiControl >	getChildrenEnd();
 
 	private:
 
-		LinkedList< DebugGuiControl >	m_childControls;
+		LinkedList< DebugGuiControl >		m_childControls;
 
 	};
 }

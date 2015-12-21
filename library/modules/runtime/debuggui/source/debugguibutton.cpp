@@ -47,7 +47,7 @@ namespace tiki
 		return vector::add( textSize, getPadding().getWidthHeight() );
 	}
 
-	void DebugGuiButton::update()
+	void DebugGuiButton::update( double /*elapsedTime*/ )
 	{
 	}
 

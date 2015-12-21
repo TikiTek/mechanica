@@ -1,5 +1,5 @@
 
-#include "tiki/framework/gameapplication.hpp"
+#include "tiki/gameapplication/gameapplication.hpp"
 
 namespace tiki
 {

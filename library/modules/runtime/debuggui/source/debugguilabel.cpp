@@ -39,7 +39,7 @@ namespace tiki
 	{
 	}
 
-	void DebugGuiLabel::update()
+	void DebugGuiLabel::update( double elapsedTime )
 	{
 	}
 

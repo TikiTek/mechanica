@@ -8,7 +8,7 @@ game:add_include_dir( "include" );
 
 game:add_dependency( "config" );
 game:add_dependency( "base" );
-game:add_dependency( "framework" );
+game:add_dependency( "gameapplication" );
 game:add_dependency( "gameflowsystem" );
 game:add_dependency( "gamestates" );
 game:add_dependency( "genericdata" );

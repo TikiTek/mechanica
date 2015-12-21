@@ -1,5 +1,6 @@
-#ifndef TIKI_FRAMEWORKDATA_HPP__
-#define TIKI_FRAMEWORKDATA_HPP__
+#pragma once
+#ifndef TIKI_GAMEAPPLICATIONDATA_HPP_INCLUDED
+#define TIKI_GAMEAPPLICATIONDATA_HPP_INCLUDED
 
 #include "tiki/base/timer.hpp"
 #include "tiki/debuggui/debuggui.hpp"
@@ -13,9 +14,9 @@
 
 namespace tiki
 {
-	struct FrameworkData
+	struct GameApplicationkData
 	{
-		FrameworkData()
+		GameApplicationkData()
 		{
 #if TIKI_ENABLED( TIKI_WEB_INTERFACE )
 			pWebInterface = nullptr;
@@ -41,4 +42,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_FRAMEWORKDATA_HPP__
+#endif // TIKI_GAMEAPPLICATIONDATA_HPP_INCLUDED

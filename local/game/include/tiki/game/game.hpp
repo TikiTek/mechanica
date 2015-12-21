@@ -2,10 +2,9 @@
 #ifndef TIKI_TIKIARENAGAME_HPP
 #define TIKI_TIKIARENAGAME_HPP
 
-#include "tiki/framework/gameapplication.hpp"
+#include "tiki/gameapplication/gameapplication.hpp"
 
 #include "tiki/framework/touchgamesystem.hpp"
-#include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
@@ -32,10 +31,13 @@ namespace tiki
 	class Game : public GameApplication
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
-		friend GameFlowSystem& framework::getGameFlowSystem();
-		friend ResourceRequestPool& framework::getResourceRequestPool();
+
+	public:
+
+		GameFlowSystem&			getGameFlowSystem()			{ return m_gameFlow; }
+		ResourceRequestPool&	getResourceRequestPool()	{ return m_resourceRequestPool; }
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		friend ImmediateRenderer& framework::getImmediateRenderer();
+		ImmediateRenderer&		getImmediateRenderer()		{ return m_immediateRenderer; }
 #endif
 
 	protected:
@@ -49,14 +51,6 @@ namespace tiki
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
-
-	private: // friend
-
-		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
-		ResourceRequestPool&	getResourceRequestPool() { return m_resourceRequestPool; }
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		ImmediateRenderer&		getImmediateRenderer() { return m_immediateRenderer; }
-#endif
 
 	private:
 

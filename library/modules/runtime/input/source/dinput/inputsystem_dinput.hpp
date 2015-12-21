@@ -54,7 +54,7 @@ namespace tiki
 	{
 	public:
 
-		static void processTouchEvent( InputSystem& inputSystem, WPARAM wParam, LPARAM lParam );
+		static bool handleWindowMessage( InputSystem& inputSystem, UINT message, WPARAM wParam, LPARAM lParam );
 
 	};
 }

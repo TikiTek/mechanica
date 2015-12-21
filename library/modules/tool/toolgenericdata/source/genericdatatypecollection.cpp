@@ -411,7 +411,7 @@ namespace tiki
 				else if ( modifier.modifier == "bit" )
 				{
 					const sint64 shift = ParseString::parseInt64( content.cStr() );
-					const sint64 value = 1 << shift;
+					const sint64 value = 1ll << shift;
 
 					content = StringConvert::ToString( value );
 				}

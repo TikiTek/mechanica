@@ -3,9 +3,8 @@
 
 #include "tiki/animation/animation.hpp"
 #include "tiki/base/timer.hpp"
-#include "tiki/framework/framework.hpp"
 #include "tiki/framework/mainwindow.hpp"
-#include "tiki/game/framework_game.hpp"
+#include "tiki/game/game.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
@@ -31,8 +30,21 @@ namespace tiki
 		float2	texCoord;
 	};
 	
-	void TestState::create( ApplicationState* pParentState )
+	TestState::TestState()
 	{
+		m_pGame			= nullptr;
+		m_pParentState	= nullptr;
+	}
+
+	TestState::~TestState()
+	{
+		TIKI_ASSERT( m_pGame == nullptr );
+		TIKI_ASSERT( m_pParentState == nullptr );
+	}
+
+	void TestState::create( Game* pGame, ApplicationState* pParentState )
+	{
+		m_pGame			= pGame;
 		m_pParentState	= pParentState;
 
 		m_pFont					= nullptr;
@@ -51,7 +63,8 @@ namespace tiki
 
 	void TestState::dispose()
 	{
-		m_pParentState = nullptr;
+		m_pGame			= nullptr;
+		m_pParentState	= nullptr;
 	}
 
 	TransitionState TestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -62,18 +75,18 @@ namespace tiki
 			if ( isCreating )
 			{
 				PostProcessBloomParameters bloomParameters;	
-				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
-				bloomParameters.height		= framework::getGraphicsSystem().getBackBuffer().getHeight() / 2u;
+				bloomParameters.width		= m_pGame->getGraphicsSystem().getBackBuffer().getWidth() / 2u;
+				bloomParameters.height		= m_pGame->getGraphicsSystem().getBackBuffer().getHeight() / 2u;
 				bloomParameters.passCount	= 6u;
 				TIKI_VERIFY( m_bloom.create(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager(),
+					m_pGame->getGraphicsSystem(),
+					m_pGame->getResourceManager(),
 					bloomParameters
 				) );
 
 				TIKI_VERIFY( m_skybox.create(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager()
+					m_pGame->getGraphicsSystem(),
+					m_pGame->getResourceManager()
 				) );
 
 				return TransitionState_Finish;
@@ -81,13 +94,13 @@ namespace tiki
 			else
 			{
 				m_skybox.dispose(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager()
+					m_pGame->getGraphicsSystem(),
+					m_pGame->getResourceManager()
 				);
 
 				m_bloom.dispose(
-					framework::getGraphicsSystem(),
-					framework::getResourceManager()
+					m_pGame->getGraphicsSystem(),
+					m_pGame->getResourceManager()
 				);
 
 				return TransitionState_Finish;
@@ -97,7 +110,7 @@ namespace tiki
 		case TestStateTransitionSteps_LoadResources:
 			if ( isCreating )
 			{
-				ResourceRequestPool& resourceRequestPool = framework::getResourceRequestPool();
+				ResourceRequestPool& resourceRequestPool = m_pGame->getResourceRequestPool();
 
 				if ( isInital )
 				{
@@ -118,7 +131,7 @@ namespace tiki
 					}
 
 					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
-					m_skinningData.matrices.create( framework::getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
+					m_skinningData.matrices.create( m_pGame->getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
 
 					return TransitionState_Finish;
 				}
@@ -129,7 +142,7 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
-				ResourceManager& resourceManager = framework::getResourceManager();
+				ResourceManager& resourceManager = m_pGame->getResourceManager();
 
 				resourceManager.unloadResource( m_pAnimationPlayer );
 				resourceManager.unloadResource( m_pModelPlayer );
@@ -139,7 +152,7 @@ namespace tiki
 				resourceManager.unloadResource( m_pFontBig );
 				resourceManager.unloadResource( m_pFont );
 				
-				m_skinningData.matrices.dispose( framework::getGraphicsSystem() );
+				m_skinningData.matrices.dispose( m_pGame->getGraphicsSystem() );
 				m_animationData.dispose();
 
 				return TransitionState_Finish;
@@ -181,9 +194,9 @@ namespace tiki
 					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )					
-					m_testWindow.create( framework::getDebugGui() );
+					m_testWindow.create( m_pGame->getDebugGui() );
 #endif
-					//m_lightingWindow.create( framework::getDebugGui() );
+					//m_lightingWindow.create( m_pGame->getDebugGui() );
 
 					m_testWindow.setRectangle( Rectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
 					//m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
@@ -212,8 +225,8 @@ namespace tiki
 
 	void TestState::update()
 	{
-		const float timeDelta = float( framework::getFrameTimer().getElapsedTime() );
-		const float totalGameTime = float( framework::getFrameTimer().getTotalTime() );
+		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
+		const float totalGameTime = float( m_pGame->getFrameTimer().getTotalTime() );
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
@@ -230,7 +243,7 @@ namespace tiki
 			TIKI_COLOR_YELLOW
 		};
 
-		const float timeValue = (float)framework::getFrameTimer().getTotalTime() / 10.0f;
+		const float timeValue = (float)m_pGame->getFrameTimer().getTotalTime() / 10.0f;
 		//for (uint i = 0u; i < pointLightCount; ++i)
 		//{
 		//	const float value = ( ( f32::twoPi / pointLightCount ) * i ) + ( timeValue * -5.0f );
@@ -290,11 +303,11 @@ namespace tiki
 
 		m_freeCamera.update( frameData.mainCamera, timeDelta );
 
-		const WindowEvent* pEvent = framework::getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
+		const WindowEvent* pEvent = m_pGame->getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
 		if ( pEvent != nullptr )
 		{
 			TIKI_VERIFY( m_bloom.resize(
-				framework::getGraphicsSystem(),
+				m_pGame->getGraphicsSystem(),
 				pEvent->data.sizeChanged.size.x / 2u,
 				pEvent->data.sizeChanged.size.y / 2u
 			) );
@@ -309,7 +322,7 @@ namespace tiki
 	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		ImmediateRenderer& immediateRenderer = framework::getImmediateRenderer();
+		ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
 
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
@@ -356,7 +369,7 @@ namespace tiki
 		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
 		//immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
 
-		const float timeDelta = (float)framework::getFrameTimer().getElapsedTime();
+		const float timeDelta = (float)m_pGame->getFrameTimer().getElapsedTime();
 
 		char buffer[ 128u ];
 		formatStringBuffer( buffer, TIKI_COUNT( buffer ), " FPS: %.2f", 1.0f / timeDelta );
