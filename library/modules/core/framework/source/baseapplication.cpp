@@ -1,6 +1,7 @@
 #include "tiki/framework/baseapplication.hpp"
 
 #include "tiki/base/timer.hpp"
+#include "tiki/framework/frameworkfactories.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/input/inputsystem.hpp"
@@ -13,8 +14,11 @@ namespace tiki
 	{
 		MainWindow			mainWindow;
 		GraphicsSystem		graphicSystem;
-		ResourceManager		resourceManager;
 		InputSystem			inputSystem;
+
+		ResourceManager		resourceManager;
+		FrameworkFactories	resourceFactories;
+
 		Timer				frameTimer;
 	};
 
@@ -40,7 +44,7 @@ namespace tiki
 			InputEvent inputEvent;
 			while( m_pBaseData->inputSystem.popEvent( inputEvent ) )
 			{
-				processInputEvent( inputEvent );
+				processBaseInputEvent( inputEvent );
 			}
 
 			while( frame() );
@@ -91,6 +95,11 @@ namespace tiki
 			return false;
 		}
 
+		if( !initializeFileSystem() )
+		{
+			return false;
+		}
+
 		if( !initializeFramework() )
 		{
 			return false;
@@ -110,6 +119,7 @@ namespace tiki
 	{
 		shutdownApplication();
 		shutdownFramework();
+		shutdownFileSystem();
 		shutdownPlatform();
 
 		TIKI_MEMORY_DELETE_OBJECT( m_pBaseData );
@@ -158,6 +168,8 @@ namespace tiki
 			return false;
 		}
 
+		m_pBaseData->resourceFactories.create( m_pBaseData->resourceManager, m_pBaseData->graphicSystem );
+
 		InputSystemParameters inputParams;
 		inputParams.windowHandle	= m_pBaseData->mainWindow.getHandle();
 		inputParams.instanceHandle	= platform::getInstanceHandle();
@@ -177,6 +189,7 @@ namespace tiki
 	{
 		m_pBaseData->inputSystem.dispose();
 		m_pBaseData->graphicSystem.dispose();
+		m_pBaseData->resourceFactories.dispose( m_pBaseData->resourceManager );
 		m_pBaseData->resourceManager.dispose();
 		m_pBaseData->mainWindow.dispose();
 	}
@@ -206,13 +219,9 @@ namespace tiki
 				{
 					return false;
 				}
-
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-				m_pBaseData->debugGui.setScreenSize( vector::create( (float)windowEvent.data.sizeChanged.size.x, (float)windowEvent.data.sizeChanged.size.y ) );
-#endif
 			}
 
-			processWindowEvent( windowEvent );
+			processBaseWindowEvent( windowEvent );
 		}
 
 		InputEvent inputEvent;
@@ -223,26 +232,9 @@ namespace tiki
 				wantToShutdown = true;
 			}
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-			if( m_pBaseData->debugGui.processInputEvent( inputEvent ) )
+			if( !processBaseInputEvent( inputEvent ) )
 			{
-				continue;
-			}
-#endif
 
-			if( !processInputEvent( inputEvent ) )
-			{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-				if( inputEvent.eventType == InputEventType_Keyboard_Down )
-				{
-					switch( inputEvent.data.keybaordKey.key )
-					{
-					case KeyboardKey_F1:
-						m_pBaseData->debugGui.setActive( !m_pBaseData->debugGui.getActive() );
-						break;
-					}
-				}
-#endif
 
 				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
 				//{

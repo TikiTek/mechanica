@@ -64,8 +64,6 @@ namespace tiki
 		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
 		ResourceManager& resourceManager	= getResourceManager();
 
-		m_factories.create( resourceManager, graphicsSystem );
-
 		m_resourceRequestPool.create( resourceManager );
 		m_immediateRenderer.create( graphicsSystem, resourceManager );
 
@@ -153,7 +151,7 @@ namespace tiki
 		m_touchSystem.update( (float)getFrameTimer().getElapsedTime(), getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
-			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
+			processGameInputEvent( m_touchSystem.getInputEventByIndex( i ) );
 		} 
 
 		m_resourceRequestPool.update();
@@ -172,7 +170,7 @@ namespace tiki
 		m_touchSystem.render( graphicsContext );
 	}
 
-	bool Game::processInputEvent( const InputEvent& inputEvent )
+	bool Game::processGameInputEvent( const InputEvent& inputEvent )
 	{
 		if ( m_touchSystem.processInputEvent( inputEvent ) )
 		{
@@ -194,7 +192,7 @@ namespace tiki
 		return m_gameFlow.processInputEvent( inputEvent );
 	}
 
-	void Game::processWindowEvent( const WindowEvent& windowEvent )
+	void Game::processGameWindowEvent( const WindowEvent& windowEvent )
 	{
 		m_gameFlow.processWindowEvent( windowEvent );
 	}

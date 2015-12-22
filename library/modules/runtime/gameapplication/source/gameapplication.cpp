@@ -3,7 +3,9 @@
 #include "tiki/base/timer.hpp"
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/debugguiwindows/debugguiwindows.hpp"
+#include "tiki/input/inputevent.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
+#include "tiki/runtimeshared/windowevent.hpp"
 #include "tiki/toollibraries/iwebinterrface.hpp"
 
 namespace tiki
@@ -61,13 +63,28 @@ namespace tiki
 		parameters.pResourceFileSystem	= &m_pGameData->gamebuildFileSystem;
 	}
 
-	bool GameApplication::initializeApplication()
+	bool GameApplication::initializeFileSystem()
 	{
+		m_pGameData = TIKI_MEMORY_NEW_OBJECT( GameApplicationkData );
+
 		if( !m_pGameData->gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
 		{
 			return false;
 		}
 
+		return true;
+	}
+
+	void GameApplication::shutdownFileSystem()
+	{
+		m_pGameData->gamebuildFileSystem.dispose();
+
+		TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
+		m_pGameData = nullptr;
+	}
+
+	bool GameApplication::initializeApplication()
+	{
 		if ( !initializeDebugSystems() )
 		{
 			return false;
@@ -81,8 +98,6 @@ namespace tiki
 		shutdownGame();
 
 		shutdownDebugSystems();
-
-		m_pGameData->gamebuildFileSystem.dispose();
 	}
 
 	void GameApplication::updateApplication( bool wantToShutdown )
@@ -105,6 +120,45 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_pGameData->debugGui.render( graphicsContext );
 #endif
+	}
+
+	bool GameApplication::processBaseInputEvent( const InputEvent& inputEvent )
+	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		if( m_pGameData->debugGui.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+#endif
+
+		if( !processGameInputEvent( inputEvent ) )
+		{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			if( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F1 )
+			{
+				m_pGameData->debugGui.setActive( !m_pGameData->debugGui.getActive() );
+
+				return true;
+			}
+#endif
+			return false;
+		}
+
+		return true;
+	}
+
+	void GameApplication::processBaseWindowEvent( const WindowEvent& windowEvent )
+	{
+		switch( windowEvent.type )
+		{
+		case WindowEventType_SizeChanged:
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+			m_pGameData->debugGui.setScreenSize( vector::create( (float)windowEvent.data.sizeChanged.size.x, (float)windowEvent.data.sizeChanged.size.y ) );
+#endif
+			break;
+		}
+
+		processGameWindowEvent( windowEvent );
 	}
 
 	bool GameApplication::initializeDebugSystems()

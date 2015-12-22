@@ -62,14 +62,16 @@ namespace tiki
 		virtual							~BaseApplication();
 
 		virtual void					fillBaseParameters( BaseApplicationParamters& parameters ) TIKI_PURE;
+		virtual bool					initializeFileSystem() TIKI_PURE;
+		virtual void					shutdownFileSystem() TIKI_PURE;
 		virtual bool					initializeApplication() TIKI_PURE;
 		virtual void					shutdownApplication() TIKI_PURE;
 
 		virtual void					updateApplication( bool wantToShutdown ) TIKI_PURE;
 		virtual void					renderApplication( GraphicsContext& graphicsContext ) const TIKI_PURE;
 
-		virtual bool					processInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
-		virtual void					processWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+		virtual bool					processBaseInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
+		virtual void					processBaseWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
 
 		bool							m_running;
 

@@ -8,7 +8,6 @@
 #include "tiki/gameflow/gameflowsystem.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
-#include "tiki/runtimeshared/frameworkfactories.hpp"
 
 namespace tiki
 {
@@ -49,12 +48,10 @@ namespace tiki
 		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool			processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
-
-		FrameworkFactories		m_factories;
 
 		ImmediateRenderer		m_immediateRenderer;
 
