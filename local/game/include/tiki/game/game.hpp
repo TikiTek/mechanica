@@ -42,12 +42,12 @@ namespace tiki
 
 	protected:
 
-		virtual void			fillParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual bool			initializeGame() TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			shutdownGame() TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void			update( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			render( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;

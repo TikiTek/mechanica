@@ -4,5 +4,6 @@
 /library/tools/commandlineconverter/build
 /library/tools/genericdatacodegenerator/build
 /library/tools/editor/build
+/library/tools/uieditor/build
 /local/mastering/output
 /local/game/build

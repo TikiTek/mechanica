@@ -42,7 +42,7 @@ namespace tiki
 		return GameStates_Play;
 	}
 
-	void Game::fillParameters( GameApplicationParamters& parameters )
+	void Game::fillGameParameters( GameApplicationParamters& parameters )
 	{
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
@@ -143,7 +143,7 @@ namespace tiki
 		m_resourceRequestPool.dispose();
 	}
 
-	void Game::update( bool wantToShutdown )
+	void Game::updateGame( bool wantToShutdown )
 	{
 		if ( wantToShutdown )
 		{
@@ -165,7 +165,7 @@ namespace tiki
 		}
 	}
 
-	void Game::render( GraphicsContext& graphicsContext ) const
+	void Game::renderGame( GraphicsContext& graphicsContext ) const
 	{
 		m_gameFlow.render( graphicsContext );
 
