@@ -1,11 +1,11 @@
 
-#include "tiki/framework/gameframework.hpp"
+#include "tiki/framework/baseapplication.hpp"
 
 #include "SDL.h"
 
 namespace tiki
 {
-	bool GameFramework::initializePlatform()
+	bool BaseApplication::initializePlatform()
 	{
 		if ( SDL_Init( SDL_INIT_GAMECONTROLLER ) < 0 )
 		{
@@ -16,12 +16,12 @@ namespace tiki
 		return true;
 	}
 
-	void GameFramework::shutdownPlatform()
+	void BaseApplication::shutdownPlatform()
 	{
 		SDL_Quit();
 	}
 
-	void GameFramework::updatePlatform()
+	void BaseApplication::updatePlatform()
 	{
 		SDL_Event sdlEvent;
 		while ( SDL_PollEvent( &sdlEvent ) )
