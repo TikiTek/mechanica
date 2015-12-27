@@ -717,16 +717,16 @@ namespace tiki
 		Vector3 scaleAxe2;
 		vector::set( scaleAxe2, axe2.x * radius, axe2.y * radius, axe2.z * radius );
 
-		int idx = 0;
-		for ( int i = 0; i < verticesPercircle; i++ )
+		uint idx = 0u;
+		for ( uint i = 0u; i < verticesPercircle; i++ )
 		{
 			Vector3 vt;
 			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
-			vector::scale( vt, f32::sin( ( f32::twoPi / verticesPercircle)*i ) );
+			vector::scale( vt, f32::sin( (f32::twoPi / verticesPercircle) * i ) );
 
 			Vector3 vtySin;
 			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
-			vector::scale( vtySin, f32::cos( ( f32::twoPi / verticesPercircle)*i ) );
+			vector::scale( vtySin, f32::cos( ( f32::twoPi / verticesPercircle) * i ) );
 
 			vector::add( vt, vtySin );
 			vector::add( vt, center );

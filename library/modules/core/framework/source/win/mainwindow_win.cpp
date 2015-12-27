@@ -76,7 +76,7 @@ namespace tiki
 			return false;
 		}
 
-		m_eventBuffer.create();
+		m_eventBuffer.create( params.maxWindowEvents );
 
 		m_platformData.userData.apUserData[ MainWindowMesageHandler_Window ]		= this;
 		m_platformData.userData.apHandlerFunction[ MainWindowMesageHandler_Window ]	= framework::handleWindowMessage;
@@ -128,8 +128,6 @@ namespace tiki
 
 	void MainWindow::update()
 	{
-		m_eventBuffer.clear();
-
 		MSG msg;
 		if( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
 		{
@@ -157,7 +155,7 @@ namespace tiki
 		return size;
 	}
 
-	const WindowEventBuffer& MainWindow::getEventBuffer() const
+	WindowEventBuffer& MainWindow::getEventBuffer()
 	{
 		return m_eventBuffer;
 	}

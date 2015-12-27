@@ -196,6 +196,8 @@ namespace tiki
 
 	bool BaseApplication::frame()
 	{
+		bool wantToShutdown = false;
+
 		m_pBaseData->frameTimer.update();
 		m_pBaseData->mainWindow.update();
 		m_pBaseData->resourceManager.update();
@@ -203,12 +205,11 @@ namespace tiki
 
 		updatePlatform();
 
-		bool wantToShutdown = false;
-		const uint windowEventCount = m_pBaseData->mainWindow.getEventBuffer().getEventCount();
-		for( uint i = 0u; i < windowEventCount; ++i )
-		{
-			const WindowEvent& windowEvent = m_pBaseData->mainWindow.getEventBuffer().getEventByIndex( i );
+		WindowEventBuffer& windowEventBuffer = m_pBaseData->mainWindow.getEventBuffer();
 
+		WindowEvent windowEvent;
+		while ( windowEventBuffer.popEvent( windowEvent ) )
+		{
 			if( windowEvent.type == WindowEventType_Destroy )
 			{
 				wantToShutdown = true;
@@ -234,8 +235,6 @@ namespace tiki
 
 			if( !processBaseInputEvent( inputEvent ) )
 			{
-
-
 				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
 				//{
 				//	const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );

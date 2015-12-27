@@ -3,7 +3,7 @@
 #define TIKI_WINDOWEVENTBUFFER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/base/queue.hpp"
 #include "tiki/runtimeshared/windowevent.hpp"
 
 namespace tiki
@@ -12,19 +12,17 @@ namespace tiki
 	{
 	public:
 
-		void						create();
+		bool						create( uint maxEventCount );
 		void						dispose();
 
-		void						clear();
+		bool						popEvent( WindowEvent& targetEvent );
 		WindowEvent&				pushEvent( WindowEventType type );
 
-		size_t						getEventCount() const;
-		const WindowEvent&			getEventByIndex( size_t index ) const;
-		const WindowEvent*			getEventByType( WindowEventType type ) const;
+		uint						getEventCount() const;
 
 	private:
 		
-		typedef FixedSizedArray< WindowEvent, TIKI_WINDOWEVENTBUFFER_SIZE > WindowEventArray;
+		typedef Queue< WindowEvent > WindowEventArray;
 
 		WindowEventArray			m_events;
 
