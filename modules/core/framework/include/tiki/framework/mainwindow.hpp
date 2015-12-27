@@ -21,11 +21,24 @@ namespace tiki
 {
 	struct WindowParameters
 	{
+		WindowParameters()
+		{
+			instanceHandle	= InvalidInstanceHandle;
+
+			width			= 0u;
+			height			= 0u;
+			pWindowTitle	= "";
+
+			maxWindowEvents	= 32u;
+		}
+
 		InstanceHandle	instanceHandle;
 
 		uint			width;
 		uint			height;				
 		cstring			pWindowTitle;
+
+		uint			maxWindowEvents;
 	};
 	
 	class MainWindow
@@ -45,7 +58,7 @@ namespace tiki
 
 		WindowHandle				getHandle() const;
 		uint2						getClientSize() const;
-		const WindowEventBuffer&	getEventBuffer() const;
+		WindowEventBuffer&			getEventBuffer();
 
 	private:
 

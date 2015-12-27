@@ -2,7 +2,7 @@
 
 local module = Module:new( "toolapplication" );
 
-module:add_files( "include/*.*" );
+module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
 module:add_files( "source/*.*" );
 

@@ -1,8 +1,6 @@
 
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
-#include "tiki/converterbase/converterhelper.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
@@ -11,6 +9,11 @@
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
+
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+#	include "tiki/converterbase/converterhelper.hpp"
+#	include "tiki/converterbase/resourcewriter.hpp"
+#endif
 
 namespace tiki
 {
@@ -67,6 +70,7 @@ namespace tiki
 
 	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const
 	{
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		const GenericDataType* pType = value.getType();
 
 		writer.writeAlignment( pType->getAlignment() );
@@ -357,6 +361,7 @@ namespace tiki
 			}
 			break;
 		}
+#endif
 
 		return false;
 	}

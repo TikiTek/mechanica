@@ -1,120 +1,65 @@
 #pragma once
-#ifndef TIKI_GAMEAPPLICATION_HPP_INCLUDED
-#define TIKI_GAMEAPPLICATION_HPP_INCLUDED
+#ifndef TIKI_TOOLAPPLICATION_HPP_INCLUDED
+#define TIKI_TOOLAPPLICATION_HPP_INCLUDED
 
-#include "tiki/base/types.hpp"
-
-#include "tiki/graphics/graphicsrenderermode.hpp"
+#include "tiki/framework/baseapplication.hpp"
 
 namespace tiki
 {
-	class DebugGui;
-	class GameApplication;
-	class GraphicsContext;
-	class GraphicsSystem;
-	class IWebInterface;
-	class InputSystem;
-	class MainWindow;
-	class ResourceManager;
-	class Timer;
-	class WindowEventBuffer;
-	struct GameApplicationkData;
-	struct InputEvent;
-	struct WindowEvent;
+	class ToolApplication;
 
 	namespace framework
 	{
-		GameApplication& getGame();
+		ToolApplication& getTool();
 	}
 
-	struct GameApplicationParamters
+	struct ToolApplicationParamters : public BaseApplicationParamters
 	{
-		GameApplicationParamters()
+		ToolApplicationParamters()
 		{
-			screenWidth			= 900;
-			screenHeight		= 600;
-			fullScreen			= false;
-			graphicsMode		= GraphicsRendererMode_Hardware;
-
-			pWindowTitle		= "TikiEngine 3.0";
-
-			pGamebuildPath		= "../../../../../gamebuild/";
 		}
-
-		uint					screenWidth;
-		uint					screenHeight;
-		bool					fullScreen;
-		GraphicsRendererMode	graphicsMode;
-
-		cstring					pWindowTitle;
-
-		cstring					pGamebuildPath;
-
 	};
 
-	class GameApplication
+	class ToolApplication : public BaseApplication
 	{
-		TIKI_NONCOPYABLE_CLASS( GameApplication );
+		TIKI_NONCOPYABLE_CLASS( ToolApplication );
 
 	public:
 
-		int								run();
+	protected:
 
-		MainWindow&						getMainWindow() const;
-		GraphicsSystem&					getGraphicsSystem() const;
-		ResourceManager&				getResourceManager() const;
-		InputSystem&					getIputSystem() const;
-		const Timer&					getFrameTimer() const;
-		const WindowEventBuffer&		getWindowEventBufer() const;
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		DebugGui&						getDebugGui() const;
-#endif
-#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
-		IWebInterface*					getWebInterface() const;
-#endif
+									ToolApplication();
+		virtual						~ToolApplication();
 
 	protected:
 
-									GameApplication();
-		virtual						~GameApplication();
+		virtual void				fillBaseParameters( BaseApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool				initializeFileSystem() TIKI_OVERRIDE TIKI_FINAL;
+		virtual void				shutdownFileSystem() TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool				initializeApplication() TIKI_OVERRIDE TIKI_FINAL;
+		virtual void				shutdownApplication() TIKI_OVERRIDE TIKI_FINAL;
 
-	protected:
+		virtual void				updateApplication( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void				renderApplication( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void				fillParameters( GameApplicationParamters& parameters ) TIKI_PURE;
-		virtual bool				initializeGame() TIKI_PURE;
-		virtual void				shutdownGame() TIKI_PURE;
+		virtual bool				processBaseInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void				processBaseWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void				update( bool wantToShutdown ) TIKI_PURE;
-		virtual void				render( GraphicsContext& graphicsContext ) const TIKI_PURE;
+		virtual void				fillToolParameters( ToolApplicationParamters& parameters ) TIKI_PURE;
+		virtual bool				initializeTool() TIKI_PURE;
+		virtual void				shutdownTool() TIKI_PURE;
 
-		virtual bool				processInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
-		virtual void				processWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+		virtual void				updateTool( bool wantToShutdown ) TIKI_PURE;
+		virtual void				renderTool( GraphicsContext& graphicsContext ) const TIKI_PURE;
 
-		bool						m_running;
+		virtual bool				processToolInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
+		virtual void				processToolWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
 
 	private:
-		
-		bool						m_isInitialized;
-		
-		GameApplicationParamters	m_parameters;
-		GameApplicationkData*		m_pApplicationData;
-	
-		bool						initialize();
-		void						shutdown();
 
-		bool						initializePlatform();
-		void						shutdownPlatform();
-		void						updatePlatform();
-
-		bool						initializeFramework();
-		void						shutdownFramework();
-
-		bool						initializeDebugSystems();
-		void						shutdownDebugSystems();
-
-		bool						frame();
+		ToolApplicationParamters	m_parameters;
 
 	};
 }
 
-#endif // TIKI_GAMEAPPLICATION_HPP_INCLUDED
+#endif // TIKI_TOOLAPPLICATION_HPP_INCLUDED
