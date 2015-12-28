@@ -2,7 +2,9 @@
 #ifndef TIKI_UITYPES_HPP_INCLUDED
 #define TIKI_UITYPES_HPP_INCLUDED
 
+#include "tiki/base/fixedarray.hpp"
 #include "tiki/base/linkedlist.hpp"
+#include "tiki/graphics/color.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -20,6 +22,16 @@ namespace tiki
 		UiElementFlags_DockEight	= 1u << 3u
 	};
 
+	enum UiElementPoints
+	{
+		UiElementPoints_TopLeft,
+		UiElementPoints_TopRight,
+		UiElementPoints_BottomRight,
+		UiElementPoints_BottomLeft,
+
+		UiElementPoints_Count
+	};
+
 	enum UiSizeType : uint8
 	{
 		UiSizeType_Auto,
@@ -35,14 +47,27 @@ namespace tiki
 		float		value;
 	};
 
-	struct UiElement
+	struct UiElement : public LinkedItem< UiElement >
 	{
-		Vector2			position;
-		UiSize			width;
-		UiSize			height;
-		Vector4			margin;
-		Vector4			padding;
-		UiElementFlags	flags;
+		typedef FixedArray< HdrColor, UiElementPoints_Count >	ColorArray;
+		typedef FixedArray< Vector2, UiElementPoints_Count >	TexCoordArray;
+
+		UiElementFlags			flags;
+
+		Vector2					position;
+		UiSize					width;
+		UiSize					height;
+
+		Vector2					layoutSize;
+		Vector4					margin;
+		Vector4					padding;
+
+		const Font*				pFont;
+		const char*				pText;
+
+		const TextureData*		pTexture;
+		ColorArray				colors;
+		TexCoordArray			texCoords;
 
 		LinkedList< UiElement >	children;
 	};
