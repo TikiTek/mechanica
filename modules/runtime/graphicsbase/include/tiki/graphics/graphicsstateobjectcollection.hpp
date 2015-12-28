@@ -2,7 +2,7 @@
 #ifndef __TIKI_GRAPHICSSTATEOBJECTCOLLECTION_HPP_INCLUDED__
 #define __TIKI_GRAPHICSSTATEOBJECTCOLLECTION_HPP_INCLUDED__
 
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/container/sizedarray.hpp"
 
 namespace tiki
 {

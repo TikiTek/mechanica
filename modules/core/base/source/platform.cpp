@@ -28,7 +28,7 @@ namespace tiki
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/debug.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/path.hpp"

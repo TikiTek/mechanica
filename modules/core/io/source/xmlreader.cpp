@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	void* xmlAlloc(size_t _bytes, void* pUserData)
+	void* __cdecl xmlAlloc(size_t _bytes, void* pUserData)
 	{
 		XmlReader* pXml	= static_cast< XmlReader* >( pUserData );
 		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
@@ -14,7 +14,7 @@ namespace tiki
 		return pXml->m_pData;
 	}
 
-	void xmlErrorHandler( const char* _errorMessage, const char* _begin, const char* _current )
+	void __cdecl xmlErrorHandler( const char* _errorMessage, const char* _begin, const char* _current )
 	{
 		TIKI_TRACE_ERROR( _errorMessage );
 	}

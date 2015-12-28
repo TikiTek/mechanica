@@ -2,7 +2,7 @@
 #ifndef TIKI_BASICSTRING_HPP_INCLUDED__
 #define TIKI_BASICSTRING_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

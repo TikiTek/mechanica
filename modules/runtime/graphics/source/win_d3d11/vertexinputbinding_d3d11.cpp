@@ -1,7 +1,7 @@
 
 #include "tiki/graphics/vertexinputbinding.hpp"
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/shader.hpp"

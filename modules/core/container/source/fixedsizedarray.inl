@@ -2,8 +2,6 @@
 #ifndef __TIKI_FIXEDSIZEDARRAY_INL_INCLUDED__
 #define __TIKI_FIXEDSIZEDARRAY_INL_INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
-
 namespace tiki
 {
 	template< typename T, uint TCapacity >

@@ -3,7 +3,7 @@
 #define TIKI_PLATFORM_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/staticarray.hpp"
 
 namespace tiki
 {

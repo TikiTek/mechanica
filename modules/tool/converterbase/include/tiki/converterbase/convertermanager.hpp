@@ -2,16 +2,16 @@
 #ifndef TIKI_CONVERTERMANAGER_HPP
 #define TIKI_CONVERTERMANAGER_HPP
 
-#include "tiki/base/staticarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/list.hpp"
+#include "tiki/container/map.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/sqlite.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/threading/mutex.hpp"
-#include "tiki/container/list.hpp"
-#include "tiki/container/map.hpp"
-#include "tiki/converterbase/sqlite.hpp"
 
 struct _XmlElement;
 

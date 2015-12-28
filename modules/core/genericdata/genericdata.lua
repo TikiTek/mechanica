@@ -8,6 +8,8 @@ module:add_files( path.join( global_configuration.root_path, "content/genericdat
 module:add_files( "genericdata.lua" );
 module:add_include_dir( "include" );
 
+module:add_dependency( "base" );
+module:add_dependency( "container" );
 module:add_dependency( "resource" );
 
 module.import_func = function(project)

@@ -2,7 +2,7 @@
 #ifndef TIKI_CHUNKSTORAGE_HPP_INCLUDED
 #define TIKI_CHUNKSTORAGE_HPP_INCLUDED
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

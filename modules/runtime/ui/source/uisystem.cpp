@@ -20,10 +20,7 @@ namespace tiki
 			return false;
 		}
 
-		ChunkStorageParameters storageParameters;
-		// TODO
-
-		if( !m_storage.create( storageParameters ) )
+		if( !m_elementPool.create( parameters.maxElementCount ) )
 		{
 			dispose();
 			return false;
@@ -34,8 +31,8 @@ namespace tiki
 
 	void UiSystem::dispose()
 	{
-		m_storage.dispose();
-
+		m_elementPool.dispose();
+		
 		m_renderer.dispose();
 	}
 

@@ -2,7 +2,7 @@
 #ifndef TIKI_DEBUGPROPMANAGER_HPP_INCLUDED__
 #define TIKI_DEBUGPROPMANAGER_HPP_INCLUDED__
 
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 
 namespace tiki
 {

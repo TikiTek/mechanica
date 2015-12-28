@@ -2,7 +2,7 @@
 #ifndef TIKI_DIRECTORY_HPP
 #define TIKI_DIRECTORY_HPP
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 

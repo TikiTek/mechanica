@@ -2,7 +2,7 @@
 #ifndef TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 #define TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/container/sizedarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/constantbuffer.hpp"

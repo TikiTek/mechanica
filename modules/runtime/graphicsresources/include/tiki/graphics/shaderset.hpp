@@ -2,7 +2,7 @@
 #ifndef __TIKI_SHADERSET_HPP_INCLUDED__
 #define __TIKI_SHADERSET_HPP_INCLUDED__
 
-#include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/resource/resource.hpp"

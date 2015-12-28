@@ -3,7 +3,7 @@
 #define TIKI_GENERICDATATYPE_HPP_INCLUDED__
 
 #include "tiki/base/basicstring.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"

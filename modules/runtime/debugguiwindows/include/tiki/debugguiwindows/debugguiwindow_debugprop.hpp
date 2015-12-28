@@ -4,7 +4,7 @@
 
 #include "tiki/debuggui/debugguiwindow.hpp"
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/debuggui/debugguialignment.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguihorizontallayout.hpp"
