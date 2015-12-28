@@ -4,6 +4,8 @@
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/vector.hpp"
 
+#include "uitypes.hpp"
+
 namespace tiki
 {
 	class Font;
@@ -14,17 +16,7 @@ namespace tiki
 		UiRenderElementType_TextureRectangle,
 		UiRenderElementType_Text
 	};
-
-	enum UiRenderVertexIndex
-	{
-		UiRenderVertexIndex_TopLeft,
-		UiRenderVertexIndex_TopRight,
-		UiRenderVertexIndex_BottomRight,
-		UiRenderVertexIndex_BottomLeft,
-
-		UiRenderVertexIndex_Count
-	};
-
+	
 	struct UiRenderElement
 	{
 		UiRenderElementType	type;
@@ -34,8 +26,9 @@ namespace tiki
 
 	struct UiRenderElementColorRectangle : public UiRenderElement
 	{
-		typedef FixedArray< HdrColor, UiRenderVertexIndex_Count >	ColorArray;
+		typedef FixedArray< HdrColor, UiElementPoints_Count >	ColorArray;
 
+		Vector2				position;
 		Vector2				size;
 		float				rotation;
 
@@ -44,7 +37,7 @@ namespace tiki
 
 	struct UiRenderElementDataTextureRectangle : public UiRenderElementColorRectangle
 	{
-		typedef FixedArray< Vector2, UiRenderVertexIndex_Count >	TexCoordArray;
+		typedef FixedArray< Vector2, UiElementPoints_Count >	TexCoordArray;
 
 		TexCoordArray		texCoords;
 		const TextureData*	pTextureData;
@@ -66,7 +59,13 @@ namespace tiki
 
 	bool UiRenderer::create( const UiRendererParameters& parameters )
 	{
-		return false;
+		//if ( !m_renderElements.create( parameters.maxRenderElements ) )
+		//{
+		//	dispose();
+		//	return false;
+		//}
+
+		return true;
 	}
 
 	void UiRenderer::dispose()
@@ -75,10 +74,25 @@ namespace tiki
 
 	void UiRenderer::update( const UiRenderData& renderData )
 	{
+		//m_renderElements.clear();
 	}
 
 	void UiRenderer::render( GraphicsContext& context ) const
 	{
 	}
 
+	void UiRenderer::updateRecursiveRenderTree( const UiElement& element )
+	{
+		UiRenderElement* pRenderElement = nullptr;
+		if( element.pFont != nullptr )
+		{
+			//pRenderElement = m_
+		}
+		
+
+		for( uint i = 0u; i < element.children.getCount(); ++i )
+		{
+
+		}
+	}
 }
