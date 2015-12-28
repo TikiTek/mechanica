@@ -1,7 +1,7 @@
 #ifndef TIKI_INPUTSYSTEM_HPP__
 #define TIKI_INPUTSYSTEM_HPP__
 
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/input/inputdevice.hpp"

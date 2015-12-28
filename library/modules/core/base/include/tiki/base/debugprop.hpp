@@ -3,7 +3,7 @@
 #define TIKI_DEBUGPROP_HPP__INCLUDED
 
 #include "tiki/base/debugpropmanager.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 

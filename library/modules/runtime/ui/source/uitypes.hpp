@@ -2,8 +2,8 @@
 #ifndef TIKI_UITYPES_HPP_INCLUDED
 #define TIKI_UITYPES_HPP_INCLUDED
 
-#include "tiki/base/fixedarray.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/fixedarray.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/vector.hpp"
 

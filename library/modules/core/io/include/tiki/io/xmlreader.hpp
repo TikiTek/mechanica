@@ -2,7 +2,7 @@
 #ifndef TIKI_TIKIXML_HPP
 #define TIKI_TIKIXML_HPP
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 

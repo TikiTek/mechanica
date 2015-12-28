@@ -1,8 +1,8 @@
 #ifndef TIKI_VERTEXFORMAT_HPP
 #define TIKI_VERTEXFORMAT_HPP
 
-#include "tiki/base/fixedarray.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 #include "tiki/graphics/graphicssystemlimits.hpp"

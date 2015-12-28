@@ -2,7 +2,7 @@
 #ifndef __TIKI_DEBUGMENU_HPP_INCLUDED__
 #define __TIKI_DEBUGMENU_HPP_INCLUDED__
 
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/debuggui/debugguievent.hpp"

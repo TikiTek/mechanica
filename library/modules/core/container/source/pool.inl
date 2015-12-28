@@ -3,6 +3,7 @@
 #define TIKI_POOL_INL_INCLUDED__
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/memory.hpp"
 
 namespace tiki
 {

@@ -3,7 +3,7 @@
 #define TIKI_BASICSTRING_INL_INCLUDED__
 
 #include "tiki/base/memory.hpp"
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/container/sizedarray.hpp"
 #include "tiki/base/string.hpp"
 
 namespace tiki

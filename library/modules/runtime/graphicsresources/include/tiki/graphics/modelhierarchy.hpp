@@ -3,7 +3,7 @@
 #define TIKI_MODELHIERARCHY_HPP
 
 #include "tiki/base/simd.hpp"
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 

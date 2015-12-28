@@ -1,8 +1,8 @@
 #ifndef TIKI_GRAPHICCOMMANDWRITER_HPP__
 #define TIKI_GRAPHICCOMMANDWRITER_HPP__
 
-#include "tiki/base/array.hpp"
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/graphicssystemlimits.hpp"

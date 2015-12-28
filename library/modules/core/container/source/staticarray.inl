@@ -2,7 +2,6 @@
 #ifndef TIKI_STATICARRAY_INL
 #define TIKI_STATICARRAY_INL
 
-#include "tiki/base/staticarray.hpp"
 #include "tiki/base/assert.hpp"
 
 namespace tiki

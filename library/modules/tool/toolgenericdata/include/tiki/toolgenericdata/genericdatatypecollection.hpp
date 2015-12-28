@@ -2,8 +2,8 @@
 #ifndef TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 #define TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 
-#include "tiki/base/fixedarray.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/fixedarray.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/container/map.hpp"

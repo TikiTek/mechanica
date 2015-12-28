@@ -3,7 +3,7 @@
 #define __TIKI_THREAD_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include "../../../source/win/platformdata_win.hpp"

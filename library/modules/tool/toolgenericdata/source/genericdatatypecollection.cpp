@@ -568,7 +568,7 @@ namespace tiki
 
 		static const char* s_pReference			= "\tclass %s;\n";
 		static const char* s_pStringInclude		= "#include \"tiki/base/basicstring.hpp\"\n";
-		static const char* s_pArrayInclude		= "#include \"tiki/base/staticarray.hpp\"\n";
+		static const char* s_pArrayInclude		= "#include \"tiki/container/staticarray.hpp\"\n";
 		static const char* s_pResourceInclude	= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
 		static const char* s_pReferenceInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
 		static const char* s_pDependencyInclude	= "#include \"%s.hpp\"\n";

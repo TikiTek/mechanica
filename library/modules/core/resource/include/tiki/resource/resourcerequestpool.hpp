@@ -2,7 +2,7 @@
 #ifndef TIKI_RESOURCEREQUESTPOOL_HPP_INCLUDED__
 #define TIKI_RESOURCEREQUESTPOOL_HPP_INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

@@ -2,8 +2,8 @@
 #ifndef TIKI_RESOURCEREQUEST_HPP_INCLUDED__
 #define TIKI_RESOURCEREQUEST_HPP_INCLUDED__
 
-#include "tiki/base/linkedlist.hpp"
-#include "tiki/base/sizedarray.hpp"
+#include "tiki/container/linkedlist.hpp"
+#include "tiki/container/sizedarray.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

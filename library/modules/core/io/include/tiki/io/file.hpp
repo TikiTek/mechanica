@@ -2,7 +2,7 @@
 #ifndef TIKI_FILE_HPP
 #define TIKI_FILE_HPP
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

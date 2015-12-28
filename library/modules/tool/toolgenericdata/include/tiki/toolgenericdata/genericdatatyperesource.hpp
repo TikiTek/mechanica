@@ -5,7 +5,7 @@
 #include "tiki/toolgenericdata/genericdatatype.hpp"
 
 #include "tiki/base/basicstring.hpp"
-#include "tiki/base/fixedarray.hpp"
+#include "tiki/container/fixedarray.hpp"
 
 namespace tiki
 {

@@ -2,8 +2,9 @@
 #ifndef TIKI_UISYSTEM_HPP_INCLUDED
 #define TIKI_UISYSTEM_HPP_INCLUDED
 
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/container/chunkstorage.hpp"
+#include "tiki/container/pool.hpp"
 #include "tiki/ui/uirenderer.hpp"
 
 namespace tiki
@@ -37,9 +38,10 @@ namespace tiki
 
 	private:
 
-		UiRenderer		m_renderer;
+		UiRenderer				m_renderer;
 
-		ChunkStorage	m_storage;
+		Pool< UiElement >		m_elementPool;
+		LinkedList< UiElement >	m_elements;
 
 	};
 }
