@@ -3,6 +3,7 @@
 local module = Module:new( "ui" );
 
 module:add_files( "include/tiki/ui/*.*" );
+module:add_files( "source/shader/*.fx" );
 module:add_files( "source/*.*" );
 module:add_files( "ui.lua" );
 module:add_include_dir( "include" );

@@ -46,6 +46,7 @@ module:add_files( "src/video/*.c" );
 module:add_files( "src/video/*.h" );
 module:add_files( "src/video/dummy/*.c" );
 module:add_files( "src/video/dummy/*.h" );
+module:add_files( "sdl.lua" );
 
 if is_windows then
 	module:add_files( "src/audio/winmm/*.c" );

@@ -3,6 +3,7 @@
 local module = Module:new( "commandlineconverter" );
 
 module:add_files( "source/*.*" );
+module:add_files( "commandlineconverter.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "toollibraries" );

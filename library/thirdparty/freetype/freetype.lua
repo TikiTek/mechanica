@@ -5,6 +5,7 @@ local module = Module:new( "freetype" );
 module.module_type = ModuleTypes.UnityCModule;
 
 module:add_files( "include/*.h" );
+module:add_files( "freetype.lua" );
 module:add_include_dir( "include" );
 
 module:add_files( "src/autofit/autofit.c" );

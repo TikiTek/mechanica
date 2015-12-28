@@ -31,6 +31,8 @@ module:add_files( "lib/rawstr.h" );
 module:add_files( "lib/nonblock.h" );
 module:add_files( "lib/warnless.h" );
 
+module:add_files( "curl.lua" );
+
 module:set_define( "CURL_STATICLIB" );
 
 module:add_library_file( "ws2_32" );

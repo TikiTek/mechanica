@@ -3,6 +3,7 @@
 local module = Module:new( "webinterfacelibrary" );
 
 module:add_files( "source/*.*" );
+module:add_files( "webinterfacelibrary.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "threading" );

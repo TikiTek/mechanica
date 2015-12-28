@@ -4,6 +4,7 @@ local module = Module:new( "framework" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( "framework.lua" );
 module:add_include_dir( "include" );
 
 if use_sdl then

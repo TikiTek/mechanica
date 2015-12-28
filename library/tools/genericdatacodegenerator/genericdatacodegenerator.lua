@@ -3,6 +3,7 @@
 local module = Module:new( "genericdatacodegenerator" );
 
 module:add_files( "source/*.*" );
+module:add_files( "genericdatacodegenerator.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "toolbase" );
