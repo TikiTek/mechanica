@@ -3,7 +3,6 @@
 #define TIKI_LIST_HPP
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
@@ -22,7 +21,7 @@ namespace tiki
 		TIKI_FORCE_INLINE					Pool();
 		TIKI_FORCE_INLINE					~Pool();
 
-		TIKI_FORCE_INLINE bool				create(uint capacity);
+		TIKI_FORCE_INLINE bool				create( uint capacity );
 		TIKI_FORCE_INLINE void				dispose();
 
 		TIKI_FORCE_INLINE uint				getCount() const;

@@ -2,7 +2,7 @@
 #ifndef __TIKI_PHYSICSINTERNAL_HPP_INCLUDED__
 #define __TIKI_PHYSICSINTERNAL_HPP_INCLUDED__
 
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 

@@ -2,7 +2,6 @@
 #ifndef TIKI_MEMORY_HPP
 #define TIKI_MEMORY_HPP
 
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/base/assert.hpp"
 

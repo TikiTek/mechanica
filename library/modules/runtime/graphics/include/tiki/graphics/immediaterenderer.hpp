@@ -8,7 +8,6 @@
 #include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/math/intersection.hpp"
 
 #include "base.hpp"
@@ -21,7 +20,6 @@ namespace tiki
 	class Font;
 	class GraphicsContext;
 	class GraphicsSystem;
-	class Projection;
 	class RasterizerState;
 	class RenderTarget;
 	class ResourceManager;
@@ -31,6 +29,7 @@ namespace tiki
 	class VertexFormat;
 	class VertexInputBinding;
 	struct Box;
+	struct Matrix43;
 	struct Rectangle; 
 	struct Vector2;
 

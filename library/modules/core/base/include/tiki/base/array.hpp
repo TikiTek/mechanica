@@ -4,7 +4,6 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/types.hpp"
 

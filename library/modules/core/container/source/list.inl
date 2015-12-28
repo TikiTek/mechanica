@@ -3,7 +3,6 @@
 #define TIKI_LIST_INL
 
 #include "tiki/base/functions.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/memory.hpp"
 
 namespace tiki

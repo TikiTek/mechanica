@@ -3,7 +3,6 @@
 #define TIKI_FOURCC_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/inline.hpp"
 
 #define TIKI_FOURCC( a, b, c, d ) ((fourcc)((((fourcc)d) << 24) | (((fourcc)c) << 16) | (((fourcc)b) << 8) | ((fourcc)a)))
 

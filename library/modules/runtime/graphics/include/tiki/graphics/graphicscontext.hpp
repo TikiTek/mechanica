@@ -2,7 +2,6 @@
 #define TIKI_GRAPHICCOMMANDWRITER_HPP__
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/color.hpp"

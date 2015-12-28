@@ -3,7 +3,6 @@
 #define TIKI_STRING_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/inline.hpp"
 
 namespace tiki
 {

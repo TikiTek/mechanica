@@ -3,7 +3,6 @@
 #define TIKI_FLOAT_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/inline.hpp"
 
 #include <math.h>
 #include <stdlib.h>

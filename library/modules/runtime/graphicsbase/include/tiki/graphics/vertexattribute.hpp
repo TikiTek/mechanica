@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	enum VertexInputType
+	enum VertexInputType : uint8
 	{
 		VertexInputType_PerVertex,
 		VertexInputType_PerInstance
@@ -16,11 +16,11 @@ namespace tiki
 	struct VertexAttribute
 	{
 		VertexSementic			semantic;
-		uint32					semanticIndex;
+		uint8					semanticIndex;
 
 		VertexAttributeFormat	format;
 
-		uint32					streamIndex;
+		uint8					streamIndex;
 		VertexInputType			inputType;
 	};
 }

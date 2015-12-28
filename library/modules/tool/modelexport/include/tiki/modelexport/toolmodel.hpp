@@ -2,7 +2,6 @@
 #define TIKI_TOOLMODEL_HPP__
 
 #include "tiki/base/array.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/io/xmlreader.hpp"

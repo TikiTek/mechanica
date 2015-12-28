@@ -1,7 +1,7 @@
 #ifndef TIKI_RECTANGLE_HPP__
 #define TIKI_RECTANGLE_HPP__
 
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki

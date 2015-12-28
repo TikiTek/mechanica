@@ -2,7 +2,7 @@
 #ifndef TIKI_THICKNESS_HPP_INCLUDED__
 #define TIKI_THICKNESS_HPP_INCLUDED__
 
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki

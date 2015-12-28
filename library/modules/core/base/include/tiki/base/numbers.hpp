@@ -3,7 +3,6 @@
 #define TIKI_NUMBERS_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/inline.hpp"
 
 namespace tiki
 {

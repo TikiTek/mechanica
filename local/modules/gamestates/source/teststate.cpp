@@ -303,15 +303,15 @@ namespace tiki
 
 		m_freeCamera.update( frameData.mainCamera, timeDelta );
 
-		const WindowEvent* pEvent = m_pGame->getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
-		if ( pEvent != nullptr )
-		{
-			TIKI_VERIFY( m_bloom.resize(
-				m_pGame->getGraphicsSystem(),
-				pEvent->data.sizeChanged.size.x / 2u,
-				pEvent->data.sizeChanged.size.y / 2u
-			) );
-		}
+		//const WindowEvent* pEvent = m_pGame->getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
+		//if ( pEvent != nullptr )
+		//{
+		//	TIKI_VERIFY( m_bloom.resize(
+		//		m_pGame->getGraphicsSystem(),
+		//		pEvent->data.sizeChanged.size.x / 2u,
+		//		pEvent->data.sizeChanged.size.y / 2u
+		//	) );
+		//}
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )

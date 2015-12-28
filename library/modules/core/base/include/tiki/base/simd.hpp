@@ -3,7 +3,6 @@
 #define TIKI_SIMD_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/inline.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC ) || (defined( __MMX__ ) && defined( __SSE__ ))
 #	include "../../../source/win/simd_types_win.hpp"

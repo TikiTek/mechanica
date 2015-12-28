@@ -29,7 +29,7 @@ namespace tiki
 		m_description.height		= uint16( m_pImage->getHeight() );
 		m_description.depth			= 1u;
 		m_description.arrayCount	= 1u;
-		m_description.mipCount		= uint16( parameters.mipMapCount );
+		m_description.mipCount		= uint8( parameters.mipMapCount );
 
 		m_description.format		= parameters.targetFormat;
 		m_description.type			= parameters.targetType;

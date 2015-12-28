@@ -6,4 +6,7 @@ module.module_type = ModuleTypes.FilesModule;
 
 module:add_include_dir( "src" );
 
-module:add_files( "src/**/*.*" );
+module:add_files( "src/**" );
+module:add_files( "src/**/**" );
+module:add_files( "src/**/**/**" );
+module:add_files( "bullet.lua" );

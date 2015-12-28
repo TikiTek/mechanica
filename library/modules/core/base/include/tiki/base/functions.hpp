@@ -2,7 +2,7 @@
 #ifndef TIKI_BASE_FUNCTIONS_HPP
 #define TIKI_BASE_FUNCTIONS_HPP
 
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/base/numberlimits.hpp"
 
 namespace tiki
