@@ -4,7 +4,8 @@ local module = Module:new( "graphics" );
 
 module:add_files( "source/global/*.*" );
 module:add_files( "source/shader/*.fx" );
-module:add_files( "include/**/*.*" );
+module:add_files( "include/tiki/graphics/*.*" );
+module:add_files( "graphics.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "math" );
@@ -36,5 +37,5 @@ end
 
 local module = Module:new( "graphicsshader" );
 
-module:add_files( "include/**/*.hpp" );
+module:add_files( "include/tiki/graphics/shader/*.hpp" );
 module:add_shader_dir( "include" );

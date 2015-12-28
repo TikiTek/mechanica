@@ -40,11 +40,11 @@ namespace tiki
 			mipMapCount		= 0u;
 		}
 
-		TextureType targetType;
-		PixelFormat targetFormat;
+		TextureType	targetType;
+		PixelFormat	targetFormat;
 		GraphicsApi	targetApi;
 		
-		uint mipMapCount;
+		uint		mipMapCount;
 
 		union
 		{

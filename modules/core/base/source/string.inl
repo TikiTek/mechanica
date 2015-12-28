@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE uint getStringSize( cstring pSource )
+	TIKI_FORCE_INLINE uint getStringSize( const char* pSource )
 	{
 		uint length = (uint)-1;		
 		while ( pSource[ ++length ] != '\0' );

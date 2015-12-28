@@ -3,7 +3,6 @@
 #define __TIKI_MATRIX_INL_INCLUDED__
 
 #include "tiki/base/float32.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
 #include "tiki/math/matrix.hpp"

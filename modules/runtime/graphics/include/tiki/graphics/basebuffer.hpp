@@ -1,7 +1,6 @@
 #ifndef TIKI_BASEBUFFER_HPP__
 #define TIKI_BASEBUFFER_HPP__
 
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

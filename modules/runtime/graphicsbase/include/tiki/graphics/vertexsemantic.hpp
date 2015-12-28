@@ -6,10 +6,8 @@
 
 namespace tiki
 {
-	enum VertexSementic
+	enum VertexSementic : uint8
 	{
-		VertexSementic_Invalid,
-
 		VertexSementic_Position,
 		VertexSementic_Normal,
 		VertexSementic_TangentFlip,
@@ -19,36 +17,26 @@ namespace tiki
 		VertexSementic_JointIndex,
 		VertexSementic_JointWeight,
 
-		VertexSementic_Count
+		VertexSementic_Count,
+		VertexSementic_Invalid = 0xffu
 	};
 
 	TIKI_FORCE_INLINE VertexAttributeFormat getDefaultFormatForSemantic( VertexSementic semantic )
 	{
-		switch ( semantic )
+		static const VertexAttributeFormat s_vertexSemanticFormatMapping[] =
 		{
-		case VertexSementic_Position:
-			return VertexAttributeFormat_x32y32z32_float;
-		case VertexSementic_Normal:
-			return VertexAttributeFormat_x32y32z32_float;
-		case VertexSementic_TangentFlip:
-			return VertexAttributeFormat_x32y32z32w32_float;
-		case VertexSementic_Binormal:
-			return VertexAttributeFormat_x32y32z32_float;
-		case VertexSementic_Color:
-			return VertexAttributeFormat_x8y8z8w8_unorm;
-		case VertexSementic_TexCoord:
-			return VertexAttributeFormat_x16y16_float;
-		case VertexSementic_JointIndex:
-			return VertexAttributeFormat_x8y8z8w8;
-		case VertexSementic_JointWeight:
-			return VertexAttributeFormat_x16y16z16w16_unorm;
-			
-		default:
-			TIKI_BREAK( "[graphics] semantic not supported.\n" );
-			break;
-		}
+			VertexAttributeFormat_x32y32z32_float,		// VertexSementic_Position
+			VertexAttributeFormat_x32y32z32_float,		// VertexSementic_Normal
+			VertexAttributeFormat_x32y32z32w32_float,	// VertexSementic_TangentFlip
+			VertexAttributeFormat_x32y32z32_float,		// VertexSementic_Binormal
+			VertexAttributeFormat_x8y8z8w8_unorm,		// VertexSementic_Color
+			VertexAttributeFormat_x16y16_float,			// VertexSementic_TexCoord
+			VertexAttributeFormat_x8y8z8w8,				// VertexSementic_JointIndex
+			VertexAttributeFormat_x16y16z16w16_unorm,	// VertexSementic_JointWeight
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_vertexSemanticFormatMapping ) == VertexSementic_Count );
 
-		return VertexAttributeFormat_Invalid;
+		return s_vertexSemanticFormatMapping[ semantic ];
 	}
 }
 

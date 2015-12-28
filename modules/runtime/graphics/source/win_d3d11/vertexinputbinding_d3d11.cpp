@@ -14,7 +14,6 @@ namespace tiki
 {
 	static const char* s_semanticNames[] =
 	{
-		"ERROR",
 		"POSITION",
 		"NORMAL",
 		"TANGENT",

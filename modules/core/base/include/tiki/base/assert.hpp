@@ -56,6 +56,10 @@
 
 #endif
 
-#define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __COUNTER__ )
+#if TIKI_ENABLED( TIKI_CPP_11 )
+#	define TIKI_COMPILETIME_ASSERT( expr ) static_assert( expr, "Compiletime Assert failed!" );
+#else
+#	define TIKI_COMPILETIME_ASSERT( expr ) typedef struct { int x[ ( ( expr ? 1 : -1 ) ) ]; } TIKI_CONCAT( __tiki__assert__, __COUNTER__ )
+#endif
 
 #endif // TIKI_ASSERT_HPP

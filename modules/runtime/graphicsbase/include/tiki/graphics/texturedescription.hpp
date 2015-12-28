@@ -7,19 +7,18 @@
 
 namespace tiki
 {
-	enum TextureType
+	enum TextureType : uint8
 	{
-		TextureType_Invalid = -1,
-
 		TextureType_1d,
 		TextureType_2d,
 		TextureType_3d,
 		TextureType_Cube,
 
-		TextureType_Count
+		TextureType_Count,
+		TextureType_Invalid = 0xffu,
 	};
 
-	enum TextureFlags
+	enum TextureFlags : uint8
 	{
 		TextureFlags_None			= 0u,
 
@@ -29,6 +28,7 @@ namespace tiki
 
 		TextureFlags_Count
 	};
+	TIKI_FLAGS_ENUM( TextureFlags );
 
 	struct TextureDescription
 	{
@@ -40,20 +40,20 @@ namespace tiki
 			arrayCount	= 1u;
 			mipCount	= 1u;
 
-			flags		= (uint16)TextureFlags_None;
-			format		= (uint16)PixelFormat_Invalid;
-			type		= (uint16)TextureType_Invalid;
+			flags		= TextureFlags_None;
+			format		= PixelFormat_Invalid;
+			type		= TextureType_Invalid;
 		}
 
-		uint16	width;
-		uint16	height;
-		uint16	depth;
-		uint16	arrayCount;
-		uint16	mipCount;
+		uint16			width;
+		uint16			height;
+		uint16			depth;
+		uint16			arrayCount;
+		uint8			mipCount;
 
-		uint16	flags;		// see TextureFlag
-		uint16	format;		// see PixelFormat
-		uint16	type;		// see TextureType
+		TextureFlags	flags;
+		PixelFormat		format;
+		TextureType		type;
 	};
 }
 

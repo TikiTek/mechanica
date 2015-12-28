@@ -71,6 +71,12 @@ namespace tiki
 
 }
 
+#if __cplusplus >= 201103L || _MSC_VER >= 1800
+#	define TIKI_CPP_11		TIKI_ON
+#else
+#	define TIKI_CPP_11		TIKI_OFF
+#endif
+
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 
 #if TIKI_ENABLED( TIKI_BUILD_MINGW )
@@ -105,6 +111,36 @@ namespace tiki
 
 #endif
 
+#define TIKI_USE_INLINE TIKI_ON
+
+#if TIKI_ENABLED( TIKI_USE_INLINE )
+
+#	if TIKI_ENABLED( TIKI_BUILD_MSVC )
+
+#		define TIKI_INLINE			inline
+#		define TIKI_FORCE_INLINE	__forceinline
+#		define TIKI_NO_INLINE		__declspec(noinline)
+
+#	elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+
+#		define TIKI_INLINE			inline
+#		define TIKI_FORCE_INLINE	inline //__attribute__((always_inline))
+#		define TIKI_NO_INLINE		__attribute__((noinline))
+
+#	else
+
+#		error Platform not implemented
+
+#	endif
+
+#else
+
+#	define TIKI_INLINE
+#	define TIKI_FORCE_INLINE
+#	define TIKI_NO_INLINE
+
+#endif
+
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
 		class_name ( const class_name & );			\
@@ -136,6 +172,8 @@ namespace tiki
 	struct handle_name ## Type;					\
 	typedef handle_name ## Type* handle_name;	\
 	static const handle_name Invalid ## handle_name = (handle_name)TIKI_SIZE_T_MAX
+
+#define TIKI_FLAGS_ENUM( type )	TIKI_FORCE_INLINE type operator|( type a, type b ) { return (type)(sint64( a ) | sint64( b )); }
 
 #define TIKI_CONCAT( x1, x2 )			TIKI_CONCAT_HELPER( x1, x2 )
 #define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2

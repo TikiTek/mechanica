@@ -75,7 +75,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE T* FixedSizedArray< T, TCapacity >::pushRange( const T* pData, uint count )
+	TIKI_FORCE_INLINE T* FixedSizedArray< T, TCapacity >::pushRange( ConstIterator pData, uint count )
 	{
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( m_count + count <= TCapacity );

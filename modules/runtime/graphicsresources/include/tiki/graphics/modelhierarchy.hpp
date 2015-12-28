@@ -2,7 +2,6 @@
 #ifndef TIKI_MODELHIERARCHY_HPP
 #define TIKI_MODELHIERARCHY_HPP
 
-#include "tiki/base/inline.hpp"
 #include "tiki/base/simd.hpp"
 #include "tiki/base/staticarray.hpp"
 #include "tiki/base/types.hpp"

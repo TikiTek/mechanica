@@ -3,7 +3,6 @@
 #define TIKI_RESOURCEMANAGER_HPP
 
 #include "tiki/base/basicstring.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/sizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/pool.hpp"

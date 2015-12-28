@@ -2,7 +2,6 @@
 #ifndef __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
 #define __TIKI_SORTEDSIZEDMAP_HPP_INCLUDED__
 
-#include "tiki/base/inline.hpp"
 #include "tiki/base/keyvaluepair.hpp"
 #include "tiki/base/types.hpp"
 

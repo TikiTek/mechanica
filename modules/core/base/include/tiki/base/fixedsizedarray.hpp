@@ -3,7 +3,6 @@
 #define __TIKI_FIXEDSIZEDARRAY_HPP_INCLUDED__
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

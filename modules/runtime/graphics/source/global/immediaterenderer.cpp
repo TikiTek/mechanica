@@ -4,15 +4,15 @@
 #include "tiki/base/numbers.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/graphics/primitivetopologies.hpp"
+#include "tiki/graphics/shader/immediaterenderer_shader.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/math/box.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
-#include "tiki/math/box.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
