@@ -4,4 +4,5 @@ local module = Module:new( "threading" );
 
 module:add_files( "source/win/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( "threading.lua" );
 module:add_include_dir( "include" );

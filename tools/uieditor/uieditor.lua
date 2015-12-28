@@ -4,6 +4,7 @@ local module = Module:new( "uieditor" );
 
 module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
+module:add_files( "uieditor.lua" );
 module:add_files( "source/*.*" );
 
 module:add_dependency( "config" );

@@ -4,6 +4,7 @@ local module = Module:new( "trex" );
 
 module.module_type = ModuleTypes.UnityCModule;
 
-module:add_files( "source/*.*" );
 module:add_files( "include/*.h" );
+module:add_files( "source/*.*" );
+module:add_files( "trex.lua" );
 module:add_include_dir( "include" );

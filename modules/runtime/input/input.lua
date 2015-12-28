@@ -4,6 +4,7 @@ local module = Module:new( "input" );
 
 module:add_files( "include/**/*.*" );
 module:add_include_dir( "include" );
+module:add_files( "input.lua" );
 module:add_files( "source/*.*" );
 
 if use_sdl then

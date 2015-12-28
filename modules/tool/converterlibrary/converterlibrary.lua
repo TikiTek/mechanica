@@ -3,6 +3,7 @@
 local module = Module:new( "converterlibrary" );
 
 module:add_files( "source/*.*" );
+module:add_files( "converterlibrary.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "threading" );

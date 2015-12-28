@@ -3,6 +3,7 @@
 local module = Module:new( "nettest" );
 
 module:add_files( "source/*.*" );
+module:add_files( "nettest.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "base" );

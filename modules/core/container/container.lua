@@ -5,6 +5,7 @@ local module = Module:new( "container" );
 module:add_files( "source/*.*" );
 module:add_files( "source/win/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( "container.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "base" );

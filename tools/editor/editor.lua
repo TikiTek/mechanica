@@ -3,6 +3,7 @@
 local module = Module:new( "editor" );
 
 module:add_files( "source/*.*" );
+module:add_files( "editor.lua" );
 
 module:set_flag( "WPF" );
 

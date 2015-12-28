@@ -3,6 +3,7 @@
 local module = Module:new( "libraryunittests" );
 
 module:add_files( "source/*.*" );
+module:add_files( "libraryunittests.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "base" );

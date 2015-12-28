@@ -6,4 +6,5 @@ module.module_type = ModuleTypes.FilesModule;
 
 module:add_files( "src/*.c" );
 module:add_files( "include/*.h" );
+module:add_files( "libpsd.lua" );
 module:add_include_dir( "include" );

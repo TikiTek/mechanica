@@ -4,6 +4,7 @@ local module = Module:new( "base" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( "base.lua" );
 module:add_include_dir( "include" );
 
 if is_windows then
