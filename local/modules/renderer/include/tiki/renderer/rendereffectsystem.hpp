@@ -3,7 +3,7 @@
 #define __TIKI_RENDEREFFECTSYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/fixedarray.hpp"
+#include "tiki/container/fixedarray.hpp"
 
 #include "renderer.hpp"
 

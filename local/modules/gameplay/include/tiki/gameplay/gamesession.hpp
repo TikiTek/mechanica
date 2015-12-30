@@ -2,9 +2,9 @@
 #ifndef __TIKI_GAMESTATE_HPP_INCLUDED__
 #define __TIKI_GAMESTATE_HPP_INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"

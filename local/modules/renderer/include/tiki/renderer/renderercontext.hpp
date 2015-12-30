@@ -2,8 +2,8 @@
 #ifndef __TIKI_RENDERERCONTEXT_HPP_INCLUDED__
 #define __TIKI_RENDERERCONTEXT_HPP_INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/vector.hpp"
