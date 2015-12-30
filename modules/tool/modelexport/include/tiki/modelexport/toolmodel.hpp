@@ -1,14 +1,14 @@
 #ifndef TIKI_TOOLMODEL_HPP__
 #define TIKI_TOOLMODEL_HPP__
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/list.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/modelexport/toolmodelanimation.hpp"
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
-#include "tiki/container/list.hpp"
 
 namespace tiki
 {

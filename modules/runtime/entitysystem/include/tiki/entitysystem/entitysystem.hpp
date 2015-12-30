@@ -2,9 +2,9 @@
 #ifndef __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
 #define __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
-#include "tiki/base/sizedarray.hpp"
-#include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
+#include "tiki/container/sizedarray.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/entitysystem/componentstorage.hpp"
 #include "tiki/entitysystem/componenttyperegister.hpp"
 

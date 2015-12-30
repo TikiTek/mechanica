@@ -2,11 +2,11 @@
 #ifndef TIKI_TOOLMODELSOURCE_HPP
 #define TIKI_TOOLMODELSOURCE_HPP
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/vertexsemantic.hpp"
 #include "tiki/toolbase/tokenizer.hpp"
 

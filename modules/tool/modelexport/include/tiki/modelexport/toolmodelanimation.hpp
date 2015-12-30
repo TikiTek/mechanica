@@ -2,7 +2,7 @@
 #ifndef TIKI_TOOLMODELANIMATION_HPP
 #define TIKI_TOOLMODELANIMATION_HPP
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/math/matrix.hpp"
 
 struct _XmlElement;

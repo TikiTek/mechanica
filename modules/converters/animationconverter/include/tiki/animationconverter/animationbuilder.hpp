@@ -3,12 +3,12 @@
 #define __TIKI_ANIMATIONBUILDER_HPP_INCLUDED__
 
 #include "tiki/animationconverter/spline.hpp"
-#include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/list.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/container/list.hpp"
 
 namespace tiki
 {
