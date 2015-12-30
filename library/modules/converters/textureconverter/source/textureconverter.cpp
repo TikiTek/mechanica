@@ -1,14 +1,13 @@
 
 #include "tiki/textureconverter/textureconverter.hpp"
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/stringparse.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
-
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
 

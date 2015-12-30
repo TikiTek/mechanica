@@ -4,8 +4,8 @@
 
 #include "tiki/renderer/rendereffect.hpp"
 
-#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 
 

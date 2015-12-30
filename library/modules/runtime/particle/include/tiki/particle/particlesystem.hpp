@@ -3,7 +3,7 @@
 #define TIKI_PARTICLESYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 
 namespace tiki
 {

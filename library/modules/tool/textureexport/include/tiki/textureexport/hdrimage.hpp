@@ -2,8 +2,8 @@
 #ifndef TIKI_HDRIMAGE_HPP__INCLUDED
 #define TIKI_HDRIMAGE_HPP__INCLUDED
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/pixelformat.hpp"
 
 namespace tiki

@@ -3,7 +3,7 @@
 #define TIKI_WINDOWEVENTBUFFER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/queue.hpp"
+#include "tiki/container/queue.hpp"
 #include "tiki/runtimeshared/windowevent.hpp"
 
 namespace tiki
