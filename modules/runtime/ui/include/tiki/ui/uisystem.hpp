@@ -10,10 +10,17 @@
 namespace tiki
 {
 	class GraphicsContext;
+	class GraphicsSystem;
+	class ResourceManager;
 	struct InputEvent;
 
 	struct UiSystemParameters
 	{
+		UiSystemParameters()
+		{
+			maxElementCount = 4096u;
+		}
+
 		uint					maxElementCount;
 
 		UiRendererParameters	rendererParameters;
@@ -28,8 +35,8 @@ namespace tiki
 						UiSystem();
 						~UiSystem();
 
-		bool			create( const UiSystemParameters& parameters );
-		void			dispose();
+		bool			create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters );
+		void			dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		void			update();
 		void			render( GraphicsContext& context ) const;

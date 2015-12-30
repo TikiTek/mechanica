@@ -57,7 +57,7 @@ namespace tiki
 	{
 	}
 
-	bool UiRenderer::create( const UiRendererParameters& parameters )
+	bool UiRenderer::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters )
 	{
 		//if ( !m_renderElements.create( parameters.maxRenderElements ) )
 		//{
@@ -68,7 +68,7 @@ namespace tiki
 		return true;
 	}
 
-	void UiRenderer::dispose()
+	void UiRenderer::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 	}
 

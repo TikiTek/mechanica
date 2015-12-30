@@ -12,28 +12,23 @@ namespace tiki
 	{
 	}
 
-	bool UiSystem::create( const UiSystemParameters& parameters )
+	bool UiSystem::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters )
 	{
-		if( !m_renderer.create( parameters.rendererParameters ) )
+		if( !m_renderer.create( graphicsSystem, resourceManager, parameters.rendererParameters ) ||
+			!m_elementPool.create( parameters.maxElementCount ) )
 		{
-			dispose();
-			return false;
-		}
-
-		if( !m_elementPool.create( parameters.maxElementCount ) )
-		{
-			dispose();
+			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
 
 		return true;
 	}
 
-	void UiSystem::dispose()
+	void UiSystem::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
 		m_elementPool.dispose();
 		
-		m_renderer.dispose();
+		m_renderer.dispose( graphicsSystem, resourceManager );
 	}
 
 	void UiSystem::update()
