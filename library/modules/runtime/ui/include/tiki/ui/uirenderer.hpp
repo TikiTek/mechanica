@@ -13,7 +13,9 @@ namespace tiki
 	class BlendState;
 	class DepthStencilState;
 	class GraphicsContext;
+	class GraphicsSystem;
 	class RasterizerState;
+	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
 	struct UiElement;
@@ -47,8 +49,8 @@ namespace tiki
 					UiRenderer();
 					~UiRenderer();
 
-		bool		create( const UiRendererParameters& parameters );
-		void		dispose();
+		bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters );
+		void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		void		update( const UiRenderData& renderData );
 		void		render( GraphicsContext& context ) const;

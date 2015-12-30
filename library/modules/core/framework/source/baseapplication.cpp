@@ -7,6 +7,7 @@
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/threading/thread.hpp"
+#include "tiki/ui/uisystem.hpp"
 
 namespace tiki
 {
@@ -18,6 +19,8 @@ namespace tiki
 
 		ResourceManager		resourceManager;
 		FrameworkFactories	resourceFactories;
+
+		UiSystem			uiSystem;
 
 		Timer				frameTimer;
 	};
@@ -180,6 +183,14 @@ namespace tiki
 			return false;
 		}
 
+		UiSystemParameters uiParams;
+		
+		if( !m_pBaseData->uiSystem.create( m_pBaseData->graphicSystem, m_pBaseData->resourceManager, uiParams ) )
+		{
+			TIKI_TRACE_ERROR( "[BaseApplication] Could not create UiSystem.\n" );
+			return false;
+		}
+
 		m_pBaseData->frameTimer.create();
 
 		return true;
@@ -187,6 +198,7 @@ namespace tiki
 
 	void BaseApplication::shutdownFramework()
 	{
+		m_pBaseData->uiSystem.dispose( m_pBaseData->graphicSystem, m_pBaseData->resourceManager );
 		m_pBaseData->inputSystem.dispose();
 		m_pBaseData->graphicSystem.dispose();
 		m_pBaseData->resourceFactories.dispose( m_pBaseData->resourceManager );
