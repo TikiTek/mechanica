@@ -26,7 +26,7 @@
 
 #else
 
-#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size, TIKI_DEFAULT_ALIGNMENT )
+#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size )
 #	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )				::tiki::memory::allocAligned( size, alignment )
 
 #	define TIKI_MEMORY_NEW_OBJECT( type )							::new ( ::tiki::memory::newObjectAligned< type >() ) type
@@ -55,7 +55,7 @@ namespace tiki
 		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 
 #else
-		void*					allocAligned( uint size, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void*					allocAligned( uint size, uint alignment = TIKI_MINIMUM_ALIGNMENT );
 
 		template<typename T>
 		TIKI_FORCE_INLINE T*	newObjectAligned( uint alignment = TIKI_DEFAULT_ALIGNMENT );

@@ -15,7 +15,6 @@ namespace tiki
 	class XmlReader
 	{
 		TIKI_NONCOPYABLE_CLASS( XmlReader );
-		friend void* xmlAlloc(size_t _bytes, void* pUserData);
 
 	public:
 
@@ -40,6 +39,9 @@ namespace tiki
 
 		XmlElement*			m_pNode;
 		void*				m_pData;
+
+		static void*		allocateMemory( size_t _bytes, void* pUserData );
+		static void			errorHandler( const char* pErrorMessage, const char* pBegin, const char* pCurrent );
 
 	};
 }
