@@ -3,81 +3,61 @@
 
 #include "tiki/base/assert.hpp"
 
-#include <windows.h>
+#include <semaphore.h>
 
 namespace tiki
 {
 	Semaphore::Semaphore()
 	{
-		m_platformData.semaphoreHandle = INVALID_HANDLE_VALUE;
+		m_platformData.isInitialized = false;
 	}
 
 	Semaphore::~Semaphore()
 	{
-		TIKI_ASSERT( m_platformData.semaphoreHandle == INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.isInitialized == false );
 	}
 
 	bool Semaphore::create( uint initialCount /*= 0*/, uint maxCount /*= 0x7fffffff*/, const char* pName /*= nullptr*/ )
 	{
-		TIKI_ASSERT( m_platformData.semaphoreHandle == INVALID_HANDLE_VALUE );
-		m_platformData.semaphoreHandle = CreateSemaphoreA(
-			nullptr,
-			DWORD( initialCount ),
-			DWORD( maxCount ),
-			pName
-		);
-
-		if (m_platformData.semaphoreHandle == nullptr)
-		{
-			m_platformData.semaphoreHandle = INVALID_HANDLE_VALUE;
-			return false;
-		}
-
-		return true;
+		TIKI_ASSERT( m_platformData.isInitialized == false );		
+		return sem_init( &m_platformData.semaphoreData, initialCount );
 	}
 
 	void Semaphore::dispose()
 	{
-		if ( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE )
+		if ( m_platformData.isInitialized )
 		{
-			CloseHandle( m_platformData.semaphoreHandle );
-			m_platformData.semaphoreHandle = INVALID_HANDLE_VALUE;
+			sem_destroy( &m_platformData.semaphoreData );
+			m_platformData.isInitialized = false;;
 		}
 	}
 
-	void Semaphore::incement( uint count /*= 1u*/ )
+	void Semaphore::incement()
 	{
-		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		ReleaseSemaphore(
-			m_platformData.semaphoreHandle,
-			DWORD( count ),
-			nullptr
-		);
+		TIKI_ASSERT( m_platformData.isInitialized );
+		sem_post( &m_platformData.semaphoreData );
 	}
 
-	void Semaphore::decrement( uint count /*= 1u*/ )
+	void Semaphore::decrement()
 	{
-		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		for (uint i = 0u; i < count; ++i)
-		{
-			WaitForSingleObject( m_platformData.semaphoreHandle, INFINITE );
-		} 
+		TIKI_ASSERT( m_platformData.isInitialized );
+		sem_wait( m_platformData.semaphoreData );
 	}
 
-	uint Semaphore::tryDecrement( uint count /*= 1u*/, uint timeOut /*= TimeOutInfinity */ )
+	bool Semaphore::tryDecrement(uint timeOut /*= TimeOutInfinity */ )
 	{
-		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		for (uint i = 0u; i < count; ++i)
+		TIKI_ASSERT( m_platformData.isInitialized );
+		if ( timeOut == TimeOutInfinity )
 		{
-			if ( WaitForSingleObject( m_platformData.semaphoreHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
-			{
-				return i;
-			}
-		} 
-
-		return count;
+			return sem_trywait( &m_platformData.semaphoreData ) >= 0;
+		}
+		else
+		{
+			timespec time;
+			time.tv_sec	= timeOut / 1000;
+			time.tv_nsec	= (timeOut - (time.tv_sec * 1000)) * 1000000;
+			
+			return sem_timedwait( &m_platformData.semaphoreData, &time ) >= 0;
+		}
 	}
 }

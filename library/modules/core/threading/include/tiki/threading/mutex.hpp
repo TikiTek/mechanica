@@ -30,7 +30,7 @@ namespace tiki
 		Mutex();
 		~Mutex();
 
-		void				create();
+		bool				create();
 		void				dispose();
 
 		void				lock();

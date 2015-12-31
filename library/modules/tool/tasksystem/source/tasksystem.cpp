@@ -178,7 +178,7 @@ namespace tiki
 
 	bool TaskSystem::threadDispatchTask( Task& targetTask )
 	{
-		if ( m_taskCountSemaphore.tryDecrement( 1u, 10u ) )
+		if ( m_taskCountSemaphore.tryDecrement( 10u ) )
 		{
 			bool result = false;
 

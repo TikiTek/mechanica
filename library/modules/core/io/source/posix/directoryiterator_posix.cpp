@@ -19,7 +19,7 @@ namespace tiki
 
 	bool DirectoryIterator::create( const char* pPath )
 	{
-		m_platformData.pDirHandle = opendir( Path );
+		m_platformData.pDirHandle = opendir( pPath );
 
 		return m_platformData.pDirHandle != nullptr;
 	}
