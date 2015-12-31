@@ -18,7 +18,8 @@ module.import_func = function(project)
 	includedirs( { output_path } );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
 	
-	local exe_path = path.join( global_configuration.root_path, "library/buildtools/genericdatacodegenerator/genericdatacodegenerator.exe" );
+	local exe_name = iff(is_windows, "genericdatacodegenerator.exe", "genericdatacodegenerator");
+	local exe_path = path.join( global_configuration.root_path, "library/buildtools/genericdatacodegenerator/" .. exe_name );
 	local content_path = path.join( global_configuration.root_path, "content" );
 	local arguments = "--content-dir=" .. content_path .. " --target-dir=" .. output_path;
 	local command_line = exe_path .. " " .. arguments;

@@ -2,6 +2,8 @@
 #ifndef TIKI_RESOURCEREQUESTPOOL_INL_INCLUDED__
 #define TIKI_RESOURCEREQUESTPOOL_INL_INCLUDED__
 
+#include  "tiki/resource/resourcemanager.hpp"
+
 namespace tiki
 {
 	template< typename T >

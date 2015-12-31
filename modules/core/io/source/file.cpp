@@ -162,8 +162,8 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-        targetContent.create( len, alignment );
-		fread( const_cast< char* >( targetContent.getBegin() ), (size_t)len, 1u, pFile );
+		targetContent.create( len.__pos, alignment );
+		fread( const_cast< char* >( targetContent.getBegin() ), (size_t)len.__pos, 1u, pFile );
 		fclose( pFile );
 
 		return true;
@@ -182,8 +182,8 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-		buffer.create( (size_t)len, alignment );
-		fread( buffer.getBegin(), (size_t)len, 1u, pFile );
+		buffer.create( (size_t)len.__pos, alignment );
+		fread( buffer.getBegin(), (size_t)len.__pos, 1u, pFile );
 		fclose( pFile );
 
 		return true;

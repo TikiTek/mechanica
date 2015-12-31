@@ -3,7 +3,10 @@
 
 #include <cstdarg>
 #include <cstdio>
-#include <windows.h>
+
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#   include <windows.h>
+#endif
 
 namespace tiki
 {

@@ -1,94 +1,95 @@
+#include "tiki/io/filestream.hpp"
 
 #include "tiki/base/assert.hpp"
 
-#include "tiki/toolbase/toolfilestream.hpp"
-
-#pragma warning(disable: 4996)
 #include <stdio.h>
 
 namespace tiki
 {
-	ToolFileStream::ToolFileStream()
+	FileStream::FileStream()
 	{
-		m_pHandle = nullptr;
 	}
 
-	ToolFileStream::~ToolFileStream()
+	FileStream::~FileStream()
 	{
-		TIKI_ASSERT( m_pHandle == nullptr );
 	}
 
-	void ToolFileStream::create( const string& fileName, FileOpenMode fileMode )
+	void FileStream::create( const char* pFileName, DataAccessMode accessMode )
 	{
 		cstring pMode = "wb+";
 
 		switch ( fileMode )
 		{
-		case FOM_Read:
+		case DataAccessMode_Read:
 			pMode = "rb";
 			break;
-		case FOM_Write:
+			
+		case DataAccessMode_Write:
 			pMode = "wb";
 			break;
-		case FOM_WriteAppend:
+			
+		case DataAccessMod_WriteAppend:
 			pMode = "ab";
+			break;
+			
+		case DataAccessMode_ReadWrite:
+			pMode = "rwb;"
 			break;
 		}
 
-		m_pHandle = fopen( fileName.cStr(), pMode );
+		m_platformData.pFileHandle = fopen( pFileName, pMode );
 	}
 
-	void ToolFileStream::dispose()
+	void FileStream::dispose()
 	{
-		if (m_pHandle)
+		if( m_platformData.pFileHandle )
 		{
-			fclose( m_pHandle );
-			m_pHandle	= nullptr;
+			fclose( m_platformData.pFileHandle );
+			m_platformData.pFileHandle	= nullptr;
 		}
 	}
 
-	bool ToolFileStream::isOpen() const
+	bool FileStream::isOpen() const
 	{
-		return m_pHandle != nullptr;
+		return m_platformData.pFileHandle != nullptr;
 	}
 
-	size_t ToolFileStream::read( void* pData, size_t length ) const
+	size_t FileStream::read( void* pData, size_t length ) const
 	{
-		TIKI_ASSERT( m_pHandle );
-		return fread( pData, length, 1u, m_pHandle );
+		TIKI_ASSERT( m_platformData.pFileHandle );
+		return fread( pData, length, 1u, m_platformData.pFileHandle );
 	}
 
-	void ToolFileStream::write( const void* pData, size_t length ) const
+	void FileStream::write( const void* pData, size_t length ) const
 	{
-		TIKI_ASSERT( m_pHandle );
-		fwrite( pData, length, 1u, m_pHandle );
+		TIKI_ASSERT( m_platformData.pFileHandle );
+		fwrite( pData, length, 1u, m_platformData.pFileHandle );
 	}
 
-	size_t ToolFileStream::getLength()
+	size_t FileStream::getLength()
 	{
 		size_t pos = getPosition();
 
-		fseek( m_pHandle, 0, SEEK_END );
-		size_t size = (size_t)ftell( m_pHandle );
+		fseek( m_platformData.pFileHandle, 0, SEEK_END );
+		size_t size = (size_t)ftell( m_platformData.pFileHandle );
 
 		setPosition( pos );
 
 		return size;
 	}
 
-	size_t ToolFileStream::getPosition() const
+	size_t FileStream::getPosition() const
 	{
 		fpos_t pos = 0;
-		fgetpos( m_pHandle, &pos );
+		fgetpos( m_platformData.pFileHandle, &pos );
 		return (size_t)pos;
 
 	}
 
-	size_t ToolFileStream::setPosition( size_t pos )
+	size_t FileStream::setPosition( size_t pos )
 	{
 		fpos_t pos2 = (fpos_t)pos;
-		fsetpos( m_pHandle, &pos2 );
+		fsetpos( m_platformData.pFileHandle, &pos2 );
 		return (size_t)pos2;
 	}
-
 }

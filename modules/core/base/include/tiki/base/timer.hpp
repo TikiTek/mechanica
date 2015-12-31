@@ -21,10 +21,20 @@ namespace tiki
 
 	private:
 
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		struct TimeStamp
 		{
 			uint64 time;
 		};
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+		struct TimeStamp
+		{
+			long int timeSec;
+			long int timeMS;
+		};
+#else
+#	error "Platform not supported"
+#endif
 
 		TimeStamp	m_freq;
 		TimeStamp	m_last;

@@ -1,7 +1,9 @@
 
 #include "tiki/toolbase/directory_tool.hpp"
 
-#include <Windows.h>
+#include "tiki/io/directory.hpp"
+#include "tiki/io/directoryiterator.hpp"
+#include "tiki/io/file.hpp"
 
 namespace tiki
 {
@@ -9,67 +11,37 @@ namespace tiki
 	{
 		bool getFiles( const string& path, List< string >& targetList )
 		{
-			string searchPattern = path.replace( '\\', '/' );
-			searchPattern += ( path.endsWith( '/' ) ? "*.*" : "/*.*" );
-
-			WIN32_FIND_DATAA findData;
-			HANDLE hFind = FindFirstFileA( searchPattern.cStr(), &findData );
-						
-			if ( hFind == INVALID_HANDLE_VALUE )
+			DirectoryIterator iterator;
+			iterator.create( path.cStr() );
+			
+			while ( iterator.findNextFile() )
 			{
-				return false;
-			}
-
-			do
-			{
-				if ( findData.cFileName[ 0u ] == '.' && ( findData.cFileName[ 1u ] == '.' || strlen( findData.cFileName ) == 1u ) )
+				if( file::exists( iterator.getCurrentFileName() ) )
 				{
-					continue;
+					targetList.add( iterator.getCurrentFileName() );
 				}
-				
-				if ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-				{
-					continue;
-				}
-
-				targetList.add( findData.cFileName );
 			}
-			while ( FindNextFileA( hFind, &findData ) );
+			
+			iterator.dispose();
 
-			FindClose( hFind );
 			return true;
 		}
 
 		bool getDirectories( const string& path, List< string >& targetList )
 		{
-			string searchPattern = path.replace( '\\', '/' );
-			searchPattern += ( path.endsWith( '/' ) ? "*.*" : "/*.*" );
-
-			WIN32_FIND_DATAA findData;
-			HANDLE hFind = FindFirstFileA( searchPattern.cStr(), &findData );
-
-			if ( hFind == INVALID_HANDLE_VALUE )
+			DirectoryIterator iterator;
+			iterator.create( path.cStr() );
+			
+			while ( iterator.findNextFile() )
 			{
-				return false;
-			}
-
-			do
-			{
-				if ( findData.cFileName[ 0u ] == '.' && ( findData.cFileName[ 1u ] == '.' || strlen( findData.cFileName ) == 1u ) )
+				if( directory::exists( iterator.getCurrentFileName() ) )
 				{
-					continue;
+					targetList.add( iterator.getCurrentFileName() );
 				}
-				
-				if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == 0u )
-				{
-					continue;
-				}
-
-				targetList.add( findData.cFileName );
 			}
-			while ( FindNextFileA( hFind, &findData ) );
+			
+			iterator.dispose();
 
-			FindClose( hFind );
 			return true;
 		}
 	}
