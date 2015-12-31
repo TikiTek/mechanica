@@ -24,9 +24,9 @@ namespace tiki
 				field				= fields[ i ];
 				field.isInherited	= true;
 
-				m_alignment	= max( m_alignment, field.pType->getAlignment() );
-				m_size		= alignValue( m_size, field.pType->getAlignment() );
-				m_size		= m_size + field.pType->getSize();				
+				m_alignment	= TIKI_MAX( m_alignment, field.pType->getAlignment() );
+				m_size			= alignValue( m_size, field.pType->getAlignment() );
+				m_size			= m_size + field.pType->getSize();				
 			}
 		}
 	}
@@ -98,9 +98,9 @@ namespace tiki
 						field.mode			= GenericDataTypeMode_ToolAndRuntime;
 						field.isInherited	= false;
 
-						m_alignment	= max( m_alignment, field.pType->getAlignment() );
-						m_size		= alignValue( m_size, field.pType->getAlignment() );
-						m_size		= m_size + field.pType->getSize();
+						m_alignment	= TIKI_MAX( m_alignment, field.pType->getAlignment() );
+						m_size			= alignValue( m_size, field.pType->getAlignment() );
+						m_size			= m_size + field.pType->getSize();
 					}
 					
 					if ( isValue && field.pType != pType )

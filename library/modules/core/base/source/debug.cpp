@@ -36,7 +36,13 @@ namespace tiki
 			"[ERROR] "
 		};
 		const uint prefixStringLength		= strlen( s_aTracePrefix[ level ] );
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		const uint formattedStringLength	= _vsnprintf( nullptr, 0u, pFormat, pArgs );
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+		const uint formattedStringLength	= vprintf( pFormat, pArgs );
+#else
+#   error "Platform not supported"
+#endif
 
 		string message( prefixStringLength + formattedStringLength );
 		copyString( (char*)message.cStr(), prefixStringLength + 1u, s_aTracePrefix[ level ] );

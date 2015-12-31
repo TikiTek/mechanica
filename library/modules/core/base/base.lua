@@ -10,7 +10,7 @@ module:add_include_dir( "include" );
 if is_windows then
 	module:add_files( "source/win/*.cpp" );
 elseif is_linux then
-	module:add_files( "source/linux/*.cpp" );
+	module:add_files( "source/posix/*.cpp" );
 else
 	throw("Platform not supported.");
 end

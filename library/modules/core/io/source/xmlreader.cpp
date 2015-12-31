@@ -96,7 +96,7 @@ namespace tiki
 		return targetList.getCount();
 	}
 
-	/*static*/ void* XmlReader::allocateMemory( size_t _bytes, void* pUserData )
+	/*static*/ void* XmlReader::allocateMemory( ::size_t _bytes, void* pUserData )
 	{
 		XmlReader* pXml	= static_cast<XmlReader*>(pUserData);
 		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
