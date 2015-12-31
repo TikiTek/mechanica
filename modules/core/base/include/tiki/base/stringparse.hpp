@@ -106,10 +106,10 @@ namespace tiki
 			uint32 i = 0;
 			while (i < str.data->stringLength)
 			{
-				if (str[i] >= BasicString<TString>::numberZero && str[i] <= BasicString<TString>::numberNine)
+				if (str[i] >= BasicString::numberZero && str[i] <= BasicString::numberNine)
 				{
 					int p = int( str.data->stringLength - ( i + 1 ) );
-					TUInt c = str[i] - BasicString<TString>::numberZero;
+					TUInt c = str[i] - BasicString::numberZero;
 
 					num += c * (TUInt)pow(10.0, p);
 				}

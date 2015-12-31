@@ -6,7 +6,13 @@
 
 #include "tiki/io/filesystem.hpp"
 
-typedef void* HANDLE;
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#	include "../../../source/win/platformdata_win.hpp"
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+#	include "../../../source/posix/platformdata_posix.hpp"
+#else
+#	error not supported
+#endif
 
 namespace tiki
 {
@@ -36,7 +42,7 @@ namespace tiki
 
 	private:
 
-		HANDLE				m_fileHandle;
+		FileStreamPlatformData	m_platformData;
 
 	};
 }

@@ -23,7 +23,7 @@ namespace tiki
 		Event();
 		~Event();
 
-		void	create( bool initialState = false, bool manualReset = false, const char* pName = nullptr );
+		bool	create( bool initialState = false, bool manualReset = false, const char* pName = nullptr );
 		void	dispose();
 
 		void	signal();

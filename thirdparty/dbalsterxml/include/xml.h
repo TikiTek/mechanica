@@ -30,8 +30,6 @@
 #ifndef DBALSTER_XML_H
 #define DBALSTER_XML_H
 
-#include <windows.h>
-
 //
 // this is a very small XML parser. The document is scanned from a memory block
 // and copied to a tree-like structure. the class uses its own allocator to simplify
