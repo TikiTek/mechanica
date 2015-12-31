@@ -7,7 +7,7 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "io.lua" );
 module:add_include_dir( "include" );
 
-if is_window then
+if is_windows then
 	module:add_files( "source/win/*.*" );
 elseif is_linux then
 	module:add_files( "source/posix/*.*" );
