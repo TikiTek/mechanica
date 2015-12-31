@@ -14,6 +14,7 @@ namespace tiki
 	class MainWindow;
 	class ResourceManager;
 	class Timer;
+	class UiSystem;
 	struct BaseApplicationkData;
 	struct InputEvent;
 	struct WindowEvent;
@@ -54,6 +55,7 @@ namespace tiki
 		GraphicsSystem&					getGraphicsSystem() const;
 		ResourceManager&				getResourceManager() const;
 		InputSystem&					getIputSystem() const;
+		UiSystem&						getUiSystem() const;
 		const Timer&					getFrameTimer() const;
 
 	protected:

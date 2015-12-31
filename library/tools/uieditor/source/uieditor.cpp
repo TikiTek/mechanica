@@ -1,15 +1,16 @@
 #include "tiki/uieditor/uieditor.hpp"
 
+#include "tiki/ui/uielement.hpp"
+#include "tiki/ui/uisystem.hpp"
+
 namespace tiki
 {
 	UiEditor::UiEditor()
 	{
-
 	}
 
 	UiEditor::~UiEditor()
 	{
-
 	}
 
 	void UiEditor::fillToolParameters( ToolApplicationParamters& parameters )
@@ -19,6 +20,12 @@ namespace tiki
 
 	bool UiEditor::initializeTool()
 	{
+		UiSystem& uiSystem = getUiSystem();
+
+		UiElement* pElement = uiSystem.addElement();
+		pElement->setWidth( UiSize( 100.0f ) );
+		pElement->setHeight( UiSize( 100.0f ) );
+
 		return true;
 	}
 

@@ -38,6 +38,9 @@ namespace tiki
 		bool			create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters );
 		void			dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
+		UiElement*		addElement( UiElement* pParent = nullptr );
+		void			removeElement( UiElement* pElement );
+
 		void			update();
 		void			render( GraphicsContext& context ) const;
 
@@ -49,6 +52,8 @@ namespace tiki
 
 		Pool< UiElement >		m_elementPool;
 		LinkedList< UiElement >	m_elements;
+
+		void					updateLayout();
 
 	};
 }
