@@ -85,6 +85,8 @@ if is_windows then
 	module:add_library_file( "Imm32" );
 	module:add_library_file( "Winmm" );
 	module:add_library_file( "Version" );
+elseif is_linux then
+
 else
 	throw "Platform not implemented"
 end

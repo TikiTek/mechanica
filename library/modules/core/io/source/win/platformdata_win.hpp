@@ -11,6 +11,11 @@ namespace tiki
 {
 	struct FileStreamPlatformData
 	{
+		FileStreamPlatformData()
+		{
+			fileHandle = nullptr;
+		}
+		
 		HANDLE	fileHandle;
 	};
 
@@ -33,10 +38,10 @@ namespace tiki
 		{
 			aPathBuffer[ 0u	]		= '\0';
 			aCurrentFileBuffer[0u ]	= '\0';
-			searchHandle			= INVALID_HANDLE_VALUE;
+			searchHandle				= INVALID_HANDLE_VALUE;
 		}
 
-		wchar_t				aPathBuffer[ TIKI_MAX_PATH ];
+		wchar_t			aPathBuffer[ TIKI_MAX_PATH ];
 		char				aCurrentFileBuffer[ TIKI_MAX_PATH ];
 
 		HANDLE				searchHandle;
