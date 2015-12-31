@@ -16,7 +16,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE tiki::Map<TKey, TValue>::Map( const Map< TKey, TValue >& copy )
+	TIKI_FORCE_INLINE Map<TKey, TValue>::Map( const Map< TKey, TValue >& copy )
 	{
 		m_pData = nullptr;
 		m_count = 0;
@@ -56,13 +56,13 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE bool tiki::Map<TKey, TValue>::isEmpty() const
+	TIKI_FORCE_INLINE bool Map<TKey, TValue>::isEmpty() const
 	{
 		return m_count == 0u;
 	}
 	
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE bool tiki::Map<TKey, TValue>::hasKey( const TKey& key ) const
+	TIKI_FORCE_INLINE bool Map<TKey, TValue>::hasKey( const TKey& key ) const
 	{
 		return findIndex( key ) != TIKI_SIZE_T_MAX;
 	}
@@ -195,7 +195,7 @@ namespace tiki
 	}
 	
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE TValue& tiki::Map<TKey, TValue>::operator[]( const TKey& key )
+	TIKI_FORCE_INLINE TValue& Map<TKey, TValue>::operator[]( const TKey& key )
 	{
 		const uint index = findIndex( key );
 		if ( index == TIKI_SIZE_T_MAX )
@@ -207,7 +207,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const TValue& tiki::Map<TKey, TValue>::operator[]( const TKey& key ) const
+	TIKI_FORCE_INLINE const TValue& Map<TKey, TValue>::operator[]( const TKey& key ) const
 	{
 		const uint index = findIndex( key );
 		TIKI_ASSERT( index != TIKI_SIZE_T_MAX );
@@ -251,7 +251,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint tiki::Map<TKey, TValue>::getNextSize( uint targetSize )
+	TIKI_FORCE_INLINE uint Map<TKey, TValue>::getNextSize( uint targetSize )
 	{
 		uint capacity = TIKI_MAX( 2u, m_capacity );
 
@@ -264,7 +264,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE void tiki::Map<TKey, TValue>::checkArraySize( uint neddedSize )
+	TIKI_FORCE_INLINE void Map<TKey, TValue>::checkArraySize( uint neddedSize )
 	{
 		if ( m_capacity < neddedSize )
 		{

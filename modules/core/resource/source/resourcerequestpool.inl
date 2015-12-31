@@ -15,7 +15,7 @@ namespace tiki
 	}
 	
 	template< typename T >
-	void tiki::ResourceRequestPool::unloadResource( const T*& pResource )
+	void ResourceRequestPool::unloadResource( const T*& pResource )
 	{
 		TIKI_ASSERT( m_pResourceManager != nullptr );
 

@@ -84,6 +84,11 @@ namespace tiki
 		return m_pBaseData->inputSystem;
 	}
 
+	UiSystem& BaseApplication::getUiSystem() const
+	{
+		return m_pBaseData->uiSystem;
+	}
+
 	const Timer& BaseApplication::getFrameTimer() const
 	{
 		return m_pBaseData->frameTimer;
@@ -214,6 +219,7 @@ namespace tiki
 		m_pBaseData->mainWindow.update();
 		m_pBaseData->resourceManager.update();
 		m_pBaseData->inputSystem.update();
+		m_pBaseData->uiSystem.update();
 
 		updatePlatform();
 
@@ -245,17 +251,20 @@ namespace tiki
 				wantToShutdown = true;
 			}
 
-			if( !processBaseInputEvent( inputEvent ) )
+			if( !m_pBaseData->uiSystem.processInputEvent( inputEvent ) )
 			{
-				//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
-				//{
-				//	const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
-				//	TIKI_TRACE_INFO( "[framework] keyboard event not handled. %s has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
-				//}
-				//else
-				//{
-				//	TIKI_TRACE_INFO( "[framework] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
-				//}
+				if( !processBaseInputEvent( inputEvent ) )
+				{
+					//if ( inputEvent.deviceType == InputDeviceType_Keyboard )
+					//{
+					//	const char* pState = ( inputEvent.eventType == InputEventType_Keyboard_Up ? "released" : "pressed" );
+					//	TIKI_TRACE_INFO( "[framework] keyboard event not handled. %s has %s.\n", input::getKeyboardKeyName( inputEvent.data.keybaordKey.key ), pState );
+					//}
+					//else
+					//{
+					//	TIKI_TRACE_INFO( "[framework] InputEvent of type %u not handled by any state.\n", inputEvent.eventType );
+					//}
+				}
 			}
 		}
 
@@ -266,6 +275,8 @@ namespace tiki
 			GraphicsContext& graphicsContext = m_pBaseData->graphicSystem.beginFrame();
 
 			renderApplication( graphicsContext );
+
+			m_pBaseData->uiSystem.render( graphicsContext );
 
 			m_pBaseData->graphicSystem.endFrame();
 		}

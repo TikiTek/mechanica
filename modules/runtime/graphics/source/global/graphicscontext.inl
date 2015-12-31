@@ -11,7 +11,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	void tiki::GraphicsContext::beginImmediateGeometry( StaticArray< T >& targetArray, uint vertexCount )
+	void GraphicsContext::beginImmediateGeometry( StaticArray< T >& targetArray, uint vertexCount )
 	{
 		void* pData = beginImmediateGeometry( sizeof( T ), vertexCount );
 		targetArray.create( static_cast< T* >( pData ), vertexCount );

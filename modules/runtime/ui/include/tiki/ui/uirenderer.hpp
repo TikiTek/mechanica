@@ -18,7 +18,7 @@ namespace tiki
 	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
-	struct UiElement;
+	class UiElement;
 	struct UiRenderData;
 	struct UiRenderElement;
 

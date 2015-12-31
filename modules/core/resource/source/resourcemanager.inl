@@ -17,13 +17,13 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const ResourceRequest& tiki::ResourceManager::beginResourceLoading( const char* pFileName )
+	TIKI_FORCE_INLINE const ResourceRequest& ResourceManager::beginResourceLoading( const char* pFileName )
 	{
 		return beginGenericResourceLoading( pFileName, T::getResourceType(), crcString( pFileName ) );
 	}
 	
 	template< typename T >
-	void tiki::ResourceManager::unloadResource( const T*& pResource )
+	void ResourceManager::unloadResource( const T*& pResource )
 	{
 		unloadGenericResource( (const Resource**)&pResource );
 	}

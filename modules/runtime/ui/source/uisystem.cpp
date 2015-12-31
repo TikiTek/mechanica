@@ -1,6 +1,6 @@
 #include "tiki/ui/uisystem.hpp"
 
-#include "uitypes.hpp"
+#include "uitypes_private.hpp"
 
 namespace tiki
 {
@@ -26,13 +26,54 @@ namespace tiki
 
 	void UiSystem::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		for( UiElement& element : m_elements )
+		{
+			removeElement( &element );
+		}
+
 		m_elementPool.dispose();
 		
 		m_renderer.dispose( graphicsSystem, resourceManager );
 	}
 
+	UiElement* UiSystem::addElement( UiElement* pParent /*= nullptr */ )
+	{
+		UiElement& element = m_elementPool.push();
+		element.create( pParent );
+
+		if( pParent == nullptr )
+		{
+			m_elements.push( element );
+		}
+
+		return &element;
+	}
+
+	void UiSystem::removeElement( UiElement* pElement )
+	{
+		if( pElement == nullptr )
+		{
+			return;
+		}
+
+		for( UiElement& child : pElement->m_children )
+		{
+			removeElement( &child );
+		}
+		pElement->dispose();
+
+		if( pElement->m_pParent == nullptr )
+		{
+			m_elements.removeSortedByValue( *pElement );
+		}
+
+		m_elementPool.removeUnsortedByValue( *pElement );
+	}
+
 	void UiSystem::update()
 	{
+		updateLayout();
+
 		UiRenderData renderData;
 
 		m_renderer.update( renderData );
@@ -47,4 +88,17 @@ namespace tiki
 	{
 		return false;
 	}
+
+	void UiSystem::updateLayout()
+	{
+		for( UiElement& element : m_elements )
+		{
+			if( !element.m_layoutChanged )
+			{
+				continue;
+			}
+
+		}
+	}
+
 }

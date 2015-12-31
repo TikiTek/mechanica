@@ -4,7 +4,7 @@
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/vector.hpp"
 
-#include "uitypes.hpp"
+#include "uitypes_private.hpp"
 
 namespace tiki
 {
@@ -84,13 +84,13 @@ namespace tiki
 	void UiRenderer::updateRecursiveRenderTree( const UiElement& element )
 	{
 		UiRenderElement* pRenderElement = nullptr;
-		if( element.pFont != nullptr )
+		if( element.m_pFont != nullptr )
 		{
 			//pRenderElement = m_
 		}
 		
 
-		for( uint i = 0u; i < element.children.getCount(); ++i )
+		for( uint i = 0u; i < element.m_children.getCount(); ++i )
 		{
 
 		}
