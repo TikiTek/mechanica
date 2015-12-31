@@ -1,3 +1,4 @@
+*~
 /gamebuild
 /library/tests/libraryunittests/build
 /library/tests/nettest/build
@@ -7,3 +8,4 @@
 /library/tools/uieditor/build
 /local/mastering/output
 /local/game/build
+
