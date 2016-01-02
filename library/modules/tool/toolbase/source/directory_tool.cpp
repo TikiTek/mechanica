@@ -12,11 +12,14 @@ namespace tiki
 		bool getFiles( const string& path, List< string >& targetList )
 		{
 			DirectoryIterator iterator;
-			iterator.create( path.cStr() );
+			if ( !iterator.create( path.cStr() ) )
+			{
+				return false;
+			}
 			
 			while ( iterator.findNextFile() )
 			{
-				if( file::exists( iterator.getCurrentFileName() ) )
+				if( iterator.isCurrentFile() )
 				{
 					targetList.add( iterator.getCurrentFileName() );
 				}
@@ -30,11 +33,14 @@ namespace tiki
 		bool getDirectories( const string& path, List< string >& targetList )
 		{
 			DirectoryIterator iterator;
-			iterator.create( path.cStr() );
+			if ( !iterator.create( path.cStr() ) )
+			{
+				return false;
+			}
 			
 			while ( iterator.findNextFile() )
 			{
-				if( directory::exists( iterator.getCurrentFileName() ) )
+				if( iterator.isCurrentDirectory() )
 				{
 					targetList.add( iterator.getCurrentFileName() );
 				}

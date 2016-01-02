@@ -52,7 +52,7 @@ namespace tiki
 			format,
 			nullptr,
 			argptr
-			);
+		);
 
 		va_end( argptr );
 	}
@@ -64,7 +64,7 @@ namespace tiki
 		va_list argptr;
 		va_start( argptr, format );
 
-		sprintf( pTargetBuffer, format, argptr );
+		vsnprintf( pTargetBuffer, bufferSize, format, argptr );
 
 		va_end( argptr );
 	}

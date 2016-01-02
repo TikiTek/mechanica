@@ -7,14 +7,12 @@
 
 namespace tiki
 {
-	enum
-	{
-		TimeOutInfinity = 0xffffffffu
-	};
-
 	struct ThreadPlatformData
 	{
 		pthread_t		threadHandle;
+		uint64			threadId;
+		
+		char			name[ 16u ];
 	};
 
 	struct MutexPlatformData
@@ -31,6 +29,13 @@ namespace tiki
 
 	struct EventPlatformData
 	{
+		bool				isInitialized;
+
+		pthread_mutex_t	signalMutex;
+		pthread_cond_t		condition;
+		
+		volatile bool		isSignaled;
+		volatile uint32	waitingThreadCount;
 	};
 }
 

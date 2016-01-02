@@ -29,7 +29,7 @@ namespace tiki
 		void	signal();
 		void	reset();
 
-		bool	waitForSignal( uint timeOut = TimeOutInfinity );
+		bool	waitForSignal( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 	private:
 

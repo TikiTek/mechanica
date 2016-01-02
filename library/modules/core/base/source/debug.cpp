@@ -26,7 +26,6 @@ namespace tiki
 
 	void debug::traceInternal( const char* pFormat, TraceLevel level, va_list pArgs )
 	{
-#pragma warning(disable: 4996)
 		static cstring s_aTracePrefix[] =
 		{
 			"",
@@ -36,12 +35,13 @@ namespace tiki
 			"[ERROR] "
 		};
 		const uint prefixStringLength		= strlen( s_aTracePrefix[ level ] );
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-		const uint formattedStringLength	= _vsnprintf( nullptr, 0u, pFormat, pArgs );
-#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-		const uint formattedStringLength	= vprintf( pFormat, pArgs );
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	pragma warning(disable: 4996)
+		const uint formattedStringLength		= _vsnprintf( nullptr, 0u, pFormat, pArgs );
 #else
-#   error "Platform not supported"
+		va_list startList = { *pArgs };
+		const uint formattedStringLength		= vsnprintf( nullptr, 0u, pFormat, pArgs );
+		pArgs = startList;
 #endif
 
 		string message( prefixStringLength + formattedStringLength );
@@ -55,6 +55,7 @@ namespace tiki
 			nullptr,
 			pArgs
 		);
+#	pragma warning(default: 4996)
 #else
         vsnprintf(
             (char*)( message.cStr() + prefixStringLength ),
@@ -70,7 +71,6 @@ namespace tiki
 		{
 			s_pGlobalTraceCallback( message.cStr(), level );
 		}
-#pragma warning(default: 4996)
 	}
 
 	void debug::trace( const char* pFormat, ... )
