@@ -8,6 +8,8 @@
 
 namespace tiki
 {
+	class GenericDataTypeValueType;
+	
 	struct GenericDataEnumValue
 	{
 		string				name;
@@ -22,7 +24,7 @@ namespace tiki
 
 	public:
 
-											GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType );
+											GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType& baseType );
 		virtual								~GenericDataTypeEnum();
 
 		virtual bool						loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
@@ -44,9 +46,9 @@ namespace tiki
 
 	private:
 
-		const GenericDataType*			m_pBaseType;
+		const GenericDataTypeValueType*	m_pBaseType;
 
-		List< GenericDataEnumValue >	m_values;
+		List< GenericDataEnumValue >		m_values;
 
 	};
 }

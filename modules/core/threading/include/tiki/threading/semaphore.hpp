@@ -26,10 +26,10 @@ namespace tiki
 		bool	create( uint initialCount = 0, uint maxCount = 0x7fffffff, const char* pName = nullptr );
 		void	dispose();
 
-		void	incement( uint count = 1u );
+		void	incement();
 
-		void	decrement( uint count = 1u );
-		uint	tryDecrement( uint count = 1u, uint timeOut = TimeOutInfinity );
+		void	decrement();
+		bool	tryDecrement( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 	private:
 

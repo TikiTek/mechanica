@@ -37,12 +37,11 @@ namespace tiki
 		}
 
 		m_loadingMutex.create();
-		if ( !m_loadingThread.create( staticThreadEntry, 1024 * 1024, "ResourceManager" ) )
+		if ( !m_loadingThread.create( staticThreadEntry, this, 1024 * 1024, "ResourceManager" ) )
 		{
 			dispose();
 			return false;
 		}
-		m_loadingThread.start( this );
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		AssetConverterParamter converterParameters;

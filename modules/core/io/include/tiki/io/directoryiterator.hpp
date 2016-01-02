@@ -28,6 +28,8 @@ namespace tiki
 
 		bool			findNextFile();
 
+		bool			isCurrentFile() const;
+		bool			isCurrentDirectory() const;
 		const char*	getCurrentFileName() const;
 
 	private:

@@ -14,11 +14,11 @@ namespace tiki
 	{
 	}
 
-	void FileStream::create( const char* pFileName, DataAccessMode accessMode )
+	bool FileStream::create( const char* pFileName, DataAccessMode accessMode )
 	{
 		cstring pMode = "wb+";
 
-		switch ( fileMode )
+		switch ( accessMode )
 		{
 		case DataAccessMode_Read:
 			pMode = "rb";
@@ -28,16 +28,17 @@ namespace tiki
 			pMode = "wb";
 			break;
 			
-		case DataAccessMod_WriteAppend:
+		case DataAccessMode_WriteAppend:
 			pMode = "ab";
 			break;
 			
 		case DataAccessMode_ReadWrite:
-			pMode = "rwb;"
+			pMode = "rwb";
 			break;
 		}
 
 		m_platformData.pFileHandle = fopen( pFileName, pMode );
+		return m_platformData.pFileHandle != nullptr;
 	}
 
 	void FileStream::dispose()
@@ -54,42 +55,72 @@ namespace tiki
 		return m_platformData.pFileHandle != nullptr;
 	}
 
-	size_t FileStream::read( void* pData, size_t length ) const
+	FileSize FileStream::read( void* pData, FileSize length ) const
 	{
 		TIKI_ASSERT( m_platformData.pFileHandle );
 		return fread( pData, length, 1u, m_platformData.pFileHandle );
 	}
 
-	void FileStream::write( const void* pData, size_t length ) const
+	FileSize FileStream::write( const void* pData, FileSize length )
 	{
 		TIKI_ASSERT( m_platformData.pFileHandle );
-		fwrite( pData, length, 1u, m_platformData.pFileHandle );
+		return fwrite( pData, length, 1u, m_platformData.pFileHandle );
 	}
 
-	size_t FileStream::getLength()
+	FileSize FileStream::getPosition() const
 	{
-		size_t pos = getPosition();
+		fpos_t pos;
+		fgetpos( m_platformData.pFileHandle, &pos );
+		return (FileSize)pos.__pos;
 
+	}
+
+	void FileStream::setPosition( FileSize pos )
+	{
+		fpos_t pos2;
+		pos2.__pos = pos;
+		fsetpos( m_platformData.pFileHandle, &pos2 );
+	}
+	
+	FileSize FileStream::seekPosition( FileOffset offset, DataStreamSeek method /*= DataStreamSeek_Current*/ )
+	{
+		static const int s_aSeekModeMapping[] = {
+			SEEK_SET,
+			SEEK_CUR,
+			SEEK_END
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aSeekModeMapping ) == DataStreamSeek_Count );
+		
+		return (FileSize)fseek( m_platformData.pFileHandle, offset, s_aSeekModeMapping[ method ] );
+	}
+	
+	FileSize FileStream::getLength() const
+	{
+		fpos_t pos;
+		fgetpos( m_platformData.pFileHandle, &pos );
+		
 		fseek( m_platformData.pFileHandle, 0, SEEK_END );
-		size_t size = (size_t)ftell( m_platformData.pFileHandle );
-
-		setPosition( pos );
+		FileSize size = (FileSize)ftell( m_platformData.pFileHandle );
+		
+		fsetpos( m_platformData.pFileHandle, &pos );
 
 		return size;
 	}
-
-	size_t FileStream::getPosition() const
+	
+	void FileStream::setLength( FileSize length )
 	{
-		fpos_t pos = 0;
-		fgetpos( m_platformData.pFileHandle, &pos );
-		return (size_t)pos;
-
-	}
-
-	size_t FileStream::setPosition( size_t pos )
-	{
-		fpos_t pos2 = (fpos_t)pos;
-		fsetpos( m_platformData.pFileHandle, &pos2 );
-		return (size_t)pos2;
+		FileSize currentLength = getLength();		
+		seekPosition( 0, DataStreamSeek_End );
+		
+		uint8 data = 0u;
+		while ( currentLength < length )
+		{
+			if ( !write( &data, 1u ) )
+			{
+				break;
+			}
+			
+			currentLength++;
+		}
 	}
 }

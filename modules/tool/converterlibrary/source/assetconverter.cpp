@@ -101,12 +101,8 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
-		
-		if ( m_watchThread.create( watchThreadStaticEntryPoint, 8192u, "AssetConverter" ) == true )
-		{
-			m_watchThread.start( this );
-		}
+		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );		
+		m_watchThread.create( watchThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
 	}
 
 	void AssetConverter::stopWatch()
@@ -166,7 +162,7 @@ namespace tiki
 			}
 			else
 			{
-				Sleep( 10u );
+				Thread::sleepCurrentThread( 10u );
 			}
 		}
 	}

@@ -14,13 +14,6 @@
 
 namespace tiki
 {
-//#if TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-//	struct MutexPlatformData
-//	{
-//		pthread_mutex_t mutex;
-//	};
-//#endif
-
 	class Mutex
 	{
 		TIKI_NONCOPYABLE_CLASS( Mutex );
@@ -30,11 +23,11 @@ namespace tiki
 		Mutex();
 		~Mutex();
 
-		void				create();
+		bool				create();
 		void				dispose();
 
 		void				lock();
-		bool				tryLock( uint timeOut = TimeOutInfinity );
+		bool				tryLock( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 		void				unlock();
 

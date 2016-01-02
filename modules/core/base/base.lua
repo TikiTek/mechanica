@@ -11,6 +11,8 @@ if is_windows then
 	module:add_files( "source/win/*.cpp" );
 elseif is_linux then
 	module:add_files( "source/posix/*.cpp" );
+
+	module:add_library_file( "pthread" );
 else
 	throw("Platform not supported.");
 end
