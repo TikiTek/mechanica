@@ -41,7 +41,6 @@ namespace tiki
 		convertWidecharToUtf8String( pBuffer, bufferSize, aUserNameWideCharBuffer );
 	}
 
-
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 	InstanceHandle platform::getInstanceHandle()
 	{
