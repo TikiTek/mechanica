@@ -65,7 +65,7 @@ namespace tiki
 				len++;
 
 			if (value == 0)
-				return string::numberZero;
+				return "0";
 
 			TInt i = 1;
 			TInt i2 = i;

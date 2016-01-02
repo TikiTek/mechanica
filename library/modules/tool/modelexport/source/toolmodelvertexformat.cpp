@@ -24,18 +24,18 @@ namespace tiki
 		return findAttributeBySemantic( semantic, 0u ) != nullptr;
 	}
 
-	void ToolModelVertexFormat::addSemantic( VertexSementic semantic, VertexAttributeFormat format, uint32 streamIndex /* = 0u */ )
+	void ToolModelVertexFormat::addSemantic( VertexSementic semantic, VertexAttributeFormat format /* = VertexAttributeFormat_Invalid */, uint32 streamIndex /* = 0u */ )
 	{
 		TIKI_ASSERT( semantic < VertexSementic_Count);
-		TIKI_ASSERT( format < VertexAttributeFormat_Count );
+		TIKI_ASSERT( format < VertexAttributeFormat_Count || format == VertexAttributeFormat_Invalid );
 		TIKI_ASSERT( streamIndex < m_vertexStrides.getCount() );
 		setAttribute( m_attributes.add(), semantic, format, streamIndex );
 	}
 
-	bool ToolModelVertexFormat::insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format /*= VertexAttributeFormat_Invalid*/, uint32 streamIndex /*= 0u */ )
+	bool ToolModelVertexFormat::insertSemantic( VertexSementic semantic, VertexSementic afterThisSemantic, VertexAttributeFormat format /* = VertexAttributeFormat_Invalid */, uint32 streamIndex /* = 0u */ )
 	{
 		TIKI_ASSERT( semantic < VertexSementic_Count);
-		TIKI_ASSERT( format < VertexAttributeFormat_Count );
+		TIKI_ASSERT( format < VertexAttributeFormat_Count || format == VertexAttributeFormat_Invalid );
 		TIKI_ASSERT( streamIndex < m_vertexStrides.getCount() );
 
 		const VertexAttribute* pAttribute = findAttributeBySemantic( afterThisSemantic, 0u );

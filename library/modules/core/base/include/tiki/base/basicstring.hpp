@@ -15,7 +15,7 @@ namespace tiki
 	public:
 
 		TIKI_FORCE_INLINE					BasicString();
-		TIKI_FORCE_INLINE					BasicString( uint len );
+		TIKI_FORCE_INLINE explicit			BasicString( uint len );
 		TIKI_FORCE_INLINE					BasicString( const char* pString );
 		TIKI_FORCE_INLINE					BasicString( const char* pString, sint length );
 		TIKI_FORCE_INLINE					BasicString( const BasicString& copy );

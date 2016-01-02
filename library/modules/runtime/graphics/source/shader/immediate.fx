@@ -1,7 +1,7 @@
 // vs-features= ps-features=TIKI_FONT_MODE,TIKI_COLOR_MODE
 
 #include "shader/platform.fxh"
-#include "tiki/graphics/immediaterenderer_shader.hpp"
+#include "tiki/graphics/shader/immediaterenderer_shader.hpp"
 
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
 	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, TIKI_OUTPUT_POSITION0 )
