@@ -13,7 +13,6 @@ int tiki::mainEntryPoint()
 		parameters.sourcePath	= "../../../../../../content";
 		parameters.outputPath	= "../../../../../../gamebuild";
 		parameters.forceRebuild	= platform::hasArgument( "--rebuild" );
-		parameters.rebuildOnMissingDatabase	= false;
 
 		IAssetConverter* pConverter = createAssetConverter();
 		pConverter->create( parameters );

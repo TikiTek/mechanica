@@ -19,7 +19,7 @@ namespace tiki
 		string finalPath = pPath;
 		if ( !finalPath.endsWith( '/' ) )
 		{
-			finalPath += '/';
+			finalPath += "/";
 		}
 		finalPath += "*.*";
 
@@ -70,6 +70,16 @@ namespace tiki
 		}
 
 		return result;
+	}
+	
+	bool DirectoryIterator::isCurrentFile() const
+	{
+		return !isBitSet( m_platformData.searchData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY );
+	}
+
+	bool DirectoryIterator::isCurrentDirectory() const
+	{
+		return isBitSet( m_platformData.searchData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY );
 	}
 
 	const char* DirectoryIterator::getCurrentFileName() const

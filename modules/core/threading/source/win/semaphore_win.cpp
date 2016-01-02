@@ -45,39 +45,21 @@ namespace tiki
 		}
 	}
 
-	void Semaphore::incement( uint count /*= 1u*/ )
+	void Semaphore::incement()
 	{
 		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		ReleaseSemaphore(
-			m_platformData.semaphoreHandle,
-			DWORD( count ),
-			nullptr
-		);
+		ReleaseSemaphore( m_platformData.semaphoreHandle, 1, nullptr );
 	}
 
-	void Semaphore::decrement( uint count /*= 1u*/ )
+	void Semaphore::decrement()
 	{
 		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		for (uint i = 0u; i < count; ++i)
-		{
-			WaitForSingleObject( m_platformData.semaphoreHandle, INFINITE );
-		} 
+		WaitForSingleObject( m_platformData.semaphoreHandle, INFINITE );
 	}
 
-	uint Semaphore::tryDecrement( uint count /*= 1u*/, uint timeOut /*= TimeOutInfinity */ )
+	bool Semaphore::tryDecrement( timems timeOut /* = TIKI_TIME_OUT_INFINITY */ )
 	{
 		TIKI_ASSERT( m_platformData.semaphoreHandle != INVALID_HANDLE_VALUE );
-
-		for (uint i = 0u; i < count; ++i)
-		{
-			if ( WaitForSingleObject( m_platformData.semaphoreHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
-			{
-				return i;
-			}
-		} 
-
-		return count;
+		return WaitForSingleObject( m_platformData.semaphoreHandle, DWORD( timeOut ) ) != WAIT_TIMEOUT;
 	}
 }

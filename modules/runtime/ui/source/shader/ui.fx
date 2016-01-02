@@ -1,7 +1,7 @@
 // vs-features= ps-features=TIKI_FONT_MODE,TIKI_COLOR_MODE
 
 #include "shader/platform.fxh"
-#include "tiki/graphics/immediaterenderer_shader.hpp"
+#include "tiki/ui/shader/ui_shader.hpp"
 
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
 	TIKI_VERTEX_TO_PIXEL_DEFINITION_ELEMENT( float4, TIKI_OUTPUT_POSITION0 )
@@ -20,7 +20,7 @@ TIKI_VERTEX_INPUT_DEFINITION_BEGIN( VertexInput )
 	TIKI_VERTEX_INPUT_DEFINITION_ELEMENT( 2, float4, TIKI_COLOR0 )
 TIKI_VERTEX_INPUT_DEFINITION_END( VertexInput )
 
-TIKI_DEFINE_CONSTANT( 0, ImmediateRendererConstantData, s_constantData )
+TIKI_DEFINE_CONSTANT( 0, UiShaderConstantData, s_constantData )
 
 TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 {

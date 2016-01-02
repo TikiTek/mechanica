@@ -9,3 +9,5 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "converterbase" );
 module:add_dependency( "toolgenericdata" );
+
+module:set_define( "TIKI_GENERICDATA_CONVERTER", "TIKI_ON" );

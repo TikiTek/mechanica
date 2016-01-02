@@ -63,7 +63,7 @@ namespace tiki
 		static ThreadList		s_threadList;
 		
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-		static DWORD			threadEntryPoint( void* pArgument );
+		static DWORD WINAPI		threadEntryPoint( void* pArgument );
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 		static void*			threadEntryPoint( void* pArgument );
 #endif

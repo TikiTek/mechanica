@@ -15,12 +15,14 @@ namespace tiki
 		TIKI_ASSERT( !m_platformData.isInitialized );
 	}
 
-	void Mutex::create()
+	bool Mutex::create()
 	{
 		TIKI_ASSERT( !m_platformData.isInitialized );
 
 		m_platformData.isInitialized = true;
 		InitializeCriticalSection( &m_platformData.mutexData );
+
+		return true;
 	}
 
 	void Mutex::dispose()
@@ -38,7 +40,7 @@ namespace tiki
 		EnterCriticalSection( &m_platformData.mutexData );
 	}
 
-	bool Mutex::tryLock( uint timeOut /*= TimeOutInfinity*/ )
+	bool Mutex::tryLock( timems timeOut /* = TIKI_TIME_OUT_INFINITY */ )
 	{
 		TIKI_ASSERT( m_platformData.isInitialized );
 		return TryEnterCriticalSection( &m_platformData.mutexData ) != 0;

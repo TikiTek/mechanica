@@ -30,7 +30,7 @@ namespace tiki
 
 		bool			isCurrentFile() const;
 		bool			isCurrentDirectory() const;
-		const char*	getCurrentFileName() const;
+		const char*		getCurrentFileName() const;
 
 	private:
 
