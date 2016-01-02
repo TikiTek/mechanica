@@ -91,7 +91,8 @@ namespace tiki
 
 #define TIKI_DEFAULT_ALIGNMENT	0u
 #define TIKI_INVALID_CRC32		0xffffffffu
-#define TIKI_MAX_PATH			512u
+#define TIKI_MAX_PATH				512u
+#define TIKI_TIME_OUT_INFINITY	0x7fffffffffffffff
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 

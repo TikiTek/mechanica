@@ -29,7 +29,7 @@ namespace tiki
 		void	incement();
 
 		void	decrement();
-		bool	tryDecrement( uint timeOut = TimeOutInfinity );
+		bool	tryDecrement( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 	private:
 

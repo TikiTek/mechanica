@@ -11,23 +11,23 @@
 
 namespace tiki
 {
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_Boolean			== GenericDataTypeValueTypeType_Boolean );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_Boolean				== (int)GenericDataTypeValueTypeType_Boolean );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger8	== GenericDataTypeValueTypeType_SingedInteger8 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger16	== GenericDataTypeValueTypeType_SingedInteger16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger32	== GenericDataTypeValueTypeType_SingedInteger32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger64	== GenericDataTypeValueTypeType_SingedInteger64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger8		== (int)GenericDataTypeValueTypeType_SingedInteger8 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger16	== (int)GenericDataTypeValueTypeType_SingedInteger16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger32	== (int)GenericDataTypeValueTypeType_SingedInteger32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger64	== (int)GenericDataTypeValueTypeType_SingedInteger64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger8	== GenericDataTypeValueTypeType_UnsingedInteger8 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger16	== GenericDataTypeValueTypeType_UnsingedInteger16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger32	== GenericDataTypeValueTypeType_UnsingedInteger32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger64	== GenericDataTypeValueTypeType_UnsingedInteger64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger8	== (int)GenericDataTypeValueTypeType_UnsingedInteger8 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger16	== (int)GenericDataTypeValueTypeType_UnsingedInteger16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger32	== (int)GenericDataTypeValueTypeType_UnsingedInteger32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger64	== (int)GenericDataTypeValueTypeType_UnsingedInteger64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint16	== GenericDataTypeValueTypeType_FloatingPoint16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint32	== GenericDataTypeValueTypeType_FloatingPoint32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint64	== GenericDataTypeValueTypeType_FloatingPoint64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint16	== (int)GenericDataTypeValueTypeType_FloatingPoint16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint32	== (int)GenericDataTypeValueTypeType_FloatingPoint32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint64	== (int)GenericDataTypeValueTypeType_FloatingPoint64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_String			== GenericDataTypeValueTypeType_String );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_String				== (int)GenericDataTypeValueTypeType_String );
 		
 	GenericDataValue::GenericDataValue()
 	{

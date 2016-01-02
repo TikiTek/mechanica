@@ -26,12 +26,18 @@ namespace tiki
 	{
 		DirectoryIteratorPlatformData()
 		{
-			pDirHandle	= nullptr;
-			pDirEntry	= nullptr;
+			pDirHandle			= nullptr;
+			pDirEntry			= nullptr;
+			
+			pathName[ 0u ]		= '\0';
+			currentName[ 0u ]	= '\0';
 		}
 		
 		__dirstream*	pDirHandle;
 		dirent*		pDirEntry;
+		
+		char			pathName[ TIKI_MAX_PATH ];
+		char			currentName[ TIKI_MAX_PATH ];
 	};
 }
 

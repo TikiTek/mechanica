@@ -20,7 +20,7 @@ namespace tiki
 	bool Semaphore::create( uint initialCount /*= 0*/, uint maxCount /*= 0x7fffffff*/, const char* pName /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_platformData.isInitialized == false );		
-		return sem_init( &m_platformData.semaphoreData, initialCount );
+		return sem_init( &m_platformData.semaphoreData, 0, initialCount );
 	}
 
 	void Semaphore::dispose()
@@ -35,19 +35,19 @@ namespace tiki
 	void Semaphore::incement()
 	{
 		TIKI_ASSERT( m_platformData.isInitialized );
-		sem_post( &m_platformData.semaphoreData );
+		TIKI_VERIFY( sem_post( &m_platformData.semaphoreData ) >= 0 );
 	}
 
 	void Semaphore::decrement()
 	{
 		TIKI_ASSERT( m_platformData.isInitialized );
-		sem_wait( m_platformData.semaphoreData );
+		TIKI_VERIFY( sem_wait( &m_platformData.semaphoreData ) >= 0 );
 	}
 
-	bool Semaphore::tryDecrement(uint timeOut /*= TimeOutInfinity */ )
+	bool Semaphore::tryDecrement( timems timeOut /*= TIKI_TIME_OUT_INFINITY*/ )
 	{
 		TIKI_ASSERT( m_platformData.isInitialized );
-		if ( timeOut == TimeOutInfinity )
+		if ( timeOut == TIKI_TIME_OUT_INFINITY )
 		{
 			return sem_trywait( &m_platformData.semaphoreData ) >= 0;
 		}

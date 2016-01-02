@@ -48,7 +48,7 @@ namespace tiki
 		TIKI_VERIFY( pthread_mutex_lock( &m_platformData.mutexData ) >= 0 );
 	}
 
-	bool Mutex::tryLock( uint timeOut /*= TimeOutInfinity*/ )
+	bool Mutex::tryLock( timems timeOut /*= TIKI_TIME_OUT_INFINITY*/ )
 	{
 		TIKI_ASSERT( m_platformData.isInitialized );
 

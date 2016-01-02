@@ -2,6 +2,8 @@
 #ifndef TIKI_STRING_INL_INCLUDED__
 #define TIKI_STRING_INL_INCLUDED__
 
+#include "tiki/base/assert.hpp"
+
 namespace tiki
 {
 	TIKI_FORCE_INLINE uint getStringSize( const char* pSource )
@@ -28,25 +30,30 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, cstring pSourceBuffer )
 	{
-		const uint sourceLength = TIKI_MIN( bufferSize - 1u, getStringSize( pSourceBuffer ) );
-
-		uint64* pTarget64 = reinterpret_cast< uint64* >( pTargetBuffer );
-		const uint64* pSource64 = reinterpret_cast< const uint64* >( pSourceBuffer );
-
+		TIKI_ASSERT( pTargetBuffer != nullptr );
+		
 		uint length = 0u;
-		while ( length < sourceLength )
+		if ( pSourceBuffer != nullptr )
 		{
-			if ( ( sourceLength -  length ) >= sizeof( uint64 ) )
-			{
-				const uint lengthOver = length / sizeof( uint64 );
-				pTarget64[ lengthOver ] = pSource64[ lengthOver ];
+			const uint sourceLength = TIKI_MIN( bufferSize - 1u, getStringSize( pSourceBuffer ) );
 
-				length += sizeof( uint64 );
-			}
-			else
+			uint64* pTarget64 = reinterpret_cast< uint64* >( pTargetBuffer );
+			const uint64* pSource64 = reinterpret_cast< const uint64* >( pSourceBuffer );
+
+			while ( length < sourceLength )
 			{
-				pTargetBuffer[ length ] = pSourceBuffer[ length ];
-				++length;
+				if ( ( sourceLength -  length ) >= sizeof( uint64 ) )
+				{
+					const uint lengthOver = length / sizeof( uint64 );
+					pTarget64[ lengthOver ] = pSource64[ lengthOver ];
+
+					length += sizeof( uint64 );
+				}
+				else
+				{
+					pTargetBuffer[ length ] = pSourceBuffer[ length ];
+					++length;
+				}
 			}
 		}
 		pTargetBuffer[ length ] = '\0';

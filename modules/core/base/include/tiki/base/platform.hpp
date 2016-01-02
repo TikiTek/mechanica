@@ -35,21 +35,21 @@ namespace tiki
 
 	namespace platform
 	{
-		PlatformType			        getHostPlatform();
-		GraphicsApi			        	getHostGraphicsApi();
+		PlatformType							getHostPlatform();
+		GraphicsApi							getHostGraphicsApi();
 
-		uint					        getProcessorCount();
+		uint									getProcessorCount();
 
-		void							getUserName( char* pBuffer, uint bufferSize );
+		void									getUserName( char* pBuffer, uint bufferSize );
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
-		InstanceHandle					getInstanceHandle();
-		const StaticArray< cstring >&	getArguments();
-		bool							hasArgument( cstring name );
+		InstanceHandle							getInstanceHandle();
+		const StaticArray< const char* >&	getArguments();
+		bool									hasArgument( const char* name );
 #endif
 	}
 
-	int							mainEntryPoint();
+	int											mainEntryPoint();
 }
 
 #endif // TIKI_PLATFORM_HPP
