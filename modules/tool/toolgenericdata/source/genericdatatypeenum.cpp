@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType& baseType )
+	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType& baseType )
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( &baseType )
 	{
@@ -89,11 +89,10 @@ namespace tiki
 		static const char* s_pBaseFormat			= "\n"
 													  "\tenum %s : %s\n"
 													  "\t{\n"
-													  "\t\t%s_Invalid = -1,\n"
-													  "\n"
 													  "%s"
 													  "\n"
-													  "\t\t%s_Count\n"
+													  "\t\t%s_Count,\n"
+													  "\t\t%s_Invalid = %s\n"
 													  "\t};\n";
 
 		static const char* s_pValueFormat			= "\t\t%s_%s,\n";
@@ -113,14 +112,24 @@ namespace tiki
 				valuesCode += formatString( s_pValueFormat, getName().cStr(), value.name.cStr() );
 			}
 		}
-
+		
+		string invalidValue = "-1";
+		if( m_pBaseType->isUnsignedInteger() )
+		{
+			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
+			
+			string format = formatString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
+			invalidValue = formatString( format.cStr(), maxValue );
+		}
+		
 		targetData.code += formatString(
 			s_pBaseFormat,
 			getExportName().cStr(),
 			m_pBaseType->getExportName().cStr(),
-			getExportName().cStr(),
 			valuesCode.cStr(),
-			getExportName().cStr()
+			getExportName().cStr(),
+			getExportName().cStr(),
+			invalidValue.cStr()
 		);
 
 		return true;

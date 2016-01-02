@@ -23,6 +23,8 @@
 #include "fpp.h"
 #include "trexpp.h"
 
+#include <stdarg.h>
+
 namespace tiki
 {
 	static const crc32 s_typeCrc = crcString( "shader" );
@@ -266,8 +268,8 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
-            : BasicIncludeHandler( result, includeDirs )
+		ShaderIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
+            : BasicIncludeHandler( result, storage )
 		{
 		}
 	};

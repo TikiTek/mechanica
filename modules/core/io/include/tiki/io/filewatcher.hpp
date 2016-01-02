@@ -47,7 +47,7 @@ namespace tiki
 		void	dispose();
 
 		bool	popEvent( FileWatcherEvent& fileEvent );
-		bool	waitForEvent( uint timeOut = TimeOutInfinity );
+		bool	waitForEvent( timems timeOut = TIKI_TIME_OUT_INFINITY );
 		
 	private:
 
