@@ -34,6 +34,8 @@ namespace tiki
 
 		string str( len );
 
+		va_start( argptr, format );
+
 		_vsprintf_s_l(
 			(char*)str.cStr(),
 			str.getLength() + 1u,
@@ -53,11 +55,13 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, format );
-
-		const size_t len = snprintf( nullptr, 0u, format, argptr );
+		va_list startList = { argptr[ 0 ] };
+		
+		const size_t len = vsnprintf( nullptr, 0u, format, argptr );
 		string str( len );
-
-		sprintf( (char*)str.cStr(), format, argptr );
+		
+		argptr[ 0 ] = startList[ 0 ];
+		vsnprintf( (char*)str.cStr(), len + 1u, format, argptr );
 
 		va_end( argptr );
 

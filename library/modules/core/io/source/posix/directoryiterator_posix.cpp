@@ -19,7 +19,8 @@ namespace tiki
 
 	bool DirectoryIterator::create( const char* pPath )
 	{
-		m_platformData.pDirHandle = opendir( Path );
+		m_platformData.pDirHandle = opendir( pPath );
+		copyString( m_platformData.pathName, TIKI_COUNT( m_platformData.pathName ), pPath );
 
 		return m_platformData.pDirHandle != nullptr;
 	}
@@ -32,12 +33,51 @@ namespace tiki
 
 	bool DirectoryIterator::findNextFile()
 	{
+		TIKI_ASSERT( m_platformData.pDirHandle != nullptr );
+		
 		m_platformData.pDirEntry = readdir( m_platformData.pDirHandle );
-		return m_platformData.pDirEntry != nullptr;
+		while ( m_platformData.pDirEntry != nullptr )
+		{
+			if ( !isStringEquals( m_platformData.pDirEntry->d_name, "." ) &&
+				 !isStringEquals( m_platformData.pDirEntry->d_name, ".." ) )
+			{
+				break;
+			}
+			
+			m_platformData.pDirEntry = readdir( m_platformData.pDirHandle );
+		}
+		
+		if( m_platformData.pDirEntry != nullptr )
+		{
+			formatStringBuffer(
+				m_platformData.currentName,
+				TIKI_COUNT( m_platformData.currentName ),
+				"%s/%s",
+				m_platformData.pathName,
+				m_platformData.pDirEntry->d_name
+			);
+			
+			return true;
+		}
+		
+		return false;
+	}
+
+	bool DirectoryIterator::isCurrentFile() const
+	{
+		TIKI_ASSERT( m_platformData.pDirEntry != nullptr );
+		return m_platformData.pDirEntry->d_type == DT_REG;
+	}
+	
+	bool DirectoryIterator::isCurrentDirectory() const
+	{
+		TIKI_ASSERT( m_platformData.pDirEntry != nullptr );
+		return m_platformData.pDirEntry->d_type == DT_DIR;
 	}
 
 	const char* DirectoryIterator::getCurrentFileName() const
 	{
+		TIKI_ASSERT( m_platformData.pDirEntry != nullptr );
 		return m_platformData.pDirEntry->d_name;
 	}
 }

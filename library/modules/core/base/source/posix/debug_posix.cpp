@@ -20,14 +20,14 @@ namespace tiki
 
 	bool debug::isDebuggerActive()
 	{
-		return false;
+		return true;
 	}
 
 	void debug::breakPoint()
 	{
 		if ( isDebuggerActive() )
 		{
-			/*__debugbreak();*/
+			__builtin_trap();
 		}
 		else
 		{

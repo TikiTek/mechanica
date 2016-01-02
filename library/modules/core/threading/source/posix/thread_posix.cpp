@@ -4,135 +4,123 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/base/functions.hpp"
 
-#include <windows.h>
-
-const DWORD MS_VC_EXCEPTION = 0x406D1388;
-
-#pragma pack(push,8)
-typedef struct tagTHREADNAME_INFO
-{
-	DWORD	dwType;			// Must be 0x1000.
-	LPCSTR	szName;			// Pointer to name (in user addr space).
-	DWORD	dwThreadID;		// Thread ID (-1=caller thread).
-	DWORD	dwFlags;		// Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
+#include <pthread.h>
+#include <errno.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
 namespace tiki
 {
 	Thread::ThreadList Thread::s_threadList;
 
-	DWORD WINAPI threadEntryPoint( void* pArgument )
-	{
-		TIKI_ASSERT( pArgument != nullptr );
-
-		const Thread* pThread = static_cast< const Thread* >( pArgument );
-		ThreadEntryFunction pEntryFunc = pThread->getEntryFunction();
-
-		return pEntryFunc( *pThread );
-	}
-
 	Thread::Thread()
 	{
-		m_platformData.threadHandle	= INVALID_HANDLE_VALUE;
+		m_platformData.threadHandle	= 0u;
 		m_platformData.threadId		= 0u;
 		m_platformData.name[ 0u ]	= '\0';
 
-		m_pEntryFunction	= nullptr;
-		m_pArgument			= nullptr;
-		m_isExitRequested	= false;
+		m_pEntryFunction				= nullptr;
+		m_pArgument					= nullptr;
+		m_isExitRequested				= false;
 
 		s_threadList.push( this );
 	}
 
 	Thread::~Thread()
 	{
-		TIKI_ASSERT( m_platformData.threadHandle == INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.threadHandle == 0u );
 
 		s_threadList.removeSortedByValue( *this );
 	}
 
-	bool Thread::create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName /*= nullptr*/ )
+	bool Thread::create( ThreadEntryFunction pEntryFunc, void* pArgument, uint stackSize /*= 0u*/, const char* pName /*= nullptr*/ )
 	{
 		TIKI_ASSERT( pEntryFunc != nullptr );
-		TIKI_ASSERT( m_platformData.threadHandle == INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.threadHandle == 0u );
 
 		m_pEntryFunction	= pEntryFunc;
+		m_pArgument		= pArgument;
 		m_isExitRequested	= false;
-
-		m_platformData.threadHandle = CreateThread(
-			nullptr,
-			stackSize,
-			threadEntryPoint,
-			this,
-			CREATE_SUSPENDED,
-			&m_platformData.threadId
-		);
-
-		if ( pName != nullptr )
+		copyString( m_platformData.name, TIKI_COUNT( m_platformData.name ), pName );
+		
+		pthread_attr_t threadAttributes;
+		if( pthread_attr_init( &threadAttributes ) < 0 )
+		{			
+			return false;
+		}
+		
+		if( pthread_attr_setdetachstate( &threadAttributes, PTHREAD_CREATE_JOINABLE ) < 0 )
 		{
-			copyString( m_platformData.name, TIKI_COUNT( m_platformData.name ), pName );
+			pthread_attr_destroy( &threadAttributes );
+			return false;
+		}
+		
+		if( stackSize > 0u )
+		{
+			const uint minStackSize = (uint)sysconf( _SC_THREAD_STACK_MIN );
+			stackSize = TIKI_MAX( minStackSize, stackSize );
+			
+			const uint pageSize = (uint)sysconf( _SC_PAGESIZE );
+			stackSize = alignValue( stackSize, pageSize );
+			
+			if( pthread_attr_setstacksize( &threadAttributes, stackSize ) < 0 )
+			{
+				pthread_attr_destroy( &threadAttributes );
+				return false;
+			}
 		}
 
-		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
+		const int result = pthread_create( &m_platformData.threadHandle, &threadAttributes, &threadEntryPoint, this );
+		pthread_attr_destroy( &threadAttributes );
+		
+		if ( result < 0 )
+		{
+			return false;
+		}
+		
+		TIKI_VERIFY( pthread_setname_np( m_platformData.threadHandle, m_platformData.name ) >= 0 );
+
+		return true;
 	}
 
 	void Thread::dispose()
 	{
-		if ( m_platformData.threadHandle != INVALID_HANDLE_VALUE )
+		if ( m_platformData.threadHandle != 0u )
 		{
-			CloseHandle( m_platformData.threadHandle );
+			void* pExitCode = 0u;
+			TIKI_VERIFY0( pthread_join( m_platformData.threadHandle, &pExitCode ) );
 		}
-		m_platformData.threadHandle = INVALID_HANDLE_VALUE;
+		
+		m_platformData.threadHandle	= 0u;
 		m_platformData.threadId		= 0u;
 
-		m_pEntryFunction	= nullptr;
-		m_pArgument			= nullptr;
-	}
-
-	void Thread::start( void* pArgument )
-	{
-		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
-
-		m_pArgument = pArgument;
-		ResumeThread( m_platformData.threadHandle );
-
-		if( getStringSize( m_platformData.name ) > 0u )
-		{
-			THREADNAME_INFO info;
-			info.dwType		= 0x1000;
-			info.szName		= m_platformData.name;
-			info.dwThreadID = m_platformData.threadId;
-			info.dwFlags	= 0;
-
-#if TIKI_ENABLED( TIKI_BUILD_MSVC )
-			__try
-			{
-				RaiseException( MS_VC_EXCEPTION, 0, sizeof( info ) / sizeof( ULONG_PTR ), (ULONG_PTR*)&info );
-			}
-			__except(EXCEPTION_EXECUTE_HANDLER)
-			{
-			}
-#endif
-		}
+		m_pEntryFunction				= nullptr;
+		m_pArgument					= nullptr;
 	}
 
 	void Thread::requestExit()
 	{
-		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.threadHandle != 0u );
 		m_isExitRequested = true;
 	}
 
-	bool Thread::waitForExit( uint timeOut /*= TimeOutInfinity */ )
+	bool Thread::waitForExit( timems timeOut /*= TIKI_TIME_OUT_INFINITY*/ )
 	{
-		TIKI_ASSERT( m_platformData.threadHandle != INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.threadHandle != 0u );
 		TIKI_ASSERT( m_platformData.threadId != getCurrentThreadId() );
 
-		if ( WaitForSingleObject( m_platformData.threadHandle, DWORD( timeOut ) ) == WAIT_TIMEOUT )
+		timespec time;
+		time.tv_sec	= timeOut / 1000000u;
+		time.tv_nsec	= ( timeOut - ( time.tv_sec * 1000000u ) ) * 1000u;
+
+		void* pExitCode = 0u;
+		if ( pthread_timedjoin_np( m_platformData.threadHandle, &pExitCode, &time ) != 0 )
 		{
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -143,12 +131,12 @@ namespace tiki
 
 	bool Thread::isCreated() const
 	{
-		return m_platformData.threadHandle != INVALID_HANDLE_VALUE;
+		return m_platformData.threadHandle != 0u;
 	}
 
 	/*static*/ uint64 Thread::getCurrentThreadId()
 	{
-		return GetCurrentThreadId();
+		return syscall( SYS_gettid );
 	}
 
 	/*static*/ const Thread& Thread::getCurrentThread()
@@ -157,8 +145,8 @@ namespace tiki
 		if ( pThread == nullptr )
 		{
 			Thread* pCurrentThread = TIKI_MEMORY_NEW_OBJECT( Thread );
-			pCurrentThread->m_platformData.threadHandle	= GetCurrentThread();
-			pCurrentThread->m_platformData.threadId		= GetCurrentThreadId();
+			pCurrentThread->m_platformData.threadHandle	= pthread_self();
+			pCurrentThread->m_platformData.threadId		= getCurrentThreadId();
 
 			pThread = pCurrentThread;
 		}
@@ -183,7 +171,27 @@ namespace tiki
 
 	void Thread::sleepCurrentThread( timems time )
 	{
-		Sleep( DWORD( time / 1000 ) );
+		timespec sleepTime;
+		sleepTime.tv_sec		= time / 1000000u;
+		sleepTime.tv_nsec		= ( time - ( sleepTime.tv_sec * 1000000u ) ) * 1000u;
+
+		int error = 0;
+		timespec remainingTime;
+		while( true )
+		{
+			const int result = nanosleep( &sleepTime, &remainingTime );
+			if( result == -1 )
+			{
+				error = errno;
+			}
+
+			if( result == 0 || error != EINTR )
+			{
+				break;
+			}
+
+			sleepTime = remainingTime;
+		}
 	}
 
 	void Thread::shutdownSystem()
@@ -196,5 +204,20 @@ namespace tiki
 			thread.dispose();
 			TIKI_MEMORY_DELETE_OBJECT( &thread  );
 		}
+	}
+	
+	void* Thread::threadEntryPoint( void* pArgument )
+	{
+		TIKI_ASSERT( pArgument != nullptr );
+
+		Thread* pThread = static_cast< Thread* >( pArgument );
+		pThread->m_platformData.threadId = getCurrentThreadId();
+		
+		ThreadEntryFunction pEntryFunc = pThread->m_pEntryFunction;
+		const uint result = pEntryFunc( *pThread );
+		
+		pthread_exit( (void*)result );
+		
+		return nullptr;
 	}
 }
