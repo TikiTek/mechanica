@@ -114,7 +114,7 @@ namespace tiki
 		graphicsContext.setPixelShaderTexture( 0u, &m_pTexture->getTextureData() );
 		graphicsContext.setPixelShaderConstant( 0u, m_pixelConstants );
 
-		graphicsContext.drawFullScreenQuadPos3( 0.0f );
+		graphicsContext.drawFullScreenQuadPos3( 1.0f );
 
 		graphicsContext.endRenderPass();
 	}
