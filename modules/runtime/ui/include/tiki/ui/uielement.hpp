@@ -23,7 +23,7 @@ namespace tiki
 
 	public:
 
-		typedef FixedArray< HdrColor, UiElementPoints_Count >	ColorArray;
+		typedef FixedArray< Color, UiElementPoints_Count >		ColorArray;
 		typedef FixedArray< Vector2, UiElementPoints_Count >	TexCoordArray;
 
 								UiElement();
@@ -47,6 +47,7 @@ namespace tiki
 		Thickness				getPadding() const;
 		void					setPadding( Thickness padding );
 
+		void					setToColorRectangle( Color color );
 		void					setToColorRectangle( const ColorArray* pVertexColors = nullptr );
 		void					setToTextureRectangle( const TextureData* pTexture, const TexCoordArray* pTexCoords = nullptr, const ColorArray* pVertexColors = nullptr );
 		void					setToText( const char* pText, const Font* pFont );
@@ -58,19 +59,20 @@ namespace tiki
 
 		UiElementFlags			m_flags;
 		bool					m_layoutChanged;
+		Vector2					m_layoutSize;
+		UiRectangle				m_boundingRectangle;
 
 		Vector2					m_position;
 		UiSize					m_width;
 		UiSize					m_height;
 
-		Vector2					m_layoutSize;
 		Thickness				m_margin;
 		Thickness				m_padding;
 
 		const Font*				m_pFont;
 		const char*				m_pText;
 
-		const TextureData*		m_pTexture;
+		const TextureData*		m_pTextureData;
 		ColorArray				m_colors;
 		TexCoordArray			m_texCoords;
 

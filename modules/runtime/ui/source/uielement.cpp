@@ -4,10 +4,10 @@ namespace tiki
 {
 	UiElement::UiElement()
 	{
-		m_pFont		= nullptr;
-		m_pText		= nullptr;
-		m_pTexture	= nullptr;
-		m_pParent	= nullptr;
+		m_pFont			= nullptr;
+		m_pText			= nullptr;
+		m_pTextureData	= nullptr;
+		m_pParent		= nullptr;
 	}
 
 	UiElement::~UiElement()
@@ -26,11 +26,11 @@ namespace tiki
 
 		m_pFont			= nullptr;
 		m_pText			= nullptr;
-		m_pTexture		= nullptr;
+		m_pTextureData	= nullptr;
 
 		for( uint i = 0u; i < m_colors.getCount(); ++i )
 		{
-			m_colors[ i ]	= { 1.0f, 1.0f, 1.0f, 1.0f };
+			m_colors[ i ] = TIKI_COLOR_WHITE;
 		}
 
 		m_texCoords[ UiElementPoints_TopLeft ]		= vector::create( 0.0f, 0.0f );
@@ -109,15 +109,34 @@ namespace tiki
 		m_layoutChanged = true;
 	}
 
+	void UiElement::setToColorRectangle( Color color )
+	{
+		m_pFont			= nullptr;
+		m_pText			= nullptr;
+		m_pTextureData	= nullptr;
+
+		for( uint i = 0u; i < m_colors.getCount(); ++i )
+		{
+			m_colors[ i ] = color;
+		}
+	}
+
 	void UiElement::setToColorRectangle( const ColorArray* pVertexColors /*= nullptr */ )
 	{
 		m_pFont			= nullptr;
 		m_pText			= nullptr;
-		m_pTexture		= nullptr;
+		m_pTextureData	= nullptr;
 
 		if( pVertexColors != nullptr )
 		{
 			m_colors.create( pVertexColors->getBegin(), pVertexColors->getCount() );
+		}
+		else
+		{
+			for( uint i = 0u; i < m_colors.getCount(); ++i )
+			{
+				m_colors[ i ] = TIKI_COLOR_WHITE;
+			}
 		}
 	}
 
@@ -127,7 +146,7 @@ namespace tiki
 
 		m_pFont			= nullptr;
 		m_pText			= nullptr;
-		m_pTexture		= pTexture;
+		m_pTextureData	= pTexture;
 
 		if( pTexCoords != nullptr )
 		{
@@ -147,7 +166,7 @@ namespace tiki
 
 		m_pFont			= pFont;
 		m_pText			= pText;
-		m_pTexture		= nullptr;
+		m_pTextureData	= nullptr;
 
 		m_layoutChanged = true;
 	}

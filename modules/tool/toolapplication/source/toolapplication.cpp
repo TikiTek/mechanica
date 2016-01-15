@@ -16,15 +16,6 @@ namespace tiki
 		parameters = m_parameters;
 	}
 
-	bool ToolApplication::initializeFileSystem()
-	{
-		return true;
-	}
-
-	void ToolApplication::shutdownFileSystem()
-	{
-	}
-
 	bool ToolApplication::initializeApplication()
 	{
 		return initializeTool();

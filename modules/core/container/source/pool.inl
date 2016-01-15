@@ -117,8 +117,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( contains( item ) );
 
+		item.~T();
+
 		FreeElement* pNewFree = (FreeElement*)&item;
 		pNewFree->pNextFree = nullptr;
+		
 
 		m_pLastFree->pNextFree = pNewFree;
 		m_pLastFree = pNewFree;

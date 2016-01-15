@@ -4,7 +4,6 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/debugguiwindows/debugguiwindows.hpp"
 #include "tiki/input/inputevent.hpp"
-#include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/runtimeshared/windowevent.hpp"
 #include "tiki/toollibraries/iwebinterrface.hpp"
 
@@ -18,8 +17,6 @@ namespace tiki
 			pWebInterface = nullptr;
 #endif
 		}
-
-		GamebuildFileSystem	gamebuildFileSystem;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		DebugGui			debugGui;
@@ -59,32 +56,13 @@ namespace tiki
 	{
 		fillGameParameters( m_parameters );
 
-		parameters						= m_parameters;
-		parameters.pResourceFileSystem	= &m_pGameData->gamebuildFileSystem;
-	}
-
-	bool GameApplication::initializeFileSystem()
-	{
-		m_pGameData = TIKI_MEMORY_NEW_OBJECT( GameApplicationkData );
-
-		if( !m_pGameData->gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	void GameApplication::shutdownFileSystem()
-	{
-		m_pGameData->gamebuildFileSystem.dispose();
-
-		TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
-		m_pGameData = nullptr;
+		parameters = m_parameters;
 	}
 
 	bool GameApplication::initializeApplication()
 	{
+		m_pGameData = TIKI_MEMORY_NEW_OBJECT( GameApplicationkData );
+
 		if ( !initializeDebugSystems() )
 		{
 			return false;
@@ -98,6 +76,9 @@ namespace tiki
 		shutdownGame();
 
 		shutdownDebugSystems();
+
+		TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
+		m_pGameData = nullptr;
 	}
 
 	void GameApplication::updateApplication( bool wantToShutdown )
