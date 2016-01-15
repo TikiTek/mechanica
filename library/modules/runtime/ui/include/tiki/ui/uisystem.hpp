@@ -11,19 +11,25 @@ namespace tiki
 {
 	class GraphicsContext;
 	class GraphicsSystem;
+	class RenderTarget;
 	class ResourceManager;
 	struct InputEvent;
+	struct UiSize;
 
 	struct UiSystemParameters
 	{
 		UiSystemParameters()
 		{
-			maxElementCount = 4096u;
+			width			= 0u;
+			height			= 0u;
+
+			maxElementCount	= 4096u;
 		}
 
-		uint					maxElementCount;
+		uint	width;
+		uint	height;
 
-		UiRendererParameters	rendererParameters;
+		uint	maxElementCount;
 	};
 
 	class UiSystem
@@ -42,7 +48,7 @@ namespace tiki
 		void			removeElement( UiElement* pElement );
 
 		void			update();
-		void			render( GraphicsContext& context ) const;
+		void			render( GraphicsContext& context, const RenderTarget& renderTarget ) const;
 
 		bool			processInputEvent( InputEvent& inputEvent );
 
@@ -51,9 +57,11 @@ namespace tiki
 		UiRenderer				m_renderer;
 
 		Pool< UiElement >		m_elementPool;
-		LinkedList< UiElement >	m_elements;
+		UiElement*				m_pRootElement;
 
-		void					updateLayout();
+		void					updateElementLayout( UiElement& element );
+
+		float					getElementLayoutSize( UiElement& element, const UiSize& elementSize, float parentSize, float childSize );
 
 	};
 }

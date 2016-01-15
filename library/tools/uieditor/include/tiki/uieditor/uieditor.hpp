@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	class UiElement;
+
 	class UiEditor : public ToolApplication
 	{
 		TIKI_NONCOPYABLE_CLASS( UiEditor );
@@ -26,6 +28,10 @@ namespace tiki
 
 		virtual bool				processToolInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual void				processToolWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
+
+	private:
+
+		UiElement*					m_pTestElement;
 
 	};
 }

@@ -5,6 +5,7 @@
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/input/inputsystem.hpp"
+#include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/threading/thread.hpp"
 #include "tiki/ui/uisystem.hpp"
@@ -16,6 +17,8 @@ namespace tiki
 		MainWindow			mainWindow;
 		GraphicsSystem		graphicSystem;
 		InputSystem			inputSystem;
+
+		GamebuildFileSystem	gamebuildFileSystem;
 
 		ResourceManager		resourceManager;
 		FrameworkFactories	resourceFactories;
@@ -103,11 +106,6 @@ namespace tiki
 			return false;
 		}
 
-		if( !initializeFileSystem() )
-		{
-			return false;
-		}
-
 		if( !initializeFramework() )
 		{
 			return false;
@@ -127,7 +125,6 @@ namespace tiki
 	{
 		shutdownApplication();
 		shutdownFramework();
-		shutdownFileSystem();
 		shutdownPlatform();
 
 		TIKI_MEMORY_DELETE_OBJECT( m_pBaseData );
@@ -152,23 +149,28 @@ namespace tiki
 			return false;
 		}
 
-		GraphicsSystemParameters graphicParams;
-		graphicParams.fullScreen		= m_parameters.fullScreen;
-		graphicParams.pWindowHandle		= m_pBaseData->mainWindow.getHandle();
-		graphicParams.rendererMode		= m_parameters.graphicsMode;
+		GraphicsSystemParameters graphicsParams;
+		graphicsParams.fullScreen		= m_parameters.fullScreen;
+		graphicsParams.pWindowHandle	= m_pBaseData->mainWindow.getHandle();
+		graphicsParams.rendererMode		= m_parameters.graphicsMode;
 
 		const uint2 windowSize			= m_pBaseData->mainWindow.getClientSize();
-		graphicParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );
-		graphicParams.backBufferHeight	= TIKI_MAX( windowSize.y, 480u );
+		graphicsParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );
+		graphicsParams.backBufferHeight	= TIKI_MAX( windowSize.y, 480u );
 
-		if( !m_pBaseData->graphicSystem.create( graphicParams ) )
+		if( !m_pBaseData->graphicSystem.create( graphicsParams ) )
 		{
 			TIKI_TRACE_ERROR( "[BaseApplication] Could not create GraphicsSystem.\n" );
 			return false;
 		}
 
+		if( !m_pBaseData->gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
+		{
+			return false;
+		}
+
 		ResourceManagerParameters resourceParams;
-		resourceParams.pFileSystem = m_parameters.pResourceFileSystem;
+		resourceParams.pFileSystem = &m_pBaseData->gamebuildFileSystem;
 
 		if( !m_pBaseData->resourceManager.create( resourceParams ) )
 		{
@@ -189,6 +191,8 @@ namespace tiki
 		}
 
 		UiSystemParameters uiParams;
+		uiParams.width	= graphicsParams.backBufferWidth;
+		uiParams.height	= graphicsParams.backBufferHeight;
 		
 		if( !m_pBaseData->uiSystem.create( m_pBaseData->graphicSystem, m_pBaseData->resourceManager, uiParams ) )
 		{
@@ -208,6 +212,7 @@ namespace tiki
 		m_pBaseData->graphicSystem.dispose();
 		m_pBaseData->resourceFactories.dispose( m_pBaseData->resourceManager );
 		m_pBaseData->resourceManager.dispose();
+		m_pBaseData->gamebuildFileSystem.dispose();
 		m_pBaseData->mainWindow.dispose();
 	}
 
@@ -276,7 +281,7 @@ namespace tiki
 
 			renderApplication( graphicsContext );
 
-			m_pBaseData->uiSystem.render( graphicsContext );
+			m_pBaseData->uiSystem.render( graphicsContext, graphicsContext.getBackBuffer() );
 
 			m_pBaseData->graphicSystem.endFrame();
 		}

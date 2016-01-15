@@ -20,10 +20,10 @@ namespace tiki
 	{
 		GameApplicationParamters()
 		{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 			pGamebuildPath = "../../../../../gamebuild/";
+#endif
 		}
-
-		cstring					pGamebuildPath;
 	};
 
 	class GameApplication : public BaseApplication
@@ -47,8 +47,7 @@ namespace tiki
 	protected:
 
 		virtual void				fillBaseParameters( BaseApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual bool				initializeFileSystem() TIKI_OVERRIDE TIKI_FINAL;
-		virtual void				shutdownFileSystem() TIKI_OVERRIDE TIKI_FINAL;
+
 		virtual bool				initializeApplication() TIKI_OVERRIDE TIKI_FINAL;
 		virtual void				shutdownApplication() TIKI_OVERRIDE TIKI_FINAL;
 

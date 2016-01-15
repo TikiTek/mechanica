@@ -3,10 +3,8 @@
 #define TIKI_UIRENDERER_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/container/chunkstorage.hpp"
+#include "tiki/container/sizedarray.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
-#include "tiki/graphics/pixelformat.hpp"
-#include "tiki/graphics/rendertarget.hpp"
 
 namespace tiki
 {
@@ -15,10 +13,13 @@ namespace tiki
 	class GraphicsContext;
 	class GraphicsSystem;
 	class RasterizerState;
+	class RenderTarget;
 	class ResourceManager;
 	class SamplerState;
 	class ShaderSet;
 	class UiElement;
+	class VertexFormat;
+	class VertexInputBinding;
 	struct UiRenderData;
 	struct UiRenderElement;
 
@@ -26,16 +27,8 @@ namespace tiki
 	{
 		UiRendererParameters()
 		{
-			width				= 0u;
-			height				= 0u;
-			targetFormat		= PixelFormat_Color;
-
 			maxRenderElements	= 4096u;
 		}
-
-		uint		width;
-		uint		height;
-		PixelFormat	targetFormat;
 
 		uint		maxRenderElements;
 	};
@@ -49,29 +42,27 @@ namespace tiki
 					UiRenderer();
 					~UiRenderer();
 
-		bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters );
-		void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+					bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters );
+					void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		void		update( const UiRenderData& renderData );
-		void		render( GraphicsContext& context ) const;
+		void		render( GraphicsContext& context, const RenderTarget& renderTarget ) const;
 
 	private:
 
-		RenderTarget					m_renderTarget;
-
 		const ShaderSet*				m_pShader;
+
+		const VertexFormat*				m_pVertexFormat;
+		const VertexInputBinding*		m_pVertexInputBinding;
 
 		const BlendState*				m_pBlendState;
 		const DepthStencilState*		m_pDepthStencilState;
 		const RasterizerState*			m_pRasterizerState;
-		const SamplerState*				m_pSampler;
+		const SamplerState*				m_pSamplerState;
 
 		ConstantBuffer					m_vertexConstantBuffer;
 
-		ChunkStorage					m_renderElements;
-		ChunkTypeId						m_colorRectangleId;
-		ChunkTypeId						m_textureRectangleId;
-		ChunkTypeId						m_textId;
+		SizedArray< UiRenderElement >	m_renderElements;
 
 		void							updateRecursiveRenderTree( const UiElement& element );
 

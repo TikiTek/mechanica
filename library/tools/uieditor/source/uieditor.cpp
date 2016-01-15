@@ -7,6 +7,7 @@ namespace tiki
 {
 	UiEditor::UiEditor()
 	{
+		m_pTestElement = nullptr;
 	}
 
 	UiEditor::~UiEditor()
@@ -15,22 +16,22 @@ namespace tiki
 
 	void UiEditor::fillToolParameters( ToolApplicationParamters& parameters )
 	{
-
+		parameters.pGamebuildPath = "../../../../../../gamebuild";
 	}
 
 	bool UiEditor::initializeTool()
 	{
-		UiSystem& uiSystem = getUiSystem();
-
-		UiElement* pElement = uiSystem.addElement();
-		pElement->setWidth( UiSize( 100.0f ) );
-		pElement->setHeight( UiSize( 100.0f ) );
+		m_pTestElement = getUiSystem().addElement();
+		m_pTestElement->setWidth( UiSize( 100.0f ) );
+		m_pTestElement->setHeight( UiSize( 100.0f ) );
+		m_pTestElement->setToColorRectangle( TIKI_COLOR_GREEN );
 
 		return true;
 	}
 
 	void UiEditor::shutdownTool()
 	{
+		getUiSystem().removeElement( m_pTestElement );
 	}
 
 	void UiEditor::updateTool( bool wantToShutdown )

@@ -30,7 +30,7 @@ namespace tiki
 
 			pWindowTitle		= "TikiEngine 3.0";
 
-			pResourceFileSystem	= nullptr;
+			pGamebuildPath		= "gamebuild/";
 		}
 
 		uint					screenWidth;
@@ -40,7 +40,7 @@ namespace tiki
 
 		cstring					pWindowTitle;
 
-		FileSystem*				pResourceFileSystem;
+		cstring					pGamebuildPath;
 	};
 
 	class BaseApplication
@@ -64,8 +64,7 @@ namespace tiki
 		virtual							~BaseApplication();
 
 		virtual void					fillBaseParameters( BaseApplicationParamters& parameters ) TIKI_PURE;
-		virtual bool					initializeFileSystem() TIKI_PURE;
-		virtual void					shutdownFileSystem() TIKI_PURE;
+
 		virtual bool					initializeApplication() TIKI_PURE;
 		virtual void					shutdownApplication() TIKI_PURE;
 

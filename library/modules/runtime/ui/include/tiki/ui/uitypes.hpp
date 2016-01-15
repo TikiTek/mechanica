@@ -45,14 +45,53 @@ namespace tiki
 			value	= 0.0f;
 		}
 
-		UiSize( float value, UiSizeType type = UiSizeType_Pixel )
+		UiSize( float _value, UiSizeType _type = UiSizeType_Pixel )
 		{
-			type	= type;
-			value	= value;
+			type	= _type;
+			value	= _value;
 		}
 
 		UiSizeType	type;
 		float		value;
+	};
+
+	struct UiRectangle
+	{
+		float left;
+		float top;
+		float bottom;
+		float right;
+
+		TIKI_FORCE_INLINE UiRectangle()
+			: left( 0.0f ), top( 0.0f ), bottom( 0.0f ), right( 0.0f )
+		{
+		}
+
+		TIKI_FORCE_INLINE void clear()
+		{
+			left	= 0.0f;
+			top		= 0.0f;
+			bottom	= 0.0f;
+			right	= 0.0f;
+		}
+
+		TIKI_FORCE_INLINE void extend( UiRectangle other )
+		{
+			left	= TIKI_MIN( left, other.left );
+			top		= TIKI_MIN( top, other.top );
+			bottom	= TIKI_MAX( bottom, other.bottom );
+			right	= TIKI_MAX( right, other.right );
+		}
+
+		TIKI_FORCE_INLINE float getWidth() const
+		{
+			return right - left;
+		}
+
+		TIKI_FORCE_INLINE float getHeight() const
+		{
+			return bottom - top;
+		}
 	};
 }
 
