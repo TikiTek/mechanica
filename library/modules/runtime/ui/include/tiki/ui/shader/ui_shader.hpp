@@ -5,7 +5,11 @@
 
 TIKI_GRAPHICS_NAMESPACE_BEGIN
 
-struct UiShaderConstantData
+#define TIKI_UI_MODE_COLOR		0
+#define TIKI_UI_MODE_TEXTURE	1
+#define TIKI_UI_MODE_FONT		2
+
+struct UiVertexConstantData
 {
 	GraphicsMatrix44 projection;
 };

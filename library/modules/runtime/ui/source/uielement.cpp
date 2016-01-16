@@ -16,7 +16,11 @@ namespace tiki
 
 	void UiElement::create( UiElement* pParent )
 	{
-		m_pParent		= pParent;
+		m_pParent = pParent;
+		if( m_pParent )
+		{
+			m_pParent->m_children.push( this );
+		}
 
 		m_flags			= UiElementFlags_None;
 		m_layoutChanged	= true;
@@ -41,6 +45,11 @@ namespace tiki
 
 	void UiElement::dispose()
 	{
+		if( m_pParent )
+		{
+			m_pParent->m_children.removeSortedByValue( *this );
+		}
+
 		m_children.clear();
 	}
 

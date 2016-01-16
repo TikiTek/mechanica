@@ -2,6 +2,7 @@
 
 #include "tiki/ui/uielement.hpp"
 #include "tiki/ui/uisystem.hpp"
+#include "tiki/graphics/graphicscontext.hpp"
 
 namespace tiki
 {
@@ -41,7 +42,7 @@ namespace tiki
 
 	void UiEditor::renderTool( GraphicsContext& graphicsContext ) const
 	{
-
+		graphicsContext.clear( graphicsContext.getBackBuffer() );
 	}
 
 	bool UiEditor::processToolInputEvent( const InputEvent& inputEvent )

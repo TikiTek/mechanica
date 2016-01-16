@@ -50,6 +50,8 @@ namespace tiki
 		void			update();
 		void			render( GraphicsContext& context, const RenderTarget& renderTarget ) const;
 
+		void			setScreenSize( float width, float height );
+
 		bool			processInputEvent( InputEvent& inputEvent );
 
 	private:

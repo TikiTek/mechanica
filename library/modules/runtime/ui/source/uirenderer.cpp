@@ -6,6 +6,7 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/resource/resourcemanager.hpp"
+#include "tiki/ui/shader/ui_shader.hpp"
 
 #include "uitypes_private.hpp"
 
@@ -59,12 +60,18 @@ namespace tiki
 			m_pVertexInputBinding	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 		}
 
-		m_pBlendState				= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendState				= graphicsSystem.createBlendState( false ); //createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState		= graphicsSystem.createDepthStencilState( false, false );
-		m_pRasterizerState			= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
+		m_pRasterizerState			= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_None, WindingOrder_Clockwise );
 		m_pSamplerState				= graphicsSystem.createSamplerState();
 
-		if( m_pVertexFormat == nullptr || m_pVertexInputBinding == nullptr || m_pBlendState == nullptr || m_pDepthStencilState == nullptr || m_pRasterizerState == nullptr || m_pSamplerState == nullptr )
+		if( m_pVertexFormat == nullptr ||
+			m_pVertexInputBinding == nullptr ||
+			m_pBlendState == nullptr ||
+			m_pDepthStencilState == nullptr ||
+			m_pRasterizerState == nullptr ||
+			m_pSamplerState == nullptr ||
+			!m_vertexConstantBuffer.create( graphicsSystem, sizeof( UiVertexConstantData ) ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;
@@ -75,6 +82,8 @@ namespace tiki
 
 	void UiRenderer::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
+		m_vertexConstantBuffer.dispose( graphicsSystem );
+
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
 		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
 
@@ -102,6 +111,7 @@ namespace tiki
 	{
 		context.beginRenderPass( renderTarget );
 
+		context.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 		context.setBlendState( m_pBlendState );
 		context.setDepthStencilState( m_pDepthStencilState );
 		context.setRasterizerState( m_pRasterizerState );
@@ -111,17 +121,49 @@ namespace tiki
 
 		context.setVertexInputBinding( m_pVertexInputBinding );
 
+		UiVertexConstantData* pVertexConstants = (UiVertexConstantData*)context.mapBuffer( m_vertexConstantBuffer );
+		createGraphicsMatrix44( pVertexConstants->projection, m_projection.getMatrix() );
+		context.unmapBuffer( m_vertexConstantBuffer );
+
+		context.setVertexShaderConstant( 0, m_vertexConstantBuffer );
+
 		for( uint i = 0u; i < m_renderElements.getCount(); ++i )
 		{
+			const UiRenderElement& element = m_renderElements[ i ];
+
 			StaticArray< UiVertex > vertices;
 			context.beginImmediateGeometry( vertices, 4u );
 
-			vertices[ 0u ].position		= createFloat2(  )
+			//{ -1.0f, -1.0f },
+			//{ -1.0f,  1.0f },
+			//{ 1.0f, -1.0f },
+			//{ 1.0f,  1.0f }
+
+			createFloat2( vertices[ 0u ].position, element.position.x,					element.position.y + element.size.y );
+			createFloat2( vertices[ 1u ].position, element.position.x,					element.position.y );
+			createFloat2( vertices[ 2u ].position, element.position.x + element.size.x, element.position.y + element.size.y );
+			createFloat2( vertices[ 3u ].position, element.position.x + element.size.x,	element.position.y );
+
+			createFloat2( vertices[ 0u ].texCood, 0.0f, 0.0f );
+			createFloat2( vertices[ 1u ].texCood, 1.0f, 0.0f );
+			createFloat2( vertices[ 2u ].texCood, 1.0f, 1.0f );
+			createFloat2( vertices[ 3u ].texCood, 0.0f, 1.0f );
+
+			vertices[ 0u ].color = TIKI_COLOR_WHITE;
+			vertices[ 1u ].color = TIKI_COLOR_WHITE;
+			vertices[ 2u ].color = TIKI_COLOR_WHITE;
+			vertices[ 3u ].color = TIKI_COLOR_WHITE;
+			vertices.dispose();
 
 			context.endImmediateGeometry();
 		}
 
 		context.endRenderPass();
+	}
+
+	void UiRenderer::setScreenSize( float width, float height )
+	{
+		m_projection.createOrthographicCenter( width, -height, 0.0f, 100.0f );
 	}
 
 	void UiRenderer::updateRecursiveRenderTree( const UiElement& element )
