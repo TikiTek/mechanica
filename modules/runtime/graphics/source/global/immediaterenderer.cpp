@@ -766,8 +766,6 @@ namespace tiki
 		m_pContext->setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
 		m_pContext->setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 
-		m_pContext->setBlendState( m_pBlendState[ ImmediateBlendState_Add ] );
-		m_pContext->setDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] );
 		m_pContext->setRasterizerState( m_pRasterizerState );
 		m_pContext->setVertexInputBinding( m_pVertexInputBinding );
 

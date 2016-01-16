@@ -29,8 +29,8 @@ namespace tiki
 		m_pRootElement = &m_elementPool.push();
 		m_pRootElement->create( nullptr );
 		m_pRootElement->setToColorRectangle( TIKI_COLOR_TRANSPARENT );
-		m_pRootElement->setWidth( UiSize( (float)parameters.width ) );
-		m_pRootElement->setHeight( UiSize( (float)parameters.height ) );
+
+		setScreenSize( (float)parameters.width, (float)parameters.height );
 
 		return true;
 	}
@@ -80,6 +80,14 @@ namespace tiki
 	void UiSystem::render( GraphicsContext& context, const RenderTarget& renderTarget ) const
 	{
 		m_renderer.render( context, renderTarget );
+	}
+
+	void UiSystem::setScreenSize( float width, float height )
+	{
+		m_pRootElement->setWidth( UiSize( width ) );
+		m_pRootElement->setHeight( UiSize( height ) );
+
+		m_renderer.setScreenSize( width, height );
 	}
 
 	bool UiSystem::processInputEvent( InputEvent& inputEvent )

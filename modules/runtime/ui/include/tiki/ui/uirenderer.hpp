@@ -5,6 +5,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/sizedarray.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/math/projection.hpp"
 
 namespace tiki
 {
@@ -42,11 +43,13 @@ namespace tiki
 					UiRenderer();
 					~UiRenderer();
 
-					bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters );
-					void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		bool		create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiRendererParameters& parameters );
+		void		dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
 		void		update( const UiRenderData& renderData );
 		void		render( GraphicsContext& context, const RenderTarget& renderTarget ) const;
+
+		void		setScreenSize( float width, float height );
 
 	private:
 
@@ -61,6 +64,8 @@ namespace tiki
 		const SamplerState*				m_pSamplerState;
 
 		ConstantBuffer					m_vertexConstantBuffer;
+
+		Projection						m_projection;
 
 		SizedArray< UiRenderElement >	m_renderElements;
 
