@@ -60,9 +60,9 @@ namespace tiki
 			m_pVertexInputBinding	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 		}
 
-		m_pBlendState				= graphicsSystem.createBlendState( false ); //createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendState				= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState		= graphicsSystem.createDepthStencilState( false, false );
-		m_pRasterizerState			= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_None, WindingOrder_Clockwise );
+		m_pRasterizerState			= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSamplerState				= graphicsSystem.createSamplerState();
 
 		if( m_pVertexFormat == nullptr ||
@@ -131,31 +131,39 @@ namespace tiki
 		{
 			const UiRenderElement& element = m_renderElements[ i ];
 
-			StaticArray< UiVertex > vertices;
-			context.beginImmediateGeometry( vertices, 4u );
+			if( element.type == UiRenderElementType_Text )
+			{
 
-			//{ -1.0f, -1.0f },
-			//{ -1.0f,  1.0f },
-			//{ 1.0f, -1.0f },
-			//{ 1.0f,  1.0f }
+			}
+			else
+			{
+				StaticArray< UiVertex > vertices;
+				context.beginImmediateGeometry( vertices, 4u );
 
-			createFloat2( vertices[ 0u ].position, element.position.x,					element.position.y + element.size.y );
-			createFloat2( vertices[ 1u ].position, element.position.x,					element.position.y );
-			createFloat2( vertices[ 2u ].position, element.position.x + element.size.x, element.position.y + element.size.y );
-			createFloat2( vertices[ 3u ].position, element.position.x + element.size.x,	element.position.y );
+				createFloat2( vertices[ 0u ].position, element.position.x, element.position.y + element.size.y );
+				createFloat2( vertices[ 1u ].position, element.position.x, element.position.y );
+				createFloat2( vertices[ 2u ].position, element.position.x + element.size.x, element.position.y + element.size.y );
+				createFloat2( vertices[ 3u ].position, element.position.x + element.size.x, element.position.y );
 
-			createFloat2( vertices[ 0u ].texCood, 0.0f, 0.0f );
-			createFloat2( vertices[ 1u ].texCood, 1.0f, 0.0f );
-			createFloat2( vertices[ 2u ].texCood, 1.0f, 1.0f );
-			createFloat2( vertices[ 3u ].texCood, 0.0f, 1.0f );
+				switch( element.type )
+				{
+				case UiRenderElementType_TextureRectangle:
+					createFloat2( vertices[ 0u ].texCood, 0.0f, 1.0f );
+					createFloat2( vertices[ 1u ].texCood, 0.0f, 0.0f );
+					createFloat2( vertices[ 2u ].texCood, 1.0f, 1.0f );
+					createFloat2( vertices[ 3u ].texCood, 1.0f, 0.0f );
+					// no break;
 
-			vertices[ 0u ].color = TIKI_COLOR_WHITE;
-			vertices[ 1u ].color = TIKI_COLOR_WHITE;
-			vertices[ 2u ].color = TIKI_COLOR_WHITE;
-			vertices[ 3u ].color = TIKI_COLOR_WHITE;
-			vertices.dispose();
+				case UiRenderElementType_ColorRectangle:
+					vertices[ 0u ].color = element.data.coloredRectangle.colors[ 0u ];
+					vertices[ 1u ].color = element.data.coloredRectangle.colors[ 1u ];
+					vertices[ 2u ].color = element.data.coloredRectangle.colors[ 2u ];
+					vertices[ 3u ].color = element.data.coloredRectangle.colors[ 3u ];
+					break;
+				}
 
-			context.endImmediateGeometry();
+				context.endImmediateGeometry( vertices );
+			}
 		}
 
 		context.endRenderPass();
@@ -170,7 +178,7 @@ namespace tiki
 	{
 		UiRenderElement& renderElement = m_renderElements.push();
 
-		renderElement.position	= element.m_position;
+		renderElement.position	= element.m_layoutPosition;
 		renderElement.rotation	= 0.0f;
 		renderElement.size		= element.m_layoutSize;
 

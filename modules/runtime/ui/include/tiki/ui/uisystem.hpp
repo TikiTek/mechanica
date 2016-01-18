@@ -61,10 +61,6 @@ namespace tiki
 		Pool< UiElement >		m_elementPool;
 		UiElement*				m_pRootElement;
 
-		void					updateElementLayout( UiElement& element );
-
-		float					getElementLayoutSize( UiElement& element, const UiSize& elementSize, float parentSize, float childSize );
-
 	};
 }
 

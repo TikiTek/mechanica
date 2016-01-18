@@ -239,6 +239,8 @@ namespace tiki
 			}
 			else if( windowEvent.type == WindowEventType_SizeChanged )
 			{
+				m_pBaseData->uiSystem.setScreenSize( (float)windowEvent.data.sizeChanged.size.x, (float)windowEvent.data.sizeChanged.size.y );
+
 				if( !m_pBaseData->graphicSystem.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
 				{
 					return false;
