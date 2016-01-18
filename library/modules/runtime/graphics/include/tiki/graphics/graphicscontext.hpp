@@ -98,6 +98,8 @@ namespace tiki
 		template<typename T>
 		void				beginImmediateGeometry( StaticArray< T >& targetArray, uint vertexCount );
 		void				endImmediateGeometry();
+		template<typename T>
+		void				endImmediateGeometry( StaticArray< T >& targetArray );
 
 		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
 		void				drawIndexedGeometry( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );

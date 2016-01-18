@@ -10,10 +10,8 @@
 namespace tiki
 {
 	template<typename T, uint TCapacity>
-	class FixedArray
+	class CopyableFixedArray
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( FixedArray );
-
 	public:
 
 		typedef T			Type;
@@ -58,6 +56,12 @@ namespace tiki
 
 		Type m_aData[ TCapacity ];
 
+	};
+
+	template<typename T, uint TCapacity>
+	class FixedArray : public CopyableFixedArray< T, TCapacity >
+	{
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( FixedArray );
 	};
 }
 

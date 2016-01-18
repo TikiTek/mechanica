@@ -71,7 +71,10 @@ namespace tiki
 
 	void UiSystem::update()
 	{
-		updateElementLayout( *m_pRootElement );
+		UiLayoutContext context;
+		context.meterToPixel = 1.0f;
+
+		m_pRootElement->updateLayout( context );
 
 		UiRenderData renderData( m_pRootElement->m_children );
 		m_renderer.update( renderData );
@@ -93,68 +96,5 @@ namespace tiki
 	bool UiSystem::processInputEvent( InputEvent& inputEvent )
 	{
 		return false;
-	}
-
-	void UiSystem::updateElementLayout( UiElement& element )
-	{
-		if( !element.m_layoutChanged )
-		{
-			return;
-		}
-
-		UiRectangle parentBounds;
-		if( element.m_pParent )
-		{
-			parentBounds = element.m_pParent->m_boundingRectangle;
-		}
-		else
-		{
-			parentBounds = element.m_boundingRectangle;
-		}
-		element.m_boundingRectangle = parentBounds;
-		
-		UiRectangle childBounds;
-		for( UiElement& child : element.m_children )
-		{
-			updateElementLayout( child );
-			childBounds.extend( child.m_boundingRectangle );
-		}
-
-		element.m_layoutSize.x	= getElementLayoutSize( element, element.m_width, parentBounds.getWidth(), childBounds.getWidth() );
-		element.m_layoutSize.y	= getElementLayoutSize( element, element.m_height, parentBounds.getHeight(), childBounds.getHeight() );
-
-		element.m_boundingRectangle.right	= element.m_boundingRectangle.left + element.m_layoutSize.x;
-		element.m_boundingRectangle.bottom	= element.m_boundingRectangle.top + element.m_layoutSize.y;
-
-		element.m_layoutChanged = false;
-	}
-
-	float UiSystem::getElementLayoutSize( UiElement& element, const UiSize& elementSize, float parentSize, float childSize )
-	{
-		switch( elementSize.type )
-		{
-		case UiSizeType_Auto:
-			return childSize;
-
-		case UiSizeType_Expand:
-			return parentSize;
-
-		case UiSizeType_Meters:
-			TIKI_ASSERT( false );
-			// TODO: get DPI
-			return elementSize.value * 0.22f;
-
-		case UiSizeType_Percent:
-			return parentSize * (elementSize.value / 100.0f);
-
-		case UiSizeType_Pixel:
-			return elementSize.value;
-
-		default:
-			TIKI_BREAK( "Size type not supported" );
-			break;
-		}
-
-		return 0.0f;
 	}
 }

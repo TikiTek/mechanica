@@ -14,6 +14,7 @@ namespace tiki
 	class Font;
 	class TextureData;
 	class UiSystem;
+	struct UiLayoutContext;
 
 	class UiElement : public LinkedItem< UiElement >
 	{
@@ -29,11 +30,8 @@ namespace tiki
 								UiElement();
 								~UiElement();
 
-		UiElementFlags			getFlags() const;
-		void					setFlags( UiElementFlags flags );
-
-		Vector2					getPosition() const;
-		void					setPosition( const Vector2& position );
+		const UiPosition&		getPosition() const;
+		void					setPosition( const UiPosition& position );
 
 		UiSize					getWidth() const;
 		void					setWidth( UiSize width );
@@ -47,8 +45,7 @@ namespace tiki
 		Thickness				getPadding() const;
 		void					setPadding( Thickness padding );
 
-		void					setToColorRectangle( Color color );
-		void					setToColorRectangle( const ColorArray* pVertexColors = nullptr );
+		void					setToColorRectangle( Color topLeft = TIKI_COLOR_WHITE, Color topRight = TIKI_COLOR_WHITE, Color bottomLeft = TIKI_COLOR_WHITE, Color bottomRight = TIKI_COLOR_WHITE );
 		void					setToTextureRectangle( const TextureData* pTexture, const TexCoordArray* pTexCoords = nullptr, const ColorArray* pVertexColors = nullptr );
 		void					setToText( const char* pText, const Font* pFont );
 
@@ -57,12 +54,12 @@ namespace tiki
 		void					create( UiElement* pParent );
 		void					dispose();
 
-		UiElementFlags			m_flags;
 		bool					m_layoutChanged;
+		Vector2					m_layoutPosition;
 		Vector2					m_layoutSize;
-		UiRectangle				m_boundingRectangle;
+		UiRectangle				m_layoutRectangle;
 
-		Vector2					m_position;
+		UiPosition				m_position;
 		UiSize					m_width;
 		UiSize					m_height;
 
@@ -78,6 +75,11 @@ namespace tiki
 
 		UiElement*				m_pParent;
 		LinkedList< UiElement >	m_children;
+
+		void					setLayoutChanged( bool applyToChildren = true );
+
+		void					updateLayout( const UiLayoutContext& context );
+		static float			getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context );
 
 	};
 }

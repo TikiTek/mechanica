@@ -8,24 +8,24 @@
 
 namespace tiki
 {
-	enum UiElementFlags : uint8
-	{
-		UiElementFlags_None			= 0u,
-
-		UiElementFlags_DockLeft		= 1u << 0u,
-		UiElementFlags_DockTop		= 1u << 1u,
-		UiElementFlags_DockBottom	= 1u << 2u,
-		UiElementFlags_DockEight	= 1u << 3u
-	};
-
 	enum UiElementPoints : uint8
 	{
-		UiElementPoints_TopLeft,
-		UiElementPoints_TopRight,
-		UiElementPoints_BottomRight,
 		UiElementPoints_BottomLeft,
+		UiElementPoints_TopLeft,
+		UiElementPoints_BottomRight,
+		UiElementPoints_TopRight,
 
 		UiElementPoints_Count
+	};
+
+	enum UiElementEdges : uint8
+	{
+		UiElementEdges_Left,
+		UiElementEdges_Top,
+		UiElementEdges_Bottom,
+		UiElementEdges_Right,
+
+		UiElementEdges_Count
 	};
 
 	enum UiSizeType : uint8
@@ -53,6 +53,55 @@ namespace tiki
 
 		UiSizeType	type;
 		float		value;
+	};
+
+	enum UiPositionType : uint8
+	{
+		UiPositionType_Auto,
+		UiPositionType_Pixel,
+		UiPositionType_Meters,
+		UiPositionType_Percent
+	};
+
+	struct UiPositionElement
+	{
+		UiPositionElement()
+		{
+			type	= UiPositionType_Auto;
+			value	= 0.0f;
+		}
+
+		UiPositionElement( float _value, UiPositionType _type = UiPositionType_Pixel )
+		{
+			type	= _type;
+			value	= _value;
+		}
+
+		UiPositionType	type;
+		float			value;
+	};
+
+	struct UiPosition
+	{
+		UiPosition( UiPositionElement left = UiPositionElement(), UiPositionElement top = UiPositionElement(), UiPositionElement bottom = UiPositionElement(), UiPositionElement right = UiPositionElement() )
+		{
+			edgeMode[ UiElementEdges_Left ]		= left.type;
+			edgeValue[ UiElementEdges_Left ]	= left.value;
+			edgeMode[ UiElementEdges_Top ]		= top.type;
+			edgeValue[ UiElementEdges_Top ]		= top.value;
+			edgeMode[ UiElementEdges_Bottom ]	= bottom.type;
+			edgeValue[ UiElementEdges_Bottom ]	= bottom.value;
+			edgeMode[ UiElementEdges_Right ]	= right.type;
+			edgeValue[ UiElementEdges_Right ]	= right.value;
+		}
+
+		CopyableFixedArray< UiPositionType, UiElementEdges_Count>	edgeMode;
+		CopyableFixedArray< float, UiElementEdges_Count >			edgeValue;
+
+		UiPositionElement	getLeft() const		{ return UiPositionElement( edgeValue[ UiElementEdges_Left ], edgeMode[ UiElementEdges_Left ] ); }
+		UiPositionElement	getTop() const		{ return UiPositionElement( edgeValue[ UiElementEdges_Top ], edgeMode[ UiElementEdges_Top ] ); }
+		UiPositionElement	getBottom() const	{ return UiPositionElement( edgeValue[ UiElementEdges_Bottom ], edgeMode[ UiElementEdges_Bottom ] ); }
+		UiPositionElement	getRight() const	{ return UiPositionElement( edgeValue[ UiElementEdges_Right ], edgeMode[ UiElementEdges_Right ] ); }
 	};
 
 	struct UiRectangle

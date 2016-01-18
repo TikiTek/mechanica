@@ -5,7 +5,7 @@
 namespace tiki
 {
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE void FixedArray< T, TCapacity >::create( ConstReference initValue, uint count /*= TCapacity */ )
+	TIKI_FORCE_INLINE void CopyableFixedArray< T, TCapacity >::create( ConstReference initValue, uint count /*= TCapacity */ )
 	{
 		TIKI_ASSERT( count <= TCapacity );
 
@@ -15,7 +15,7 @@ namespace tiki
 		}
 	}
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE void FixedArray< T, TCapacity >::create( ConstIterator pInitData, uint count )
+	TIKI_FORCE_INLINE void CopyableFixedArray< T, TCapacity >::create( ConstIterator pInitData, uint count )
 	{
 		TIKI_ASSERT( count <= TCapacity );
 		for (uint i = 0u; i < count; ++i)
@@ -25,7 +25,7 @@ namespace tiki
 	}
 	
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint tiki::FixedArray< T, TCapacity >::getIndexOf( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uint tiki::CopyableFixedArray< T, TCapacity >::getIndexOf( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_aData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -34,7 +34,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint FixedArray< T, TCapacity >::getIndexOf( ConstReference value ) const
+	TIKI_FORCE_INLINE uint CopyableFixedArray< T, TCapacity >::getIndexOf( ConstReference value ) const
 	{
 		for (uint i = 0u; i < TCapacity; ++i)
 		{
@@ -48,7 +48,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE T& FixedArray< T, TCapacity >::operator[]( uint index )
+	TIKI_FORCE_INLINE T& CopyableFixedArray< T, TCapacity >::operator[]( uint index )
 	{
 		TIKI_ASSERT( index < TCapacity );
 
@@ -56,7 +56,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE const T& FixedArray< T, TCapacity >::operator[]( uint index ) const
+	TIKI_FORCE_INLINE const T& CopyableFixedArray< T, TCapacity >::operator[]( uint index ) const
 	{
 		TIKI_ASSERT( index < TCapacity );
 

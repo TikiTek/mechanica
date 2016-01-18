@@ -76,6 +76,11 @@ namespace tiki
 		float2	texCood;
 		Color	color;
 	};
+
+	struct UiLayoutContext
+	{
+		float	meterToPixel;
+	};
 }
 
 #endif // TIKI_UITYPES_PRIVTAE_HPP_INCLUDED
