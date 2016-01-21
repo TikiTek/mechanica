@@ -60,9 +60,9 @@ namespace tiki
 			return;
 		}
 
-		for( UiElement& child : pElement->m_children )
+		while( !pElement->m_children.isEmpty() )
 		{
-			removeElement( &child );
+			removeElement( &*pElement->m_children.getBegin() );
 		}
 		pElement->dispose();
 

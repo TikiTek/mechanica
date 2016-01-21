@@ -178,9 +178,9 @@ namespace tiki
 	{
 		UiRenderElement& renderElement = m_renderElements.push();
 
-		renderElement.position	= element.m_layoutPosition;
+		vector::set( renderElement.position, element.m_layoutRectangle.left, element.m_layoutRectangle.top );
+		vector::set( renderElement.size, element.m_layoutRectangle.getWidth(), element.m_layoutRectangle.getHeight() );
 		renderElement.rotation	= 0.0f;
-		renderElement.size		= element.m_layoutSize;
 
 		if( element.m_pFont != nullptr )
 		{

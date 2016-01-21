@@ -116,6 +116,11 @@ namespace tiki
 		{
 		}
 
+		TIKI_FORCE_INLINE UiRectangle( float _left, float _top, float _bottom, float _right )
+			: left( _left ), top( _top ), bottom( _bottom ), right( _right )
+		{
+		}
+
 		TIKI_FORCE_INLINE void clear()
 		{
 			left	= 0.0f;
