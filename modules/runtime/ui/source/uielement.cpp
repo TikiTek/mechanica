@@ -24,9 +24,6 @@ namespace tiki
 			m_pParent->m_children.push( this );
 		}
 
-		m_layoutPosition	= Vector2::zero;
-		m_layoutSize		= Vector2::zero;
-
 		m_pFont				= nullptr;
 		m_pText				= nullptr;
 		m_pTextureData		= nullptr;
@@ -116,6 +113,11 @@ namespace tiki
 		m_colors[ UiElementPoints_BottomRight ]		= bottomRight;
 	}
 
+	void UiElement::setToColorRectangleOne( Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		setToColorRectangle( color, color, color, color );
+	}
+
 	void UiElement::setToTextureRectangle( const TextureData* pTexture, const TexCoordArray* pTexCoords /*= nullptr*/, const ColorArray* pVertexColors /*= nullptr */ )
 	{
 		TIKI_ASSERT( pTexture != nullptr );
@@ -193,23 +195,28 @@ namespace tiki
 		}
 		m_layoutRectangle = parentBounds;
 
-		UiRectangle childBounds;
+		getElementLayoutSizeAndPosition( m_layoutRectangle.left, m_layoutRectangle.right, m_position.getLeft(), m_position.getRight(), m_width, parentBounds.left, parentBounds.right, 0.0f, m_margin.left, m_margin.right, m_padding.getWidth(), context );
+		getElementLayoutSizeAndPosition( m_layoutRectangle.top, m_layoutRectangle.bottom, m_position.getTop(), m_position.getBottom(), m_height, parentBounds.top, parentBounds.bottom, 0.0f, m_margin.top, m_margin.bottom, m_padding.getHeight(), context );
+
+		UiRectangle childBounds( f32::maxValue, f32::maxValue, -f32::maxValue, -f32::maxValue );
+		if( m_children.isEmpty() )
+		{
+			childBounds.clear();
+		}
+
 		for( UiElement& child : m_children )
 		{
 			child.updateLayout( context );
 			childBounds.extend( child.m_layoutRectangle );
 		}
 
-		m_layoutSize.x		= getElementLayoutSizeAndPosition( m_layoutRectangle.left, m_layoutRectangle.right, m_position.getLeft(), m_position.getRight(), m_width, parentBounds.left, parentBounds.right, childBounds.getWidth(), m_margin.left, m_margin.right, m_padding.getWidth(), context );
-		m_layoutSize.y		= getElementLayoutSizeAndPosition( m_layoutRectangle.top, m_layoutRectangle.bottom, m_position.getTop(), m_position.getBottom(), m_height, parentBounds.top, parentBounds.bottom, childBounds.getHeight(), m_margin.top, m_margin.bottom, m_padding.getHeight(), context );
-
-		m_layoutPosition.x	= m_layoutRectangle.left;
-		m_layoutPosition.y	= m_layoutRectangle.top;
+		getElementLayoutSizeAndPosition( m_layoutRectangle.left, m_layoutRectangle.right, m_position.getLeft(), m_position.getRight(), m_width, parentBounds.left, parentBounds.right, childBounds.getWidth(), m_margin.left, m_margin.right, m_padding.getWidth(), context );
+		getElementLayoutSizeAndPosition( m_layoutRectangle.top, m_layoutRectangle.bottom, m_position.getTop(), m_position.getBottom(), m_height, parentBounds.top, parentBounds.bottom, childBounds.getHeight(), m_margin.top, m_margin.bottom, m_padding.getHeight(), context );
 
 		m_layoutChanged = false;
 	}
 
-	/*static*/ float UiElement::getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context )
+	/*static*/ void UiElement::getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context )
 	{
 		const float minMin	= parentMin + marginMin;
 		const float maxMax	= parentMax - marginMax;
@@ -272,30 +279,28 @@ namespace tiki
 			break;
 
 		case UiPositionType_Pixel:
-			minValue = elementPositionMax.value;
+			maxValue = elementPositionMax.value;
 			break;
 
 		case UiPositionType_Meters:
-			minValue = elementPositionMax.value * context.meterToPixel;
+			maxValue = elementPositionMax.value * context.meterToPixel;
 			break;
 
 		case UiPositionType_Percent:
-			minValue = maxSize * (elementPositionMax.value / 100.0f);
+			maxValue = maxSize * (elementPositionMax.value / 100.0f);
 			break;
 
 		default:
 			break;
 		}
 
-		float size = 0.0f;
 		if( elementPositionMin.type == UiPositionType_Auto && elementPositionMax.type == UiPositionType_Auto )
 		{
 			wantedSize = TIKI_MIN( wantedSize, maxSize );
 			const float freeSpace = maxSize - wantedSize;
 
 			targetMin	= minMin + (freeSpace / 2.0f);
-			targetMax	= maxMax + (freeSpace / 2.0f);
-			size		= wantedSize;
+			targetMax	= maxMax - (freeSpace / 2.0f);
 		}
 		else if( elementPositionMin.type == UiPositionType_Auto || elementPositionMax.type == UiPositionType_Auto )
 		{
@@ -303,18 +308,16 @@ namespace tiki
 			wantedSize = TIKI_MIN( wantedSize, maxSize - requiredPositionSpace );
 			wantedSize = TIKI_MAX( wantedSize, 0.0f );
 
-			const float freeSpace = maxMax - wantedSize;
-			targetMin	= (elementPositionMin.type == UiPositionType_Auto ? minMin + (freeSpace / 2.0f): minMin + minValue);
-			targetMax	= (elementPositionMax.type == UiPositionType_Auto ? maxMax + (freeSpace / 2.0f) : maxMax + maxValue);
-			size		= (freeSpace / 2.0f);
+			const float freeSpace = maxSize - wantedSize - requiredPositionSpace;
+			const float positionSpace = (elementExtension.type == UiSizeType_Auto ? freeSpace / 2.0f : freeSpace);
+
+			targetMin	= (elementPositionMin.type == UiPositionType_Auto ? minMin + positionSpace : minMin + minValue);
+			targetMax	= (elementPositionMax.type == UiPositionType_Auto ? maxMax - positionSpace : maxMax - maxValue);
 		}
 		else
 		{
 			targetMin	= minMin + minValue;
-			targetMax	= maxValue - maxValue;
-			size		= targetMax - targetMin;
+			targetMax	= maxMax - maxValue;
 		}
-
-		return size;
 	}
 }
