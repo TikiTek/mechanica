@@ -16,9 +16,14 @@ namespace tiki
 
 	bool UiSystem::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters )
 	{
+		if( !m_scriptContext.create() )
+		{
+			return false;
+		}
+
 		UiRendererParameters rendererParameters;
 		rendererParameters.maxRenderElements = parameters.maxElementCount;
-
+		
 		if( !m_renderer.create( graphicsSystem, resourceManager, rendererParameters ) ||
 			!m_elementPool.create( parameters.maxElementCount ) )
 		{
@@ -43,6 +48,8 @@ namespace tiki
 		m_elementPool.dispose();
 		
 		m_renderer.dispose( graphicsSystem, resourceManager );
+
+		m_scriptContext.dispose();
 	}
 
 	UiElement* UiSystem::addElement( UiElement* pParent /*= nullptr */ )
