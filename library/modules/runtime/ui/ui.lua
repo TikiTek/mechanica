@@ -12,6 +12,7 @@ module:add_dependency( "base" );
 module:add_dependency( "math" );
 module:add_dependency( "graphics" );
 module:add_dependency( "genericdata" );
+module:add_dependency( "script" );
 module:add_dependency( "uishader" );
 
 local module = Module:new( "uishader" );
