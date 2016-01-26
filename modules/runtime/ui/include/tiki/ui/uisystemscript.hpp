@@ -6,17 +6,21 @@
 
 namespace tiki
 {
-	class UiSystemScript
+	class ScriptCall;
+	class UiSystem;
+
+	class UiSystemScript : public ScriptClass
 	{
-		TIKI_NONCOPYABLE_CLASS( UiSystemScript );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( UiSystemScript );
 
 	public:
 
-		bool		create( ScriptContext& scriptContext );
-		void		dispose();
+		bool			create( ScriptContext& scriptContext, UiSystem& uiSystem );
+		void			dispose();
 
 	private:
 
+		static void		addElement( ScriptCall& context );
 
 	};
 }

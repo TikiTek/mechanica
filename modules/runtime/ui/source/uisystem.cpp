@@ -16,8 +16,21 @@ namespace tiki
 
 	bool UiSystem::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters )
 	{
+		TIKI_TRACE_INFO( "[ui] System: %p.\n", this );
+
 		if( !m_scriptContext.create() )
 		{
+			return false;
+		}
+
+		m_scriptContext.addExtension( ScriptExtensions_Base );
+		m_scriptContext.addExtension( ScriptExtensions_Math );
+		m_scriptContext.addExtension( ScriptExtensions_Objects );
+		m_scriptContext.addExtension( ScriptExtensions_String );
+
+		if( !m_scriptUiSystemClass.create( m_scriptContext, *this ) )
+		{
+			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
 
@@ -49,6 +62,7 @@ namespace tiki
 		
 		m_renderer.dispose( graphicsSystem, resourceManager );
 
+		m_scriptUiSystemClass.dispose();
 		m_scriptContext.dispose();
 	}
 
