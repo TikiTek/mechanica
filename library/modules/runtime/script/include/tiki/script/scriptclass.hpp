@@ -3,18 +3,20 @@
 #define TIKI_SCRIPTOBJECT_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
+#include "tiki/script/scriptinstance.hpp"
+
+struct lua_State;
 
 namespace tiki
 {
-	class ScriptCallContext;
-	class ScriptContext;
+	class ScriptContext;	
 
-	typedef void( *ScriptMemberFunc )( void* pInstance, ScriptCallContext& context );
+	typedef int( *ScriptWrapperFunc )( lua_State* pState );
 
 	struct ScriptMethod
 	{
 		const char*			pMethodName;
-		ScriptMemberFunc*	pMethodFunc;
+		ScriptWrapperFunc	pMethodFunc;
 	};
 
 	class ScriptClass
@@ -23,17 +25,19 @@ namespace tiki
 
 	protected:
 
-		bool	create( ScriptContext& context, const char* pName, const ScriptMethod* pMethods, uint methodCount );
-		void	dispose();
+						ScriptClass();
+						~ScriptClass();
 
-		void	registerInstance( void* pInstance );
-		void	unregisterInstance( void* pInstance );
+		bool			create( ScriptContext& context, const char* pName, const ScriptMethod* pMethods, uint methodCount );
+		void			dispose();
+
+		ScriptInstance	registerInstance( void* pInstance );
+		void			unregisterInstance( ScriptInstance instance );
 
 	private:
 
-		int		m_methodTable;
-		int		m_metaTable;
-
+		ScriptContext*	m_pContext;
+		const char*		m_pName;
 	};
 }
 

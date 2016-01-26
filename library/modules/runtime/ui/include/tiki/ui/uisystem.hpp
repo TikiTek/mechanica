@@ -7,6 +7,7 @@
 #include "tiki/container/pool.hpp"
 #include "tiki/script/scriptcontext.hpp"
 #include "tiki/ui/uirenderer.hpp"
+#include "tiki/ui/uisystemscript.hpp"
 
 namespace tiki
 {
@@ -60,6 +61,7 @@ namespace tiki
 		UiRenderer				m_renderer;
 
 		ScriptContext			m_scriptContext;
+		UiSystemScript			m_scriptUiSystemClass;
 
 		Pool< UiElement >		m_elementPool;
 		UiElement*				m_pRootElement;

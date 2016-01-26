@@ -75,16 +75,19 @@ namespace tiki
 
 	}
 
+	void ScriptContext::setGlobalValue( const char* pVariableName, const ScriptInstance& instance )
+	{
+		lua_rawgeti( m_pState, LUA_REGISTRYINDEX, instance.m_scriptObject );
+		lua_setglobal( m_pState, pVariableName );
+	}
+
 	bool ScriptContext::executeScript( const char* pCode )
 	{	
-		const int error = luaL_loadstring( m_pState, pCode );
+		const int error = luaL_dostring( m_pState, pCode );
 		if( error != LUA_OK )
 		{
-			//LUA_ERRRUN: a runtime error.
-			//LUA_ERRMEM : memory allocation error.For such errors, Lua does not call the message handler.
-			//LUA_ERRERR : error while running the message handler.
-			//LUA_ERRGCMM : e
-			TIKI_TRACE_ERROR( "[script] Unexpected error in Script.\n" );
+			const char* pErrorMessage = lua_tostring( m_pState, -1 );
+			TIKI_TRACE_ERROR( "[script] Unexpected error in Script: %s\n", pErrorMessage );
 
 			return false;
 		}
@@ -99,18 +102,50 @@ namespace tiki
 			TIKI_MEMORY_FREE( pPointer );
 			return nullptr;
 		}
-		else if( pPointer )
+		else if( pPointer == nullptr )
 		{
 			return TIKI_MEMORY_ALLOC( nsize );
 		}
 		else
 		{
 			void* pNewData = TIKI_MEMORY_ALLOC( nsize );
-			memory::copy( pNewData, pPointer, osize );
+			memory::copy( pNewData, pPointer, TIKI_MIN( nsize, osize ) );
 
 			TIKI_MEMORY_FREE( pPointer );
 
 			return pNewData;
 		}
+	}
+
+	void ScriptContext::stackDump()
+	{
+		debug::trace( "stackDump: " );
+
+		int i;
+		int top = lua_gettop( m_pState );
+		for( i = 1; i <= top; i++ ) {  /* repeat for each level */
+			int t = lua_type( m_pState, i );
+			switch( t ) {
+
+			case LUA_TSTRING:  /* strings */
+				debug::trace( "`%s'", lua_tostring( m_pState, i ) );
+				break;
+
+			case LUA_TBOOLEAN:  /* booleans */
+				debug::trace( lua_toboolean( m_pState, i ) ? "true" : "false" );
+				break;
+
+			case LUA_TNUMBER:  /* numbers */
+				debug::trace( "%g", lua_tonumber( m_pState, i ) );
+				break;
+
+			default:  /* other values */
+				debug::trace( "%s", lua_typename( m_pState, t ) );
+				break;
+
+			}
+			debug::trace( "  " );  /* put a separator */
+		}
+		debug::trace( "\n" );  /* end the listing */
 	}
 }
