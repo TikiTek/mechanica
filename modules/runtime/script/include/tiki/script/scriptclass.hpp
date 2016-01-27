@@ -3,7 +3,7 @@
 #define TIKI_SCRIPTOBJECT_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/script/scriptinstance.hpp"
+#include "tiki/script/scriptvalue.hpp"
 
 struct lua_State;
 
@@ -28,11 +28,11 @@ namespace tiki
 						ScriptClass();
 						~ScriptClass();
 
-		bool			create( ScriptContext& context, const char* pName, const ScriptMethod* pMethods, uint methodCount );
+		bool			create( ScriptContext& context, const char* pName, const ScriptMethod* pMethods, uint methodCount, ScriptWrapperFunc pOnCollectMethod = nullptr );
 		void			dispose();
 
-		ScriptInstance	registerInstance( void* pInstance );
-		void			unregisterInstance( ScriptInstance instance );
+		ScriptValue		registerInstance( void* pInstance );
+		void			unregisterInstance( const ScriptValue& instance );
 
 	private:
 

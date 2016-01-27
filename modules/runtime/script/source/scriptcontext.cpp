@@ -3,6 +3,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/script/scriptvalue.hpp"
 
 extern "C"
 {
@@ -40,23 +41,23 @@ namespace tiki
 	{
 		switch( extension )
 		{
-		case tiki::ScriptExtensions_Base:
+		case ScriptExtensions_Base:
 			luaopen_base( m_pState );
 			break;
 
-		case tiki::ScriptExtensions_Objects:
+		case ScriptExtensions_Objects:
 			luaopen_table( m_pState );
 			break;
 
-		case tiki::ScriptExtensions_IO:
+		case ScriptExtensions_IO:
 			luaopen_io( m_pState );
 			break;
 
-		case tiki::ScriptExtensions_String:
+		case ScriptExtensions_String:
 			luaopen_string( m_pState );
 			break;
 
-		case tiki::ScriptExtensions_Math:
+		case ScriptExtensions_Math:
 			luaopen_math( m_pState );
 			break;
 
@@ -75,9 +76,9 @@ namespace tiki
 
 	}
 
-	void ScriptContext::setGlobalValue( const char* pVariableName, const ScriptInstance& instance )
+	void ScriptContext::setGlobalValue( const char* pVariableName, const ScriptValue& value )
 	{
-		lua_rawgeti( m_pState, LUA_REGISTRYINDEX, instance.m_scriptObject );
+		value.pushValue();
 		lua_setglobal( m_pState, pVariableName );
 	}
 

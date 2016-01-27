@@ -3,32 +3,35 @@
 #define TIKI_SCRIPTCALL_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
-
-struct lua_State;
+#include "tiki/script/scriptvalue.hpp"
 
 namespace tiki
 {
+	class ScriptContext;
+
 	class ScriptCall
 	{
 		TIKI_NONCOPYABLE_CLASS( ScriptCall );
 
 	public:
 
-						ScriptCall();
-						~ScriptCall();
+							ScriptCall();
+							~ScriptCall();
 
-		bool			create( lua_State* pState, bool hasInstance );
-		void			dispose();
+		bool				create( ScriptContext& context, bool hasInstance );
+		void				dispose();
 
-		void*			getInstance() const;
+		void*				getInstance() const;
+		ScriptValue			getArgument( uint index ) const;
+		void				setReturnValue( const ScriptValue& value ) const;
 
-		int				getReturnValueCount() const;
+		int					pushReturnValue();
 
 	private:
 
-		lua_State*		m_pState;
-		void*			m_pInstance;
-		int				m_returnValueCount;
+		ScriptContext*			m_pContext;
+		void*					m_pInstance;
+		mutable ScriptValue		m_returnValue;
 
 	};
 }

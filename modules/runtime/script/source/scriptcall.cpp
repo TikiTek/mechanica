@@ -1,6 +1,7 @@
 #include "tiki/script/scriptcall.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/script/scriptcontext.hpp"
 
 extern "C" {
 #include "lua.h"
@@ -10,25 +11,23 @@ namespace tiki
 {
 	ScriptCall::ScriptCall()
 	{
-		m_pState			= nullptr;
+		m_pContext			= nullptr;
 		m_pInstance			= nullptr;
-		m_returnValueCount	= 0;
 	}
 
 	ScriptCall::~ScriptCall()
 	{
-		TIKI_ASSERT( m_pState			== nullptr );
-		TIKI_ASSERT( m_pInstance		== nullptr );
-		TIKI_ASSERT( m_returnValueCount	== 0 );
+		TIKI_ASSERT( m_pContext == nullptr );
+		TIKI_ASSERT( m_pInstance	== nullptr );
 	}
 
-	bool ScriptCall::create( lua_State* pState, bool hasInstance )
+	bool ScriptCall::create( ScriptContext& context, bool hasInstance )
 	{
-		m_pState = pState;
+		m_pContext = &context;
 
 		if( hasInstance )
 		{
-			void* pUserData = lua_touserdata( pState, -1 );
+			void* pUserData = lua_touserdata( m_pContext->m_pState, 1 );
 			if( pUserData == nullptr )
 			{
 				dispose();
@@ -44,9 +43,9 @@ namespace tiki
 
 	void ScriptCall::dispose()
 	{
-		m_pState			= nullptr;
-		m_pInstance			= nullptr;
-		m_returnValueCount	= 0;
+		m_pContext	= nullptr;
+		m_pInstance	= nullptr;
+		m_returnValue.dispose();
 	}
 
 	void* ScriptCall::getInstance() const
@@ -54,8 +53,29 @@ namespace tiki
 		return m_pInstance;
 	}
 
-	int ScriptCall::getReturnValueCount() const
+	ScriptValue ScriptCall::getArgument( uint index ) const
 	{
-		return m_returnValueCount;
+		const int stackIndex = -(int)(index + 1u);
+
+		ScriptValue value( *m_pContext );
+		value.createFromStack( stackIndex );
+
+		return value;
+	}
+
+	void ScriptCall::setReturnValue( const ScriptValue& value ) const
+	{
+		m_returnValue = value;
+	}
+
+	int ScriptCall::pushReturnValue()
+	{
+		if( m_returnValue.isValid() )
+		{
+			m_returnValue.pushValue();
+			return 1;
+		}
+
+		return 0;
 	}
 }
