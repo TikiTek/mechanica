@@ -7,20 +7,28 @@
 namespace tiki
 {
 	class ScriptCall;
+	class UiElementScript;
 	class UiSystem;
 
 	class UiSystemScript : public ScriptClass
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( UiSystemScript );
+		TIKI_NONCOPYABLE_CLASS( UiSystemScript );
 
 	public:
 
-		bool			create( ScriptContext& scriptContext, UiSystem& uiSystem );
-		void			dispose();
+							UiSystemScript();
+							~UiSystemScript();
+
+		bool				create( ScriptContext& scriptContext, UiSystem& uiSystem, UiElementScript& elementScript );
+		void				dispose();
 
 	private:
 
-		static void		addElement( ScriptCall& context );
+		UiSystem*			m_pUiSystem;
+		UiElementScript*	m_pUiElementScript;
+
+		static void			addElement( const ScriptCall& call );
+		static void			removeElement( const ScriptCall& call );
 
 	};
 }

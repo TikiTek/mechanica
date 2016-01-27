@@ -28,7 +28,8 @@ namespace tiki
 		m_scriptContext.addExtension( ScriptExtensions_Objects );
 		m_scriptContext.addExtension( ScriptExtensions_String );
 
-		if( !m_scriptUiSystemClass.create( m_scriptContext, *this ) )
+		if( !m_scriptUiSystemClass.create( m_scriptContext, *this, m_scriptUiElementClass ) ||
+			!m_scriptUiElementClass.create( m_scriptContext ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;
@@ -62,6 +63,7 @@ namespace tiki
 		
 		m_renderer.dispose( graphicsSystem, resourceManager );
 
+		m_scriptUiElementClass.dispose();
 		m_scriptUiSystemClass.dispose();
 		m_scriptContext.dispose();
 	}
@@ -104,6 +106,11 @@ namespace tiki
 	void UiSystem::render( GraphicsContext& context, const RenderTarget& renderTarget ) const
 	{
 		m_renderer.render( context, renderTarget );
+	}
+
+	ScriptContext& UiSystem::getScriptContext()
+	{
+		return m_scriptContext;
 	}
 
 	void UiSystem::setScreenSize( float width, float height )

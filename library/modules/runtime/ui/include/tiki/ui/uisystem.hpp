@@ -6,6 +6,7 @@
 #include "tiki/container/linkedlist.hpp"
 #include "tiki/container/pool.hpp"
 #include "tiki/script/scriptcontext.hpp"
+#include "tiki/ui/uielementscript.hpp"
 #include "tiki/ui/uirenderer.hpp"
 #include "tiki/ui/uisystemscript.hpp"
 
@@ -52,6 +53,8 @@ namespace tiki
 		void			update();
 		void			render( GraphicsContext& context, const RenderTarget& renderTarget ) const;
 
+		ScriptContext&	getScriptContext();
+
 		void			setScreenSize( float width, float height );
 
 		bool			processInputEvent( InputEvent& inputEvent );
@@ -62,6 +65,7 @@ namespace tiki
 
 		ScriptContext			m_scriptContext;
 		UiSystemScript			m_scriptUiSystemClass;
+		UiElementScript			m_scriptUiElementClass;
 
 		Pool< UiElement >		m_elementPool;
 		UiElement*				m_pRootElement;

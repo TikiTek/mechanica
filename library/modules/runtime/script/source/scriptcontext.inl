@@ -7,18 +7,24 @@ namespace tiki
 	template< ScriptFunc TFunc >
 	int ScriptContext::scriptWrapperFunction( lua_State* pState )
 	{
-		ScriptCall context;
-		if( context.create( pState, true ) )
+		ScriptContext context;
+		context.m_pState = pState;
+
+		ScriptCall call;
+		if( call.create( context, true ) )
 		{
-			TFunc( context );
+			TFunc( call );
 		}
 		else
 		{
+			context.stackDump();
 			TIKI_TRACE_ERROR( "[script] Unable to call C function. Context can't be created.\n" );
 		}
 
-		const int returnValueCount = context.getReturnValueCount();
-		context.dispose();
+		const int returnValueCount = call.pushReturnValue();
+		call.dispose();
+
+		context.m_pState = nullptr;
 
 		return returnValueCount;
 	}

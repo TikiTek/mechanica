@@ -77,6 +77,13 @@ namespace tiki
 		pFill->setPosition( UiPosition( UiPositionElement( 5.0f ), UiPositionElement( 5.0f ), UiPositionElement( 5.0f ), UiPositionElement( 5.0f ) ) );
 		pFill->setToColorRectangleOne( TIKI_COLOR_GREEN );
 
+		const char* pCode = ""
+			"local element = uiSystem:addElement();"
+			"element:setWidth( 10 )"
+			"element:setHeight( 10 )";
+
+		getUiSystem().getScriptContext().executeScript( pCode );
+
 		return true;
 	}
 

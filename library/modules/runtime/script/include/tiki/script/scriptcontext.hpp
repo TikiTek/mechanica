@@ -4,17 +4,17 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/container/linkedlist.hpp"
-#include "tiki/script/scriptinstance.hpp"
 #include "tiki/script/scriptcall.hpp"
 
 struct lua_State;
 
 namespace tiki
 {
-	class ScriptClass;
 	class ScriptCall;
+	class ScriptClass;
+	class ScriptValue;
 
-	typedef void( *ScriptFunc )( ScriptCall& context );
+	typedef void( *ScriptFunc )( const ScriptCall& context );
 	typedef int( *ScriptWrapperFunc )( lua_State* pState );
 
 	enum ScriptExtensions
@@ -33,7 +33,7 @@ namespace tiki
 		TIKI_NONCOPYABLE_CLASS( ScriptContext );
 		friend class ScriptCall;
 		friend class ScriptClass;
-		friend class ScriptInstance;
+		friend class ScriptValue;
 
 	public:
 
@@ -48,7 +48,7 @@ namespace tiki
 		void			registerFunction( ScriptFunc* pFunc );
 		void			unregisterFunction( ScriptFunc* pFunc );
 		
-		void			setGlobalValue( const char* pVariableName, const ScriptInstance& instance );
+		void			setGlobalValue( const char* pVariableName, const ScriptValue& value );
 
 		bool			executeScript( const char* pCode );
 
