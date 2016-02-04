@@ -7,16 +7,16 @@ namespace tiki
 {
 	static const D3D12_FILL_MODE s_aFillModeMapping[] =
 	{
-		D3D12_FILL_WIREFRAME,	// FillMode_Wireframe
-		D3D12_FILL_SOLID		// FillMode_Solid
+		D3D12_FILL_MODE_WIREFRAME,	// FillMode_Wireframe
+		D3D12_FILL_MODE_SOLID		// FillMode_Solid
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aFillModeMapping ) == FillMode_Count );
 
 	static const D3D12_CULL_MODE s_aCullModeMapping[] =
 	{
-		D3D12_CULL_NONE,	// CullMode_None
-		D3D12_CULL_FRONT,	// CullMode_Front
-		D3D12_CULL_BACK,	// CullMode_Back
+		D3D12_CULL_MODE_NONE,	// CullMode_None
+		D3D12_CULL_MODE_FRONT,	// CullMode_Front
+		D3D12_CULL_MODE_BACK,	// CullMode_Back
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aCullModeMapping ) == CullMode_Count );
 
