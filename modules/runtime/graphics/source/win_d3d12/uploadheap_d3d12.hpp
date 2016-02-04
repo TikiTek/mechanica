@@ -2,7 +2,7 @@
 #define TIKI_UPLOADHEAP_HPP__INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/queue.hpp"
+#include "tiki/container/queue.hpp"
 
 #include "graphicstypes_d3d12.hpp"
 

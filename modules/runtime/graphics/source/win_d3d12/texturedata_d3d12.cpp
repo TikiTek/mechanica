@@ -35,27 +35,27 @@ namespace tiki
 		return s_formatLookup[ pixelFormat ];
 	}
 
-	static D3D12_RESOURCE_MISC_FLAG getD3dFlags( TextureFlags flags )
-	{
-		D3D12_RESOURCE_MISC_FLAG result = D3D12_RESOURCE_MISC_NONE;
+	//static D3D12_RESOURCE_MISC_FLAG getD3dFlags( TextureFlags flags )
+	//{
+	//	D3D12_RESOURCE_MISC_FLAG result = D3D12_RESOURCE_MISC_NONE;
 
-		if ( isBitSet( flags, TextureFlags_RenderTarget ) )
-		{
-			result |= D3D12_RESOURCE_MISC_ALLOW_RENDER_TARGET;
-		}
+	//	if ( isBitSet( flags, TextureFlags_RenderTarget ) )
+	//	{
+	//		result |= D3D12_RESOURCE_MISC_ALLOW_RENDER_TARGET;
+	//	}
 
-		if ( isBitSet( flags, TextureFlags_DepthStencil ) )
-		{
-			result |= D3D12_RESOURCE_MISC_ALLOW_DEPTH_STENCIL;
-		}
+	//	if ( isBitSet( flags, TextureFlags_DepthStencil ) )
+	//	{
+	//		result |= D3D12_RESOURCE_MISC_ALLOW_DEPTH_STENCIL;
+	//	}
 
-		if ( !isBitSet( flags, TextureFlags_ShaderInput ) )
-		{
-			result |= D3D12_RESOURCE_MISC_DENY_SHADER_RESOURCE;
-		}
+	//	if ( !isBitSet( flags, TextureFlags_ShaderInput ) )
+	//	{
+	//		result |= D3D12_RESOURCE_MISC_DENY_SHADER_RESOURCE;
+	//	}
 
-		return result;
-	}
+	//	return result;
+	//}
 
 	static D3D12_SRV_DIMENSION getD3dViewDimentions( TextureType type )
 	{

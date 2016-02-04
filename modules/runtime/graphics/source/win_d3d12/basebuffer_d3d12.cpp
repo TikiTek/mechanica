@@ -30,24 +30,24 @@ namespace tiki
 		return s_aD3dHeapType[ binding ];
 	}
 
-	static D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
-	{
-		if( dynamic )
-		{
-			return D3D12_RESOURCE_USAGE_GENERIC_READ;
-		}
+	//static D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
+	//{
+	//	if( dynamic )
+	//	{
+	//		return D3D12_RESOURCE_USAGE_GENERIC_READ;
+	//	}
 
-		static const D3D12_RESOURCE_USAGE s_aD3dResourceUsage[] =
-		{
-			D3D12_RESOURCE_USAGE_GENERIC_READ,
-			D3D12_RESOURCE_USAGE_INITIAL,
-			D3D12_RESOURCE_USAGE_INITIAL
-		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dResourceUsage ) == GraphicsBufferType_Count );
+	//	static const D3D12_RESOURCE_USAGE s_aD3dResourceUsage[] =
+	//	{
+	//		D3D12_RESOURCE_USAGE_GENERIC_READ,
+	//		D3D12_RESOURCE_USAGE_INITIAL,
+	//		D3D12_RESOURCE_USAGE_INITIAL
+	//	};
+	//	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dResourceUsage ) == GraphicsBufferType_Count );
 
-		TIKI_ASSERT( binding < GraphicsBufferType_Count );
-		return s_aD3dResourceUsage[ binding ];
-	}
+	//	TIKI_ASSERT( binding < GraphicsBufferType_Count );
+	//	return s_aD3dResourceUsage[ binding ];
+	//}
 
 	DXGI_FORMAT graphics::getD3dIndexFormat( IndexType type )
 	{
