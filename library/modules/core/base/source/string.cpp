@@ -3,7 +3,10 @@
 
 #include <cstdarg>
 #include <cstdio>
-#include <windows.h>
+
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#   include <windows.h>
+#endif
 
 namespace tiki
 {
@@ -49,7 +52,7 @@ namespace tiki
 			format,
 			nullptr,
 			argptr
-			);
+		);
 
 		va_end( argptr );
 	}
@@ -61,7 +64,7 @@ namespace tiki
 		va_list argptr;
 		va_start( argptr, format );
 
-		sprintf( pTargetBuffer, format, argptr );
+		vsnprintf( pTargetBuffer, bufferSize, format, argptr );
 
 		va_end( argptr );
 	}

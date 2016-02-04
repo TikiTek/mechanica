@@ -4,12 +4,15 @@ local module = Module:new( "base" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
+module:add_files( "base.lua" );
 module:add_include_dir( "include" );
 
 if is_windows then
 	module:add_files( "source/win/*.cpp" );
 elseif is_linux then
-	module:add_files( "source/linux/*.cpp" );
+	module:add_files( "source/posix/*.cpp" );
+
+	module:add_library_file( "pthread" );
 else
 	throw("Platform not supported.");
 end

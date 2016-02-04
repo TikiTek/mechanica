@@ -2,7 +2,6 @@
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/staticarray.hpp"
 #include "tiki/base/stringparse.hpp"
 #include "tiki/math/basetypes.hpp"
 #include "tiki/math/matrix.hpp"

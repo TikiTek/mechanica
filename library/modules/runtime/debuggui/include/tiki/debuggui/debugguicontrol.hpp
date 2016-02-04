@@ -2,7 +2,7 @@
 #ifndef __TIKI_DEBUGGUICONTROL_HPP_INCLUDED__
 #define __TIKI_DEBUGGUICONTROL_HPP_INCLUDED__
 
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/math/thickness.hpp"
@@ -46,17 +46,17 @@ namespace tiki
 		const Rectangle&		getRectangle() const;
 		void					setRectangle( const Rectangle& boundingRectangle );
 		
-		virtual Vector2			getMinimumSize() = 0;
+		virtual Vector2			getMinimumSize() TIKI_PURE;
 
-		virtual void			update() = 0;
-		virtual void			render( ImmediateRenderer& renderer ) = 0;
+		virtual void			update( double elapsedTime ) TIKI_PURE;
+		virtual void			render( ImmediateRenderer& renderer ) TIKI_PURE;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) = 0;
+		virtual bool			processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_PURE;
 
 	protected:
 
 		void					refreshRectangle();
-		virtual void			handleRectangleChanged( const Rectangle& boundingRectangle ) = 0;
+		virtual void			handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_PURE;
 
 		static const Font*		getDefaultFont();
 		static void				pushEvent( const DebugGuiEvent& guiEvent );

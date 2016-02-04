@@ -102,45 +102,51 @@ namespace tiki
 			}
 		}
 
-		for (uint moduleIndex = 0u; moduleIndex < modules.getCount(); ++moduleIndex )
+		uint loadedModules = 0u;
+		while ( loadedModules < modules.getCount() )
 		{
-			GenericDataModuleLoadingData& data = modules[ moduleIndex ];
-
-			if ( data.pRootNode == nullptr )
+			for (uint moduleIndex = 0u; moduleIndex < modules.getCount(); ++moduleIndex )
 			{
-				continue;
-			}
+				GenericDataModuleLoadingData& data = modules[ moduleIndex ];
 
-			bool hasAllDependencies = true;
-			for (uint depIndex = 0u; depIndex < data.data.dependencies.getCount(); ++depIndex )
-			{
-				for (uint depModIndex = 0u; depModIndex < modules.getCount(); ++depModIndex )
+				if ( data.pRootNode == nullptr )
 				{
-					GenericDataModuleLoadingData& depModData = modules[ depModIndex ];
-					if ( depModData.data.name == data.data.dependencies[ depIndex ] )
+					continue;
+				}
+
+				bool hasAllDependencies = true;
+				for (uint depIndex = 0u; depIndex < data.data.dependencies.getCount(); ++depIndex )
+				{
+					for (uint depModIndex = 0u; depModIndex < modules.getCount(); ++depModIndex )
 					{
-						hasAllDependencies &= depModData.isLoaded;
+						GenericDataModuleLoadingData& depModData = modules[ depModIndex ];
+						if ( depModData.data.name == data.data.dependencies[ depIndex ] )
+						{
+							hasAllDependencies &= depModData.isLoaded;
+						}
 					}
 				}
-			}
 
-			if ( !hasAllDependencies )
-			{
-				continue;
-			}
+				if ( !hasAllDependencies )
+				{
+					continue;
+				}
+					
+				if ( !parseFile( data.reader, data.pRootNode, data.fileName, data.data.name ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", data.fileName.cStr() );
+					ok = false;
+				}
+
+				m_modules[ data.data.name ] = data.data;
+				data.pRootNode = nullptr;
+				data.isLoaded = true;
+				data.reader.dispose();
 				
-			if ( !parseFile( data.reader, data.pRootNode, data.fileName, data.data.name ) )
-			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", data.fileName.cStr() );
-				ok = false;
+				loadedModules++;
 			}
-
-			m_modules[ data.data.name ] = data.data;
-			data.pRootNode = nullptr;
-			data.reader.dispose();
-			data.isLoaded = true;
 		}
-
+		
 		modules.dispose();
 
 		if ( !ok )
@@ -411,7 +417,7 @@ namespace tiki
 				else if ( modifier.modifier == "bit" )
 				{
 					const sint64 shift = ParseString::parseInt64( content.cStr() );
-					const sint64 value = 1 << shift;
+					const sint64 value = 1ll << shift;
 
 					content = StringConvert::ToString( value );
 				}
@@ -503,9 +509,9 @@ namespace tiki
 
 	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode, const string& targetDir )
 	{
-		if ( !directory::exists( targetDir ) )
+		if ( !directory::exists( targetDir.cStr() ) )
 		{
-			if ( !directory::create( targetDir ) )
+			if ( !directory::create( targetDir.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::exportCode] unable to create target directory(%s).\n", targetDir.cStr() );
 				return false;
@@ -568,7 +574,7 @@ namespace tiki
 
 		static const char* s_pReference			= "\tclass %s;\n";
 		static const char* s_pStringInclude		= "#include \"tiki/base/basicstring.hpp\"\n";
-		static const char* s_pArrayInclude		= "#include \"tiki/base/staticarray.hpp\"\n";
+		static const char* s_pArrayInclude		= "#include \"tiki/container/staticarray.hpp\"\n";
 		static const char* s_pResourceInclude	= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
 		static const char* s_pReferenceInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
 		static const char* s_pDependencyInclude	= "#include \"%s.hpp\"\n";
@@ -770,7 +776,12 @@ namespace tiki
 	void GenericDataTypeCollection::findFiles( const string& path, List< string >& files, const string& ext ) const
 	{
 		List< string > dirFiles;
-		directory::getFiles( path, dirFiles );
+		if ( !directory::getFiles( path, dirFiles ) )
+		{
+			TIKI_TRACE_ERROR( "[genericdata] Unable to find files in '%s'", path.cStr() );
+			return;
+		}
+		
 		for (size_t i = 0u; i < dirFiles.getCount(); ++i)
 		{
 			if ( path::getExtension( dirFiles[ i ] ) != ext )
@@ -782,7 +793,12 @@ namespace tiki
 		}		
 
 		List< string > dirDirectories;
-		directory::getDirectories( path, dirDirectories );
+		if( !directory::getDirectories( path, dirDirectories ) )
+		{
+			TIKI_TRACE_ERROR( "[genericdata] Unable to find directories in '%s'", path.cStr() );
+			return;
+		}
+		
 		for (size_t i = 0u; i < dirDirectories.getCount(); ++i)
 		{
 			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );

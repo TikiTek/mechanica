@@ -46,8 +46,11 @@ namespace tiki
 			context.workingEvent.create();
 
 			const string threadName = formatString( "TaskSystem_%u", i );
-			context.thread.create( staticThreadEntryPoint, parameters.threadStackSize, threadName.cStr() );
-			context.thread.start( &context );
+			if ( !context.thread.create( staticThreadEntryPoint, &context, parameters.threadStackSize, threadName.cStr() ) )
+			{
+				dispose();
+				return false;
+			}
 		}
 
 		return true;
@@ -178,7 +181,7 @@ namespace tiki
 
 	bool TaskSystem::threadDispatchTask( Task& targetTask )
 	{
-		if ( m_taskCountSemaphore.tryDecrement( 1u, 10u ) )
+		if ( m_taskCountSemaphore.tryDecrement( 10u ) )
 		{
 			bool result = false;
 

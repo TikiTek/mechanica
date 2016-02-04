@@ -2,8 +2,7 @@
 #ifndef TIKI_BASICSTRING_HPP_INCLUDED__
 #define TIKI_BASICSTRING_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
-#include "tiki/base/inline.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
@@ -16,7 +15,7 @@ namespace tiki
 	public:
 
 		TIKI_FORCE_INLINE					BasicString();
-		TIKI_FORCE_INLINE					BasicString( uint len );
+		TIKI_FORCE_INLINE explicit			BasicString( uint len );
 		TIKI_FORCE_INLINE					BasicString( const char* pString );
 		TIKI_FORCE_INLINE					BasicString( const char* pString, sint length );
 		TIKI_FORCE_INLINE					BasicString( const BasicString& copy );

@@ -31,12 +31,12 @@ namespace tiki
 			linkCount			= 0u;
 		}
 
-		Resource**	ppLinkedResources;
-		char**		ppStringPointers;
-		void**		ppSectorPointers;
-		uint		sectorCount;
-		uint		stringCount;
-		uint		linkCount;
+		const Resource**	ppLinkedResources;
+		char**				ppStringPointers;
+		void**				ppSectorPointers;
+		uint				sectorCount;
+		uint				stringCount;
+		uint				linkCount;
 	};
 
 	struct ResourceInitData

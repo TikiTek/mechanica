@@ -3,14 +3,12 @@
 #define TIKI_PIXELFORMAT_HPP__INCLUDED
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	enum PixelFormat
+	enum PixelFormat : uint8
 	{
-		PixelFormat_Invalid = -1,
-
 		PixelFormat_R8,
 		PixelFormat_R8G8B8A8,
 		PixelFormat_R8G8B8A8_Gamma,
@@ -23,7 +21,9 @@ namespace tiki
 		PixelFormat_Count,
 
 		PixelFormat_Color	= PixelFormat_R8G8B8A8,
-		PixelFormat_Depth	= PixelFormat_Depth24Stencil8
+		PixelFormat_Depth	= PixelFormat_Depth24Stencil8,
+
+		PixelFormat_Invalid	= 0xffu
 	};
 
 	TIKI_FORCE_INLINE uint getBitsPerPixel( PixelFormat format )

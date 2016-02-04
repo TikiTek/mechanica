@@ -3,14 +3,12 @@
 #define TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	enum VertexAttributeFormat
+	enum VertexAttributeFormat : uint8
 	{
-		VertexAttributeFormat_Invalid = -1,
-
 		VertexAttributeFormat_x32y32z32w32_float,
 		VertexAttributeFormat_x32y32z32_float,
 		VertexAttributeFormat_x32y32_float,
@@ -30,7 +28,8 @@ namespace tiki
 		VertexAttributeFormat_x8y8z8w8_snorm,
 		VertexAttributeFormat_x8y8z8w8_unorm,
 
-		VertexAttributeFormat_Count
+		VertexAttributeFormat_Count,
+		VertexAttributeFormat_Invalid = 0xffu
 	};
 
 	TIKI_FORCE_INLINE uint getVertexAttributeFormatSize( VertexAttributeFormat format )

@@ -1,7 +1,6 @@
 #ifndef TIKI_BASEBUFFER_D3D11_HPP__
 #define TIKI_BASEBUFFER_D3D11_HPP__
 
-#include "tiki/base/inline.hpp"
 #include "tiki/base/types.hpp"
 
 #include "graphicstypes_d3d11.hpp"

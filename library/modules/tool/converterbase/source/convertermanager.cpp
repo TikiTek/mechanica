@@ -42,9 +42,9 @@ namespace tiki
 		TaskSystemParameters taskParameters;
 		m_taskSystem.create( taskParameters );
 
-		if ( !directory::exists( m_outputPath ) )
+		if ( !directory::exists( m_outputPath.cStr() ) )
 		{
-			directory::create( m_outputPath );
+			directory::create( m_outputPath.cStr() );
 		}
 
 		const string databaseFileName = path::combine( m_outputPath, "build.sqlite" );

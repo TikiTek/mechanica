@@ -45,7 +45,7 @@ namespace tiki
 		return textSize;
 	}
 
-	void DebugGuiCheckBox::update()
+	void DebugGuiCheckBox::update( double elapsedTime )
 	{
 	}
 

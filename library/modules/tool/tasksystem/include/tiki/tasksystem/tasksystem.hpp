@@ -2,15 +2,15 @@
 #ifndef TIKI_TASKSYSTEM_HPP_INCLUDED__
 #define TIKI_TASKSYSTEM_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/base/queue.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/queue.hpp"
 #include "tiki/tasksystem/task.hpp"
+#include "tiki/threading/event.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/threading/semaphore.hpp"
 #include "tiki/threading/thread.hpp"
-#include "tiki/threading/event.hpp"
 
 namespace tiki
 {

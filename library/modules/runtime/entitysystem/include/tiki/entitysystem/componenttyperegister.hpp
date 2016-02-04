@@ -2,9 +2,9 @@
 #ifndef __TIKI_TYPEREGISTER_HPP_INCLUDED__
 #define __TIKI_TYPEREGISTER_HPP_INCLUDED__
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
+#include "tiki/container/array.hpp"
 
 namespace tiki
 {

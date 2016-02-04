@@ -2,9 +2,9 @@
 #ifndef TIKI_TOOLMODELVERTEXFORMAT_HPP__INCLUDED
 #define TIKI_TOOLMODELVERTEXFORMAT_HPP__INCLUDED
 
-#include "tiki/base/array.hpp"
-#include "tiki/graphics/vertexattribute.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/container/list.hpp"
+#include "tiki/graphics/vertexattribute.hpp"
 
 namespace tiki
 {

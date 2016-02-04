@@ -28,7 +28,7 @@ namespace tiki
 		refreshRectangle();
 	}
 
-	tiki::Vector2 DebugGuiLabel::getMinimumSize()
+	Vector2 DebugGuiLabel::getMinimumSize()
 	{
 		Vector2 textSize;
 		getDefaultFont()->calcuateTextSize( textSize, m_aText, getStringSize( m_aText ) );
@@ -39,7 +39,7 @@ namespace tiki
 	{
 	}
 
-	void DebugGuiLabel::update()
+	void DebugGuiLabel::update( double elapsedTime )
 	{
 	}
 

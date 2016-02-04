@@ -1,13 +1,16 @@
 
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 
-#include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
+
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+#	include "tiki/converterbase/resourcewriter.hpp"
+#endif
 
 namespace tiki
 {
@@ -112,6 +115,7 @@ namespace tiki
 
 	bool GenericDataArray::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		writer.openDataSection( 0u, AllocatorType_MainMemory );
 		dataKey = writer.addDataPoint();
 
@@ -125,6 +129,9 @@ namespace tiki
 		writer.closeDataSection();
 
 		return ok;
+#else
+		return false;
+#endif
 	}
 
 	const char* GenericDataArray::getElementName() const

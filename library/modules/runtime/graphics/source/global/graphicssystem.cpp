@@ -112,7 +112,7 @@ namespace tiki
 		return createBlendState( creationParameters );
 	}
 
-	void GraphicsSystem::disposeBlendState( const BlendState* pBlendState )
+	void GraphicsSystem::disposeBlendState( const BlendState*& pBlendState )
 	{
 		if ( pBlendState == nullptr )
 		{
@@ -124,6 +124,8 @@ namespace tiki
 		{
 			pNonConstState->dispose();
 		}
+
+		pBlendState = nullptr;
 	}
 
 	const DepthStencilState* GraphicsSystem::createDepthStencilState( const DepthStencilStateParamters& creationParameters )
@@ -149,7 +151,7 @@ namespace tiki
 		return createDepthStencilState( creationParameters );
 	}
 
-	void GraphicsSystem::disposeDepthStencilState( const DepthStencilState* pDepthStencilState )
+	void GraphicsSystem::disposeDepthStencilState( const DepthStencilState*& pDepthStencilState )
 	{
 		if ( pDepthStencilState == nullptr )
 		{
@@ -161,6 +163,8 @@ namespace tiki
 		{
 			pNonConstState->dispose( *this );
 		}
+
+		pDepthStencilState = nullptr;
 	}
 
 	const RasterizerState* GraphicsSystem::createRasterizerState( const RasterizerStateParamters& creationParameters )
@@ -187,7 +191,7 @@ namespace tiki
 		return createRasterizerState( creationParameters );
 	}
 
-	void GraphicsSystem::disposeRasterizerState( const RasterizerState* pRasterizerState )
+	void GraphicsSystem::disposeRasterizerState( const RasterizerState*& pRasterizerState )
 	{
 		if ( pRasterizerState == nullptr )
 		{
@@ -199,6 +203,8 @@ namespace tiki
 		{
 			pNonConstState->dispose( *this );
 		}
+
+		pRasterizerState = nullptr;
 	}
 
 	const SamplerState* GraphicsSystem::createSamplerState( const SamplerStateParamters& creationParameters )
@@ -229,7 +235,7 @@ namespace tiki
 		return createSamplerState( creationParameters );
 	}
 
-	void GraphicsSystem::disposeSamplerState( const SamplerState* pSamplerState )
+	void GraphicsSystem::disposeSamplerState( const SamplerState*& pSamplerState )
 	{
 		if ( pSamplerState == nullptr )
 		{
@@ -241,6 +247,8 @@ namespace tiki
 		{
 			pNonConstState->dispose( *this );
 		}
+
+		pSamplerState = nullptr;
 	}
 
 	const VertexFormat* GraphicsSystem::createVertexFormat( const VertexFormatParameters& creationParameters )
@@ -266,7 +274,7 @@ namespace tiki
 		return createVertexFormat( creationParameters );
 	}
 
-	void GraphicsSystem::disposeVertexFormat( const VertexFormat* pVertexFormat )
+	void GraphicsSystem::disposeVertexFormat( const VertexFormat*& pVertexFormat )
 	{
 		if ( pVertexFormat == nullptr )
 		{
@@ -278,12 +286,16 @@ namespace tiki
 		{
 			pNonConst->dispose();
 		}
+
+		pVertexFormat = nullptr;
 	}
 
 	const VertexInputBinding* GraphicsSystem::createVertexInputBinding( const VertexInputBindingParameters& parameters )
 	{
-		TIKI_ASSERT( parameters.pShader != nullptr );
-		TIKI_ASSERT( parameters.pVertexFormat != nullptr );
+		if( parameters.pShader == nullptr || parameters.pVertexFormat == nullptr )
+		{
+			return nullptr;
+		}
 
 		const uint32 hashData[]	= { parameters.pShader->getShaderHash(), parameters.pVertexFormat->getHashValue() };
 		const crc32 hashValue	= crcBytes( hashData, sizeof( hashData ) );
@@ -312,7 +324,7 @@ namespace tiki
 		return createVertexInputBinding( parameters );
 	}
 
-	void GraphicsSystem::disposeVertexInputBinding( const VertexInputBinding* pVertexInputBinding )
+	void GraphicsSystem::disposeVertexInputBinding( const VertexInputBinding*& pVertexInputBinding )
 	{
 		if ( pVertexInputBinding == nullptr )
 		{
@@ -324,6 +336,8 @@ namespace tiki
 		{
 			pNonConst->dispose( *this );
 		}
+
+		pVertexInputBinding = nullptr;
 	}
 
 	const VertexFormat* GraphicsSystem::getStockVertexFormat( StockVertexFormat format ) const

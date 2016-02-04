@@ -6,6 +6,7 @@
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/graphicsrenderermode.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 #include "tiki/graphics/graphicsstateobjectcollection.hpp"
 #include "tiki/graphics/rasterizerstate.hpp"
@@ -29,13 +30,6 @@
 
 namespace tiki
 {
-	enum GraphicsRendererMode
-	{
-		GraphicsRendererMode_Hardware,
-		GraphicsRendererMode_Software,
-		GraphicsRendererMode_Wrapper,
-	};
-
 	enum StockVertexFormat
 	{
 		StockVertexFormat_Pos2,
@@ -82,27 +76,27 @@ namespace tiki
 
 		const BlendState*			createBlendState( const BlendStateParamters& creationParameters );
 		const BlendState*			createBlendState( bool blendEnabled, Blend sourceBlend = Blend_One, Blend destinationBlend = Blend_Zero, BlendOperation operation = BlendOperation_Add, ColorWriteMask colorWriteMask = ColorWriteMask_All );
-		void						disposeBlendState( const BlendState* pBlendState );
+		void						disposeBlendState( const BlendState*& pBlendState );
 
 		const DepthStencilState*	createDepthStencilState( const DepthStencilStateParamters& creationParameters );
 		const DepthStencilState*	createDepthStencilState( bool depthEnbaled, bool depthWriteEnabled );
-		void						disposeDepthStencilState( const DepthStencilState* pDepthStencilState );
+		void						disposeDepthStencilState( const DepthStencilState*& pDepthStencilState );
 
 		const RasterizerState*		createRasterizerState( const RasterizerStateParamters& creationParameters );
 		const RasterizerState*		createRasterizerState( FillMode fillMode = FillMode_Solid, CullMode cullMode = CullMode_Back, WindingOrder windingOrder = WindingOrder_Clockwise );
-		void						disposeRasterizerState( const RasterizerState* pRasterizerState );
+		void						disposeRasterizerState( const RasterizerState*& pRasterizerState );
 
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
 		const SamplerState*			createSamplerState( AddressMode addressU = AddressMode_Clamp, AddressMode addressV = AddressMode_Clamp, AddressMode addressW = AddressMode_Clamp, FilterMode magFilter = FilterMode_Linear, FilterMode mipFilter = FilterMode_Linear, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
-		void						disposeSamplerState( const SamplerState* pSamplerState );
+		void						disposeSamplerState( const SamplerState*& pSamplerState );
 
 		const VertexFormat*			createVertexFormat( const VertexFormatParameters& creationParameters );
 		const VertexFormat*			createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
-		void						disposeVertexFormat( const VertexFormat* pVertexFormat );
+		void						disposeVertexFormat( const VertexFormat*& pVertexFormat );
 
 		const VertexInputBinding*	createVertexInputBinding( const VertexInputBindingParameters& parameters );
 		const VertexInputBinding*	createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat );
-		void						disposeVertexInputBinding( const VertexInputBinding* pVertexInputBinding );
+		void						disposeVertexInputBinding( const VertexInputBinding*& pVertexInputBinding );
 
 		const VertexFormat*			getStockVertexFormat( StockVertexFormat format ) const;
 

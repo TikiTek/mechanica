@@ -32,6 +32,15 @@ int main( int argc, char** argv )
 
 namespace tiki
 {
+	void platform::getUserName( char* pBuffer, uint bufferSize )
+	{
+		wchar_t aUserNameWideCharBuffer[ 128u ];
+		DWORD length = TIKI_COUNT( aUserNameWideCharBuffer );
+		GetUserNameW( aUserNameWideCharBuffer, &length );
+
+		convertWidecharToUtf8String( pBuffer, bufferSize, aUserNameWideCharBuffer );
+	}
+
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 	InstanceHandle platform::getInstanceHandle()
 	{

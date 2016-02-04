@@ -6,19 +6,6 @@
 
 namespace tiki
 {
-	void* xmlAlloc(size_t _bytes, void* pUserData)
-	{
-		XmlReader* pXml	= static_cast< XmlReader* >( pUserData );
-		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
-
-		return pXml->m_pData;
-	}
-
-	void xmlErrorHandler( const char* _errorMessage, const char* _begin, const char* _current )
-	{
-		TIKI_TRACE_ERROR( _errorMessage );
-	}
-
 	XmlReader::XmlReader()
 	{
 		m_pNode			= nullptr;
@@ -42,8 +29,8 @@ namespace tiki
 		m_pNode = xml_create(
 			(const char*)data.getBegin(),
 			(const char*)data.getEnd(),
-			xmlErrorHandler,
-			xmlAlloc,
+			&errorHandler,
+			&allocateMemory,
 			nullptr,
 			this
 		);
@@ -107,5 +94,23 @@ namespace tiki
 		xml_element_find_elements( (XmlElement*)pElement, pName, (XmlElement**)targetList.getBegin(), (XmlElement**)targetList.end() );
 
 		return targetList.getCount();
+	}
+
+	/*static*/ void* XmlReader::allocateMemory( ::size_t _bytes, void* pUserData )
+	{
+		XmlReader* pXml	= static_cast<XmlReader*>(pUserData);
+		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
+
+		if( pXml->m_pData == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[xml] Inable to allocate memory for XmlReader!\n" );
+		}
+
+		return pXml->m_pData;
+	}
+
+	/*static*/ void XmlReader::errorHandler( const char* pErrorMessage, const char* pBegin, const char* pCurrent )
+	{
+		TIKI_TRACE_ERROR( pErrorMessage );
 	}
 }

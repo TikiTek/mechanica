@@ -1,27 +1,28 @@
 -- local/game
 
-local game = Module:new( "game" );
+local module = Module:new( "game" );
 
-game:add_files( "source/*.cpp" );
-game:add_files( "include/**/*.hpp" );
-game:add_include_dir( "include" );
+module:add_files( "source/*.cpp" );
+module:add_files( "include/**/*.hpp" );
+module:add_files( "game.lua" );
+module:add_include_dir( "include" );
 
-game:add_dependency( "config" );
-game:add_dependency( "base" );
-game:add_dependency( "framework" );
-game:add_dependency( "gameflowsystem" );
-game:add_dependency( "gamestates" );
-game:add_dependency( "genericdata" );
+module:add_dependency( "config" );
+module:add_dependency( "base" );
+module:add_dependency( "gameapplication" );
+module:add_dependency( "gameflowsystem" );
+module:add_dependency( "gamestates" );
+module:add_dependency( "genericdata" );
 
-game:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
+module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 
-game:add_library_file( "converterlibrary" );
-game:add_library_file( "webinterfacelibrary" );
+module:add_library_file( "converterlibrary" );
+module:add_library_file( "webinterfacelibrary" );
 
 local game_project = Project:new(
 	"game",
 	{ "x32", "x64" },
 	{ "Debug", "Release", "Master" },
-	game,
+	module,
 	ProjectTypes.windowApplication
 );

@@ -10,6 +10,7 @@ module:add_files( "MachineIndependent/*.*" );
 module:add_files( "MachineIndependent/preprocessor/*.*" );
 module:add_files( "Public/*.*" );
 module:add_files( "OGLCompilersDLL/*.*" );
+module:add_files( "glslang.lua" );
 module:add_include_dir( "Public" );
 module:add_include_dir( "MachineIndependent" );
 module:add_include_dir( "OGLCompilersDLL" );

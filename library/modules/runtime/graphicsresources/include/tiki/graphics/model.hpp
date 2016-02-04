@@ -3,7 +3,7 @@
 
 #include "tiki/resource/resource.hpp"
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/modelhierarchy.hpp"
 #include "tiki/graphics/modelgeometry.hpp"
 

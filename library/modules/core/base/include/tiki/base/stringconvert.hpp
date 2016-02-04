@@ -1,7 +1,10 @@
 #pragma once
 
 #include "tiki/base/string.hpp"
+
 #include <stdio.h>
+#include <cstdlib>
+#include <math.h>
 
 namespace tiki
 {
@@ -55,13 +58,14 @@ namespace tiki
 		static string sintegerToString(TInt value)
 		{
 			uint32 len = 0;
-			TInt val = (TInt)abs((sint32)value);
+			sint32 valAbs = abs( (sint32)value );
+			TInt val = valAbs;
 
 			if (value < 0)
 				len++;
 
 			if (value == 0)
-				return string::numberZero;
+				return "0";
 
 			TInt i = 1;
 			TInt i2 = i;
@@ -107,7 +111,7 @@ namespace tiki
 		static string floatToString(TFloat value)
 		{
 			char buffer[ 64u ];
-			_snprintf_s((char*)buffer, 64, 64, "%f", value);
+			sprintf( buffer, "%f", value);
 
 			return string(buffer);
 		}

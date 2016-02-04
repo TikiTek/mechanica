@@ -182,7 +182,7 @@ namespace tiki
 		return false;
 	}
 
-	bool FileWatcher::waitForEvent( uint timeOut /*= TimeOutInfinity */ )
+	bool FileWatcher::waitForEvent( timems timeOut /* = TIKI_TIME_OUT_INFINITY */ )
 	{
 		ULONG_PTR key;
 		OVERLAPPED* pOverlapped;

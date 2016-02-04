@@ -3,15 +3,17 @@
 #define __TIKI_RENDEREFFECTSYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/fixedarray.hpp"
+#include "tiki/container/fixedarray.hpp"
 
 #include "renderer.hpp"
 
 namespace tiki
 {
 	class GraphicsContext;
+	class GraphicsSystem;
 	class RenderBatch;
 	class RenderEffect;
+	class ResourceRequestPool;
 	struct FrameData;
 	struct RendererContext;
 
@@ -25,6 +27,7 @@ namespace tiki
 		~RenderEffectSystem();
 
 		bool			create( const RendererContext& rendererContext );
+		bool			createShaderResourcees( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
 		void			dispose();
 
 		void			registerRenderEffect( RenderEffect* pRenderEffect );

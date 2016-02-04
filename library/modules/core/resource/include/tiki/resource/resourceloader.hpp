@@ -2,7 +2,7 @@
 #ifndef __TIKI_RESOURCELOADER_HPP_INCLUDED__
 #define __TIKI_RESOURCELOADER_HPP_INCLUDED__
 
-#include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/resource/resourcedefinition.hpp"
@@ -46,7 +46,7 @@ namespace tiki
 			void					registerResourceType( fourcc type, const FactoryContext& factoryContext );
 			void					unregisterResourceType( fourcc type );
 
-			ResourceLoaderResult	loadResource( Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
+			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 
 			ResourceLoaderResult	reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );

@@ -23,13 +23,13 @@ namespace tiki
 		Event();
 		~Event();
 
-		void	create( bool initialState = false, bool manualReset = false, const char* pName = nullptr );
+		bool	create( bool initialState = false, bool manualReset = false, const char* pName = nullptr );
 		void	dispose();
 
 		void	signal();
 		void	reset();
 
-		bool	waitForSignal( uint timeOut = TimeOutInfinity );
+		bool	waitForSignal( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 	private:
 

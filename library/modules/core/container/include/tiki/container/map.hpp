@@ -2,8 +2,7 @@
 #ifndef TIKI_MAP_HPP_INCLUDED__
 #define TIKI_MAP_HPP_INCLUDED__
 
-#include "tiki/base/inline.hpp"
-#include "tiki/base/keyvaluepair.hpp"
+#include "tiki/container/keyvaluepair.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki

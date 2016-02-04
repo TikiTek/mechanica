@@ -2,7 +2,7 @@
 #define TIKI_GRAPHICSTYPES_HPP__INCLUDED
 
 #if __cplusplus
-#include "tiki/base/inline.hpp"
+#include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 
 #define TIKI_GRAPHICS_NAMESPACE_BEGIN namespace tiki {

@@ -4,7 +4,7 @@
 
 #include "tiki/resource/resource.hpp"
 
-#include "tiki/base/array.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/fontchar.hpp"
 

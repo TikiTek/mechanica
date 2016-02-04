@@ -46,6 +46,7 @@ module:add_files( "src/video/*.c" );
 module:add_files( "src/video/*.h" );
 module:add_files( "src/video/dummy/*.c" );
 module:add_files( "src/video/dummy/*.h" );
+module:add_files( "sdl.lua" );
 
 if is_windows then
 	module:add_files( "src/audio/winmm/*.c" );
@@ -84,6 +85,8 @@ if is_windows then
 	module:add_library_file( "Imm32" );
 	module:add_library_file( "Winmm" );
 	module:add_library_file( "Version" );
+elseif is_linux then
+
 else
 	throw "Platform not implemented"
 end

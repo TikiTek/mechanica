@@ -1,11 +1,11 @@
 
 #include "tiki/shaderconverter/shaderconverter.hpp"
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/stringparse.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
@@ -22,6 +22,8 @@
 //#include "ShaderLang.h"
 #include "fpp.h"
 #include "trexpp.h"
+
+#include <stdarg.h>
 
 namespace tiki
 {
@@ -266,8 +268,8 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, const List< string >& includeDirs )
-            : BasicIncludeHandler( result, includeDirs )
+		ShaderIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
+            : BasicIncludeHandler( result, storage )
 		{
 		}
 	};

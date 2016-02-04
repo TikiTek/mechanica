@@ -4,7 +4,7 @@
 
 #include "tiki/components/component.hpp"
 
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 
 namespace tiki
 {

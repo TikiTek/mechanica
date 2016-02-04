@@ -7,6 +7,8 @@ namespace tiki
 	{
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		return PlatformType_Win;
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+        return PlatformType_Linux;
 #else
 #	error not supported
 #endif
@@ -28,7 +30,6 @@ namespace tiki
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/debug.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/path.hpp"
@@ -57,37 +58,5 @@ namespace tiki
 		return returnValue;
 	}
 }
-
-#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-
-
-
-
-
-#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-
-int main( int argc, const char** argv )
-{
-	return tiki::mainEntryPoint();	
-}
-
-namespace tiki
-{
-	PlatformType getHostPlatform()
-	{
-		return Platform_Linux;
-	}
-
-	InstanceHandle getInstanceHandle()
-	{
-		return nullptr;
-	}
-}
-
-#else
-
-#	error Platform not implemented
-
-#endif
 
 #endif

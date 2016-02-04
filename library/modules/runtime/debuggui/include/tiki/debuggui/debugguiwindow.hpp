@@ -4,7 +4,7 @@
 
 #include "tiki/debuggui/debugguilayout.hpp"
 
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/debuggui/debugguibutton.hpp"
 #include "tiki/math/rectangle.hpp"
@@ -20,14 +20,14 @@ namespace tiki
 
 	public:
 
-		virtual bool	isInHierarchy() const;
+		virtual bool	isInHierarchy() const TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual Vector2	getMinimumSize();
+		virtual Vector2	getMinimumSize() TIKI_OVERRIDE;
 
-		virtual void	update();
-		virtual void	render( ImmediateRenderer& renderer );
+		virtual void	update( double elapsedTime ) TIKI_OVERRIDE;
+		virtual void	render( ImmediateRenderer& renderer ) TIKI_OVERRIDE;
 
-		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
+		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE;
 
 		const char*		getTitle() const;
 
@@ -44,7 +44,7 @@ namespace tiki
 
 		void			setTitle( const char* pTitle );
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE;
 
 		virtual bool	processGuiEvent( const DebugGuiEvent& guiEvent );
 

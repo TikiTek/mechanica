@@ -12,6 +12,16 @@
 
 namespace tiki
 {
+	DebugGui::DebugGui()
+	{
+		m_pDefaultFont = nullptr;
+	}
+
+	DebugGui::~DebugGui()
+	{
+		TIKI_ASSERT( m_pDefaultFont == nullptr );
+	}
+
 	bool DebugGui::create( GraphicsSystem& grahicsSystem, ResourceManager& resourceManager )
 	{
 		if ( !m_renderer.create( grahicsSystem, resourceManager ) )
@@ -81,7 +91,7 @@ namespace tiki
 		m_minimizedLayout.setRectangle( minimizeLayoutRect );
 	}
 
-	void DebugGui::update()
+	void DebugGui::update( double elapsedTime )
 	{
 		if ( !m_isActive )
 		{
@@ -90,10 +100,10 @@ namespace tiki
 
 		for ( LinkedIterator< DebugGuiControl > it = m_windows.getBegin(); it != m_windows.getEnd(); ++it )
 		{
-			it->update();
+			it->update( elapsedTime );
 		}
 
-		m_minimizedLayout.update();
+		m_minimizedLayout.update( elapsedTime );
 	}
 
 	void DebugGui::render( GraphicsContext& graphicsContext )

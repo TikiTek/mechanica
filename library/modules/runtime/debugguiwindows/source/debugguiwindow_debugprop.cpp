@@ -13,7 +13,6 @@
 
 // TODO: delete:
 #include "tiki/base/timer.hpp"
-#include "tiki/framework/framework.hpp"
 
 namespace tiki
 {
@@ -208,12 +207,12 @@ namespace tiki
 		DebugGuiWindow::dispose();
 	}
 
-	void DebugGuiWindowDebugProp::update()
+	void DebugGuiWindowDebugProp::update( double elapsedTime )
 	{
 		if ( m_inputAction != InputAction_Invalid )
 		{
-			m_inputTimer	-= framework::getFrameTimer().getElapsedTime();
-			m_holdTimer		+= framework::getFrameTimer().getElapsedTime();
+			m_inputTimer	-= elapsedTime;
+			m_holdTimer		+= elapsedTime;
 
 			if ( m_inputTimer < 0.0 )
 			{
@@ -279,7 +278,7 @@ namespace tiki
 			}
 		}
 
-		DebugGuiWindow::update();
+		DebugGuiWindow::update( elapsedTime );
 	}
 
 	void DebugGuiWindowDebugProp::render( ImmediateRenderer& renderer )

@@ -3,7 +3,7 @@
 
 #include "tiki/base/debugprop.hpp"
 #include "tiki/base/timer.hpp"
-#include "tiki/framework/framework.hpp"
+#include "tiki/game/game.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/math/rectangle.hpp"
@@ -19,24 +19,28 @@ namespace tiki
 
 	PlayState::PlayState()
 	{
+		m_pGame			= nullptr;
 		m_pParentState	= nullptr;
 		m_pGameRenderer	= nullptr;
 	}
 
 	PlayState::~PlayState()
 	{
+		TIKI_ASSERT( m_pGame			== nullptr );
 		TIKI_ASSERT( m_pParentState		== nullptr );
 		TIKI_ASSERT( m_pGameRenderer	== nullptr );
 	}
 
-	void PlayState::create( ApplicationState* pParentState )
+	void PlayState::create( Game* pGame, ApplicationState* pParentState )
 	{
-		m_pParentState = pParentState;
+		m_pGame			= pGame;
+		m_pParentState	= pParentState;
 	}
 
 	void PlayState::dispose()
 	{
-		m_pParentState = nullptr;
+		m_pGame			= nullptr;
+		m_pParentState	= nullptr;
 	}
 
 	TransitionState PlayState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -49,15 +53,15 @@ namespace tiki
 			if ( isCreating )
 			{
 				PostProcessBloomParameters bloomParameters;	
-				bloomParameters.width		= framework::getGraphicsSystem().getBackBuffer().getWidth() / 2u;
-				bloomParameters.height		= framework::getGraphicsSystem().getBackBuffer().getHeight() / 2u;
+				bloomParameters.width		= m_pGame->getGraphicsSystem().getBackBuffer().getWidth() / 2u;
+				bloomParameters.height		= m_pGame->getGraphicsSystem().getBackBuffer().getHeight() / 2u;
 				bloomParameters.passCount	= 6u;
-				if ( !m_bloom.create( framework::getGraphicsSystem(), framework::getResourceManager(), bloomParameters ) )
+				if ( !m_bloom.create( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager(), bloomParameters ) )
 				{
 					return TransitionState_Error;
 				}
 
-				if ( !m_immediateRenderer.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+				if ( !m_immediateRenderer.create( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() ) )
 				{
 					return TransitionState_Error;
 				}
@@ -66,9 +70,9 @@ namespace tiki
 			}
 			else
 			{
-				m_bloom.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+				m_bloom.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 
-				m_immediateRenderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+				m_immediateRenderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 
 				return TransitionState_Finish;
 			}
@@ -84,7 +88,7 @@ namespace tiki
 					return TransitionState_Error;
 				}
 
-				if( !m_gameSession.create( m_gameClient, framework::getResourceManager() ) )
+				if( !m_gameSession.create( m_gameClient, m_pGame->getResourceManager() ) )
 				{
 					return TransitionState_Error;
 				}
@@ -93,7 +97,7 @@ namespace tiki
 			}
 			else
 			{
-				m_gameSession.dispose( framework::getResourceManager() );
+				m_gameSession.dispose( m_pGame->getResourceManager() );
 				m_gameClient.dispose();
 
 				return TransitionState_Finish;
@@ -131,8 +135,8 @@ namespace tiki
 
 	void PlayState::update()
 	{
-		const float timeDelta = float( framework::getFrameTimer().getElapsedTime() );
-		const float totalGameTime = float( framework::getFrameTimer().getTotalTime() );
+		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
+		const float totalGameTime = float( m_pGame->getFrameTimer().getTotalTime() );
 
 		FrameData& frameData = m_pGameRenderer->getFrameData();
 
@@ -200,14 +204,14 @@ namespace tiki
 		if ( windowEvent.type == WindowEventType_SizeChanged )
 		{
 			const bool ok = m_bloom.resize(
-				framework::getGraphicsSystem(),
+				m_pGame->getGraphicsSystem(),
 				windowEvent.data.sizeChanged.size.x / 2u,
 				windowEvent.data.sizeChanged.size.y / 2u
 			);
 
 			if ( !ok )
 			{
-				m_bloom.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+				m_bloom.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 			}
 		}
 	}

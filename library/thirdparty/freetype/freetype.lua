@@ -5,6 +5,7 @@ local module = Module:new( "freetype" );
 module.module_type = ModuleTypes.UnityCModule;
 
 module:add_files( "include/*.h" );
+module:add_files( "freetype.lua" );
 module:add_include_dir( "include" );
 
 module:add_files( "src/autofit/autofit.c" );
@@ -45,10 +46,14 @@ module:add_files( "src/truetype/truetype.c" );
 module:add_files( "src/type1/type1.c" );
 module:add_files( "src/type42/type42.c" );
 module:add_files( "src/winfonts/winfnt.c" );
-module:add_files( "builds/win32/ftdebug.c" );
 module:add_files( "src/zerror.c" );
+
+if is_windows then
+	module:add_files( "builds/win32/ftdebug.c" );
+end
 
 module:set_define( "FT2_BUILD_LIBRARY", "1" );
 module:set_define( "FT_DEBUG_LEVEL_ERROR", "1" );
 module:set_define( "FT_DEBUG_LEVEL_TRACE", "1" );
 module:set_define( "_CRT_SECURE_NO_WARNINGS" );
+

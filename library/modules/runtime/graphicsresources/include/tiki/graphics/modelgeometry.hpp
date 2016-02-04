@@ -1,7 +1,7 @@
 #ifndef TIKI_MODELGEOMETRY_HPP__
 #define TIKI_MODELGEOMETRY_HPP__
 
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexattribute.hpp"

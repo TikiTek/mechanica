@@ -2,7 +2,7 @@
 #include "tiki/gamestates/basicteststate.hpp"
 
 #include "tiki/base/timer.hpp"
-#include "tiki/framework/framework.hpp"
+#include "tiki/game/game.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
@@ -12,14 +12,30 @@
 
 namespace tiki
 {
-	void BasicTestState::create()
+	BasicTestState::BasicTestState()
 	{
+		m_pGame = nullptr;
+	}
+
+	BasicTestState::~BasicTestState()
+	{
+		TIKI_ASSERT( m_pGame == nullptr );
+	}
+
+	void BasicTestState::create( Game* pGame )
+	{
+		TIKI_ASSERT( pGame != nullptr );
+		TIKI_ASSERT( m_pGame == nullptr );
+
+		m_pGame			= pGame;
+
 		m_pTestTexture	= nullptr;
 		m_pTestFont		= nullptr;
 	}
 
 	void BasicTestState::dispose()
 	{
+		m_pGame = nullptr;
 	}
 
 	TransitionState BasicTestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -32,14 +48,14 @@ namespace tiki
 
 				if ( isCreating )
 				{
-					if ( !m_renderer.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+					if( !m_renderer.create( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() ) )
 					{
 						return TransitionState_Error;
 					}
 				}
 				else
 				{
-					m_renderer.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+					m_renderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 				}
 			}
 			break;
@@ -50,8 +66,8 @@ namespace tiki
 
 				if ( isCreating )
 				{
-					m_pTestTexture = framework::getResourceManager().loadResource< Texture >( "checker.texture" );
-					m_pTestFont = framework::getResourceManager().loadResource< Font >( "debug.font" );
+					m_pTestTexture = m_pGame->getResourceManager().loadResource< Texture >( "checker.texture" );
+					m_pTestFont = m_pGame->getResourceManager().loadResource< Font >( "debug.font" );
 
 					bool ok = true;
 					ok &= ( m_pTestTexture != nullptr );
@@ -64,8 +80,8 @@ namespace tiki
 				}
 				else
 				{
-					framework::getResourceManager().unloadResource( m_pTestTexture );
-					framework::getResourceManager().unloadResource( m_pTestFont );
+					m_pGame->getResourceManager().unloadResource( m_pTestTexture );
+					m_pGame->getResourceManager().unloadResource( m_pTestFont );
 					m_pTestTexture	= nullptr;
 					m_pTestFont		= nullptr;
 				}
@@ -92,7 +108,7 @@ namespace tiki
 			TIKI_COLOR_PURPLE,
 			TIKI_COLOR_ORANGE
 		};
-		const uint colorIndex = uint( framework::getFrameTimer().getTotalTime() / 5.0 );
+		const uint colorIndex = uint( m_pGame->getFrameTimer().getTotalTime() / 5.0 );
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), aColors[ colorIndex % TIKI_COUNT( aColors ) ] );
 
@@ -113,5 +129,4 @@ namespace tiki
 	{
 		return false;
 	}
-
 }

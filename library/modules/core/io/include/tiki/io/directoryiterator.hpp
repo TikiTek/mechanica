@@ -20,15 +20,17 @@ namespace tiki
 
 	public:
 
-					DirectoryIterator();
-					~DirectoryIterator();
+						DirectoryIterator();
+						~DirectoryIterator();
 
-		bool		create( const char* pPath );
-		void		dispose();
+		bool			create( const char* pPath );
+		void			dispose();
 
-		bool		findNextFile();
+		bool			findNextFile();
 
-		const char*	getCurrentFileName() const;
+		bool			isCurrentFile() const;
+		bool			isCurrentDirectory() const;
+		const char*		getCurrentFileName() const;
 
 	private:
 

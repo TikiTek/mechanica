@@ -5,8 +5,11 @@ local module = Module:new( "genericdata" );
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
 module:add_files( path.join( global_configuration.root_path, "content/genericdata/types/*.*" ) );
+module:add_files( "genericdata.lua" );
 module:add_include_dir( "include" );
 
+module:add_dependency( "base" );
+module:add_dependency( "container" );
 module:add_dependency( "resource" );
 
 module.import_func = function(project)
@@ -15,7 +18,8 @@ module.import_func = function(project)
 	includedirs( { output_path } );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
 	
-	local exe_path = path.join( global_configuration.root_path, "library/buildtools/genericdatacodegenerator/genericdatacodegenerator.exe" );
+	local exe_name = iff(is_windows, "genericdatacodegenerator.exe", "genericdatacodegenerator");
+	local exe_path = path.join( global_configuration.root_path, "library/buildtools/genericdatacodegenerator/" .. exe_name );
 	local content_path = path.join( global_configuration.root_path, "content" );
 	local arguments = "--content-dir=" .. content_path .. " --target-dir=" .. output_path;
 	local command_line = exe_path .. " " .. arguments;

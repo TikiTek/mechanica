@@ -4,6 +4,7 @@ local module = Module:new( "particle" );
 
 module:add_files( "include/**/*.*" );
 module:add_files( "source/*.*" );
+module:add_files( "particle.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "base" );

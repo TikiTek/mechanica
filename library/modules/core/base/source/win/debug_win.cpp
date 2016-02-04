@@ -21,10 +21,6 @@ namespace tiki
 		if ( !debug::isDebuggerActive() )
 		{
 			printf( pText );
-
-			//FILE* pFile = fopen( "debug.log", "a" );
-			//fwrite( pText, strlen( pText ), 1u, pFile );
-			//fclose( pFile );
 		}
 	}
 
@@ -61,6 +57,9 @@ namespace tiki
 		_CrtMemState memState;
 		_CrtMemCheckpoint( &memState );
 
+		debug::nativeTrace( "\nMemory Stats:\n\n" );
+		_CrtMemDumpStatistics( &memState );
+
 		debug::nativeTrace( "\nMemory Leaks:\n\n" );
 
 		if ( memState.lCounts[ 1u ] == 0u )
@@ -72,8 +71,6 @@ namespace tiki
 			_CrtDumpMemoryLeaks();
 		}
 
-		debug::nativeTrace( "\nMemory Stats:\n\n" );
-		_CrtMemDumpStatistics( &memState );
 		debug::nativeTrace( "\n" );
 #endif
 	}

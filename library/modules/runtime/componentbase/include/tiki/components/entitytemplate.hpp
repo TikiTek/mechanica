@@ -3,7 +3,7 @@
 #define __TIKI_ENTITYTEMPLATE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/staticarray.hpp"
 
 namespace tiki
 {

@@ -2,9 +2,9 @@
 #ifndef __TIKI_FILESYSTEMWATCHER_HPP_INCLUDED__
 #define __TIKI_FILESYSTEMWATCHER_HPP_INCLUDED__
 
-#include "tiki/base/queue.hpp"
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/queue.hpp"
 #include "tiki/threading/mutex.hpp"
 #include "tiki/threading/thread.hpp"
 
@@ -47,7 +47,7 @@ namespace tiki
 		void	dispose();
 
 		bool	popEvent( FileWatcherEvent& fileEvent );
-		bool	waitForEvent( uint timeOut = TimeOutInfinity );
+		bool	waitForEvent( timems timeOut = TIKI_TIME_OUT_INFINITY );
 		
 	private:
 

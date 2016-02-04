@@ -1,6 +1,7 @@
 
 #include "tiki/game/game.hpp"
 
+#include "tiki/base/timer.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/gamestates/basicteststate.hpp"
 #include "tiki/gamestates/creditsstate.hpp"
@@ -8,8 +9,6 @@
 #include "tiki/gamestates/menustate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
-
-#include <windows.h>
 
 namespace tiki
 {
@@ -27,12 +26,12 @@ namespace tiki
 	static GameStates getStartState()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		char buffer[ 32u ];
-		DWORD length = sizeof( buffer );
-		GetUserNameA( buffer, &length );
+		char userName[ 32u ];
+		platform::getUserName( userName, TIKI_COUNT( userName ) );
 
-		const string userName = buffer;
-		if ( userName == "Tim" || userName == "tim.boden" || userName == "mail" )
+		if ( isStringEquals( userName, "Tim") ||
+			 isStringEquals( userName, "tim.boden" ) ||
+			 isStringEquals( userName, "mail" ) )
 		{
 			return GameStates_Test;
 			//return GameStates_BasicTest;
@@ -43,7 +42,7 @@ namespace tiki
 		return GameStates_Play;
 	}
 
-	void Game::fillParameters( GameFrameworkParamters& parameters )
+	void Game::fillGameParameters( GameApplicationParamters& parameters )
 	{
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
@@ -62,14 +61,19 @@ namespace tiki
 
 	bool Game::initializeGame()
 	{
-		m_factories.create( framework::getResourceManager(), framework::getGraphicsSystem() );
+		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
+		ResourceManager& resourceManager	= getResourceManager();
+
+		m_resourceRequestPool.create( resourceManager );
+		m_immediateRenderer.create( graphicsSystem, resourceManager );
 
 		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
-		m_pStates->applicationState.create();
+		m_pStates->applicationState.create( this );
 		m_pStates->introState.create( &m_pStates->applicationState );
-		m_pStates->playState.create( &m_pStates->applicationState );
-		m_pStates->testState.create( &m_pStates->applicationState );
-		m_pStates->basicTestState.create();
+		m_pStates->menuState.create( this, &m_pStates->applicationState );
+		m_pStates->playState.create( this, &m_pStates->applicationState );
+		m_pStates->testState.create( this, &m_pStates->applicationState );
+		m_pStates->basicTestState.create( this );
 
 		GameStateDefinition gameDefinition[] =
 		{
@@ -87,7 +91,7 @@ namespace tiki
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
 
-		if ( !m_touchSystem.create( framework::getGraphicsSystem(), framework::getResourceManager() ) )
+		if ( !m_touchSystem.create( graphicsSystem, resourceManager ) )
 		{
 			return false;
 		}
@@ -97,7 +101,10 @@ namespace tiki
 
 	void Game::shutdownGame()
 	{
-		m_touchSystem.dispose( framework::getGraphicsSystem(), framework::getResourceManager() );
+		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
+		ResourceManager& resourceManager	= getResourceManager();
+
+		m_touchSystem.dispose( graphicsSystem, resourceManager );
 
 		if ( m_gameFlow.isCreated() )
 		{
@@ -129,21 +136,25 @@ namespace tiki
 
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
+
+		m_immediateRenderer.dispose( graphicsSystem, resourceManager );
+		m_resourceRequestPool.dispose();
 	}
 
-	void Game::update( bool wantToShutdown )
+	void Game::updateGame( bool wantToShutdown )
 	{
 		if ( wantToShutdown )
 		{
 			m_gameFlow.startTransition( 0u );
 		}
 
-		m_touchSystem.update( (float)framework::getFrameTimer().getElapsedTime(), framework::getGraphicsSystem() );
+		m_touchSystem.update( (float)getFrameTimer().getElapsedTime(), getGraphicsSystem() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
-			processInputEvent( m_touchSystem.getInputEventByIndex( i ) );
+			processGameInputEvent( m_touchSystem.getInputEventByIndex( i ) );
 		} 
 
+		m_resourceRequestPool.update();
 		m_gameFlow.update();
 
 		if ( !m_gameFlow.isInTransition() && m_gameFlow.getCurrentState() == 0u )
@@ -152,14 +163,14 @@ namespace tiki
 		}
 	}
 
-	void Game::render( GraphicsContext& graphicsContext ) const
+	void Game::renderGame( GraphicsContext& graphicsContext ) const
 	{
 		m_gameFlow.render( graphicsContext );
 
 		m_touchSystem.render( graphicsContext );
 	}
 
-	bool Game::processInputEvent( const InputEvent& inputEvent )
+	bool Game::processGameInputEvent( const InputEvent& inputEvent )
 	{
 		if ( m_touchSystem.processInputEvent( inputEvent ) )
 		{
@@ -181,12 +192,12 @@ namespace tiki
 		return m_gameFlow.processInputEvent( inputEvent );
 	}
 
-	void Game::processWindowEvent( const WindowEvent& windowEvent )
+	void Game::processGameWindowEvent( const WindowEvent& windowEvent )
 	{
 		m_gameFlow.processWindowEvent( windowEvent );
 	}
 	
-	GameFramework& framework::getGame()
+	GameApplication& framework::getGame()
 	{
 		static Game game;
 		return game;

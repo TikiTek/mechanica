@@ -8,7 +8,6 @@
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/postskybox.hpp"
@@ -21,6 +20,7 @@ namespace tiki
 	class Animation;
 	class ApplicationState;
 	class Font;
+	class Game;
 	class GameRenderer;
 	class Model;
 	class Texture;
@@ -37,22 +37,27 @@ namespace tiki
 
 	class TestState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( TestState );
+		TIKI_NONCOPYABLE_CLASS( TestState );
 
-	public:								
+	public:
 
-		void					create( ApplicationState* pParentState );
+								TestState();
+		virtual					~TestState();
+
+		void					create( Game* pGame, ApplicationState* pParentState );
 		void					dispose();
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
+		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void			update();
-		virtual void			render( GraphicsContext& graphicsContext );
+		virtual void			update() TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent );
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 		
+		Game*						m_pGame;
 		ApplicationState*			m_pParentState;
 
 		const Font*					m_pFont;
@@ -68,7 +73,6 @@ namespace tiki
 		SkinningData				m_skinningData;
 
 		GameRenderer*				m_pGameRenderer;
-		ImmediateRenderer			m_immediateRenderer;
 		FreeCamera					m_freeCamera;
 
 		DebugGuiTestWindow			m_testWindow;

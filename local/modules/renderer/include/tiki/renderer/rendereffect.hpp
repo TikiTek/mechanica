@@ -10,7 +10,7 @@ namespace tiki
 {
 	class GraphicsContext;
 	class GraphicsSystem;
-	class ResourceManager;
+	class ResourceRequestPool;
 	struct FrameData;
 	struct RenderSequence;
 	struct RendererContext;
@@ -24,18 +24,20 @@ namespace tiki
 								RenderEffect();
 		virtual					~RenderEffect();
 
-		bool					create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
-		void					dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
-
-		virtual RenderEffectId	getRenderEffectId() const = 0;
+		bool					create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
+		bool					createShaderResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
+		void					dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
+		
+		virtual RenderEffectId	getRenderEffectId() const TIKI_PURE;
 
 		void					setFrameData( const FrameData& frameData );
 		void					executeRenderSequences( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount );
 
 	protected:
 
-		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager ) = 0;
-		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager ) = 0;
+		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_PURE;
+		virtual bool			createShaderResourcesInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) { return true; }
+		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_PURE;
 
 		virtual void			executeRenderSequencesInternal( GraphicsContext& graphisContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext ) = 0;
 

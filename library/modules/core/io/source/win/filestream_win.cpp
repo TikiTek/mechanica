@@ -13,13 +13,13 @@ namespace tiki
 	{
 		struct 
 		{
-			LONG	highLong;
 			LONG	lowLong;
+			LONG	highLong;
 		}; 
 		struct 
 		{
-			DWORD	highDoubleWord;
 			DWORD	lowDoubleWord;
+			DWORD	highDoubleWord;
 		}; 
 		FileSize	size;
 		FileOffset	offset;
@@ -53,12 +53,12 @@ namespace tiki
 
 	FileStream::FileStream()
 	{
-		m_fileHandle = INVALID_HANDLE_VALUE;
+		m_platformData.fileHandle = INVALID_HANDLE_VALUE;
 	}
 
 	FileStream::~FileStream()
 	{
-		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
+		TIKI_ASSERT( m_platformData.fileHandle == INVALID_HANDLE_VALUE );
 	}
 
 	bool FileStream::create( const char* pFileName, DataAccessMode accessMode )
@@ -66,31 +66,33 @@ namespace tiki
 		wchar_t finalPath[ TIKI_MAX_PATH ];
 		convertToPlatformPath( finalPath, TIKI_COUNT( finalPath ), pFileName );
 
-		TIKI_ASSERT( m_fileHandle == INVALID_HANDLE_VALUE );
-		m_fileHandle = CreateFileW( finalPath, s_accessMapping[ accessMode ], 0u, nullptr, s_creationMapping[ accessMode ], FILE_ATTRIBUTE_NORMAL, nullptr );
+		TIKI_ASSERT( m_platformData.fileHandle == INVALID_HANDLE_VALUE );
+		m_platformData.fileHandle = CreateFileW( finalPath, s_accessMapping[ accessMode ], 0u, nullptr, s_creationMapping[ accessMode ], FILE_ATTRIBUTE_NORMAL, nullptr );
 
-		return m_fileHandle != INVALID_HANDLE_VALUE;
+		return m_platformData.fileHandle != INVALID_HANDLE_VALUE;
 	}
 
 	void FileStream::dispose()
 	{
-		if ( m_fileHandle != INVALID_HANDLE_VALUE )
+		if ( m_platformData.fileHandle != INVALID_HANDLE_VALUE )
 		{
-			CloseHandle( m_fileHandle );
-			m_fileHandle = INVALID_HANDLE_VALUE;
+			CloseHandle( m_platformData.fileHandle );
+			m_platformData.fileHandle = INVALID_HANDLE_VALUE;
 		}
 	}
 
 	bool FileStream::isOpen() const
 	{
-		return m_fileHandle != INVALID_HANDLE_VALUE;
+		return m_platformData.fileHandle != INVALID_HANDLE_VALUE;
 	}
 
 	FileSize FileStream::read( void* pTargetData, FileSize bytesToRead ) const
 	{
+		TIKI_ASSERT( isOpen() );
+
 		DWORD bytesRead = 0u;
 		
-		if ( ReadFile( m_fileHandle, pTargetData, DWORD( bytesToRead ), &bytesRead, nullptr ) )
+		if ( ReadFile( m_platformData.fileHandle, pTargetData, DWORD( bytesToRead ), &bytesRead, nullptr ) )
 		{
 			return bytesRead;
 		}
@@ -100,50 +102,61 @@ namespace tiki
 
 	FileSize FileStream::write( const void* pSourceData, FileSize bytesToWrite )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		DWORD bytesWritten = 0u;
-		TIKI_VERIFY( WriteFile( m_fileHandle, pSourceData, DWORD( bytesToWrite ), &bytesWritten, nullptr ) );
+		TIKI_VERIFY( WriteFile( m_platformData.fileHandle, pSourceData, DWORD( bytesToWrite ), &bytesWritten, nullptr ) );
 
 		return bytesWritten;
 	}
 
 	FileSize FileStream::getPosition() const
 	{
-		return SetFilePointer( m_fileHandle, 0, nullptr, FILE_CURRENT );
+		TIKI_ASSERT( isOpen() );
+		return SetFilePointer( m_platformData.fileHandle, 0, nullptr, FILE_CURRENT );
 	}
 
 	void FileStream::setPosition( FileSize position )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepPos;
 		sepPos.size = position;
 
-		SetFilePointer( m_fileHandle, sepPos.lowLong, &sepPos.highLong, FILE_BEGIN );
+		SetFilePointer( m_platformData.fileHandle, sepPos.lowLong, &sepPos.highLong, FILE_BEGIN );
 	}
 
 	FileSize FileStream::seekPosition( FileOffset offset, DataStreamSeek method /* = DataStreamSeek_Current */ )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepOffset;
 		sepOffset.offset = offset;
 
-		sepOffset.lowDoubleWord = SetFilePointer( m_fileHandle, sepOffset.lowLong, &sepOffset.highLong, s_seekMapping[ method ] );
+		sepOffset.lowDoubleWord = SetFilePointer( m_platformData.fileHandle, sepOffset.lowLong, &sepOffset.highLong, s_seekMapping[ method ] );
 
 		return sepOffset.size;
 	}
 
 	FileSize FileStream::getLength() const
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepLength;
 		sepLength.size = 0;
 
-		sepLength.lowDoubleWord = GetFileSize( m_fileHandle, &sepLength.highDoubleWord );
+		sepLength.lowDoubleWord = GetFileSize( m_platformData.fileHandle, &sepLength.highDoubleWord );
 
 		return sepLength.size;
 	}
 
 	void FileStream::setLength( FileSize length )
 	{
+		TIKI_ASSERT( isOpen() );
+
 		LowHighSeperation sepLength;
 		sepLength.size = 0;
-		sepLength.lowDoubleWord = SetFilePointer( m_fileHandle, 0, &sepLength.highLong, FILE_END );
+		sepLength.lowDoubleWord = SetFilePointer( m_platformData.fileHandle, 0, &sepLength.highLong, FILE_END );
 
 		FileSize currentLength = sepLength.size;
 
@@ -151,7 +164,7 @@ namespace tiki
 		DWORD bytesWritten;
 		while (currentLength < length)
 		{
-			if( !WriteFile( m_fileHandle, &data, 1, &bytesWritten, nullptr ) )
+			if( !WriteFile( m_platformData.fileHandle, &data, 1, &bytesWritten, nullptr ) )
 			{
 				break;
 			}

@@ -4,15 +4,15 @@
 #include "tiki/base/numbers.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer_shader.hpp"
 #include "tiki/graphics/primitivetopologies.hpp"
+#include "tiki/graphics/shader/immediaterenderer_shader.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/math/box.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/rectangle.hpp"
-#include "tiki/math/box.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -717,16 +717,16 @@ namespace tiki
 		Vector3 scaleAxe2;
 		vector::set( scaleAxe2, axe2.x * radius, axe2.y * radius, axe2.z * radius );
 
-		int idx = 0;
-		for ( int i = 0; i < verticesPercircle; i++ )
+		uint idx = 0u;
+		for ( uint i = 0u; i < verticesPercircle; i++ )
 		{
 			Vector3 vt;
 			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
-			vector::scale( vt, f32::sin( ( f32::twoPi / verticesPercircle)*i ) );
+			vector::scale( vt, f32::sin( (f32::twoPi / verticesPercircle) * i ) );
 
 			Vector3 vtySin;
 			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
-			vector::scale( vtySin, f32::cos( ( f32::twoPi / verticesPercircle)*i ) );
+			vector::scale( vtySin, f32::cos( ( f32::twoPi / verticesPercircle) * i ) );
 
 			vector::add( vt, vtySin );
 			vector::add( vt, center );
@@ -766,8 +766,6 @@ namespace tiki
 		m_pContext->setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
 		m_pContext->setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 
-		m_pContext->setBlendState( m_pBlendState[ ImmediateBlendState_Add ] );
-		m_pContext->setDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] );
 		m_pContext->setRasterizerState( m_pRasterizerState );
 		m_pContext->setVertexInputBinding( m_pVertexInputBinding );
 

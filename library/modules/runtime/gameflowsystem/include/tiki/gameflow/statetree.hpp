@@ -2,9 +2,9 @@
 #ifndef TIKI_STATETREE_HPP__INCLUDED
 #define TIKI_STATETREE_HPP__INCLUDED
 
-#include "tiki/base/array.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 
 namespace tiki
 {

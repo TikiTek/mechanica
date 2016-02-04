@@ -3,6 +3,7 @@
 local module = Module:new( "editornative" );
 
 module:add_files( "source/*.*" );
+module:add_files( "editornative.lua" );
 module:add_files( "include/**/*.hpp" );
 
 module:add_include_dir( "include" );

@@ -15,16 +15,16 @@ namespace tiki
 		void			create( const Vector2& minSize );
 		void			dispose();
 
-		virtual Vector2	getMinimumSize();
+		virtual Vector2	getMinimumSize() TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void	update();
-		virtual void	render( ImmediateRenderer& renderer );
+		virtual void	update( double elapsedTime ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void	render( ImmediateRenderer& renderer ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state );
+		virtual bool	processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state ) TIKI_OVERRIDE TIKI_FINAL;
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 

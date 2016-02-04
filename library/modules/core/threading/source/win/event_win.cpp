@@ -15,7 +15,7 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.eventHandle == INVALID_HANDLE_VALUE );
 	}
 
-	void Event::create( bool initialState /*= false*/, bool manualReset /*= false */, const char* pName /*= nullptr*/ )
+	bool Event::create( bool initialState /*= false*/, bool manualReset /*= false */, const char* pName /*= nullptr*/ )
 	{
 		TIKI_ASSERT( m_platformData.eventHandle == INVALID_HANDLE_VALUE );
 
@@ -25,6 +25,8 @@ namespace tiki
 			initialState,
 			pName
 		);
+
+		return m_platformData.eventHandle != nullptr;
 	}
 
 	void Event::dispose()
@@ -50,7 +52,7 @@ namespace tiki
 		TIKI_VERIFY( ResetEvent( m_platformData.eventHandle ) );
 	}
 
-	bool Event::waitForSignal( uint timeOut /*= TimeOutInfinity */ )
+	bool Event::waitForSignal( timems timeOut /* = TIKI_TIME_OUT_INFINITY */ )
 	{
 		TIKI_ASSERT( m_platformData.eventHandle != INVALID_HANDLE_VALUE );
 

@@ -3,7 +3,7 @@
 #define __TIKI_THREAD_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/linkedlist.hpp"
+#include "tiki/container/linkedlist.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include "../../../source/win/platformdata_win.hpp"
@@ -28,16 +28,14 @@ namespace tiki
 		Thread();
 		~Thread();
 
-		bool					create( ThreadEntryFunction pEntryFunc, uint stackSize, const char* pName = nullptr );
+		bool					create( ThreadEntryFunction pEntryFunc, void* pArgument, uint stackSize = 0u, const char* pName = nullptr );
 		void					dispose();
 
-		void					start( void* pArgument );
 		void					requestExit();
 
-		bool					waitForExit( uint timeOut = TimeOutInfinity );
+		bool					waitForExit( timems timeOut = TIKI_TIME_OUT_INFINITY );
 
 		void*					getArgument() const			{ return m_pArgument; }
-		ThreadEntryFunction		getEntryFunction() const	{ return m_pEntryFunction; }
 		bool					isExitRequested() const		{ return m_isExitRequested; }
 
 		uint64					getThreadId() const;
@@ -47,7 +45,9 @@ namespace tiki
 		static const Thread&	getCurrentThread();
 		static const Thread*	getThreadById( uint64 threadId );
 
-		static void				shutdownSystem();
+		static void			sleepCurrentThread( timems time );
+
+		static void			shutdownSystem();
 
 	private:
 
@@ -56,11 +56,17 @@ namespace tiki
 		ThreadPlatformData	m_platformData;
 
 		ThreadEntryFunction	m_pEntryFunction;
-		void*				m_pArgument;
+		void*					m_pArgument;
 
-		volatile bool		m_isExitRequested;
+		volatile bool			m_isExitRequested;
 
-		static ThreadList	s_threadList;
+		static ThreadList		s_threadList;
+		
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		static DWORD WINAPI		threadEntryPoint( void* pArgument );
+#elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
+		static void*			threadEntryPoint( void* pArgument );
+#endif
 
 	};
 }

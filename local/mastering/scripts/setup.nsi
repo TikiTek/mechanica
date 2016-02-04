@@ -89,8 +89,8 @@ Section "Uninstall"
   Delete "$INSTDIR\${TIKI_GAME_EXE}"
   Delete "$INSTDIR\Uninstall.exe"
 
-  RMDir "$INSTDIR"
   RMDir "$INSTDIR\gamebuild"
+  RMDir "$INSTDIR"
 
   DeleteRegKey /ifempty HKCU "Software\${TIKI_PUBLISHER}\${TIKI_NAME}"
 

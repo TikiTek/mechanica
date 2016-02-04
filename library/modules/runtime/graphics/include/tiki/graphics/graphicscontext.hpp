@@ -1,9 +1,8 @@
 #ifndef TIKI_GRAPHICCOMMANDWRITER_HPP__
 #define TIKI_GRAPHICCOMMANDWRITER_HPP__
 
-#include "tiki/base/array.hpp"
-#include "tiki/base/inline.hpp"
-#include "tiki/base/staticarray.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/graphics/graphicssystemlimits.hpp"
@@ -99,6 +98,8 @@ namespace tiki
 		template<typename T>
 		void				beginImmediateGeometry( StaticArray< T >& targetArray, uint vertexCount );
 		void				endImmediateGeometry();
+		template<typename T>
+		void				endImmediateGeometry( StaticArray< T >& targetArray );
 
 		void				drawGeometry( uint vertexCount, uint baseVertexOffset = 0u );
 		void				drawIndexedGeometry( uint indexCount, uint baseIndexOffset = 0u, uint baseVertexOffset = 0u );

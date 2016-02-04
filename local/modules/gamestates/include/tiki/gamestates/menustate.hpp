@@ -9,6 +9,7 @@
 namespace tiki
 {
 	class ApplicationState;
+	class Game;
 
 	enum MenuStateTransitionSteps
 	{
@@ -24,7 +25,7 @@ namespace tiki
 								MenuState();
 		virtual					~MenuState();
 
-		void					create( ApplicationState* pParentState );
+		void					create( Game* pGame, ApplicationState* pParentState );
 		void					dispose();
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE;
@@ -36,6 +37,7 @@ namespace tiki
 
 	private:
 
+		Game*					m_pGame;
 		ApplicationState*		m_pParentState;
 
 		ImmediateRenderer		m_renderer;

@@ -2,12 +2,12 @@
 #ifndef TIKI_TIKIARENAGAME_HPP
 #define TIKI_TIKIARENAGAME_HPP
 
-#include "tiki/framework/gameframework.hpp"
+#include "tiki/gameapplication/gameapplication.hpp"
 
-#include "tiki/runtimeshared/frameworkfactories.hpp"
 #include "tiki/framework/touchgamesystem.hpp"
-#include "tiki/game/framework_game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
 {
@@ -27,30 +27,35 @@ namespace tiki
 		GameStates_Count
 	};
 
-	class Game : public GameFramework
+	class Game : public GameApplication
 	{
 		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Game );
-		friend GameFlowSystem& framework::getGameFlowSystem();
+
+	public:
+
+		GameFlowSystem&			getGameFlowSystem()			{ return m_gameFlow; }
+		ResourceRequestPool&	getResourceRequestPool()	{ return m_resourceRequestPool; }
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		ImmediateRenderer&		getImmediateRenderer()		{ return m_immediateRenderer; }
+#endif
 
 	protected:
 
-		virtual void			fillParameters( GameFrameworkParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual bool			initializeGame() TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			shutdownGame() TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void			update( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			render( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
-
-	private: // friend
-
-		GameFlowSystem&			getGameFlowSystem() { return m_gameFlow; }
+		virtual bool			processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 
-		FrameworkFactories		m_factories;
+		ImmediateRenderer		m_immediateRenderer;
+
+		ResourceRequestPool		m_resourceRequestPool;
 
 		GameFlowSystem			m_gameFlow;
 		States*					m_pStates;
