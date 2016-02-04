@@ -4,8 +4,8 @@
 
 #include "tiki/renderer/rendereffect.hpp"
 
-#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/graphics/constantbuffer.hpp"
 
 
@@ -31,8 +31,8 @@ namespace tiki
 
 	protected:
 
-		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
-		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_OVERRIDE TIKI_FINAL;
 
 		virtual void			executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext );
 

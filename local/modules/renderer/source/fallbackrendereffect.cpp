@@ -2,15 +2,15 @@
 #include "tiki/renderer/fallbackrendereffect.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/modelgeometry.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 #include "renderer.hpp"
 
@@ -46,10 +46,9 @@ namespace tiki
 		TIKI_ASSERT( m_pSampler == nullptr );
 	}
 
-	bool FallbackRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool FallbackRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
-		m_pGraphicsSystem	= &graphicsSystem;
-		m_pShader			= resourceManager.loadResource< ShaderSet >( "fallback.shader" );
+		m_pGraphicsSystem		= &graphicsSystem;
 
 		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
@@ -58,12 +57,18 @@ namespace tiki
 
 		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ) );
 
-		m_vertexInputBindings.create( 32u );
+		if ( !m_vertexInputBindings.create( 32u ) )
+		{
+			dispose( graphicsSystem, resourceRequestPool );
+			return false;
+		}
+
+		resourceRequestPool.beginLoadResource< ShaderSet >( &m_pShader, "fallback.shader" );
 
 		return true;
 	}
 
-	void FallbackRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	void FallbackRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
 		graphicsSystem.disposeBlendState( m_pBlendState );
 		m_pBlendState = nullptr;
@@ -77,9 +82,6 @@ namespace tiki
 		graphicsSystem.disposeSamplerState( m_pSampler );
 		m_pSampler = nullptr;
 
-		resourceManager.unloadResource< ShaderSet >( m_pShader );
-		m_pShader = nullptr;
-
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 
 		for (uint i = 0u; i < m_vertexInputBindings.getCount(); ++i)
@@ -89,6 +91,8 @@ namespace tiki
 			);
 		}
 		m_vertexInputBindings.dispose();
+
+		resourceRequestPool.unloadResource( m_pShader );
 
 		m_pGraphicsSystem = nullptr;
 	}

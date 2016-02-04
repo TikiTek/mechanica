@@ -17,16 +17,21 @@ namespace tiki
 		TIKI_ASSERT( m_pRendererContext == nullptr );
 	}
 
-	bool RenderEffect::create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool RenderEffect::create( const RendererContext& rendererContext, GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
 		m_pRendererContext = &rendererContext;
 
-		return createInternal( graphicsSystem, resourceManager );
+		return createInternal( graphicsSystem, resourceRequestPool );
 	}
 
-	void RenderEffect::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool RenderEffect::createShaderResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
-		disposeInternal( graphicsSystem, resourceManager );
+		return createShaderResourcesInternal( graphicsSystem, resourceRequestPool );
+	}
+
+	void RenderEffect::dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
+	{
+		disposeInternal( graphicsSystem, resourceRequestPool );
 
 		m_pFrameData		= nullptr;
 		m_pRendererContext	= nullptr;

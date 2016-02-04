@@ -11,7 +11,7 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 #include "shader/scene_shader.hpp"
 
@@ -49,12 +49,10 @@ namespace tiki
 		TIKI_ASSERT( m_pVertexInputBinding[ ModelType_Skinned ]	== nullptr );
 	}
 
-	bool SceneRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool SceneRenderEffect::createInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
 		bool success = true;
-		m_pShader				= resourceManager.loadResource< ShaderSet >( "scene.shader" );
-		success &= ( m_pShader != nullptr );
-
+		
 		m_pBlendState			= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthStencilState	= graphicsSystem.createDepthStencilState( true, true );
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
@@ -73,8 +71,7 @@ namespace tiki
 		};
 
 		m_pVertexFormat[ ModelType_Static ]			= graphicsSystem.createVertexFormat( attributesStatic, TIKI_COUNT( attributesStatic ) );
-		m_pVertexInputBinding[ ModelType_Static ]	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat[ ModelType_Static ] );
-		success &= ( m_pVertexFormat[ ModelType_Static ] != nullptr && m_pVertexInputBinding[ ModelType_Static ] != nullptr );
+		success &= ( m_pVertexFormat[ ModelType_Static ] != nullptr );
 
 		VertexAttribute attributesSkinned[] =
 		{
@@ -87,19 +84,28 @@ namespace tiki
 		};
 
 		m_pVertexFormat[ ModelType_Skinned ]		= graphicsSystem.createVertexFormat( attributesSkinned, TIKI_COUNT( attributesSkinned ) );
-		m_pVertexInputBinding[ ModelType_Skinned ]	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 1u ), m_pVertexFormat[ ModelType_Skinned ] );
-		success &= ( m_pVertexFormat[ ModelType_Skinned ] != nullptr && m_pVertexInputBinding[ ModelType_Skinned ] != nullptr );
+		success &= ( m_pVertexFormat[ ModelType_Skinned ] != nullptr );
 
 		if ( !success )
 		{
-			dispose( graphicsSystem, resourceManager );
+			dispose( graphicsSystem, resourceRequestPool );
 			return false;
 		}
+
+		resourceRequestPool.beginLoadResource< ShaderSet >( &m_pShader, "scene.shader" );
 
 		return true;
 	}
 
-	void SceneRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool SceneRenderEffect::createShaderResourcesInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
+	{
+		m_pVertexInputBinding[ ModelType_Static ]	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat[ ModelType_Static ] );
+		m_pVertexInputBinding[ ModelType_Skinned ]	= graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 1u ), m_pVertexFormat[ ModelType_Skinned ] );
+
+		return m_pVertexInputBinding[ ModelType_Static ] != nullptr && m_pVertexInputBinding[ ModelType_Skinned ] != nullptr;
+	}
+
+	void SceneRenderEffect::disposeInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool )
 	{
 		graphicsSystem.disposeBlendState( m_pBlendState );
 		m_pBlendState = nullptr;
@@ -125,8 +131,7 @@ namespace tiki
 		graphicsSystem.disposeVertexFormat( m_pVertexFormat[ ModelType_Skinned ] );
 		m_pVertexFormat[ ModelType_Skinned ] = nullptr;
 
-		resourceManager.unloadResource< ShaderSet >( m_pShader );
-		m_pShader = nullptr;
+		resourceRequestPool.unloadResource( m_pShader );
 
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 		m_pixelConstantBuffer.dispose( graphicsSystem );

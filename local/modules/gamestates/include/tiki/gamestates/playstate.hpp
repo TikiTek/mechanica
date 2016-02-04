@@ -12,6 +12,7 @@
 namespace tiki
 {
 	class ApplicationState;
+	class Game;
 
 	enum PlayStateTransitionSteps
 	{
@@ -31,7 +32,7 @@ namespace tiki
 									PlayState();
 		virtual						~PlayState();
 
-		void						create( ApplicationState* pParentState );
+		void						create( Game* pGame, ApplicationState* pParentState );
 		void						dispose();
 
 		virtual TransitionState		processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
@@ -43,7 +44,8 @@ namespace tiki
 		virtual void				processWindowEvent( const WindowEvent& windowEvent );
 
 	private:
-		
+
+		Game*						m_pGame;
 		ApplicationState*			m_pParentState;
 
 		GameRenderer*				m_pGameRenderer;

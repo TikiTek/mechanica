@@ -10,6 +10,7 @@
 namespace tiki
 {
 	class Font;
+	class Game;
 	class Texture;
 
 	enum BasicTestStateTransitionSteps
@@ -22,11 +23,14 @@ namespace tiki
 
 	class BasicTestState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( BasicTestState );
+		TIKI_NONCOPYABLE_CLASS( BasicTestState );
 
-	public:								
+	public:
 
-		void					create();
+								BasicTestState();
+		virtual					~BasicTestState();
+
+		void					create( Game* pGame );
 		void					dispose();
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
@@ -38,10 +42,12 @@ namespace tiki
 
 	private:
 
-		 ImmediateRenderer		m_renderer;
+		Game*					m_pGame;
 
-		 const Texture*			m_pTestTexture;
-		 const Font*			m_pTestFont;
+		ImmediateRenderer		m_renderer;
+
+		const Texture*			m_pTestTexture;
+		const Font*				m_pTestFont;
 
 	};
 }

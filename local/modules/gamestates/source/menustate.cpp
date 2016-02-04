@@ -1,8 +1,6 @@
 
 #include "tiki/gamestates/menustate.hpp"
 
-#include "tiki/framework/framework.hpp"
-#include "tiki/game/framework_game.hpp"
 #include "tiki/game/game.hpp"
 #include "tiki/gameflow/gameflowsystem.hpp"
 
@@ -10,35 +8,34 @@ namespace tiki
 {
 	MenuState::MenuState()
 	{
-		m_pParentState = nullptr;
+		m_pGame			= nullptr;
+		m_pParentState	= nullptr;
 	}
 
 	MenuState::~MenuState()
 	{
+		TIKI_ASSERT( m_pGame == nullptr );
 		TIKI_ASSERT( m_pParentState == nullptr );
 	}
 
-	void MenuState::create( ApplicationState* pParentState )
+	void MenuState::create(Game* pGame, ApplicationState* pParentState )
 	{
+		TIKI_ASSERT( pGame != nullptr );
 		TIKI_ASSERT( pParentState != nullptr );
 		TIKI_ASSERT( m_pParentState == nullptr );
 
-		m_pParentState = pParentState;
+		m_pGame			= pGame;
+		m_pParentState	= pParentState;
 
-		m_renderer.dispose(
-			framework::getGraphicsSystem(),
-			framework::getResourceManager()
-		);
+		m_renderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 	}
 
 	void MenuState::dispose()
 	{
-		m_renderer.dispose(
-			framework::getGraphicsSystem(),
-			framework::getResourceManager()
-		);
+		m_renderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 
-		m_pParentState = nullptr;
+		m_pGame			= nullptr;
+		m_pParentState	= nullptr;
 	}
 
 	TransitionState MenuState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -60,7 +57,7 @@ namespace tiki
 	{
 		if (inputEvent.eventType == InputEventType_Keyboard_Up)
 		{
-			framework::getGameFlowSystem().startTransition( GameStates_Play );
+			m_pGame->getGameFlowSystem().startTransition( GameStates_Play );
 
 			return true;
 		}

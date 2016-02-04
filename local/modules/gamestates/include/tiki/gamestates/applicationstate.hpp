@@ -10,6 +10,8 @@
 
 namespace tiki
 {
+	class Game;
+
 	enum ApplicationStateTransitionSteps
 	{
 		ApplicationStateTransitionSteps_CreateGameRenderer,
@@ -19,24 +21,29 @@ namespace tiki
 
 	class ApplicationState : public GameFlowState
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ApplicationState );
+		TIKI_NONCOPYABLE_CLASS( ApplicationState );
 
 	public:
 
-		void					create();
+								ApplicationState();
+		virtual					~ApplicationState();
+
+		void					create( Game* pGame );
 		void					dispose();
 
 		GameRenderer&			getGameRenderer() { return m_renderer; }
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
+		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void			update();
-		virtual void			render( GraphicsContext& graphicsContext );
+		virtual void			update() TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent );
-		virtual void			processWindowEvent( const WindowEvent& windowEvent );
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
+
+		Game*					m_pGame;
 
 		GameRenderer			m_renderer;
 
