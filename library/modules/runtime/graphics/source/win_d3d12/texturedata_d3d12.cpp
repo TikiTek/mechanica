@@ -8,6 +8,8 @@
 #include "graphicssystem_internal_d3d12.hpp"
 #include "uploadheap_d3d12.hpp"
 
+#include <d3dx12.h>
+
 namespace tiki
 {
 	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
@@ -35,27 +37,27 @@ namespace tiki
 		return s_formatLookup[ pixelFormat ];
 	}
 
-	//static D3D12_RESOURCE_MISC_FLAG getD3dFlags( TextureFlags flags )
-	//{
-	//	D3D12_RESOURCE_MISC_FLAG result = D3D12_RESOURCE_MISC_NONE;
+	static D3D12_RESOURCE_FLAGS getD3dFlags( TextureFlags flags )
+	{
+		D3D12_RESOURCE_FLAGS result = D3D12_RESOURCE_FLAG_NONE;
 
-	//	if ( isBitSet( flags, TextureFlags_RenderTarget ) )
-	//	{
-	//		result |= D3D12_RESOURCE_MISC_ALLOW_RENDER_TARGET;
-	//	}
+		if( isBitSet( flags, TextureFlags_RenderTarget ) )
+		{
+			result |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		}
 
-	//	if ( isBitSet( flags, TextureFlags_DepthStencil ) )
-	//	{
-	//		result |= D3D12_RESOURCE_MISC_ALLOW_DEPTH_STENCIL;
-	//	}
+		if( isBitSet( flags, TextureFlags_DepthStencil ) )
+		{
+			result |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+		}
 
-	//	if ( !isBitSet( flags, TextureFlags_ShaderInput ) )
-	//	{
-	//		result |= D3D12_RESOURCE_MISC_DENY_SHADER_RESOURCE;
-	//	}
+		if( !isBitSet( flags, TextureFlags_ShaderInput ) )
+		{
+			result |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+		}
 
-	//	return result;
-	//}
+		return result;
+	}
 
 	static D3D12_SRV_DIMENSION getD3dViewDimentions( TextureType type )
 	{
@@ -141,7 +143,7 @@ namespace tiki
 			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
 			D3D12_HEAP_MISC_NONE,
 			&resourceDesc,
-			D3D12_RESOURCE_USAGE_INITIAL,
+			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
 			IID_PPV_ARGS( &m_platformData.pResource )
 		);
@@ -209,7 +211,7 @@ namespace tiki
 			{
 				TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 				heapDesc.NumDescriptors = 1u;
-				heapDesc.Type			= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
+				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 				heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
 
 				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof( ID3D12DescriptorHeap ), (void**)&m_platformData.pDescriptorHeap ) ) )

@@ -3,6 +3,8 @@
 
 #include "graphicssystem_internal_d3d12.hpp"
 
+#include <d3dx12.h>
+
 namespace tiki
 {
 	UploadHeapD3d12::UploadHeapD3d12()
@@ -24,7 +26,7 @@ namespace tiki
 		TIKI_ASSERT( pDevice != nullptr );
 
 		HRESULT result = pDevice->CreateCommittedResource(
-			&D3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+			&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
 			D3D12_HEAP_MISC_NONE,
 			&CD3D12_RESOURCE_DESC::Buffer( size ),
 			D3D12_RESOURCE_USAGE_GENERIC_READ,

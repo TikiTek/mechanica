@@ -131,9 +131,9 @@ namespace tiki
 		
 		m_platformData.pCommandList->OMSetRenderTargets(
 			(UINT)renderTarget.m_colorBufferCount,
-			&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart(),
+			&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(),
 			TRUE,
-			&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart()
+			&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart()
 		);
 
 		D3D12_VIEWPORT viewPort;
