@@ -12,10 +12,10 @@ namespace tiki
 {
 	static const D3D12_TEXTURE_ADDRESS_MODE s_aAddressModeMapping[] =
 	{
-		D3D12_TEXTURE_ADDRESS_WRAP,		// AddressMode_Wrap
-		D3D12_TEXTURE_ADDRESS_MIRROR,	// AddressMode_Mirror
-		D3D12_TEXTURE_ADDRESS_CLAMP,	// AddressMode_Clamp
-		D3D12_TEXTURE_ADDRESS_BORDER,	// AddressMode_Border
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,	// AddressMode_Wrap
+		D3D12_TEXTURE_ADDRESS_MODE_MIRROR,	// AddressMode_Mirror
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,	// AddressMode_Clamp
+		D3D12_TEXTURE_ADDRESS_MODE_BORDER,	// AddressMode_Border
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aAddressModeMapping ) == AddressMode_Count );
 
@@ -63,7 +63,7 @@ namespace tiki
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
 	{
-		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D12Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
 		TIKI_DECLARE_STACKANDZERO( D3D12_SAMPLER_DESC, samplerDesc );
 		samplerDesc.Filter				= getFilter( creationParamter.magFilter, creationParamter.mipFilter );
@@ -72,7 +72,7 @@ namespace tiki
 		samplerDesc.AddressW			= s_aAddressModeMapping[ creationParamter.addressW ];
 		samplerDesc.MipLODBias			= 0.0f;
 		samplerDesc.MaxAnisotropy		= uint32( creationParamter.maxAnisotropy );
-		samplerDesc.ComparisonFunc		= D3D12_COMPARISON_ALWAYS;
+		samplerDesc.ComparisonFunc		= D3D12_COMPARISON_FUNC_ALWAYS;
 		samplerDesc.BorderColor[ 0 ]	= color::getFloatChannelR( creationParamter.borderColor );
 		samplerDesc.BorderColor[ 1 ]	= color::getFloatChannelG( creationParamter.borderColor );
 		samplerDesc.BorderColor[ 2 ]	= color::getFloatChannelB( creationParamter.borderColor );
@@ -82,8 +82,8 @@ namespace tiki
 
 		TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 		heapDesc.NumDescriptors	= 1u;
-		heapDesc.Type			= D3D12_SAMPLER_DESCRIPTOR_HEAP;
-		heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+		heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+		heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 		const HRESULT result = pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_platformData.pDescriptorHeap ) );
 		if( FAILED( result ) )
@@ -99,7 +99,7 @@ namespace tiki
 
 	void SamplerState::dispose( GraphicsSystem& /*graphicsSystem*/ )
 	{
-		graphics::safeRelease( &m_platformData.pDescriptorHeap );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pDescriptorHeap );
 		
 		GraphicsStateObject::dispose();
 	}

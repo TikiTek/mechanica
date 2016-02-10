@@ -3,7 +3,7 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shadertype.hpp"
 

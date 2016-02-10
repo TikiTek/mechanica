@@ -1,9 +1,8 @@
-
 #include "uploadheap_d3d12.hpp"
 
-#include "graphicssystem_internal_d3d12.hpp"
+#include "tiki/base/functions.hpp"
 
-#include <d3dx12.h>
+#include "graphicssystem_internal_d3d12.hpp"
 
 namespace tiki
 {
@@ -27,9 +26,9 @@ namespace tiki
 
 		HRESULT result = pDevice->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
-			D3D12_HEAP_MISC_NONE,
-			&CD3D12_RESOURCE_DESC::Buffer( size ),
-			D3D12_RESOURCE_USAGE_GENERIC_READ,
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer( size ),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr, 
 			IID_PPV_ARGS( &m_pBuffer )
 		);
@@ -63,7 +62,7 @@ namespace tiki
 		{
 			m_pBuffer->Unmap( 0u, nullptr );
 		}
-		graphics::safeRelease( &m_pBuffer );
+		GraphicsSystemPlatform::safeRelease( &m_pBuffer );
 	}
 
 	void UploadHeapD3d12::finalizeFrame( uint currentFrameIndex )

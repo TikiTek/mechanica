@@ -77,8 +77,11 @@ namespace tiki
 
 		shutdownDebugSystems();
 
-		TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
-		m_pGameData = nullptr;
+		if( m_pGameData != nullptr )
+		{
+			TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
+			m_pGameData = nullptr;
+		}
 	}
 
 	void GameApplication::updateApplication( bool wantToShutdown )
@@ -166,6 +169,11 @@ namespace tiki
 
 	void GameApplication::shutdownDebugSystems()
 	{
+		if( m_pGameData == nullptr )
+		{
+			return;
+		}
+
 #if TIKI_ENABLED( TIKI_WEB_INTERFACE )
 		if ( m_pGameData->pWebInterface != nullptr )
 		{

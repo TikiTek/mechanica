@@ -1,9 +1,9 @@
 
 #include "tiki/graphics/vertexinputbinding.hpp"
 
-#include "tiki/base/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexsemantic.hpp"
@@ -14,7 +14,6 @@ namespace tiki
 {
 	static const char* s_semanticNames[] =
 	{
-		"ERROR",
 		"POSITION",
 		"NORMAL",
 		"TANGENT",
@@ -80,7 +79,7 @@ namespace tiki
 			desc.Format					= s_d3dFormat[ att.format ];
 			desc.InputSlot				= att.streamIndex;
 			desc.AlignedByteOffset		= D3D12_APPEND_ALIGNED_ELEMENT;
-			desc.InputSlotClass			= ( att.inputType == VertexInputType_PerVertex ? D3D12_INPUT_PER_VERTEX_DATA : D3D12_INPUT_PER_INSTANCE_DATA );
+			desc.InputSlotClass			= ( att.inputType == VertexInputType_PerVertex ? D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA : D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA);
 			desc.InstanceDataStepRate	= 0;
 		}
 		

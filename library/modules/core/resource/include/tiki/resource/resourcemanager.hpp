@@ -29,14 +29,18 @@ namespace tiki
 	{
 		ResourceManagerParameters()
 		{
-			maxResourceCount	= 1000u;
-			maxRequestCount		= 128u;
+			maxResourceCount		= 1000u;
+			maxRequestCount			= 128u;
 
-			pFileSystem			= nullptr;
+			enableMultiThreading	= false;
+
+			pFileSystem				= nullptr;
 		}
 
 		uint			maxResourceCount;
 		uint			maxRequestCount;
+
+		bool			enableMultiThreading;
 
 		FileSystem*		pFileSystem;
 	};
@@ -90,6 +94,8 @@ namespace tiki
 
 		void								threadEntry( const Thread& thread );
 		static int							staticThreadEntry( const Thread& thread );
+
+		void								updateResourceLoading( ResourceRequest* pData );
 
 	};
 }

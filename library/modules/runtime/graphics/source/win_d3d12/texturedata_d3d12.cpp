@@ -12,31 +12,6 @@
 
 namespace tiki
 {
-	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
-	{
-		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
-
-		static DXGI_FORMAT s_formatLookup[] =
-		{
-			DXGI_FORMAT_R8_UNORM,				// PixelFormat_R8,
-			DXGI_FORMAT_R8G8B8A8_UNORM,			// PixelFormat_R8G8B8A8
-			DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,	// PixelFormat_R8G8B8A8_Gamma
-			DXGI_FORMAT_R16G16B16A16_FLOAT,		// PixelFormat_R16G16B16A16_Float
-			DXGI_FORMAT_R32_FLOAT,				// PixelFormat_R32_Float
-			DXGI_FORMAT_R32G32B32_FLOAT,		// PixelFormat_R32G32B32_Float
-			DXGI_FORMAT_R32G32B32A32_FLOAT,		// PixelFormat_R32G32B32A32_Float
-			DXGI_FORMAT_D24_UNORM_S8_UINT		// PixelFormat_Depth24Stencil8
-		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_formatLookup ) == PixelFormat_Count );
-
-		if ( pixelFormat == PixelFormat_Depth24Stencil8 && isBitSet( flags, TextureFlags_ShaderInput ) )
-		{
-			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		}
-
-		return s_formatLookup[ pixelFormat ];
-	}
-
 	static D3D12_RESOURCE_FLAGS getD3dFlags( TextureFlags flags )
 	{
 		D3D12_RESOURCE_FLAGS result = D3D12_RESOURCE_FLAG_NONE;
@@ -91,17 +66,17 @@ namespace tiki
 
 		m_description = description;
 
-		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D12Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
 		const PixelFormat format	= (PixelFormat)description.format;
 		const TextureFlags flags	= (TextureFlags)description.flags;
-		const DXGI_FORMAT dxFormat	= graphics::getD3dFormat( format, flags );
+		const DXGI_FORMAT dxFormat	= GraphicsSystemPlatform::getD3dPixelFormat( format, isBitSet( flags, TextureFlags_ShaderInput ) );
 
 		D3D12_RESOURCE_DESC resourceDesc;
 		switch( description.type )
 		{
 		case TextureType_1d:
-			resourceDesc = CD3D12_RESOURCE_DESC::Tex1D(
+			resourceDesc = CD3DX12_RESOURCE_DESC::Tex1D(
 				dxFormat,
 				description.width,
 				description.arrayCount,
@@ -111,7 +86,7 @@ namespace tiki
 			break;
 
 		case TextureType_2d:
-			resourceDesc = CD3D12_RESOURCE_DESC::Tex2D(
+			resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 				dxFormat,
 				description.width,
 				description.height,
@@ -124,7 +99,7 @@ namespace tiki
 			break;
 
 		case TextureType_3d:
-			resourceDesc = CD3D12_RESOURCE_DESC::Tex3D(
+			resourceDesc = CD3DX12_RESOURCE_DESC::Tex3D(
 				dxFormat,
 				description.width,
 				description.height,
@@ -140,8 +115,8 @@ namespace tiki
 		}
 
 		HRESULT result = pDevice->CreateCommittedResource(
-			&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
-			D3D12_HEAP_MISC_NONE,
+			&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
+			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
@@ -156,7 +131,7 @@ namespace tiki
 
 		if( pTextureData != nullptr )
 		{
-			UploadHeapD3d12& uploadHeap = graphics::getUploadHeap( graphicsSystem );
+			UploadHeapD3d12& uploadHeap = GraphicsSystemPlatform::getUploadHeap( graphicsSystem );
 
 			const uint bytesPerPixel = getBitsPerPixel( (PixelFormat)description.format ) / 8u;
 
@@ -199,10 +174,10 @@ namespace tiki
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			}
 
-			ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
+			ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::getCommandList( graphicsSystem );
+			GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST );
 			UpdateSubresources<32>( pCommandList, m_platformData.pResource, uploadHeap.getBuffer(), allocation.offset, 0u, (UINT)subResourceCount, subResources );
-			graphics::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_PIXEL_SHADER_RESOURCE );
+			GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE );
 		}
 	
 		if( isBitSet( description.flags, TextureFlags_ShaderInput ) )
@@ -212,9 +187,9 @@ namespace tiki
 				TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 				heapDesc.NumDescriptors = 1u;
 				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-				heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+				heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof( ID3D12DescriptorHeap ), (void**)&m_platformData.pDescriptorHeap ) ) )
+				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_platformData.pDescriptorHeap ) ) ) )
 				{
 					dispose( graphicsSystem );
 					return false;
@@ -257,7 +232,7 @@ namespace tiki
 
 	void TextureData::dispose( GraphicsSystem& graphicsSystem )
 	{
-		graphics::safeRelease( &m_platformData.pDescriptorHeap );
-		graphics::safeRelease( &m_platformData.pResource );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pDescriptorHeap );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pResource );
 	}
 }
