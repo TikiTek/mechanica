@@ -33,8 +33,11 @@ namespace tiki
 
 	void ScriptContext::dispose()
 	{
-		lua_close( m_pState );
-		m_pState = nullptr;
+		if( m_pState != nullptr )
+		{
+			lua_close( m_pState );
+			m_pState = nullptr;
+		}
 	}
 
 	void ScriptContext::addExtension( ScriptExtensions extension )

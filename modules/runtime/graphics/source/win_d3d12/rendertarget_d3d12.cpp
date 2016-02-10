@@ -45,7 +45,7 @@ namespace tiki
 		m_width				= width;
 		m_height			= height;
 
-		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D12Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
 		// create descriptor heaps
 		{
@@ -83,7 +83,7 @@ namespace tiki
 			checkSize( m_width, m_height, pColorBuffers[ i ].pDataBuffer->getWidth(), pColorBuffers[ i ].pDataBuffer->getHeight() );
 
 			TIKI_DECLARE_STACKANDZERO( D3D12_RENDER_TARGET_VIEW_DESC, viewDesc );
-			viewDesc.Format						= graphics::getD3dFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDescription().format, TextureFlags_RenderTarget );
+			viewDesc.Format						= GraphicsSystemPlatform::getD3dPixelFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDescription().format, false );
 			viewDesc.ViewDimension				= D3D12_RTV_DIMENSION_TEXTURE2D;
 
 			pDevice->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &viewDesc, m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart() );
@@ -102,7 +102,7 @@ namespace tiki
 			checkSize( m_width, m_height, pDepthBuffer->pDataBuffer->getWidth(), pDepthBuffer->pDataBuffer->getHeight() );
 
 			TIKI_DECLARE_STACKANDZERO( D3D12_DEPTH_STENCIL_VIEW_DESC, viewDesc );
-			viewDesc.Format				= graphics::getD3dFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDescription( ).format, TextureFlags_DepthStencil );
+			viewDesc.Format				= GraphicsSystemPlatform::getD3dPixelFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDescription( ).format, false );
 			viewDesc.ViewDimension		= D3D12_DSV_DIMENSION_TEXTURE2D;
 
 			pDevice->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &viewDesc, m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart() );
@@ -120,8 +120,8 @@ namespace tiki
 
 	void RenderTarget::dispose( GraphicsSystem& graphicsSystem )
 	{
-		graphics::safeRelease( &m_platformData.pColorHeap );
-		graphics::safeRelease( &m_platformData.pDepthHeap );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pColorHeap );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pDepthHeap );
 
 		for( size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i )
 		{

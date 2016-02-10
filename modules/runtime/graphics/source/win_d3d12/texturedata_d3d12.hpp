@@ -16,11 +16,6 @@ namespace tiki
 		ID3D12Resource*			pResource;
 		ID3D12DescriptorHeap*	pDescriptorHeap;
 	};
-
-	namespace graphics
-	{
-		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
-	}
 }
 
 #endif // TIKI_TEXTUREDATA_D3D12_HPP__INCLUDED__

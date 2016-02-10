@@ -13,7 +13,6 @@ module:add_dependency( "graphicsbase" );
 module:add_dependency( "animation" );
 module:add_dependency( "graphicsshader" );
 
-
 if use_d3d11 then
 	module:add_files( "source/win_d3d11/*.*" );
 	
@@ -24,6 +23,8 @@ elseif use_d3d12 then
 	
 	module:add_library_file( "d3d12" );
 	module:add_library_file( "dxgi" );
+	
+	module:add_dependency( "d3dx12" );
 elseif use_opengl then
 	module:add_files( "source/global_opengl4/*.*" );
 	

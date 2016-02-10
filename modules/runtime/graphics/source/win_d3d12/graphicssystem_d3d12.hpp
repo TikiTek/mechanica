@@ -16,11 +16,14 @@ namespace tiki
 	{
 		GraphicsSystemPlatformData()
 		{
+			pSwapChain					= nullptr;
+			pFactory					= nullptr;
+
+			pDevice						= nullptr;
 			pCommandAllocator			= nullptr;
 			pCommandQueue				= nullptr;
-			pDevice						= nullptr;
+			pCommandList				= nullptr;
 			pRootSignature				= nullptr;
-			pSwapChain					= nullptr;
 			pFence						= nullptr;
 
 			pBackBufferColor					= nullptr;
@@ -33,12 +36,14 @@ namespace tiki
 			currentFench				= 0u;
 		}
 
-		ID3D12CommandAllocator*		pCommandAllocator;
-		ID3D12GraphicsCommandList*	pCommandList;
-		ID3D12CommandQueue*			pCommandQueue;
+		IDXGIFactory4*				pFactory;
+		IDXGISwapChain1*			pSwapChain;
+
 		ID3D12Device*				pDevice;
+		ID3D12CommandAllocator*		pCommandAllocator;
+		ID3D12CommandQueue*			pCommandQueue;
+		ID3D12GraphicsCommandList*	pCommandList;
 		ID3D12RootSignature*		pRootSignature;
-		IDXGISwapChain*				pSwapChain;
 		ID3D12Fence*				pFence;
 
 		ID3D12Resource*				pBackBufferColor;

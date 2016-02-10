@@ -37,10 +37,13 @@ namespace tiki
 		}
 
 		m_loadingMutex.create();
-		if ( !m_loadingThread.create( staticThreadEntry, this, 1024 * 1024, "ResourceManager" ) )
+		if( params.enableMultiThreading )
 		{
-			dispose();
-			return false;
+			if( !m_loadingThread.create( staticThreadEntry, this, 1024 * 1024, "ResourceManager" ) )
+			{
+				dispose();
+				return false;
+			}
 		}
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
@@ -80,13 +83,15 @@ namespace tiki
 		}
 #endif
 
-		m_loadingThread.requestExit();
-		m_loadingThread.waitForExit();
-		m_loadingThread.dispose();
+		if( m_loadingThread.isCreated() )
+		{
+			m_loadingThread.requestExit();
+			m_loadingThread.waitForExit();
+			m_loadingThread.dispose();
+		}
 		m_loadingMutex.dispose();
 
 		m_resourceRequests.dispose();
-
 
 		m_resourceLoader.dispose();
 		m_resourceStorage.dispose();
@@ -125,6 +130,17 @@ namespace tiki
 			}
 		}
 #endif
+
+		if( !m_loadingThread.isCreated() )
+		{
+			while( !m_runningRequests.isEmpty() )
+			{
+				ResourceRequest& data = *m_runningRequests.getBegin();
+				m_runningRequests.removeSortedByValue( data );
+
+				updateResourceLoading( &data );
+			}
+		}
 	}
 
 	void ResourceManager::registerResourceType( fourcc type, const FactoryContext& factoryContext )
@@ -162,6 +178,7 @@ namespace tiki
 
 		while (request.isLoading())
 		{
+			update();
 			Thread::sleepCurrentThread( 250 );
 		}
 
@@ -261,28 +278,7 @@ namespace tiki
 				continue;
 			}
 
-			ResourceRequest& request = *pData;
-
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
-			if ( s_enableAssetConverterWatch )
-			{
-				m_pAssetConverter->lockConversion();
-			}
-#endif
-
-			const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType );
-
-			const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
-			traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
-
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
-			if ( s_enableAssetConverterWatch )
-			{
-				m_pAssetConverter->unlockConversion();
-			}
-#endif
-
-			request.m_isLoading = false;
+			updateResourceLoading( pData );
 		}
 	}
 
@@ -292,5 +288,31 @@ namespace tiki
 		pManager->threadEntry( thread );
 
 		return 0;
+	}
+
+	void ResourceManager::updateResourceLoading( ResourceRequest* pData )
+	{
+		ResourceRequest& request = *pData;
+
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+		if( s_enableAssetConverterWatch )
+		{
+			m_pAssetConverter->lockConversion();
+		}
+#endif
+
+		const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType );
+
+		const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
+		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
+
+#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+		if( s_enableAssetConverterWatch )
+		{
+			m_pAssetConverter->unlockConversion();
+		}
+#endif
+
+		request.m_isLoading = false;
 	}
 }

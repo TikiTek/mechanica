@@ -30,35 +30,23 @@ namespace tiki
 		return s_aD3dHeapType[ binding ];
 	}
 
-	//static D3D12_RESOURCE_USAGE getD3dResourceUsage( GraphicsBufferType binding, bool dynamic )
-	//{
-	//	if( dynamic )
-	//	{
-	//		return D3D12_RESOURCE_USAGE_GENERIC_READ;
-	//	}
-
-	//	static const D3D12_RESOURCE_USAGE s_aD3dResourceUsage[] =
-	//	{
-	//		D3D12_RESOURCE_USAGE_GENERIC_READ,
-	//		D3D12_RESOURCE_USAGE_INITIAL,
-	//		D3D12_RESOURCE_USAGE_INITIAL
-	//	};
-	//	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dResourceUsage ) == GraphicsBufferType_Count );
-
-	//	TIKI_ASSERT( binding < GraphicsBufferType_Count );
-	//	return s_aD3dResourceUsage[ binding ];
-	//}
-
-	DXGI_FORMAT graphics::getD3dIndexFormat( IndexType type )
+	static D3D12_RESOURCE_STATES getD3dResourceState( GraphicsBufferType binding, bool dynamic )
 	{
-		if( type == IndexType_UInt16 )
+		if( dynamic )
 		{
-			return DXGI_FORMAT_R16_UINT;
+			return D3D12_RESOURCE_STATE_GENERIC_READ;
 		}
-		else
+
+		static const D3D12_RESOURCE_STATES s_aD3dResourceUsage[] =
 		{
-			return DXGI_FORMAT_R32_UINT;
-		}
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_COMMON,
+			D3D12_RESOURCE_STATE_COMMON
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aD3dResourceUsage ) == GraphicsBufferType_Count );
+
+		TIKI_ASSERT( binding < GraphicsBufferType_Count );
+		return s_aD3dResourceUsage[ binding ];
 	}
 
 	BaseBuffer::BaseBuffer()
@@ -84,16 +72,16 @@ namespace tiki
 			size = alignValue< uint >( size, 256u );
 		}
 
-		ID3D12Device* pDevice = graphics::getDevice( graphicsSystem );
+		ID3D12Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 
 		const D3D12_HEAP_TYPE heapType				= getD3dHeapType( binding, dynamic );
-		const D3D12_RESOURCE_USAGE resourceUsage	= getD3dResourceUsage( binding, dynamic );
+		const D3D12_RESOURCE_STATES resourceState	= getD3dResourceState( binding, dynamic );
 
 		HRESULT result = pDevice->CreateCommittedResource(
-			&CD3D12_HEAP_PROPERTIES( heapType ),
-			D3D12_HEAP_MISC_NONE,
-			&D3D12_RESOURCE_DESC::Buffer( size ),
-			resourceUsage,
+			&CD3DX12_HEAP_PROPERTIES( heapType ),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer( size ),
+			resourceState,
 			nullptr,
 			IID_PPV_ARGS( &m_pBuffer )
 		);
@@ -110,10 +98,10 @@ namespace tiki
 			{
 				ID3D12Resource* pUploadBuffer = nullptr;
 				result = pDevice->CreateCommittedResource(
-					&CD3D12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
-					D3D12_HEAP_MISC_NONE,
-					&CD3D12_RESOURCE_DESC::Buffer( size ),
-					D3D12_RESOURCE_USAGE_GENERIC_READ,
+					&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+					D3D12_HEAP_FLAG_NONE,
+					&CD3DX12_RESOURCE_DESC::Buffer( size ),
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
 					IID_PPV_ARGS( &pUploadBuffer )
 				);
@@ -129,10 +117,10 @@ namespace tiki
 				initData.RowPitch	= size;
 				initData.SlicePitch	= size;
 
-				ID3D12GraphicsCommandList* pCommandList = graphics::getCommandList( graphicsSystem );
-				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_INITIAL, D3D12_RESOURCE_USAGE_COPY_DEST );
+				ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::getCommandList( graphicsSystem );
+				GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST );
 				UpdateSubresources<1>( pCommandList, m_pBuffer, pUploadBuffer, 0, 0, 1, &initData );
-				graphics::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_USAGE_COPY_DEST, D3D12_RESOURCE_USAGE_GENERIC_READ );
+				GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_pBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ );
 
 				pUploadBuffer->Release();
 				pUploadBuffer = nullptr;
@@ -151,8 +139,8 @@ namespace tiki
 			// create descriptor heap
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 			heapDesc.NumDescriptors	= 1u;
-			heapDesc.Type			= D3D12_CBV_SRV_UAV_DESCRIPTOR_HEAP;
-			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_SHADER_VISIBLE;
+			heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_pDescriptorHeap ) ) ) )
 			{
@@ -175,7 +163,7 @@ namespace tiki
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )
 	{
-		graphics::safeRelease( &m_pDescriptorHeap );
-		graphics::safeRelease( &m_pBuffer );
+		GraphicsSystemPlatform::safeRelease( &m_pDescriptorHeap );
+		GraphicsSystemPlatform::safeRelease( &m_pBuffer );
 	}
 }

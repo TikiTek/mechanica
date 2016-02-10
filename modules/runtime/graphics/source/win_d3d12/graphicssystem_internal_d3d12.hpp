@@ -3,8 +3,11 @@
 
 #include "graphicstypes_d3d12.hpp"
 
-#include <dxgi.h>
+#include "tiki/graphics/pixelformat.hpp"
+
+#include <dxgi1_4.h>
 #include <d3d12.h>
+#include <d3dx12.h>
 
 namespace tiki
 {
@@ -12,20 +15,23 @@ namespace tiki
 	class UploadHeapD3d12;
 	struct GraphicsSystemPlatformData;
 	enum IndexType;
-
-	namespace graphics
+	
+	class GraphicsSystemPlatform
 	{
-		GraphicsSystemPlatformData& getPlatformData( GraphicsSystem& graphicSystem );
-		ID3D12Device*				getDevice( GraphicsSystem& graphicsSystem );
-		ID3D12GraphicsCommandList*	getCommandList( GraphicsSystem& graphicsSystem );
-		UploadHeapD3d12&			getUploadHeap( GraphicsSystem& graphicsSystem );
+	public:
 
-		DXGI_FORMAT					getD3dIndexFormat( IndexType type );
+		static ID3D12Device*				getDevice( GraphicsSystem& graphicsSystem );
+		static ID3D12GraphicsCommandList*	getCommandList( GraphicsSystem& graphicsSystem );
+		static ID3D12RootSignature*			getRootSignature( GraphicsSystem& graphicsSystem );
+		static UploadHeapD3d12&				getUploadHeap( GraphicsSystem& graphicsSystem );
 
-		void						setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, UINT stateBefore, UINT stateAfter );
+		static DXGI_FORMAT					getD3dPixelFormat( PixelFormat pixelFormat, bool useTypelessFormat );
+		static DXGI_FORMAT					getD3dIndexFormat( IndexType type );
+
+		static void							setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter );
 
 		template<class T>
-		TIKI_FORCE_INLINE void safeRelease( T** ppObject )
+		static TIKI_FORCE_INLINE void safeRelease( T** ppObject )
 		{
 			if( *ppObject != nullptr )
 			{
@@ -33,7 +39,7 @@ namespace tiki
 				*ppObject = nullptr;
 			}
 		}
-	}
+	};
 }
 
 #endif // TIKI_GRAPHICSSYSTEM_INTERNAL_D3D12_HPP__INCLUDED__

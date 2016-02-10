@@ -58,9 +58,9 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
 
 		m_pGraphicsSystem				= &graphicsSystem;
-		m_platformData.pDevice			= graphics::getDevice( graphicsSystem );
-		m_platformData.pCommandList		= graphics::getCommandList( graphicsSystem );
-		m_platformData.pRootSignature	= graphics::getPlatformData( graphicsSystem ).pRootSignature;
+		m_platformData.pDevice			= GraphicsSystemPlatform::getDevice( graphicsSystem );
+		m_platformData.pCommandList		= GraphicsSystemPlatform::getCommandList( graphicsSystem );
+		m_platformData.pRootSignature	= GraphicsSystemPlatform::getRootSignature( graphicsSystem );
 
 		m_pRenderTarget = nullptr;
 
@@ -184,10 +184,10 @@ namespace tiki
 		if ( m_currentRenderPassDepth != 0u )
 		{
 			const RenderTarget& renderTarget = *m_apRenderPassesStack[ m_currentRenderPassDepth - 1u ];
-			m_platformData.pCommandList->SetRenderTargets(
-				&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(),
-				TRUE,
+			m_platformData.pCommandList->OMSetRenderTargets(
 				(UINT)renderTarget.m_colorBufferCount,
+				&renderTarget.m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart(),
+				TRUE,				
 				&renderTarget.m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart()
 			);
 
@@ -196,7 +196,7 @@ namespace tiki
 		else
 		{
 			m_pRenderTarget = nullptr;
-			m_platformData.pCommandList->SetRenderTargets( nullptr, FALSE, 0u, nullptr );
+			m_platformData.pCommandList->OMSetRenderTargets( 0u, nullptr, FALSE, nullptr );
 		}
 
 		invalidateState();
@@ -303,9 +303,9 @@ namespace tiki
 		D3D12_INDEX_BUFFER_VIEW bufferView;
 		bufferView.BufferLocation	= indexBuffer.m_pBuffer->GetGPUVirtualAddress();
 		bufferView.SizeInBytes		= UINT( indexBuffer.getCount() * indexBuffer.getIndexType() );
-		bufferView.Format			= graphics::getD3dIndexFormat( indexBuffer.getIndexType() );
+		bufferView.Format			= GraphicsSystemPlatform::getD3dIndexFormat( indexBuffer.getIndexType() );
 
-		m_platformData.pCommandList->SetIndexBuffer( &bufferView );
+		m_platformData.pCommandList->IASetIndexBuffer( &bufferView );
 	}
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer )
@@ -315,7 +315,7 @@ namespace tiki
 		bufferView.SizeInBytes		= UINT( vertexBuffer.getCount() * vertexBuffer.getStride() );
 		bufferView.StrideInBytes	= UINT( vertexBuffer.getStride() );
 
-		m_platformData.pCommandList->SetVertexBuffers( (UINT)slot, &bufferView, 1u );
+		m_platformData.pCommandList->IASetVertexBuffers( (UINT)slot, 1u, &bufferView );
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
@@ -337,7 +337,7 @@ namespace tiki
 		bufferView.BufferLocation	= m_immediateVertexData.m_pBuffer->GetGPUVirtualAddress();
 		bufferView.SizeInBytes		= UINT( m_immediateVertexCount * m_immediateVertexStride );
 		bufferView.StrideInBytes	= UINT( m_immediateVertexStride );
-		m_platformData.pCommandList->SetVertexBuffers( 0u, &bufferView, 1u );
+		m_platformData.pCommandList->IASetVertexBuffers( 0u, 1u, &bufferView );
 
 		prepareDrawCall();
 		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );
@@ -422,7 +422,7 @@ namespace tiki
 				TIKI_DECLARE_STACKANDZERO( D3D12_GRAPHICS_PIPELINE_STATE_DESC, pipelineDesc );
 				pipelineDesc.BlendState				= m_pBlendState->m_platformData.blendDesc;
 				pipelineDesc.DepthStencilState		= m_pDepthStencilState->m_platformData.depthStencilDesc;
-				pipelineDesc.DSVFormat				= graphics::getD3dFormat( m_pRenderTarget->m_depthBuffer.format, TextureFlags_DepthStencil );
+				pipelineDesc.DSVFormat				= GraphicsSystemPlatform::getD3dPixelFormat( m_pRenderTarget->m_depthBuffer.format, false );
 				pipelineDesc.InputLayout			= m_pVertexInputBinding->m_platformData.inputLayoutDesc;
 				pipelineDesc.NumRenderTargets		= (UINT)m_pRenderTarget->m_colorBufferCount;
 				pipelineDesc.PrimitiveTopologyType	= s_aTopologies[ m_primitiveTopology ];
@@ -434,7 +434,7 @@ namespace tiki
 
 				for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
 				{
-					pipelineDesc.RTVFormats[ i ] = graphics::getD3dFormat( m_pRenderTarget->m_colorBuffers[ i ].format, TextureFlags_RenderTarget );
+					pipelineDesc.RTVFormats[ i ] = GraphicsSystemPlatform::getD3dPixelFormat( m_pRenderTarget->m_colorBuffers[ i ].format, false );
 				}
 
 				TIKI_VERIFY( SUCCEEDED( m_platformData.pDevice->CreateGraphicsPipelineState( &pipelineDesc, IID_PPV_ARGS( &pPipelineState ) ) ) );
@@ -523,7 +523,7 @@ namespace tiki
 				}
 			}
 
-			m_platformData.pCommandList->SetDescriptorHeaps( heaps.getBegin(), (UINT)heaps.getCount() );
+			m_platformData.pCommandList->SetDescriptorHeaps( (UINT)heaps.getCount(), heaps.getBegin() );
 
 			for (UINT i = 0u; i < heaps.getCount(); ++i)
 			{
