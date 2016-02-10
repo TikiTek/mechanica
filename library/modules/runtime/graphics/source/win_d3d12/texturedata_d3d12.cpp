@@ -7,8 +7,7 @@
 
 #include "graphicssystem_internal_d3d12.hpp"
 #include "uploadheap_d3d12.hpp"
-
-#include <d3dx12.h>
+#include "descriptorpool_d3d12.hpp"
 
 namespace tiki
 {
@@ -114,12 +113,26 @@ namespace tiki
 			break;
 		}
 
+		D3D12_CLEAR_VALUE* pClearValue = nullptr;
+
+		TIKI_DECLARE_STACKANDZERO( D3D12_CLEAR_VALUE, clearValue );
+		clearValue.Format = dxFormat;
+		if( isBitSet( m_description.flags, TextureFlags_DepthStencil ) )
+		{
+			clearValue.DepthStencil.Depth = 1.0f;
+			pClearValue = &clearValue;
+		}
+		else if( isBitSet( m_description.flags, TextureFlags_RenderTarget ) )
+		{
+			pClearValue = &clearValue;
+		}
+
 		HRESULT result = pDevice->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
+			pClearValue,
 			IID_PPV_ARGS( &m_platformData.pResource )
 		);
 
@@ -182,49 +195,40 @@ namespace tiki
 	
 		if( isBitSet( description.flags, TextureFlags_ShaderInput ) )
 		{
-			// create descriptor heap
+			DescriptorPoolD3d12& shaderResourcePool = GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem );
+			m_platformData.shaderViewHandle = shaderResourcePool.allocateDescriptor();
+			if( m_platformData.shaderViewHandle == InvalidDescriptorHandle )
 			{
-				TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
-				heapDesc.NumDescriptors = 1u;
-				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-				heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_platformData.pDescriptorHeap ) ) ) )
-				{
-					dispose( graphicsSystem );
-					return false;
-				}
+				dispose( graphicsSystem );
+				return false;
 			}
 
-			// create shader resource view
+			TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
+			viewDesc.ViewDimension				= getD3dViewDimentions( (TextureType)description.type );
+			viewDesc.Format						= dxFormat;
+			viewDesc.Shader4ComponentMapping	= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+			switch( m_description.type )
 			{
-				TIKI_DECLARE_STACKANDZERO( D3D12_SHADER_RESOURCE_VIEW_DESC, viewDesc );
-				viewDesc.ViewDimension				= getD3dViewDimentions( (TextureType)description.type );
-				viewDesc.Format						= dxFormat;
-				viewDesc.Shader4ComponentMapping	= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			case TextureType_1d:
+				viewDesc.Texture1D.MipLevels = description.mipCount;
+				break;
 
-				switch (m_description.type)
-				{
-				case TextureType_1d:
-					viewDesc.Texture1D.MipLevels = description.mipCount;
-					break;
+			case TextureType_2d:
+				viewDesc.Texture2D.MipLevels = description.mipCount;
+				break;
 
-				case TextureType_2d:
-					viewDesc.Texture2D.MipLevels = description.mipCount;
-					break;
+			case TextureType_3d:
+				viewDesc.Texture3D.MipLevels = description.mipCount;
+				break;
 
-				case TextureType_3d:
-					viewDesc.Texture3D.MipLevels = description.mipCount;
-					break;
+			case TextureType_Cube:
+				viewDesc.TextureCube.MipLevels = description.mipCount;
+				break;
 
-				case TextureType_Cube:
-					viewDesc.TextureCube.MipLevels = description.mipCount;
-					break;
-
-				}
-
-				pDevice->CreateShaderResourceView( m_platformData.pResource, &viewDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
 			}
+
+			pDevice->CreateShaderResourceView( m_platformData.pResource, &viewDesc, shaderResourcePool.getCpuHandle( m_platformData.shaderViewHandle ) );
 		}
 
 		return true;
@@ -232,7 +236,12 @@ namespace tiki
 
 	void TextureData::dispose( GraphicsSystem& graphicsSystem )
 	{
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pDescriptorHeap );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pResource );
+
+		if( m_platformData.shaderViewHandle != InvalidDescriptorHandle )
+		{
+			GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem ).freeDescriptor( m_platformData.shaderViewHandle );
+			m_platformData.shaderViewHandle = InvalidDescriptorHandle;
+		}
 	}
 }

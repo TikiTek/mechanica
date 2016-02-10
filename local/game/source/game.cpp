@@ -31,10 +31,11 @@ namespace tiki
 
 		if ( isStringEquals( userName, "Tim") ||
 			 isStringEquals( userName, "tim.boden" ) ||
+			 isStringEquals( userName, "tbode" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			return GameStates_Test;
-			//return GameStates_BasicTest;
+			//return GameStates_Test;
+			return GameStates_BasicTest;
 			//return GameStates_Play;
 		}
 #endif

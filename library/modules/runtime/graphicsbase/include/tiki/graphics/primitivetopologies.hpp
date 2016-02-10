@@ -11,7 +11,6 @@ namespace tiki
 		PrimitiveTopology_TriangleList,
 		PrimitiveTopology_TriangleStrip,
 
-
 		PrimitiveTopology_Count
 	};
 }

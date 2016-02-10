@@ -10,6 +10,11 @@ namespace tiki
 		return graphicsSystem.m_platformData.pDevice;
 	}
 
+	/*static*/ IDXGISwapChain1* GraphicsSystemPlatform::getSwapChain( GraphicsSystem& graphicsSystem )
+	{
+		return graphicsSystem.m_platformData.pSwapChain;
+	}
+
 	/*static*/ ID3D12GraphicsCommandList* GraphicsSystemPlatform::getCommandList( GraphicsSystem& graphicsSystem )
 	{
 		return graphicsSystem.m_platformData.pCommandList;
@@ -25,9 +30,29 @@ namespace tiki
 		return graphicsSystem.m_platformData.uploadHeap;
 	}
 
+	/*static*/ DescriptorPoolD3d12& GraphicsSystemPlatform::getShaderResourcePool( GraphicsSystem& graphicsSystem )
+	{
+		return graphicsSystem.m_platformData.shaderResourcePool;
+	}
+
+	/*static*/ DescriptorPoolD3d12& GraphicsSystemPlatform::getSamplerPool( GraphicsSystem& graphicsSystem )
+	{
+		return graphicsSystem.m_platformData.samplerPool;
+	}
+
+	/*static*/ DescriptorPoolD3d12& GraphicsSystemPlatform::getRenderTargetPool( GraphicsSystem& graphicsSystem )
+	{
+		return graphicsSystem.m_platformData.renderTargetPool;
+	}
+
+	/*static*/ DescriptorPoolD3d12& GraphicsSystemPlatform::getDepthStencilPool( GraphicsSystem& graphicsSystem )
+	{
+		return graphicsSystem.m_platformData.depthStencilPool;
+	}
+
 	/*static*/ DXGI_FORMAT GraphicsSystemPlatform::getD3dPixelFormat( PixelFormat pixelFormat, bool useTypelessFormat )
 	{
-		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
+		TIKI_ASSERT( pixelFormat < PixelFormat_Count || pixelFormat == PixelFormat_Invalid );
 
 		static DXGI_FORMAT s_formatLookup[] =
 		{
@@ -45,6 +70,10 @@ namespace tiki
 		if( useTypelessFormat && pixelFormat == PixelFormat_Depth24Stencil8 )
 		{
 			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		}
+		else if( pixelFormat == PixelFormat_Invalid )
+		{
+			return DXGI_FORMAT_UNKNOWN;
 		}
 
 		return s_formatLookup[ pixelFormat ];

@@ -7,6 +7,7 @@
 #include "tiki/graphics/indexbuffer.hpp"
 #include "tiki/graphics/vertexbuffer.hpp"
 
+#include "descriptorpool_d3d12.hpp"
 #include "graphicssystem_internal_d3d12.hpp"
 
 namespace tiki
@@ -52,13 +53,13 @@ namespace tiki
 	BaseBuffer::BaseBuffer()
 	{
 		m_pBuffer			= nullptr;
-		m_pDescriptorHeap	= nullptr;
+		m_descriptorHandle	= InvalidDescriptorHandle;
 	}
 
 	BaseBuffer::~BaseBuffer()
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
-		TIKI_ASSERT( m_pDescriptorHeap == nullptr );
+		TIKI_ASSERT( m_descriptorHandle == InvalidDescriptorHandle );
 	}
 
 	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
@@ -136,13 +137,9 @@ namespace tiki
 
 		if ( binding == GraphicsBufferType_ConstantBuffer )
 		{
-			// create descriptor heap
-			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
-			heapDesc.NumDescriptors	= 1u;
-			heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-			if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_pDescriptorHeap ) ) ) )
+			DescriptorPoolD3d12& shaderResourcePool = GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem );
+			m_descriptorHandle = shaderResourcePool.allocateDescriptor();
+			if( m_descriptorHandle == InvalidDescriptorHandle )
 			{
 				dispose( graphicsSystem );
 				return false;
@@ -151,11 +148,11 @@ namespace tiki
 			TIKI_DECLARE_STACKANDZERO( D3D12_CONSTANT_BUFFER_VIEW_DESC, viewDesc );
 			viewDesc.SizeInBytes = (UINT)size;
 
-			pDevice->CreateConstantBufferView( &viewDesc, m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+			pDevice->CreateConstantBufferView( &viewDesc, shaderResourcePool.getCpuHandle( m_descriptorHandle ) );
 		}
 		else
 		{
-			m_pDescriptorHeap = nullptr;
+			m_descriptorHandle = InvalidDescriptorHandle;
 		}
 
 		return true;
@@ -163,7 +160,12 @@ namespace tiki
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )
 	{
-		GraphicsSystemPlatform::safeRelease( &m_pDescriptorHeap );
 		GraphicsSystemPlatform::safeRelease( &m_pBuffer );
+
+		if( m_descriptorHandle != InvalidDescriptorHandle )
+		{
+			GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem ).freeDescriptor( m_descriptorHandle );
+			m_descriptorHandle = InvalidDescriptorHandle;
+		}
 	}
 }
