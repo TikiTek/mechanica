@@ -4,6 +4,7 @@
 #include "tiki/base/memory.hpp"
 #include "tiki/graphics/texturedata.hpp"
 
+#include "descriptorpool_d3d12.hpp"
 #include "graphicssystem_internal_d3d12.hpp"
 
 namespace tiki
@@ -27,14 +28,11 @@ namespace tiki
 	RenderTarget::RenderTarget()
 		: m_width( 0u ), m_height( 0u ), m_colorBufferCount( 0u )
 	{
-		m_platformData.pColorHeap = nullptr;
-		m_platformData.pDepthHeap = nullptr;
+		TIKI_ASSERT( TIKI_COUNT( m_colorBuffers ) == TIKI_COUNT( m_platformData.colorHandles ) );
 	}
 
 	RenderTarget::~RenderTarget()
 	{
-		TIKI_ASSERT( m_platformData.pColorHeap == nullptr );
-		TIKI_ASSERT( m_platformData.pDepthHeap == nullptr );
 	}
 
 	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
@@ -51,34 +49,29 @@ namespace tiki
 		{
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 
-			if( colorBufferCount > 0u )
+			for( size_t i = 0u; i < colorBufferCount; ++i )
 			{
-				heapDesc.NumDescriptors	= (UINT)colorBufferCount;
-				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pColorHeap ) ) )
-				{
-					dispose( graphicsSystem );
-					return false;
-				}
 			}
 
 			if( pDepthBuffer != nullptr )
 			{
-				heapDesc.NumDescriptors	= 1u;
-				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pDepthHeap ) ) )
-				{
-					dispose( graphicsSystem );
-					return false;
-				}
 			}
 		}
 
-		TIKI_ASSERT( pColorBuffers != nullptr ||colorBufferCount == 0u );
+		TIKI_ASSERT( pColorBuffers != nullptr || colorBufferCount == 0u );
+
+		DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( graphicsSystem );
 		for (size_t i = 0u; i < m_colorBufferCount; ++i)
 		{
 			m_colorBuffers[ i ] = pColorBuffers[ i ];
 			TIKI_ASSERT( pColorBuffers[ i ].pDataBuffer != nullptr );
+
+			m_platformData.colorHandles[ i ] = renderTargetPool.allocateDescriptor();
+			if( m_platformData.colorHandles[ i ] == InvalidDescriptorHandle )
+			{
+				dispose( graphicsSystem );
+				return false;
+			}
 
 			checkSize( m_width, m_height, pColorBuffers[ i ].pDataBuffer->getWidth(), pColorBuffers[ i ].pDataBuffer->getHeight() );
 
@@ -86,7 +79,7 @@ namespace tiki
 			viewDesc.Format						= GraphicsSystemPlatform::getD3dPixelFormat( (PixelFormat)pColorBuffers[ i ].pDataBuffer->getDescription().format, false );
 			viewDesc.ViewDimension				= D3D12_RTV_DIMENSION_TEXTURE2D;
 
-			pDevice->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &viewDesc, m_platformData.pColorHeap->GetCPUDescriptorHandleForHeapStart() );
+			pDevice->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &viewDesc, renderTargetPool.getCpuHandle( m_platformData.colorHandles[ i ] ) );
 		}
 
 		for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
@@ -99,20 +92,28 @@ namespace tiki
 			m_depthBuffer = *pDepthBuffer;
 			TIKI_ASSERT( pDepthBuffer->pDataBuffer != nullptr );
 
+			DescriptorPoolD3d12& depthStencilPool = GraphicsSystemPlatform::getDepthStencilPool( graphicsSystem );
+			m_platformData.depthHandle = depthStencilPool.allocateDescriptor();
+			if( m_platformData.depthHandle == InvalidDescriptorHandle )
+			{
+				dispose( graphicsSystem );
+				return false;
+			}
+
 			checkSize( m_width, m_height, pDepthBuffer->pDataBuffer->getWidth(), pDepthBuffer->pDataBuffer->getHeight() );
 
 			TIKI_DECLARE_STACKANDZERO( D3D12_DEPTH_STENCIL_VIEW_DESC, viewDesc );
 			viewDesc.Format				= GraphicsSystemPlatform::getD3dPixelFormat( (PixelFormat)pDepthBuffer->pDataBuffer->getDescription( ).format, false );
 			viewDesc.ViewDimension		= D3D12_DSV_DIMENSION_TEXTURE2D;
 
-			pDevice->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &viewDesc, m_platformData.pDepthHeap->GetCPUDescriptorHandleForHeapStart() );
+			pDevice->CreateDepthStencilView( pDepthBuffer->pDataBuffer->m_platformData.pResource, &viewDesc, depthStencilPool.getCpuHandle( m_platformData.depthHandle ) );
 		}
 		else
 		{
 			m_depthBuffer.format		= PixelFormat_Invalid;
 			m_depthBuffer.pDataBuffer	= nullptr;
 
-			m_platformData.pDepthHeap	= nullptr;
+			m_platformData.depthHandle	= InvalidDescriptorHandle;
 		}
 
 		return true;
@@ -120,12 +121,22 @@ namespace tiki
 
 	void RenderTarget::dispose( GraphicsSystem& graphicsSystem )
 	{
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pColorHeap );
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pDepthHeap );
-
+		DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( graphicsSystem );
 		for( size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i )
 		{
+			if( m_platformData.colorHandles[ i ] != InvalidDescriptorHandle )
+			{
+				renderTargetPool.freeDescriptor( m_platformData.colorHandles[ i ] );
+				m_platformData.colorHandles[ i ] = InvalidDescriptorHandle;
+			}
+
 			m_colorBuffers[ i ].clear();
+		}
+
+		if( m_platformData.depthHandle != InvalidDescriptorHandle )
+		{
+			GraphicsSystemPlatform::getDepthStencilPool( graphicsSystem ).freeDescriptor( m_platformData.depthHandle );
+			m_platformData.depthHandle = InvalidDescriptorHandle;
 		}
 
 		m_depthBuffer.clear();

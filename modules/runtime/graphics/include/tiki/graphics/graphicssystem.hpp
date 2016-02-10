@@ -13,6 +13,7 @@
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
 #include "tiki/graphics/shader.hpp"
+#include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
 
@@ -124,6 +125,8 @@ namespace tiki
 
 		const VertexFormat*									m_pStockVertexFormats[ StockVertexFormat_Count ];
 
+		TextureData											m_backBufferColorData;
+		TextureData											m_backBufferDepthData;
 		RenderTarget										m_backBufferTarget;
 
 		GraphicsStateObjectCollection< BlendState >			m_blendStates;

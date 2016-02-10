@@ -9,12 +9,12 @@ namespace tiki
 	{
 		TextureDataPlatformData()
 		{
-			pResource		= nullptr;
-			pDescriptorHeap	= nullptr;
+			pResource			= nullptr;
+			shaderViewHandle	= InvalidDescriptorHandle;
 		}
 
 		ID3D12Resource*			pResource;
-		ID3D12DescriptorHeap*	pDescriptorHeap;
+		DescriptorHandle		shaderViewHandle;
 	};
 }
 

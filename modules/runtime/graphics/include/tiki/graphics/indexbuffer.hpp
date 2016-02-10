@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	enum IndexType
+	enum IndexType : uint8
 	{		
 		IndexType_Invalid	= 0u,
 

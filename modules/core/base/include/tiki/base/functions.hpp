@@ -5,6 +5,10 @@
 #include "tiki/base/types.hpp"
 #include "tiki/base/numberlimits.hpp"
 
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_ENABLED( TIKI_BUILD_64BIT )
+#	include <intrin.h>
+#endif
+
 namespace tiki
 {
 	template<typename T>
@@ -84,6 +88,17 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint countLeadingZeros64( uint64 value )
 	{
+#if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_ENABLED( TIKI_BUILD_64BIT )
+		unsigned long result = 0u;
+		if( _BitScanReverse64( &result, value ) )
+		{
+			return 63u - result;
+		}
+		else
+		{
+			return 64u;
+		}
+#else
 		register uint64 x = value;
 		x |= (x >> 1);
 		x |= (x >> 2);
@@ -92,6 +107,7 @@ namespace tiki
 		x |= (x >> 16);
 		x |= (x >> 32);
 		return ( 64u - countPopulation64( x ) );
+#endif
 	}
 
 	TIKI_FORCE_INLINE uint clamp( uint value, uint min, uint max )

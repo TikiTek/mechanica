@@ -4,6 +4,9 @@
 #include "tiki/base/memory.hpp"
 #include "tiki/graphics/graphicssystemlimits.hpp"
 
+#include "graphicstypes_d3d12.hpp"
+
+// TODO: remove this include
 #include <d3d12.h>
 
 namespace tiki
@@ -47,10 +50,10 @@ namespace tiki
 	{
 		SamplerStatePlatformData()
 		{
-			pDescriptorHeap = nullptr;
+			samplerHandle = InvalidDescriptorHandle;
 		}
 
-		ID3D12DescriptorHeap*	pDescriptorHeap;
+		DescriptorHandle	samplerHandle;
 	};
 
 	struct VertexInputBindingPlatformData

@@ -58,7 +58,7 @@ namespace tiki
 
 	bool SamplerState::isCreated() const
 	{
-		return m_platformData.pDescriptorHeap != nullptr;
+		return m_platformData.samplerHandle != InvalidDescriptorHandle;
 	}
 
 	bool SamplerState::create( GraphicsSystem& graphicsSystem, const SamplerStateParamters& creationParamter )
@@ -80,26 +80,25 @@ namespace tiki
 		samplerDesc.MinLOD				= 0;
 		samplerDesc.MaxLOD				= D3D12_FLOAT32_MAX;
 
-		TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
-		heapDesc.NumDescriptors	= 1u;
-		heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-		heapDesc.Flags			= D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-		const HRESULT result = pDevice->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &m_platformData.pDescriptorHeap ) );
-		if( FAILED( result ) )
+		DescriptorPoolD3d12& samplerPool = GraphicsSystemPlatform::getSamplerPool( graphicsSystem );
+		m_platformData.samplerHandle = samplerPool.allocateDescriptor();
+		if( m_platformData.samplerHandle == InvalidDescriptorHandle )
 		{
-			dispose( graphicsSystem );
 			return false;
 		}
 
-		pDevice->CreateSampler( &samplerDesc, m_platformData.pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
+		pDevice->CreateSampler( &samplerDesc, samplerPool.getCpuHandle( m_platformData.samplerHandle ) );
 
 		return true;
 	}
 
-	void SamplerState::dispose( GraphicsSystem& /*graphicsSystem*/ )
+	void SamplerState::dispose( GraphicsSystem& graphicsSystem )
 	{
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pDescriptorHeap );
+		if( m_platformData.samplerHandle != InvalidDescriptorHandle )
+		{
+			GraphicsSystemPlatform::getSamplerPool( graphicsSystem ).freeDescriptor( m_platformData.samplerHandle );
+			m_platformData.samplerHandle = InvalidDescriptorHandle;
+		}
 		
 		GraphicsStateObject::dispose();
 	}

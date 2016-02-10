@@ -12,12 +12,15 @@ namespace tiki
 	{
 		RenderTargetPlatformData()
 		{
-			pColorHeap = nullptr;
-			pDepthHeap = nullptr;
+			for( size_t i = 0u; i < TIKI_COUNT( colorHandles ); ++i )
+			{
+				colorHandles[ i ] = InvalidDescriptorHandle;
+			}
+			depthHandle = InvalidDescriptorHandle;
 		}
 
-		ID3D12DescriptorHeap*		pColorHeap;
-		ID3D12DescriptorHeap*		pDepthHeap;
+		DescriptorHandle		colorHandles[ GraphicsSystemLimits_RenderTargetSlots ];
+		DescriptorHandle		depthHandle;
 	};
 }
 
