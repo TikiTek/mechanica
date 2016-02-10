@@ -1,7 +1,7 @@
 #ifndef TIKI_GRAPHICSCONTEXT_D3D12_HPP__INCLUDED__
 #define TIKI_GRAPHICSCONTEXT_D3D12_HPP__INCLUDED__
 
-#include "tiki/base/fixedsizedarray.hpp"
+#include "tiki/container/fixedsizedarray.hpp"
 
 #include "graphicstypes_d3d12.hpp"
 

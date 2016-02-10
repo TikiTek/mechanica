@@ -54,7 +54,7 @@ namespace tiki
 			if( colorBufferCount > 0u )
 			{
 				heapDesc.NumDescriptors	= (UINT)colorBufferCount;
-				heapDesc.Type			= D3D12_RTV_DESCRIPTOR_HEAP;
+				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pColorHeap ) ) )
 				{
 					dispose( graphicsSystem );
@@ -65,7 +65,7 @@ namespace tiki
 			if( pDepthBuffer != nullptr )
 			{
 				heapDesc.NumDescriptors	= 1u;
-				heapDesc.Type			= D3D12_DSV_DESCRIPTOR_HEAP;
+				heapDesc.Type			= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 				if( FAILED( pDevice->CreateDescriptorHeap( &heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_platformData.pDepthHeap ) ) )
 				{
 					dispose( graphicsSystem );
