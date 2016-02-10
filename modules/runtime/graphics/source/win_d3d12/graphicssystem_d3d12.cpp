@@ -337,7 +337,7 @@ namespace tiki
 	static bool graphics::initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D12_COMMAND_QUEUE_DESC, queueDesc );
-		queueDesc.Flags	= D3D12_COMMAND_QUEUE_NONE;
+		queueDesc.Flags	= D3D12_COMMAND_QUEUE_FLAG_NONE;
 		queueDesc.Type	= D3D12_COMMAND_LIST_TYPE_DIRECT;
 		if ( FAILED( data.pDevice->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( &data.pCommandQueue ) ) ) )
 		{
@@ -355,16 +355,16 @@ namespace tiki
 		}
 
 		D3D12_DESCRIPTOR_RANGE descRanges[ 3u ];
-		descRanges[ 0u ].Init( D3D12_DESCRIPTOR_RANGE_SRV, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
-		descRanges[ 1u ].Init( D3D12_DESCRIPTOR_RANGE_SAMPLER, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
-		descRanges[ 2u ].Init( D3D12_DESCRIPTOR_RANGE_CBV, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots, 0 );
+		descRanges[ 0u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_SRV, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
+		descRanges[ 1u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
+		descRanges[ 2u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_CBV, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots, 0 );
 
 		D3D12_ROOT_PARAMETER rootParameters[ 3u ];
 		rootParameters[ 0u ].InitAsDescriptorTable( 1u, &descRanges[ 0u ], D3D12_SHADER_VISIBILITY_ALL );
 		rootParameters[ 1u ].InitAsDescriptorTable( 1u, &descRanges[ 1u ], D3D12_SHADER_VISIBILITY_ALL );
 		rootParameters[ 2u ].InitAsDescriptorTable( 1u, &descRanges[ 2u ], D3D12_SHADER_VISIBILITY_ALL );
 
-		D3D12_ROOT_SIGNATURE descRootSignature;
+		D3D12_ROOT_SIGNATURE_DESC descRootSignature;
 		descRootSignature.Init( TIKI_COUNT( rootParameters ), rootParameters, 0u, nullptr, D3D12_ROOT_SIGNATURE_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
 
 		ID3DBlob* pOutputBlob	= nullptr;

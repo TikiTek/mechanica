@@ -9,14 +9,14 @@ namespace tiki
 {
 	static const D3D12_COMPARISON_FUNC s_aComparsionFunctionMapping[] =
 	{
-		D3D12_COMPARISON_NEVER,				// ComparsionFunction_Never
-		D3D12_COMPARISON_LESS,				// ComparsionFunction_Less
-		D3D12_COMPARISON_EQUAL,				// ComparsionFunction_Equal
-		D3D12_COMPARISON_LESS_EQUAL,		// ComparsionFunction_LessOrEqual
-		D3D12_COMPARISON_GREATER,			// ComparsionFunction_Greater
-		D3D12_COMPARISON_NOT_EQUAL,			// ComparsionFunction_NotEqual
-		D3D12_COMPARISON_GREATER_EQUAL,		// ComparsionFunction_GreaterOrEqual
-		D3D12_COMPARISON_ALWAYS				// ComparsionFunction_Always
+		D3D12_COMPARISON_FUNC_NEVER,			// ComparsionFunction_Never
+		D3D12_COMPARISON_FUNC_LESS,				// ComparsionFunction_Less
+		D3D12_COMPARISON_FUNC_EQUAL,			// ComparsionFunction_Equal
+		D3D12_COMPARISON_FUNC_LESS_EQUAL,		// ComparsionFunction_LessOrEqual
+		D3D12_COMPARISON_FUNC_GREATER,			// ComparsionFunction_Greater
+		D3D12_COMPARISON_FUNC_NOT_EQUAL,		// ComparsionFunction_NotEqual
+		D3D12_COMPARISON_FUNC_GREATER_EQUAL,	// ComparsionFunction_GreaterOrEqual
+		D3D12_COMPARISON_FUNC_ALWAYS			// ComparsionFunction_Always
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aComparsionFunctionMapping ) == ComparsionFunction_Count );
 
