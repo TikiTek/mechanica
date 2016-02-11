@@ -445,7 +445,6 @@ namespace tiki
 				}
 			}
 
-
 			if( pPipelineState == nullptr )
 			{
 				static const D3D12_PRIMITIVE_TOPOLOGY_TYPE s_aTopologieTypeMapping[] =
