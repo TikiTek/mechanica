@@ -15,6 +15,7 @@ struct ID3D12Resource;
 struct ID3D12RootSignature;
 struct IDXGISwapChain1;
 struct IDXGIFactory4;
+struct IDXGISwapChain3;
 
 struct D3D12_INPUT_ELEMENT_DESC;
 struct D3D12_CPU_DESCRIPTOR_HANDLE;

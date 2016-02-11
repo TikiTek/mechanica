@@ -34,7 +34,7 @@
 #	define TIKI_TRACE_WARNING	::tiki::debug::traceWarning
 #	define TIKI_TRACE_ERROR		::tiki::debug::traceError
 
-#	define TIKI_NOT_IMPLEMENTED	::tiki::debug::trace( "%s(%u): not implemented", __FILE__, __LINE__ )
+#	define TIKI_NOT_IMPLEMENTED	::tiki::debug::trace( "%s(%u): not implemented\n", __FILE__, __LINE__ )
 
 #else
 

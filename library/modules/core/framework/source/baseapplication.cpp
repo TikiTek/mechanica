@@ -111,10 +111,12 @@ namespace tiki
 			return false;
 		}
 
+		m_pBaseData->graphicSystem.beginFrame();
 		if( !initializeApplication() )
 		{
 			return false;
 		}
+		m_pBaseData->graphicSystem.endFrame();
 
 		m_isInitialized = true;
 
@@ -275,11 +277,11 @@ namespace tiki
 			}
 		}
 
-		updateApplication( wantToShutdown );
-
 		// render
 		{
 			GraphicsContext& graphicsContext = m_pBaseData->graphicSystem.beginFrame();
+
+			updateApplication( wantToShutdown );
 
 			renderApplication( graphicsContext );
 

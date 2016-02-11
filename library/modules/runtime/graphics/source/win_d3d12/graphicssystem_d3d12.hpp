@@ -25,12 +25,16 @@ namespace tiki
 			pBackBufferColorResouce	= nullptr;
 
 			backBufferColorHandle	= InvalidDescriptorHandle;
+
+			currentFench			= 0u;
 		}
 
 		ID3D12CommandAllocator*		pCommandAllocator;
 
 		ID3D12Resource*				pBackBufferColorResouce;
 		DescriptorHandle			backBufferColorHandle;
+
+		uint64						currentFench;
 	};
 
 	struct GraphicsSystemPlatformData
@@ -48,13 +52,11 @@ namespace tiki
 
 			waitEventHandle				= INVALID_HANDLE_VALUE;
 
-			swapBufferCount				= 0u;
 			currentSwapBufferIndex		= 0u;
-			currentFench				= 0u;
 		}
 
 		IDXGIFactory4*				pFactory;
-		IDXGISwapChain1*			pSwapChain;
+		IDXGISwapChain3*			pSwapChain;
 
 		ID3D12Device*				pDevice;
 		ID3D12CommandQueue*			pCommandQueue;
@@ -72,9 +74,8 @@ namespace tiki
 		HANDLE						waitEventHandle;
 
 		GraphicsSystemFrame			frames[ GraphicsSystemLimits_MaxFrameCount ];
-		uint						swapBufferCount;
 		uint						currentSwapBufferIndex;
-		uint64						currentFench;
+		
 	};
 }
 
