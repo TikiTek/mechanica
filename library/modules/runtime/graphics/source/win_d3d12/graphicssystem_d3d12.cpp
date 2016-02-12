@@ -293,6 +293,13 @@ namespace tiki
 
 		m_platformData.pCommandList->SetGraphicsRootSignature( m_platformData.pRootSignature );
 
+		ID3D12DescriptorHeap* apDescriptorHeaps[] =
+		{
+			m_platformData.shaderResourcePool.getHeap(),
+			m_platformData.samplerPool.getHeap()
+		};
+		m_platformData.pCommandList->SetDescriptorHeaps( TIKI_COUNT( apDescriptorHeaps ), apDescriptorHeaps );
+
 		return m_commandBuffer;
 	}
 
@@ -454,18 +461,46 @@ namespace tiki
 			return false;
 		}
 
-		CD3DX12_DESCRIPTOR_RANGE descRanges[ 3u ];
-		descRanges[ 0u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_SRV, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
-		descRanges[ 1u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots, 0 );
-		descRanges[ 2u ].Init( D3D12_DESCRIPTOR_RANGE_TYPE_CBV, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots, 0 );
+		FixedSizedArray< CD3DX12_DESCRIPTOR_RANGE, GraphicsDiscriptorIndex_Count > descRanges;
+		FixedArray< CD3DX12_ROOT_PARAMETER, GraphicsDiscriptorIndex_Count > rootParameters;
 
-		CD3DX12_ROOT_PARAMETER rootParameters[ 3u ];
-		rootParameters[ 0u ].InitAsDescriptorTable( 1u, &descRanges[ 0u ], D3D12_SHADER_VISIBILITY_ALL );
-		rootParameters[ 1u ].InitAsDescriptorTable( 1u, &descRanges[ 1u ], D3D12_SHADER_VISIBILITY_ALL );
-		rootParameters[ 2u ].InitAsDescriptorTable( 1u, &descRanges[ 2u ], D3D12_SHADER_VISIBILITY_ALL );
+		size_t i = 0u;
+		for( ; i < GraphicsDiscriptorIndex_FirstVertexTexture; ++i )
+		{
+			rootParameters[ i ].InitAsConstantBufferView( UINT( i - GraphicsDiscriptorIndex_FirstVertexConstant ), 0u, D3D12_SHADER_VISIBILITY_VERTEX );
+		}
+
+		for( ; i < GraphicsDiscriptorIndex_FirstVertexSampler; ++i )
+		{
+			descRanges.push( CD3DX12_DESCRIPTOR_RANGE( D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1u, UINT( i - GraphicsDiscriptorIndex_FirstVertexTexture ) ) );
+			rootParameters[ i ].InitAsDescriptorTable( 1u, &descRanges.getLast(), D3D12_SHADER_VISIBILITY_VERTEX );
+		}
+
+		for( ; i < GraphicsDiscriptorIndex_FirstPixelConstant; ++i )
+		{
+			descRanges.push( CD3DX12_DESCRIPTOR_RANGE( D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1u, UINT( i - GraphicsDiscriptorIndex_FirstVertexSampler ) ) );
+			rootParameters[ i ].InitAsDescriptorTable( 1u, &descRanges.getLast(), D3D12_SHADER_VISIBILITY_VERTEX );
+		}
+
+		for( ; i < GraphicsDiscriptorIndex_FirstPixelTexture; ++i )
+		{
+			rootParameters[ i ].InitAsConstantBufferView( UINT( i - GraphicsDiscriptorIndex_FirstPixelConstant ), 0u, D3D12_SHADER_VISIBILITY_PIXEL );
+		}
+
+		for( ; i < GraphicsDiscriptorIndex_FirstPixelSampler; ++i )
+		{
+			descRanges.push( CD3DX12_DESCRIPTOR_RANGE( D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1u, UINT( i - GraphicsDiscriptorIndex_FirstPixelTexture ) ) );
+			rootParameters[ i ].InitAsDescriptorTable( 1u, &descRanges.getLast(), D3D12_SHADER_VISIBILITY_PIXEL );
+		}
+
+		for( ; i < GraphicsDiscriptorIndex_Count; ++i )
+		{
+			descRanges.push( CD3DX12_DESCRIPTOR_RANGE( D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1u, UINT( i - GraphicsDiscriptorIndex_FirstPixelSampler ) ) );
+			rootParameters[ i ].InitAsDescriptorTable( 1u, &descRanges.getLast(), D3D12_SHADER_VISIBILITY_PIXEL );
+		}
 
 		CD3DX12_ROOT_SIGNATURE_DESC descRootSignature;
-		descRootSignature.Init( TIKI_COUNT( rootParameters ), rootParameters, 0u, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
+		descRootSignature.Init( (UINT)i, rootParameters.getBegin(), 0u, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
 
 		ID3DBlob* pOutputBlob	= nullptr;
 		ID3DBlob* pErrorBlob	= nullptr;

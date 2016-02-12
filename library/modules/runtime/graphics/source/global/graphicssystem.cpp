@@ -340,6 +340,24 @@ namespace tiki
 		pVertexInputBinding = nullptr;
 	}
 
+	DynamicBuffer GraphicsSystem::allocateDynamicBuffer( GraphicsBufferType type, uint size )
+	{
+		DynamicGpuBuffer* pGpuBuffer = nullptr;
+		if( m_lastDynamicBufferByType[ type ] != nullptr )
+		{
+			DynamicGpuBuffer* pLastGpuBuffer = m_lastDynamicBufferByType[ type ];
+			if( pLastGpuBuffer->currentGpuOffset + size <= pLastGpuBuffer->size )
+			{
+				pGpuBuffer = pLastGpuBuffer;
+			}
+		}
+
+		if( pGpuBuffer == nullptr )
+		{
+
+		}
+	}
+
 	const VertexFormat* GraphicsSystem::getStockVertexFormat( StockVertexFormat format ) const
 	{
 		TIKI_ASSERT( format < StockVertexFormat_Count );

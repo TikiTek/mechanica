@@ -3,12 +3,14 @@
 #define TIKI_GRAPHICSYSTEM_HPP
 
 #include "tiki/base/types.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/graphics/blendstate.hpp"
 #include "tiki/graphics/depthstencilstate.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicsrenderermode.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 #include "tiki/graphics/graphicsstateobjectcollection.hpp"
+#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/graphics/rasterizerstate.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
@@ -99,6 +101,8 @@ namespace tiki
 		const VertexInputBinding*	createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat );
 		void						disposeVertexInputBinding( const VertexInputBinding*& pVertexInputBinding );
 
+		DynamicBuffer				allocateDynamicBuffer( GraphicsBufferType type, uint size );
+
 		const VertexFormat*			getStockVertexFormat( StockVertexFormat format ) const;
 
 		GraphicsContext&			beginFrame();
@@ -117,6 +121,16 @@ namespace tiki
 			MaxVertexFormatCount		= 32u,
 			MaxVertexInputBindingCount	= 32u
 		};
+
+		struct DynamicGpuBuffer : public LinkedItem< DynamicGpuBuffer >
+		{
+			GraphicsBufferType	type;
+
+			BaseBuffer			gpuBuffer;
+			uint				size;
+			uint				currentGpuOffset;
+		};
+		typedef FixedArray< DynamicGpuBuffer*, GraphicsBufferType_Count > FixedDynamicGpuBufferArray;
 		
 		uint												m_frameNumber;
 		
@@ -136,6 +150,9 @@ namespace tiki
 		GraphicsStateObjectCollection< VertexFormat >		m_vertexFormats;
 		GraphicsStateObjectCollection< VertexInputBinding >	m_vertexInputBindings;
 
+		FixedDynamicGpuBufferArray							m_lastDynamicBufferByType;
+		LinkedList< DynamicGpuBuffer >						m_dynamicBuffers;
+		
 		bool												createPlatform( const GraphicsSystemParameters& params );
 		void												disposePlatform();
 
