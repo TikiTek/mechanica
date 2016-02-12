@@ -147,14 +147,14 @@ namespace tiki
 	template< typename T, uint TCapacity >
 	TIKI_FORCE_INLINE T& FixedSizedArray< T, TCapacity >::operator[]( uint index )
 	{
-		TIKI_ASSERT( index < TCapacity );
+		TIKI_ASSERT( index < m_count );
 		return m_aData[ index ];
 	}
 
 	template< typename T, uint TCapacity >
 	TIKI_FORCE_INLINE const T& FixedSizedArray< T, TCapacity >::operator[]( uint index ) const
 	{
-		TIKI_ASSERT( index < TCapacity );
+		TIKI_ASSERT( index < m_count );
 		return m_aData[ index ];
 	}
 }

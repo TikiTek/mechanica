@@ -11,6 +11,7 @@ namespace tiki
 
 	class BaseBuffer
 	{
+		friend class GraphicsSystem;
 		friend class GraphicsContext;
 
 	protected:
@@ -20,11 +21,15 @@ namespace tiki
 
 		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
 		void					dispose( GraphicsSystem& graphicsSystem );
+
+	private: // friend
+
+		ID3D12Resource*			getBuffer( GraphicsSystem& graphicsSystem ) const;
 		
 	private:
 
 		ID3D12Resource*			m_pBuffer;
-		DescriptorHandle		m_descriptorHandle;
+		//DescriptorHandle		m_descriptorHandle;
 		bool					m_dynamic;
 
 	};

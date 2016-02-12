@@ -127,9 +127,9 @@ namespace tiki
 
 	private:
 
-		enum MyEnum
+		enum
 		{
-			MaxImmediateGeometrySize = 10240u
+			MaxImmediateGeometrySize = 10u * 1024u
 		};
 
 		GraphicsSystem*				m_pGraphicsSystem;

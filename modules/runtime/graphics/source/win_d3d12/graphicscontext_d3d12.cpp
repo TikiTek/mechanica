@@ -57,10 +57,12 @@ namespace tiki
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
 		TIKI_ASSERT( m_platformData.pCommandList == nullptr );
 
-		m_pGraphicsSystem				= &graphicsSystem;
-		m_platformData.pDevice			= GraphicsSystemPlatform::getDevice( graphicsSystem );
-		m_platformData.pCommandList		= GraphicsSystemPlatform::getCommandList( graphicsSystem );
-		m_platformData.pRootSignature	= GraphicsSystemPlatform::getRootSignature( graphicsSystem );
+		m_pGraphicsSystem					= &graphicsSystem;
+		m_platformData.pDevice				= GraphicsSystemPlatform::getDevice( graphicsSystem );
+		m_platformData.pCommandList			= GraphicsSystemPlatform::getCommandList( graphicsSystem );
+		m_platformData.pRootSignature		= GraphicsSystemPlatform::getRootSignature( graphicsSystem );
+		m_platformData.pShaderResourcePool	= &GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem );
+		m_platformData.pSamplerPool			= &GraphicsSystemPlatform::getSamplerPool( graphicsSystem );
 
 		m_pRenderTarget = nullptr;
 
@@ -70,7 +72,7 @@ namespace tiki
 		}
 		m_currentRenderPassDepth = 0u;
 
-		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize / 4u, 4u, true );
+		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize * 10u, 4u, true );
 		m_immediateVertexCount	= 0u;
 		m_immediateVertexStride	= 0u;
 
@@ -283,6 +285,11 @@ namespace tiki
 	{
 		if ( m_apVertexSamplerStates[ slot ] != pSampler )
 		{
+			m_platformData.pCommandList->SetGraphicsRootDescriptorTable(
+				UINT( GraphicsDiscriptorIndex_FirstVertexSampler + slot ),
+				m_platformData.pSamplerPool->getGpuHandle( pSampler->m_platformData.samplerHandle )
+			);
+
 			m_apVertexSamplerStates[ slot ] = pSampler;
 		}
 	}
@@ -291,6 +298,11 @@ namespace tiki
 	{
 		if ( m_apVertexTextures[ slot ] != pTextureData )
 		{
+			m_platformData.pCommandList->SetGraphicsRootDescriptorTable(
+				UINT( GraphicsDiscriptorIndex_FirstVertexTexture + slot ),
+				m_platformData.pShaderResourcePool->getGpuHandle( pTextureData->m_platformData.shaderViewHandle )
+			);
+
 			m_apVertexTextures[ slot ] = pTextureData;
 		}
 	}
@@ -299,6 +311,11 @@ namespace tiki
 	{
 		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
+			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
+				UINT( GraphicsDiscriptorIndex_FirstVertexConstant + slot ),
+				buffer.m_pBuffer->GetGPUVirtualAddress()
+			);
+
 			m_apVertexConstants[ slot ] = &buffer;
 		}
 	}
@@ -314,6 +331,11 @@ namespace tiki
 	{
 		if ( m_apPixelSamplerStates[ slot ] != pSampler )
 		{
+			m_platformData.pCommandList->SetGraphicsRootDescriptorTable(
+				UINT( GraphicsDiscriptorIndex_FirstPixelSampler + slot ),
+				m_platformData.pSamplerPool->getGpuHandle( pSampler->m_platformData.samplerHandle )
+			);
+
 			m_apPixelSamplerStates[ slot ] = pSampler;
 		}
 	}
@@ -322,6 +344,11 @@ namespace tiki
 	{
 		if ( m_apPixelTextures[ slot ] != pTextureData )
 		{
+			m_platformData.pCommandList->SetGraphicsRootDescriptorTable(
+				UINT( GraphicsDiscriptorIndex_FirstPixelTexture + slot ),
+				m_platformData.pShaderResourcePool->getGpuHandle( pTextureData->m_platformData.shaderViewHandle )
+			);
+
 			m_apPixelTextures[ slot ] = pTextureData;
 		}
 	}
@@ -330,6 +357,11 @@ namespace tiki
 	{
 		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
+			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
+				UINT( GraphicsDiscriptorIndex_FirstPixelConstant + slot ),
+				buffer.m_pBuffer->GetGPUVirtualAddress()
+			);
+
 			m_apPixelConstants[ slot ] = &buffer;
 		}
 	}

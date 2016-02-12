@@ -7,6 +7,8 @@
 
 namespace tiki
 {
+	class DescriptorPoolD3d12;
+
 	enum
 	{
 		GraphicsSystemLimits_MaxPipelineStates	= 128u,
@@ -26,6 +28,8 @@ namespace tiki
 			pDevice				= nullptr;
 			pCommandList		= nullptr;
 			pRootSignature		= nullptr;
+			pShaderResourcePool	= nullptr;
+			pSamplerPool		= nullptr;
 		}
 
 		typedef FixedSizedArray< GraphicsContextPipelineState, GraphicsSystemLimits_MaxPipelineStates > PipelineStateArray;
@@ -34,7 +38,11 @@ namespace tiki
 		ID3D12GraphicsCommandList*	pCommandList;
 		ID3D12RootSignature*		pRootSignature;
 
+		DescriptorPoolD3d12*		pShaderResourcePool;
+		DescriptorPoolD3d12*		pSamplerPool;
+
 		PipelineStateArray			pipelineStates;
+		
 	};
 }
 

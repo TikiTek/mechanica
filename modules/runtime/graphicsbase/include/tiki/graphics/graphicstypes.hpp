@@ -1,15 +1,26 @@
 #ifndef TIKI_GRAPHICSTYPES_HPP__INCLUDED
 #define TIKI_GRAPHICSTYPES_HPP__INCLUDED
 
-#if __cplusplus
+#ifdef __cplusplus
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 
-#define TIKI_GRAPHICS_NAMESPACE_BEGIN namespace tiki {
-#define TIKI_GRAPHICS_NAMESPACE_END }
+#define TIKI_GRAPHICS_NAMESPACE_BEGIN	namespace tiki {
+#define TIKI_GRAPHICS_NAMESPACE_END		}
 
 namespace tiki
 {
+	struct DynamicBuffer
+	{
+		GraphicsBufferType	type;
+
+		BaseBuffer*			pGpuBuffer;
+		uint				gpuBufferOffset;
+
+		void*				pData;
+		uint				dataSize;
+	};
+
 	struct GraphicsMatrix33
 	{
 		float	data[ 9u ];
@@ -75,6 +86,7 @@ namespace tiki
 }
 
 #else
+// shader code
 
 #define TIKI_GRAPHICS_NAMESPACE_BEGIN
 #define TIKI_GRAPHICS_NAMESPACE_END
