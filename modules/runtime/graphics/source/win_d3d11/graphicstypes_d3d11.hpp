@@ -42,4 +42,10 @@ struct ID3D11SamplerState;
 
 enum DXGI_FORMAT;
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#	define TIKI_SET_DX_OBJECT_NAME( pObject, pName ) D3D_SET_OBJECT_NAME_A( pObject, pName )
+#else
+#	define TIKI_SET_DX_OBJECT_NAME( pObject, pName )
+#endif
+
 #endif // TIKI_GRAPHICSTYPES_HPP

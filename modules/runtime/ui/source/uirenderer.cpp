@@ -71,7 +71,7 @@ namespace tiki
 			m_pDepthStencilState == nullptr ||
 			m_pRasterizerState == nullptr ||
 			m_pSamplerState == nullptr ||
-			!m_vertexConstantBuffer.create( graphicsSystem, sizeof( UiVertexConstantData ) ) )
+			!m_vertexConstantBuffer.create( graphicsSystem, sizeof( UiVertexConstantData ), "UiVertexConstants" ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;

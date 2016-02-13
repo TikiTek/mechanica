@@ -3,6 +3,8 @@
 
 #include "tiki/base/types.hpp"
 
+#include "tiki/container/fixedarray.hpp"
+
 #include "graphicstypes_d3d12.hpp"
 
 namespace tiki
@@ -19,17 +21,14 @@ namespace tiki
 								BaseBuffer();
 								~BaseBuffer();
 
-		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
+		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );
 
-	private: // friend
-
-		ID3D12Resource*			getBuffer( GraphicsSystem& graphicsSystem ) const;
-		
 	private:
 
-		ID3D12Resource*			m_pBuffer;
-		//DescriptorHandle		m_descriptorHandle;
+		typedef FixedArray< ID3D12Resource*, GraphicsSystemLimits_MaxFrameCount > BufferArray;
+
+		BufferArray				m_buffers;
 		bool					m_dynamic;
 
 	};

@@ -67,6 +67,27 @@ namespace tiki
 		{
 			if( *ppObject != nullptr )
 			{
+				char nameBuffer[ 1024 ] = "Unnamed";
+				UINT length = TIKI_COUNT( nameBuffer );
+				(*ppObject)->GetPrivateData( WKPDID_D3DDebugObjectName, &length, nameBuffer );
+				if( length != 0 )
+				{
+					nameBuffer[ length ] = '\0';
+				}
+
+				ULONG refCount = (*ppObject)->Release();
+				TIKI_ASSERT( refCount >= 0 );
+
+				TIKI_TRACE_DEBUG( "[graphics] Release %s ref count is now: %i\n", nameBuffer, refCount );
+				*ppObject = nullptr;
+			}
+		}
+
+		template<class T>
+		static TIKI_FORCE_INLINE void safeReleaseBla( T** ppObject )
+		{
+			if( *ppObject != nullptr )
+			{
 				(*ppObject)->Release();
 				*ppObject = nullptr;
 			}

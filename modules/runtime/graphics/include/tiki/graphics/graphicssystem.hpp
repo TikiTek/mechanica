@@ -64,6 +64,7 @@ namespace tiki
 
 	class GraphicsSystem
 	{
+		friend class GraphicsContext;
 		friend class GraphicsSystemPlatform;
 		TIKI_NONCOPYABLE_CLASS( GraphicsSystem );
 

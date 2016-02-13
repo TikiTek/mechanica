@@ -28,7 +28,7 @@ namespace tiki
 		TextureData();
 		~TextureData();
 
-		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData = nullptr );
+		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData = nullptr, const char* pDebugName = nullptr );
 		void						dispose( GraphicsSystem& graphicsSystem );
 
 		uint						getWidth() const		{ return m_description.width; }

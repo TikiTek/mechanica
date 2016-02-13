@@ -93,7 +93,7 @@ namespace tiki
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSamplerState			= graphicsSystem.createSamplerState( SamplerStateParamters() );
 
-		if ( m_vertexConstantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ) ) == false )
+		if ( m_vertexConstantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ), "ImmediateVertexConstants" ) == false )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;

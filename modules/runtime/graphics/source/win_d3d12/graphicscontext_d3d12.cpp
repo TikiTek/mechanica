@@ -86,6 +86,12 @@ namespace tiki
 		m_pGraphicsSystem				= nullptr;
 		m_platformData.pCommandList		= nullptr;
 
+		for( uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
+		{
+			GraphicsSystemPlatform::safeRelease( &m_platformData.pipelineStates[ i ].pPpielineState );
+		}
+		m_platformData.pipelineStates.clear();
+
 		m_immediateVertexData.dispose( graphicsSystem );
 	}
 
@@ -311,9 +317,10 @@ namespace tiki
 	{
 		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
+			const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
 			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
 				UINT( GraphicsDiscriptorIndex_FirstVertexConstant + slot ),
-				buffer.m_pBuffer->GetGPUVirtualAddress()
+				buffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress()
 			);
 
 			m_apVertexConstants[ slot ] = &buffer;
@@ -357,9 +364,10 @@ namespace tiki
 	{
 		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
+			const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
 			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
 				UINT( GraphicsDiscriptorIndex_FirstPixelConstant + slot ),
-				buffer.m_pBuffer->GetGPUVirtualAddress()
+				buffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress()
 			);
 
 			m_apPixelConstants[ slot ] = &buffer;
@@ -368,8 +376,10 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
+		const uint bufferIndex = (indexBuffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
+
 		D3D12_INDEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= indexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.BufferLocation	= indexBuffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress();
 		bufferView.SizeInBytes		= UINT( indexBuffer.getCount() * indexBuffer.getIndexType() );
 		bufferView.Format			= GraphicsSystemPlatform::getD3dIndexFormat( indexBuffer.getIndexType() );
 
@@ -378,8 +388,10 @@ namespace tiki
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer )
 	{
+		const uint bufferIndex = (vertexBuffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
+
 		D3D12_VERTEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= vertexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.BufferLocation	= vertexBuffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress();
 		bufferView.SizeInBytes		= UINT( vertexBuffer.getCount() * vertexBuffer.getStride() );
 		bufferView.StrideInBytes	= UINT( vertexBuffer.getStride() );
 
@@ -402,7 +414,7 @@ namespace tiki
 		TIKI_ASSERT( validateDrawCall() );
 
 		D3D12_VERTEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= m_immediateVertexData.m_pBuffer->GetGPUVirtualAddress();
+		bufferView.BufferLocation	= m_immediateVertexData.m_buffers[ m_pGraphicsSystem->m_platformData.currentSwapBufferIndex ]->GetGPUVirtualAddress();
 		bufferView.SizeInBytes		= UINT( m_immediateVertexCount * m_immediateVertexStride );
 		bufferView.StrideInBytes	= UINT( m_immediateVertexStride );
 		m_platformData.pCommandList->IASetVertexBuffers( 0u, 1u, &bufferView );
@@ -429,17 +441,21 @@ namespace tiki
 
 	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
-		TIKI_ASSERT( buffer.m_pBuffer != nullptr );
+		const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
+		TIKI_ASSERT( buffer.m_buffers[ bufferIndex ] != nullptr );
 
 		void* pData;
-		buffer.m_pBuffer->Map( 0u, nullptr, &pData );
+		buffer.m_buffers[ bufferIndex ]->Map( 0u, nullptr, &pData );
 
 		return pData;
 	}
 
 	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
-		buffer.m_pBuffer->Unmap( 0u, nullptr );
+		const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
+		TIKI_ASSERT( buffer.m_buffers[ bufferIndex ] != nullptr );
+
+		buffer.m_buffers[ bufferIndex ]->Unmap( 0u, nullptr );
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const

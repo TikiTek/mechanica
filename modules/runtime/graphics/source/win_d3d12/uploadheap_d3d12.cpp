@@ -20,7 +20,7 @@ namespace tiki
 		TIKI_ASSERT( m_pDataEnd == nullptr );
 	}
 
-	bool UploadHeapD3d12::create( ID3D12Device* pDevice, uint size, uint maxAllocationCount /*= 128u*/ )
+	bool UploadHeapD3d12::create( ID3D12Device* pDevice, uint size, uint maxAllocationCount, const char* pDebugName )
 	{
 		TIKI_ASSERT( pDevice != nullptr );
 
@@ -37,6 +37,7 @@ namespace tiki
 		{
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( m_pBuffer, pDebugName );
 
 		if( FAILED( m_pBuffer->Map( 0u, nullptr, (void**)&m_pDataStart ) ) )
 		{
