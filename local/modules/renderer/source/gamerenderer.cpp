@@ -104,8 +104,8 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ) ) ||
-			!m_cameraParameterConstants.create( graphicsSystem, sizeof( CameraParameter ) ) )
+		if( !m_lightingPixelConstants.create( graphicsSystem, sizeof( LightingPixelConstantData ), "LightingPixelConstants" ) ||
+			!m_cameraParameterConstants.create( graphicsSystem, sizeof( CameraParameter ), "LightingCameraConstants" ) )
 		{
 			dispose( resourceRequestPool );
 			return false;

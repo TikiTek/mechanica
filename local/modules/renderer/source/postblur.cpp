@@ -55,7 +55,7 @@ namespace tiki
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 		success &= ( m_pBlendState != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
 
-		success &= m_pixelConstants.create( graphicsSystem, sizeof( BlurPixelConstantData ) );
+		success &= m_pixelConstants.create( graphicsSystem, sizeof( BlurPixelConstantData ), "BlurPixelConstants" );
 		success &= createRenderTargets( graphicsSystem, width, height );
 
 		if ( !success )

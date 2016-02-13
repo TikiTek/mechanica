@@ -55,7 +55,7 @@ namespace tiki
 		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSampler				= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 
-		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ) );
+		m_vertexConstantBuffer.create( graphicsSystem, sizeof( FallbackVertexConstants ), "FallbackVertexConstants" );
 
 		if ( !m_vertexInputBindings.create( 32u ) )
 		{
