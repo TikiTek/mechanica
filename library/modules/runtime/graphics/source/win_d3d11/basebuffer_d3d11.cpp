@@ -36,7 +36,7 @@ namespace tiki
 		TIKI_ASSERT( m_pBuffer == nullptr );
 	}
 
-	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData /*= nullptr*/ )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName )
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
 
@@ -61,6 +61,7 @@ namespace tiki
 			dispose( graphicsSystem );
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( m_pBuffer, pDebugName );
 
 		return true;
 	}

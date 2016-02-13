@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_FORCE_INLINE			VertexBuffer();
 		TIKI_FORCE_INLINE			~VertexBuffer();
 
-		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr );
+		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr, const char* pDebugName = nullptr );
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
 		TIKI_FORCE_INLINE size_t	getStride() const	{ return m_stride; }

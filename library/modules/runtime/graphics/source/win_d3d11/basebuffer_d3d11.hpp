@@ -11,6 +11,7 @@ namespace tiki
 
 	class BaseBuffer
 	{
+		friend class GraphicsSystem;
 		friend class GraphicsContext;
 
 	protected:
@@ -18,7 +19,7 @@ namespace tiki
 								BaseBuffer();
 								~BaseBuffer();
 
-		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData = nullptr );
+		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );
 		
 		uint					getSize() const;

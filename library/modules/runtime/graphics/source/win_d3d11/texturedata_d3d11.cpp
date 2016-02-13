@@ -83,7 +83,7 @@ namespace tiki
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
 	}
 
-	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /*= nullptr*/ )
+	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /* = nullptr */, const char* pDebugName /* = nullptr */ )
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
 		TIKI_ASSERT( m_platformData.pShaderView == nullptr );
@@ -209,6 +209,7 @@ namespace tiki
 			dispose( graphicsSystem );
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( m_platformData.pResource, pDebugName );
 
 		if ( isBitSet( description.flags, TextureFlags_ShaderInput ) )
 		{
@@ -224,6 +225,7 @@ namespace tiki
 				dispose( graphicsSystem );
 				return false;
 			}
+			TIKI_SET_DX_OBJECT_NAME( m_platformData.pShaderView, pDebugName );
 		}
 
 		return true;

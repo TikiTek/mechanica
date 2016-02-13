@@ -27,7 +27,7 @@ namespace tiki
 		TIKI_FORCE_INLINE			IndexBuffer();
 		TIKI_FORCE_INLINE			~IndexBuffer();
 
-		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t indexCount, IndexType type, bool dynamic = true, const void* pInitData = nullptr );
+		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t indexCount, IndexType type, bool dynamic = true, const void* pInitData = nullptr, const char* pDebugName = nullptr );
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
 		TIKI_FORCE_INLINE IndexType	getIndexType() const	{ return m_indexType; }

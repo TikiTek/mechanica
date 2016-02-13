@@ -71,7 +71,7 @@ namespace tiki
 			success &= ( m_pVertexInputBinding != nullptr );
 		}
 
-		success &= m_pixelConstants.create( graphicsSystem, sizeof( AsciiPixelConstantData ) );
+		success &= m_pixelConstants.create( graphicsSystem, sizeof( AsciiPixelConstantData ), "AsciiPixelConstants" );
 
 		if ( !success )
 		{

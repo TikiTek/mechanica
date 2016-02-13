@@ -7,16 +7,6 @@
 
 namespace tiki
 {
-	enum
-	{
-		GraphicsSystemLimits_MaxUploadHeapSize		= 32u * 1024u * 1024u,
-		GraphicsSystemLimits_MaxShaderResourceViews	= 1024u,
-		GraphicsSystemLimits_MaxSamplers			= 128u,
-		GraphicsSystemLimits_MaxRenderTargetViews	= 128u,
-		GraphicsSystemLimits_MaxDepthStencilViews	= 128u,
-		GraphicsSystemLimits_MaxFrameCount			= 2u
-	};
-
 	struct GraphicsSystemFrame
 	{
 		GraphicsSystemFrame()

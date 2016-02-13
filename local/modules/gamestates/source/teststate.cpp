@@ -131,7 +131,7 @@ namespace tiki
 					}
 
 					m_animationData.create( m_pModelPlayer->getHierarchy()->getJointCount() );
-					m_skinningData.matrices.create( m_pGame->getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u );
+					m_skinningData.matrices.create( m_pGame->getGraphicsSystem(), sizeof( GraphicsMatrix44 ) * 256u, "SkinningConstants" );
 
 					return TransitionState_Finish;
 				}

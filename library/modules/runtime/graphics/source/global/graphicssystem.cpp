@@ -354,8 +354,18 @@ namespace tiki
 
 		if( pGpuBuffer == nullptr )
 		{
-
+			//m_platformData.
 		}
+
+		DynamicBuffer dynamicBuffer;
+		dynamicBuffer.type				= type;
+		dynamicBuffer.pGpuBuffer		= &pGpuBuffer->gpuBuffer;
+		dynamicBuffer.gpuBufferOffset	= pGpuBuffer->currentGpuOffset;
+		dynamicBuffer.pData				= nullptr;
+		dynamicBuffer.dataSize			= size;
+		
+
+		return dynamicBuffer;
 	}
 
 	const VertexFormat* GraphicsSystem::getStockVertexFormat( StockVertexFormat format ) const

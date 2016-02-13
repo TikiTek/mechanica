@@ -12,7 +12,7 @@ namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
-	bool convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLength, const char* pSourceBuffer )
+	bool convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLengthInCharacters, const char* pSourceBuffer )
 	{
 		const int result = MultiByteToWideChar(
 			CP_UTF8,
@@ -20,20 +20,20 @@ namespace tiki
 			pSourceBuffer,
 			-1,
 			pTargetBuffer,
-			(int)targetLength
+			(int)targetLengthInCharacters
 		);
 
 		return result != 0;
 	}
 
-	bool convertWidecharToUtf8String( char* pTargetBuffer, uint targetLength, const wchar_t* pSourceBuffer )
+	bool convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer )
 	{
 		const int result = WideCharToMultiByte(
 			CP_UTF8, 0,
 			pSourceBuffer,
 			-1,
 			pTargetBuffer,
-			(int)targetLength, 
+			(int)targetLengthInCharacters,
 			nullptr,
 			nullptr
 		);

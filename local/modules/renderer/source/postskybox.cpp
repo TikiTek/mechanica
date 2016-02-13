@@ -59,8 +59,8 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_vertexConstants.create( graphicsSystem, sizeof( SkyboxVertexConstantData ) ) ||
-			!m_pixelConstants.create( graphicsSystem, sizeof( SkyboxPixelConstantData ) ) )
+		if( !m_vertexConstants.create( graphicsSystem, sizeof( SkyboxVertexConstantData ), "SkyBoxVertexConstants" ) ||
+			!m_pixelConstants.create( graphicsSystem, sizeof( SkyboxPixelConstantData ), "SkyBoxPixelConstants" ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;

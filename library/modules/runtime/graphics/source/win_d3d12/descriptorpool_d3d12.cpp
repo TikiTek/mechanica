@@ -16,7 +16,7 @@ namespace tiki
 		TIKI_ASSERT( m_pHeap == nullptr );
 	}
 
-	bool DescriptorPoolD3d12::create( ID3D12Device* pDevice, uint maxDescriptorCount, DescriptorType type )
+	bool DescriptorPoolD3d12::create( ID3D12Device* pDevice, uint maxDescriptorCount, DescriptorType type, const char* pDebugName )
 	{
 		static const D3D12_DESCRIPTOR_HEAP_TYPE s_aDescriptorTypeMapping[] =
 		{
@@ -42,6 +42,7 @@ namespace tiki
 			dispose();
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( m_pHeap, pDebugName );
 
 		const size_t maskCount = alignValue< size_t >( maxDescriptorCount, 64u ) / 64u;
 		if( !m_freeMask.create( maskCount ) )
@@ -84,6 +85,41 @@ namespace tiki
 		}
 
 		return InvalidDescriptorHandle;
+	}
+
+	bool DescriptorPoolD3d12::allocateRange( DescriptorHandle* pOutput, uint count )
+	{
+		for( size_t maskIndex = 0; maskIndex < m_freeMask.getCount(); ++maskIndex )
+		{
+			if( m_freeMask[ maskIndex ] == 0u )
+			{
+				continue;
+			}
+
+			const uint64 mask			= m_freeMask[ maskIndex ];
+			const uint64 firstBit		= mask & (-(sint64)mask);
+			const uint64 checkBits		= (1ull << count) - 1;
+			const uint64 checkMask		= checkBits << firstBit;
+
+			if( (checkMask & mask) == checkMask )
+			{
+				continue;
+			}
+
+			const uint32 indexInMask	= uint32( 63u - countLeadingZeros64( firstBit ) );
+			const uint32 firstIndex		= uint32( (maskIndex * 64u) + indexInMask );
+			for( uint i = 0u; i < count; ++i )
+			{
+				pOutput[ i ] = (DescriptorHandle)(firstIndex + i);
+			}
+
+			const uint64 newMask		= mask & (~checkMask);
+			m_freeMask[ maskIndex ]		= newMask;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	void DescriptorPoolD3d12::freeDescriptor( DescriptorHandle handle )

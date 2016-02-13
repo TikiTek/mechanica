@@ -58,6 +58,7 @@ namespace tiki
 				disposePlatform();
 				return false;
 			}
+			TIKI_SET_DX_OBJECT_NAME( m_platformData.frames[ i ].pCommandAllocator, "CommandAllocator" );
 		}
 
 		if( !graphics::initObjects( m_platformData, params ) )
@@ -74,15 +75,26 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, GraphicsSystemLimits_MaxUploadHeapSize ) ||
-			!m_platformData.shaderResourcePool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxShaderResourceViews, DescriptorType_ShaderResource ) ||
-			!m_platformData.samplerPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxSamplers, DescriptorType_Sampler ) ||
-			!m_platformData.renderTargetPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxRenderTargetViews, DescriptorType_RenderTarget ) ||
-			!m_platformData.depthStencilPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxDepthStencilViews, DescriptorType_DepthStencil ) )
+		if( !m_platformData.uploadHeap.create( m_platformData.pDevice, GraphicsSystemLimits_MaxUploadHeapSize, 128u, "UploadHeap" ) ||
+			!m_platformData.shaderResourcePool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxShaderResourceViews, DescriptorType_ShaderResource, "ShaderResourcePool" ) ||
+			!m_platformData.samplerPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxSamplers, DescriptorType_Sampler, "SamplerPool" ) ||
+			!m_platformData.renderTargetPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxRenderTargetViews, DescriptorType_RenderTarget, "RenderTargetPool" ) ||
+			!m_platformData.depthStencilPool.create( m_platformData.pDevice, GraphicsSystemLimits_MaxDepthStencilViews, DescriptorType_DepthStencil, "DepthStencilPool" ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create upload heap or descriptor pools.\n" );
 			disposePlatform();
 			return false;
+		}
+
+		// create frames
+		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
+		{
+			DescriptorHandle backBufferColorHandle = (i == 0u ? m_backBufferTarget.m_platformData.colorHandles[ 0u ] : InvalidDescriptorHandle);
+			if( !graphics::initFrame( m_platformData, m_platformData.frames[ i ], i, backBufferColorHandle ) )
+			{
+				disposePlatform();
+				return false;
+			}
 		}
 
 		// create back buffer target
@@ -94,7 +106,7 @@ namespace tiki
 			depthDescription.flags		= TextureFlags_DepthStencil;
 			depthDescription.type		= TextureType_2d;
 
-			if( !m_backBufferDepthData.create( *this, depthDescription ) )
+			if( !m_backBufferDepthData.create( *this, depthDescription, nullptr, "BackBufferDepth" ) )
 			{
 				TIKI_TRACE_ERROR( "[graphics] Could not create DepthStencilBuffer.\n" );
 				disposePlatform();
@@ -108,30 +120,14 @@ namespace tiki
 			colorDescription.flags		= TextureFlags_RenderTarget;
 			colorDescription.type		= TextureType_2d;
 
-			m_backBufferColorData.m_description = colorDescription;
-			HRESULT result = m_platformData.pSwapChain->GetBuffer( 0, __uuidof(ID3D12Resource), (void**)&m_backBufferColorData.m_platformData.pResource );
-			if( FAILED( result ) )
-			{
-				TIKI_TRACE_ERROR( "[graphics] Could not get BackBuffer.\n" );
-				disposePlatform();
-				return false;
-			}
+			m_backBufferColorData.m_description				= colorDescription;
+			m_backBufferColorData.m_platformData.pResource	= m_platformData.frames[ m_platformData.currentSwapBufferIndex ].pBackBufferColorResouce;
 
 			RenderTargetBuffer colorBuffer( m_backBufferColorData );
 			RenderTargetBuffer depthBuffer( m_backBufferDepthData );
 			if( !m_backBufferTarget.create( *this, backBufferSize.x, backBufferSize.y, &colorBuffer, 1u, &depthBuffer ) )
 			{
 				TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer/DepthStencilBuffer.\n" );
-				disposePlatform();
-				return false;
-			}
-		}
-
-		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
-		{
-			DescriptorHandle backBufferColorHandle = (i == 0u ? m_backBufferTarget.m_platformData.colorHandles[ 0u ] : InvalidDescriptorHandle);
-			if( !graphics::initFrame( m_platformData, m_platformData.frames[ i ], i, backBufferColorHandle ) )
-			{
 				disposePlatform();
 				return false;
 			}
@@ -202,19 +198,20 @@ namespace tiki
 		m_platformData.renderTargetPool.dispose();
 		m_platformData.depthStencilPool.dispose();
 
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pCommandList );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pFence );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pRootSignature );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pCommandList );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pSwapChain );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pCommandQueue );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pDevice );
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pSwapChain );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pFactory );
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		IDXGIDebug* pDebug = nullptr;
 		if( SUCCEEDED( DXGIGetDebugInterface1( 0u, IID_PPV_ARGS( &pDebug ) ) ) )
 		{
-			pDebug->ReportLiveObjects( DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY );
-			GraphicsSystemPlatform::safeRelease( &pDebug );
+			pDebug->ReportLiveObjects( DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL );
+			GraphicsSystemPlatform::safeReleaseBla( &pDebug );
 		}
 #endif
 	}
@@ -237,7 +234,7 @@ namespace tiki
 		m_backBufferDepthData.dispose( *this );
 		GraphicsSystemPlatform::safeRelease( &m_backBufferColorData.m_platformData.pResource );
 
-		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, UINT( width ), UINT( height ), DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT );
+		HRESULT result = m_platformData.pSwapChain->ResizeBuffers( 0, UINT( width ), UINT( height ), DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH );
 		if ( FAILED( result ) )
 		{
 			dispose();
@@ -349,7 +346,7 @@ namespace tiki
 		if( SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( &pDebug ) ) ) )
 		{
 			pDebug->EnableDebugLayer();
-			GraphicsSystemPlatform::safeRelease( &pDebug );
+			GraphicsSystemPlatform::safeReleaseBla( &pDebug );
 		}
 #endif
 
@@ -357,7 +354,8 @@ namespace tiki
 		{
 			return false;
 		}
-
+		TIKI_SET_DX_OBJECT_NAME( data.pFactory, "Factory" );
+		
 		IDXGIAdapter1* pAdapter = nullptr;
 		IDXGIAdapter1* pCurrentAdapter = nullptr;
 		for( UINT adapterIndex = 0; DXGI_ERROR_NOT_FOUND != data.pFactory->EnumAdapters1( adapterIndex, &pCurrentAdapter ); ++adapterIndex )
@@ -378,6 +376,7 @@ namespace tiki
 			D3D_FEATURE_LEVEL_11_0,
 			IID_PPV_ARGS( &data.pDevice )
 		);
+		TIKI_SET_DX_OBJECT_NAME( data.pDevice, "Device" );
 
 		GraphicsSystemPlatform::safeRelease( &pAdapter );
 
@@ -399,7 +398,7 @@ namespace tiki
 		swapChainDesc.BufferUsage		= DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect		= DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count	= 1;
-		swapChainDesc.Flags				= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+		swapChainDesc.Flags				= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_FULLSCREEN_DESC, fullscreenDesc );
 		fullscreenDesc.Windowed = !params.fullScreen;
@@ -414,7 +413,16 @@ namespace tiki
 			&pSwapChain
 		);
 
-		return SUCCEEDED( pSwapChain->QueryInterface( IID_PPV_ARGS( &data.pSwapChain ) ) );
+		if( FAILED( result ) )
+		{
+			return false;
+		}
+		TIKI_SET_DX_OBJECT_NAME( pSwapChain, "SwapChain" );
+
+		result = pSwapChain->QueryInterface( IID_PPV_ARGS( &data.pSwapChain ) );
+		GraphicsSystemPlatform::safeRelease( &pSwapChain );
+
+		return SUCCEEDED( result );
 	}
 
 	bool graphics::initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uint frameIndex, DescriptorHandle backBufferColorHandle )
@@ -425,6 +433,7 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[graphics] Could not get BackBuffer.\n" );
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( frame.pBackBufferColorResouce, "BackBuffer" );
 
 		if( backBufferColorHandle != InvalidDescriptorHandle )
 		{
@@ -455,11 +464,13 @@ namespace tiki
 		{
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( data.pCommandQueue, "CommandQueue" );
 
 		if( FAILED( data.pDevice->CreateCommandList( 1u, D3D12_COMMAND_LIST_TYPE_DIRECT, frame.pCommandAllocator, nullptr, IID_PPV_ARGS( &data.pCommandList ) ) ) )
 		{
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( data.pCommandList, "CommandList" );
 
 		FixedSizedArray< CD3DX12_DESCRIPTOR_RANGE, GraphicsDiscriptorIndex_Count > descRanges;
 		FixedArray< CD3DX12_ROOT_PARAMETER, GraphicsDiscriptorIndex_Count > rootParameters;
@@ -529,12 +540,14 @@ namespace tiki
 		{
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( data.pRootSignature, "RootSignature" );
 
 		result = data.pDevice->CreateFence( 0u, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &data.pFence ) );
 		if ( FAILED( result ) )
 		{
 			return false;
 		}
+		TIKI_SET_DX_OBJECT_NAME( data.pFence, "Fence" );
 
 		return true;
 	}
