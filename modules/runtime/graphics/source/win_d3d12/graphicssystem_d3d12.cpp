@@ -21,8 +21,6 @@ namespace tiki
 		static bool initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
 		static bool initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uint frameIndex, DescriptorHandle backBufferColorHandle );
 		static bool initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
-
-		static bool waitForGpu( GraphicsSystemPlatformData& data );
 	}
 
 	bool GraphicsSystem::createPlatform( const GraphicsSystemParameters& params )
@@ -52,13 +50,15 @@ namespace tiki
 
 		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
 		{
-			if( FAILED( m_platformData.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &m_platformData.frames[ i ].pCommandAllocator ) ) ) )
+			if( FAILED( m_platformData.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &m_platformData.frames[ i ].pRenderCommandAllocator ) ) ) ||
+				FAILED( m_platformData.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &m_platformData.frames[ i ].pResourceCommandAllocator ) ) ) )
 			{
 				TIKI_TRACE_ERROR( "[graphics] Could not create CommandAllocator.\n" );
 				disposePlatform();
 				return false;
 			}
-			TIKI_SET_DX_OBJECT_NAME( m_platformData.frames[ i ].pCommandAllocator, "CommandAllocator" );
+			TIKI_SET_DX_OBJECT_NAME( m_platformData.frames[ i ].pRenderCommandAllocator, "RenderCommandAllocator" );
+			TIKI_SET_DX_OBJECT_NAME( m_platformData.frames[ i ].pResourceCommandAllocator, "ResourceCommandAllocator" );
 		}
 
 		if( !graphics::initObjects( m_platformData, params ) )
@@ -141,24 +141,22 @@ namespace tiki
 		}
 
 		m_platformData.waitEventHandle = CreateEvent( nullptr, false, false, nullptr );
+		m_platformData.isInFrame = true;
 
-		// execute command list
-		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
-		ID3D12CommandList* pCommandList = m_platformData.pCommandList;
-		m_platformData.pCommandQueue->ExecuteCommandLists( 1u, &pCommandList );
-
-		if ( !graphics::waitForGpu( m_platformData ) )
+		if ( !GraphicsSystemPlatform::waitForGpu( *this ) )
 		{
 			disposePlatform();
 			return false;
 		}
+
+		m_platformData.isInFrame = false;
 
 		return true;
 	}
 
 	void GraphicsSystem::disposePlatform()
 	{
-		graphics::waitForGpu( m_platformData );
+		GraphicsSystemPlatform::waitForGpu( *this );
 
 		m_backBufferTarget.dispose( *this );
 		m_backBufferDepthData.dispose( *this );
@@ -183,7 +181,8 @@ namespace tiki
 		{
 			GraphicsSystemFrame& frame = m_platformData.frames[ i ];
 
-			GraphicsSystemPlatform::safeRelease( &frame.pCommandAllocator );
+			GraphicsSystemPlatform::safeRelease( &frame.pRenderCommandAllocator );
+			GraphicsSystemPlatform::safeRelease( &frame.pResourceCommandAllocator );
 			GraphicsSystemPlatform::safeRelease( &frame.pBackBufferColorResouce );
 
 			if( i != 0u && frame.backBufferColorHandle != InvalidDescriptorHandle )
@@ -200,11 +199,14 @@ namespace tiki
 
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pFence );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pRootSignature );
-		GraphicsSystemPlatform::safeRelease( &m_platformData.pCommandList );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pRenderCommandList );
+		GraphicsSystemPlatform::safeRelease( &m_platformData.pResourceCommandList );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pSwapChain );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pCommandQueue );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pDevice );
 		GraphicsSystemPlatform::safeRelease( &m_platformData.pFactory );
+
+		m_platformData.resourceCommandListMutex.dispose();
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		IDXGIDebug* pDebug = nullptr;
@@ -228,7 +230,8 @@ namespace tiki
 			return false;
 		}
 
-		m_platformData.pCommandList->OMSetRenderTargets( 0u, nullptr, FALSE, nullptr );
+		m_platformData.pRenderCommandList->ClearState( nullptr );
+		GraphicsSystemPlatform::waitForGpu( *this );
 
 		m_backBufferTarget.dispose( *this );
 		m_backBufferDepthData.dispose( *this );
@@ -278,65 +281,86 @@ namespace tiki
 		m_frameNumber++;
 			
 		GraphicsSystemFrame& frame = m_platformData.frames[ m_platformData.currentSwapBufferIndex ];
-		TIKI_VERIFY( SUCCEEDED( frame.pCommandAllocator->Reset() ) );
-		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Reset( frame.pCommandAllocator, nullptr ) ) );
+		TIKI_VERIFY( SUCCEEDED( frame.pRenderCommandAllocator->Reset() ) );
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pRenderCommandList->Reset( frame.pRenderCommandAllocator, nullptr ) ) );
 
 		GraphicsSystemPlatform::setResourceBarrier(
-			m_platformData.pCommandList,
+			m_platformData.pRenderCommandList,
 			frame.pBackBufferColorResouce,
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET
 		);
 
-		m_platformData.pCommandList->SetGraphicsRootSignature( m_platformData.pRootSignature );
+		m_platformData.pRenderCommandList->SetGraphicsRootSignature( m_platformData.pRootSignature );
 
 		ID3D12DescriptorHeap* apDescriptorHeaps[] =
 		{
 			m_platformData.shaderResourcePool.getHeap(),
 			m_platformData.samplerPool.getHeap()
 		};
-		m_platformData.pCommandList->SetDescriptorHeaps( TIKI_COUNT( apDescriptorHeaps ), apDescriptorHeaps );
+		m_platformData.pRenderCommandList->SetDescriptorHeaps( TIKI_COUNT( apDescriptorHeaps ), apDescriptorHeaps );
+
+		m_platformData.isInFrame = true;
+
+		m_commandBuffer.beginFrame();
 
 		return m_commandBuffer;
 	}
 
 	void GraphicsSystem::endFrame()
 	{
+		m_commandBuffer.endFrame();
+
 		GraphicsSystemFrame& prevFrame = m_platformData.frames[ m_platformData.currentSwapBufferIndex ];
 
 		GraphicsSystemPlatform::setResourceBarrier(
-			m_platformData.pCommandList,
+			m_platformData.pRenderCommandList,
 			prevFrame.pBackBufferColorResouce,
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT
 		);
 
 		// execute command list
-		TIKI_VERIFY( SUCCEEDED( m_platformData.pCommandList->Close() ) );
-		ID3D12CommandList* pCommandList = m_platformData.pCommandList;
-		m_platformData.pCommandQueue->ExecuteCommandLists( 1u, &pCommandList );
+		m_platformData.resourceCommandListMutex.lock();
+
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pRenderCommandList->Close() ) );
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pResourceCommandList->Close() ) );
+		ID3D12CommandList* apCommandLists[] =
+		{
+			m_platformData.pResourceCommandList,
+			m_platformData.pRenderCommandList,
+		};
+		m_platformData.pCommandQueue->ExecuteCommandLists( TIKI_COUNT( apCommandLists ), apCommandLists );
 
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pSwapChain->Present( 1, 0 ) ) );
 		
-		m_platformData.uploadHeap.finalizeFrame( (uint)prevFrame.currentFench );
+		m_platformData.uploadHeap.finalizeFrame( (uint)prevFrame.currentFence );
 
 		// swap frame
 		m_platformData.currentSwapBufferIndex = m_platformData.pSwapChain->GetCurrentBackBufferIndex();
 		GraphicsSystemFrame& nextFrame = m_platformData.frames[ m_platformData.currentSwapBufferIndex ];
 
 		// signal and increment the current fence
-		const uint64 currentFenceValue = prevFrame.currentFench;
+		const uint64 currentFenceValue = prevFrame.currentFence;
 		m_platformData.pCommandQueue->Signal( m_platformData.pFence, currentFenceValue );
 	
-		if( m_platformData.pFence->GetCompletedValue() < nextFrame.currentFench )
+		if( m_platformData.pFence->GetCompletedValue() < nextFrame.currentFence )
 		{
-			TIKI_VERIFY( SUCCEEDED( m_platformData.pFence->SetEventOnCompletion( nextFrame.currentFench, m_platformData.waitEventHandle ) ) );
+			TIKI_VERIFY( SUCCEEDED( m_platformData.pFence->SetEventOnCompletion( nextFrame.currentFence, m_platformData.waitEventHandle ) ) );
 			WaitForSingleObjectEx( m_platformData.waitEventHandle, INFINITE, FALSE );
 		}
-		nextFrame.currentFench = currentFenceValue + 1u;
+		nextFrame.currentFence = currentFenceValue + 1u;
 
+		// start resource command list
+		TIKI_VERIFY( SUCCEEDED( nextFrame.pResourceCommandAllocator->Reset() ) );
+		TIKI_VERIFY( SUCCEEDED( m_platformData.pResourceCommandList->Reset( nextFrame.pResourceCommandAllocator, nullptr ) ) );
+		m_platformData.resourceCommandListMutex.unlock();
+
+		// set back buffer target
 		m_backBufferColorData.m_platformData.pResource = nextFrame.pBackBufferColorResouce;
 		m_backBufferTarget.m_platformData.colorHandles[ 0u ] = nextFrame.backBufferColorHandle;
+
+		m_platformData.isInFrame = false;
 	}
 
 	static bool graphics::initDevice( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params )
@@ -466,11 +490,15 @@ namespace tiki
 		}
 		TIKI_SET_DX_OBJECT_NAME( data.pCommandQueue, "CommandQueue" );
 
-		if( FAILED( data.pDevice->CreateCommandList( 1u, D3D12_COMMAND_LIST_TYPE_DIRECT, frame.pCommandAllocator, nullptr, IID_PPV_ARGS( &data.pCommandList ) ) ) )
+		data.resourceCommandListMutex.create();
+
+		if( FAILED( data.pDevice->CreateCommandList( 1u, D3D12_COMMAND_LIST_TYPE_DIRECT, frame.pRenderCommandAllocator, nullptr, IID_PPV_ARGS( &data.pRenderCommandList ) ) ) || 
+			FAILED( data.pDevice->CreateCommandList( 1u, D3D12_COMMAND_LIST_TYPE_DIRECT, frame.pResourceCommandAllocator, nullptr, IID_PPV_ARGS( &data.pResourceCommandList ) ) ) )
 		{
 			return false;
 		}
-		TIKI_SET_DX_OBJECT_NAME( data.pCommandList, "CommandList" );
+		TIKI_SET_DX_OBJECT_NAME( data.pRenderCommandList, "RenderCommandList" );
+		TIKI_SET_DX_OBJECT_NAME( data.pResourceCommandList, "ResourceCommandList" );
 
 		FixedSizedArray< CD3DX12_DESCRIPTOR_RANGE, GraphicsDiscriptorIndex_Count > descRanges;
 		FixedArray< CD3DX12_ROOT_PARAMETER, GraphicsDiscriptorIndex_Count > rootParameters;
@@ -548,26 +576,6 @@ namespace tiki
 			return false;
 		}
 		TIKI_SET_DX_OBJECT_NAME( data.pFence, "Fence" );
-
-		return true;
-	}
-
-	bool graphics::waitForGpu( GraphicsSystemPlatformData& data )
-	{
-		GraphicsSystemFrame& frame = data.frames[ data.currentSwapBufferIndex ];
-
-		if( FAILED( data.pCommandQueue->Signal( data.pFence, frame.currentFench ) ) )
-		{
-			return false;
-		}
-		
-		if( FAILED( data.pFence->SetEventOnCompletion( frame.currentFench, data.waitEventHandle ) ) )
-		{
-			return false;
-		}
-		WaitForSingleObjectEx( data.waitEventHandle, INFINITE, FALSE );
-
-		frame.currentFench++;
 
 		return true;
 	}

@@ -15,9 +15,9 @@ namespace tiki
 		return graphicsSystem.m_platformData.pSwapChain;
 	}
 
-	/*static*/ ID3D12GraphicsCommandList* GraphicsSystemPlatform::getCommandList( GraphicsSystem& graphicsSystem )
+	/*static*/ ID3D12GraphicsCommandList* GraphicsSystemPlatform::getRenderCommandList( GraphicsSystem& graphicsSystem )
 	{
-		return graphicsSystem.m_platformData.pCommandList;
+		return graphicsSystem.m_platformData.pRenderCommandList;
 	}
 
 	/*static*/ ID3D12RootSignature* GraphicsSystemPlatform::getRootSignature( GraphicsSystem& graphicsSystem )
@@ -91,6 +91,20 @@ namespace tiki
 		}
 	}
 
+	/*static*/ ID3D12GraphicsCommandList* GraphicsSystemPlatform::lockResourceCommandList( GraphicsSystem& graphicsSystem )
+	{
+		graphicsSystem.m_platformData.resourceCommandListMutex.lock();
+		return graphicsSystem.m_platformData.pResourceCommandList;
+	}
+
+	/*static*/ void GraphicsSystemPlatform::unlockResourceCommandList( GraphicsSystem& graphicsSystem, ID3D12GraphicsCommandList*& pCommandList )
+	{
+		TIKI_ASSERT( pCommandList == graphicsSystem.m_platformData.pResourceCommandList );
+		pCommandList = nullptr;
+
+		graphicsSystem.m_platformData.resourceCommandListMutex.unlock();
+	}
+
 	/*static*/ void GraphicsSystemPlatform::setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter )
 	{
 		TIKI_DECLARE_STACKANDZERO( D3D12_RESOURCE_BARRIER, descBarrier );
@@ -101,5 +115,53 @@ namespace tiki
 		descBarrier.Transition.StateAfter	= stateAfter;
 
 		pCommandList->ResourceBarrier( 1, &descBarrier );
+	}
+
+	/*static*/ bool GraphicsSystemPlatform::waitForGpu( GraphicsSystem& graphicsSystem )
+	{
+		GraphicsSystemPlatformData& platformData = graphicsSystem.m_platformData;
+		GraphicsSystemFrame& frame = platformData.frames[ platformData.currentSwapBufferIndex ];
+
+		// execute command list
+		MutexStackLock stackLock( platformData.resourceCommandListMutex );
+
+		if( platformData.isInFrame && FAILED( platformData.pRenderCommandList->Close() ) )
+		{
+			return false;
+		}
+		
+		if( FAILED( platformData.pResourceCommandList->Close() ) )
+		{
+			return false;
+		}
+
+		ID3D12CommandList* apCommandLists[] =
+		{
+			platformData.pResourceCommandList,
+			platformData.pRenderCommandList,
+		};
+		platformData.pCommandQueue->ExecuteCommandLists( platformData.isInFrame ? 2u : 1u, apCommandLists );
+
+		if( FAILED( platformData.pCommandQueue->Signal( platformData.pFence, frame.currentFence ) ) )
+		{
+			return false;
+		}
+
+		if( FAILED( platformData.pFence->SetEventOnCompletion( frame.currentFence, platformData.waitEventHandle ) ) )
+		{
+			return false;
+		}
+
+		WaitForSingleObjectEx( platformData.waitEventHandle, INFINITE, FALSE );
+		frame.currentFence++;
+
+		// start resource command list
+		if( FAILED( frame.pResourceCommandAllocator->Reset() ) ||
+			FAILED( platformData.pResourceCommandList->Reset( frame.pResourceCommandAllocator, nullptr ) ) )
+		{
+			return false;
+		}
+
+		return true;
 	}
 }

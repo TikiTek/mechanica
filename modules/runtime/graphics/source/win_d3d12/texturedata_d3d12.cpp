@@ -188,10 +188,11 @@ namespace tiki
 				depth		= TIKI_MAX( depth / 2u, 1u );
 			}
 
-			ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::getCommandList( graphicsSystem );
+			ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::lockResourceCommandList( graphicsSystem );
 			GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST );
 			UpdateSubresources<32>( pCommandList, m_platformData.pResource, uploadHeap.getBuffer(), allocation.offset, 0u, (UINT)subResourceCount, subResources );
 			GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_platformData.pResource, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE );
+			GraphicsSystemPlatform::unlockResourceCommandList( graphicsSystem, pCommandList );
 		}
 	
 		if( isBitSet( description.flags, TextureFlags_ShaderInput ) )

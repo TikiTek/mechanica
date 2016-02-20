@@ -130,13 +130,14 @@ namespace tiki
 				initData.RowPitch	= size;
 				initData.SlicePitch	= size;
 
-				ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::getCommandList( graphicsSystem );
+				ID3D12GraphicsCommandList* pCommandList = GraphicsSystemPlatform::lockResourceCommandList( graphicsSystem );
 				for( uint i = 0u; i < bufferCount; ++i )
 				{
 					GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_buffers[ i ], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST );
 					UpdateSubresources<1>( pCommandList, m_buffers[ i ], pUploadBuffer, 0, 0, 1, &initData );
 					GraphicsSystemPlatform::setResourceBarrier( pCommandList, m_buffers[ i ], D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ );
 				}
+				GraphicsSystemPlatform::unlockResourceCommandList( graphicsSystem, pCommandList );
 
 				pUploadBuffer->Release();
 				pUploadBuffer = nullptr;
@@ -178,6 +179,8 @@ namespace tiki
 
 	void BaseBuffer::dispose( GraphicsSystem& graphicsSystem )
 	{
+		GraphicsSystemPlatform::waitForGpu( graphicsSystem );
+
 		for( uint i = 0u; i < m_buffers.getCount(); ++i )
 		{
 			GraphicsSystemPlatform::safeRelease( &m_buffers[ i ] );
