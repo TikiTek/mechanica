@@ -4,8 +4,6 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
-#include "tiki/graphics/immediaterenderer.hpp"
-
 namespace tiki
 {
 	class ApplicationState;
@@ -39,8 +37,6 @@ namespace tiki
 
 		Game*					m_pGame;
 		ApplicationState*		m_pParentState;
-
-		ImmediateRenderer		m_renderer;
 
 	};
 }

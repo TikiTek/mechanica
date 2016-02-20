@@ -144,7 +144,7 @@ namespace tiki
 
 	void Game::updateGame( bool wantToShutdown )
 	{
-		if ( wantToShutdown )
+		if ( wantToShutdown && !m_gameFlow.isInTransition() )
 		{
 			m_gameFlow.startTransition( 0u );
 		}

@@ -26,14 +26,10 @@ namespace tiki
 
 		m_pGame			= pGame;
 		m_pParentState	= pParentState;
-
-		m_renderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 	}
 
 	void MenuState::dispose()
 	{
-		m_renderer.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
-
 		m_pGame			= nullptr;
 		m_pParentState	= nullptr;
 	}
