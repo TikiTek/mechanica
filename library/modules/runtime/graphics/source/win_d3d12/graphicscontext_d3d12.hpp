@@ -25,11 +25,14 @@ namespace tiki
 	{
 		GraphicsContextPlatformData()
 		{
-			pDevice				= nullptr;
-			pCommandList		= nullptr;
-			pRootSignature		= nullptr;
-			pShaderResourcePool	= nullptr;
-			pSamplerPool		= nullptr;
+			pDevice					= nullptr;
+			pCommandList			= nullptr;
+			pRootSignature			= nullptr;
+			pShaderResourcePool		= nullptr;
+			pSamplerPool			= nullptr;
+
+			pImmediateBufferData	= nullptr;
+			immediateBufferSize		= 0u;
 		}
 
 		typedef FixedSizedArray< GraphicsContextPipelineState, GraphicsSystemLimits_MaxPipelineStates > PipelineStateArray;
@@ -42,6 +45,9 @@ namespace tiki
 		DescriptorPoolD3d12*		pSamplerPool;
 
 		PipelineStateArray			pipelineStates;
+
+		uint8*						pImmediateBufferData;
+		uint						immediateBufferSize;
 		
 	};
 }

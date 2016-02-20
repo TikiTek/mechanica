@@ -125,6 +125,9 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem );
 		void				dispose( GraphicsSystem& graphicsSystem );
 
+		void				beginFrame();
+		void				endFrame();
+
 	private:
 
 		enum

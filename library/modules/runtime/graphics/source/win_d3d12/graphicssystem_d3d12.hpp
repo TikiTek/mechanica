@@ -2,6 +2,8 @@
 #ifndef TIKI_GRAPHICSSYSTEM_D3D11_HPP
 #define TIKI_GRAPHICSSYSTEM_D3D11_HPP
 
+#include "tiki/threading/mutex.hpp"
+
 #include "uploadheap_d3d12.hpp"
 #include "descriptorpool_d3d12.hpp"
 
@@ -11,20 +13,22 @@ namespace tiki
 	{
 		GraphicsSystemFrame()
 		{
-			pCommandAllocator		= nullptr;
-			pBackBufferColorResouce	= nullptr;
+			pRenderCommandAllocator		= nullptr;
+			pResourceCommandAllocator	= nullptr;
+			pBackBufferColorResouce		= nullptr;
 
-			backBufferColorHandle	= InvalidDescriptorHandle;
+			backBufferColorHandle		= InvalidDescriptorHandle;
 
-			currentFench			= 0u;
+			currentFence				= 0u;
 		}
 
-		ID3D12CommandAllocator*		pCommandAllocator;
+		ID3D12CommandAllocator*		pRenderCommandAllocator;
+		ID3D12CommandAllocator*		pResourceCommandAllocator;
 
 		ID3D12Resource*				pBackBufferColorResouce;
 		DescriptorHandle			backBufferColorHandle;
 
-		uint64						currentFench;
+		uint64						currentFence;
 	};
 
 	struct GraphicsSystemPlatformData
@@ -36,12 +40,14 @@ namespace tiki
 
 			pDevice						= nullptr;
 			pCommandQueue				= nullptr;
-			pCommandList				= nullptr;
+			pRenderCommandList			= nullptr;
+			pResourceCommandList		= nullptr;
 			pRootSignature				= nullptr;
 			pFence						= nullptr;
 
 			waitEventHandle				= INVALID_HANDLE_VALUE;
 
+			isInFrame					= false;
 			currentSwapBufferIndex		= 0u;
 		}
 
@@ -50,9 +56,12 @@ namespace tiki
 
 		ID3D12Device*				pDevice;
 		ID3D12CommandQueue*			pCommandQueue;
-		ID3D12GraphicsCommandList*	pCommandList;
+		ID3D12GraphicsCommandList*	pRenderCommandList;
 		ID3D12RootSignature*		pRootSignature;
 		ID3D12Fence*				pFence;
+
+		ID3D12GraphicsCommandList*	pResourceCommandList;
+		Mutex						resourceCommandListMutex;
 
 		UploadHeapD3d12				uploadHeap;
 
@@ -63,6 +72,7 @@ namespace tiki
 				
 		HANDLE						waitEventHandle;
 
+		bool						isInFrame;
 		GraphicsSystemFrame			frames[ GraphicsSystemLimits_MaxFrameCount ];
 		uint						currentSwapBufferIndex;
 		

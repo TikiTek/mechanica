@@ -59,7 +59,7 @@ namespace tiki
 
 		m_pGraphicsSystem					= &graphicsSystem;
 		m_platformData.pDevice				= GraphicsSystemPlatform::getDevice( graphicsSystem );
-		m_platformData.pCommandList			= GraphicsSystemPlatform::getCommandList( graphicsSystem );
+		m_platformData.pCommandList			= GraphicsSystemPlatform::getRenderCommandList( graphicsSystem );
 		m_platformData.pRootSignature		= GraphicsSystemPlatform::getRootSignature( graphicsSystem );
 		m_platformData.pShaderResourcePool	= &GraphicsSystemPlatform::getShaderResourcePool( graphicsSystem );
 		m_platformData.pSamplerPool			= &GraphicsSystemPlatform::getSamplerPool( graphicsSystem );
@@ -400,27 +400,34 @@ namespace tiki
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
 	{
-		TIKI_ASSERT( vertexStride * vertexCount <= MaxImmediateGeometrySize );
+		if( m_platformData.immediateBufferSize + (vertexStride * vertexCount) > m_immediateVertexData.m_count * m_immediateVertexData.m_stride )
+		{
+			TIKI_TRACE_WARNING( "[graphics] Unable to allocate memory from immediate buffer. Out of memory.\n" );
+			return nullptr;
+		}
 
 		m_immediateVertexStride	= vertexStride;
 		m_immediateVertexCount	= vertexCount;
-
-		return mapBuffer( m_immediateVertexData );
+		
+		return m_platformData.pImmediateBufferData;
 	}
 
 	void GraphicsContext::endImmediateGeometry()
 	{
-		unmapBuffer( m_immediateVertexData );
 		TIKI_ASSERT( validateDrawCall() );
 
 		D3D12_VERTEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= m_immediateVertexData.m_buffers[ m_pGraphicsSystem->m_platformData.currentSwapBufferIndex ]->GetGPUVirtualAddress();
+		bufferView.BufferLocation	= m_immediateVertexData.m_buffers[ m_pGraphicsSystem->m_platformData.currentSwapBufferIndex ]->GetGPUVirtualAddress() + m_platformData.immediateBufferSize;
 		bufferView.SizeInBytes		= UINT( m_immediateVertexCount * m_immediateVertexStride );
 		bufferView.StrideInBytes	= UINT( m_immediateVertexStride );
 		m_platformData.pCommandList->IASetVertexBuffers( 0u, 1u, &bufferView );
 
 		prepareDrawCall();
 		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );		
+
+		const uint drawCallSize = m_immediateVertexStride * m_immediateVertexCount;
+		m_platformData.pImmediateBufferData	+= drawCallSize;
+		m_platformData.immediateBufferSize	+= drawCallSize;
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
@@ -461,6 +468,18 @@ namespace tiki
 	const RenderTarget& GraphicsContext::getBackBuffer() const
 	{
 		return m_pGraphicsSystem->getBackBuffer();
+	}
+	
+	void GraphicsContext::beginFrame()
+	{
+		m_platformData.pImmediateBufferData	= (uint8*)mapBuffer( m_immediateVertexData );
+		m_platformData.immediateBufferSize	= 0u;
+	}
+
+	void GraphicsContext::endFrame()
+	{
+		m_platformData.pImmediateBufferData = nullptr;
+		unmapBuffer( m_immediateVertexData );
 	}
 
 	void GraphicsContext::prepareDrawCall()
@@ -555,107 +574,5 @@ namespace tiki
 			m_platformData.pCommandList->IASetPrimitiveTopology( s_aTopologieMapping[ m_primitiveTopology ] );
 			m_platformData.pCommandList->SetPipelineState( pPipelineState );
 		}
-
-		//// set descriptors
-		//{
-		//	FixedSizedArray< ID3D12DescriptorHeap*, GraphicsSystemLimits_MaxDescriptorHeaps > heaps;
-
-		//	FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > samplerViews;
-		//	FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderTextureSlots + GraphicsSystemLimits_PixelShaderTextureSlots > textureViews;
-		//	FixedSizedArray< ViewHandleDataD3d12, GraphicsSystemLimits_VertexShaderConstantSlots + GraphicsSystemLimits_PixelShaderConstantSlots > constantViews;
-
-		//	// vertex
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i )
-		//	{
-		//		if( m_apVertexSamplerStates[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexSamplerStates[ i ]->m_platformData.pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			samplerViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apVertexTextures ); ++i )
-		//	{
-		//		if( m_apVertexTextures[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexTextures[ i ]->m_platformData.pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			textureViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apVertexConstants ); ++i )
-		//	{
-		//		if( m_apVertexConstants[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apVertexConstants[ i ]->m_pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			constantViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-		//	
-		//	// pixel
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apPixelSamplerStates ); ++i )
-		//	{
-		//		if( m_apPixelSamplerStates[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelSamplerStates[ i ]->m_platformData.pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			samplerViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apPixelTextures ); ++i )
-		//	{
-		//		if( m_apPixelTextures[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelTextures[ i ]->m_platformData.pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			textureViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-
-		//	for( uint i = 0u; i < TIKI_COUNT( m_apPixelConstants ); ++i )
-		//	{
-		//		if( m_apPixelConstants[ i ] != nullptr )
-		//		{
-		//			ID3D12DescriptorHeap* pDescriptorHeap = m_apPixelConstants[ i ]->m_pDescriptorHeap;
-
-		//			heaps.push( pDescriptorHeap );
-		//			constantViews.push() = ViewHandleDataD3d12( (UINT)i, pDescriptorHeap->GetCPUDescriptorHandleForHeapStart() );
-		//		}
-		//	}
-
-		//	m_platformData.pCommandList->SetDescriptorHeaps( (UINT)heaps.getCount(), heaps.getBegin() );
-
-		//	for (UINT i = 0u; i < heaps.getCount(); ++i)
-		//	{
-		//		m_platformData.pCommandList->SetGraphicsRootDescriptorTable( i, heaps[ i ]->GetGPUDescriptorHandleForHeapStart() );
-		//	}
-
-		//	//for( uint i = 0u; i < samplerViews.getCount(); ++i )
-		//	//{
-		//	//	const ViewData& viewData = samplerViews[ i ];
-		//	//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
-		//	//}
-
-		//	//for( uint i = 0u; i < textureViews.getCount(); ++i )
-		//	//{
-		//	//	const ViewHandleDataD3d12& viewData = textureViews[ i ];
-		//	//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
-		//	//}
-
-		//	//for( uint i = 0u; i < constantViews.getCount(); ++i )
-		//	//{
-		//	//	const ViewHandleDataD3d12& viewData = constantViews[ i ];
-		//	//	m_platformData.pCommandList->SetGraphicsRootShaderResourceView( viewData.slot, viewData.handle );
-		//	//}
-		//}
 	}
 }
