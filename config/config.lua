@@ -57,8 +57,8 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION 
 	module:set_flag("MultiProcessorCompile");
 	
 	use_msvc	= true;
-	--use_d3d11	= true;
-	use_d3d12	= true;
+	use_d3d11	= true;
+	--use_d3d12	= true;
 	--use_opengl	= true;
 	
 	global_configuration.enable_unity_builds = true	
