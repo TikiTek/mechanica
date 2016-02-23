@@ -39,7 +39,7 @@ namespace tiki
 
 		void			dispose();
 
-		void*			getObjectInstance() const;
+		void*			getObjectInstanceData() const;
 		double			getFloatValue() const;
 		sint64			getSignedValue() const;
 		uint64			getUnsignedValue() const;

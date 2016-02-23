@@ -5,6 +5,12 @@
 
 namespace tiki
 {
+	struct UiSystemScriptData
+	{
+		UiSystem*			pUiSystem;
+		UiElementScript*	pUiElementScript;
+	};
+
 	UiSystemScript::UiSystemScript()
 	{
 		m_pUiSystem			= nullptr;
@@ -33,7 +39,11 @@ namespace tiki
 			return false;
 		}
 
-		ScriptValue value = registerInstance( this );
+		UiSystemScriptData scriptData;
+		scriptData.pUiSystem		= &uiSystem;
+		scriptData.pUiElementScript	= &elementScript;
+
+		ScriptValue value = registerInstance( &scriptData, sizeof( UiSystemScriptData ) );
 		scriptContext.setGlobalValue( "uiSystem", value );
 		
 		return true;
@@ -49,19 +59,17 @@ namespace tiki
 
 	void UiSystemScript::addElement( const ScriptCall& call )
 	{
-		UiSystemScript& uiSystem = *(UiSystemScript*)call.getInstance();
+		const UiSystemScriptData& scriptData = *(const UiSystemScriptData*)call.getInstanceData();
 
-		UiElement* pElement = uiSystem.m_pUiSystem->addElement();
-		call.setReturnValue( uiSystem.m_pUiElementScript->registerInstance( pElement ) );
+		const ScriptValue parentValue = call.getArgument( 0u );
+		call.setReturnValue( scriptData.pUiElementScript->createScriptElement( parentValue ) );
 	}
 
 	void UiSystemScript::removeElement( const ScriptCall& call )
 	{
-		UiSystemScript& uiSystem = *(UiSystemScript*)call.getInstance();
+		const UiSystemScriptData& scriptData = *(const UiSystemScriptData*)call.getInstanceData();
 
 		const ScriptValue value = call.getArgument( 0u );
-		UiElement* pElement = (UiElement*)value.getObjectInstance();
-
-		uiSystem.m_pUiSystem->removeElement( pElement );
+		scriptData.pUiElementScript->disposeScriptElement( value );
 	}
 }

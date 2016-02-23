@@ -101,6 +101,16 @@ namespace tiki
 		setLayoutChanged();
 	}
 
+	void UiElement::registerEventHandler( UiElementEventType type, const UiEventHandler& handler )
+	{
+		//m_eventHandlers[ type ].push( handler );
+	}
+
+	void UiElement::unregisterEventHandler( UiElementEventType type, const UiEventHandler& handler )
+	{
+
+	}
+
 	void UiElement::setToColorRectangle( Color topLeft /* = TIKI_COLOR_WHITE */, Color topRight /* = TIKI_COLOR_WHITE */, Color bottomLeft /* = TIKI_COLOR_WHITE */, Color bottomRight /* = TIKI_COLOR_WHITE */ )
 	{
 		m_pFont			= nullptr;

@@ -29,7 +29,7 @@ namespace tiki
 		m_scriptContext.addExtension( ScriptExtensions_String );
 
 		if( !m_scriptUiSystemClass.create( m_scriptContext, *this, m_scriptUiElementClass ) ||
-			!m_scriptUiElementClass.create( m_scriptContext ) )
+			!m_scriptUiElementClass.create( m_scriptContext, *this ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;

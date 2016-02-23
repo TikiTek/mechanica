@@ -21,7 +21,7 @@ namespace tiki
 		bool				create( ScriptContext& context, bool hasInstance );
 		void				dispose();
 
-		void*				getInstance() const;
+		void*				getInstanceData() const;
 		ScriptValue			getArgument( uint index ) const;
 		void				setReturnValue( const ScriptValue& value ) const;
 
@@ -30,7 +30,7 @@ namespace tiki
 	private:
 
 		ScriptContext*			m_pContext;
-		void*					m_pInstance;
+		void*					m_pInstanceData;
 		mutable ScriptValue		m_returnValue;
 
 	};

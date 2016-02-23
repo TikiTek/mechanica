@@ -2,11 +2,30 @@
 
 #include "tiki/script/scriptcontext.hpp"
 #include "tiki/ui/uielement.hpp"
+#include "tiki/ui/uisystem.hpp"
 
 namespace tiki
 {
-	bool UiElementScript::create( ScriptContext& scriptContext )
+	struct UiElementScriptData
 	{
+		UiSystem*	pUiSystem;
+		UiElement*	pUiElement;
+	};
+
+	UiElementScript::UiElementScript()
+	{
+		m_pUiSystem = nullptr;
+	}
+
+	UiElementScript::~UiElementScript()
+	{
+		TIKI_ASSERT( m_pUiSystem == nullptr );
+	}
+
+	bool UiElementScript::create( ScriptContext& scriptContext, UiSystem& uiSystem )
+	{
+		m_pUiSystem = &uiSystem;
+
 		static const ScriptMethod s_aMethods[] =
 		{
 			{ "setPosition",	&ScriptContext::scriptWrapperFunction< UiElementScript::setPosition > },
@@ -25,26 +44,52 @@ namespace tiki
 	void UiElementScript::dispose()
 	{
 		ScriptClass::dispose();
+
+		m_pUiSystem = nullptr;
 	}
 
-	void UiElementScript::setPosition( const ScriptCall& call )
+	ScriptValue UiElementScript::createScriptElement( const ScriptValue& parentValue )
+	{
+		UiElement* pParent = nullptr;
+		if( parentValue.isValid() )
+		{
+			const UiElementScriptData& scriptData = *(const UiElementScriptData*)parentValue.getObjectInstanceData();
+			pParent = scriptData.pUiElement;
+		}
+
+		UiElement* pElement = m_pUiSystem->addElement( pParent );
+
+		UiElementScriptData scriptData;
+		scriptData.pUiSystem	= m_pUiSystem;
+		scriptData.pUiElement	= pElement;
+
+		return registerInstance( &scriptData, sizeof( scriptData ) );
+	}
+
+	void UiElementScript::disposeScriptElement( const ScriptValue& elementValue )
+	{
+		const UiElementScriptData& scriptData = *(const UiElementScriptData*)elementValue.getObjectInstanceData();
+		scriptData.pUiSystem->removeElement( scriptData.pUiElement );
+	}
+
+	/*static*/ void UiElementScript::setPosition( const ScriptCall& call )
 	{
 
 	}
 
-	void UiElementScript::setWidth( const ScriptCall& call )
+	/*static*/ void UiElementScript::setWidth( const ScriptCall& call )
 	{
-		UiElement* pElement = (UiElement*)call.getInstance();
+		const UiElementScriptData& scriptData = *(const UiElementScriptData*)call.getInstanceData();
 
-		const float value = (float)call.getArgument( 0 ).getFloatValue();
-		pElement->setWidth( UiSize( value ) );
+		const float value = (float)call.getArgument( 0u ).getFloatValue();
+		scriptData.pUiElement->setWidth( UiSize( value ) );
 	}
 
-	void UiElementScript::setHeight( const ScriptCall& call )
+	/*static*/ void UiElementScript::setHeight( const ScriptCall& call )
 	{
-		UiElement* pElement = (UiElement*)call.getInstance();
+		const UiElementScriptData& scriptData = *(const UiElementScriptData*)call.getInstanceData();
 
-		const float value = (float)call.getArgument( 0 ).getFloatValue();
-		pElement->setHeight( UiSize( value ) );
+		const float value = (float)call.getArgument( 0u ).getFloatValue();
+		scriptData.pUiElement->setHeight( UiSize( value ) );
 	}
 }
