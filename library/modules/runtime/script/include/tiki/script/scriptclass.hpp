@@ -31,7 +31,7 @@ namespace tiki
 		bool			create( ScriptContext& context, const char* pName, const ScriptMethod* pMethods, uint methodCount, ScriptWrapperFunc pOnCollectMethod = nullptr );
 		void			dispose();
 
-		ScriptValue		registerInstance( void* pInstance );
+		ScriptValue		registerInstance( const void* pInstanceData, uint instanceDataSize );
 		void			unregisterInstance( const ScriptValue& instance );
 
 	private:

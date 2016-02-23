@@ -11,14 +11,14 @@ namespace tiki
 {
 	ScriptCall::ScriptCall()
 	{
-		m_pContext			= nullptr;
-		m_pInstance			= nullptr;
+		m_pContext		= nullptr;
+		m_pInstanceData	= nullptr;
 	}
 
 	ScriptCall::~ScriptCall()
 	{
 		TIKI_ASSERT( m_pContext == nullptr );
-		TIKI_ASSERT( m_pInstance	== nullptr );
+		TIKI_ASSERT( m_pInstanceData == nullptr );
 	}
 
 	bool ScriptCall::create( ScriptContext& context, bool hasInstance )
@@ -34,8 +34,10 @@ namespace tiki
 				return false;
 			}
 
-			m_pInstance = *(void**)pUserData;
-			return m_pInstance != nullptr;
+			lua_pop( m_pContext->m_pState, 0 );
+
+			m_pInstanceData = pUserData;
+			return m_pInstanceData != nullptr;
 		}
 
 		return true;
@@ -43,14 +45,14 @@ namespace tiki
 
 	void ScriptCall::dispose()
 	{
-		m_pContext	= nullptr;
-		m_pInstance	= nullptr;
+		m_pContext		= nullptr;
+		m_pInstanceData	= nullptr;
 		m_returnValue.dispose();
 	}
 
-	void* ScriptCall::getInstance() const
+	void* ScriptCall::getInstanceData() const
 	{
-		return m_pInstance;
+		return m_pInstanceData;
 	}
 
 	ScriptValue ScriptCall::getArgument( uint index ) const

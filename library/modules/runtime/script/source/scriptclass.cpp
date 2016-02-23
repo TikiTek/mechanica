@@ -1,5 +1,6 @@
 #include "tiki/script/scriptclass.hpp"
 
+#include "tiki/base/memory.hpp"
 #include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/script/scriptcontext.hpp"
 
@@ -77,12 +78,14 @@ namespace tiki
 		m_pContext = nullptr;
 	}
 
-	ScriptValue ScriptClass::registerInstance( void* pInstance )
+	ScriptValue ScriptClass::registerInstance( const void* pInstanceData, uint instanceDataSize )
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		lua_State* pState = m_pContext->m_pState;
 
-		*(void**)lua_newuserdata( pState, sizeof( void* ) ) = pInstance;
+		void* pScriptData = lua_newuserdata( pState, instanceDataSize );
+		memory::copy( pScriptData, pInstanceData, instanceDataSize );
+
 		luaL_getmetatable( pState, m_pName );
 		lua_setmetatable( pState, -2 );
 

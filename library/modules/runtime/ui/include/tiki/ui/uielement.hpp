@@ -14,7 +14,29 @@ namespace tiki
 	class Font;
 	class TextureData;
 	class UiSystem;
+	struct UiEventData;
+	struct UiEventHandler;
 	struct UiLayoutContext;
+
+	enum UiElementEventType
+	{
+		UiElementEventType_MouseIn,
+		UiElementEventType_MouseOut,
+		UiElementEventType_MouseOver,
+		UiElementEventType_MouseButtonDown,
+		UiElementEventType_MouseButtonUp,
+		UiElementEventType_MouseButtonClick,
+
+		UiElementEventType_Count
+	};
+
+	typedef void( *UiEventFunc )( const UiEventData& eventData );
+
+	//struct UiElementEventFunction
+	//{
+	//	ScriptValue		scriptValue;
+	//	UiEventFunc*	pEventFunc;
+	//};
 
 	class UiElement : public LinkedItem< UiElement >
 	{
@@ -50,10 +72,17 @@ namespace tiki
 		void					setToTextureRectangle( const TextureData* pTexture, const TexCoordArray* pTexCoords = nullptr, const ColorArray* pVertexColors = nullptr );
 		void					setToText( const char* pText, const Font* pFont );
 
-	private:
+	private: // friend
 
 		void					create( UiElement* pParent );
 		void					dispose();
+
+		void					registerEventHandler( UiElementEventType type, const UiEventHandler& handler );
+		void					unregisterEventHandler( UiElementEventType type, const UiEventHandler& handler );
+
+	private:
+
+		typedef FixedArray< LinkedList< UiEventHandler >, UiElementEventType_Count > UiEventHandlerArray;
 
 		bool					m_layoutChanged;
 		UiRectangle				m_layoutRectangle;
@@ -74,6 +103,8 @@ namespace tiki
 
 		UiElement*				m_pParent;
 		LinkedList< UiElement >	m_children;
+
+		UiEventHandlerArray		m_eventHandlers;
 
 		void					setLayoutChanged( bool applyToChildren = true );
 

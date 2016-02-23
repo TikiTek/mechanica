@@ -76,7 +76,7 @@ namespace tiki
 		m_pContext	= nullptr;
 	}
 
-	void* ScriptValue::getObjectInstance() const
+	void* ScriptValue::getObjectInstanceData() const
 	{
 		TIKI_ASSERT( isValid() && isObject() );
 
@@ -89,7 +89,7 @@ namespace tiki
 				return nullptr;
 			}
 
-			return *(void**)pUserData;
+			return pUserData;
 		}
 
 		return nullptr;
