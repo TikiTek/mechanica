@@ -123,6 +123,73 @@ namespace tiki
 		return m_pContext != nullptr && m_type != ScriptValueType_Invalid;
 	}
 
+	ScriptValue& ScriptValue::operator=( const ScriptValue& copy )
+	{
+		if( copy.isValid() )
+		{
+			m_pContext	= copy.m_pContext;
+			m_type		= copy.m_type;
+
+			switch( m_type )
+			{
+			case ScriptValueType_Object:
+				copy.pushValue();
+				createObjectFromStack();
+				break;
+
+			case ScriptValueType_Float:
+				m_value.floatingPoint = copy.m_value.floatingPoint;
+				break;
+
+			case ScriptValueType_Signed:
+				m_value.signedInteger = copy.m_value.signedInteger;
+				break;
+
+			case ScriptValueType_Unsigned:
+				m_value.unsignedInteger = copy.m_value.unsignedInteger;
+				break;
+
+			default:
+				break;
+			}
+		}
+		else
+		{
+			m_pContext	= nullptr;
+			m_type		= ScriptValueType_Invalid;
+		}
+
+		return *this;
+	}
+
+	bool ScriptValue::operator==( const ScriptValue& rhs )
+	{
+		if( m_pContext != rhs.m_pContext || m_type != rhs.m_type )
+		{
+			return false;
+		}
+
+		switch( m_type )
+		{
+		case ScriptValueType_Object:
+			return m_value.objectRef == rhs.m_value.objectRef;
+
+		case ScriptValueType_Float:
+			return m_value.floatingPoint == rhs.m_value.floatingPoint;
+
+		case ScriptValueType_Signed:
+			return m_value.signedInteger == rhs.m_value.signedInteger;
+
+		case ScriptValueType_Unsigned:
+			return m_value.unsignedInteger == rhs.m_value.unsignedInteger;
+
+		default:
+			break;
+		}
+
+		return true;
+	}
+
 	void ScriptValue::createFromStack( int index )
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
@@ -174,44 +241,5 @@ namespace tiki
 		default:
 			break;
 		}
-	}
-
-	ScriptValue& ScriptValue::operator=( const ScriptValue& copy )
-	{
-		if( copy.isValid() )
-		{
-			m_pContext	= copy.m_pContext;
-			m_type		= copy.m_type;
-
-			switch( m_type )
-			{
-			case ScriptValueType_Object:
-				copy.pushValue();
-				createObjectFromStack();
-				break;
-
-			case ScriptValueType_Float:
-				m_value.floatingPoint = copy.m_value.floatingPoint;
-				break;
-
-			case ScriptValueType_Signed:
-				m_value.signedInteger = copy.m_value.signedInteger;
-				break;
-
-			case ScriptValueType_Unsigned:
-				m_value.unsignedInteger = copy.m_value.unsignedInteger;
-				break;
-
-			default:
-				break;
-			}
-		}
-		else
-		{
-			m_pContext	= nullptr;
-			m_type		= ScriptValueType_Invalid;
-		}
-
-		return *this;
 	}
 }

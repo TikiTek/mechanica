@@ -17,6 +17,7 @@ namespace tiki
 	class RenderTarget;
 	class ResourceManager;
 	struct InputEvent;
+	struct UiEventHandler;
 	struct UiSize;
 
 	struct UiSystemParameters
@@ -38,6 +39,7 @@ namespace tiki
 	class UiSystem
 	{
 		TIKI_NONCOPYABLE_CLASS( UiSystem );
+		friend class UiElement;
 
 	public:
 
@@ -59,6 +61,11 @@ namespace tiki
 
 		bool			processInputEvent( InputEvent& inputEvent );
 
+	private: // friend
+
+		UiEventHandler*	allocateEventHandler();
+		void			freeEventHandler( UiEventHandler& eventHandler );
+
 	private:
 
 		UiRenderer				m_renderer;
@@ -69,6 +76,8 @@ namespace tiki
 
 		Pool< UiElement >		m_elementPool;
 		UiElement*				m_pRootElement;
+
+		Pool< UiEventHandler >	m_eventHandlers;
 
 	};
 }

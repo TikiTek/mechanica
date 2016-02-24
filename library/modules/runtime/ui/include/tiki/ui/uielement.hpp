@@ -12,6 +12,7 @@
 namespace tiki
 {
 	class Font;
+	class ScriptValue;
 	class TextureData;
 	class UiSystem;
 	struct UiEventData;
@@ -31,12 +32,6 @@ namespace tiki
 	};
 
 	typedef void( *UiEventFunc )( const UiEventData& eventData );
-
-	//struct UiElementEventFunction
-	//{
-	//	ScriptValue		scriptValue;
-	//	UiEventFunc*	pEventFunc;
-	//};
 
 	class UiElement : public LinkedItem< UiElement >
 	{
@@ -67,6 +62,9 @@ namespace tiki
 		Thickness				getPadding() const;
 		void					setPadding( Thickness padding );
 
+		void					registerEventHandler( UiElementEventType type, UiEventFunc* pHandlerFunc );
+		void					unregisterEventHandler( UiElementEventType type, UiEventFunc pHandlerFunc );
+
 		void					setToColorRectangle( Color topLeft = TIKI_COLOR_WHITE, Color topRight = TIKI_COLOR_WHITE, Color bottomLeft = TIKI_COLOR_WHITE, Color bottomRight = TIKI_COLOR_WHITE );
 		void					setToColorRectangleOne( Color color = TIKI_COLOR_WHITE );
 		void					setToTextureRectangle( const TextureData* pTexture, const TexCoordArray* pTexCoords = nullptr, const ColorArray* pVertexColors = nullptr );
@@ -74,15 +72,17 @@ namespace tiki
 
 	private: // friend
 
-		void					create( UiElement* pParent );
+		void					create( UiSystem* pUiSystem, UiElement* pParent );
 		void					dispose();
 
-		void					registerEventHandler( UiElementEventType type, const UiEventHandler& handler );
-		void					unregisterEventHandler( UiElementEventType type, const UiEventHandler& handler );
+		void					registerScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc );
+		void					unregisterScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc );
 
 	private:
 
 		typedef FixedArray< LinkedList< UiEventHandler >, UiElementEventType_Count > UiEventHandlerArray;
+
+		UiSystem*				m_pUiSystem;
 
 		bool					m_layoutChanged;
 		UiRectangle				m_layoutRectangle;

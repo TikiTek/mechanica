@@ -26,6 +26,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE uint				getCount() const;
 		TIKI_FORCE_INLINE bool				isEmpty() const;
+		TIKI_FORCE_INLINE bool				isFull() const;
 
 		TIKI_FORCE_INLINE bool				contains( const T& item ) const;
 

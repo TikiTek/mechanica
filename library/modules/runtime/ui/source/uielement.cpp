@@ -1,5 +1,7 @@
 #include "tiki/ui/uielement.hpp"
 
+#include "tiki/ui/uisystem.hpp"
+
 #include "uitypes_private.hpp"
 
 namespace tiki
@@ -16,8 +18,10 @@ namespace tiki
 	{
 	}
 
-	void UiElement::create( UiElement* pParent )
+	void UiElement::create( UiSystem* pUiSystem, UiElement* pParent )
 	{
+		m_pUiSystem = pUiSystem;
+
 		m_pParent = pParent;
 		if( m_pParent )
 		{
@@ -44,6 +48,26 @@ namespace tiki
 		}
 
 		m_children.clear();
+	}
+
+	void UiElement::registerScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc )
+	{
+		UiEventHandler* pEventHandler = m_pUiSystem->allocateEventHandler();
+		if( pEventHandler == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[ui] Unable to register event handler. Out of Memory.\n" );
+			return;
+		}
+
+		pEventHandler->scriptFunc	= handlerFunc;
+		pEventHandler->pEventFunc	= nullptr;
+
+		m_eventHandlers[ type ].push( pEventHandler );
+	}
+
+	void UiElement::unregisterScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc )
+	{
+
 	}
 
 	const UiPosition& UiElement::getPosition() const
@@ -101,12 +125,12 @@ namespace tiki
 		setLayoutChanged();
 	}
 
-	void UiElement::registerEventHandler( UiElementEventType type, const UiEventHandler& handler )
+	void UiElement::registerEventHandler( UiElementEventType type, UiEventFunc* pHandlerFunc )
 	{
-		//m_eventHandlers[ type ].push( handler );
+
 	}
 
-	void UiElement::unregisterEventHandler( UiElementEventType type, const UiEventHandler& handler )
+	void UiElement::unregisterEventHandler( UiElementEventType type, UiEventFunc pHandlerFunc )
 	{
 
 	}

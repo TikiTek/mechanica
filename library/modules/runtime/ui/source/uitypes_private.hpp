@@ -81,6 +81,12 @@ namespace tiki
 	{
 		float	meterToPixel;
 	};
+
+	struct UiEventHandler
+	{
+		ScriptValue		scriptFunc;
+		UiEventFunc*	pEventFunc;
+	};
 }
 
 #endif // TIKI_UITYPES_PRIVTAE_HPP_INCLUDED

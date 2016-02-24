@@ -78,6 +78,12 @@ namespace tiki
 	}
 
 	template<typename T>
+	TIKI_FORCE_INLINE bool tiki::Pool<T>::isFull() const
+	{
+		return m_count == m_capacity;
+	}
+
+	template<typename T>
 	TIKI_FORCE_INLINE bool Pool<T>::contains( const T& item ) const
 	{
 		TIKI_ASSERT( uint( &item ) % sizeof( T ) == uint( m_pData ) % sizeof( T ) );
