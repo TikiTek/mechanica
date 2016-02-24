@@ -10,6 +10,8 @@ namespace tiki
 		ScriptContext context;
 		context.m_pState = pState;
 
+		context.stackDump();
+
 		ScriptCall call;
 		if( call.create( context, true ) )
 		{

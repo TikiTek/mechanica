@@ -34,7 +34,7 @@ namespace tiki
 				return false;
 			}
 
-			lua_pop( m_pContext->m_pState, 0 );
+			m_pContext->stackDump();
 
 			m_pInstanceData = pUserData;
 			return m_pInstanceData != nullptr;
@@ -58,6 +58,12 @@ namespace tiki
 	ScriptValue ScriptCall::getArgument( uint index ) const
 	{
 		const int stackIndex = -(int)(index + 1u);
+
+		const int requiredStackSize = (int)index + (m_pInstanceData ? 2 : 1);
+		if( lua_gettop( m_pContext->m_pState ) < requiredStackSize )
+		{
+			return ScriptValue();
+		}
 
 		ScriptValue value( *m_pContext );
 		value.createFromStack( stackIndex );

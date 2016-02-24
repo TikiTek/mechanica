@@ -90,7 +90,7 @@ namespace tiki
 		lua_setmetatable( pState, -2 );
 
 		ScriptValue value( *m_pContext );
-		value.createObjectFromStack();
+		value.createReferenceFromStack();
 
 		return value;
 	}

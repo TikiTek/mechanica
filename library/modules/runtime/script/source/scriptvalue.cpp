@@ -27,16 +27,42 @@ namespace tiki
 		*this = copy;
 	}
 
+	ScriptValue::ScriptValue( ScriptContext& context, double value )
+	{
+		m_pContext = &context;
+		createFloat( value );
+	}
+
+	ScriptValue::ScriptValue( ScriptContext& context, sint64 value )
+	{
+		m_pContext = &context;
+		createSigned( value );
+	}
+
+	ScriptValue::ScriptValue( ScriptContext& context, uint64 value )
+	{
+		m_pContext = &context;
+		createUnsigned( value );
+	}
+
 	ScriptValue::~ScriptValue()
 	{
 		dispose();
 	}
 
-	void ScriptValue::createObjectFromStack()
+	void ScriptValue::createReferenceFromStack()
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
-		m_type				= ScriptValueType_Object;
+		if( lua_isfunction( m_pContext->m_pState, -1 ) )
+		{
+			m_type = ScriptValueType_Function;
+		}
+		else
+		{
+			m_type = ScriptValueType_Object;
+		}
+
 		m_value.objectRef	= luaL_ref( m_pContext->m_pState, LUA_REGISTRYINDEX );
 		if( m_value.objectRef == LUA_REFNIL )
 		{
@@ -46,20 +72,42 @@ namespace tiki
 
 	void ScriptValue::createFloat( double value )
 	{
+		TIKI_ASSERT( m_pContext != nullptr );
 		m_type					= ScriptValueType_Float;
 		m_value.floatingPoint	= value;
 	}
 
 	void ScriptValue::createSigned( sint64 value )
 	{
+		TIKI_ASSERT( m_pContext != nullptr );
 		m_type					= ScriptValueType_Signed;
 		m_value.signedInteger	= value;
 	}
 
 	void ScriptValue::createUnsigned( uint64 value )
 	{
+		TIKI_ASSERT( m_pContext != nullptr );
 		m_type					= ScriptValueType_Unsigned;
 		m_value.unsignedInteger	= value;
+	}
+
+	void ScriptValue::createObject( const ScriptObjectField* pFields, uint fieldCount )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		m_type = ScriptValueType_Object;
+
+		lua_createtable( m_pContext->m_pState, 0, (int)fieldCount );
+
+		for( uint i = 0u; i < fieldCount; ++i )
+		{
+			const ScriptObjectField& field = pFields[ i ];
+
+			lua_pushstring( m_pContext->m_pState, field.pName );
+			field.value.pushValue();
+			lua_settable( m_pContext->m_pState, -3 );
+		}
+
+		createReferenceFromStack();
 	}
 
 	void ScriptValue::dispose()
@@ -123,6 +171,13 @@ namespace tiki
 		return m_pContext != nullptr && m_type != ScriptValueType_Invalid;
 	}
 
+	ScriptValue ScriptValue::callFunction( const ScriptValue& arg1 /*= ScriptValue()*/, const ScriptValue& arg2 /*= ScriptValue()*/, const ScriptValue& arg3 /*= ScriptValue() */ ) const
+	{
+		TIKI_ASSERT( isFunction() );
+
+		return ScriptValue();
+	}
+
 	ScriptValue& ScriptValue::operator=( const ScriptValue& copy )
 	{
 		if( copy.isValid() )
@@ -133,8 +188,9 @@ namespace tiki
 			switch( m_type )
 			{
 			case ScriptValueType_Object:
+			case ScriptValueType_Function:
 				copy.pushValue();
-				createObjectFromStack();
+				createReferenceFromStack();
 				break;
 
 			case ScriptValueType_Float:
@@ -172,6 +228,7 @@ namespace tiki
 		switch( m_type )
 		{
 		case ScriptValueType_Object:
+		case ScriptValueType_Function:
 			return m_value.objectRef == rhs.m_value.objectRef;
 
 		case ScriptValueType_Float:
@@ -194,12 +251,19 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
+		if( lua_gettop( m_pContext->m_pState ) == 0 )
+		{
+			m_type = ScriptValueType_Invalid;
+			return;
+		}
+
 		const int type = lua_type( m_pContext->m_pState, index );
 		switch( type )
 		{
 		case LUA_TUSERDATA:
 		case LUA_TTABLE:
-			createObjectFromStack();
+		case LUA_TFUNCTION:
+			createReferenceFromStack();
 			break;
 
 		case LUA_TNUMBER:
@@ -219,6 +283,7 @@ namespace tiki
 		switch( m_type )
 		{
 		case ScriptValueType_Object:
+		case ScriptValueType_Function:
 			if( m_value.objectRef == LUA_NOREF )
 			{
 				lua_pushnil( m_pContext->m_pState );
