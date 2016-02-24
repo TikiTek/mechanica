@@ -14,24 +14,13 @@ namespace tiki
 	class Font;
 	class ScriptValue;
 	class TextureData;
+	class UiElement;
 	class UiSystem;
-	struct UiEventData;
 	struct UiEventHandler;
 	struct UiLayoutContext;
+	union UiEventData;
 
-	enum UiElementEventType
-	{
-		UiElementEventType_MouseIn,
-		UiElementEventType_MouseOut,
-		UiElementEventType_MouseOver,
-		UiElementEventType_MouseButtonDown,
-		UiElementEventType_MouseButtonUp,
-		UiElementEventType_MouseButtonClick,
-
-		UiElementEventType_Count
-	};
-
-	typedef void( *UiEventFunc )( const UiEventData& eventData );
+	typedef void( *UiEventFunc )( UiElement* pElement, const UiEventData& eventData );
 
 	class UiElement : public LinkedItem< UiElement >
 	{
@@ -62,8 +51,8 @@ namespace tiki
 		Thickness				getPadding() const;
 		void					setPadding( Thickness padding );
 
-		void					registerEventHandler( UiElementEventType type, UiEventFunc* pHandlerFunc );
-		void					unregisterEventHandler( UiElementEventType type, UiEventFunc pHandlerFunc );
+		void					registerEventHandler( UiEventType type, UiEventFunc pHandlerFunc );
+		void					unregisterEventHandler( UiEventType type, UiEventFunc pHandlerFunc );
 
 		void					setToColorRectangle( Color topLeft = TIKI_COLOR_WHITE, Color topRight = TIKI_COLOR_WHITE, Color bottomLeft = TIKI_COLOR_WHITE, Color bottomRight = TIKI_COLOR_WHITE );
 		void					setToColorRectangleOne( Color color = TIKI_COLOR_WHITE );
@@ -75,12 +64,14 @@ namespace tiki
 		void					create( UiSystem* pUiSystem, UiElement* pParent );
 		void					dispose();
 
-		void					registerScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc );
-		void					unregisterScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc );
+		void					registerScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc );
+		void					unregisterScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc );
+
+		void					raiseEvent( UiEventType type, const UiEventData& eventData );
 
 	private:
 
-		typedef FixedArray< LinkedList< UiEventHandler >, UiElementEventType_Count > UiEventHandlerArray;
+		typedef FixedArray< LinkedList< UiEventHandler >, UiEventType_Count > UiEventHandlerArray;
 
 		UiSystem*				m_pUiSystem;
 

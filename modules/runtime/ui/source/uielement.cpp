@@ -50,7 +50,26 @@ namespace tiki
 		m_children.clear();
 	}
 
-	void UiElement::registerScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc )
+	void UiElement::registerEventHandler( UiEventType type, UiEventFunc pHandlerFunc )
+	{
+		UiEventHandler* pEventHandler = m_pUiSystem->allocateEventHandler();
+		if( pEventHandler == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[ui] Unable to register event handler. Out of Memory.\n" );
+			return;
+		}
+
+		pEventHandler->pEventFunc = pHandlerFunc;
+
+		m_eventHandlers[ type ].push( pEventHandler );
+	}
+
+	void UiElement::unregisterEventHandler( UiEventType type, UiEventFunc pHandlerFunc )
+	{
+
+	}
+
+	void UiElement::registerScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc )
 	{
 		UiEventHandler* pEventHandler = m_pUiSystem->allocateEventHandler();
 		if( pEventHandler == nullptr )
@@ -65,9 +84,77 @@ namespace tiki
 		m_eventHandlers[ type ].push( pEventHandler );
 	}
 
-	void UiElement::unregisterScriptEventHandler( UiElementEventType type, const ScriptValue& handlerFunc )
+	void UiElement::unregisterScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc )
 	{
 
+	}
+
+	void UiElement::raiseEvent( UiEventType type, const UiEventData& eventData )
+	{
+		ScriptValue scriptEventData( m_pUiSystem->getScriptContext() );
+
+		ScriptContext& scriptContext = m_pUiSystem->getScriptContext();
+		switch( type )
+		{
+		case UiEventType_MouseIn:
+		case UiEventType_MouseOut:
+		case UiEventType_MouseOver:
+		case UiEventType_MouseButtonDown:
+		case UiEventType_MouseButtonUp:
+		case UiEventType_MouseButtonClick:
+			{
+				const ScriptObjectField aFields[] =
+				{
+					{ "positionX", ScriptValue( scriptContext, eventData.mouse.positionX ) },
+					{ "positionY", ScriptValue( scriptContext, eventData.mouse.positionY ) }
+				};
+
+				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
+			}
+			break;
+
+		case UiEventType_PositionChanged:
+			{
+				const ScriptObjectField aFields[] =
+				{
+					{ "left",	ScriptValue( scriptContext, eventData.position.position.getLeft().value ) },
+					{ "top",	ScriptValue( scriptContext, eventData.position.position.getTop().value ) },
+					{ "bottom",	ScriptValue( scriptContext, eventData.position.position.getBottom().value ) },
+					{ "right",	ScriptValue( scriptContext, eventData.position.position.getRight().value ) }
+				};
+
+				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
+			}
+			break;
+
+		case UiEventType_SizeChanged:
+			{
+				const ScriptObjectField aFields[] =
+				{
+					{ "width",	ScriptValue( scriptContext, eventData.size.width.value ) },
+					{ "height",	ScriptValue( scriptContext, eventData.size.height.value ) }
+				};
+
+				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		for( UiEventHandler& eventHandler : m_eventHandlers[ type ] )
+		{
+			if( eventHandler.scriptFunc.isValid() )
+			{
+				eventHandler.scriptFunc.callFunction( scriptEventData );
+			}
+			else
+			{
+				TIKI_ASSERT( eventHandler.pEventFunc != nullptr );
+				eventHandler.pEventFunc( this, eventData );
+			}
+		}
 	}
 
 	const UiPosition& UiElement::getPosition() const
@@ -123,16 +210,6 @@ namespace tiki
 	{
 		m_padding = padding;
 		setLayoutChanged();
-	}
-
-	void UiElement::registerEventHandler( UiElementEventType type, UiEventFunc* pHandlerFunc )
-	{
-
-	}
-
-	void UiElement::unregisterEventHandler( UiElementEventType type, UiEventFunc pHandlerFunc )
-	{
-
 	}
 
 	void UiElement::setToColorRectangle( Color topLeft /* = TIKI_COLOR_WHITE */, Color topRight /* = TIKI_COLOR_WHITE */, Color bottomLeft /* = TIKI_COLOR_WHITE */, Color bottomRight /* = TIKI_COLOR_WHITE */ )

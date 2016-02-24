@@ -2,6 +2,7 @@
 #ifndef TIKI_UITYPES_PRIVATE_HPP_INCLUDED
 #define TIKI_UITYPES_PRIVATE_HPP_INCLUDED
 
+#include "tiki/script/scriptvalue.hpp"
 #include "tiki/ui/uielement.hpp"
 
 namespace tiki
@@ -82,10 +83,10 @@ namespace tiki
 		float	meterToPixel;
 	};
 
-	struct UiEventHandler
+	struct UiEventHandler : public LinkedItem< UiEventHandler >
 	{
 		ScriptValue		scriptFunc;
-		UiEventFunc*	pEventFunc;
+		UiEventFunc		pEventFunc;
 	};
 }
 

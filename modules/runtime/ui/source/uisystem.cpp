@@ -46,7 +46,7 @@ namespace tiki
 		}
 
 		m_pRootElement = &m_elementPool.push();
-		m_pRootElement->create( nullptr );
+		m_pRootElement->create( this, nullptr );
 		m_pRootElement->setToColorRectangle( TIKI_COLOR_TRANSPARENT );
 
 		setScreenSize( (float)parameters.width, (float)parameters.height );
@@ -71,7 +71,7 @@ namespace tiki
 	UiElement* UiSystem::addElement( UiElement* pParent /*= nullptr */ )
 	{
 		UiElement& element = m_elementPool.push();
-		element.create( !pParent ? m_pRootElement : pParent );
+		element.create( this, !pParent ? m_pRootElement : pParent );
 
 		return &element;
 	}

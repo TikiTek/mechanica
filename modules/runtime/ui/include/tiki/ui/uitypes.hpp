@@ -4,6 +4,7 @@
 
 #include "tiki/container/fixedarray.hpp"
 #include "tiki/graphics/color.hpp"
+#include "tiki/input/mousebutton.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -146,6 +147,41 @@ namespace tiki
 		{
 			return bottom - top;
 		}
+	};
+
+	enum UiEventType
+	{
+		UiEventType_MouseIn,
+		UiEventType_MouseOut,
+		UiEventType_MouseOver,
+		UiEventType_MouseButtonDown,
+		UiEventType_MouseButtonUp,
+		UiEventType_MouseButtonClick,
+		UiEventType_PositionChanged,
+		UiEventType_SizeChanged,
+
+		UiEventType_Count
+	};
+
+	union UiEventData
+	{
+		struct UiMouseEventData
+		{
+			float		positionX;
+			float		positionY;
+			bool		buttons[ MouseButton_Count ];
+		} mouse;
+
+		struct UiPositionEventData
+		{
+			UiPosition	position;
+		} position;
+
+		struct UisizeEventData
+		{
+			UiSize		width;
+			UiSize		height;
+		} size;
 	};
 }
 
