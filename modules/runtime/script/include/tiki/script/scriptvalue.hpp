@@ -54,6 +54,8 @@ namespace tiki
 		
 		ScriptValue&	operator=( const ScriptValue& copy );
 
+		bool			operator==( const ScriptValue& rhs );
+
 	private: // friend
 
 		void			createFromStack( int index );

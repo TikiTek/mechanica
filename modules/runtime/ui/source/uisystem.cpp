@@ -125,4 +125,19 @@ namespace tiki
 	{
 		return false;
 	}
+
+	UiEventHandler* UiSystem::allocateEventHandler()
+	{
+		if( m_eventHandlers.isFull() )
+		{
+			return nullptr;
+		}
+
+		return &m_eventHandlers.push();
+	}
+
+	void UiSystem::freeEventHandler( UiEventHandler& eventHandler )
+	{
+		m_eventHandlers.removeUnsortedByValue( eventHandler );
+	}
 }
