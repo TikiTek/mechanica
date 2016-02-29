@@ -153,6 +153,12 @@ namespace tiki
 		TIKI_FORCE_INLINE Iterator			getEnd()			{ return Iterator( nullptr ); }
 		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return ConstIterator( nullptr ); }
 
+		TIKI_FORCE_INLINE Reference			getFirst()			{ TIKI_ASSERT( m_count > 0u ); return *m_pData; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ TIKI_ASSERT( m_count > 0u ); return *m_pData; }
+
+		TIKI_FORCE_INLINE Reference			getLast()			{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
+		TIKI_FORCE_INLINE ConstReference	getLast() const		{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
+
 		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
 		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
 

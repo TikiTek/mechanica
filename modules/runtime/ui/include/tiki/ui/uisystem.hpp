@@ -24,16 +24,18 @@ namespace tiki
 	{
 		UiSystemParameters()
 		{
-			width			= 0u;
-			height			= 0u;
+			width					= 0u;
+			height					= 0u;
 
-			maxElementCount	= 4096u;
+			maxElementCount			= 4096u;
+			maxEventHandlerCount	= 4096u;
 		}
 
 		uint	width;
 		uint	height;
 
 		uint	maxElementCount;
+		uint	maxEventHandlerCount;
 	};
 
 	class UiSystem
@@ -77,7 +79,7 @@ namespace tiki
 		Pool< UiElement >		m_elementPool;
 		UiElement*				m_pRootElement;
 
-		Pool< UiEventHandler >	m_eventHandlers;
+		Pool< UiEventHandler >	m_eventHandlerPool;
 
 	};
 }

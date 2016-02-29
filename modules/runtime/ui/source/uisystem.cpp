@@ -1,5 +1,7 @@
 #include "tiki/ui/uisystem.hpp"
 
+#include "tiki/input/inputevent.hpp"
+
 #include "uitypes_private.hpp"
 
 namespace tiki
@@ -39,7 +41,8 @@ namespace tiki
 		rendererParameters.maxRenderElements = parameters.maxElementCount;
 		
 		if( !m_renderer.create( graphicsSystem, resourceManager, rendererParameters ) ||
-			!m_elementPool.create( parameters.maxElementCount ) )
+			!m_elementPool.create( parameters.maxElementCount ) ||
+			!m_eventHandlerPool.create( parameters.maxEventHandlerCount ) )
 		{
 			dispose( graphicsSystem, resourceManager );
 			return false;
@@ -59,6 +62,7 @@ namespace tiki
 		removeElement( m_pRootElement );
 		m_pRootElement = nullptr;
 
+		m_eventHandlerPool.dispose();
 		m_elementPool.dispose();
 		
 		m_renderer.dispose( graphicsSystem, resourceManager );
@@ -123,21 +127,31 @@ namespace tiki
 
 	bool UiSystem::processInputEvent( InputEvent& inputEvent )
 	{
+		switch( inputEvent.eventType )
+		{
+		case InputEventType_Mouse_Moved:
+			return m_pRootElement->checkMouseMoveEvent( vector::create( float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) ) );
+			break;
+
+		default:
+			break;
+		}
+
 		return false;
 	}
 
 	UiEventHandler* UiSystem::allocateEventHandler()
 	{
-		if( m_eventHandlers.isFull() )
+		if( m_eventHandlerPool.isFull() )
 		{
 			return nullptr;
 		}
 
-		return &m_eventHandlers.push();
+		return &m_eventHandlerPool.push();
 	}
 
 	void UiSystem::freeEventHandler( UiEventHandler& eventHandler )
 	{
-		m_eventHandlers.removeUnsortedByValue( eventHandler );
+		m_eventHandlerPool.removeUnsortedByValue( eventHandler );
 	}
 }

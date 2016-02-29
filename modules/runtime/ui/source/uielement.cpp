@@ -12,6 +12,8 @@ namespace tiki
 		m_pText			= nullptr;
 		m_pTextureData	= nullptr;
 		m_pParent		= nullptr;
+
+		m_mouseState	= false;
 	}
 
 	UiElement::~UiElement()
@@ -42,6 +44,17 @@ namespace tiki
 
 	void UiElement::dispose()
 	{
+		for( uint i = 0u; i < m_eventHandlers.getCount(); ++i )
+		{
+			while( !m_eventHandlers[ i ].isEmpty() )
+			{
+				UiEventHandler& eventHandler = m_eventHandlers[ i ].getFirst();
+				m_eventHandlers[ i ].removeSortedByValue( eventHandler );
+
+				m_pUiSystem->freeEventHandler( eventHandler );
+			}
+		}
+
 		if( m_pParent )
 		{
 			m_pParent->m_children.removeSortedByValue( *this );
@@ -89,12 +102,12 @@ namespace tiki
 
 	}
 
-	void UiElement::raiseEvent( UiEventType type, const UiEventData& eventData )
+	void UiElement::raiseEvent( const UiEvent& eventData )
 	{
 		ScriptValue scriptEventData( m_pUiSystem->getScriptContext() );
 
 		ScriptContext& scriptContext = m_pUiSystem->getScriptContext();
-		switch( type )
+		switch( eventData.type )
 		{
 		case UiEventType_MouseIn:
 		case UiEventType_MouseOut:
@@ -105,8 +118,8 @@ namespace tiki
 			{
 				const ScriptObjectField aFields[] =
 				{
-					{ "positionX", ScriptValue( scriptContext, eventData.mouse.positionX ) },
-					{ "positionY", ScriptValue( scriptContext, eventData.mouse.positionY ) }
+					{ "positionX", ScriptValue( scriptContext, eventData.data.mouse.position.x ) },
+					{ "positionY", ScriptValue( scriptContext, eventData.data.mouse.position.y ) }
 				};
 
 				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
@@ -117,10 +130,10 @@ namespace tiki
 			{
 				const ScriptObjectField aFields[] =
 				{
-					{ "left",	ScriptValue( scriptContext, eventData.position.position.getLeft().value ) },
-					{ "top",	ScriptValue( scriptContext, eventData.position.position.getTop().value ) },
-					{ "bottom",	ScriptValue( scriptContext, eventData.position.position.getBottom().value ) },
-					{ "right",	ScriptValue( scriptContext, eventData.position.position.getRight().value ) }
+					{ "left",	ScriptValue( scriptContext, eventData.data.position.position.getLeft().value ) },
+					{ "top",	ScriptValue( scriptContext, eventData.data.position.position.getTop().value ) },
+					{ "bottom",	ScriptValue( scriptContext, eventData.data.position.position.getBottom().value ) },
+					{ "right",	ScriptValue( scriptContext, eventData.data.position.position.getRight().value ) }
 				};
 
 				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
@@ -131,8 +144,8 @@ namespace tiki
 			{
 				const ScriptObjectField aFields[] =
 				{
-					{ "width",	ScriptValue( scriptContext, eventData.size.width.value ) },
-					{ "height",	ScriptValue( scriptContext, eventData.size.height.value ) }
+					{ "width",	ScriptValue( scriptContext, eventData.data.size.width.value ) },
+					{ "height",	ScriptValue( scriptContext, eventData.data.size.height.value ) }
 				};
 
 				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
@@ -143,7 +156,7 @@ namespace tiki
 			break;
 		}
 
-		for( UiEventHandler& eventHandler : m_eventHandlers[ type ] )
+		for( UiEventHandler& eventHandler : m_eventHandlers[ eventData.type ] )
 		{
 			if( eventHandler.scriptFunc.isValid() )
 			{
@@ -325,6 +338,43 @@ namespace tiki
 		getElementLayoutSizeAndPosition( m_layoutRectangle.top, m_layoutRectangle.bottom, m_position.getTop(), m_position.getBottom(), m_height, parentBounds.top, parentBounds.bottom, childBounds.getHeight(), m_margin.top, m_margin.bottom, m_padding.getHeight(), context );
 
 		m_layoutChanged = false;
+	}
+
+	bool UiElement::checkMouseMoveEvent( const Vector2& position )
+	{
+		const bool isInElement = m_layoutRectangle.contains( position );
+		if( isInElement || m_mouseState )
+		{
+			UiEvent eventData;
+			eventData.data.mouse.position	= position;
+			//eventData.data.mouse.buttons	= ...;
+
+			if( isInElement && m_mouseState )
+			{
+				eventData.type = UiEventType_MouseOver;
+			}
+			else if( isInElement && !m_mouseState )
+			{
+				eventData.type = UiEventType_MouseIn;
+				m_mouseState = true;
+			}
+			else if( !isInElement && m_mouseState )
+			{
+				eventData.type = UiEventType_MouseOut;
+				m_mouseState = false;
+			}
+
+			raiseEvent( eventData );
+
+			for( UiElement& child : m_children )
+			{
+				child.checkMouseMoveEvent( position );
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/*static*/ void UiElement::getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context )
