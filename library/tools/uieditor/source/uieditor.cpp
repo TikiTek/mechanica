@@ -76,6 +76,7 @@ namespace tiki
 		UiElement* pFill = ui.addElement( m_pTestElement );
 		pFill->setPosition( UiPosition( UiPositionElement( 5.0f ), UiPositionElement( 5.0f ), UiPositionElement( 5.0f ), UiPositionElement( 5.0f ) ) );
 		pFill->setToColorRectangleOne( TIKI_COLOR_GREEN );
+		pFill->registerEventHandler( UiEventType_MouseOver, handleMouseOverEvent );
 
 		const char* pCode = ""
 			"local element = uiSystem:addElement();"
@@ -110,6 +111,11 @@ namespace tiki
 	void UiEditor::processToolWindowEvent( const WindowEvent& windowEvent )
 	{
 
+	}
+
+	void UiEditor::handleMouseOverEvent( UiElement* pSender, const UiEvent& eventData )
+	{
+		pSender->setToColorRectangleOne( TIKI_COLOR_BLUE );
 	}
 
 	ToolApplication& framework::getTool()

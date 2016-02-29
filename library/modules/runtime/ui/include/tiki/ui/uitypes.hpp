@@ -147,6 +147,11 @@ namespace tiki
 		{
 			return bottom - top;
 		}
+
+		TIKI_FORCE_INLINE bool contains( const Vector2& point ) const
+		{
+			return (point.x >= left) && (point.x <= right) && (point.y >= top) && (point.y <= bottom);
+		}
 	};
 
 	enum UiEventType
@@ -165,10 +170,13 @@ namespace tiki
 
 	union UiEventData
 	{
+		UiEventData()
+		{
+		}
+
 		struct UiMouseEventData
 		{
-			float		positionX;
-			float		positionY;
+			Vector2		position;
 			bool		buttons[ MouseButton_Count ];
 		} mouse;
 
@@ -177,11 +185,22 @@ namespace tiki
 			UiPosition	position;
 		} position;
 
-		struct UisizeEventData
+		struct UiSizeEventData
 		{
 			UiSize		width;
 			UiSize		height;
 		} size;
+	};
+
+	struct UiEvent
+	{
+		UiEvent()
+		{
+			type = UiEventType_Count;
+		}
+
+		UiEventType	type;
+		UiEventData	data;
 	};
 }
 

@@ -16,11 +16,11 @@ namespace tiki
 	class TextureData;
 	class UiElement;
 	class UiSystem;
+	struct UiEvent;
 	struct UiEventHandler;
 	struct UiLayoutContext;
-	union UiEventData;
 
-	typedef void( *UiEventFunc )( UiElement* pElement, const UiEventData& eventData );
+	typedef void( *UiEventFunc )( UiElement* pElement, const UiEvent& eventData );
 
 	class UiElement : public LinkedItem< UiElement >
 	{
@@ -67,7 +67,7 @@ namespace tiki
 		void					registerScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc );
 		void					unregisterScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc );
 
-		void					raiseEvent( UiEventType type, const UiEventData& eventData );
+		void					raiseEvent( const UiEvent& eventData );
 
 	private:
 
@@ -95,11 +95,14 @@ namespace tiki
 		UiElement*				m_pParent;
 		LinkedList< UiElement >	m_children;
 
+		bool					m_mouseState;
 		UiEventHandlerArray		m_eventHandlers;
 
 		void					setLayoutChanged( bool applyToChildren = true );
 
 		void					updateLayout( const UiLayoutContext& context );
+
+		bool					checkMouseMoveEvent( const Vector2& position );
 
 		static void				getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context );
 

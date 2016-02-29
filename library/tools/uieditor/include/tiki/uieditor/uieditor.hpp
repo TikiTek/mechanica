@@ -7,6 +7,7 @@
 namespace tiki
 {
 	class UiElement;
+	struct UiEvent;
 
 	class UiEditor : public ToolApplication
 	{
@@ -32,6 +33,8 @@ namespace tiki
 	private:
 
 		UiElement*					m_pTestElement;
+
+		static void					handleMouseOverEvent( UiElement* pSender, const UiEvent& eventData );
 
 	};
 }
