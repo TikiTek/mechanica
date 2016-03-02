@@ -1,5 +1,32 @@
-// CreateDefaultClass true
+-- local/mastering/premake.lua
 
+newaction {
+    trigger = "master",
+    description = "Generates an final Version",
+
+    onStart = function()
+        print("Starting Lua generation")
+    end,
+
+    onWorkspace = function(wks)
+        printf("Generating Lua for workspace '%s'", wks.name)
+    end,
+
+    onProject = function(prj)
+        printf("Generating Lua for project '%s'", prj.name)
+    end,
+
+    execute = function()
+        print("Executing Lua action")
+    end,
+
+    onEnd = function()
+        print("Lua generation complete")
+    end
+}
+
+
+--[[
 bool ask = false;
 if (args.Length > 0)
 {
@@ -153,6 +180,9 @@ public static class MasteringScript
 		}	
 	}
 	
+	--cdrtools\mkisofs.exe -o steam_os2.iso -iso-level 3 -r -R -l -L -J -allow-lowercase -allow-multidot data_folder
+	--pause
+	
 	public static void BuildIso(bool ask)
 	{
 		if (_ask(ask, "Build ISO"))
@@ -173,5 +203,4 @@ public static class MasteringScript
 		}	
 	}
 }
-//EndScript
-
+--]]
