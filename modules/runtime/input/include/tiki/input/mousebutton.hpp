@@ -14,6 +14,19 @@ namespace tiki
 
 		MouseButton_Count
 	};
+
+	struct MouseButtonState
+	{
+		MouseButtonState()
+		{
+			for( uint i = 0u; i < TIKI_COUNT( state ); ++i )
+			{
+				state[ i ] = false;
+			}
+		}
+
+		bool state[ MouseButton_Count ];
+	};
 }
 
 #endif // __TIKI_MOUSEBUTTON_HPP_INCLUDED__

@@ -18,6 +18,7 @@ namespace tiki
 	class UiSystem;
 	struct UiEvent;
 	struct UiEventHandler;
+	struct UiInputState;
 	struct UiLayoutContext;
 
 	typedef void( *UiEventFunc )( UiElement* pElement, const UiEvent& eventData );
@@ -50,6 +51,10 @@ namespace tiki
 
 		Thickness				getPadding() const;
 		void					setPadding( Thickness padding );
+
+		uint					getChildCount() const;
+		UiElement*				getChildByIndex( uint index );
+		UiElement*				getFirstChild();
 
 		void					registerEventHandler( UiEventType type, UiEventFunc pHandlerFunc );
 		void					unregisterEventHandler( UiEventType type, UiEventFunc pHandlerFunc );
@@ -95,14 +100,16 @@ namespace tiki
 		UiElement*				m_pParent;
 		LinkedList< UiElement >	m_children;
 
-		bool					m_mouseState;
+		bool					m_mouseMoveState;
+		MouseButtonState		m_mouseClickState;
 		UiEventHandlerArray		m_eventHandlers;
 
 		void					setLayoutChanged( bool applyToChildren = true );
 
 		void					updateLayout( const UiLayoutContext& context );
 
-		bool					checkMouseMoveEvent( const Vector2& position );
+		bool					checkMouseMoveEvent( const UiInputState& state );
+		bool					checkMouseClickEvent( const UiInputState& prevState, const UiInputState& currentState );
 
 		static void				getElementLayoutSizeAndPosition( float& targetMin, float& targetMax, UiPositionElement elementPositionMin, UiPositionElement elementPositionMax, UiSize elementExtension, float parentMin, float parentMax, float childExtension, float marginMin, float marginMax, float paddingExtension, const UiLayoutContext& context );
 
