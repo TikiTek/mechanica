@@ -210,6 +210,7 @@ function finalize( output_name, projects )
 			end
 		end
 	end
+	table.insert( var_configurations, 'Project' );
 	
 	solution( output_name );
 	configurations( var_configurations );
@@ -231,4 +232,10 @@ function finalize( output_name, projects )
 		
 		project:finalize();
 	end
+	
+	premake_path = global_configuration.root_path .. '\\library\\buildtools\\premake\\premake5.exe'
+	
+	filter( 'Project' );
+	kind( 'Makefile' );
+	buildcommands( { 'cd ..\\project', premake_path .. ' /outpath=../build ' .. _ACTION } );
 end
