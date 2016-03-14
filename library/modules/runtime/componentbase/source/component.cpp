@@ -1,5 +1,6 @@
-
 #include "tiki/components/component.hpp"
+
+#include "tiki/base/crc32.hpp"
 
 namespace tiki
 {
@@ -26,5 +27,10 @@ namespace tiki
 	void ComponentBase::unregisterComponent()
 	{
 		m_registedTypeId = InvalidComponentTypeId;
+	}
+
+	crc32 ComponentBase::getTypeCrc() const
+	{
+		return crcString( getTypeName() );
 	}
 }

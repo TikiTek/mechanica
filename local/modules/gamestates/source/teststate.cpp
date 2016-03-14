@@ -165,7 +165,7 @@ namespace tiki
 				TIKI_VERIFY( m_gameClient.create() );
 
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
-				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
+				m_planeEntityId		= m_gameClient.createTerrainEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
 
 				return TransitionState_Finish;
 			}
