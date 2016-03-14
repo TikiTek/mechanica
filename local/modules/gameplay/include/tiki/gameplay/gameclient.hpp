@@ -8,15 +8,19 @@
 #include "tiki/components/physicscollidercomponent.hpp"
 #include "tiki/components/skinnedmodelcomponent.hpp"
 #include "tiki/components/staticmodelcomponent.hpp"
+#include "tiki/components/terraincomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/gamecomponents/coincomponent.hpp"
 #include "tiki/gamecomponents/playercontrolcomponent.hpp"
+#include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/physics/physicsworld.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
 	class Model;
+	struct FrameData;
 	struct InputEvent;
 
 	struct GameClientUpdateContext
@@ -24,14 +28,19 @@ namespace tiki
 		GameClientUpdateContext()
 		{
 			pPlayerCollider = nullptr;
+			pTerrainState	= nullptr;
+			pFrameData		= nullptr;
 		}
 
 		float							totalGameTime;
 		float							timeDelta;
 
 		const PhysicsCollisionObject*	pPlayerCollider;
+		const TerrainComponentState*	pTerrainState;
 
 		CollectedCoinIdArray			collectedCoins;
+
+		FrameData*						pFrameData;
 	};
 
 	class GameClient
@@ -47,12 +56,12 @@ namespace tiki
 		EntityId									createModelEntity( const Model* pModel, const Vector3& position );
 		EntityId									createBoxEntity( const Model* pModel, const Vector3& position );
 		EntityId									createCoinEntity( const Model* pModel, const Vector3& position );
-		EntityId									createPlaneEntity( const Model* pModel, const Vector3& position );
+		EntityId									createTerrainEntity( const Model* pModel, const Vector3& position );
 
 		void										disposeEntity( EntityId entityId );
 
 		void										update( GameClientUpdateContext& updateContext );
-		void										render( GameRenderer& gameRenderer );
+		void										render( GameRenderer& gameRenderer ) const;
 
 		bool										processInputEvent( const InputEvent& inputEvent );
 
@@ -62,6 +71,7 @@ namespace tiki
 		const PhysicsCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
 		const PlayerControlComponent&				getPlayerControlComponent() const { return m_playerControlComponent; }
 		const TransformComponent&					getTransformComponent() const { return m_transformComponent; }
+		const TerrainComponent&						getTerrainComponent() const { return m_terrainComponent; }
 
 	private:
 
@@ -76,12 +86,16 @@ namespace tiki
 
 		PhysicsWorld						m_physicsWorld;
 
+		GameCamera							m_gameCamera;
+		FreeCamera							m_freeCamera;
+
 		LifeTimeComponent					m_lifeTimeComponent;
 		PhysicsBodyComponent				m_physicsBodyComponent;
 		PhysicsCharacterControllerComponent	m_physicsCharacterControllerComponent;
 		PhysicsColliderComponent			m_physicsColliderComponent;
 		SkinnedModelComponent				m_skinnedModelComponent;
 		StaticModelComponent				m_staticModelComponent;
+		TerrainComponent					m_terrainComponent;
 		TransformComponent					m_transformComponent;
 
 		PlayerControlComponent				m_playerControlComponent;

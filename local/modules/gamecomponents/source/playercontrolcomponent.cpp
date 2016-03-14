@@ -59,29 +59,21 @@ namespace tiki
 		m_pPhysicsCharacterControllerComponent		= nullptr;
 	}
 
-	void PlayerControlComponent::update( float timeDelta )
+	void PlayerControlComponent::update( const GameCamera& gameCamera, float timeDelta )
 	{
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			//Vector2 rotationOffset = m_inputState.rightStick;
-			//vector::scale( rotationOffset, timeDelta * 2.0f );
-			//vector::add( pState->rotation, rotationOffset );
-			//pState->rotation.y = f32::clamp( pState->rotation.y, -f32::piOver2, f32::piOver2 );
-			//quaternion::fromYawPitchRoll( pState->positionRotation, pState->rotation.x, 0.0f, 0.0f );
-
 			Vector3 walkForce = { m_inputState.leftStick.x, 0.0f, m_inputState.leftStick.y };
 			vector::scale( walkForce, -pState->speed );
-			//quaternion::transform( walkForce, pState->positionRotation );
-
+			
+			const float rotationFactor = f32::piOver2 + (m_inputState.leftStick.x / 3.0f);
+			Quaternion rotation;
+			quaternion::fromYawPitchRoll( rotation, rotationFactor, 0.0f, 0.0f );
+			
 			m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
-
-			if ( m_inputState.jump )
-			{
-				m_pPhysicsCharacterControllerComponent->jump( pState->pPhysicsController );
-				m_inputState.jump = false;
-			}
+			m_pTransformComponent->setRotation( pState->pTransform, rotation );
 		}
 	}
 

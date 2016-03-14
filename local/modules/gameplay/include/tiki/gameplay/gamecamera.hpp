@@ -4,12 +4,13 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
 	class Camera;
-	class TransformComponent;
-	struct TransformComponentState;
+	class TerrainComponent;
+	struct TerrainComponentState;
 
 	class GameCamera
 	{
@@ -17,20 +18,21 @@ namespace tiki
 
 	public:
 
-		GameCamera();
-		~GameCamera();
+								GameCamera();
+								~GameCamera();
 
-		void		create( EntityId playerEntityId, const TransformComponentState* pControlState, const TransformComponent& playerControlComponent );
-		void		dispose();
+		void					create( const TerrainComponent& terrainComponent, const Vector3& cameraPosition );
+		void					dispose();
 
-		void		update( Camera& targetCamera );
+		void					update( Camera& targetCamera, const TerrainComponentState* pTerrainComponentState, float deltaTime );
+
+		const Vector3&			getCameraPosition() const { return m_cameraPosition; }
 		
 	private:
 
-		const TransformComponent*		m_pTransformComponent;
+		const TerrainComponent*	m_pTerrainComponent;
 
-		EntityId						m_playerEntityId;
-		const TransformComponentState*	m_pPlayerState;
+		Vector3					m_cameraPosition;
 
 	};
 }
