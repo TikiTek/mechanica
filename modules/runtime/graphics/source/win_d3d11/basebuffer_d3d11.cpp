@@ -48,7 +48,7 @@ namespace tiki
 		desc.CPUAccessFlags			= ( dynamic ? D3D11_CPU_ACCESS_WRITE : 0u );
 		desc.StructureByteStride	= 0;
 		desc.BindFlags				= getD3dBinding( binding );
-		desc.ByteWidth				= UINT( size );
+		desc.ByteWidth				= UINT( alignValue< uint >( size, 16u ) );
 		desc.MiscFlags				= 0;
 
 		TIKI_DECLARE_STACKANDZERO( D3D11_SUBRESOURCE_DATA, initData );
