@@ -1,40 +1,44 @@
-
 #include "tiki/math/intersection.hpp"
+
 #include "tiki/base/float32.hpp"
+#include "tiki/math/box.hpp"
+#include "tiki/math/plane.hpp"
+#include "tiki/math/ray.hpp"
+#include "tiki/math/sphere.hpp"
 
 namespace tiki 
 {
 	namespace intersection
 	{
-		bool intersectRaySphere( const Ray3& ray, const Sphere3& sphere, Vector3& intersectionPoint )
+		bool intersectRaySphere( const Ray& ray, const Sphere& sphere, Vector3& intersectionPoint )
 		{
 			float rayParameters[ 2 ];
 
-			Vector3 difference = ray.Origin; 
-			vector::sub( difference, sphere.Center );
+			Vector3 difference = ray.origin; 
+			vector::sub( difference, sphere.center );
 
-			float a0 = vector::dot( difference, difference ) - sphere.Radius * sphere.Radius;
+			float a0 = vector::dot( difference, difference ) - sphere.radius * sphere.radius;
 			float a1, discr, root;
 
 			// p is inside sphere
 			if ( a0 <= 0.f )
 			{
-				a1					= vector::dot( ray.Direction, difference );
+				a1					= vector::dot( ray.direction, difference );
 				discr				= a1 * a1 - a0;
 				root				= f32::sqrt( discr );
 				rayParameters[ 0 ]	= -a1 + root;
 
-				Vector3 scaledDir = ray.Direction;
+				Vector3 scaledDir = ray.direction;
 				vector::scale( scaledDir, rayParameters[ 0 ] );
 
-				intersectionPoint = ray.Origin;
+				intersectionPoint = ray.origin;
 				vector::add( intersectionPoint, scaledDir );
 
 				return true;
 			}
 
 			// P is outside the sphere
-			a1 = vector::dot( ray.Direction, difference );
+			a1 = vector::dot( ray.direction, difference );
 			if ( a1 >= 0.f )
 			{
 				return false;
@@ -52,10 +56,10 @@ namespace tiki
 				rayParameters[ 0 ] = -a1 - root;
 				rayParameters[ 1 ] = -a1 + root;
 
-				Vector3 scaledDir = ray.Direction;
+				Vector3 scaledDir = ray.direction;
 				vector::scale( scaledDir, rayParameters[ 0 ] );
 
-				intersectionPoint = ray.Origin;
+				intersectionPoint = ray.origin;
 				intersectionPoint = vector::add( intersectionPoint, scaledDir );
 
 				return true;
@@ -65,24 +69,24 @@ namespace tiki
 			{
 				rayParameters[ 0 ] = -a1;
 
-				Vector3 scaledDir = ray.Direction;
+				Vector3 scaledDir = ray.direction;
 				vector::scale( scaledDir, rayParameters[ 0 ] );
 
-				intersectionPoint = ray.Origin;
+				intersectionPoint = ray.origin;
 				intersectionPoint = vector::add( intersectionPoint, scaledDir );
 
 				return true;
 			}
 		}
 
-		bool intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3& intersectionPoint )
+		bool intersectRayPlane( const Ray& ray, const Plane& plane, Vector3& intersectionPoint )
 		{
 			// intersection = origin + t*direction, with t >= 0.
 			Vector3 normal;
 			plane.getNormal( normal );
 
-			float dirDotNormal		= vector::dot( ray.Direction, normal );
-			float signedDistance	= plane.getDistanceTo( ray.Origin );
+			float dirDotNormal		= vector::dot( ray.direction, normal );
+			float signedDistance	= plane.getDistanceTo( ray.origin );
 
 			// The line is not parallel to the plane, so they must intersect.
 			if ( f32::abs( dirDotNormal ) > f32::zeroTolerance )
@@ -91,11 +95,11 @@ namespace tiki
 				float lineParameter = -signedDistance / dirDotNormal;
 
 				// t * direction;
-				intersectionPoint = ray.Direction;
+				intersectionPoint = ray.direction;
 				vector::scale( intersectionPoint, lineParameter );
 
 				// origin + t * direction;
-				vector::add( intersectionPoint, ray.Origin );
+				vector::add( intersectionPoint, ray.origin );
 
 				return true;
 			}
@@ -104,15 +108,14 @@ namespace tiki
 			if ( f32::abs( signedDistance <= f32::zeroTolerance ) )
 			{
 				// The line is coincident with the plane, so choose t = 0 for the parameter (initial value). 
-				intersectionPoint = ray.Origin;
+				intersectionPoint = ray.origin;
 				return true;
 			}
 
 			return false;
 		}
 
-		#pragma region intersectRayBox
-		bool intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint )
+		bool intersectRayBox( const Ray& ray, const Box& box, Vector3& intersectionPoint )
 		{
 			float WdU	[ 3 ];
 			float AWdU	[ 3 ];
@@ -121,10 +124,10 @@ namespace tiki
 			float AWxDdU[ 3 ];
 			float RHS;
 
-			Vector3 diff = ray.Origin;
+			Vector3 diff = ray.origin;
 			vector::sub( diff, box.Center );
 
-			WdU	[ 0 ] = vector::dot( ray.Direction, box.Axis[ 0 ] );
+			WdU	[ 0 ] = vector::dot( ray.direction, box.Axis[ 0 ] );
 			AWdU[ 0 ] = f32::abs( WdU[ 0 ] );
 			DdU [ 0 ] = vector::dot( diff, box.Axis[ 0 ] );
 			ADdU[ 0 ] = f32::abs( DdU[ 0 ] );
@@ -133,7 +136,7 @@ namespace tiki
 				return false;
 			}
 
-			WdU	[ 1 ] = vector::dot( ray.Direction, box.Axis[ 1 ] );
+			WdU	[ 1 ] = vector::dot( ray.direction, box.Axis[ 1 ] );
 			AWdU[ 1 ] = f32::abs( WdU[ 1 ] );
 			DdU	[ 1 ] = vector::dot( diff, box.Axis[ 1 ] );
 			ADdU[ 1 ] = f32::abs( DdU[ 1 ] );
@@ -142,7 +145,7 @@ namespace tiki
 				return false;
 			}
 
-			WdU	[ 2 ] = vector::dot( ray.Direction, box.Axis[ 2 ] );
+			WdU	[ 2 ] = vector::dot( ray.direction, box.Axis[ 2 ] );
 			AWdU[ 2 ] = f32::abs( WdU[ 2 ] );
 			DdU	[ 2 ] = vector::dot( diff, box.Axis[ 2 ] );
 			ADdU[ 2 ] = f32::abs( DdU[ 2 ] );
@@ -152,7 +155,7 @@ namespace tiki
 			}
 
 			Vector3 WxD;
-			vector::cross( WxD, ray.Direction, diff );
+			vector::cross( WxD, ray.direction, diff );
 
 			AWxDdU[ 0 ] = f32::abs( vector::dot( WxD, box.Axis[ 0 ] ) ); 
 			RHS = box.Extents.y * AWdU[ 2 ] + box.Extents.z * AWdU[ 1 ];
@@ -178,7 +181,7 @@ namespace tiki
 			// Get intersection point
 
 			int quantity;
-			return doClipping( 0.0f, f32::maxValue, ray.Origin, ray.Direction, box, true, quantity, intersectionPoint );
+			return doClipping( 0.0f, f32::maxValue, ray.origin, ray.direction, box, true, quantity, intersectionPoint );
 
 		}
 
@@ -276,8 +279,5 @@ namespace tiki
 				return numer <= 0.0f;
 			}
 		}
-		#pragma endregion
-
-
 	}
 }

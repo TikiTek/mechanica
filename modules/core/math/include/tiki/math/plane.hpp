@@ -19,19 +19,19 @@ namespace tiki
 
 	public:
 
-		Plane();
-		~Plane();
+					Plane();
+					~Plane();
 
-		void	create( float a, float b, float c, float d );
-		void	create( const Vector3& normal, float d );
-		void	create( const Vector3& point, const Vector3& normal );
-		void	create( const Vector3& point1, const Vector3& point2, const Vector3& point3 );
+		void		create( float a, float b, float c, float d );
+		void		create( const Vector3& normal, float d );
+		void		create( const Vector3& point, const Vector3& normal );
+		void		create( const Vector3& point1, const Vector3& point2, const Vector3& point3 );
 
-		void	normalize();
+		void		normalize();
 
-		void	getNormal( Vector3& targetVector ) const;
-		float	getD() const { return m_data.w; }
-		float   getDistanceTo( const Vector3& target ) const;
+		void		getNormal( Vector3& targetVector ) const;
+		float		getD() const { return m_data.w; }
+		float		getDistanceTo( const Vector3& target ) const;
 
 	private:
 

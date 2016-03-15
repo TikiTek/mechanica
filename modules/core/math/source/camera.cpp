@@ -1,8 +1,9 @@
 
 #include "tiki/math/camera.hpp"
 
-#include "tiki/math/quaternion.hpp"
 #include "tiki/base/numbers.hpp"
+#include "tiki/math/quaternion.hpp"
+#include "tiki/math/ray.hpp"
 
 namespace tiki
 {
@@ -91,15 +92,10 @@ namespace tiki
 		return m_frustum;
 	}
 
-	void Camera::getCameraRay( sint16 mousePosX, sint16 mousePosY, int width, int height, Ray3* ray )
+	void Camera::getCameraRay( Ray* pRay, sint16 mousePosX, sint16 mousePosY, int width, int height )
 	{
+		TIKI_ASSERT( pRay != nullptr );
 		createMatrix();
-
-		if ( ray == nullptr )
-		{
-			TIKI_ASSERT( "Invalid ray" );
-			return;
-		}
 
 		float mouseX = (float)( mousePosX );
 		float mouseY = (float)( mousePosY );
@@ -115,8 +111,8 @@ namespace tiki
 		vector::sub( direction, origin );
 		vector::normalize( direction );
 
-		ray->Origin		= origin;
-		ray->Direction	= direction;
+		pRay->origin	= origin;
+		pRay->direction	= direction;
 	}
 
 }

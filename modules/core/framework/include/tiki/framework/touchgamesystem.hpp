@@ -3,10 +3,11 @@
 #define __TIKI_TOUCHGAMESYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/input/inputsystem.hpp"
 #include "tiki/container/fixedarray.hpp"
 #include "tiki/container/fixedsizedarray.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/input/inputsystem.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
