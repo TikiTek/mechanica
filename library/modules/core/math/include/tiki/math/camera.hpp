@@ -6,11 +6,11 @@
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
-#include "tiki/math/intersection.hpp"
 
 namespace tiki
 {
 	struct Quaternion;
+	struct Ray;
 
 	class Camera
 	{
@@ -36,7 +36,7 @@ namespace tiki
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
 		const Frustum&		getFrustum();
-		void				getCameraRay(sint16 mousePosX, sint16 mousePosY, int width, int height, Ray3* ray);
+		void				getCameraRay( Ray* pRay, sint16 mousePosX, sint16 mousePosY, int width, int height );
 
 	private:
 

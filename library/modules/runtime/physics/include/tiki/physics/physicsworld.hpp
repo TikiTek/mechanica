@@ -51,7 +51,7 @@ namespace tiki
 		void		update( float timeStep );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		void		renderDebug( GraphicsContext& graphicsContext, ImmediateRenderer& renderer, const RenderTarget& renderTarget, const Camera& camera );
+		void		renderDebug();
 #endif
 
 	private:

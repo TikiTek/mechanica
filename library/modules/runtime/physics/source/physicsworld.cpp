@@ -178,15 +178,11 @@ namespace tiki
 	}
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-	void PhysicsWorld::renderDebug( GraphicsContext& graphicsContext, ImmediateRenderer& renderer, const RenderTarget& renderTarget, const Camera& camera )
+	void PhysicsWorld::renderDebug()
 	{
 		if ( s_drawDebug )
 		{
-			m_debugDraw.beginRendering( graphicsContext, renderer, renderTarget, camera );
-
 			m_pPhysicWorld->debugDrawWorld();
-
-			m_debugDraw.endRendering();
 		}
 	}
 #endif

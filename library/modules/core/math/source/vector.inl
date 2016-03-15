@@ -35,6 +35,21 @@ namespace tiki
 	{
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon ) && f32::isZero( vec.z, epsilon ) && f32::isZero( vec.w, epsilon );
 	}
+	
+	TIKI_FORCE_INLINE bool vector::isNormalized( const Vector2& vec, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isEquals( vector::length( vec ), 1.0f, epsilon );
+	}
+
+	TIKI_FORCE_INLINE bool vector::isNormalized( const Vector3& vec, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isEquals( vector::length( vec ), 1.0f, epsilon );
+	}
+
+	TIKI_FORCE_INLINE bool vector::isNormalized( const Vector4& vec, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isEquals( vector::length( vec ), 1.0f, epsilon );
+	}
 
 	TIKI_FORCE_INLINE Vector2 vector::create( float x, float y )
 	{
