@@ -15,7 +15,7 @@ namespace tiki
 		Url();
 		~Url();
 
-		bool	createFromString( cstring pString );
+		bool	createFromString( const char* pString );
 		void	clear();
 		
 		bool	isValid() const;

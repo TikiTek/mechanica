@@ -10,7 +10,7 @@ namespace tiki
 	struct HttpRequest
 	{
 		Url				url;
-		cstring			pBody;
+		const char*			pBody;
 	};
 }
 

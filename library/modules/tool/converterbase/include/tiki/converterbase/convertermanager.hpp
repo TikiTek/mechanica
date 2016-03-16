@@ -37,7 +37,7 @@ namespace tiki
 
 	class ConverterManager
 	{
-		friend void globalTraceCallback( cstring message, TraceLevel level );
+		friend void globalTraceCallback( const char* message, TraceLevel level );
 
 	public:
 
@@ -116,7 +116,7 @@ namespace tiki
 		TaskSystem					m_taskSystem;
 		List< ConversionTask >		m_tasks;
 
-		void						traceCallback( cstring message, TraceLevel level ) const;
+		void						traceCallback( const char* message, TraceLevel level ) const;
 		void						parseParams( const XmlReader& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const;
 
 		bool						prepareTasks();

@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_ASSERT( m_pHandler == nullptr );
 	}
 
-	void WebRquestHandler::create( cstring pUrlPath, IWebHandler* pHandler )
+	void WebRquestHandler::create( const char* pUrlPath, IWebHandler* pHandler )
 	{
 		TIKI_ASSERT( pHandler != nullptr );
 

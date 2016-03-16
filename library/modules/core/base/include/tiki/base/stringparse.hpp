@@ -12,19 +12,19 @@ namespace tiki
 	{
 	public:
 
-		static sint16 parseInt16( cstring string )
+		static sint16 parseInt16( const char* string )
 		{
 			return (uint16)atoi( string );
 			//return parseSigedInteger<char, sint16>(string);
 		}
 
-		static sint32 parseInt32( cstring string )
+		static sint32 parseInt32( const char* string )
 		{
 			return (sint32)atoi( string );
 			//return parseSigedInteger<char, sint32>(string);
 		}
 
-		static sint64 parseInt64( cstring string )
+		static sint64 parseInt64( const char* string )
 		{
 			if ( string[ 0u ] == '0' && string[ 1u ] == 'x' )
 			{
@@ -35,19 +35,19 @@ namespace tiki
 			//return parseSigedInteger<char, sint64>(string);
 		}
 
-		static uint16 parseUInt16( cstring string )
+		static uint16 parseUInt16( const char* string )
 		{
 			return (uint16)atoi( string );
 			//return parseUnsigedInteger<char, uint16>(string);
 		}
 
-		static uint32 parseUInt32( cstring string )
+		static uint32 parseUInt32( const char* string )
 		{
 			return (uint32)atoi( string );
 			//return parseUnsigedInteger<char, uint32>(string);
 		}
 
-		static uint64 parseUInt64( cstring string )
+		static uint64 parseUInt64( const char* string )
 		{
 			if ( string[ 0u ] == '0' && string[ 1u ] == 'x' )
 			{
@@ -58,23 +58,23 @@ namespace tiki
 			//return parseUnsigedInteger<char, uint64>(string);
 		}
 
-		static sint64 parseSingedHex(cstring string)
+		static sint64 parseSingedHex(const char* string)
 		{
 			return (sint64)strtol( string, nullptr, 16 );
 		}
 
-		static uint64 parseUnsingedHex(cstring string)
+		static uint64 parseUnsingedHex(const char* string)
 		{
 			return (uint64)strtol( string, nullptr, 16 );
 		}
 
-		static float parseSingle( cstring string )
+		static float parseSingle( const char* string )
 		{
 			return (float)atof( string );
 			//return parseFloat<char, float>(string);
 		}
 
-		static double parseDouble( cstring string )
+		static double parseDouble( const char* string )
 		{
 			return (double)atof( string );
 			//return parseFloat<char, double>(string);

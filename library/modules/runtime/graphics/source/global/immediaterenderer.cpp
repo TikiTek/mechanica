@@ -200,6 +200,19 @@ namespace tiki
 		m_pContext->setDepthStencilState( m_pDepthStencilState[ depthState ] );
 	}
 
+	void ImmediateRenderer::setPrimitiveTopology( PrimitiveTopology topology ) const
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		TIKI_ASSERT( topology < PrimitiveTopology_Count );
+		m_pContext->setPrimitiveTopology( topology );
+	}
+
+	void ImmediateRenderer::setShaderMode( ImmediateShaderMode shaderMode ) const
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, shaderMode ) );
+	}
+
 	void ImmediateRenderer::drawRectangle( const Rectangle& d, Color color /*= TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
@@ -413,6 +426,17 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 	
+	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity )
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		return m_pContext->beginImmediateGeometry( vertices, capacity );
+	}
+
+	void ImmediateRenderer::endImmediateGeometry( StaticArray< ImmediateVertex >& vertices )
+	{
+		m_pContext->endImmediateGeometry( vertices );
+	}
+
 	void ImmediateRenderer::setState() const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );

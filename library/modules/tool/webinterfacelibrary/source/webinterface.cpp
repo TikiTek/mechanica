@@ -39,7 +39,7 @@ namespace tiki
 		m_server.update();
 	}
 
-	void WebInterface::registerRequestHandler( cstring pUrlPath, IWebHandler* pHandler )
+	void WebInterface::registerRequestHandler( const char* pUrlPath, IWebHandler* pHandler )
 	{
 		WebRquestHandler* pWebHandler = TIKI_MEMORY_NEW_OBJECT( WebRquestHandler );
 		pWebHandler->create( pUrlPath, pHandler );

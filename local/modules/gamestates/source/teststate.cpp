@@ -381,7 +381,7 @@ namespace tiki
 
 		if ( m_enablePhysicsDebug )
 		{
-			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+			m_gameClient.getPhysicsWorld().renderDebug();
 		}
 #endif
 	}

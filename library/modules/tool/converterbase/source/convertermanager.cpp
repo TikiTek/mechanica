@@ -18,7 +18,7 @@ namespace tiki
 {
 	static ConverterManager* s_pInstance = nullptr;
 
-	void globalTraceCallback( cstring message, TraceLevel level )
+	void globalTraceCallback( const char* message, TraceLevel level )
 	{
 		s_pInstance->traceCallback( message, level );
 	}
@@ -58,7 +58,7 @@ namespace tiki
 		{
 			TIKI_TRACE_INFO( "[convertermanager] Database not found. Create new Database.\n" );
 
-			cstring pCreateTableSql[] =
+			const char* pCreateTableSql[] =
 			{
 				"CREATE TABLE builds (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, buildtime DATETIME, has_error BOOL);",
 				"CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, filename TEXT NOT NULL, path TEXT NOT NULL, type INTEGER NOT NULL, has_error BOOL);",
@@ -190,7 +190,7 @@ namespace tiki
 		m_taskSystem.waitForTask( taskId );
 	}
 
-	void ConverterManager::traceCallback( cstring message, TraceLevel level ) const
+	void ConverterManager::traceCallback( const char* message, TraceLevel level ) const
 	{
 		string line = message;
 		if ( !line.endsWith('\n') )

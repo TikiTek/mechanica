@@ -46,7 +46,7 @@ namespace tiki
 		features.add( feature );
 	}
 
-	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const cstring* pShaderTypes, uint typeCount, const string& featuresLine )
+	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const const char** pShaderTypes, uint typeCount, const string& featuresLine )
 	{
 		for (uint i = 0u; i < typeCount; ++i)
 		{
@@ -108,8 +108,8 @@ namespace tiki
 		TRexpp regex;
 		regex.Compile( "^\\s*#include\\s+(<([^\"'<>|\\b]+)>|\"([^\"'<>|\\b]+)\")" );
 
-		cstring beginPath;
-		cstring endPath;
+		const char* beginPath;
+		const char* endPath;
 		while ( regex.Search( resultCode.cStr(), &beginPath, &endPath ) )
 		{
 			string path = string( beginPath, endPath - beginPath );
@@ -178,7 +178,7 @@ namespace tiki
 			return;
 		}
 
-		const cstring shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
+		const const char* shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		bool shaderEnabled[ TIKI_COUNT( shaderStart ) ];
 		List< ShaderFeature > shaderFeatures[ TIKI_COUNT( shaderStart ) ];
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( shaderStart ) == ShaderType_Count );

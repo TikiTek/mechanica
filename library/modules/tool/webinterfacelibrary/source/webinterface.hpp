@@ -19,7 +19,7 @@ namespace tiki
 
 		virtual void		update() TIKI_OVERRIDE;
 
-		virtual void		registerRequestHandler( cstring pUrlPath, IWebHandler* pHandler ) TIKI_OVERRIDE;
+		virtual void		registerRequestHandler( const char* pUrlPath, IWebHandler* pHandler ) TIKI_OVERRIDE;
 		virtual void		unregisterRequestHandler( IWebHandler* pHandler ) TIKI_OVERRIDE;
 
 	private:

@@ -22,7 +22,7 @@ namespace tiki
 		~SqliteDatabase();
 		friend class SqliteQuery;
 
-		bool			create( cstring pFileName );
+		bool			create( const char* pFileName );
 		void			dispose();
 
 		bool			isCreated() const { return m_pDatabase != nullptr; }

@@ -221,7 +221,7 @@ namespace tiki
 		}
 	};
 
-	TIKI_FORCE_INLINE void parseMatrix( Matrix44& mtx, cstring str, float scale )
+	TIKI_FORCE_INLINE void parseMatrix( Matrix44& mtx, const char* str, float scale )
 	{
 		Tokenizer token;
 		token.create( str, " \n\t\r", true );

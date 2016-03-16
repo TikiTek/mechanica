@@ -63,7 +63,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	bool GamebuildFileSystem::exists( cstring pFileName ) const
+	bool GamebuildFileSystem::exists( const char* pFileName ) const
 	{
 		const crc32 filenameCrc = crcString( pFileName );
 
@@ -78,7 +78,7 @@ namespace tiki
 		return false;
 	}
 
-	DataStream* GamebuildFileSystem::open( cstring pFileName, DataAccessMode accessMode )
+	DataStream* GamebuildFileSystem::open( const char* pFileName, DataAccessMode accessMode )
 	{
 		const string fullPath = path::combine( m_gamebuildPath, pFileName );
 

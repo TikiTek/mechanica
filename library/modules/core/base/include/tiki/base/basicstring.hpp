@@ -116,7 +116,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE string		operator+( const char* str1, const string& str2 );
 
-	string							formatString( cstring format, ... );
+	string							formatString( const char* pFormat, ... );
+	string							formatStringArgs( const char* pFormat, va_list argptr );
 
 }
 

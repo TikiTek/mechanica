@@ -28,7 +28,7 @@ namespace tiki
 		return length;
 	}
 
-	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, cstring pSourceBuffer )
+	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, const char* pSourceBuffer )
 	{
 		TIKI_ASSERT( pTargetBuffer != nullptr );
 		
@@ -61,7 +61,7 @@ namespace tiki
 		return length;
 	}
 	
-	TIKI_FORCE_INLINE bool isStringEquals( cstring pString1, cstring pString2 )
+	TIKI_FORCE_INLINE bool isStringEquals( const char* pString1, const char* pString2 )
 	{
 		if ( pString1 == pString2 )
 		{
@@ -86,7 +86,7 @@ namespace tiki
 		return pString1[ index ] == pString2[ index ] != '\0';
 	}
 
-	TIKI_FORCE_INLINE uint stringIndexOf( cstring pString, char c, uint index /* = 0 */ )
+	TIKI_FORCE_INLINE uint stringIndexOf( const char* pString, char c, uint index /* = 0 */ )
 	{
 		uint i = index;
 		while ( pString[ i ] != '\0' )
@@ -102,7 +102,7 @@ namespace tiki
 		return TIKI_SIZE_T_MAX;
 	}
 
-	TIKI_FORCE_INLINE uint stringIndexOf( cstring pString, cstring pSearch, uint index /*= 0*/ )
+	TIKI_FORCE_INLINE uint stringIndexOf( const char* pString, const char* pSearch, uint index /*= 0*/ )
 	{
 		const uint stringLength = getStringSize( pString );
 		const uint searchLength = getStringSize( pSearch );
@@ -147,7 +147,7 @@ namespace tiki
 		return TIKI_SIZE_T_MAX;
 	}
 
-	TIKI_FORCE_INLINE uint stringLastIndexOf( cstring pString, char c, uint index /*= TIKI_SIZE_T_MAX*/ )
+	TIKI_FORCE_INLINE uint stringLastIndexOf( const char* pString, char c, uint index /*= TIKI_SIZE_T_MAX*/ )
 	{
 		const uint stringLength = getStringSize( pString );
 
@@ -165,7 +165,7 @@ namespace tiki
 		return TIKI_SIZE_T_MAX;
 	}
 
-	TIKI_FORCE_INLINE uint stringLastIndexOf( cstring pString, cstring pSearch, uint index /*= TIKI_SIZE_T_MAX*/ )
+	TIKI_FORCE_INLINE uint stringLastIndexOf( const char* pString, const char* pSearch, uint index /*= TIKI_SIZE_T_MAX*/ )
 	{
 		const uint stringLength = getStringSize( pString );
 		const uint searchLength = getStringSize( pSearch );

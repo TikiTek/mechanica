@@ -17,7 +17,7 @@ namespace tiki
 							WebRquestHandler();
 		virtual				~WebRquestHandler();
 
-		void				create( cstring pUrlPath, IWebHandler* pHandler );
+		void				create( const char* pUrlPath, IWebHandler* pHandler );
 		void				dispose();
 
 		virtual	void		handleRequest( HttpResponse& response, const HttpRequest& request ) TIKI_OVERRIDE;

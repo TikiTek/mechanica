@@ -2,12 +2,14 @@
 #ifndef TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 #define TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 
-#include "tiki/container/sizedarray.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/constantbuffer.hpp"
-#include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/container/sizedarray.hpp"
+#include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/color.hpp"
+#include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/primitivetopologies.hpp"
+#include "tiki/graphics/vertexbuffer.hpp"
 
 #include "base.hpp"
 
@@ -46,6 +48,23 @@ namespace tiki
 
 		ImmediateDepthState_Count
 	};
+
+	enum ImmediateShaderMode
+	{
+		ImmediateShaderMode_Texture,
+		ImmediateShaderMode_Font,
+		ImmediateShaderMode_Color,
+
+		ImmediateShaderMode_Count
+	};
+
+	struct ImmediateVertex
+	{
+		float3	position;
+		uint16	u;
+		uint16	v;
+		Color	color;
+	};
 	
 	class ImmediateRenderer
 	{
@@ -67,21 +86,18 @@ namespace tiki
 
 		void				setBlendState( ImmediateBlendState blendState ) const;
 		void				setDepthState( ImmediateDepthState depthState ) const;
+		void				setPrimitiveTopology( PrimitiveTopology topology ) const;
+		void				setShaderMode( ImmediateShaderMode shaderMode) const;
 
 		void				drawRectangle( const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
 
-	private:
+		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity );
+		void				endImmediateGeometry( StaticArray< ImmediateVertex >& vertices );
 
-		struct ImmediateVertex
-		{
-			float3	position;
-			uint16	u;
-			uint16	v;
-			Color	color;
-		};
+	private:
 
 		mutable GraphicsContext*	m_pContext;
 

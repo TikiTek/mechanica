@@ -27,7 +27,7 @@ namespace tiki
 		{
 			bool found = false;
 			uint index = m_currentIndex - 1u;
-			cstring pText = m_text.cStr();
+			const char* pText = m_text.cStr();
 			do 
 			{
 				const char tc = pText[ ++index ];
