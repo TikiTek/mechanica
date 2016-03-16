@@ -11,9 +11,8 @@ namespace tiki
 
 	struct Box
 	{
-		TIKI_NONCOPYABLE_STRUCT( Box );
-
 	public:
+
 				Box();
 				Box( const Vector3& center, const Vector3& extents );
 
@@ -26,6 +25,7 @@ namespace tiki
 		void	rotate( const Quaternion& rotation );
 
 	public:
+
 		Vector3		Center;
 		Vector3		Extents;   
 		Vector3		Axis[ 3 ];

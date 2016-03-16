@@ -1,27 +1,76 @@
 #include "tiki/debugrenderer/debugrenderer.hpp"
 
+#include "tiki/base/basicstring.hpp"
+#include "tiki/base/zoneallocator.hpp"
 #include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/math/box.hpp"
-#include "tiki/math/ray.hpp"
+
+#include "debugrenderer_types.hpp"
+
+#include <stdarg.h>
 
 namespace tiki
 {
+	static DebugRenderCommand* s_pDebugRendererFirstCommand = nullptr;
+	static DebugRenderCommand* s_pDebugRendererLastCommand = nullptr;
+	static ZoneAllocator s_debugRendererData;
 
-
-	void debugrenderer::drawLines( const Vector3* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ )
+	namespace debugrenderer
 	{
-		TIKI_ASSERT( pPoints != nullptr );
-		TIKI_ASSERT( m_pContext != nullptr );
+		template<class T>
+		T*		allocateCommand( uint extraMemory = 0u );
 
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+		void	flushDrawLines( ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, Color color );
 
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+		void	flushDrawLineRay( ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command );
+		void	flushDrawLineBox( ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command );
+		void	flushDrawLineAxes( ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command );
+		void	flushDrawLineGrid( ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command );
+		void	flushDrawLineCircle( ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color );
+		void	flushDrawLineSphere( ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command );
+
+		void	flushDrawSolidBox( ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command );
+		void	flushDrawSolidAxes( ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix );
+
+		void	flushDrawText( ImmediateRenderer& renderer, const DebugRenderTextCommand& command );
+		void	flushDrawText3D( ImmediateRenderer& renderer, const DebugRenderText3DCommand& command );
+	}
+
+	template<class T>
+	T* debugrenderer::allocateCommand( uint extraMemory /*= 0u*/ )
+	{
+		const uint sizeInBytes = sizeof( T ) + extraMemory;
+		T* pCommand = (T*)s_debugRendererData.allocate( sizeInBytes );
+
+		if( pCommand )
+		{
+			if( s_pDebugRendererFirstCommand == nullptr )
+			{
+				s_pDebugRendererFirstCommand = pCommand;
+				s_pDebugRendererLastCommand = pCommand;
+			}
+			else
+			{
+				s_pDebugRendererFirstCommand->pNext = pCommand;
+				s_pDebugRendererLastCommand = pCommand;
+			}
+
+			pCommand->pNext = nullptr;
+			pCommand->type	= T::CommandType;
+		}
+		
+		return pCommand;
+	}
+
+	void debugrenderer::flushDrawLines( ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, Color color )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		StaticArray< ImmediateVertex > vertices;
-		m_pContext->beginImmediateGeometry( vertices, capacity );
+		renderer.beginImmediateGeometry( vertices, pointCount );
 
-		for( uint i = 0u; i < capacity; ++i )
+		for( uint i = 0u; i < pointCount; ++i )
 		{
 			ImmediateVertex& targetVertex	= vertices[ i ];
 			const Vector3& sourcePoint		= pPoints[ i ];
@@ -32,36 +81,31 @@ namespace tiki
 			targetVertex.color	= color;
 		}
 
-		vertices.dispose();
-
-		m_pContext->endImmediateGeometry();
+		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::drawRay( const Ray& ray, float length /* = 100.0f */, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::flushDrawLineRay( ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command )
 	{
-		Vector3 scaledDir = ray.direction;
-		vector::scale( scaledDir, length );
+		Vector3 scaledDir = command.ray.direction;
+		vector::scale( scaledDir, command.length );
 
-		Vector3 end = ray.origin;
+		Vector3 end = command.ray.origin;
 		vector::add( end, scaledDir );
 
-		const Vector3 points[] ={ ray.origin, end };
-		drawLines( points, TIKI_COUNT( points ), color );
+		const Vector3 points[] = { command.ray.origin, end };
+		debugrenderer::flushDrawLines( renderer, points, TIKI_COUNT( points ), command.color );
 	}
 
-	void debugrenderer::drawBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::flushDrawLineBox( ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command )
 	{
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
-
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		Vector3 boxVertices[ 8 ];
-		box.getVertices( &boxVertices[ 0 ] );
-
-		const uint vertexCount = 24;
+		command.box.getVertices( &boxVertices[ 0 ] );
 
 		StaticArray< ImmediateVertex > vertices;
-		m_pContext->beginImmediateGeometry( vertices, vertexCount );
+		renderer.beginImmediateGeometry( vertices, 24 );
 
 		// draw lower rect
 		createFloat3( vertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
@@ -104,52 +148,110 @@ namespace tiki
 		createFloat3( vertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
 
 		// set color and uv
-		for( uint i = 0u; i < vertexCount; ++i )
+		for( uint i = 0u; i < vertices.getCount(); ++i )
 		{
 			ImmediateVertex& current = vertices[ i ];
-			current.color	= color;
+			current.color	= command.color;
 			current.u		= 0u;
 			current.v		= 0u;
 		}
 
-		vertices.dispose();
-
-		m_pContext->endImmediateGeometry();
+		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::drawGrid( int gridSpacing /*= 10*/, int gridSize /*= 512*/, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::flushDrawLineAxes( ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command )
 	{
-		if( gridSpacing == 0 )
-		{
-			return;
-		}
 
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+	}
 
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
+	void debugrenderer::flushDrawLineGrid( ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
 
-		uint vertexCount = ((gridSize / gridSpacing) * 8) + 4;
+		const float gridRatio = command.gridSize / command.gridSpace;
+		const uint vertexCount = (uint(gridRatio) * 8) + 4;
 
 		StaticArray< ImmediateVertex > vertices;
-		m_pContext->beginImmediateGeometry( vertices, vertexCount );
+		renderer.beginImmediateGeometry( vertices, vertexCount );
 
 		// fill array
 		uint idx = 0;
-		for( int i = 1; i < (gridSize / gridSpacing) + 1; i++ )
+		for( int i = 1; i < int( gridRatio ) + 1; i++ )
 		{
-			createFloat3( vertices[ idx++ ].position, (float)(i * gridSpacing), 0.0f, (float)(gridSize) );
-			createFloat3( vertices[ idx++ ].position, (float)(i * gridSpacing), 0.0f, (float)(-gridSize) );
-			createFloat3( vertices[ idx++ ].position, (float)(-i * gridSpacing), 0.0f, (float)(gridSize) );
-			createFloat3( vertices[ idx++ ].position, (float)(-i * gridSpacing), 0.0f, (float)(-gridSize) );
+			createFloat3( vertices[ idx++ ].position, (float)(i * command.gridSpace), 0.0f, (float)(command.gridSize) );
+			createFloat3( vertices[ idx++ ].position, (float)(i * command.gridSpace), 0.0f, (float)(-command.gridSize) );
+			createFloat3( vertices[ idx++ ].position, (float)(-i * command.gridSpace), 0.0f, (float)(command.gridSize) );
+			createFloat3( vertices[ idx++ ].position, (float)(-i * command.gridSpace), 0.0f, (float)(-command.gridSize) );
 
-			createFloat3( vertices[ idx++ ].position, (float)(gridSize), 0.0f, (float)(i * gridSpacing) );
-			createFloat3( vertices[ idx++ ].position, (float)(-gridSize), 0.0f, (float)(i * gridSpacing) );
-			createFloat3( vertices[ idx++ ].position, (float)(gridSize), 0.0f, (float)(-i * gridSpacing) );
-			createFloat3( vertices[ idx++ ].position, (float)(-gridSize), 0.0f, (float)(-i * gridSpacing) );
+			createFloat3( vertices[ idx++ ].position, (float)(command.gridSize), 0.0f, (float)(i * command.gridSpace) );
+			createFloat3( vertices[ idx++ ].position, (float)(-command.gridSize), 0.0f, (float)(i * command.gridSpace) );
+			createFloat3( vertices[ idx++ ].position, (float)(command.gridSize), 0.0f, (float)(-i * command.gridSpace) );
+			createFloat3( vertices[ idx++ ].position, (float)(-command.gridSize), 0.0f, (float)(-i * command.gridSpace) );
 		}
 
 		// set color and uv
 		for( uint i = 0u; i < idx; ++i )
+		{
+			ImmediateVertex& current = vertices[ i ];
+			current.color = command.color;
+			current.u = 0u;
+			current.v = 0u;
+		}
+
+		// add highlights
+		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)(-command.gridSize) );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)(command.gridSize) );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, (float)(command.gridSize), 0.0f, 0.0f );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+		createFloat3( vertices[ idx ].position, (float)(-command.gridSize), 0.0f, 0.0f );
+		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
+
+		renderer.endImmediateGeometry( vertices );
+	}
+
+	void debugrenderer::flushDrawLineCircle( ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
+
+		uint verticesPercircle = 30;
+		uint vertexCount = verticesPercircle + 1;
+
+		StaticArray< ImmediateVertex > vertices;
+		renderer.beginImmediateGeometry( vertices, vertexCount );
+
+		Vector3 scaleAxe1;
+		vector::set( scaleAxe1, normal.x * radius, normal.y * radius, normal.z * radius );
+
+		Vector3 scaleAxe2;
+		vector::set( scaleAxe2, tangent.x * radius, tangent.y * radius, tangent.z * radius );
+
+		uint idx = 0u;
+		for( uint i = 0u; i < verticesPercircle; i++ )
+		{
+			Vector3 vt;
+			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
+			vector::scale( vt, f32::sin( (f32::twoPi / verticesPercircle) * i ) );
+
+			Vector3 vtySin;
+			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
+			vector::scale( vtySin, f32::cos( (f32::twoPi / verticesPercircle) * i ) );
+
+			vector::add( vt, vtySin );
+			vector::add( vt, center );
+
+			createFloat3( vertices[ idx++ ].position, vt.x, vt.y, vt.z );
+		}
+
+		// add last vertex from end to start
+		createFloat3( vertices[ idx++ ].position, vertices[ 0 ].position.x, vertices[ 0 ].position.y, vertices[ 0 ].position.z );
+
+		// set color and uv
+		TIKI_ASSERT( idx == vertexCount );
+		for( uint i = 0u; i < vertexCount; ++i )
 		{
 			ImmediateVertex& current = vertices[ i ];
 			current.color = color;
@@ -157,31 +259,23 @@ namespace tiki
 			current.v = 0u;
 		}
 
-		// add highlights
-		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)(-gridSize) );
-		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( vertices[ idx ].position, 0.0f, 0.0f, (float)(gridSize) );
-		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( vertices[ idx ].position, (float)(gridSize), 0.0f, 0.0f );
-		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
-		createFloat3( vertices[ idx ].position, (float)(-gridSize), 0.0f, 0.0f );
-		vertices[ idx++ ].color = TIKI_COLOR_GREEN;
-
-		vertices.dispose();
-
-		m_pContext->endImmediateGeometry();
+		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::drawAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )
+	void debugrenderer::flushDrawLineSphere( ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command )
 	{
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineList );
+		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitY, command.color );
+		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitZ, command.color );
+		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitZ, Vector3::unitY, command.color );
+	}
 
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
-
-		uint vertexCount = 14 * 3;
+	void debugrenderer::flushDrawSolidAxes( ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		StaticArray< ImmediateVertex > vertices;
-		m_pContext->beginImmediateGeometry( vertices, vertexCount );
+		renderer.beginImmediateGeometry( vertices, 14u * 3u );
 
 		float halfLineOffset	= lineOffset * 0.5f;
 		float quarterLineLength = lineLength * 0.25f;
@@ -266,10 +360,10 @@ namespace tiki
 		createFloat3( vertices[ idx++ ].position, 0, 0, lineLength );
 		createFloat3( vertices[ idx++ ].position, -quarterLineLength, 0, lineLength - quarterLineLength );
 
-		//TIKI_ASSERT( vertexCount == idx );
+		TIKI_ASSERT( vertices.getCount() == idx );
 
 		// set color
-		for( uint i = lastIdx + 1; i < vertexCount; ++i )
+		for( uint i = lastIdx + 1; i < vertices.getCount(); ++i )
 		{
 			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_BLUE;
@@ -277,7 +371,7 @@ namespace tiki
 
 
 		// todo: set immediate renderer world matrix?
-		for( uint i = 0; i < vertexCount; ++i )
+		for( uint i = 0; i < vertices.getCount(); ++i )
 		{
 			Vector3 transformedPos;
 			vector::set( transformedPos, vertices[ i ].position.x, vertices[ i ].position.y, vertices[ i ].position.z );
@@ -289,69 +383,163 @@ namespace tiki
 			vertices[ i ].position.z = transformedPos.z;
 		}
 
-		vertices.dispose();
-
-		m_pContext->endImmediateGeometry();
+		renderer.endImmediateGeometry( vertices );
 	}
 
-
-	void debugrenderer::drawCircle( const Vector3& center, float radius, const Vector3& axe1, const Vector3& axe2, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::initialize( ResourceManager& resourceManager )
 	{
-		m_pContext->setPrimitiveTopology( PrimitiveTopology_LineStrip );
-
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
-
-		uint verticesPercircle = 30;
-		uint vertexCount = verticesPercircle + 1;
-
-		StaticArray< ImmediateVertex > vertices;
-		m_pContext->beginImmediateGeometry( vertices, vertexCount );
-
-		Vector3 scaleAxe1;
-		vector::set( scaleAxe1, axe1.x * radius, axe1.y * radius, axe1.z * radius );
-
-		Vector3 scaleAxe2;
-		vector::set( scaleAxe2, axe2.x * radius, axe2.y * radius, axe2.z * radius );
-
-		uint idx = 0u;
-		for( uint i = 0u; i < verticesPercircle; i++ )
-		{
-			Vector3 vt;
-			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
-			vector::scale( vt, f32::sin( (f32::twoPi / verticesPercircle) * i ) );
-
-			Vector3 vtySin;
-			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
-			vector::scale( vtySin, f32::cos( (f32::twoPi / verticesPercircle) * i ) );
-
-			vector::add( vt, vtySin );
-			vector::add( vt, center );
-
-			createFloat3( vertices[ idx++ ].position, vt.x, vt.y, vt.z );
-		}
-
-		// add last vertex from end to start
-		createFloat3( vertices[ idx++ ].position, vertices[ 0 ].position.x, vertices[ 0 ].position.y, vertices[ 0 ].position.z );
-
-		// set color and uv
-		TIKI_ASSERT( idx == vertexCount );
-		for( uint i = 0u; i < vertexCount; ++i )
-		{
-			ImmediateVertex& current = vertices[ i ];
-			current.color = color;
-			current.u = 0u;
-			current.v = 0u;
-		}
-
-		vertices.dispose();
-
-		m_pContext->endImmediateGeometry();
+		s_pDebugRendererFirstCommand = nullptr;
+		s_pDebugRendererLastCommand = nullptr;
+		s_debugRendererData.create( 1u * 1024u * 1024u );
 	}
 
-	void debugrenderer::drawSphere( const Vector3& center, float radius, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::shutdown( ResourceManager& resourceManager )
 	{
-		debugrenderer::drawCircle( center, radius, Vector3::unitX, Vector3::unitY, color );
-		debugrenderer::drawCircle( center, radius, Vector3::unitX, Vector3::unitZ, color );
-		debugrenderer::drawCircle( center, radius, Vector3::unitZ, Vector3::unitY, color );
+		s_pDebugRendererFirstCommand = nullptr;
+		s_pDebugRendererLastCommand = nullptr;
+		s_debugRendererData.dispose();
+	}
+
+	void debugrenderer::drawLines( const Vector3* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		TIKI_ASSERT( pPoints != nullptr );
+
+		DebugRenderLinesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLinesCommand >( sizeof( Vector3 ) * capacity );
+		if( pCommand != nullptr )
+		{
+			pCommand->color			= color;
+			pCommand->pointCount	= capacity;
+			memory::copy( pCommand->aPoints, pPoints, sizeof( Vector3 ) * capacity );
+		}
+	}
+
+	void debugrenderer::drawLineRay( const Ray& ray, float length /*= 100.0f*/, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderLineRayCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineRayCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->ray			= ray;
+			pCommand->length		= length;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawLineBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderLineBoxCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineBoxCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->box			= box;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawLineAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )
+	{
+		DebugRenderLineAxesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineAxesCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->lineLength	= lineLength;
+			pCommand->lineOffset	= lineOffset;
+			pCommand->worldMatrix	= worldMatrix;
+		}
+	}
+
+	void debugrenderer::drawLineGrid( float gridSpacing /*= 5.0f*/, float gridSize /*= 10.0f*/, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		if( gridSpacing == 0 )
+		{
+			return;
+		}
+
+		DebugRenderLineGridCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineGridCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->gridSpace		= gridSpacing;
+			pCommand->gridSize		= gridSize;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderLineCircleCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineCircleCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->center		= center;
+			pCommand->radius		= radius;
+			pCommand->normal		= normal;
+			pCommand->tangent		= tangent;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawLineSphere( const Vector3& center, float radius, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderLineSphereCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineSphereCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->center		= center;
+			pCommand->radius		= radius;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawSolidBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderSolidBoxCommand* pCommand = debugrenderer::allocateCommand< DebugRenderSolidBoxCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->box			= box;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawSolidAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )
+	{
+		DebugRenderSolidAxesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderSolidAxesCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->lineLength	= lineLength;
+			pCommand->lineOffset	= lineOffset;
+			pCommand->worldMatrix	= worldMatrix;
+		}
+	}
+
+	void debugrenderer::drawText( const Vector2& position, Color color, const char* pTextFormat, ... )
+	{
+		va_list argptr;
+		va_start( argptr, pTextFormat );
+		const string text = formatStringArgs( pTextFormat, argptr );
+		va_end( argptr );
+
+		DebugRenderTextCommand* pCommand = debugrenderer::allocateCommand< DebugRenderTextCommand >( text.getLength() + 1u );
+		if( pCommand != nullptr )
+		{
+			pCommand->position		= position;
+			pCommand->color			= color;
+			copyString( pCommand->text, text.getLength() + 1u, text.cStr() );
+		}
+	}
+
+	void debugrenderer::drawText3D( const Vector3& position, Color color, const char* pTextFormat, ... )
+	{
+		va_list argptr;
+		va_start( argptr, pTextFormat );
+		const string text = formatStringArgs( pTextFormat, argptr );
+		va_end( argptr );
+
+		DebugRenderText3DCommand* pCommand = debugrenderer::allocateCommand< DebugRenderText3DCommand >( text.getLength() + 1u );
+		if( pCommand != nullptr )
+		{
+			pCommand->position		= position;
+			pCommand->color			= color;
+			copyString( pCommand->text, text.getLength() + 1u, text.cStr() );
+		}
+	}
+
+	void debugrenderer::flush( ImmediateRenderer& renderer )
+	{
+
 	}
 }

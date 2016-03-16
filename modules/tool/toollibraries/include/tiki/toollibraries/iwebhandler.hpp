@@ -8,9 +8,9 @@ namespace tiki
 	{
 	public:
 
-		virtual cstring	getName() TIKI_PURE;
+		virtual const char*	getName() TIKI_PURE;
 
-		virtual bool	handleRequest( string& responseContent, cstring requestedPath ) TIKI_PURE;
+		virtual bool	handleRequest( string& responseContent, const char* requestedPath ) TIKI_PURE;
 
 	};
 }

@@ -18,7 +18,7 @@ namespace tiki
 
 	namespace debug
 	{
-		typedef void(*TraceCallback)(cstring, TraceLevel);
+		typedef void(*TraceCallback)(const char*, TraceLevel);
 
 		void	trace( const char* pFormat, ... );
 		void	traceInfo( const char* pFormat, ... );

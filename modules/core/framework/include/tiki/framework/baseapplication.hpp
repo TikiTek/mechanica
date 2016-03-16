@@ -38,9 +38,9 @@ namespace tiki
 		bool					fullScreen;
 		GraphicsRendererMode	graphicsMode;
 
-		cstring					pWindowTitle;
+		const char*					pWindowTitle;
 
-		cstring					pGamebuildPath;
+		const char*					pGamebuildPath;
 	};
 
 	class BaseApplication

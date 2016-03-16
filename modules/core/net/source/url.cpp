@@ -12,7 +12,7 @@ namespace tiki
 	{
 	}
 
-	bool Url::createFromString( cstring pString )
+	bool Url::createFromString( const char* pString )
 	{
 		clear();
 		m_urlString = pString;

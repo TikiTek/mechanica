@@ -18,7 +18,7 @@ namespace tiki
 		TIKI_ASSERT( m_pData == nullptr );
 	}
 
-	bool XmlReader::create( cstring pFileName )
+	bool XmlReader::create( const char* pFileName )
 	{
 		Array< uint8 > data;
 		if( !file::readAllBytes( pFileName, data ) )
@@ -54,13 +54,13 @@ namespace tiki
 		m_pData	= nullptr;
 	}
 
-	const XmlElement* XmlReader::findNodeByName( cstring pName ) const
+	const XmlElement* XmlReader::findNodeByName( const char* pName ) const
 	{
 		TIKI_ASSERT( m_pNode );
 		return xml_element_find_any( m_pNode, pName );
 	}
 
-	const XmlElement* XmlReader::findFirstChild( cstring pName, const XmlElement* pElement ) const
+	const XmlElement* XmlReader::findFirstChild( const char* pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( m_pNode );
 		TIKI_ASSERT( pElement );
@@ -74,19 +74,19 @@ namespace tiki
 		return xml_element_find_element( nullptr, pElement->name, (XmlElement*)pElement );
 	}
 
-	const XmlElement* XmlReader::findNext( cstring pName, const XmlElement* pElement ) const
+	const XmlElement* XmlReader::findNext( const char* pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( pElement );
 		return xml_element_find_element( nullptr, pName, (XmlElement*)pElement );
 	}
 
-	const XmlAttribute* XmlReader::findAttributeByName( cstring pName, const XmlElement* pElement ) const
+	const XmlAttribute* XmlReader::findAttributeByName( const char* pName, const XmlElement* pElement ) const
 	{
 		TIKI_ASSERT( pElement );
 		return xml_element_find_attribute( (XmlElement*)pElement, pName, nullptr );
 	}
 
-	size_t XmlReader::getChilds( XmlElementList& targetList, const XmlElement* pElement, cstring pName ) const
+	size_t XmlReader::getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const
 	{
 		TIKI_ASSERT( pElement );
 		const uint count = xml_element_find_elements( (XmlElement*)pElement, pName, nullptr, nullptr );

@@ -22,17 +22,17 @@ namespace tiki
 	}
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
-	bool file::exists( cstring pFileName )
+	bool file::exists( const char* pFileName )
 	{
 		return (GetFileAttributesA( getPlatformFilename( pFileName ).cStr() ) != INVALID_FILE_ATTRIBUTES);
 	}
 
-	bool file::copy( cstring pFrom, cstring pTo, bool overwrite /* = true */ )
+	bool file::copy( const char* pFrom, const char* pTo, bool overwrite /* = true */ )
 	{
 		return CopyFileA( getPlatformFilename( pFrom ).cStr(), getPlatformFilename( pTo ).cStr(), !overwrite ) != 0;
 	}
 
-	bool file::move( cstring pFrom, cstring pTo, bool overwrite /* = true */ )
+	bool file::move( const char* pFrom, const char* pTo, bool overwrite /* = true */ )
 	{
 		const string to = getPlatformFilename( pTo );
 		if ( file::exists( to.cStr() ) && !overwrite )
@@ -43,12 +43,12 @@ namespace tiki
 		return MoveFileA( getPlatformFilename( pFrom ).cStr(), to.cStr() ) != 0;
 	}
 
-	bool file::remove( cstring pFileName )
+	bool file::remove( const char* pFileName )
 	{
 		return DeleteFileA( getPlatformFilename( pFileName ).cStr() ) != 0;
 	}
 
-	bool file::readAllText( cstring pFileName, Array< char >& targetContent, size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/  )
+	bool file::readAllText( const char* pFileName, Array< char >& targetContent, size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/  )
 	{
 		FILE* pFile;
 		if ( fopen_s( &pFile, getPlatformFilename( pFileName ).cStr(), "rb" ) )
@@ -71,7 +71,7 @@ namespace tiki
 		return true;
 	}
 
-	bool file::readAllBytes( cstring pFileName, Array< uint8 >& buffer, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool file::readAllBytes( const char* pFileName, Array< uint8 >& buffer, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		FILE* pFile;
 		fpos_t len;
@@ -92,7 +92,7 @@ namespace tiki
 		return true;
 	}
 
-	bool file::writeAllBytes( cstring pFileName, const uint8* pData, size_t dataLength )
+	bool file::writeAllBytes( const char* pFileName, const uint8* pData, size_t dataLength )
 	{
 		FILE* pFile;
 
@@ -107,7 +107,7 @@ namespace tiki
 		return true;
 	}
 
-	crc32 file::getLastChangeCrc( cstring pFileName )
+	crc32 file::getLastChangeCrc( const char* pFileName )
 	{
 		HANDLE handle = CreateFileA( getPlatformFilename( pFileName ).cStr(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr );
 
@@ -129,27 +129,27 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
-	bool file::exists( cstring pFileName )
+	bool file::exists( const char* pFileName )
 	{
 		return false;
 	}
 
-	bool file::copy( cstring pFrom, cstring pTo, bool overwrite /* = true */ )
+	bool file::copy( const char* pFrom, const char* pTo, bool overwrite /* = true */ )
 	{
 		return false;
 	}
 
-	bool file::move( cstring pFrom, cstring pTo, bool overwrite /* = true */ )
+	bool file::move( const char* pFrom, const char* pTo, bool overwrite /* = true */ )
 	{
 		return false;
 	}
 
-	bool file::remove( cstring pFileName )
+	bool file::remove( const char* pFileName )
 	{
 		return false;
 	}
 
-	bool file::readAllText( cstring pFileName, Array< char >& targetContent, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool file::readAllText( const char* pFileName, Array< char >& targetContent, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		FILE* pFile = fopen( getPlatformFilename( pFileName ).cStr(), "r" );
 		if ( pFile == nullptr )
@@ -169,7 +169,7 @@ namespace tiki
 		return true;
 	}
 
-	bool file::readAllBytes( cstring pFileName, Array< uint8 >& buffer, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool file::readAllBytes( const char* pFileName, Array< uint8 >& buffer, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
 		FILE* pFile = fopen( getPlatformFilename( pFileName ).cStr(), "rb" );
 		if ( pFile == nullptr )
@@ -189,7 +189,7 @@ namespace tiki
 		return true;
 	}
 
-	bool file::writeAllBytes( cstring pFileName, const uint8* pData, size_t dataLength )
+	bool file::writeAllBytes( const char* pFileName, const uint8* pData, size_t dataLength )
 	{
 		FILE* pFile = fopen( getPlatformFilename( pFileName ).cStr(), "wb" );
 		if ( pFile == nullptr )
@@ -203,7 +203,7 @@ namespace tiki
 		return true;
 	}
 
-	crc32 file::getLastChangeCrc( cstring pFileName )
+	crc32 file::getLastChangeCrc( const char* pFileName )
 	{
 		return 0u;
 	}

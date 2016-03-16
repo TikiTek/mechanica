@@ -26,7 +26,7 @@ namespace tiki
 
 	void debug::traceInternal( const char* pFormat, TraceLevel level, va_list pArgs )
 	{
-		static cstring s_aTracePrefix[] =
+		static const char* s_aTracePrefix[] =
 		{
 			"",
 			"[DEBUG] ",

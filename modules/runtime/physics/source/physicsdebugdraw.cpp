@@ -48,7 +48,7 @@ namespace tiki
 	{
 		const Vector3 v ={ p.x(), p.y(), p.z() };
 		const Color color2 = color::fromFloatRGBA( color.x(), color.y(), color.z(), 1.0f );
-		debugrenderer::drawSphere( v, radius, color2 );
+		debugrenderer::drawLineSphere( v, radius, color2 );
 	}
 
 	void PhysicsDebugDraw::drawTriangle( const btVector3& a, const btVector3& b, const btVector3& c,const btVector3& color, btScalar alpha )
