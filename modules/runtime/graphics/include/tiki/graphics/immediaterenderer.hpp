@@ -78,8 +78,8 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		void				beginRendering( GraphicsContext& graphicsContext ) const;
-		void				endRendering() const;
+		void				beginRendering( GraphicsContext& graphicsContext );
+		void				endRendering();
 
 		void				beginRenderPass( const RenderTarget* pRenderTarget = nullptr, const Camera* pProjection = nullptr ) const;
 		void				endRenderPass() const;
@@ -94,12 +94,12 @@ namespace tiki
 		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
 
-		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity );
-		void				endImmediateGeometry( StaticArray< ImmediateVertex >& vertices );
+		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const;
+		void				endImmediateGeometry( StaticArray< ImmediateVertex >& vertices ) const;
 
 	private:
 
-		mutable GraphicsContext*	m_pContext;
+		GraphicsContext*			m_pContext;
 
 		const ShaderSet*			m_pShaderSet;
 		
