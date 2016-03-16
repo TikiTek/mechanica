@@ -2,6 +2,7 @@
 #include "tiki/game/game.hpp"
 
 #include "tiki/base/timer.hpp"
+#include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
 #include "tiki/gamestates/basicteststate.hpp"
 #include "tiki/gamestates/creditsstate.hpp"
@@ -66,7 +67,6 @@ namespace tiki
 		ResourceManager& resourceManager	= getResourceManager();
 
 		m_resourceRequestPool.create( resourceManager );
-		m_immediateRenderer.create( graphicsSystem, resourceManager );
 
 		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
 		m_pStates->applicationState.create( this );
@@ -138,7 +138,6 @@ namespace tiki
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
 
-		m_immediateRenderer.dispose( graphicsSystem, resourceManager );
 		m_resourceRequestPool.dispose();
 	}
 
@@ -149,7 +148,7 @@ namespace tiki
 			m_gameFlow.startTransition( 0u );
 		}
 
-		m_touchSystem.update( (float)getFrameTimer().getElapsedTime(), getGraphicsSystem() );
+		m_touchSystem.update( (float)getFrameTimer().getElapsedTime() );
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
 			processGameInputEvent( m_touchSystem.getInputEventByIndex( i ) );
@@ -168,7 +167,11 @@ namespace tiki
 	{
 		m_gameFlow.render( graphicsContext );
 
-		m_touchSystem.render( graphicsContext );
+		m_touchSystem.render( getImmediateRenderer() );
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getGameRenderer().getFrameData().mainCamera );
+#endif
 	}
 
 	bool Game::processGameInputEvent( const InputEvent& inputEvent )

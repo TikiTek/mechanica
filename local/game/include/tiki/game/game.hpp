@@ -35,9 +35,6 @@ namespace tiki
 
 		GameFlowSystem&			getGameFlowSystem()			{ return m_gameFlow; }
 		ResourceRequestPool&	getResourceRequestPool()	{ return m_resourceRequestPool; }
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		ImmediateRenderer&		getImmediateRenderer()		{ return m_immediateRenderer; }
-#endif
 
 	protected:
 
@@ -52,8 +49,6 @@ namespace tiki
 		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
-
-		ImmediateRenderer		m_immediateRenderer;
 
 		ResourceRequestPool		m_resourceRequestPool;
 

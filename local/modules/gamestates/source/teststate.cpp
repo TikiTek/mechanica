@@ -322,7 +322,7 @@ namespace tiki
 	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
+		const ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
 
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
@@ -344,7 +344,6 @@ namespace tiki
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		immediateRenderer.beginRendering( graphicsContext );
 		immediateRenderer.beginRenderPass();
 
 		if ( m_gbufferIndex != -1 )
@@ -377,7 +376,6 @@ namespace tiki
 		immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
 
 		immediateRenderer.endRenderPass();
-		immediateRenderer.endRendering();
 
 		if ( m_enablePhysicsDebug )
 		{

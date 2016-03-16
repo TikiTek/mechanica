@@ -6,6 +6,7 @@
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
+#include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
@@ -61,6 +62,8 @@ namespace tiki
 
 	void PlayerControlComponent::update( const GameCamera& gameCamera, float timeDelta )
 	{
+		debugrenderer::drawLine( vector::create( 0.0f, 5.0f, -100.0f ), vector::create( 0.0f, 5.0f, 100.0f ), TIKI_COLOR_RED );
+
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
