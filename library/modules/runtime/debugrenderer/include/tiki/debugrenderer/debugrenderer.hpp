@@ -7,7 +7,9 @@
 namespace tiki
 {
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
+	class Camera;
 	class ImmediateRenderer;
+	class RenderTarget;
 	class ResourceManager;
 	struct Box;
 	struct Matrix43;
@@ -20,6 +22,7 @@ namespace tiki
 		void	initialize( ResourceManager& resourceManager );
 		void	shutdown( ResourceManager& resourceManager );
 
+		void	drawLine( const Vector3& start, const Vector3& end, Color color = TIKI_COLOR_WHITE );
 		void	drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );
 
 		void	drawLineRay( const Ray& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE );
@@ -35,7 +38,7 @@ namespace tiki
 		void	drawText( const Vector2& position, Color color, const char* pTextFormat, ... );
 		void	drawText3D( const Vector3& position, Color color, const char* pTextFormat, ... );
 
-		void	flush( ImmediateRenderer& renderer );
+		void	flush( const ImmediateRenderer& renderer, const Camera& camera, const RenderTarget* pRenderTarget = nullptr );
 	}
 #endif
 }

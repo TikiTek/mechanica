@@ -7,9 +7,9 @@
 
 namespace tiki
 {
-	class FileSystem;
 	class GraphicsContext;
 	class GraphicsSystem;
+	class ImmediateRenderer;
 	class InputSystem;
 	class MainWindow;
 	class ResourceManager;
@@ -57,6 +57,7 @@ namespace tiki
 		InputSystem&					getIputSystem() const;
 		UiSystem&						getUiSystem() const;
 		const Timer&					getFrameTimer() const;
+		const ImmediateRenderer&		getImmediateRenderer() const;
 
 	protected:
 

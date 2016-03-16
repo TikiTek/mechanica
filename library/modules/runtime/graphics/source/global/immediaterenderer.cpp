@@ -133,13 +133,13 @@ namespace tiki
 		m_vertexConstantBuffer.dispose( graphicsSystem );
 	}
 
-	void ImmediateRenderer::beginRendering( GraphicsContext& graphicsContext ) const
+	void ImmediateRenderer::beginRendering( GraphicsContext& graphicsContext )
 	{
 		TIKI_ASSERT( m_pContext == nullptr );
 		m_pContext = &graphicsContext;
 	}
 
-	void ImmediateRenderer::endRendering() const
+	void ImmediateRenderer::endRendering()
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		m_pContext = nullptr;
@@ -426,13 +426,13 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 	
-	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity )
+	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		return m_pContext->beginImmediateGeometry( vertices, capacity );
 	}
 
-	void ImmediateRenderer::endImmediateGeometry( StaticArray< ImmediateVertex >& vertices )
+	void ImmediateRenderer::endImmediateGeometry( StaticArray< ImmediateVertex >& vertices ) const
 	{
 		m_pContext->endImmediateGeometry( vertices );
 	}
