@@ -8,12 +8,12 @@ namespace tiki
 {
 	UiElement::UiElement()
 	{
-		m_pFont			= nullptr;
-		m_pText			= nullptr;
-		m_pTextureData	= nullptr;
-		m_pParent		= nullptr;
+		m_pFont				= nullptr;
+		m_pText				= nullptr;
+		m_pTextureData		= nullptr;
+		m_pParent			= nullptr;
 
-		m_mouseState	= false;
+		m_mouseMoveState	= false;
 	}
 
 	UiElement::~UiElement()
@@ -118,8 +118,8 @@ namespace tiki
 			{
 				const ScriptObjectField aFields[] =
 				{
-					{ "positionX", ScriptValue( scriptContext, eventData.data.mouse.position.x ) },
-					{ "positionY", ScriptValue( scriptContext, eventData.data.mouse.position.y ) }
+					{ "positionX", ScriptValue( scriptContext, eventData.data.mouseMove.position.x ) },
+					{ "positionY", ScriptValue( scriptContext, eventData.data.mouseMove.position.y ) }
 				};
 
 				scriptEventData.createObject( aFields, TIKI_COUNT( aFields ) );
@@ -223,6 +223,27 @@ namespace tiki
 	{
 		m_padding = padding;
 		setLayoutChanged();
+	}
+
+	uint UiElement::getChildCount() const
+	{
+		return m_children.getCount();
+	}
+
+	UiElement* UiElement::getChildByIndex( uint index )
+	{
+		LinkedList< UiElement >::Iterator it = m_children.getBegin();
+		for( uint i = 0u; i < index; ++i )
+		{
+			++it;
+		}
+
+		return &*it;
+	}
+
+	UiElement* UiElement::getFirstChild()
+	{
+		return &m_children.getFirst();
 	}
 
 	void UiElement::setToColorRectangle( Color topLeft /* = TIKI_COLOR_WHITE */, Color topRight /* = TIKI_COLOR_WHITE */, Color bottomLeft /* = TIKI_COLOR_WHITE */, Color bottomRight /* = TIKI_COLOR_WHITE */ )
@@ -340,38 +361,87 @@ namespace tiki
 		m_layoutChanged = false;
 	}
 
-	bool UiElement::checkMouseMoveEvent( const Vector2& position )
+	bool UiElement::checkMouseMoveEvent( const UiInputState& state )
 	{
-		const bool isInElement = m_layoutRectangle.contains( position );
-		if( isInElement || m_mouseState )
+		const bool isInElement = m_layoutRectangle.contains( state.mousePosition );
+		if( isInElement || m_mouseMoveState )
 		{
 			UiEvent eventData;
-			eventData.data.mouse.position	= position;
-			//eventData.data.mouse.buttons	= ...;
+			eventData.data.mouseMove.position	= state.mousePosition;
+			eventData.data.mouseMove.buttons	= state.mouseButtonState;
 
-			if( isInElement && m_mouseState )
+			if( isInElement && m_mouseMoveState )
 			{
 				eventData.type = UiEventType_MouseOver;
 			}
-			else if( isInElement && !m_mouseState )
+			else if( isInElement && !m_mouseMoveState )
 			{
 				eventData.type = UiEventType_MouseIn;
-				m_mouseState = true;
+				m_mouseMoveState = true;
 			}
-			else if( !isInElement && m_mouseState )
+			else if( !isInElement && m_mouseMoveState )
 			{
 				eventData.type = UiEventType_MouseOut;
-				m_mouseState = false;
+				m_mouseMoveState = false;
+				m_mouseClickState = MouseButtonState();
 			}
 
 			raiseEvent( eventData );
 
 			for( UiElement& child : m_children )
 			{
-				child.checkMouseMoveEvent( position );
+				child.checkMouseMoveEvent( state );
 			}
 
 			return true;
+		}
+
+		return false;
+	}
+
+	bool UiElement::checkMouseClickEvent( const UiInputState& prevState, const UiInputState& currentState )
+	{
+		if( m_mouseMoveState )
+		{
+			UiEvent eventData;
+			eventData.data.mouseButton.position	= currentState.mousePosition;
+
+			bool result = false;
+			for( uint i = 0u; i < MouseButton_Count; ++i )
+			{
+				eventData.data.mouseButton.button = (MouseButton)i;
+
+				if( !prevState.mouseButtonState.state[ i ] && currentState.mouseButtonState.state[ i ] )
+				{
+					m_mouseClickState.state[ i ] = true;
+
+					eventData.type = UiEventType_MouseButtonDown;
+					raiseEvent( eventData );
+
+					result = true;
+				}
+				else if( prevState.mouseButtonState.state[ i ] && !currentState.mouseButtonState.state[ i ] )
+				{
+					if( m_mouseClickState.state[ i ] )
+					{
+						eventData.type = UiEventType_MouseButtonClick;
+						raiseEvent( eventData );
+					}
+					m_mouseClickState.state[ i ] = false;
+
+					eventData.type = UiEventType_MouseButtonUp;
+					raiseEvent( eventData );
+
+					result = true;
+				}
+			}
+
+			for( UiElement& child : m_children )
+			{
+				child.checkMouseClickEvent( prevState, currentState );
+			}
+
+			return result;
 		}
 
 		return false;

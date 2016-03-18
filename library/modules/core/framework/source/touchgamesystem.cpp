@@ -1,11 +1,12 @@
 
 #include "tiki/framework/touchgamesystem.hpp"
 
+#include "tiki/base/debugprop.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
-#include "tiki/base/debugprop.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
 
 namespace tiki
 {
@@ -49,12 +50,6 @@ namespace tiki
 		m_halfPadSize = m_padSize;
 		vector::scale( m_halfPadSize, 0.5f );
 
-		if ( !m_renderer.create( graphicsSystem, resourceManager ) )
-		{
-			dispose( graphicsSystem, resourceManager );
-			return false;
-		}
-
 		for (uint i = 0u; i < m_touchPoints.getCount(); ++i)
 		{
 			TouchPoint& point = m_touchPoints[ i ];
@@ -71,8 +66,6 @@ namespace tiki
 
 	void TouchGameSystem::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		m_renderer.dispose( graphicsSystem, resourceManager );
-
 		resourceManager.unloadResource( m_pPointTexture );
 		resourceManager.unloadResource( m_pPadPointTexture );
 		resourceManager.unloadResource( m_pPadTexture );
@@ -81,7 +74,7 @@ namespace tiki
 		m_pPointTexture		= nullptr;
 	}
 
-	void TouchGameSystem::update( float timeDelta, const GraphicsSystem& graphicsSystem )
+	void TouchGameSystem::update( float timeDelta )
 	{
 		m_inputEvents.clear();
 
@@ -90,8 +83,8 @@ namespace tiki
 			return;
 		}
 
-		const float width = float( graphicsSystem.getBackBuffer().getWidth() );
-		const float height = float( graphicsSystem.getBackBuffer().getHeight() );
+		const float width = float( m_pGraphicsSystem->getBackBuffer().getWidth() );
+		const float height = float( m_pGraphicsSystem->getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
 
 		const Vector2 leftPadPos = { m_padSize.x * globalScale, height - ( m_padSize.y * globalScale ) };
@@ -155,18 +148,17 @@ namespace tiki
 		}
 	}
 
-	void TouchGameSystem::render( GraphicsContext& graphicsContext ) const
+	void TouchGameSystem::render( const ImmediateRenderer& renderer ) const
 	{
 		if ( !m_isEnabled && !s_convertMouseToTouchEvents )
 		{
 			return;
 		}
 
-		m_renderer.beginRendering( graphicsContext );
-		m_renderer.beginRenderPass();
+		renderer.beginRenderPass();
 
-		const float width = float( graphicsContext.getBackBuffer().getWidth() );
-		const float height = float( graphicsContext.getBackBuffer().getHeight() );
+		const float width = float( m_pGraphicsSystem->getBackBuffer().getWidth() );
+		const float height = float( m_pGraphicsSystem->getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
 
 		const Rectangle leftPadRect = Rectangle(
@@ -183,8 +175,8 @@ namespace tiki
 			m_padSize.y * globalScale
 		);
 
-		m_renderer.drawTexturedRectangle( m_pPadTexture->getTextureData(), leftPadRect, TIKI_COLOR_WHITE );
-		m_renderer.drawTexturedRectangle( m_pPadTexture->getTextureData(), rightPadRect, TIKI_COLOR_WHITE );
+		renderer.drawTexturedRectangle( m_pPadTexture->getTextureData(), leftPadRect, TIKI_COLOR_WHITE );
+		renderer.drawTexturedRectangle( m_pPadTexture->getTextureData(), rightPadRect, TIKI_COLOR_WHITE );
 
 		for (uint i = 0u; i < m_touchPoints.getCount(); ++i)
 		{
@@ -202,7 +194,7 @@ namespace tiki
 				);
 
 				const Color color = color::fromFloatRGBA( 1.0f, 1.0f, 1.0f, point.scale * point.scale );
-				m_renderer.drawTexturedRectangle(
+				renderer.drawTexturedRectangle(
 					( point.isOnPad[ 0u ] || point.isOnPad[ 1u ] ? m_pPadPointTexture : m_pPointTexture )->getTextureData(),
 					destinationRectangle,
 					color
@@ -210,8 +202,7 @@ namespace tiki
 			}
 		}
 
-		m_renderer.endRenderPass();
-		m_renderer.endRendering();
+		renderer.endRenderPass();
 	}
 
 	bool TouchGameSystem::processInputEvent( const InputEvent& inputEvent )

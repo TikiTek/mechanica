@@ -36,7 +36,7 @@ namespace tiki
 
 		uint			width;
 		uint			height;				
-		cstring			pWindowTitle;
+		const char*			pWindowTitle;
 
 		uint			maxWindowEvents;
 	};

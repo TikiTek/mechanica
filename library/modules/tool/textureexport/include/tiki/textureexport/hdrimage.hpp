@@ -36,7 +36,7 @@ namespace tiki
 		};
 
 		void			create( const size_t width, const size_t height, GammaType gamma = GammaType_Linear );
-		bool			createFromFile( cstring pFileName );
+		bool			createFromFile( const char* pFileName );
 		void			createFromImage( const HdrImage& imageToCopy );
 
 		void			dispose();

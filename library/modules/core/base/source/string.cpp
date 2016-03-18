@@ -41,7 +41,7 @@ namespace tiki
 		return result != 0;
 	}
 
-	void formatStringBuffer( char* pTargetBuffer, uint targetLength, cstring format, ... )
+	void formatStringBuffer( char* pTargetBuffer, uint targetLength, const char* format, ... )
 	{
 		va_list argptr;
 		va_start( argptr, format );
@@ -59,7 +59,7 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_MINGW )
 
-	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, cstring format, ... )
+	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, const char* format, ... )
 	{
 		va_list argptr;
 		va_start( argptr, format );

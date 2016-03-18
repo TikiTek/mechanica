@@ -10,7 +10,7 @@
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 tiki::InstanceHandle				s_instanceHandle;
-tiki::StaticArray< tiki::cstring >	s_arguments;
+tiki::StaticArray< const char* >	s_arguments;
 
 #if TIKI_ENABLED( TIKI_SDL )
 #	include "SDL_main.h"
@@ -20,7 +20,7 @@ int main( int argc, char** argv )
 {
 	s_instanceHandle = (tiki::InstanceHandle)GetModuleHandle( nullptr );
 
-	s_arguments.create( (tiki::cstring*)argv, (tiki::uint)argc );
+	s_arguments.create( (const char**)argv, (tiki::uint)argc );
 
 	const int returnValue = tiki::platform::startApplication();
 
@@ -47,12 +47,12 @@ namespace tiki
 		return s_instanceHandle;
 	}
 
-	const StaticArray< cstring >& platform::getArguments()
+	const StaticArray< const char* >& platform::getArguments()
 	{
 		return s_arguments;
 	}
 
-	bool platform::hasArgument( cstring name )
+	bool platform::hasArgument( const char* name )
 	{
 		for (uint i = 0u; i < s_arguments.getCount(); ++i)
 		{

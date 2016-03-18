@@ -66,6 +66,10 @@ namespace tiki
 		TIKI_FORCE_INLINE bool		isZero( const Vector3& vec, float epsilon = f32::epsilon );
 		TIKI_FORCE_INLINE bool		isZero( const Vector4& vec, float epsilon = f32::epsilon );
 
+		TIKI_FORCE_INLINE bool		isNormalized( const Vector2& vec, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isNormalized( const Vector3& vec, float epsilon = f32::epsilon );
+		TIKI_FORCE_INLINE bool		isNormalized( const Vector4& vec, float epsilon = f32::epsilon );
+
 		TIKI_FORCE_INLINE Vector2	create( float x, float y );
 		TIKI_FORCE_INLINE Vector3	create( float x, float y, float z );
 		TIKI_FORCE_INLINE Vector4	create( float x, float y, float z, float w );

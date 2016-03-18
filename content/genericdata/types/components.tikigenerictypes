@@ -4,6 +4,9 @@
 		<field type="float4" name="rotation" />
 		<field type="float3" name="scale" />
 	</struct>
+	<struct name="TerrainComponentInitData">
+		<field type="{reference Model}" name="model" />
+	</struct>
 	<struct name="StaticModelComponentInitData">
 		<field type="{reference Model}" name="model" />
 	</struct>

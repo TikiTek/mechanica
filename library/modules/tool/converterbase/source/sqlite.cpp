@@ -15,7 +15,7 @@ namespace tiki
 		TIKI_ASSERT( m_pDatabase == nullptr );
 	}
 
-	bool SqliteDatabase::create( cstring pFileName )
+	bool SqliteDatabase::create( const char* pFileName )
 	{
 		if ( sqlite3_open( pFileName, &m_pDatabase ) != SQLITE_OK )
 		{

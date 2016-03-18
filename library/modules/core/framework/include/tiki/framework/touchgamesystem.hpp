@@ -3,13 +3,16 @@
 #define __TIKI_TOUCHGAMESYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/input/inputsystem.hpp"
 #include "tiki/container/fixedarray.hpp"
 #include "tiki/container/fixedsizedarray.hpp"
+#include "tiki/input/inputsystem.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
+	class GraphicsSystem;
+	class ImmediateRenderer;
+	class ResourceManager;
 	class Texture;
 
 	class TouchGameSystem
@@ -24,8 +27,8 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		void				update( float timeDelta, const GraphicsSystem& graphicsSystem );
-		void				render( GraphicsContext& graphicsContext ) const;
+		void				update( float timeDelta );
+		void				render( const ImmediateRenderer& renderer ) const;
 
 		bool				processInputEvent( const InputEvent& inputEvent );
 
@@ -67,8 +70,6 @@ namespace tiki
 		Vector2					m_halfPointSize;
 		Vector2					m_padSize;
 		Vector2					m_halfPadSize;
-
-		ImmediateRenderer		m_renderer;
 
 	};
 }

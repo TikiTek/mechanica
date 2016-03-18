@@ -17,7 +17,7 @@ namespace tiki
 
 		virtual void		update() = 0;
 
-		virtual void		registerRequestHandler( cstring url, IWebHandler* pHandler ) = 0;
+		virtual void		registerRequestHandler( const char* url, IWebHandler* pHandler ) = 0;
 		virtual void		unregisterRequestHandler( IWebHandler* pHandler ) = 0;
 
 	};

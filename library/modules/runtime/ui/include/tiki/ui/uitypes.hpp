@@ -174,11 +174,17 @@ namespace tiki
 		{
 		}
 
-		struct UiMouseEventData
+		struct UiMouseMoveEventData
 		{
-			Vector2		position;
-			bool		buttons[ MouseButton_Count ];
-		} mouse;
+			Vector2				position;
+			MouseButtonState	buttons;
+		} mouseMove;
+
+		struct UiMouseButtonEventData
+		{
+			Vector2				position;
+			MouseButton			button;
+		} mouseButton;
 
 		struct UiPositionEventData
 		{
@@ -201,6 +207,12 @@ namespace tiki
 
 		UiEventType	type;
 		UiEventData	data;
+	};
+
+	struct UiInputState
+	{
+		Vector2				mousePosition;
+		MouseButtonState	mouseButtonState;
 	};
 }
 

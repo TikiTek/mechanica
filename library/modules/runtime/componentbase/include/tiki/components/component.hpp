@@ -22,7 +22,7 @@ namespace tiki
 		virtual bool			initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData ) = 0;
 		virtual void			disposeState( ComponentState* pComponentState ) = 0;
 
-		virtual crc32			getTypeCrc() const = 0;
+		virtual crc32			getTypeCrc() const;
 		virtual uint32			getStateSize() const = 0;
 		virtual const char*		getTypeName() const = 0;
 

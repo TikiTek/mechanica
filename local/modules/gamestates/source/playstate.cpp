@@ -83,12 +83,7 @@ namespace tiki
 
 			if ( isCreating )
 			{
-				if( !m_gameClient.create() )
-				{
-					return TransitionState_Error;
-				}
-
-				if( !m_gameSession.create( m_gameClient, m_pGame->getResourceManager() ) )
+				if( !m_gameSession.create( m_pGame->getResourceManager() ) )
 				{
 					return TransitionState_Error;
 				}
@@ -98,7 +93,6 @@ namespace tiki
 			else
 			{
 				m_gameSession.dispose( m_pGame->getResourceManager() );
-				m_gameClient.dispose();
 
 				return TransitionState_Finish;
 			}
@@ -145,21 +139,13 @@ namespace tiki
 		vector::normalize( directionalLight.direction );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
-		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_gameSession.getPlayerEntityId(), m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
-
-		GameClientUpdateContext gameClientUpdateContext;
-		gameClientUpdateContext.timeDelta		= timeDelta;
-		gameClientUpdateContext.totalGameTime	= totalGameTime;		
-		gameClientUpdateContext.pPlayerCollider	= &m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState );
-		m_gameClient.update( gameClientUpdateContext );
-
 		m_gameSession.update( frameData, timeDelta, totalGameTime );
-
-		m_gameClient.render( *m_pGameRenderer );
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
+		m_gameSession.render( *m_pGameRenderer );
+
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
@@ -186,11 +172,6 @@ namespace tiki
 
 	bool PlayState::processInputEvent( const InputEvent& inputEvent )
 	{
-		if ( m_gameClient.processInputEvent( inputEvent ) )
-		{
-			return true;
-		}
-
 		if ( m_gameSession.processInputEvent( inputEvent ) )
 		{
 			return true;

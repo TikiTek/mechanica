@@ -21,19 +21,19 @@ namespace tiki
 								XmlReader();
 								~XmlReader();
 
-		bool					create( cstring pFileName );
+		bool					create( const char* pFileName );
 		void					dispose();
 
 		const XmlElement*		getRoot() const { return m_pNode; }
 
-		const XmlElement*		findNodeByName( cstring pName ) const;
-		const XmlElement*		findFirstChild( cstring pName,  const XmlElement* pElement ) const;
+		const XmlElement*		findNodeByName( const char* pName ) const;
+		const XmlElement*		findFirstChild( const char* pName,  const XmlElement* pElement ) const;
 		const XmlElement*		findNext( const XmlElement* pElement ) const;
-		const XmlElement*		findNext( cstring pName, const XmlElement* pElement ) const;
+		const XmlElement*		findNext( const char* pName, const XmlElement* pElement ) const;
 
-		const XmlAttribute*	findAttributeByName( cstring pName, const XmlElement* pElement ) const;
+		const XmlAttribute*	findAttributeByName( const char* pName, const XmlElement* pElement ) const;
 
-		size_t					getChilds( XmlElementList& targetList, const XmlElement* pElement, cstring pName ) const;
+		size_t					getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const;
 
 	private:
 

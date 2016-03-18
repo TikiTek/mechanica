@@ -9,6 +9,7 @@
 #include "tiki/ui/uielementscript.hpp"
 #include "tiki/ui/uirenderer.hpp"
 #include "tiki/ui/uisystemscript.hpp"
+#include "tiki/ui/uitypes.hpp"
 
 namespace tiki
 {
@@ -18,8 +19,7 @@ namespace tiki
 	class ResourceManager;
 	struct InputEvent;
 	struct UiEventHandler;
-	struct UiSize;
-
+	
 	struct UiSystemParameters
 	{
 		UiSystemParameters()
@@ -80,6 +80,9 @@ namespace tiki
 		UiElement*				m_pRootElement;
 
 		Pool< UiEventHandler >	m_eventHandlerPool;
+
+		UiInputState			m_prevInputState;
+		UiInputState			m_currentInputState;
 
 	};
 }

@@ -48,7 +48,7 @@ namespace tiki
 			Type_Float
 		};
 
-		DebugProp( cstring pName, cstring pModule, Type type )
+		DebugProp( const char* pName, const char* pModule, Type type )
 			: m_pName( pName ), m_pModule( pModule ), m_type( type )
 		{
 			debugprop::registerProperty( *this );
@@ -60,9 +60,9 @@ namespace tiki
 		}
 
 		Type		getType() const		{ return m_type; }
-		cstring		getFullName() const	{ return m_pName; }
-		cstring		getModule() const	{ return m_pModule; }
-		cstring		getName() const
+		const char*		getFullName() const	{ return m_pName; }
+		const char*		getModule() const	{ return m_pModule; }
+		const char*		getName() const
 		{
 			uint index = stringLastIndexOf( m_pName, '/' );
 			index = ( index == TIKI_SIZE_T_MAX ? 0u : index + 1u );
@@ -73,8 +73,8 @@ namespace tiki
 	protected:
 
 		Type		m_type;
-		cstring		m_pName;
-		cstring		m_pModule;
+		const char*		m_pName;
+		const char*		m_pModule;
 
 	};
 
@@ -84,7 +84,7 @@ namespace tiki
 
 	public:
 
-		DebugPropBool( cstring pName, cstring pModule, bool defaultValue )
+		DebugPropBool( const char* pName, const char* pModule, bool defaultValue )
 			: DebugProp( pName, pModule, Type_Bool ), m_value( defaultValue ), m_defaultValue( defaultValue )
 		{
 		}
@@ -108,7 +108,7 @@ namespace tiki
 
 	public:
 
-		DebugPropInt( cstring pName, cstring pModule, int defaultValue, int minValue, int maxValue )
+		DebugPropInt( const char* pName, const char* pModule, int defaultValue, int minValue, int maxValue )
 			: DebugProp( pName, pModule, Type_Int ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
 			TIKI_ASSERT( defaultValue >= minValue );
@@ -146,7 +146,7 @@ namespace tiki
 
 	public:
 
-		DebugPropFloat( cstring pName, cstring pModule, float defaultValue, float minValue, float maxValue )
+		DebugPropFloat( const char* pName, const char* pModule, float defaultValue, float minValue, float maxValue )
 			: DebugProp( pName, pModule, Type_Float ), m_value( defaultValue ), m_defaultValue( defaultValue ), m_minValue( minValue ), m_maxValue( maxValue )
 		{
 			TIKI_ASSERT( defaultValue >= minValue );

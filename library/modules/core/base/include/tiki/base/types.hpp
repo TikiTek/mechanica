@@ -67,8 +67,6 @@ namespace tiki
 	typedef float			float32;
 	typedef double			float64;
 
-	typedef const char*		cstring;
-
 }
 
 #if __cplusplus >= 201103L || _MSC_VER >= 1800

@@ -1,9 +1,11 @@
 #include "tiki/framework/baseapplication.hpp"
 
 #include "tiki/base/timer.hpp"
+#include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/framework/frameworkfactories.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/io/gamebuildfilesystem.hpp"
 #include "tiki/resource/resourcemanager.hpp"
@@ -23,9 +25,11 @@ namespace tiki
 		ResourceManager		resourceManager;
 		FrameworkFactories	resourceFactories;
 
+		ImmediateRenderer	immediateRenderer;
 		UiSystem			uiSystem;
 
 		Timer				frameTimer;
+
 	};
 
 	BaseApplication::BaseApplication()
@@ -95,6 +99,11 @@ namespace tiki
 	const Timer& BaseApplication::getFrameTimer() const
 	{
 		return m_pBaseData->frameTimer;
+	}
+
+	const ImmediateRenderer& BaseApplication::getImmediateRenderer() const
+	{
+		return m_pBaseData->immediateRenderer;
 	}
 
 	bool BaseApplication::initialize()
@@ -190,6 +199,15 @@ namespace tiki
 			return false;
 		}
 
+		if( !m_pBaseData->immediateRenderer.create( m_pBaseData->graphicSystem, m_pBaseData->resourceManager ) )
+		{
+			TIKI_TRACE_ERROR( "[BaseApplication] Could not create ImmediateRenderer.\n" );
+			return false;
+		}
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		debugrenderer::initialize( m_pBaseData->resourceManager );
+#endif
+
 		UiSystemParameters uiParams;
 		uiParams.width	= graphicsParams.backBufferWidth;
 		uiParams.height	= graphicsParams.backBufferHeight;
@@ -207,6 +225,11 @@ namespace tiki
 
 	void BaseApplication::shutdownFramework()
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		debugrenderer::shutdown( m_pBaseData->resourceManager );
+#endif
+
+		m_pBaseData->immediateRenderer.dispose( m_pBaseData->graphicSystem, m_pBaseData->resourceManager );
 		m_pBaseData->uiSystem.dispose( m_pBaseData->graphicSystem, m_pBaseData->resourceManager );
 		m_pBaseData->inputSystem.dispose();
 		m_pBaseData->graphicSystem.dispose();
@@ -281,11 +304,13 @@ namespace tiki
 		if ( m_running )
 		{
 			GraphicsContext& graphicsContext = m_pBaseData->graphicSystem.beginFrame();
+			m_pBaseData->immediateRenderer.beginRendering( graphicsContext );
 
 			renderApplication( graphicsContext );
 
 			m_pBaseData->uiSystem.render( graphicsContext, graphicsContext.getBackBuffer() );
 
+			m_pBaseData->immediateRenderer.endRendering();
 			m_pBaseData->graphicSystem.endFrame();
 		}
 

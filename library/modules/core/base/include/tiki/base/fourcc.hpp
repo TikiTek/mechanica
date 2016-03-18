@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE fourcc makeFourcc( cstring pString )
+	TIKI_FORCE_INLINE fourcc makeFourcc( const char* pString )
 	{
 		return ((const fourcc*)pString)[ 0u ];
 	}

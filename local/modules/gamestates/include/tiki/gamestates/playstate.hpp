@@ -4,7 +4,6 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
-#include "tiki/gameplay/gameclient.hpp"
 #include "tiki/gameplay/gamesession.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/renderer/postbloom.hpp"
@@ -52,7 +51,6 @@ namespace tiki
 		ImmediateRenderer			m_immediateRenderer;
 		PostProcessBloom			m_bloom;
 
-		GameClient					m_gameClient;
 		GameSession					m_gameSession;
 
 	};

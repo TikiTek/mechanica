@@ -105,6 +105,8 @@ namespace tiki
 
 		UiRenderData renderData( m_pRootElement->m_children );
 		m_renderer.update( renderData );
+
+		m_prevInputState = m_currentInputState;
 	}
 
 	void UiSystem::render( GraphicsContext& context, const RenderTarget& renderTarget ) const
@@ -130,8 +132,31 @@ namespace tiki
 		switch( inputEvent.eventType )
 		{
 		case InputEventType_Mouse_Moved:
-			return m_pRootElement->checkMouseMoveEvent( vector::create( float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) ) );
-			break;
+			{
+				m_currentInputState.mousePosition =  vector::create( float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) );
+
+				bool result = false;
+				for( UiElement& child : m_pRootElement->m_children )
+				{
+					result |= child.checkMouseMoveEvent( m_currentInputState );
+				}
+
+				return result;
+			}
+			
+		case InputEventType_Controller_ButtonDown:
+		case InputEventType_Controller_ButtonUp:
+			{
+				m_currentInputState.mouseButtonState.state[ inputEvent.data.mouseButton.button ] = (inputEvent.eventType == InputEventType_Controller_ButtonDown);
+
+				bool result = false;
+				for( UiElement& child : m_pRootElement->m_children )
+				{
+					result |= child.checkMouseClickEvent( m_prevInputState, m_currentInputState );
+				}
+
+				return result;
+			}
 
 		default:
 			break;

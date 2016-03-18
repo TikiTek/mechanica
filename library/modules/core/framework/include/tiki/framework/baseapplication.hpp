@@ -7,9 +7,9 @@
 
 namespace tiki
 {
-	class FileSystem;
 	class GraphicsContext;
 	class GraphicsSystem;
+	class ImmediateRenderer;
 	class InputSystem;
 	class MainWindow;
 	class ResourceManager;
@@ -38,9 +38,9 @@ namespace tiki
 		bool					fullScreen;
 		GraphicsRendererMode	graphicsMode;
 
-		cstring					pWindowTitle;
+		const char*					pWindowTitle;
 
-		cstring					pGamebuildPath;
+		const char*					pGamebuildPath;
 	};
 
 	class BaseApplication
@@ -57,6 +57,7 @@ namespace tiki
 		InputSystem&					getIputSystem() const;
 		UiSystem&						getUiSystem() const;
 		const Timer&					getFrameTimer() const;
+		const ImmediateRenderer&		getImmediateRenderer() const;
 
 	protected:
 

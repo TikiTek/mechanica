@@ -33,7 +33,7 @@ namespace tiki
 		m_data.create( imageToCopy.m_data.getBegin(), imageToCopy.m_data.getCount() );
 	}
 
-	bool HdrImage::createFromFile( cstring pFileName )
+	bool HdrImage::createFromFile( const char* pFileName )
 	{
 		psd_context* pContext	= nullptr;
 		psd_status status		= psd_image_load( &pContext, (psd_char*)pFileName );

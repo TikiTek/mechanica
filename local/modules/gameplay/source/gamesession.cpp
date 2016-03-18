@@ -1,8 +1,6 @@
 
 #include "tiki/gameplay/gamesession.hpp"
 
-#include "tiki/base/debugprop.hpp"
-#include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/renderer/renderercontext.hpp"
@@ -10,27 +8,26 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameSession/UseFreeCamera", false );
 
 	GameSession::GameSession()
 	{
-		m_pGameClient		= nullptr;
 		m_playerEntityId	= InvalidEntityId;
 
 		m_pModelPlayer		= nullptr;
 		m_pModelTerrain		= nullptr;
+		m_pModelCoin		= nullptr;
 	}
 
 	GameSession::~GameSession()
 	{
-		TIKI_ASSERT( m_pGameClient == nullptr );
 	}
 
-	bool GameSession::create( GameClient& gameClient, ResourceManager& resourceManager )
+	bool GameSession::create( ResourceManager& resourceManager )
 	{
-		TIKI_ASSERT( m_pGameClient == nullptr );
-
-		m_pGameClient		= &gameClient;
+		if( !m_gameClient.create() )
+		{
+			return false;
+		}		
 
 		m_pModelPlayer		= resourceManager.loadResource< Model >( "spaceship.model" );
 		m_pModelTerrain		= resourceManager.loadResource< Model >( "plane.model" );
@@ -41,37 +38,23 @@ namespace tiki
 			return false;
 		}
 
-		m_planeEntityId		= m_pGameClient->createPlaneEntity( m_pModelTerrain, vector::create( 0.0f, 0.0f, 0.0f ) );
-		m_playerEntityId	= gameClient.createPlayerEntity( m_pModelPlayer, vector::create( 0.0f, 5.0f, 0.0f ) );
+		m_planeEntityId		= m_gameClient.createTerrainEntity( m_pModelTerrain, vector::create( 0.0f, 0.0f, 0.0f ) );
+		m_playerEntityId	= m_gameClient.createPlayerEntity( m_pModelPlayer, vector::create( 0.0f, 5.0f, 0.0f ) );
 		if ( m_planeEntityId == InvalidEntityId || m_playerEntityId == InvalidEntityId )
 		{
 			dispose( resourceManager );
 			return false;
 		}
 
-		m_gameCamera.create(
-			m_playerEntityId,
-			(TransformComponentState*)gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, gameClient.getTransformComponent().getTypeId() ),
-			gameClient.getTransformComponent()
-		);
-
-		m_freeCamera.create( Vector3::zero, Quaternion::identity );
-		m_freeCamera.setMouseControl( true );
-
 		return true;
 	}
 
 	void GameSession::dispose( ResourceManager& resourceManager )
 	{
-		TIKI_ASSERT( m_pGameClient != nullptr );
-
-		m_freeCamera.dispose();
-		m_gameCamera.dispose();
-		
-		m_pGameClient->disposeEntity( m_playerEntityId );
+		m_gameClient.disposeEntity( m_playerEntityId );
 		m_playerEntityId = InvalidEntityId;
 
-		m_pGameClient->disposeEntity( m_planeEntityId );
+		m_gameClient.disposeEntity( m_planeEntityId );
 		m_planeEntityId = InvalidEntityId;
 
 		resourceManager.unloadResource( m_pModelPlayer );
@@ -81,33 +64,30 @@ namespace tiki
 		m_pModelTerrain		= nullptr;
 		m_pModelCoin		= nullptr;
 
-		m_pGameClient = nullptr;
+		m_gameClient.dispose();
 	}
 
 	void GameSession::update( FrameData& frameData, float timeDelta, float totalGameTime )
 	{
-		if ( s_useFreeCamera )
-		{
-			m_freeCamera.update( frameData.mainCamera, timeDelta );
-		}
-		else
-		{
-			m_gameCamera.update( frameData.mainCamera );
-		}
+		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
+
+		GameClientUpdateContext gameClientUpdateContext;
+		gameClientUpdateContext.timeDelta		= timeDelta;
+		gameClientUpdateContext.totalGameTime	= totalGameTime;
+		gameClientUpdateContext.pPlayerCollider	= &m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState );
+		gameClientUpdateContext.pTerrainState	= (const TerrainComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_planeEntityId, m_gameClient.getTerrainComponent().getTypeId() );
+		gameClientUpdateContext.pFrameData		= &frameData;
+
+		m_gameClient.update( gameClientUpdateContext );
 	}
 
-	void GameSession::render() const
+	void GameSession::render( GameRenderer& gameRenderer ) const
 	{
-		// remove this?
+		m_gameClient.render( gameRenderer );
 	}
 
 	bool GameSession::processInputEvent( const InputEvent& inputEvent )
 	{
-		if ( s_useFreeCamera )
-		{
-			return m_freeCamera.processInputEvent( inputEvent );
-		}
-
-		return false;
+		return m_gameClient.processInputEvent( inputEvent );
 	}
 }
