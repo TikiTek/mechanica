@@ -133,6 +133,35 @@ function table.index_of( table, object )
 	return result;	
 end
 
+function table.containsValue( table2, value )
+	if type( table2 ) ~= "table" then
+		throw( "not a table" );
+	end
+	
+	local count = #table2;
+	for i = 0,count do
+		if table2[ i ] == value then
+			return true;
+		end
+	end
+	
+	return false
+end
+
+function table.removeValue( table2, value )
+	if type( table2 ) ~= "table" then
+		throw( "not a table" );
+	end
+	
+	local count = #table2;
+	for i = 0,count do
+		if table2[ i ] == value then
+			table.remove(table2, i );
+			break;
+		end
+	end
+end
+
 function copy_instance( target, source )
 	for name,value in pairs( source ) do		
 		if ( type( value ) == "table" and name ~= "__index" ) then
