@@ -165,7 +165,7 @@ namespace tiki
 				TIKI_VERIFY( m_gameClient.create() );
 
 				m_boxesEntityId		= m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
-				m_planeEntityId		= m_gameClient.createPlaneEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
+				m_planeEntityId		= m_gameClient.createTerrainEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
 
 				return TransitionState_Finish;
 			}
@@ -322,7 +322,7 @@ namespace tiki
 	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
+		const ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
 
 		//Matrix44 matrices[ 256u ];
 		////AnimationJoint::fillJointArrayFromHierarchy( m_animationData.getData(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy() );
@@ -344,7 +344,6 @@ namespace tiki
 
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
 
-		immediateRenderer.beginRendering( graphicsContext );
 		immediateRenderer.beginRenderPass();
 
 		if ( m_gbufferIndex != -1 )
@@ -377,11 +376,10 @@ namespace tiki
 		immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
 
 		immediateRenderer.endRenderPass();
-		immediateRenderer.endRendering();
 
 		if ( m_enablePhysicsDebug )
 		{
-			m_gameClient.getPhysicsWorld().renderDebug( graphicsContext, immediateRenderer, graphicsContext.getBackBuffer(), m_pGameRenderer->getFrameData().mainCamera );
+			m_gameClient.getPhysicsWorld().renderDebug();
 		}
 #endif
 	}

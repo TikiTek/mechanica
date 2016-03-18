@@ -1,15 +1,19 @@
 
 #include "tiki/gameplay/gameclient.hpp"
 
+#include "tiki/base/debugprop.hpp"
 #include "tiki/components/entitytemplate.hpp"
 #include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/renderer/renderercontext.hpp"
 
 #include "components.hpp"
 #include "gamecomponents.hpp"
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", false );
+
 	bool GameClient::create()
 	{
 		EntitySystemParameters entitySystemParams;
@@ -39,6 +43,9 @@ namespace tiki
 		TIKI_VERIFY( m_transformComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
 
+		TIKI_VERIFY( m_terrainComponent.create( m_transformComponent ) );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_terrainComponent ) );
+
 		TIKI_VERIFY( m_staticModelComponent.create( m_transformComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_staticModelComponent ) );
 
@@ -63,12 +70,23 @@ namespace tiki
 		TIKI_VERIFY( m_coinComponent.create( m_transformComponent, m_physicsBodyComponent, m_lifeTimeComponent, m_physicsWorld ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_coinComponent ) );
 
+		m_gameCamera.create(
+			m_terrainComponent,
+			vector::create( 0.0f, 5.0f, 0.0f )
+		);
+
+		m_freeCamera.create( Vector3::zero, Quaternion::identity );
+		m_freeCamera.setMouseControl( true );
+		
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
 		m_entitySystem.update(); // to dispose all entities
+
+		m_freeCamera.dispose();
+		m_gameCamera.dispose();
 
 		m_entitySystem.unregisterComponentType( &m_coinComponent );
 		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
@@ -78,6 +96,7 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
 		m_entitySystem.unregisterComponentType( &m_skinnedModelComponent );
 		m_entitySystem.unregisterComponentType( &m_staticModelComponent );
+		m_entitySystem.unregisterComponentType( &m_terrainComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
 		m_coinComponent.dispose();
@@ -88,6 +107,7 @@ namespace tiki
 		m_physicsBodyComponent.dispose();
 		m_skinnedModelComponent.dispose();
 		m_staticModelComponent.dispose();
+		m_terrainComponent.dispose();
 		m_transformComponent.dispose();
 
 		m_physicsWorld.dispose();
@@ -231,15 +251,15 @@ namespace tiki
 		return result;
 	}
 
-	EntityId GameClient::createPlaneEntity( const Model* pModel, const Vector3& position )
+	EntityId GameClient::createTerrainEntity( const Model* pModel, const Vector3& position )
 	{
 		TransformComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
 
-		StaticModelComponentInitData modelInitData;
-		modelInitData.model = pModel;
+		TerrainComponentInitData terrainInitData;
+		terrainInitData.model = pModel;
 
 		PhysicsColliderComponentInitData colliderInitData;
 		createFloat3( colliderInitData.position, position.x, position.y + 0.005f, position.z );
@@ -250,7 +270,7 @@ namespace tiki
 		{
 			{ m_transformComponent.getTypeCrc(), &transformInitData },
 			{ m_physicsColliderComponent.getTypeCrc(), &colliderInitData },
-			{ m_staticModelComponent.getTypeCrc(), &modelInitData }
+			{ m_terrainComponent.getTypeCrc(), &terrainInitData }
 		};
 
 		EntityTemplate entityTemplate;
@@ -276,21 +296,36 @@ namespace tiki
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
-		m_playerControlComponent.update( updateContext.timeDelta );
+		m_playerControlComponent.update( m_gameCamera, updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 		m_coinComponent.update( updateContext.pPlayerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
 
 		m_transformComponent.update();
+
+		if( s_useFreeCamera )
+		{
+			m_freeCamera.update( updateContext.pFrameData->mainCamera, updateContext.timeDelta );
+		}
+		else
+		{
+			m_gameCamera.update( updateContext.pFrameData->mainCamera, updateContext.pTerrainState, updateContext.timeDelta );
+		}
 	}
 
-	void GameClient::render( GameRenderer& gameRenderer )
+	void GameClient::render( GameRenderer& gameRenderer ) const
 	{
 		m_staticModelComponent.render( gameRenderer );
 		m_skinnedModelComponent.render( gameRenderer );
+		m_terrainComponent.render( gameRenderer );
 	}
 	
 	bool GameClient::processInputEvent( const InputEvent& inputEvent )
 	{
+		if( s_useFreeCamera )
+		{
+			return m_freeCamera.processInputEvent( inputEvent );
+		}
+
 		if ( m_playerControlComponent.processInputEvent( inputEvent ) )
 		{
 			return true;

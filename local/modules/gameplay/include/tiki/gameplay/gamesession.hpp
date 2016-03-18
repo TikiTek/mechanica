@@ -5,16 +5,17 @@
 #include "tiki/base/types.hpp"
 #include "tiki/components/component_types.hpp"
 #include "tiki/container/fixedsizedarray.hpp"
-#include "tiki/gameplay/gamecamera.hpp"
+#include "tiki/gameplay/gameclient.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
 	class GameClient;
+	class GameRenderer;
 	class Model;
 	class ResourceManager;
 	struct FrameData;
+	struct InputEvent;
 	struct TransformComponentState;
 
 	class GameSession
@@ -26,11 +27,11 @@ namespace tiki
 		GameSession();
 		~GameSession();
 
-		bool		create( GameClient& gameClient, ResourceManager& resourceManager );
+		bool		create( ResourceManager& resourceManager );
 		void		dispose( ResourceManager& resourceManager );
 
 		void		update( FrameData& frameData, float timeDelta, float totalGameTime );
-		void		render() const;
+		void		render( GameRenderer& gameRenderer ) const;
 
 		bool		processInputEvent( const InputEvent& inputEvent );
 
@@ -38,11 +39,7 @@ namespace tiki
 
 	private:
 
-		GameClient*					m_pGameClient;
-		
-		bool						m_useFreeCamera;
-		GameCamera					m_gameCamera;
-		FreeCamera					m_freeCamera;
+		GameClient					m_gameClient;
 
 		EntityId					m_playerEntityId;
 		TransformComponentState*	m_pPlayerTransformState;
