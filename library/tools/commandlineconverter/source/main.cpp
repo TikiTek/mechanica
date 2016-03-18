@@ -14,6 +14,20 @@ int tiki::mainEntryPoint()
 		parameters.outputPath	= "../../../../../../gamebuild";
 		parameters.forceRebuild	= platform::hasArgument( "--rebuild" );
 
+		for( uint i = 0u; i < platform::getArguments().getCount(); ++i )
+		{
+			const string arg = platform::getArguments()[ i ];
+
+			if( arg.startsWith( "--content-dir=" ) )
+			{
+				parameters.sourcePath = arg.subString( getStringSize( "--content-dir=" ) );
+			}
+			else if( arg.startsWith( "--target-dir=" ) )
+			{
+				parameters.outputPath = arg.subString( getStringSize( "--target-dir=" ) );
+			}
+		}
+
 		IAssetConverter* pConverter = createAssetConverter();
 		pConverter->create( parameters );
 

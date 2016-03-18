@@ -46,7 +46,7 @@ namespace tiki
 		features.add( feature );
 	}
 
-	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const const char** pShaderTypes, uint typeCount, const string& featuresLine )
+	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const char** pShaderTypes, uint typeCount, const string& featuresLine )
 	{
 		for (uint i = 0u; i < typeCount; ++i)
 		{
@@ -178,7 +178,7 @@ namespace tiki
 			return;
 		}
 
-		const const char* shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
+		const char* shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
 		bool shaderEnabled[ TIKI_COUNT( shaderStart ) ];
 		List< ShaderFeature > shaderFeatures[ TIKI_COUNT( shaderStart ) ];
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( shaderStart ) == ShaderType_Count );

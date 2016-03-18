@@ -7,6 +7,7 @@
 
 namespace tiki
 {
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	PhysicsDebugDraw::PhysicsDebugDraw()
 	{
 		m_debugMode = btIDebugDraw::DBG_NoDebug;
@@ -86,4 +87,5 @@ namespace tiki
 	void PhysicsDebugDraw::draw3dText( const btVector3& /*location*/, const char* /*textString*/ )
 	{
 	}
+#endif
 }

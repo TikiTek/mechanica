@@ -6,6 +6,8 @@
 
 #include "tiki/base/types.hpp"
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+
 namespace tiki
 {
 	class PhysicsDebugDraw : public btIDebugDraw
@@ -39,5 +41,7 @@ namespace tiki
 
 	};
 }
+
+#endif
 
 #endif // __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__

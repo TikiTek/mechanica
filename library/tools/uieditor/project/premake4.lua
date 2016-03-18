@@ -2,4 +2,4 @@
 
 include "../../../buildtools/base_scripts"
 
-finalize( "tiki3uieditor", { find_project( "uieditor" ) } );
+finalize( "uieditor", { find_project( "uieditor" ) } );

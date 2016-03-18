@@ -2,4 +2,4 @@
 
 include "../../../buildtools/base_scripts"
 
-finalize( "tiki3genericdatacodegenerator", { find_project( "genericdatacodegenerator" ) } );
+finalize( "genericdatacodegenerator", { find_project( "genericdatacodegenerator" ) } );

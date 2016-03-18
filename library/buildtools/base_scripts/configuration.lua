@@ -56,7 +56,17 @@ function Configuration:apply( shader_dirs, binary_dirs, binary_files )
 			--print( k.."="..v );
 		end
 	end
+	
+	if table.containsValue(self.flags, 'NoRTTI') then
+		rtti 'Off'
+		table.removeValue(self.flags, 'NoRTTI')
+	end
 
+	if table.containsValue(self.flags, 'NoExceptions') then
+		exceptionhandling 'Off'
+		table.removeValue(self.flags, 'NoExceptions')
+	end
+	
 	flags( self.flags );
 
 	includedirs( self.include_dirs );
