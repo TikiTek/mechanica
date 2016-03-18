@@ -1,28 +1,70 @@
 -- local/mastering/premake.lua
 
+local currentDir = os.getcwd();
+local baseDir = "../../..";
+local converterDir = path.join(baseDir, "library/tools/commandlineconverter");
+local gameDir = path.join(baseDir, "local/game");
+local gamebuildDir = path.join(baseDir, "gamebuild");
+
+function getOutputDir()
+	return path.getabsolute('output', '.');
+end
+	
+function cleanUp()
+	os.rmdir(getOutputDir());
+end
+
+function buildProject(projectPath)
+	print('Building ' .. path.getname(projectPath) .. '...');
+	os.chdir(projectPath);
+	os.execute('create_visualstudio.cmd');
+	create_project = path.getabsolute(path.join(projectPath, 'create_visualstudio.cmd'), currentDir)
+	print(create_project);
+end
+
+function buildGame()
+	buildProject(gameDir);
+end
+
+function buildAssets()
+	buildProject(converterDir);
+
+	print('Building assets...');
+	
+end
+
+function buildSetup()
+	
+end
+
+function buildIso()
+	
+end
+
 newaction {
     trigger = "master",
     description = "Generates an final Version",
 
-    onStart = function()
-        print("Starting Lua generation")
+    onStart = function()        
     end,
 
     onWorkspace = function(wks)
-        printf("Generating Lua for workspace '%s'", wks.name)
     end,
 
     onProject = function(prj)
-        printf("Generating Lua for project '%s'", prj.name)
     end,
 
     execute = function()
-        print("Executing Lua action")
+		cleanUp();
+		buildGame();
+		buildAssets();
+		buildSetup();
+		buildIso();
     end,
 
     onEnd = function()
-        print("Lua generation complete")
     end
+	
 }
 
 
@@ -46,9 +88,6 @@ using System.Diagnostics;
 
 public static class MasteringScript
 {
-	private static string _codeDir = @"..\..\";
-	private static string _binaryDir = @"..\..\..\binary\";
-	private static string _gamebuildDir = @"..\..\..\gamebuild\";
 
 	private static string _cmakeExe = @"..\..\library\buildtools\cmake\bin\cmake.exe";
 
