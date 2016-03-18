@@ -1,36 +1,109 @@
--- local/mastering/premake.lua
+-- local/mastering/premake5.lua
 
 local currentDir = os.getcwd();
 local baseDir = "../../..";
-local converterDir = path.join(baseDir, "library/tools/commandlineconverter");
-local gameDir = path.join(baseDir, "local/game");
-local gamebuildDir = path.join(baseDir, "gamebuild");
+local converterDir = path.getabsolute(path.join(baseDir, "library/tools/commandlineconverter"), currentDir);
+local gameDir = path.getabsolute(path.join(baseDir, "local/game"), currentDir);
+local gamebuildDir = path.getabsolute(path.join(baseDir, "gamebuild"), currentDir);
+local contentDir = path.getabsolute(path.join(baseDir, "content"), currentDir);
 
-function getOutputDir()
-	return path.getabsolute('output', '.');
-end
+local outputDir = path.getabsolute('../output', currentDir);
+local logFilename = path.join(outputDir, 'master.log');
+
+local msBuildPath = nil;
+
+local logFile = nil;
+
+function l(message, notPrint)
+	logFile:write(message .. "\n");
 	
-function cleanUp()
-	os.rmdir(getOutputDir());
+	if not notPrint then
+		print(message);
+	end
 end
 
-function buildProject(projectPath)
-	print('Building ' .. path.getname(projectPath) .. '...');
+function throw( text )
+	l( "Exception: " .. text );
+	l( debug.traceback() );
+	error();
+end
+
+function iff( expr, when_true, when_false )
+	if expr then
+		return when_true
+	else
+		return when_false
+	end
+end
+
+function cleanUp()
+	l('Clean up ' .. outputDir .. '...');
+	os.rmdir(outputDir);
+	os.mkdir(outputDir);
+end
+
+function buildProject(projectPath, config)
+	local projectName = path.getname(projectPath);
+	l('Generate ' .. projectName .. '...');
+	
 	os.chdir(projectPath);
-	os.execute('create_visualstudio.cmd');
-	create_project = path.getabsolute(path.join(projectPath, 'create_visualstudio.cmd'), currentDir)
-	print(create_project);
+	local createProcess = io.popen('create_visualstudio.cmd');
+	local createProcessOutput = createProcess:read('*a');
+	local createProcessResult = createProcess:close();
+	
+	l(createProcessOutput, true);
+
+	if not createProcessResult then
+		throw('Generation failed!');
+	end
+	
+	l('Building ' .. projectName .. '...');
+	
+	local projectFile = path.join(projectPath, 'build', projectName .. '.sln');
+	local msBuildCommandLine = string.format(
+		[[""%s" /property:Configuration=%s /property:Platform=x64 /verbosity:m /nologo "%s""]],
+		msBuildPath,
+		config,
+		string.gsub(projectFile, '/', "\\")		
+	);
+	
+	local buildProcess = io.popen(msBuildCommandLine);
+	local buildProcessOutput = buildProcess:read('*a');
+	local buildProcessResult = buildProcess:close();
+
+	l(buildProcessOutput, true);
+	
+	if not buildProcessResult then
+		throw('Build failed!');
+	end
+	
+	return string.match(buildProcessOutput, '-> ([a-zA-Z]:[a-zA-Z0-9\\/.-_ \(\)]+.exe)');
 end
 
 function buildGame()
-	buildProject(gameDir);
+	buildProject(gameDir, 'Master');
 end
 
 function buildAssets()
-	buildProject(converterDir);
+	local converterExe = buildProject(converterDir, 'Release');
 
-	print('Building assets...');
+	l('Building assets...');
+	local converterCommandLine = string.format(
+		[[""%s" --content-dir=%s --target-dir=%s"]],
+		converterExe,
+		contentDir,
+		gamebuildDir
+	);
+		
+	local buildProcess = io.popen(converterCommandLine);
+	local buildProcessOutput = buildProcess:read('*a');
+	local buildProcessResult = buildProcess:close();
+
+	l(buildProcessOutput, true);
 	
+	if not buildProcessResult then
+		throw('Build failed!');
+	end
 end
 
 function buildSetup()
@@ -46,6 +119,18 @@ newaction {
     description = "Generates an final Version",
 
     onStart = function()        
+		logFile = io.open(logFilename, "w+");
+		
+		local msBuildPlatform = iif(os.is64bit(), '/reg:64', '/reg:32');
+		local msBuildCommand = 'reg.exe query "HKLM\\SOFTWARE\\Microsoft\\MSBuild\\ToolsVersions\\14.0" /v MSBuildToolsPath ' .. msBuildPlatform
+		local msBuildReg = io.popen(msBuildCommand);
+		local msBuildResult = msBuildReg:read('*a');
+		msBuildReg:close();
+		
+		msBuildPath = string.match(msBuildResult, "([a-zA-Z]:[a-zA-Z0-9\\/.-_ \(\)]+)");
+		msBuildPath = string.gsub(msBuildPath, "\\", '/');
+		msBuildPath = path.join(msBuildPath, 'MSBuild.exe');
+		msBuildPath = string.gsub(msBuildPath, '/', "\\");
     end,
 
     onWorkspace = function(wks)
@@ -63,6 +148,7 @@ newaction {
     end,
 
     onEnd = function()
+		logFile:close();
     end
 	
 }

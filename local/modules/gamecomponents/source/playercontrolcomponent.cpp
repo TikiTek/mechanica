@@ -62,7 +62,9 @@ namespace tiki
 
 	void PlayerControlComponent::update( const GameCamera& gameCamera, float timeDelta )
 	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		debugrenderer::drawLine( vector::create( 0.0f, 5.0f, -100.0f ), vector::create( 0.0f, 5.0f, 100.0f ), TIKI_COLOR_RED );
+#endif
 
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;

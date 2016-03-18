@@ -12,4 +12,4 @@ if use_msvc then
 	projects[#projects+1] = find_project( "webinterfacelibrary" );
 end
 
-finalize( "tiki3game",  projects );
+finalize( "game",  projects );
