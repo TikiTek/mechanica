@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	class GameRenderer;
+	class RenderScene;
 	class TransformComponent;
 	struct SkinnedModelComponentInitData;
 	struct SkinnedModelComponentState;
@@ -25,7 +25,7 @@ namespace tiki
 		bool					create( TransformComponent& transformComponent );
 		void					dispose();
 
-		void					render( GameRenderer& gameRenderer ) const;
+		void					render( RenderScene& scene ) const;
 
 		virtual crc32			getTypeCrc() const;
 		virtual uint32			getStateSize() const;

@@ -46,11 +46,10 @@ namespace tiki
 
 	class Frustum
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Frustum );
-
 	public:
 
 		void					create( const Matrix44& viewProjection );
+		void					create( const Vector3 aCorners[ FrustumCorner_Count ] );
 
 		FrustumIntersectionType	testIntersectionPoint( const Vector3& point ) const;
 		//FrustumIntersectionType	testIntersectionBoundingBox( const BoundingBox& box ) const;

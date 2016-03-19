@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	class GameRenderer;
+	class RenderScene;
 	class TransformComponent;
 	struct TerrainComponentInitData;
 	struct TerrainComponentState;
@@ -24,7 +24,7 @@ namespace tiki
 		bool				create( TransformComponent& transformComponent );
 		void				dispose();
 
-		void				render( GameRenderer& gameRenderer ) const;
+		void				render( RenderScene& scene ) const;
 
 		float				getHeightAtPosition( const TerrainComponentState* pComponentState, const Vector2& position ) const;
 

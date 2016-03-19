@@ -129,4 +129,9 @@ namespace tiki
 	{		
 		m_stateTree.startTransition( stateIndex );
 	}
+
+	bool GameFlowSystem::isInState( int stateIndex ) const
+	{
+		return m_stateTree.getCurrentState() == stateIndex;
+	}
 }

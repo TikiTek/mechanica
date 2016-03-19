@@ -15,8 +15,6 @@ namespace tiki
 
 	class Plane
 	{
-		TIKI_NONCOPYABLE_CLASS( Plane );
-
 	public:
 
 					Plane();

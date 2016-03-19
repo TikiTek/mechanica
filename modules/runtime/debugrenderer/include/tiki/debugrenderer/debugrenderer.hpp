@@ -8,6 +8,7 @@ namespace tiki
 {
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	class Camera;
+	class Frustum;
 	class ImmediateRenderer;
 	class RenderTarget;
 	class ResourceManager;
@@ -31,6 +32,7 @@ namespace tiki
 		void	drawLineGrid( float gridSpacing = 5.0f, float gridSize = 10.0f, Color color = TIKI_COLOR_WHITE );
 		void	drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color = TIKI_COLOR_WHITE );
 		void	drawLineSphere( const Vector3& center, float radius, Color color = TIKI_COLOR_WHITE );
+		void	drawLineFrustum( const Frustum& frustum, Color color = TIKI_COLOR_WHITE );
 
 		void	drawSolidBox( const Box& box, Color color = TIKI_COLOR_WHITE );
 		void	drawSolidAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix );

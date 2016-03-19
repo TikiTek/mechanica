@@ -45,7 +45,7 @@ namespace tiki
 		m_transformTypeId = InvalidComponentTypeId;
 	}
 
-	void SkinnedModelComponent::render( GameRenderer& gameRenderer ) const
+	void SkinnedModelComponent::render( RenderScene& scene ) const
 	{
 	}
 

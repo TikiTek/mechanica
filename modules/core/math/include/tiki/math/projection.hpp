@@ -19,14 +19,17 @@ namespace tiki
 	{
 	public:
 
-		void			createPerspective( float aspectRatio, float fieldOfView, float nearPlane, float farPlane );
+		void			createPerspective( float width, float height, float fieldOfView, float nearPlane, float farPlane );
 		void			createOrthographic( float width, float height, float nearPlane, float farPlane );
 		void			createOrthographicCenter( float width, float height, float nearPlane, float farPlane );
 
-		const Matrix44&	getMatrix() const { return m_matrix; }
+		const Matrix44&	getMatrix() const		{ return m_matrix; }
 
-		float			getNearPlane() const { return m_nearPlane; }
-		float			getFarPlane() const { return m_farPlane; }
+		float			getNearPlane() const	{ return m_nearPlane; }
+		float			getFarPlane() const		{ return m_farPlane; }
+		float			getWidth() const		{ return m_width; }
+		float			getHeight() const		{ return m_height; }
+		float			getFieldOfView() const	{ return m_fieldOfView; }
 
 	private:
 
@@ -35,20 +38,9 @@ namespace tiki
 		ProjectionType	m_type;
 		float			m_nearPlane;
 		float			m_farPlane;
-
-		union 
-		{
-			struct
-			{
-				float			width;
-				float			height;
-			} m_orthographicData;
-			struct
-			{
-				float			aspectRatio;
-				float			fieldOfView;
-			} m_perspectiveData;
-		};
+		float			m_width;
+		float			m_height;
+		float			m_fieldOfView;
 
 		void			createMatrix();
 
