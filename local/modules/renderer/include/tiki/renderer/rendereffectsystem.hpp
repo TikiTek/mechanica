@@ -13,8 +13,8 @@ namespace tiki
 	class GraphicsSystem;
 	class RenderBatch;
 	class RenderEffect;
+	class RenderView;
 	class ResourceRequestPool;
-	struct FrameData;
 	struct RendererContext;
 
 	class RenderEffectSystem
@@ -23,25 +23,22 @@ namespace tiki
 
 	public:
 
-		RenderEffectSystem();
-		~RenderEffectSystem();
+						RenderEffectSystem();
+						~RenderEffectSystem();
 
-		bool			create( const RendererContext& rendererContext );
+		bool			create();
 		bool			createShaderResourcees( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool );
 		void			dispose();
 
 		void			registerRenderEffect( RenderEffect* pRenderEffect );
 		void			unregisterRenderEffect( RenderEffect* pRenderEffect );
 
-		void			setFrameData( const FrameData& frameData );
-		void			render( GraphicsContext& graphicsContext, RenderPass pass, const RenderBatch& batch ) const;
+		void			renderView( GraphicsContext& graphicsContext, const RendererContext& context, const RenderView& view, RenderPass pass ) const;
 
 	private:
 
 		typedef	FixedArray< RenderEffect*, RenderEffectId_Count > RenderEffectArray;
 		
-		const RendererContext*	m_pRendererContext;
-
 		RenderEffectArray		m_effects;
 
 	};

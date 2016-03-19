@@ -2,20 +2,27 @@
 #include "tiki/gamecomponents/playercontrolcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
+#include "tiki/base/debugprop.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
+#include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/input/inputevent.hpp"
+#include "tiki/math/camera.hpp"
+#include "tiki/math/intersection.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/quaternion.hpp"
+#include "tiki/math/ray.hpp"
 #include "tiki/math/vector.hpp"
 
 #include "gamecomponents.hpp"
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_FLOAT( s_controlBorder, "GameComponents/PlayerControlBorder", 0.0f, 0.0f, 300.0f );
+
     struct PhysicsCharacterControllerComponentState;
 
 	struct PlayerControlComponentState : public ComponentState
@@ -60,10 +67,64 @@ namespace tiki
 		m_pPhysicsCharacterControllerComponent		= nullptr;
 	}
 
-	void PlayerControlComponent::update( const GameCamera& gameCamera, float timeDelta )
+	void PlayerControlComponent::update( const GameCamera& gameCamera, const Camera& camera, float timeDelta )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		debugrenderer::drawLine( vector::create( 0.0f, 5.0f, -100.0f ), vector::create( 0.0f, 5.0f, 100.0f ), TIKI_COLOR_RED );
+		const float nearPlane = camera.getProjection().getNearPlane();
+		const float farPlane = camera.getProjection().getFarPlane();
+		const float width = camera.getProjection().getWidth();
+		const float height = camera.getProjection().getHeight();
+		const Matrix44& viewProjection = camera.getViewProjectionMatrix();
+		const Vector3& cameraPosition = gameCamera.getCameraPosition();
+
+		const float left = s_controlBorder;
+		const float right = width - s_controlBorder;
+		const float top = s_controlBorder;
+		const float bottom = height - s_controlBorder;
+
+		Plane plane;
+		plane.create( Vector3::zero, Vector3::unitY );
+
+		Vector3 topLeft = vector::create( left, top, 1.0f );
+		Vector3 topRight = vector::create( right, top, 1.0f );
+		Vector3 bottomLeft = vector::create( left, bottom, 1.0f );
+		Vector3 bottomRight = vector::create( right, bottom, 1.0f );
+		Ray rayTopLeft;
+		Ray rayTopRight;
+		Ray rayBottomLeft;
+		Ray rayBottomRight;
+		camera.getCameraRay( rayTopLeft, left, top, width, height );
+		camera.getCameraRay( rayTopRight, right, top, width, height );
+		camera.getCameraRay( rayBottomLeft, left, bottom, width, height );
+		camera.getCameraRay( rayBottomRight, right, bottom, width, height );
+
+		intersection::intersectRayPlane( rayTopLeft, plane, topLeft );
+		intersection::intersectRayPlane( rayTopRight, plane, topRight );
+		intersection::intersectRayPlane( rayBottomLeft, plane, bottomLeft );
+		intersection::intersectRayPlane( rayBottomRight, plane, bottomRight );
+		//vector::add( topLeft, cameraPosition );
+		//vector::add( topRight, cameraPosition );
+		//vector::add( bottomLeft, cameraPosition );
+		//vector::add( bottomRight, cameraPosition );
+
+		debugrenderer::drawLineFrustum( camera.getFrustum() );
+
+		debugrenderer::drawLine( topLeft, topRight, TIKI_COLOR_RED );
+		debugrenderer::drawLine( topLeft, bottomLeft, TIKI_COLOR_RED );
+		debugrenderer::drawLine( bottomLeft, bottomRight, TIKI_COLOR_RED );
+		debugrenderer::drawLine( topRight, bottomRight, TIKI_COLOR_RED );
+
+		//const Vector3& camersPos = gameCamera.getCameraPosition();
+		//
+		//const float left = camersPos.x - 5.0f;
+		//const float right = camersPos.x + 5.0f;
+		//const float top = camersPos.z + 20.0f;
+		//const float bottom = camersPos.z + 5.0f;
+		//
+		//debugrenderer::drawLine( vector::create( left, 5.0f, top ), vector::create( right, 5.0f, top ), TIKI_COLOR_RED );
+		//debugrenderer::drawLine( vector::create( left, 5.0f, top ), vector::create( left, 5.0f, bottom ), TIKI_COLOR_RED );
+		//debugrenderer::drawLine( vector::create( left, 5.0f, bottom ), vector::create( right, 5.0f, bottom ), TIKI_COLOR_RED );
+		//debugrenderer::drawLine( vector::create( right, 5.0f, top ), vector::create( right, 5.0f, bottom ), TIKI_COLOR_RED );
 #endif
 
 		Iterator componentStates = getIterator();

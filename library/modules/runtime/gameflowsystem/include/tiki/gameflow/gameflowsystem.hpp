@@ -42,7 +42,7 @@ namespace tiki
 
 		void				startTransition( int stateIndex );
 
-		const StateTree&	getStateTree() const	{ return m_stateTree; }
+		bool				isInState( int stateIndex ) const;
 
 		bool				isInTransition() const	{ return m_stateTree.isInTransition(); }
 		uint				getCurrentState() const	{ return m_stateTree.getCurrentState(); }

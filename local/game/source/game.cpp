@@ -1,4 +1,3 @@
-
 #include "tiki/game/game.hpp"
 
 #include "tiki/base/timer.hpp"
@@ -10,6 +9,7 @@
 #include "tiki/gamestates/menustate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
+#include "tiki/renderer/renderview.hpp"
 
 namespace tiki
 {
@@ -170,7 +170,10 @@ namespace tiki
 		m_touchSystem.render( getImmediateRenderer() );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getGameRenderer().getFrameData().mainCamera );
+		if( m_gameFlow.isInState( GameStates_Play ) )
+		{
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->playState.getRenderView().getCamera() );
+		}
 #endif
 	}
 

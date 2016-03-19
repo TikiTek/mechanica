@@ -8,7 +8,6 @@
 
 namespace tiki
 {
-
 	GameSession::GameSession()
 	{
 		m_playerEntityId	= InvalidEntityId;
@@ -67,7 +66,7 @@ namespace tiki
 		m_gameClient.dispose();
 	}
 
-	void GameSession::update( FrameData& frameData, float timeDelta, float totalGameTime )
+	void GameSession::update( float timeDelta, float totalGameTime )
 	{
 		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
 
@@ -76,14 +75,13 @@ namespace tiki
 		gameClientUpdateContext.totalGameTime	= totalGameTime;
 		gameClientUpdateContext.pPlayerCollider	= &m_gameClient.getPhysicsCharacterControllerComponent().getPhysicsObject( pPlayerControllerState );
 		gameClientUpdateContext.pTerrainState	= (const TerrainComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_planeEntityId, m_gameClient.getTerrainComponent().getTypeId() );
-		gameClientUpdateContext.pFrameData		= &frameData;
 
 		m_gameClient.update( gameClientUpdateContext );
 	}
 
-	void GameSession::render( GameRenderer& gameRenderer ) const
+	void GameSession::render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext )
 	{
-		m_gameClient.render( gameRenderer );
+		m_gameClient.render( gameRenderer, graphicsContext );
 	}
 
 	bool GameSession::processInputEvent( const InputEvent& inputEvent )

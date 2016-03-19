@@ -5,12 +5,44 @@ namespace tiki
 {
 	void Frustum::create( const Matrix44& viewProjection )
 	{
-		m_planes[ FrustumPlane_Near ].create( viewProjection.x.z, viewProjection.y.z, viewProjection.z.z, viewProjection.w.z );
-		m_planes[ FrustumPlane_Far ].create( viewProjection.x.w - viewProjection.x.z, viewProjection.y.w - viewProjection.y.z, viewProjection.z.w - viewProjection.z.z, viewProjection.w.w - viewProjection.w.z );
-		m_planes[ FrustumPlane_Left ].create( viewProjection.x.w + viewProjection.x.x, viewProjection.y.w + viewProjection.y.x, viewProjection.z.w + viewProjection.z.x, viewProjection.w.w + viewProjection.w.x );
-		m_planes[ FrustumPlane_Right ].create( viewProjection.x.w - viewProjection.x.x, viewProjection.y.w - viewProjection.y.x, viewProjection.z.w - viewProjection.z.x, viewProjection.w.w - viewProjection.w.x );
-		m_planes[ FrustumPlane_Top ].create( viewProjection.x.w - viewProjection.x.y, viewProjection.y.w - viewProjection.y.y, viewProjection.z.w - viewProjection.z.y, viewProjection.w.w - viewProjection.w.y );
-		m_planes[ FrustumPlane_Bottom ].create( viewProjection.x.w + viewProjection.x.y, viewProjection.y.w + viewProjection.y.y, viewProjection.z.w + viewProjection.z.y, viewProjection.w.w + viewProjection.w.y );		
+		Matrix44 inverseViewProjection;
+		matrix::invert( inverseViewProjection, viewProjection );
+
+		const float x0 = -1.0f;
+		const float x1 = 1.0f;
+		const float y0 = -1.0f;
+		const float y1 = 1.0f;
+		const float z0 = 0.0f;
+		const float z1 = 1.0f;
+
+		Vector3 aCorners[ FrustumCorner_Count ] =
+		{
+			{ x1, y0, z0 },	// FrustumCorner_NearRightBottom
+			{ x1, y1, z0 },	// FrustumCorner_NearRightTop
+			{ x0, y1, z0 },	// FrustumCorner_NearLeftTop
+			{ x0, y0, z0 },	// FrustumCorner_NearLeftBottom
+			{ x1, y0, z1 },	// FrustumCorner_FarRightBottom
+			{ x1, y1, z1 },	// FrustumCorner_FarRightTop
+			{ x0, y1, z1 },	// FrustumCorner_FarLeftTop
+			{ x0, y0, z1 },	// FrustumCorner_FarLeftBottom
+		};
+
+		for( uint i = 0u; i < TIKI_COUNT( aCorners); ++i )
+		{
+			matrix::transform( aCorners[ i ], inverseViewProjection );
+		}		
+
+		create( aCorners );
+	}
+
+	void Frustum::create( const Vector3 aCorners[ FrustumCorner_Count ] )
+	{
+		m_planes[ FrustumPlane_Near ].create( aCorners[ FrustumCorner_NearRightTop ], aCorners[ FrustumCorner_NearRightBottom ], aCorners[ FrustumCorner_NearLeftTop ] );
+		m_planes[ FrustumPlane_Far ].create( aCorners[ FrustumCorner_FarLeftTop ], aCorners[ FrustumCorner_FarLeftBottom ], aCorners[ FrustumCorner_FarRightTop ] );
+		m_planes[ FrustumPlane_Left ].create( aCorners[ FrustumCorner_NearLeftTop ], aCorners[ FrustumCorner_NearLeftBottom ], aCorners[ FrustumCorner_FarLeftTop ] );
+		m_planes[ FrustumPlane_Right ].create( aCorners[ FrustumCorner_FarRightTop ], aCorners[ FrustumCorner_FarRightBottom ], aCorners[ FrustumCorner_NearRightTop ] );
+		m_planes[ FrustumPlane_Top ].create( aCorners[ FrustumCorner_NearRightBottom ], aCorners[ FrustumCorner_FarRightBottom ], aCorners[ FrustumCorner_NearLeftBottom ] );
+		m_planes[ FrustumPlane_Bottom ].create( aCorners[ FrustumCorner_FarRightTop ], aCorners[ FrustumCorner_NearRightTop ], aCorners[ FrustumCorner_FarLeftTop ] );
 	}
 
 	FrustumIntersectionType Frustum::testIntersectionPoint( const Vector3& point ) const

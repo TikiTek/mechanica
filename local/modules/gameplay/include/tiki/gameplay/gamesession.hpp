@@ -14,7 +14,7 @@ namespace tiki
 	class GameRenderer;
 	class Model;
 	class ResourceManager;
-	struct FrameData;
+	struct ViewData;
 	struct InputEvent;
 	struct TransformComponentState;
 
@@ -24,18 +24,21 @@ namespace tiki
 
 	public:
 
-		GameSession();
-		~GameSession();
+									GameSession();
+									~GameSession();
 
-		bool		create( ResourceManager& resourceManager );
-		void		dispose( ResourceManager& resourceManager );
+		bool						create( ResourceManager& resourceManager );
+		void						dispose( ResourceManager& resourceManager );
 
-		void		update( FrameData& frameData, float timeDelta, float totalGameTime );
-		void		render( GameRenderer& gameRenderer ) const;
+		void						update( float timeDelta, float totalGameTime );
+		void						render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext );
 
-		bool		processInputEvent( const InputEvent& inputEvent );
+		bool						processInputEvent( const InputEvent& inputEvent );
 
-		EntityId	getPlayerEntityId() const { return m_playerEntityId; }
+		EntityId					getPlayerEntityId() const { return m_playerEntityId; }
+
+		GameClient&					getGameClient() { return m_gameClient; }
+		const GameClient&			getGameClient() const { return m_gameClient; }
 
 	private:
 

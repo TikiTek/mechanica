@@ -16,9 +16,17 @@ namespace tiki
 	{
 	}
 
-	void Camera::create( const Vector3& position, const Quaternion& rotation, const Projection* pProjection /*= nullptr*/, const Vector3& upVector /*= Vector3::unitY*/ )
+	void Camera::create( const Camera& copy )
 	{
-		m_upVector		= upVector;
+		m_upVector		= copy.m_upVector;
+		m_projection	= copy.m_projection;
+
+		setTransform( copy.m_position, copy.m_rotation );
+	}
+
+	void Camera::create( const Vector3& position /* = Vector3::zero */, const Quaternion& rotation /* = Quaternion::identity */, const Projection* pProjection /* = nullptr */, const Vector3& upVector /* = Vector3::unitY */ )
+	{
+		m_upVector = upVector;
 
 		if ( pProjection != nullptr )
 		{
@@ -26,8 +34,12 @@ namespace tiki
 		}
 
 		setTransform( position, rotation );
+	}
 
-		m_isFrustumValid = false;
+	void Camera::setProjection( const Projection& projection )
+	{
+		m_projection = projection;
+		createMatrix();
 	}
 
 	void Camera::setTransform( const Vector3& position, const Quaternion& rotation )
@@ -81,7 +93,7 @@ namespace tiki
 		matrix::mul( m_viewProjection, m_projection.getMatrix() );
 	}
 
-	const Frustum& Camera::getFrustum()
+	const Frustum& Camera::getFrustum() const
 	{
 		if ( !m_isFrustumValid )
 		{
@@ -92,27 +104,15 @@ namespace tiki
 		return m_frustum;
 	}
 
-	void Camera::getCameraRay( Ray* pRay, sint16 mousePosX, sint16 mousePosY, int width, int height )
+	void Camera::getCameraRay( Ray& ray, float mousePosX, float mousePosY, float width, float height ) const
 	{
-		TIKI_ASSERT( pRay != nullptr );
-		createMatrix();
+		vector::set( ray.origin, mousePosX, mousePosY, 0.0f );
+		vector::set( ray.direction, mousePosX, mousePosY, 1.0f );
 
-		float mouseX = (float)( mousePosX );
-		float mouseY = (float)( mousePosY );
+		matrix::unproject( ray.origin, 0.0f, 0.0f, width, height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
+		matrix::unproject( ray.direction, 0.0f, 0.0f, width, height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
 
-		Vector3 origin;
-		vector::set( origin, mouseX, mouseY, 0.0f );
-		matrix::unproject( origin, 0.0f, 0.0f, (float)width, (float)height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
-
-		Vector3 direction;
-		vector::set( direction, mouseX, mouseY, 1.0f );
-		matrix::unproject( direction, 0.0f, 0.0f, (float)width, (float)height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
-
-		vector::sub( direction, origin );
-		vector::normalize( direction );
-
-		pRay->origin	= origin;
-		pRay->direction	= direction;
+		vector::sub( ray.direction, ray.origin );
+		vector::normalize( ray.direction );
 	}
-
 }

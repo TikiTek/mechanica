@@ -27,14 +27,14 @@ namespace tiki
 								FallbackRenderEffect();
 		virtual					~FallbackRenderEffect();
 
-		virtual RenderEffectId	getRenderEffectId() const { return RenderEffectId_Fallback; }
+		virtual RenderEffectId	getRenderEffectId() const TIKI_OVERRIDE TIKI_FINAL { return RenderEffectId_Fallback; }
 
 	protected:
 
 		virtual bool			createInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_OVERRIDE TIKI_FINAL;
 		virtual void			disposeInternal( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourceRequestPool ) TIKI_OVERRIDE TIKI_FINAL;
 
-		virtual void			executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext );
+		virtual void			executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const RenderView& view, const RendererContext& rendererContext ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 

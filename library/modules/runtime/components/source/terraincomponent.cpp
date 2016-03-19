@@ -3,7 +3,7 @@
 
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/transformcomponent.hpp"
-#include "tiki/renderer/gamerenderer.hpp"
+#include "tiki/renderer/renderscene.hpp"
 
 #include "components.hpp"
 
@@ -39,7 +39,7 @@ namespace tiki
 		m_pTransformComponent = nullptr;
 	}
 
-	void TerrainComponent::render( GameRenderer& gameRenderer ) const
+	void TerrainComponent::render( RenderScene& scene ) const
 	{
 		ConstIterator componentStates = getConstIterator();
 
@@ -49,7 +49,7 @@ namespace tiki
 			Matrix43 worldTransform;
 			m_pTransformComponent->getWorldTransform( worldTransform, pState->pTransform );
 
-			gameRenderer.queueModel( pState->pModel, &worldTransform, nullptr );
+			scene.queueModel( pState->pModel, &worldTransform, nullptr );
 		}
 	}
 

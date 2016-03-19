@@ -11,6 +11,7 @@
 namespace tiki
 {
 	class Material;
+	class Model;
 	class ModelGeometry;
 	struct Matrix43;
 	struct SkinningData;
@@ -49,6 +50,8 @@ namespace tiki
 		void						reset();
 
 		RenderSequenceEnumerator	createEnumerator( RenderPass pass ) const;
+
+		void						queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr, const SkinningData** ppSkinningData = nullptr );
 
 		void						beginSequence( RenderPassMask passMask, RenderEffectId renderEffectId, uint8 renderFlags );
 		void						queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform = nullptr, const SkinningData* pSkinningData = nullptr );

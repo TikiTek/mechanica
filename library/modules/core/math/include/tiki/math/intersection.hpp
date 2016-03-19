@@ -2,7 +2,7 @@
 #ifndef TIKI_INTERSECTION_HPP__
 #define TIKI_INTERSECTION_HPP__
 
-#include "tiki/math/vector.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
@@ -10,6 +10,7 @@ namespace tiki
 	struct Box;
 	struct Ray;
 	struct Sphere;
+	struct Vector3;
 
 	namespace intersection
 	{

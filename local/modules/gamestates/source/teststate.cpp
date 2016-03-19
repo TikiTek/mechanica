@@ -18,7 +18,7 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
-#include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
@@ -186,12 +186,7 @@ namespace tiki
 
 				if ( isCreating )
 				{
-					FrameData& frameData = m_pGameRenderer->getFrameData();
-					frameData.nearPlane		= 0.001f;
-					frameData.farPlane		= 100.0f;
-					frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
-
-					m_freeCamera.create( frameData.mainCamera.getPosition(), frameData.mainCamera.getRotation() );
+					m_freeCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )					
 					m_testWindow.create( m_pGame->getDebugGui() );
@@ -225,12 +220,27 @@ namespace tiki
 
 	void TestState::update()
 	{
-		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
-		const float totalGameTime = float( m_pGame->getFrameTimer().getTotalTime() );
+		const float timeDelta		= float( m_pGame->getFrameTimer().getElapsedTime() );
+		const float totalGameTime	= float( m_pGame->getFrameTimer().getTotalTime() );
+		const float timeValue		= (float)m_pGame->getFrameTimer().getTotalTime() / 10.0f;
 
-		FrameData& frameData = m_pGameRenderer->getFrameData();
+		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 
-		DirectionalLightData& directionalLight = frameData.directionalLights.push();
+		Vector3 position ={ 0.0f, 3.0f, 0.0f };
+		m_gameClient.getTransformComponent().setPosition( pState, position );
+
+		Quaternion rotation;
+		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
+		m_gameClient.getTransformComponent().setRotation( pState, rotation );
+
+		GameClientUpdateContext gameClientUpdateContext;
+		gameClientUpdateContext.timeDelta		= timeDelta;
+		gameClientUpdateContext.totalGameTime	= totalGameTime;
+		m_gameClient.update( gameClientUpdateContext );
+
+		RenderScene& scene = m_gameClient.getScene();
+
+		DirectionalLightData& directionalLight = scene.addDirectionalLight();
 		vector::set( directionalLight.direction, 0.941176471f, 0.235294118f, 0.0f );
 		directionalLight.color = TIKI_COLOR_WHITE;
 
@@ -243,7 +253,6 @@ namespace tiki
 			TIKI_COLOR_YELLOW
 		};
 
-		const float timeValue = (float)m_pGame->getFrameTimer().getTotalTime() / 10.0f;
 		//for (uint i = 0u; i < pointLightCount; ++i)
 		//{
 		//	const float value = ( ( f32::twoPi / pointLightCount ) * i ) + ( timeValue * -5.0f );
@@ -269,7 +278,7 @@ namespace tiki
 
 		m_pAnimationPlayer->sample( m_animationData.getBegin(), m_animationData.getCount(), *m_pModelPlayer->getHierarchy(), timeValue );
 
-		m_lightingWindow.fillFrameData( frameData );
+		m_lightingWindow.fillFrameData( scene );
 
 		//Matrix43 mtx = Matrix43::identity;
 		//mtx.pos.y = -0.1f;
@@ -287,21 +296,7 @@ namespace tiki
 		//	m_pGameRenderer->queueModel( m_pModelBox, &mtx );
 		//}
 
-		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
-
-		Vector3 position = { 0.0f, 3.0f, 0.0f };
-		m_gameClient.getTransformComponent().setPosition( pState, position );
-
-		Quaternion rotation;
-		quaternion::fromYawPitchRoll( rotation, timeValue, 0.0f, 0.0f );
-		m_gameClient.getTransformComponent().setRotation( pState, rotation );
-
-		GameClientUpdateContext gameClientUpdateContext;
-		gameClientUpdateContext.timeDelta		= timeDelta;
-		gameClientUpdateContext.totalGameTime	= totalGameTime;		
-		m_gameClient.update( gameClientUpdateContext );
-
-		m_freeCamera.update( frameData.mainCamera, timeDelta );
+		m_freeCamera.update( m_gameClient.getView().getCamera(), timeDelta );
 
 		//const WindowEvent* pEvent = m_pGame->getMainWindow().getEventBuffer().getEventByType( WindowEventType_SizeChanged );
 		//if ( pEvent != nullptr )
@@ -316,7 +311,7 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		m_gameClient.render( *m_pGameRenderer );
+		m_gameClient.render( *m_pGameRenderer, graphicsContext );
 	}
 
 	void TestState::postRender( GraphicsContext& graphicsContext )

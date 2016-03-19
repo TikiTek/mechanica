@@ -3,6 +3,8 @@
 
 #include "tiki/renderer/renderbatch.hpp"
 #include "tiki/renderer/rendereffect.hpp"
+#include "tiki/renderer/renderscene.hpp"
+#include "tiki/renderer/renderview.hpp"
 
 #include "renderer.hpp"
 
@@ -10,8 +12,6 @@ namespace tiki
 {
 	RenderEffectSystem::RenderEffectSystem()
 	{
-		m_pRendererContext = nullptr;
-
 		for (uint i = 0u; i < m_effects.getCount(); ++i)
 		{
 			m_effects[ i ] = nullptr;
@@ -20,14 +20,10 @@ namespace tiki
 
 	RenderEffectSystem::~RenderEffectSystem()
 	{
-		TIKI_ASSERT( m_pRendererContext == nullptr );
 	}
 
-	bool RenderEffectSystem::create( const RendererContext& rendererContext )
+	bool RenderEffectSystem::create()
 	{
-		TIKI_ASSERT( m_pRendererContext == nullptr );
-		m_pRendererContext = &rendererContext;
-
 		return true;
 	}
 
@@ -49,8 +45,6 @@ namespace tiki
 
 	void RenderEffectSystem::dispose()
 	{
-		m_pRendererContext = nullptr;
-
 		for (uint i = 0u; i < m_effects.getCount(); ++i)
 		{
 			m_effects[ i ] = nullptr;
@@ -73,22 +67,9 @@ namespace tiki
 		m_effects[ renderEffectId ] = nullptr;
 	}
 
-	void RenderEffectSystem::setFrameData( const FrameData& frameData )
+	void RenderEffectSystem::renderView( GraphicsContext& graphicsContext, const RendererContext& context, const RenderView& view, RenderPass pass ) const
 	{
-		for (uint i = 0u; i < m_effects.getCount(); ++i)
-		{
-			if ( m_effects[ i ] != nullptr )
-			{
-				m_effects[ i ]->setFrameData( frameData );
-			}
-		} 
-	}
-
-	void RenderEffectSystem::render( GraphicsContext& graphicsContext, RenderPass pass, const RenderBatch& batch ) const
-	{
-		TIKI_ASSERT( m_pRendererContext != nullptr );
-
-		RenderSequenceEnumerator enumerator = batch.createEnumerator( pass );
+		RenderSequenceEnumerator enumerator = view.getScene().getRenderBatch().createEnumerator( pass );
 		while ( true )
 		{
 			const RenderSequence* pSequence = enumerator.enumerate();
@@ -114,7 +95,7 @@ namespace tiki
 				continue;
 			}
 
-			pRenderEffect->executeRenderSequences( graphicsContext, pass, pSequence, 1u );
+			pRenderEffect->executeRenderSequences( graphicsContext, context, view, pass, pSequence, 1u );
 		} 
 	}
 }

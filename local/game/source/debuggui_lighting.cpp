@@ -1,7 +1,7 @@
 
 #include "tiki/game/debuggui_lighting.hpp"
 
-#include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderscene.hpp"
 
 namespace tiki
 {
@@ -43,9 +43,9 @@ namespace tiki
 		DebugGuiWindow::dispose();
 	}
 
-	void DebugGuiLightingWindow::fillFrameData( FrameData& frameData )
+	void DebugGuiLightingWindow::fillFrameData( RenderScene& scene )
 	{
-		SpotLightData& spotLight = frameData.spotLights.push();
+		SpotLightData& spotLight = scene.addSpotLight();
 		vector::set( spotLight.position, m_positionX.getValue(), m_positionY.getValue(), m_positionZ.getValue() );
 		vector::set( spotLight.direction, 0.5f, 0.5f, 0.0f );
 		spotLight.color = TIKI_COLOR_WHITE;

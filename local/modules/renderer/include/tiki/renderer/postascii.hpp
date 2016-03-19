@@ -14,12 +14,12 @@ namespace tiki
 	class Font;
 	class GraphicsContext;
 	class RasterizerState;
+	class RenderView;
 	class ResourceManager;
 	class SamplerState;
 	class SamplerState;
 	class ShaderSet;
 	class VertexInputBinding;
-	struct FrameData;
 	struct RendererContext;
 
 	struct PostProcessAsciiParameters
@@ -55,7 +55,7 @@ namespace tiki
 		const TextureData&	getDownSampleData() const	{ return m_downSampleData; }
 		const TextureData&	getResultData() const		{ return m_finalResultData; }
 
-		void				render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext ) const;
+		void				render( GraphicsContext& graphicsContext, const RenderView& view, const RendererContext& rendererContext ) const;
 		
 	private:
 

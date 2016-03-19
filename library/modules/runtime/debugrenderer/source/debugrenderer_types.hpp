@@ -3,6 +3,7 @@
 #define TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 
 #include "tiki/math/box.hpp"
+#include "tiki/math/frustum.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/math/ray.hpp"
 
@@ -17,6 +18,7 @@ namespace tiki
 		DebugRenderCommandType_DrawLineGrid,
 		DebugRenderCommandType_DrawLineCircle,
 		DebugRenderCommandType_DrawLineSphere,
+		DebugRenderCommandType_DrawLineFrustum,
 
 		DebugRenderCommandType_DrawSolidBox,
 		DebugRenderCommandType_DrawSolidAxes,
@@ -39,6 +41,7 @@ namespace tiki
 
 		Color					color;
 		uint					pointCount;
+		bool					drawAsStrip;
 		Vector3					aPoints[ 1u ];
 	};
 
@@ -94,6 +97,14 @@ namespace tiki
 
 		Vector3					center;
 		float					radius;
+		Color					color;
+	};
+
+	struct DebugRenderLineFrustumCommand : public DebugRenderCommand
+	{
+		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawLineFrustum;
+
+		Frustum					frustum;
 		Color					color;
 	};
 

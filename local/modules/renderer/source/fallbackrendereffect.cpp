@@ -10,6 +10,7 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
 #include "renderer.hpp"
@@ -97,7 +98,7 @@ namespace tiki
 		m_pGraphicsSystem = nullptr;
 	}
 
-	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
+	void FallbackRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const RenderView& view, const RendererContext& rendererContext )
 	{
 		const Shader* pVertexShader = m_pShader->getShader( ShaderType_VertexShader, 0u );
 
@@ -121,11 +122,11 @@ namespace tiki
 				const RenderCommand& command = sequence.pCommands[ commandIndex ];
 
 				Matrix43 mvMtx = command.worldTransform;
-				matrix::mul( mvMtx, frameData.mainCamera.getViewMatrix() );
+				matrix::mul( mvMtx, view.getCamera().getViewMatrix() );
 
 				Matrix44 mvpMtx;
 				matrix::set( mvpMtx, command.worldTransform );
-				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
+				matrix::mul( mvpMtx, view.getCamera().getViewProjectionMatrix() );
 
 				FallbackVertexConstants* pVertexConstants = static_cast< FallbackVertexConstants* >( graphicsContext.mapBuffer( m_vertexConstantBuffer ) );
 				TIKI_ASSERT( pVertexConstants != nullptr );

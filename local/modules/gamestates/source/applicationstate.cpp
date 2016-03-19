@@ -102,12 +102,10 @@ namespace tiki
 
 	void ApplicationState::update()
 	{
-		m_renderer.update();
 	}
 
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
-		m_renderer.render( graphicsContext );
 	}
 
 	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )

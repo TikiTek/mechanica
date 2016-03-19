@@ -13,15 +13,9 @@
 namespace tiki
 {
 	class GraphicsSystem;
+	class RenderTarget;
 	class TextureData;
 	
-	enum 
-	{
-		GameRendererLimits_MaxDirectionalLights = 4u,
-		GameRendererLimits_MaxPointLights		= 16u,
-		GameRendererLimits_MaxSpotLights		= 4u,
-	};
-
 	struct RendererContext
 	{
 		GraphicsSystem*	pGraphicsSystem;
@@ -34,52 +28,6 @@ namespace tiki
 		const TextureData*	pGBuffer2;
 		const TextureData*	pAccumulationBuffer;
 		const TextureData*	pDepthBuffer;
-	};
-
-	struct DirectionalLightData
-	{
-		Vector3		direction;
-		Color		color;		
-	};
-
-	struct PointLightData
-	{
-		Vector3		position;
-		Color		color;
-		float		range;
-	};
-
-	struct SpotLightData
-	{
-		Vector3		position;
-		Vector3		direction;
-		Color		color;
-		float		range;
-		float		theta;
-		float		phi;
-	};
-
-	struct FrameData
-	{
-		typedef FixedSizedArray< DirectionalLightData, GameRendererLimits_MaxDirectionalLights >	DirectionalLightDataArray;
-		typedef FixedSizedArray< PointLightData, GameRendererLimits_MaxPointLights >				PointLightDataArray;
-		typedef FixedSizedArray< SpotLightData, GameRendererLimits_MaxSpotLights >					SpotLightDataArray;
-
-		float						nearPlane;
-		float						farPlane;
-		float						aspectRatio;
-		Camera						mainCamera;
-
-		DirectionalLightDataArray	directionalLights;
-		PointLightDataArray			pointLights;
-		SpotLightDataArray			spotLights;
-
-		void reset()
-		{
-			directionalLights.clear();
-			pointLights.clear();
-			spotLights.clear();
-		}
 	};
 }
 

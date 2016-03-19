@@ -21,7 +21,7 @@ namespace tiki
 		template<class T>
 		T*		allocateCommand( uint extraMemory = 0u );
 
-		void	flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, Color color );
+		void	flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color );
 
 		void	flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command );
 		void	flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command );
@@ -29,6 +29,7 @@ namespace tiki
 		void	flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command );
 		void	flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color );
 		void	flushDrawLineSphere( const ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command );
+		void	flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command );
 
 		void	flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command );
 		void	flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix );
@@ -54,20 +55,24 @@ namespace tiki
 			}
 			else
 			{
-				s_pDebugRendererFirstCommand->pNext = pCommand;
+				s_pDebugRendererLastCommand->pNext = pCommand;
 				s_pDebugRendererLastCommand = pCommand;
 			}
 
 			pCommand->pNext = nullptr;
 			pCommand->type	= T::CommandType;
 		}
+		else
+		{
+			TIKI_TRACE_WARNING( "[debugrenderer] Can't draw debug commaand. Out of memory.\n" );
+		}
 		
 		return pCommand;
 	}
 
-	void debugrenderer::flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, Color color )
+	void debugrenderer::flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color )
 	{
-		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setPrimitiveTopology( drawAsStrip ? PrimitiveTopology_LineStrip : PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		StaticArray< ImmediateVertex > vertices;
@@ -96,7 +101,7 @@ namespace tiki
 		vector::add( end, scaledDir );
 
 		const Vector3 points[] = { command.ray.origin, end };
-		debugrenderer::flushDrawLines( renderer, points, TIKI_COUNT( points ), command.color );
+		debugrenderer::flushDrawLines( renderer, points, TIKI_COUNT( points ), false, command.color );
 	}
 
 	void debugrenderer::flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command )
@@ -270,6 +275,38 @@ namespace tiki
 		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitY, command.color );
 		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitZ, command.color );
 		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitZ, Vector3::unitY, command.color );
+	}
+
+	void debugrenderer::flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command )
+	{
+		Vector3 cornerPoints[ 8u ];
+		command.frustum.getCorners( cornerPoints );
+
+		Vector3	nearPoints[] = { 
+			cornerPoints[ FrustumCorner_NearRightBottom ],
+			cornerPoints[ FrustumCorner_NearRightTop ],
+			cornerPoints[ FrustumCorner_NearLeftTop ],
+			cornerPoints[ FrustumCorner_NearLeftBottom ]
+		};
+
+		Vector3	farPoints[] = {
+			cornerPoints[ FrustumCorner_FarRightBottom ],
+			cornerPoints[ FrustumCorner_FarRightTop ],
+			cornerPoints[ FrustumCorner_FarLeftTop ],
+			cornerPoints[ FrustumCorner_FarLeftBottom ]
+		};
+
+		Vector3	topLeft[] = { cornerPoints[ FrustumCorner_NearLeftTop ], cornerPoints[ FrustumCorner_FarLeftTop ] };
+		Vector3	topRight[] = { cornerPoints[ FrustumCorner_NearRightTop ], cornerPoints[ FrustumCorner_FarRightTop ] };
+		Vector3	bottomLeft[] = { cornerPoints[ FrustumCorner_NearLeftBottom ], cornerPoints[ FrustumCorner_FarLeftBottom ] };
+		Vector3	bottomRight[] = { cornerPoints[ FrustumCorner_NearRightBottom ], cornerPoints[ FrustumCorner_FarRightBottom ] };
+
+		flushDrawLines( renderer, nearPoints, TIKI_COUNT( nearPoints ), true, command.color );
+		flushDrawLines( renderer, farPoints, TIKI_COUNT( farPoints ), true, command.color );
+		flushDrawLines( renderer, topLeft, TIKI_COUNT( topLeft ), true, command.color );
+		flushDrawLines( renderer, topRight, TIKI_COUNT( topRight ), true, command.color );
+		flushDrawLines( renderer, bottomLeft, TIKI_COUNT( bottomLeft ), true, command.color );
+		flushDrawLines( renderer, bottomRight, TIKI_COUNT( bottomRight ), true, command.color );
 	}
 
 	void debugrenderer::flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command )
@@ -514,6 +551,16 @@ namespace tiki
 		}
 	}
 
+	void debugrenderer::drawLineFrustum( const Frustum& frustum, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderLineFrustumCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineFrustumCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->frustum		= frustum;
+			pCommand->color			= color;
+		}
+	}
+
 	void debugrenderer::drawSolidBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
 	{
 		DebugRenderSolidBoxCommand* pCommand = debugrenderer::allocateCommand< DebugRenderSolidBoxCommand >();
@@ -579,7 +626,7 @@ namespace tiki
 			case DebugRenderCommandType_DrawLines:
 				{
 					const DebugRenderLinesCommand& command = *(const DebugRenderLinesCommand*)pCommand;
-					debugrenderer::flushDrawLines( renderer, command.aPoints, command.pointCount, command.color );
+					debugrenderer::flushDrawLines( renderer, command.aPoints, command.pointCount, false, command.color );
 				}
 				break;
 
@@ -625,6 +672,13 @@ namespace tiki
 				}
 				break;
 
+			case DebugRenderCommandType_DrawLineFrustum:
+				{
+					const DebugRenderLineFrustumCommand& command = *(const DebugRenderLineFrustumCommand*)pCommand;
+					debugrenderer::flushDrawLineFrustum( renderer, command );
+				}
+				break;
+
 			case DebugRenderCommandType_DrawSolidBox:
 				{
 					const DebugRenderSolidBoxCommand& command = *(const DebugRenderSolidBoxCommand*)pCommand;
@@ -661,6 +715,7 @@ namespace tiki
 				break;
 
 			default:
+				TIKI_TRACE_ERROR( "[debugrenderer] Invalid debug render command.\n" );
 				break;
 			}
 

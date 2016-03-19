@@ -18,6 +18,7 @@ namespace tiki
 	class GraphicsSystem;
 	class Model;
 	class RasterizerState;
+	class RenderView;
 	class ResourceRequestPool;
 	class SamplerState;
 	class ShaderSet;
@@ -44,18 +45,12 @@ namespace tiki
 			rendererWidth	= 1280u;
 			rendererHeight	= 720u;
 
-			nearPlane	= 0.001f;
-			farPlane	= 100.0f;
-
 			maxSeqeuenceCount		= 256u;
 			maxRenderCommandCount	= 1024u;
 		}
 
 		uint	rendererWidth;
 		uint	rendererHeight;
-
-		float	nearPlane;
-		float	farPlane;
 
 		uint	maxSeqeuenceCount;
 		uint	maxRenderCommandCount;
@@ -79,7 +74,6 @@ namespace tiki
 		bool				registerRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool );
 		void				unregisterRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool );
 
-		FrameData&			getFrameData()			{ return m_frameData; }
 		RendererContext&	getRendererContext()	{ return m_context; }
 
 		const TextureData&	getGeometryBufferBxIndex( uint index ) const	{ return m_geometryBufferData[ index ]; }
@@ -93,10 +87,7 @@ namespace tiki
 		void				setVisualizationMode( VisualizationMode mode )	{ m_visualizationMode = mode; }
 #endif
 
-		void				queueModel( const Model* pModel, const Matrix43* pWorldTransform = nullptr, const SkinningData** ppSkinningData = nullptr );
-
-		void				update();
-		void				render( GraphicsContext& graphicsContext ) const;
+		void				renderView( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, RenderView& view ) const;
 
 	private:
 
@@ -104,16 +95,13 @@ namespace tiki
 		{							// |-----|-------|------------------------|------------------------|
 			GeometryBuffer_Target0,	// | diffuseColor.rgb                     | selfIlluminationFactor |
 			GeometryBuffer_Target1,	// | specluarColor.rgb		              | specluarIntensity      |
-			GeometryBuffer_Target2,	// | normal.xy   | glossness			  | specluarPower          | // 16 bit?
+			GeometryBuffer_Target2,	// | normal.xy   | glossiness			  | specluarPower          | // 16 bit?
 
 			GeometryBuffer_Count
 		};
 
 		RendererContext				m_context;
-		FrameData					m_frameData;
-
-		RenderBatch					m_renderBatch;
-		RenderEffectSystem			m_renderEffectSystem;
+		RenderEffectSystem			m_effectSystem;
 
 		const BlendState*			m_pBlendStateAdd;
 		const BlendState*			m_pBlendStateSet;
@@ -150,10 +138,9 @@ namespace tiki
 		void						disposeTextureData();
 		void						disposeRenderTargets();
 
-		void						renderGeometry( GraphicsContext& graphicsContext ) const;
-		void						renderLighting( GraphicsContext& graphicsContext ) const;
-		void						renderVisualization( GraphicsContext& graphicsContext ) const;
-
+		void						renderGeometry( GraphicsContext& graphicsContext, const RenderView& view ) const;
+		void						renderLighting( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, const RenderView& view ) const;
+		void						renderVisualization( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, const RenderView& view ) const;
 	};
 }
 
