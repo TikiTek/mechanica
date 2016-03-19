@@ -8,6 +8,7 @@
 
 namespace tiki
 {
+	class Camera;
 	class GameCamera;
 	class PhysicsCharacterControllerComponent;
 	class TransformComponent;
@@ -33,7 +34,7 @@ namespace tiki
 		bool				create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent );
 		void				dispose();
 
-		void				update( const GameCamera& gameCamera, float timeDelta );
+		void				update( const GameCamera& gameCamera, const Camera& camera, float timeDelta );
 		
 		bool				processInputEvent( const InputEvent& inputEvent );
 

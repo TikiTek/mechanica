@@ -9,6 +9,8 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/renderer/rendereffect.hpp"
+#include "tiki/renderer/renderscene.hpp"
+#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
@@ -63,29 +65,9 @@ namespace tiki
 		m_context.pAccumulationBuffer	= &m_accumulationData;
 		m_context.pDepthBuffer			= &m_readOnlyDepthBuffer;
 
-		m_frameData.nearPlane			= parameters.nearPlane;
-		m_frameData.farPlane			= parameters.farPlane;
-		m_frameData.aspectRatio			= (float)parameters.rendererWidth / (float)parameters.rendererHeight;
-
-		if ( m_renderBatch.create( parameters.maxSeqeuenceCount, parameters.maxRenderCommandCount ) == false )
-		{
-			dispose( resourceRequestPool );
-			return false;
-		}
-
-		if ( m_renderEffectSystem.create( m_context ) == false )
-		{
-			dispose( resourceRequestPool );
-			return false;
-		}
-
-		if ( createTextureData() == false )
-		{
-			dispose( resourceRequestPool );
-			return false;
-		}
-
-		if ( createRenderTargets() == false )
+		if( !m_effectSystem.create() ||
+			!createTextureData() ||
+			!createRenderTargets() )
 		{
 			dispose( resourceRequestPool );
 			return false;
@@ -141,7 +123,7 @@ namespace tiki
 		}
 #endif
 
-		m_renderEffectSystem.createShaderResourcees( graphicsSystem, resourceRequestPool );
+		m_effectSystem.createShaderResourcees( graphicsSystem, resourceRequestPool );
 
 		return true;
 	}
@@ -160,34 +142,33 @@ namespace tiki
 
 		m_cameraParameterConstants.dispose( graphicsSystem );
 		m_lightingPixelConstants.dispose( graphicsSystem );
-
+		
 		graphicsSystem.disposeVertexInputBinding( m_pLightingInputBinding );
 		m_pLightingInputBinding = nullptr;
-
+		
 		resourceRequestPool.unloadResource( m_pReflectionTexture );
 		resourceRequestPool.unloadResource( m_pLightingShader );
-
+		
 		graphicsSystem.disposeBlendState( m_pBlendStateAdd );
 		graphicsSystem.disposeBlendState( m_pBlendStateSet );
 		m_pBlendStateAdd = nullptr;
 		m_pBlendStateSet = nullptr;
-
+		
 		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState );
 		m_pDepthStencilState = nullptr;
-
+		
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		m_pRasterizerState = nullptr;
-
+		
 		graphicsSystem.disposeSamplerState( m_pSamplerLinear );
 		graphicsSystem.disposeSamplerState( m_pSamplerNearst );
 		m_pSamplerLinear = nullptr;
 		m_pSamplerNearst = nullptr;
-
+		
 		disposeRenderTargets();
 		disposeTextureData();
 
-		m_renderEffectSystem.dispose();
-		m_renderBatch.dispose();
+		m_effectSystem.dispose();
 	}
 
 	bool GameRenderer::resize( uint width, uint height )
@@ -198,9 +179,7 @@ namespace tiki
 		m_context.rendererWidth		= TIKI_MAX( 10u, width );
 		m_context.rendererHeight	= TIKI_MAX( 10u, height );
 
-		m_frameData.aspectRatio		= (float)width / (float)height;
-
-		if ( createTextureData() == false || createRenderTargets() == false )
+		if( createTextureData() == false || createRenderTargets() == false )
 		{
 			return false;
 		}
@@ -210,55 +189,40 @@ namespace tiki
 
 	bool GameRenderer::registerRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool )
 	{
-		if ( !renderEffect.create( m_context, *m_context.pGraphicsSystem, resourceRequestPool ) )
+		if( !renderEffect.create( *m_context.pGraphicsSystem, resourceRequestPool ) )
 		{
 			return false;
 		}
 
-		m_renderEffectSystem.registerRenderEffect( &renderEffect );
+		m_effectSystem.registerRenderEffect( &renderEffect );
 
 		return true;
 	}
 
 	void GameRenderer::unregisterRenderEffect( RenderEffect& renderEffect, ResourceRequestPool& resourceRequestPool )
 	{
-		m_renderEffectSystem.unregisterRenderEffect( &renderEffect );
+		m_effectSystem.unregisterRenderEffect( &renderEffect );
 
 		renderEffect.dispose( *m_context.pGraphicsSystem, resourceRequestPool );
 	}
-	
-	void GameRenderer::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/, const SkinningData** ppSkinningData /*= nullptr*/ )
+
+	void GameRenderer::renderView( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, RenderView& view ) const
 	{
-		m_renderBatch.beginSequence( RenderPassMask_Geometry, (RenderEffectId)pModel->getMaterial()->getData()->renderEffectId, 0u );
-		for (uint i = 0u; i < pModel->getGeometryCount(); ++i)
+		view.prepareForRenderTarget( renderTarget );
+
+		if( renderTarget.getWidth() != m_geometryTarget.getWidth() ||
+			renderTarget.getHeight() != m_geometryTarget.getHeight() )
 		{
-			const SkinningData* pSkinningData = ( ppSkinningData != nullptr ? ppSkinningData[ i ] : nullptr );
-			m_renderBatch.queueGeometry( pModel->getGeometryByIndex( i ), pModel->getMaterial(), pWorldTransform, pSkinningData );
+			// TODO: remove deferred rendering
+			TIKI_TRACE_ERROR( "[renderer] Currently the view have the same size as the G-Buffer.\n");
+			return;
 		}
-		m_renderBatch.endSequence();
-	}
 
-	void GameRenderer::update()
-	{
-		m_frameData.reset();
-		m_frameData.mainCamera.getProjection().createPerspective(
-			m_frameData.aspectRatio,
-			f32::piOver4,
-			m_frameData.nearPlane,
-			m_frameData.farPlane
-		);
-
-		m_renderBatch.reset();
-		m_renderEffectSystem.setFrameData( m_frameData );
-	}
-
-	void GameRenderer::render( GraphicsContext& graphicsContext ) const
-	{
-		renderGeometry( graphicsContext );
-		renderLighting( graphicsContext );
+		renderGeometry( graphicsContext, view );
+		renderLighting( graphicsContext, renderTarget, view );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		renderVisualization( graphicsContext );
+		renderVisualization( graphicsContext, renderTarget, view );
 #endif
 	}
 
@@ -357,20 +321,23 @@ namespace tiki
 		m_accumulationTarget.dispose( graphicsSystem );
 	}
 
-	void GameRenderer::renderGeometry( GraphicsContext& graphicsContext ) const
+	void GameRenderer::renderGeometry( GraphicsContext& graphicsContext, const RenderView& view ) const
 	{
 		graphicsContext.beginRenderPass( m_geometryTarget );
 		graphicsContext.clear( m_geometryTarget, TIKI_COLOR_BLACK );
 
-		m_renderEffectSystem.render( graphicsContext, RenderPass_Geometry, m_renderBatch );
+		m_effectSystem.renderView( graphicsContext, m_context, view, RenderPass_Geometry );
 
 		graphicsContext.endRenderPass();
 
 		graphicsContext.copyTextureData( m_depthBuffer, m_readOnlyDepthBuffer );
 	}
 
-	void GameRenderer::renderLighting( GraphicsContext& graphicsContext ) const
+	void GameRenderer::renderLighting( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, const RenderView& view ) const
 	{
+		const RenderScene& scene = view.getScene();
+		const Camera& camera = view.getCamera();
+
 		graphicsContext.beginRenderPass( m_accumulationTarget );
 		graphicsContext.clear( m_accumulationTarget, TIKI_COLOR_BLACK, 1.0f, 0u, ClearMask_Color );
 
@@ -387,49 +354,48 @@ namespace tiki
 		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerLinear );
 		
 		Matrix44 inverseProjection;
-		matrix::invert( inverseProjection, m_frameData.mainCamera.getProjection().getMatrix() );
+		matrix::invert( inverseProjection, camera.getProjection().getMatrix() );
 
 		//Matrix44 inverseViewProjection;
 		//matrix::invert( inverseViewProjection, m_frameData.mainCamera.getViewProjectionMatrix() );
 
 		CameraParameter* pCameraConstants = static_cast< CameraParameter* >( graphicsContext.mapBuffer( m_cameraParameterConstants ) );
 		TIKI_ASSERT( pCameraConstants != nullptr );
-		*pCameraConstants = fillCameraParameter( m_frameData.mainCamera );
+		*pCameraConstants = fillCameraParameter( camera );
 		graphicsContext.unmapBuffer( m_cameraParameterConstants );
 
 		LightingPixelConstantData* pPixelConstants = static_cast< LightingPixelConstantData* >( graphicsContext.mapBuffer( m_lightingPixelConstants ) );
 		TIKI_ASSERT( pPixelConstants != nullptr );
 
-		//createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 		createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 
-		const Vector3& cameraPosition = m_frameData.mainCamera.getPosition();
+		const Vector3& cameraPosition = camera.getPosition();
 		createFloat4( pPixelConstants->param0, cameraPosition.x, cameraPosition.y, cameraPosition.z, 0.0f );
 
-		const uint directionalLightCount	= m_frameData.directionalLights.getCount();
-		const uint pointLightCount			= m_frameData.pointLights.getCount();
-		const uint spotLightCount			= m_frameData.spotLights.getCount();
-		for (uint i = 0u; i < directionalLightCount; ++i)
+		const RenderScene::DirectionalLightDataArray& directionalLights	= scene.getDirectionalLights();
+		const RenderScene::PointLightDataArray& pointLights				= scene.getPointLights();
+		const RenderScene::SpotLightDataArray& spotLights				= scene.getSpotLights();
+		for (uint i = 0u; i < directionalLights.getCount(); ++i)
 		{
-			const DirectionalLightData& lightData = m_frameData.directionalLights[ i ];
+			const DirectionalLightData& lightData = directionalLights[ i ];
 			pPixelConstants->directionalLights[ i ] = fillDirectionalLightData( lightData.direction, lightData.color );
 		}
 
-		for (uint i = 0u; i < pointLightCount; ++i)
+		for (uint i = 0u; i < pointLights.getCount(); ++i)
 		{
-			const PointLightData& lightData = m_frameData.pointLights[ i ];
-			pPixelConstants->pointLights[ i ] = fillPointLightData( lightData.position, m_frameData.mainCamera.getWorldMatrix(), m_frameData.mainCamera.getPosition(), lightData.color, lightData.range );
+			const PointLightData& lightData = pointLights[ i ];
+			pPixelConstants->pointLights[ i ] = fillPointLightData( lightData.position, camera.getWorldMatrix(), camera.getPosition(), lightData.color, lightData.range );
 		}
 		
-		for (uint i = 0u; i < spotLightCount; ++i)
+		for (uint i = 0u; i < spotLights.getCount(); ++i)
 		{
-			const SpotLightData& lightData = m_frameData.spotLights[ i ];
-			pPixelConstants->spotLights[ i ] = fillSpotLightData( lightData.position, m_frameData.mainCamera.getViewMatrix(), lightData.direction, lightData.color, lightData.range, lightData.theta, lightData.phi );
+			const SpotLightData& lightData = spotLights[ i ];
+			pPixelConstants->spotLights[ i ] = fillSpotLightData( lightData.position, camera.getViewMatrix(), lightData.direction, lightData.color, lightData.range, lightData.theta, lightData.phi );
 		} 
 
 		graphicsContext.unmapBuffer( m_lightingPixelConstants );
 
-		const uint32 shaderMask = getShaderVariantMask( directionalLightCount, pointLightCount, spotLightCount );
+		const uint32 shaderMask = getShaderVariantMask( directionalLights.getCount(), pointLights.getCount(), spotLights.getCount() );
 		graphicsContext.setVertexShader( m_pLightingShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pLightingShader->getShader( ShaderType_PixelShader, shaderMask ) );
 		graphicsContext.setVertexInputBinding( m_pLightingInputBinding );
@@ -442,14 +408,14 @@ namespace tiki
 	}
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-	void GameRenderer::renderVisualization( GraphicsContext& graphicsContext ) const
+	void GameRenderer::renderVisualization( GraphicsContext& graphicsContext, const RenderTarget& renderTarget, const RenderView& view ) const
 	{
 		if ( m_visualizationMode == VisualizationMode_Invalid )
 		{
 			return;
 		}
 
-		graphicsContext.beginRenderPass( m_accumulationTarget );
+		graphicsContext.beginRenderPass( renderTarget );
 
 		graphicsContext.setBlendState( m_pBlendStateSet );
 		graphicsContext.setDepthStencilState( m_pDepthStencilState );

@@ -12,7 +12,7 @@
 
 namespace tiki
 {
-	struct FrameData;
+	class RenderScene;
 
 	class DebugGuiLightingWindow : public DebugGuiWindow
 	{
@@ -23,7 +23,7 @@ namespace tiki
 		void						create( DebugGui& debugGui );
 		void						dispose();
 
-		void						fillFrameData( FrameData& frameData );
+		void						fillFrameData( RenderScene& scene );
 
 	private:
 

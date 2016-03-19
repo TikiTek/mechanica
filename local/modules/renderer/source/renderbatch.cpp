@@ -3,6 +3,7 @@
 
 #include "tiki/base/functions.hpp"
 #include "tiki/graphics/material.hpp"
+#include "tiki/graphics/model.hpp"
 
 #include "renderer.hpp"
 
@@ -88,6 +89,17 @@ namespace tiki
 		m_pCurrentSequence->commandCount	= 0u;
 		m_pCurrentSequence->sortValue		= 0u;
 		m_pCurrentSequence->pCommands		= nullptr;
+	}
+
+	void RenderBatch::queueModel( const Model* pModel, const Matrix43* pWorldTransform /*= nullptr*/, const SkinningData** ppSkinningData /*= nullptr*/ )
+	{
+		beginSequence( RenderPassMask_Geometry, (RenderEffectId)pModel->getMaterial()->getData()->renderEffectId, 0u );
+		for( uint i = 0u; i < pModel->getGeometryCount(); ++i )
+		{
+			const SkinningData* pSkinningData = (ppSkinningData != nullptr ? ppSkinningData[ i ] : nullptr);
+			queueGeometry( pModel->getGeometryByIndex( i ), pModel->getMaterial(), pWorldTransform, pSkinningData );
+		}
+		endSequence();
 	}
 
 	void RenderBatch::queueGeometry( const ModelGeometry& geometry, const Material* pMaterial, const Matrix43* pWorldTransform /*= nullptr */, const SkinningData* pSkinningData /*= nullptr*/ )

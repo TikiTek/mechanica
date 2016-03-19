@@ -11,6 +11,7 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/renderer/rendercommand.hpp"
 #include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
 #include "shader/scene_shader.hpp"
@@ -137,7 +138,7 @@ namespace tiki
 		m_pixelConstantBuffer.dispose( graphicsSystem );
 	}
 
-	void SceneRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const FrameData& frameData, const RendererContext& rendererContext )
+	void SceneRenderEffect::executeRenderSequencesInternal( GraphicsContext& graphicsContext, RenderPass pass, const RenderSequence* pSequences, uint sequenceCount, const RenderView& view, const RendererContext& rendererContext )
 	{
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 		graphicsContext.setBlendState( m_pBlendState );
@@ -186,7 +187,7 @@ namespace tiki
 
 				Matrix44 mvpMtx;
 				matrix::set( mvpMtx, command.worldTransform );
-				matrix::mul( mvpMtx, frameData.mainCamera.getViewProjectionMatrix() );
+				matrix::mul( mvpMtx, view.getCamera().getViewProjectionMatrix() );
 
 				Matrix43 modelView = command.worldTransform;
 				//matrix::mul( modelView, frameData.mainCamera.getViewMatrix() );

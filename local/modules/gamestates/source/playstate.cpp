@@ -104,12 +104,6 @@ namespace tiki
 			if ( isCreating )
 			{
 				m_pGameRenderer = &m_pParentState->getGameRenderer();
-
-				FrameData& frameData = m_pGameRenderer->getFrameData();
-				frameData.nearPlane		= 0.001f;
-				frameData.farPlane		= 100.0f;
-				frameData.mainCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
-
 				return TransitionState_Finish;
 			}
 			else
@@ -132,19 +126,17 @@ namespace tiki
 		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
 		const float totalGameTime = float( m_pGame->getFrameTimer().getTotalTime() );
 
-		FrameData& frameData = m_pGameRenderer->getFrameData();
+		m_gameSession.update( timeDelta, totalGameTime );
 
-		DirectionalLightData& directionalLight = frameData.directionalLights.push();
+		DirectionalLightData& directionalLight = m_gameSession.getGameClient().getScene().addDirectionalLight();
 		vector::set( directionalLight.direction, s_lightDirectionX, s_lightDirectionY, s_lightDirectionZ );
 		vector::normalize( directionalLight.direction );
 		directionalLight.color = TIKI_COLOR_WHITE;
-
-		m_gameSession.update( frameData, timeDelta, totalGameTime );
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
-		m_gameSession.render( *m_pGameRenderer );
+		m_gameSession.render( *m_pGameRenderer, graphicsContext );
 
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
@@ -195,5 +187,10 @@ namespace tiki
 				m_bloom.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 			}
 		}
+	}
+
+	const RenderView& PlayState::getRenderView() const
+	{
+		return m_gameSession.getGameClient().getView();
 	}
 }

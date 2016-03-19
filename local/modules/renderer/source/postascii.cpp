@@ -6,6 +6,7 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/stockvertex.hpp"
 #include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/ascii_shader.hpp"
@@ -113,16 +114,16 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	void PostProcessAscii::render( GraphicsContext& graphicsContext, const FrameData& frameData, const RendererContext& rendererContext ) const
+	void PostProcessAscii::render( GraphicsContext& graphicsContext, const RenderView& view, const RendererContext& rendererContext ) const
 	{
 		// down sample
 		{
 			Matrix44 inverseProjection;
-			matrix::invert( inverseProjection, frameData.mainCamera.getProjection().getMatrix() );
+			matrix::invert( inverseProjection, view.getCamera().getProjection().getMatrix() );
 
 			AsciiPixelConstantData* pPixelConstants = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
 			TIKI_ASSERT( pPixelConstants != nullptr );
-			createFloat4( pPixelConstants->param0, frameData.farPlane, (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
+			createFloat4( pPixelConstants->param0, view.getFarPlane(), (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
 			createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 			graphicsContext.unmapBuffer( m_pixelConstants );
 		}
@@ -150,7 +151,7 @@ namespace tiki
 
 		graphicsContext.endRenderPass();
 
-		// ascii
+		// ASCII
 		graphicsContext.beginRenderPass( m_finalResultTarget );
 
 		graphicsContext.setBlendState( m_pBlendState );

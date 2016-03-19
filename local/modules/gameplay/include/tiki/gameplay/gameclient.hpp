@@ -15,13 +15,15 @@
 #include "tiki/gamecomponents/playercontrolcomponent.hpp"
 #include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/physics/physicsworld.hpp"
+#include "tiki/renderer/renderscene.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
+	class GameRenderer;
 	class Model;
-	struct FrameData;
 	struct InputEvent;
+	struct ViewData;
 
 	struct GameClientUpdateContext
 	{
@@ -29,7 +31,6 @@ namespace tiki
 		{
 			pPlayerCollider = nullptr;
 			pTerrainState	= nullptr;
-			pFrameData		= nullptr;
 		}
 
 		float							totalGameTime;
@@ -39,15 +40,16 @@ namespace tiki
 		const TerrainComponentState*	pTerrainState;
 
 		CollectedCoinIdArray			collectedCoins;
-
-		FrameData*						pFrameData;
 	};
 
 	class GameClient
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( GameClient );
+		TIKI_NONCOPYABLE_CLASS( GameClient );
 
 	public:
+
+													GameClient();
+													~GameClient();
 
 		bool										create();
 		void										dispose();
@@ -61,12 +63,17 @@ namespace tiki
 		void										disposeEntity( EntityId entityId );
 
 		void										update( GameClientUpdateContext& updateContext );
-		void										render( GameRenderer& gameRenderer ) const;
+		void										render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext );
 
 		bool										processInputEvent( const InputEvent& inputEvent );
 
 		EntitySystem&								getEntitySystem()	{ return m_entitySystem; }
 		PhysicsWorld&								getPhysicsWorld()	{ return m_physicsWorld; }
+
+		RenderScene&								getScene()			{ return m_renderScene; }
+		const RenderScene&							etScene() const		{ return m_renderScene; }
+		RenderView&									getView()			{ return *m_pRenderView; }
+		const RenderView&							getView() const		{ return *m_pRenderView; }
 
 		const PhysicsCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
 		const PlayerControlComponent&				getPlayerControlComponent() const { return m_playerControlComponent; }
@@ -85,6 +92,9 @@ namespace tiki
 		EntitySystem						m_entitySystem;
 
 		PhysicsWorld						m_physicsWorld;
+
+		RenderScene							m_renderScene;
+		RenderView*							m_pRenderView;
 
 		GameCamera							m_gameCamera;
 		FreeCamera							m_freeCamera;

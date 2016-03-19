@@ -3,16 +3,29 @@
 
 #include "tiki/base/debugprop.hpp"
 #include "tiki/components/entitytemplate.hpp"
+#include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/renderer/gamerenderer.hpp"
 #include "tiki/renderer/renderercontext.hpp"
+#include "tiki/renderer/renderview.hpp"
 
 #include "components.hpp"
 #include "gamecomponents.hpp"
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", false );
+	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", true );
+
+	GameClient::GameClient()
+	{
+		m_pRenderView = nullptr;
+	}
+
+	GameClient::~GameClient()
+	{
+		TIKI_ASSERT( m_pRenderView == nullptr );
+	}
 
 	bool GameClient::create()
 	{
@@ -77,12 +90,25 @@ namespace tiki
 
 		m_freeCamera.create( Vector3::zero, Quaternion::identity );
 		m_freeCamera.setMouseControl( true );
+
+		RenderSceneParameters sceneParameters;
+		if( !m_renderScene.create( sceneParameters ) )
+		{
+			dispose();
+			return false;
+		}
+
+		RenderViewParameters viewParameters;
+		m_pRenderView = m_renderScene.addView( viewParameters );
 		
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
+		m_renderScene.removeView( m_pRenderView );
+		m_renderScene.dispose();
+
 		m_entitySystem.update(); // to dispose all entities
 
 		m_freeCamera.dispose();
@@ -288,35 +314,43 @@ namespace tiki
 
 	void GameClient::update( GameClientUpdateContext& updateContext )
 	{
+		const timems timeMs = timems( updateContext.timeDelta * 1000.0f );
+
+		m_renderScene.clearState();
+
 		m_entitySystem.update();
 
-		const timems timeMs = timems( updateContext.timeDelta * 1000.0f );
+		Camera camera;
+		camera.create( m_pRenderView->getCamera() );
+		m_gameCamera.update( camera, updateContext.pTerrainState, updateContext.timeDelta );
+
+		if( s_useFreeCamera )
+		{
+			m_freeCamera.update( m_pRenderView->getCamera(), updateContext.timeDelta );
+		}
+		else
+		{
+			m_pRenderView->getCamera().create( camera );
+		}
 
 		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsCharacterControllerComponent.update();
 		m_physicsBodyComponent.update();
-		m_playerControlComponent.update( m_gameCamera, updateContext.timeDelta );
+		m_playerControlComponent.update( m_gameCamera, camera, updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 		m_coinComponent.update( updateContext.pPlayerCollider, updateContext.collectedCoins, updateContext.totalGameTime );
 
 		m_transformComponent.update();
-
-		if( s_useFreeCamera )
-		{
-			m_freeCamera.update( updateContext.pFrameData->mainCamera, updateContext.timeDelta );
-		}
-		else
-		{
-			m_gameCamera.update( updateContext.pFrameData->mainCamera, updateContext.pTerrainState, updateContext.timeDelta );
-		}
 	}
 
-	void GameClient::render( GameRenderer& gameRenderer ) const
+	void GameClient::render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext )
 	{
-		m_staticModelComponent.render( gameRenderer );
-		m_skinnedModelComponent.render( gameRenderer );
-		m_terrainComponent.render( gameRenderer );
+		m_staticModelComponent.render( m_renderScene );
+		m_skinnedModelComponent.render( m_renderScene );
+		m_terrainComponent.render( m_renderScene );
+
+		gameRenderer.renderView( graphicsContext, graphicsContext.getBackBuffer(), *m_pRenderView );
 	}
 	
 	bool GameClient::processInputEvent( const InputEvent& inputEvent )
