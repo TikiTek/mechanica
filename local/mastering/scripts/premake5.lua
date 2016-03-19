@@ -2,15 +2,20 @@
 
 local currentDir = os.getcwd();
 local baseDir = "../../..";
+
 local converterDir = path.getabsolute(path.join(baseDir, "library/tools/commandlineconverter"), currentDir);
 local gameDir = path.getabsolute(path.join(baseDir, "local/game"), currentDir);
+
+local configDir = path.getabsolute(path.join(baseDir, "local/mastering/configuration"), currentDir);
 local gamebuildDir = path.getabsolute(path.join(baseDir, "gamebuild"), currentDir);
 local contentDir = path.getabsolute(path.join(baseDir, "content"), currentDir);
 
 local outputDir = path.getabsolute('../output', currentDir);
 local logFilename = path.join(outputDir, 'master.log');
 
-local msBuildPath = nil;
+local msBuildExe = nil;
+local nsisExe = path.getabsolute(path.join(baseDir, "library/buildtools/nsis/makensis.exe"), currentDir);
+local mkisofsExe = path.getabsolute(path.join(baseDir, "library/buildtools/cdrtools/mkisofs.exe"), currentDir);
 
 local logFile = nil;
 
@@ -36,6 +41,34 @@ function iff( expr, when_true, when_false )
 	end
 end
 
+function writeAllText(fileName, content)
+	local f = io.open(fileName, 'w+');
+	if not f then
+		throw('can\'t open ' .. fileName);
+	end
+	
+	f:write(content);
+	f:close();
+end
+
+function os.executew(commandLine, workingDir, errorMessage)
+	if workingDir then
+		os.chdir(workingDir);
+	end
+	
+	local buildProcess = io.popen(commandLine);
+	local buildProcessOutput = buildProcess:read('*a');
+	local buildProcessResult = buildProcess:close();
+
+	l(buildProcessOutput, true);
+	
+	if not buildProcessResult then
+		throw(iff(errorMessage, errorMessage, 'Unknown build error!'));
+	end
+	
+	return buildProcessResult, buildProcessOutput;
+end
+
 function cleanUp()
 	l('Clean up ' .. outputDir .. '...');
 	os.rmdir(outputDir);
@@ -44,39 +77,23 @@ end
 
 function buildProject(projectPath, config)
 	local projectName = path.getname(projectPath);
-	l('Generate ' .. projectName .. '...');
 	
-	os.chdir(projectPath);
-	local createProcess = io.popen('create_visualstudio.cmd');
-	local createProcessOutput = createProcess:read('*a');
-	local createProcessResult = createProcess:close();
-	
-	l(createProcessOutput, true);
-
-	if not createProcessResult then
-		throw('Generation failed!');
-	end
+	l('Generate ' .. projectName .. '...');	
+	os.executew('create_visualstudio.cmd', projectPath, 'Generation failed!');
 	
 	l('Building ' .. projectName .. '...');
 	
 	local projectFile = path.join(projectPath, 'build', projectName .. '.sln');
-	local msBuildCommandLine = string.format(
+	local commandLine = string.format(
 		[[""%s" /property:Configuration=%s /property:Platform=x64 /verbosity:m /nologo "%s""]],
-		msBuildPath,
+		msBuildExe,
 		config,
-		string.gsub(projectFile, '/', "\\")		
+		string.gsub(projectFile, '/', "\\")
 	);
 	
-	local buildProcess = io.popen(msBuildCommandLine);
-	local buildProcessOutput = buildProcess:read('*a');
-	local buildProcessResult = buildProcess:close();
+	local buildDir = path.join(projectPath, 'build');
+	local buildProcessResult, buildProcessOutput = os.executew(commandLine, buildDir, 'Build');
 
-	l(buildProcessOutput, true);
-	
-	if not buildProcessResult then
-		throw('Build failed!');
-	end
-	
 	return string.match(buildProcessOutput, '-> ([a-zA-Z]:[a-zA-Z0-9\\/.-_ \(\)]+.exe)');
 end
 
@@ -88,30 +105,58 @@ function buildAssets()
 	local converterExe = buildProject(converterDir, 'Release');
 
 	l('Building assets...');
-	local converterCommandLine = string.format(
+	local commandLine = string.format(
 		[[""%s" --content-dir=%s --target-dir=%s"]],
 		converterExe,
 		contentDir,
 		gamebuildDir
 	);
-		
-	local buildProcess = io.popen(converterCommandLine);
-	local buildProcessOutput = buildProcess:read('*a');
-	local buildProcessResult = buildProcess:close();
-
-	l(buildProcessOutput, true);
 	
-	if not buildProcessResult then
-		throw('Build failed!');
-	end
+	os.executew(commandLine, nil, 'Asset build failed!');
 end
 
 function buildSetup()
+	l("Build Setup...");
 	
+	local scriptsDir = path.join(outputDir, "scripts")
+	os.mkdir(scriptsDir);
+	os.mkdir(path.join(outputDir, "setup"));
+	
+	local gamebuildPattern = path.join(gamebuildDir, '*');
+	local gamebuildFiles = os.matchfiles(gamebuildPattern);
+	
+	local contentInstall = "";
+	local contentUninstall = "";
+	for i,fileName in pairs( gamebuildFiles ) do
+		local fullPath = string.gsub(path.getabsolute(fileName), '/', "\\");
+	
+		contentInstall = contentInstall .. string.format("File \"%s\"\n", fullPath);
+		contentUninstall = contentUninstall .. string.format("Delete \"%s\"\n", fullPath);
+	end
+	writeAllText(path.join(scriptsDir, 'install.nsh'), contentInstall);
+	writeAllText(path.join(scriptsDir, 'uninstall.nsh'), contentUninstall);
+	
+	local commandLine = string.format(
+		[[""%s" setup.nsi"]],
+		nsisExe
+	);
+	os.executew(commandLine, currentDir, 'Setup build failed!');
 end
 
 function buildIso()
+	--cdrtools\mkisofs.exe -o steam_os2.iso -iso-level 3 -r -R -l -L -J -allow-lowercase -allow-multidot data_folder
+	--pause
 	
+	l("Build ISO-Image...");
+	
+	local commandLine = string.format(
+		[[""%s" -o "%s" -l -hfs %s %s"]],
+		mkisofsExe,
+		path.join(outputDir, 'eu_image_win.iso'),
+		path.join(configDir, 'cdcontent'),
+		path.join(outputDir, 'setup')
+	);
+	os.executew(commandLine, nil, "ISO build failed!");
 end
 
 newaction {
@@ -127,10 +172,10 @@ newaction {
 		local msBuildResult = msBuildReg:read('*a');
 		msBuildReg:close();
 		
-		msBuildPath = string.match(msBuildResult, "([a-zA-Z]:[a-zA-Z0-9\\/.-_ \(\)]+)");
-		msBuildPath = string.gsub(msBuildPath, "\\", '/');
-		msBuildPath = path.join(msBuildPath, 'MSBuild.exe');
-		msBuildPath = string.gsub(msBuildPath, '/', "\\");
+		msBuildExe = string.match(msBuildResult, "([a-zA-Z]:[a-zA-Z0-9\\/.-_ \(\)]+)");
+		msBuildExe = string.gsub(msBuildExe, "\\", '/');
+		msBuildExe = path.join(msBuildExe, 'MSBuild.exe');
+		msBuildExe = string.gsub(msBuildExe, '/', "\\");
     end,
 
     onWorkspace = function(wks)
@@ -152,180 +197,3 @@ newaction {
     end
 	
 }
-
-
---[[
-bool ask = false;
-if (args.Length > 0)
-{
-	ask = (args[0] == "ask");
-}
-
-MasteringScript.CleanUp();
-MasteringScript.BuildMaster(ask);
-MasteringScript.BuildAssets(ask);
-MasteringScript.BuildSetup(ask);
-MasteringScript.BuildIso(ask);
-
-//BeginScript
-using System;
-using System.IO;
-using System.Diagnostics;
-
-public static class MasteringScript
-{
-
-	private static string _cmakeExe = @"..\..\library\buildtools\cmake\bin\cmake.exe";
-
-	private static bool _ask(bool ask, string text)
-	{
-		if (ask)
-		{
-			Console.Write(text + "(y/n)? ");
-			string answer = "";
-			while (answer != "y")
-			{
-				answer = Console.ReadLine();
-				if (answer == "n") return false;
-			}
-		}
-		
-		return true;
-	}
-
-	private static void _start(string exeName, string[] arguments)
-	{
-		_start(exeName, arguments, ".");
-	}
-
-	private static void _start(string exeName, string[] arguments, string workingDir)
-	{
-		if (arguments == null)
-		{
-			arguments = new string[0];
-		}
-	
-		ProcessStartInfo info = new ProcessStartInfo();
-		info.FileName = exeName;
-		info.Arguments = String.Join(" ", arguments);
-		info.UseShellExecute = false;
-		info.WorkingDirectory = Path.GetFullPath(workingDir);
-		
-		Process pro = Process.Start(info);
-		pro.WaitForExit();
-	}
-	
-	private static void _puts(string text)
-	{
-		Console.WriteLine(text);
-	}
-	
-	private static void _mkdir(string path)
-	{
-		Directory.CreateDirectory(path);
-	}
-	
-	public static void CleanUp()
-	{
-		Directory.Delete("output", true);
-	}
-	
-	public static void BuildMaster(bool ask)
-	{
-		if (_ask(ask, "Build Master version"))
-		{
-			_puts("Configure...");
-			_start(
-				_cmakeExe,
-				new string[] {
-					"-DCMAKE_BUILD_TYPE=master",
-					"."
-				},
-				_binaryDir
-			);
-			
-			_puts("Build...");
-			_start(
-				_cmakeExe,
-				new string[] {
-					"--build",
-					".",
-					"--target game"
-				},
-				_binaryDir
-			);			
-		}
-	}
-	
-	public static void BuildAssets(bool ask)
-	{
-		if (_ask(ask, "Build Assets"))
-		{
-			_puts("Build Assets...");
-			_start(
-				Path.GetFullPath(Path.Combine(_codeDir, "build_assets.cmd")),
-				new string[] {
-					"--master"
-				},
-				_codeDir
-			);
-		}	
-	}
-	
-	public static void BuildSetup(bool ask)
-	{
-		if (_ask(ask, "Build Setup"))
-		{
-			_puts("Build Setup-Scripts...");
-			
-			_mkdir(@".\output\scripts");
-			_mkdir(@".\output\setup");
-			
-			string contentInstall = "";
-			string contentUninstall = "";
-			foreach (string file in Directory.GetFiles(_gamebuildDir))
-			{
-				string fullPath = Path.GetFullPath(file);
-			
-				contentInstall += String.Format("File \"{0}\"{1}", fullPath, Environment.NewLine);
-				contentUninstall += String.Format("Delete \"{0}\"{1}", fullPath, Environment.NewLine);
-			}
-			File.WriteAllText(@".\output\scripts\install.nsh", contentInstall);
-			File.WriteAllText(@".\output\scripts\uninstall.nsh", contentUninstall);
-			
-			_puts("Build Setup-Executable...");
-		
-			_start(
-				@"..\..\library\buildtools\nsis\makensis.exe",
-				new string[] {
-					"setup.nsi"
-				},
-				"scripts"
-			);
-		}	
-	}
-	
-	--cdrtools\mkisofs.exe -o steam_os2.iso -iso-level 3 -r -R -l -L -J -allow-lowercase -allow-multidot data_folder
-	--pause
-	
-	public static void BuildIso(bool ask)
-	{
-		if (_ask(ask, "Build ISO"))
-		{
-			_puts("Build ISO-Image...");
-			
-			_start(
-				@"..\..\library\buildtools\cdrtools\mkisofs.exe",
-				new string[] {
-					"-o",
-					Path.GetFullPath(@"output\eu_image_win.iso"),
-					"-l",
-					"-hfs",
-					Path.GetFullPath(@"configuration\cdcontent"),
-					Path.GetFullPath(@"output\setup")
-				}
-			);
-		}	
-	}
-}
---]]
