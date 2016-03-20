@@ -1,7 +1,7 @@
 
 #include "tiki/unittest/unittest.hpp"
 
-#include "tiki/webserver/url.hpp"
+#include "tiki/net/url.hpp"
 
 namespace tiki
 {
@@ -18,7 +18,7 @@ namespace tiki
 		return true;
 	}
 
-	static bool checkUrlIntegrity( const Url& url, cstring pProtocol, cstring pUsername, cstring pPassword, cstring pDomain, cstring pPort, cstring pPath, const Map<string, string>* pArguments, cstring pFragment )
+	static bool checkUrlIntegrity( const Url& url, const char* pProtocol, const char* pUsername, const char* pPassword, const char* pDomain, const char* pPort, const char* pPath, const Map<string, string>* pArguments, const char* pFragment )
 	{
 		bool result = true;
 
