@@ -2,4 +2,4 @@
 
 include "../../../buildtools/base_scripts"
 
-finalize( "tiki3unittests", { find_project( "libraryunittests" ) } );
+finalize( "unittests", { find_project( "libraryunittests" ) } );

@@ -1,7 +1,7 @@
 
 #include "tiki/unittest/unittest.hpp"
 
-#include "tiki/base/sortedsizedmap.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 
 namespace tiki
 {	
