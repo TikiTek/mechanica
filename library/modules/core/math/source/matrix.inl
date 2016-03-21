@@ -150,6 +150,13 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix44& matrix::createTranslation( Matrix44& mtx, const Vector3& position )
+	{
+		matrix::createIdentity( mtx );
+		vector::set( mtx.w, position, 1.0f );
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z )
 	{
 		mtx.x = x;
@@ -332,7 +339,7 @@ namespace tiki
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix33& matrix::invert( Matrix33& mtx, const Matrix33& source )
+	TIKI_FORCE_INLINE bool matrix::invert( Matrix33& mtx, const Matrix33& source )
 	{
 		const float det =	source.x.x * source.y.y * source.z.z +
 							source.x.y * source.y.z * source.z.x +
@@ -340,7 +347,10 @@ namespace tiki
 							source.z.x * source.y.y * source.x.z -
 							source.z.y * source.y.z * source.x.x -
 							source.z.z * source.y.x * source.x.y;
-		TIKI_ASSERT( f32::isZero( det ) == false );
+		if( f32::isZero( det ) )
+		{
+			return false;
+		}
 
 		mtx.x.x = source.y.y * source.z.z - source.y.z * source.z.y;
 		mtx.x.y = source.x.z * source.z.y - source.x.y * source.z.z;
@@ -352,17 +362,24 @@ namespace tiki
 		mtx.z.y = source.x.y * source.z.x - source.x.x * source.z.y;
 		mtx.z.z = source.x.x * source.y.y - source.x.y * source.y.x;
 
-		return scale( mtx, 1.0f / det );
+		scale( mtx, 1.0f / det );
+
+		return true;
 	}
 
-	TIKI_FORCE_INLINE Matrix43& matrix::invert( Matrix43& mtx, const Matrix43& source )
+	TIKI_FORCE_INLINE bool matrix::invert( Matrix43& mtx, const Matrix43& source )
 	{
-		matrix::invert( mtx.rot, source.rot );
+		if( !matrix::invert( mtx.rot, source.rot ) )
+		{
+			return false;
+		}
+
 		vector::negate( mtx.pos );
-		return mtx;
+
+		return true;
 	}
 
-	TIKI_FORCE_INLINE Matrix44& matrix::invert( Matrix44& mtx, const Matrix44& source )
+	TIKI_FORCE_INLINE bool matrix::invert( Matrix44& mtx, const Matrix44& source )
 	{
 		// source: https://github.com/sharpdx/SharpDX/blob/master/Source/SharpDX.Mathematics/Matrix.cs
 
@@ -379,11 +396,11 @@ namespace tiki
 		const float d14 = source.y.x * b3 + source.y.y * -b1 + source.y.z * b0;
 
 		const float det = source.x.x * d11 - source.x.y * d12 + source.x.z * d13 - source.x.w * d14;
-		if ( f32::abs( det ) == 0.0f)
+		if( f32::isZero( det ) )
 		{
-			mtx = Matrix44::zero;
-			return mtx;
+			return false;
 		}
+
 		const float inverseDet = 1.0f / det;
 
 		const float a0 = (source.x.x * source.y.y) - (source.x.y * source.y.x);
@@ -413,7 +430,7 @@ namespace tiki
 		mtx.z.x = +d13 * inverseDet; mtx.z.y = -d23 * inverseDet; mtx.z.z = +d33 * inverseDet; mtx.z.w = -d43 * inverseDet;
 		mtx.w.x = -d14 * inverseDet; mtx.w.y = +d24 * inverseDet; mtx.w.z = -d34 * inverseDet; mtx.w.w = +d44 * inverseDet;
 
-		return mtx;
+		return true;
 	}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::lerp( Matrix33& mtx, const Matrix33& start, const Matrix33& end, const float amount )

@@ -25,7 +25,7 @@ namespace tiki
 			return -a > a ? -a : a;
 		}
 
-		TIKI_FORCE_INLINE bool	isZero( float a, float epsilon2 = f32::epsilon )
+		TIKI_FORCE_INLINE bool	isZero( float a, float epsilon2 = 1.0e-20f )
 		{
 			return f32::abs( a ) < epsilon2;
 		}

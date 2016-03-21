@@ -22,7 +22,7 @@ namespace tiki
 		~Camera();
 
 		void				create( const Camera& copy );
-		void				create( const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Projection* pProjection = nullptr, const Vector3& upVector = Vector3::unitY );
+		void				create( const Vector3& position = Vector3::zero, const Quaternion& rotation = Quaternion::identity, const Projection* pProjection = nullptr );
 
 		const Projection&	getProjection() const { return m_projection; }
 		void				setProjection( const Projection& projection );
@@ -32,8 +32,8 @@ namespace tiki
 
 		void				setTransform( const Vector3& position, const Quaternion& rotation );
 
-		const Matrix43&		getWorldMatrix() const			{ return m_world; }
-		const Matrix43&		getViewMatrix() const			{ return m_view; }
+		const Matrix44&		getWorldMatrix() const			{ return m_world; }
+		const Matrix44&		getViewMatrix() const			{ return m_view; }
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
 		const Frustum&		getFrustum() const;
@@ -41,20 +41,18 @@ namespace tiki
 
 	private:
 
-		Vector3		m_upVector;
 		Projection	m_projection;
 
 		Vector3		m_position;
 		Quaternion	m_rotation;
 
-		Matrix43	m_world;
-		Matrix43	m_view;
+		Matrix44	m_world;
+		Matrix44	m_view;
 		Matrix44	m_viewProjection;
 
-		mutable bool		m_isFrustumValid;
-		mutable Frustum		m_frustum;
+		Frustum		m_frustum;
 
-		void		createMatrix();
+		void		createData();
 
 	};
 }

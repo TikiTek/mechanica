@@ -55,15 +55,15 @@ namespace tiki
 		//FrustumIntersectionType	testIntersectionBoundingBox( const BoundingBox& box ) const;
 		//FrustumIntersectionType	testIntersectionBoundingSphere( const BoundingSphere& sphere ) const;
 		
-		void					getCorner( Vector3& targetVector, FrustumCorner corner ) const;
-		void					getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const;
+		bool					getCorner( Vector3& targetVector, FrustumCorner corner ) const;
+		bool					getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const;
 		const Plane&			getPlane( FrustumPlane plane ) const;
 
 	private:
 				
 		Plane					m_planes[ FrustumPlane_Count ];
 
-		void					getThreePlanesIntersectionPoint( Vector3& targetVector, const Plane& plane1, const Plane& plane2, const Plane& plane3 ) const;
+		bool					getThreePlanesIntersectionPoint( Vector3& targetVector, const Plane& plane1, const Plane& plane2, const Plane& plane3 ) const;
 
 	};
 }

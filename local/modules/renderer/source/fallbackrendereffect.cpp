@@ -121,7 +121,8 @@ namespace tiki
 			{
 				const RenderCommand& command = sequence.pCommands[ commandIndex ];
 
-				Matrix43 mvMtx = command.worldTransform;
+				Matrix44 mvMtx;
+				matrix::set( mvMtx, command.worldTransform );
 				matrix::mul( mvMtx, view.getCamera().getViewMatrix() );
 
 				Matrix44 mvpMtx;

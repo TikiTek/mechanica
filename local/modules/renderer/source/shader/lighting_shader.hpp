@@ -53,7 +53,7 @@ DirectionalLightConstantData fillDirectionalLightData( const Vector3& direction,
 	return data;
 }
 
-PointLightConstantData fillPointLightData( const Vector3& worldPosition, const Matrix43& viewMatrix, const Vector3& cameraPosition, Color color, float range )
+PointLightConstantData fillPointLightData( const Vector3& worldPosition, const Matrix44& viewMatrix, const Vector3& cameraPosition, Color color, float range )
 {
 	PointLightConstantData data;
 	
@@ -68,7 +68,7 @@ PointLightConstantData fillPointLightData( const Vector3& worldPosition, const M
 	return data;
 }
 
-SpotLightConstantData fillSpotLightData( const Vector3& worldPosition, const Matrix43& viewMatrix, const Vector3& direction, Color color, float range, float theta, float phi )
+SpotLightConstantData fillSpotLightData( const Vector3& worldPosition, const Matrix44& viewMatrix, const Vector3& direction, Color color, float range, float theta, float phi )
 {
 	SpotLightConstantData data;
 

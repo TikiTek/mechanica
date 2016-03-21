@@ -60,7 +60,7 @@ namespace tiki
 	//	return FrustumIntersectionType_Disjoint;
 	//}
 
-	void Frustum::getCorner( Vector3& targetVector, FrustumCorner corner ) const
+	bool Frustum::getCorner( Vector3& targetVector, FrustumCorner corner ) const
 	{
 		TIKI_ASSERT( corner < FrustumCorner_Count );
 
@@ -76,19 +76,31 @@ namespace tiki
 			{ FrustumPlane_Far,		FrustumPlane_Bottom,	FrustumPlane_Left }
 		};
 
-		getThreePlanesIntersectionPoint( targetVector, m_planes[ s_aaCornerPlanes[ corner ][ 0u ] ], m_planes[ s_aaCornerPlanes[ corner ][ 1u ] ], m_planes[ s_aaCornerPlanes[ corner ][ 2u ] ] );
+		return getThreePlanesIntersectionPoint( targetVector, m_planes[ s_aaCornerPlanes[ corner ][ 0u ] ], m_planes[ s_aaCornerPlanes[ corner ][ 1u ] ], m_planes[ s_aaCornerPlanes[ corner ][ 2u ] ] );
 	}
 
-	void Frustum::getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const
+	bool Frustum::getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const
 	{
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ],	m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
-		getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ],	m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
+		bool ok = true;
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ],	m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
+		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
+
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Top ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Top ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Bottom ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Bottom ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Top ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Top ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Bottom ] );
+		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Bottom ] );
+
+		return ok;
 	}
 
 	const Plane& Frustum::getPlane( FrustumPlane plane ) const
@@ -96,35 +108,34 @@ namespace tiki
 		return m_planes[ plane ];
 	}
 
-	void Frustum::getThreePlanesIntersectionPoint( Vector3& targetVector, const Plane& plane1, const Plane& plane2, const Plane& plane3 ) const
+	bool Frustum::getThreePlanesIntersectionPoint( Vector3& targetVector, const Plane& plane1, const Plane& plane2, const Plane& plane3 ) const
 	{
-		//P = -d1 * N2xN3 / N1.N2xN3 - d2 * N3xN1 / N2.N3xN1 - d3 * N1xN2 / N3.N1xN2 
-		Vector3 normal1;
-		Vector3 normal2;
-		Vector3 normal3;
-		plane1.getNormal( normal1 );
-		plane1.getNormal( normal2 );
-		plane1.getNormal( normal3 );
+		// P = -d1 * N2xN3 / N1.N2xN3 - d2 * N3xN1 / N2.N3xN1 - d3 * N1xN2 / N3.N1xN2 
 
-		Vector3 cross1;
-		Vector3 cross2;
-		Vector3 cross3;
-		vector::cross( cross1, normal2, normal3 );
-		vector::cross( cross2, normal3, normal1 );
-		vector::cross( cross3, normal1, normal2 );
-		const float dot1 = vector::dot( normal1, cross1 );
-		const float dot2 = vector::dot( normal2, cross2 );
-		const float dot3 = vector::dot( normal3, cross3 );
+		const Vector4& data1 = plane1.getData();
+		const Vector4& data2 = plane2.getData();
+		const Vector4& data3 = plane3.getData();
 
-		vector::scale( cross1, -plane1.getD() );
-		vector::scale( cross2, plane2.getD() );
-		vector::scale( cross3, plane3.getD() );
-		vector::scale( cross1, 1.0f / dot1 );
-		vector::scale( cross2, 1.0f / dot2 );
-		vector::scale( cross3, 1.0f / dot3 );
-		
-		targetVector = cross1;
-		vector::sub( targetVector, cross2 );
-		vector::sub( targetVector, cross3 );
+		Matrix33 mtx;
+		mtx.x.x = data1.x;
+		mtx.x.y = data2.x;
+		mtx.x.z = data3.x;
+		mtx.y.x = data1.y;
+		mtx.y.y = data2.y;
+		mtx.y.z = data3.y;
+		mtx.z.x = data1.z;
+		mtx.z.y = data2.z;
+		mtx.z.z = data3.z;
+
+		Matrix33 inverseMtx;
+		if( !matrix::invert( inverseMtx, mtx ) )
+		{
+			return false;
+		}
+
+		vector::set( targetVector, -data1.w, -data2.w, -data3.w );
+		matrix::transform( targetVector, inverseMtx );
+
+		return true;
 	}
 }

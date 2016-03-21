@@ -37,12 +37,9 @@ namespace tiki
 		m_pTerrainComponent = nullptr;
 	}
 
-	static float test = 0.0f;
 	void GameCamera::update( Camera& targetCamera, const TerrainComponentState* pTerrainComponentState, float deltaTime )
 	{
-		test += deltaTime;
-		m_cameraPosition.x = f32::sin( test );
-		m_cameraPosition.z += s_cameraSpeedZ * deltaTime;
+		//m_cameraPosition.z += s_cameraSpeedZ * deltaTime;
 		m_cameraPosition.y = m_pTerrainComponent->getHeightAtPosition( pTerrainComponentState, vector::create( m_cameraPosition.x, m_cameraPosition.x ) ) + s_cameraAltitude;
 		//position.z = s_cameraDistanceZ;
 
