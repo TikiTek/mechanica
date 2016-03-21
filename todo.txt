@@ -5,5 +5,6 @@ Change to Forward rendering
 Try Physically-Based Rendering
 Implement usable Tools
 Implement reflection for Generic Data
-Shadow Volumes
+Shadows (ray tracer?)
 Implement Particles
+Fix math
