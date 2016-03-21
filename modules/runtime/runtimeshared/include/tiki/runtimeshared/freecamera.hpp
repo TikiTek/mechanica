@@ -35,6 +35,8 @@ namespace tiki
 
 		bool		m_enableMouse;
 
+		Vector2		m_mouseState;
+		Vector2		m_keyboardState;
 		Vector2		m_leftStickState;
 		Vector2		m_rightStickState;
 		float		m_leftTriggerState;

@@ -225,7 +225,7 @@ namespace tiki
 			inputEvent.deviceId		= controllerIndex;
 			inputEvent.data.controllerStick.stickIndex		= stickIndex;
 			inputEvent.data.controllerStick.xState			= (float)currentStateX / 32767.0f;
-			inputEvent.data.controllerStick.yState			= (float)currentStateY / 32767.0f;
+			inputEvent.data.controllerStick.yState			= (float)currentStateY / -32767.0f;
 		}
 	}
 

@@ -280,7 +280,10 @@ namespace tiki
 	void debugrenderer::flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command )
 	{
 		Vector3 cornerPoints[ 8u ];
-		command.frustum.getCorners( cornerPoints );
+		if( !command.frustum.getCorners( cornerPoints ) )
+		{
+			TIKI_TRACE_ERROR( "[debugrenderer] Could not draw frustum.\n" );
+		}
 
 		Vector3	nearPoints[] = { 
 			cornerPoints[ FrustumCorner_NearRightBottom ],

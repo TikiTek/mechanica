@@ -68,6 +68,7 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix33&	createRotationX( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix33&	createRotationY( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix33&	createRotationZ( Matrix33& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix44&	createTranslation( Matrix44& mtx, const Vector3& position );
 
 		TIKI_FORCE_INLINE Matrix33&	set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z );
 		TIKI_FORCE_INLINE Matrix43&	set( Matrix43& mtx, const Matrix33& rot, const Vector3& pos );
@@ -95,9 +96,9 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix43&	scale( Matrix43& mtx, float val );
 		TIKI_FORCE_INLINE Matrix44&	scale( Matrix44& mtx, float val );
 
-		TIKI_FORCE_INLINE Matrix33&	invert( Matrix33& mtx, const Matrix33& source );
-		TIKI_FORCE_INLINE Matrix43&	invert( Matrix43& mtx, const Matrix43& source );
-		TIKI_FORCE_INLINE Matrix44&	invert( Matrix44& mtx, const Matrix44& source );
+		TIKI_FORCE_INLINE bool		invert( Matrix33& mtx, const Matrix33& source );	// try to invert. returns false if determinant is zero.
+		TIKI_FORCE_INLINE bool		invert( Matrix43& mtx, const Matrix43& source );	// try to invert. returns false if determinant is zero.
+		TIKI_FORCE_INLINE bool		invert( Matrix44& mtx, const Matrix44& source );	// try to invert. returns false if determinant is zero.
 
 		TIKI_FORCE_INLINE Matrix33&	lerp( Matrix33& mtx, const Matrix33& start, const Matrix33& end, const float amount );
 		TIKI_FORCE_INLINE Matrix43&	lerp( Matrix43& mtx, const Matrix43& start, const Matrix43& end, const float amount );
@@ -110,10 +111,6 @@ namespace tiki
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix43& mtx );	// for coordinate
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix44& mtx );	// for coordinate
 		TIKI_FORCE_INLINE void		transform( Vector4& vec, const Matrix44& mtx );	// for coordinate
-
-		TIKI_FORCE_INLINE void		transformNormal( Vector3& vec, const Matrix43& mtx );
-		TIKI_FORCE_INLINE void		transformCoordinate( Vector3& vec, const Matrix44& mtx );
-
 
 		TIKI_FORCE_INLINE void		project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx );
 		TIKI_FORCE_INLINE void		unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx );

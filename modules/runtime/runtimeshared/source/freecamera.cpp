@@ -17,6 +17,8 @@ namespace tiki
 		quaternion::toYawPitchRoll( yprRotation, rotation );
 		m_rotation = vector::create( yprRotation.x, yprRotation.y );
 
+		vector::clear( m_mouseState );
+		vector::clear( m_keyboardState );
 		vector::clear( m_leftStickState );
 		vector::clear( m_rightStickState );
 		m_leftTriggerState	= 0.0f;
@@ -25,8 +27,6 @@ namespace tiki
 
 	void FreeCamera::dispose()
 	{
-		vector::clear( m_position );
-		vector::clear( m_rotation );
 	}
 
 	void FreeCamera::update( Camera& targetCamera, float timeDelta )
@@ -36,10 +36,8 @@ namespace tiki
 		// rotate camera
 		{
 			Vector2 rotation = m_rightStickState;
-			if ( m_enableMouse )
-			{
-				vector::clear( m_rightStickState );
-			}
+			vector::add( rotation, m_mouseState );
+			vector::clear( m_mouseState );
 			vector::scale( rotation, timeDelta * 2.0f );
 
 			vector::add( m_rotation, rotation );
@@ -50,19 +48,22 @@ namespace tiki
 
 		// move camera
 		{
+			Vector2 cameraMovement = m_leftStickState;
+			vector::add( cameraMovement, m_keyboardState );
+
 			Vector3 cameraForward;
-			Vector3 cameraRight;
+			Vector3 cameraLeft;
 			Vector3 cameraUp;
 			quaternion::getForward( cameraForward, cameraRotation );
-			quaternion::getRight( cameraRight, cameraRotation );
+			quaternion::getLeft( cameraLeft, cameraRotation );
 			quaternion::getUp( cameraUp, cameraRotation );
 
-			vector::scale( cameraForward,	m_leftStickState.y * timeDelta * m_speed );
-			vector::scale( cameraRight,		m_leftStickState.x * timeDelta * m_speed );
+			vector::scale( cameraForward,	cameraMovement.y * timeDelta * m_speed );
+			vector::scale( cameraLeft,		cameraMovement.x * timeDelta * m_speed );
 			vector::scale( cameraUp,		( -m_leftTriggerState + m_rightTriggerState ) * timeDelta * m_speed );
 
 			vector::add( m_position, cameraForward );
-			vector::add( m_position, cameraRight );
+			vector::add( m_position, cameraLeft );
 			vector::add( m_position, cameraUp );
 		}
 
@@ -71,64 +72,62 @@ namespace tiki
 
 	bool FreeCamera::processInputEvent( const InputEvent& inputEvent )
 	{
-		if ( !m_enableMouse )
+		if( inputEvent.eventType == InputEventType_Controller_StickChanged )
 		{
-			if ( inputEvent.eventType == InputEventType_Controller_StickChanged )
+			switch( inputEvent.data.controllerStick.stickIndex )
 			{
-				switch ( inputEvent.data.controllerStick.stickIndex )
-				{
-				case 0u:
-					m_leftStickState.x	= inputEvent.data.controllerStick.xState;
-					m_leftStickState.y	= inputEvent.data.controllerStick.yState;
-					break;
+			case 0u:
+				m_leftStickState.x = inputEvent.data.controllerStick.xState;
+				m_leftStickState.y = inputEvent.data.controllerStick.yState;
+				break;
 
-				case 1u:
-					m_rightStickState.x	= inputEvent.data.controllerStick.xState;
-					m_rightStickState.y	= inputEvent.data.controllerStick.yState;
-					break;
-				}
-
-				return true;
+			case 1u:
+				m_rightStickState.x = inputEvent.data.controllerStick.xState;
+				m_rightStickState.y = inputEvent.data.controllerStick.yState;
+				break;
 			}
-			else if ( inputEvent.eventType == InputEventType_Controller_TriggerChanged )
-			{
-				switch ( inputEvent.data.controllerTrigger.triggerIndex )
-				{
-				case 0u:
-					m_leftTriggerState = inputEvent.data.controllerTrigger.state;
-					break;
 
-				case 1u:
-					m_rightTriggerState = inputEvent.data.controllerTrigger.state;
-					break;
-				}
-
-				return true;
-			}
+			return true;
 		}
-		else
+		else if( inputEvent.eventType == InputEventType_Controller_TriggerChanged )
+		{
+			switch( inputEvent.data.controllerTrigger.triggerIndex )
+			{
+			case 0u:
+				m_leftTriggerState = inputEvent.data.controllerTrigger.state;
+				break;
+
+			case 1u:
+				m_rightTriggerState = inputEvent.data.controllerTrigger.state;
+				break;
+			}
+
+			return true;
+		}
+
+		if ( m_enableMouse )
 		{
 			if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 			{
 				switch ( inputEvent.data.keybaordKey.key )
 				{
 				case KeyboardKey_W:
-					m_leftStickState.y = 1.0f;
+					m_keyboardState.y = -1.0f;
 					return true;
 					//break;
 
 				case KeyboardKey_A:
-					m_leftStickState.x = -1.0f;
+					m_keyboardState.x = -1.0f;
 					return true;
 					//break;
 
 				case KeyboardKey_S:
-					m_leftStickState.y = -1.0f;
+					m_keyboardState.y = 1.0f;
 					return true;
 					//break;
 
 				case KeyboardKey_D:
-					m_leftStickState.x = 1.0f;
+					m_keyboardState.x = 1.0f;
 					return true;
 					//break;
 
@@ -147,22 +146,14 @@ namespace tiki
 				switch ( inputEvent.data.keybaordKey.key )
 				{
 				case KeyboardKey_W:
-					m_leftStickState.y = 0.0f;
+				case KeyboardKey_S:
+					m_keyboardState.y = 0.0f;
 					return true;
 					//break;
 
 				case KeyboardKey_A:
-					m_leftStickState.x = 0.0f;
-					return true;
-					//break;
-
-				case KeyboardKey_S:
-					m_leftStickState.y = 0.0f;
-					return true;
-					//break;
-
 				case KeyboardKey_D:
-					m_leftStickState.x = 0.0f;
+					m_keyboardState.x = 0.0f;
 					return true;
 					//break;
 
@@ -175,8 +166,8 @@ namespace tiki
 			}
 			else if ( inputEvent.eventType == InputEventType_Mouse_Moved )
 			{
-				m_rightStickState.x = float( inputEvent.data.mouseMoved.xOffset ) * 0.1f;
-				m_rightStickState.y = float( inputEvent.data.mouseMoved.yOffset ) * -0.1f;
+				m_mouseState.x = float( inputEvent.data.mouseMoved.xOffset ) * 0.1f;
+				m_mouseState.y = float( inputEvent.data.mouseMoved.yOffset ) * 0.1f;
 
 				return true;
 			}
@@ -188,12 +179,5 @@ namespace tiki
 	void FreeCamera::setMouseControl( bool enabled )
 	{
 		m_enableMouse = enabled;
-		
-		if ( !enabled )
-		{
-			vector::clear( m_rightStickState );
-			vector::clear( m_leftStickState );
-		}
 	}
-
 }
