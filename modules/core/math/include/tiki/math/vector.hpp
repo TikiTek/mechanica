@@ -90,24 +90,33 @@ namespace tiki
 		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, const Vector3& source, float w );
 		TIKI_FORCE_INLINE Vector4&	set( Vector4& vec, float x, float y, float z, float w );
 
-		TIKI_FORCE_INLINE Vector2&	add( Vector2& vec, float x, float y );
-		TIKI_FORCE_INLINE Vector3&	add( Vector3& vec, float x, float y, float z );
-		TIKI_FORCE_INLINE Vector4&	add( Vector4& vec, float x, float y, float z, float w );
 		TIKI_FORCE_INLINE Vector2&	add( Vector2& vec, const Vector2& rhs );
 		TIKI_FORCE_INLINE Vector3&	add( Vector3& vec, const Vector3& rhs );
 		TIKI_FORCE_INLINE Vector4&	add( Vector4& vec, const Vector4& rhs );
+		TIKI_FORCE_INLINE Vector2&	add( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	add( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	add( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
 
 		TIKI_FORCE_INLINE Vector2&	sub( Vector2& vec, const Vector2& rhs );
 		TIKI_FORCE_INLINE Vector3&	sub( Vector3& vec, const Vector3& rhs );
 		TIKI_FORCE_INLINE Vector4&	sub( Vector4& vec, const Vector4& rhs );
+		TIKI_FORCE_INLINE Vector2&	sub( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	sub( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	sub( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
 
 		TIKI_FORCE_INLINE Vector2&	mul( Vector2& vec, const Vector2& rhs );
 		TIKI_FORCE_INLINE Vector3&	mul( Vector3& vec, const Vector3& rhs );
 		TIKI_FORCE_INLINE Vector4&	mul( Vector4& vec, const Vector4& rhs );
+		TIKI_FORCE_INLINE Vector2&	mul( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	mul( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	mul( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
 
 		TIKI_FORCE_INLINE Vector2&	div( Vector2& vec, const Vector2& rhs );
 		TIKI_FORCE_INLINE Vector3&	div( Vector3& vec, const Vector3& rhs );
 		TIKI_FORCE_INLINE Vector4&	div( Vector4& vec, const Vector4& rhs );
+		TIKI_FORCE_INLINE Vector2&	div( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	div( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	div( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
 
 		TIKI_FORCE_INLINE Vector2&	scale( Vector2& vec, float val );
 		TIKI_FORCE_INLINE Vector3&	scale( Vector3& vec, float val );

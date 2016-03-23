@@ -176,30 +176,6 @@ namespace tiki
 		return vec;
 	}
 
-	TIKI_FORCE_INLINE Vector2& vector::add( Vector2& vec, float x, float y )
-	{
-		vec.x += x;
-		vec.y += y;
-		return vec;
-	}
-
-	TIKI_FORCE_INLINE Vector3& vector::add( Vector3& vec, float x, float y, float z )
-	{
-		vec.x += x;
-		vec.y += y;
-		vec.z += z;
-		return vec;
-	}
-
-	TIKI_FORCE_INLINE Vector4& vector::add( Vector4& vec, float x, float y, float z, float w )
-	{
-		vec.x += x;
-		vec.y += y;
-		vec.z += z;
-		vec.w += w;
-		return vec;
-	}
-
 	TIKI_FORCE_INLINE Vector2& vector::add( Vector2& vec, const Vector2& rhs )
 	{
 		vec.x += rhs.x;
@@ -221,6 +197,30 @@ namespace tiki
 		vec.y += rhs.y;
 		vec.z += rhs.z;
 		vec.w += rhs.w;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector2& vector::add( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = lhs.x + rhs.x;
+		vec.y = lhs.y + rhs.y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::add( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = lhs.x + rhs.x;
+		vec.y = lhs.y + rhs.y;
+		vec.z = lhs.z + rhs.z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::add( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = lhs.x + rhs.x;
+		vec.y = lhs.y + rhs.y;
+		vec.z = lhs.z + rhs.z;
+		vec.w = lhs.w + rhs.w;
 		return vec;
 	}
 
@@ -248,6 +248,30 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2& vector::sub( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = lhs.x - rhs.x;
+		vec.y = lhs.y - rhs.y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::sub( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = lhs.x - rhs.x;
+		vec.y = lhs.y - rhs.y;
+		vec.z = lhs.z - rhs.z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::sub( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = lhs.x - rhs.x;
+		vec.y = lhs.y - rhs.y;
+		vec.z = lhs.z - rhs.z;
+		vec.w = lhs.w - rhs.w;
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::mul( Vector2& vec, const Vector2& rhs )
 	{
 		vec.x *= rhs.x;
@@ -272,6 +296,30 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2& vector::mul( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = lhs.x * rhs.x;
+		vec.y = lhs.y * rhs.y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::mul( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = lhs.x * rhs.x;
+		vec.y = lhs.y * rhs.y;
+		vec.z = lhs.z * rhs.z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::mul( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = lhs.x * rhs.x;
+		vec.y = lhs.y * rhs.y;
+		vec.z = lhs.z * rhs.z;
+		vec.w = lhs.w * rhs.w;
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::div( Vector2& vec, const Vector2& rhs )
 	{
 		vec.x /= rhs.x;
@@ -293,6 +341,30 @@ namespace tiki
 		vec.y /= rhs.y;
 		vec.z /= rhs.z;
 		vec.w /= rhs.w;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector2& vector::div( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = lhs.x / rhs.x;
+		vec.y = lhs.y / rhs.y;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::div( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = lhs.x / rhs.x;
+		vec.y = lhs.y / rhs.y;
+		vec.z = lhs.z / rhs.z;
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::div( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = lhs.x / rhs.x;
+		vec.y = lhs.y / rhs.y;
+		vec.z = lhs.z / rhs.z;
+		vec.w = lhs.w / rhs.w;
 		return vec;
 	}
 
