@@ -14,6 +14,8 @@ namespace tiki
 		void	beginUnitTest( const char* pName );
 		void	addTest( const char* pTitle, const char* pFile, const char* pLine, UnitTestFunction pFunc );
 
+		void	addFailure( const char* pName );
+
 		int		run();
 	}
 }
@@ -34,5 +36,7 @@ namespace tiki
 		);								\
 	);									\
 	bool func_name ## ()
+
+#define TIKI_UT_CHECK( expr ) if ( !( expr ) ) ::tiki::unittest::addFailure( #expr )
 
 #endif // __TIKI_UNITTTEST_HPP_INCLUDED__
