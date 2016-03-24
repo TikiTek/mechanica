@@ -499,7 +499,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector2& vector::truncate( Vector2& vec, float len )
 	{
-		TIKI_ASSERT( f32::isZero( len ) == false );
+		TIKI_ASSERT( !f32::isZero( len ) );
 		return scale(
 			vec,
 			len * f32::rsqrt( lengthSquared( vec ) )
@@ -508,7 +508,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector3& vector::truncate( Vector3& vec, float len )
 	{
-		TIKI_ASSERT( f32::isZero( len ) == false );
+		TIKI_ASSERT( !f32::isZero( len ) );
 		return scale(
 			vec,
 			len * f32::rsqrt( lengthSquared( vec ) )
@@ -517,7 +517,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector4& vector::truncate( Vector4& vec, float len )
 	{
-		TIKI_ASSERT( f32::isZero( len ) == false );
+		TIKI_ASSERT( !f32::isZero( len ) );
 		return scale(
 			vec,
 			len * f32::rsqrt( lengthSquared( vec ) )
@@ -585,6 +585,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector2& vector::reflect( Vector2& vec, const Vector2& source, const Vector2& normal )
 	{
+		TIKI_ASSERT( isNormalized( normal ) );
+
 		Vector2 modNormal = normal;
 		scale( modNormal, dot( source, normal ) * 2.0f );
 		vec = source;
@@ -593,6 +595,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector3& vector::reflect( Vector3& vec, const Vector3& source, const Vector3& normal )
 	{
+		TIKI_ASSERT( isNormalized( normal ) );
+
 		Vector3 modNormal = normal;
 		scale( modNormal, dot( source, normal ) * 2.0f );
 		vec = source;
@@ -601,6 +605,8 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Vector4& vector::reflect( Vector4& vec, const Vector4& source, const Vector4& normal )
 	{
+		TIKI_ASSERT( isNormalized( normal ) );
+
 		Vector4 modNormal = normal;
 		scale( modNormal, dot( source, normal ) * 2.0f );
 		vec = source;

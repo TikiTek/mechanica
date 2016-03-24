@@ -71,7 +71,7 @@ namespace tiki
 		}
 
 		// approximated 1.0f / sqrt( x )
-		TIKI_FORCE_INLINE float rsqrt( float x )
+		TIKI_FORCE_INLINE float approximatedInverseSquareRoot( float x )
 		{
 			float xhalf = x * 0.5f;
 			int i = *(int*) &x;
@@ -81,9 +81,14 @@ namespace tiki
 			return x;
 		}
 
+		TIKI_FORCE_INLINE float rsqrt( float x )
+		{
+			return 1.0f / sqrtf( x );
+		}
+
 		TIKI_FORCE_INLINE float sqrt( float x )
 		{
-			return x * rsqrt( x );
+			return sqrtf( x ); // x * rsqrt( x );
 		}
 
 		TIKI_FORCE_INLINE float mod( float value, float divisor )
