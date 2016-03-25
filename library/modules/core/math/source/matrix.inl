@@ -223,6 +223,30 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix33& matrix::add( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs )
+	{
+		vector::add( mtx.x, lhs.x, rhs.x );
+		vector::add( mtx.y, lhs.y, rhs.y );
+		vector::add( mtx.z, lhs.z, rhs.z );
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix43& matrix::add( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs )
+	{
+		matrix::add( mtx.rot, lhs.rot, rhs.rot );
+		vector::add( mtx.pos, lhs.pos, rhs.pos );
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix44& matrix::add( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs )
+	{
+		vector::add( mtx.x, lhs.x, rhs.x );
+		vector::add( mtx.y, lhs.y, rhs.y );
+		vector::add( mtx.z, lhs.z, rhs.z );
+		vector::add( mtx.w, lhs.w, rhs.w );
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::sub( Matrix33& mtx, const Matrix33& rhs )
 	{
 		vector::sub( mtx.x, rhs.x );
@@ -247,13 +271,54 @@ namespace tiki
 		return mtx;
 	}
 
+	TIKI_FORCE_INLINE Matrix33& matrix::sub( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs )
+	{
+		vector::sub( mtx.x, lhs.x, rhs.x );
+		vector::sub( mtx.y, lhs.y, rhs.y );
+		vector::sub( mtx.z, lhs.z, rhs.z );
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix43& matrix::sub( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs )
+	{
+		matrix::sub( mtx.rot, lhs.rot, rhs.rot );
+		vector::sub( mtx.pos, lhs.pos, rhs.pos );
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix44& matrix::sub( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs )
+	{
+		vector::sub( mtx.x, lhs.x, rhs.x );
+		vector::sub( mtx.y, lhs.y, rhs.y );
+		vector::sub( mtx.z, lhs.z, rhs.z );
+		vector::sub( mtx.w, lhs.w, rhs.w );
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::mul( Matrix33& mtx, const Matrix33& rhs )
+	{
+		return mul( mtx, mtx, rhs );
+	}
+
+	TIKI_FORCE_INLINE Matrix43& matrix::mul( Matrix43& mtx, const Matrix43& rhs )
+	{
+		return mul( mtx, mtx, rhs );
+	}
+
+	TIKI_FORCE_INLINE Matrix44& matrix::mul( Matrix44& mtx, const Matrix44& rhs )
+	{
+		return mul( mtx, mtx, rhs );
+	}
+
+	TIKI_FORCE_INLINE Matrix33& matrix::mul( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs )
 	{
 		Matrix33 right = rhs;
 		transpose( right );
-		const Vector3 x = mtx.x;
-		const Vector3 y = mtx.y;
-		const Vector3 z = mtx.z;
+
+		const Vector3 x = lhs.x;
+		const Vector3 y = lhs.y;
+		const Vector3 z = lhs.z;
+
 		mtx.x.x = vector::dot( x, right.x );
 		mtx.x.y = vector::dot( x, right.y );
 		mtx.x.z = vector::dot( x, right.z );
@@ -263,24 +328,28 @@ namespace tiki
 		mtx.z.x = vector::dot( z, right.x );
 		mtx.z.y = vector::dot( z, right.y );
 		mtx.z.z = vector::dot( z, right.z );
+
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix43& matrix::mul( Matrix43& mtx, const Matrix43& rhs )
+	TIKI_FORCE_INLINE Matrix43& matrix::mul( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs )
 	{
-		matrix::mul( mtx.rot, rhs.rot );
-		vector::add( mtx.pos, rhs.pos );
+		matrix::mul( mtx.rot, lhs.rot,rhs.rot );
+		vector::add( mtx.pos, lhs.pos,rhs.pos );
+
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix44& matrix::mul( Matrix44& mtx, const Matrix44& rhs )
+	TIKI_FORCE_INLINE Matrix44& matrix::mul( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs )
 	{
 		Matrix44 right = rhs;
 		transpose( right );
-		const Vector4 x = mtx.x;
-		const Vector4 y = mtx.y;
-		const Vector4 z = mtx.z;
-		const Vector4 w = mtx.w;
+
+		const Vector4 x = lhs.x;
+		const Vector4 y = lhs.y;
+		const Vector4 z = lhs.z;
+		const Vector4 w = lhs.w;
+
 		mtx.x.x = vector::dot( x, right.x );
 		mtx.x.y = vector::dot( x, right.y );
 		mtx.x.z = vector::dot( x, right.z );
@@ -297,23 +366,9 @@ namespace tiki
 		mtx.w.y = vector::dot( w, right.y );
 		mtx.w.z = vector::dot( w, right.z );
 		mtx.w.w = vector::dot( w, right.w );
+
 		return mtx;
 	}
-
-	//TIKI_FORCE_INLINE Matrix33& matrix::div( Matrix33& mtx, const Matrix33& rhs )
-	//{
-
-	//}
-
-	//TIKI_FORCE_INLINE Matrix43& matrix::div( Matrix43& mtx, const Matrix43& rhs )
-	//{
-
-	//}
-
-	//TIKI_FORCE_INLINE Matrix44& matrix::div( Matrix44& mtx, const Matrix44& rhs )
-	//{
-
-	//}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::scale( Matrix33& mtx, float val )
 	{
