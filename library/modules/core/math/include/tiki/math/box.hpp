@@ -4,7 +4,6 @@
 
 #include "tiki/math/vector.hpp"
 
-
 namespace tiki
 {
 	struct Quaternion;
@@ -13,22 +12,20 @@ namespace tiki
 	{
 	public:
 
-				Box();
-				Box( const Vector3& center, const Vector3& extents );
+					Box();
+					Box( const Vector3& _center, const Vector3& _extents );
 
-		void    create( const Vector3& min, const Vector3& max);
-		void	create( float minX, float minY, float minZ, float maxX, float maxY, float maxZ );
+		void		create( const Vector3& min, const Vector3& max);
+		void		create( float minX, float minY, float minZ, float maxX, float maxY, float maxZ );
 
-		void	getVertices( Vector3* pVertices ) const;
+		void		getVertices( Vector3* pVertices ) const;
 
-		void	translate( const Vector3& translation );
-		void	rotate( const Quaternion& rotation );
+		void		translate( const Vector3& translation );
+		void		rotate( const Quaternion& rotation );
 
-	public:
-
-		Vector3		Center;
-		Vector3		Extents;   
-		Vector3		Axis[ 3 ];
+		Vector3		center;
+		Vector3		extents;   
+		Vector3		axis[ 3u ];
 	};
 
 }

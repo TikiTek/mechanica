@@ -29,35 +29,17 @@ namespace tiki
 
 	void Plane::create( const Vector3& point1, const Vector3& point2, const Vector3& point3 )
 	{
-		Vector3 edge1 = point2;
-		vector::sub( edge1, point1 );
+		Vector3 edge1;
+		vector::sub( edge1, point1, point2 );
 
-		Vector3 edge2 = point3;
-		vector::sub( edge2, point1 );
+		Vector3 edge2;
+		vector::sub( edge2, point3, point1 );
 
 		Vector3 normal;
 		vector::cross( normal, edge1, edge2 );
 		vector::normalizeZero( normal );
 
-		create( point1, normal );
-
-		//const float x1 = point2.x - point1.x;
-		//const float y1 = point2.y - point1.y;
-		//const float z1 = point2.z - point1.z;
-		//const float x2 = point3.x - point1.x;
-		//const float y2 = point3.y - point1.y;
-		//const float z2 = point3.z - point1.z;
-
-		//const float yz = (y1 * z2) - (z1 * y2);
-		//const float xz = (z1 * x2) - (x1 * z2);
-		//const float xy = (x1 * y2) - (y1 * x2);
-
-		//const float invPyth = f32::rsqrt( (yz * yz) + (xz * xz) + (xy * xy) );
-
-		//Vector3 normal = { yz, xz, xy };
-		//vector::scale( normal, invPyth );
-
-		//create( point1, normal );
+		create( point2, normal );
 	}
 
 	void Plane::normalize()

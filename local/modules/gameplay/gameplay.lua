@@ -11,3 +11,5 @@ module:add_dependency( "entitysystem" );
 module:add_dependency( "components" );
 module:add_dependency( "gamecomponents" );
 module:add_dependency( "debugrenderer" );
+module:add_dependency( "voxelworld" );
+module:add_dependency( "voxelmesh" );

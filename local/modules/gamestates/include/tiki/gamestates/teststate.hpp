@@ -6,11 +6,12 @@
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
-#include "tiki/runtimeshared/freecamera.hpp"
 #include "tiki/gameplay/gameclient.hpp"
 #include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/postbloom.hpp"
 #include "tiki/renderer/postskybox.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
+#include "tiki/voxelworld/voxelworld.hpp"
 
 #include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -89,6 +90,8 @@ namespace tiki
 
 		EntityId					m_boxesEntityId;
 		EntityId					m_planeEntityId;
+
+		VoxelWorld					m_world;
 
 	};
 }

@@ -12,25 +12,25 @@
 namespace tiki
 {
 	template<typename T>
-	TIKI_FORCE_INLINE T* addPtr( T* pPtr, uint byteCountToAdd )
+	TIKI_FORCE_INLINE T* addPointer( T* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< T* >( (void*)( (uint8*)pPtr + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* addPtr( const T* pPtr, uint byteCountToAdd )
+	TIKI_FORCE_INLINE const T* addPointer( const T* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< const T* >( (const void*)( (const uint8*)pPtr + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* addPtrCast( void* pPtr, uint byteCountToAdd )
+	TIKI_FORCE_INLINE T* addPointerCast( void* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< T* >( static_cast< void* >( static_cast< uint8* >( pPtr ) + byteCountToAdd ) );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* addPtrCast( const void* pPtr, uint byteCountToAdd )
+	TIKI_FORCE_INLINE const T* addPointerCast( const void* pPtr, uint byteCountToAdd )
 	{
 		return static_cast< const T* >( static_cast< const void* >( static_cast< const uint8* >( pPtr ) + byteCountToAdd ) );
 	}
@@ -62,17 +62,23 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE bool isValueAligned( T value, T alignment )
 	{
-		return alignValue( value, alignment ) == value;
+		return (value % alignment) == 0;
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T* alignPtr( T* pPtr, uint alignment )
+	TIKI_FORCE_INLINE bool isPointerAligned( T value, T alignment )
+	{
+		return (uint( value ) % alignment) == 0;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE T* alignPointer( T* pPtr, uint alignment )
 	{
 		return (T*)alignValue( (uint)pPtr, alignment );
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T* alignPtr( const T* pPtr, uint alignment )
+	TIKI_FORCE_INLINE const T* alignPointer( const T* pPtr, uint alignment )
 	{
 		return (const T*)alignValue( (uint)pPtr, alignment );
 	}
