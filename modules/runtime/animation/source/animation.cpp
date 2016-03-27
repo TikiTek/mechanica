@@ -117,7 +117,7 @@ namespace tiki
 		const float frame		= (float)exactFrame + frameDiff;
 
 		uint headerIndex = 0;
-		const AnimationChunkHeader* pHeader = addPtrCast< AnimationChunkHeader >( m_pData, m_pData->headerOffset );
+		const AnimationChunkHeader* pHeader = addPointerCast< AnimationChunkHeader >( m_pData, m_pData->headerOffset );
 		while ( pHeader[ headerIndex ].endTime <= exactFrame )
 		{
 			TIKI_ASSERT( headerIndex < m_pData->headerCount );
@@ -231,7 +231,7 @@ namespace tiki
 
 		//////////////////////////////////////////////////////////////////////////
 		// position
-		pBaseData = (uint8*)alignPtr( pData, 8u );
+		pBaseData = (uint8*)alignPointer( pData, 8u );
 		pData = (sint16*)(pBaseData + (sizeof(uint64) * pHeader->interpolatedPositionJointCount));
 		pMask = (uint64*)pBaseData;
 
@@ -310,7 +310,7 @@ namespace tiki
 		//////////////////////////////////////////////////////////////////////////
 		// scale
 		//////////////////////////////////////////////////////////////////////////
-		pBaseData = (uint8*)alignPtr( pData, 8u );
+		pBaseData = (uint8*)alignPointer( pData, 8u );
 		pData = (sint16*)(pBaseData + (sizeof(uint64) * pHeader->interpolatedScaleJointCount));
 		pMask = (uint64*)pBaseData;
 

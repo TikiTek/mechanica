@@ -431,7 +431,7 @@ namespace tiki
 					for (uint k = 0u; k < m_vertices.getCount(); ++k)
 					{
 						ToolModelVertex& vertex = m_vertices[ k ];
-						float* pTarget = addPtrCast< float >( &vertex, offset );
+						float* pTarget = addPointerCast< float >( &vertex, offset );
 
 						const uint dataIndex1 = (k * inputCount) + source.userData;
 						TIKI_ASSERT( dataIndex1 != indicesData.getCount() );

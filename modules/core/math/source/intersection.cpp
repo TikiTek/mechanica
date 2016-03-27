@@ -125,31 +125,31 @@ namespace tiki
 			float RHS;
 
 			Vector3 diff = ray.origin;
-			vector::sub( diff, box.Center );
+			vector::sub( diff, box.center );
 
-			WdU	[ 0 ] = vector::dot( ray.direction, box.Axis[ 0 ] );
+			WdU	[ 0 ] = vector::dot( ray.direction, box.axis[ 0 ] );
 			AWdU[ 0 ] = f32::abs( WdU[ 0 ] );
-			DdU [ 0 ] = vector::dot( diff, box.Axis[ 0 ] );
+			DdU [ 0 ] = vector::dot( diff, box.axis[ 0 ] );
 			ADdU[ 0 ] = f32::abs( DdU[ 0 ] );
-			if ( ADdU[ 0 ] > box.Extents.x && DdU[ 0 ] * WdU[ 0 ] >= 0.0f )
+			if ( ADdU[ 0 ] > box.extents.x && DdU[ 0 ] * WdU[ 0 ] >= 0.0f )
 			{
 				return false;
 			}
 
-			WdU	[ 1 ] = vector::dot( ray.direction, box.Axis[ 1 ] );
+			WdU	[ 1 ] = vector::dot( ray.direction, box.axis[ 1 ] );
 			AWdU[ 1 ] = f32::abs( WdU[ 1 ] );
-			DdU	[ 1 ] = vector::dot( diff, box.Axis[ 1 ] );
+			DdU	[ 1 ] = vector::dot( diff, box.axis[ 1 ] );
 			ADdU[ 1 ] = f32::abs( DdU[ 1 ] );
-			if ( ADdU[ 1 ] > box.Extents.y && DdU[ 1 ] * WdU[ 1 ] >= 0.0f )
+			if ( ADdU[ 1 ] > box.extents.y && DdU[ 1 ] * WdU[ 1 ] >= 0.0f )
 			{
 				return false;
 			}
 
-			WdU	[ 2 ] = vector::dot( ray.direction, box.Axis[ 2 ] );
+			WdU	[ 2 ] = vector::dot( ray.direction, box.axis[ 2 ] );
 			AWdU[ 2 ] = f32::abs( WdU[ 2 ] );
-			DdU	[ 2 ] = vector::dot( diff, box.Axis[ 2 ] );
+			DdU	[ 2 ] = vector::dot( diff, box.axis[ 2 ] );
 			ADdU[ 2 ] = f32::abs( DdU[ 2 ] );
-			if ( ADdU[ 2 ] > box.Extents.z && DdU[ 2 ] * WdU[ 2 ] >= 0.0f )
+			if ( ADdU[ 2 ] > box.extents.z && DdU[ 2 ] * WdU[ 2 ] >= 0.0f )
 			{
 				return false;
 			}
@@ -157,22 +157,22 @@ namespace tiki
 			Vector3 WxD;
 			vector::cross( WxD, ray.direction, diff );
 
-			AWxDdU[ 0 ] = f32::abs( vector::dot( WxD, box.Axis[ 0 ] ) ); 
-			RHS = box.Extents.y * AWdU[ 2 ] + box.Extents.z * AWdU[ 1 ];
+			AWxDdU[ 0 ] = f32::abs( vector::dot( WxD, box.axis[ 0 ] ) ); 
+			RHS = box.extents.y * AWdU[ 2 ] + box.extents.z * AWdU[ 1 ];
 			if ( AWxDdU[ 0 ] > RHS )
 			{
 				return false;
 			}
 
-			AWxDdU[ 1 ] = f32::abs( vector::dot( WxD, box.Axis[ 1 ] ) ); 
-			RHS = box.Extents.x * AWdU[ 2 ] + box.Extents.z * AWdU[ 0 ];
+			AWxDdU[ 1 ] = f32::abs( vector::dot( WxD, box.axis[ 1 ] ) ); 
+			RHS = box.extents.x * AWdU[ 2 ] + box.extents.z * AWdU[ 0 ];
 			if ( AWxDdU[ 1 ] > RHS )
 			{
 				return false;
 			}
 
-			AWxDdU[ 2 ] = f32::abs( vector::dot( WxD, box.Axis[ 2 ] ) );
-			RHS = box.Extents.x * AWdU[ 1 ] + box.Extents.y * AWdU[ 0 ];
+			AWxDdU[ 2 ] = f32::abs( vector::dot( WxD, box.axis[ 2 ] ) );
+			RHS = box.extents.x * AWdU[ 1 ] + box.extents.y * AWdU[ 0 ];
 			if ( AWxDdU[ 2 ] > RHS )
 			{
 				return false;
@@ -193,23 +193,25 @@ namespace tiki
 
 			Vector3 BOrigin;
 			vector::set( BOrigin,
-				vector::dot( diff, box.Axis[ 0 ] ),
-				vector::dot( diff, box.Axis[ 1 ] ),
-				vector::dot( diff, box.Axis[ 2 ] ) );
+				vector::dot( diff, box.axis[ 0 ] ),
+				vector::dot( diff, box.axis[ 1 ] ),
+				vector::dot( diff, box.axis[ 2 ] )
+			);
 
 			Vector3 BDirection;
 			vector::set( BDirection,
-				vector::dot( direction, box.Axis[ 0 ] ),
-				vector::dot( direction, box.Axis[ 1 ] ),
-				vector::dot( direction, box.Axis[ 2 ] ) );
+				vector::dot( direction, box.axis[ 0 ] ),
+				vector::dot( direction, box.axis[ 1 ] ),
+				vector::dot( direction, box.axis[ 2 ] )
+			);
 
 			float saveT0 = t0, saveT1 = t1;
-			bool notAllClipped = clip( +BDirection.x, -BOrigin.x - box.Extents.x, t0, t1 ) &&
-				clip( -BDirection.x, +BOrigin.x - box.Extents.x, t0, t1 ) &&
-				clip( +BDirection.y, -BOrigin.y - box.Extents.y, t0, t1 ) &&
-				clip( -BDirection.y, +BOrigin.y - box.Extents.y, t0, t1 ) &&
-				clip( +BDirection.z, -BOrigin.z - box.Extents.z, t0, t1 ) &&
-				clip( -BDirection.z, +BOrigin.z - box.Extents.z, t0, t1 );
+			bool notAllClipped = clip( +BDirection.x, -BOrigin.x - box.extents.x, t0, t1 ) &&
+				clip( -BDirection.x, +BOrigin.x - box.extents.x, t0, t1 ) &&
+				clip( +BDirection.y, -BOrigin.y - box.extents.y, t0, t1 ) &&
+				clip( -BDirection.y, +BOrigin.y - box.extents.y, t0, t1 ) &&
+				clip( +BDirection.z, -BOrigin.z - box.extents.z, t0, t1 ) &&
+				clip( -BDirection.z, +BOrigin.z - box.extents.z, t0, t1 );
 
 			bool ret = false;
 

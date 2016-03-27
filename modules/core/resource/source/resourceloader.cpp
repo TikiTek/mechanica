@@ -455,7 +455,7 @@ namespace tiki
 				switch ( item.type )
 				{
 				case ReferenceType_Pointer:
-					pPointer = addPtr( context.sectionData.ppSectorPointers[ item.targetId ], item.offsetInTargetSection );
+					pPointer = addPointer( context.sectionData.ppSectorPointers[ item.targetId ], item.offsetInTargetSection );
 					break;
 
 				case ReferenceType_String:
@@ -470,7 +470,7 @@ namespace tiki
 					return ResourceLoaderResult_WrongFileFormat;
 				}
 
-				uint64* pTargetSectionData = addPtrCast< uint64 >( context.sectionData.ppSectorPointers[ i ], item.offsetInSection );
+				uint64* pTargetSectionData = addPointerCast< uint64 >( context.sectionData.ppSectorPointers[ i ], item.offsetInSection );
 				*pTargetSectionData = (uint64)pPointer;
 			}
 
