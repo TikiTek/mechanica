@@ -3,6 +3,8 @@
 #define TIKI_VOXELTYPES_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
+#include "tiki/container/fixedarray.hpp"
+#include "tiki/math/axisalignedbox.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/sphere.hpp"
 
@@ -19,7 +21,8 @@ namespace tiki
 		VoxelChilds_BottomLeftBack,
 		VoxelChilds_BottomRightBack,
 
-		VoxelChilds_Count
+		VoxelChilds_Count,
+		VoxelChilds_Invalid = 0xffu
 	};
 
 	struct Voxel
@@ -28,24 +31,33 @@ namespace tiki
 		{
 			pParent = nullptr;
 
-			for( uint i = 0u; i < TIKI_COUNT( apChilds ); ++i )
+			for( uint i = 0u; i < children.getCount(); ++i )
 			{
-				apChilds[ i ] = nullptr;
+				children[ i ] = nullptr;
 			}
 
-			isFull		= true;
-			voxelType	= 0u;
+			isFull			= false;
+			childCount		= 0u;
+			voxelType		= 0u;
+			voxelChildType	= VoxelChilds_Invalid;
 		}
 
-		Voxel*	pParent;
-		Voxel*	apChilds[ VoxelChilds_Count ];
+		typedef FixedArray< Voxel*, VoxelChilds_Count > ChildrenArray;
 
-		bool	isFull;
-		uint8	voxelType;
+		Voxel*			pParent;
+		ChildrenArray	children;
+
+		bool			isFull;
+		uint8			childCount;
+		uint8			voxelType;
+		VoxelChilds		voxelChildType;
+
+		AxisAlignedBox	boundingBox;
 	};
 
 	enum VoxelWorldTransformTypes
 	{
+		VoxelWorldTransformTypes_Clear,
 		VoxelWorldTransformTypes_CutOutBox,
 		VoxelWorldTransformTypes_CutOutSphere,
 		VoxelWorldTransformTypes_FillBox,
@@ -54,14 +66,21 @@ namespace tiki
 		VoxelWorldTransformTypes_Count
 	};
 
+	union VoxelWorldTranformCommandData
+	{
+		VoxelWorldTranformCommandData()
+		{
+		}
+
+		Box		box;
+		Sphere	sphere;
+	};
+
 	struct VoxelWorldTranformCommand
 	{
-		VoxelWorldTransformTypes	type;
-		union 
-		{
-			Box						box;
-			Sphere					sphere;
-		} data;
+
+		VoxelWorldTransformTypes		type;
+		VoxelWorldTranformCommandData	data;
 	};
 }
 

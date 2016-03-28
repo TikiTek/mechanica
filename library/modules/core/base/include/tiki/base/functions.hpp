@@ -64,9 +64,8 @@ namespace tiki
 	{
 		return (value % alignment) == 0;
 	}
-
-	template<typename T>
-	TIKI_FORCE_INLINE bool isPointerAligned( T value, T alignment )
+		
+	TIKI_FORCE_INLINE bool isPointerAligned( const void* value, uint alignment )
 	{
 		return (uint( value ) % alignment) == 0;
 	}

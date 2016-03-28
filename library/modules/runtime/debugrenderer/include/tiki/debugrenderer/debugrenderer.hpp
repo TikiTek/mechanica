@@ -17,6 +17,7 @@ namespace tiki
 	struct Ray;
 	struct Vector2;
 	struct Vector3;
+	struct AxisAlignedBox;
 	
 	namespace debugrenderer
 	{
@@ -28,6 +29,7 @@ namespace tiki
 
 		void	drawLineRay( const Ray& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE );
 		void	drawLineBox( const Box& box, Color color = TIKI_COLOR_WHITE );
+		void	drawLineAxisAlignedBox( const AxisAlignedBox& axisAlignedBox, Color color = TIKI_COLOR_WHITE );
 		void	drawLineAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix );
 		void	drawLineGrid( float gridSpacing = 5.0f, float gridSize = 10.0f, Color color = TIKI_COLOR_WHITE );
 		void	drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color = TIKI_COLOR_WHITE );
