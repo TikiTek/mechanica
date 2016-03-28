@@ -26,8 +26,8 @@ namespace tiki
 
 					AxisAlignedBox();
 					
-		void		createFromCenterExtends( const Vector3& _center, const Vector3& _extents );
-		void		createFromMinMax( const Vector3& min, const Vector3& max);
+		void		createFromCenterExtends( const Vector3& center, const Vector3& extents );
+		void		createFromMinMax( const Vector3& _min, const Vector3& _max );
 		void		createFromMinMax( float minX, float minY, float minZ, float maxX, float maxY, float maxZ );
 
 		void		getVertices( Vector3 aVertices[ AxisAlignedBoxVertices_Count ] ) const;
@@ -35,8 +35,12 @@ namespace tiki
 		void		translate( const Vector3& translation );
 		void		extend( const Vector3& _extents );
 
-		Vector3		center;
-		Vector3		extents;
+		bool		contains( const Vector3& point ) const;
+
+		Vector3		getSize() const;
+
+		Vector3		min;
+		Vector3		max;
 	};
 }
 

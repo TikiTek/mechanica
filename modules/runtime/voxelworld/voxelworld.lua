@@ -8,3 +8,4 @@ module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "math" );
+module:add_dependency( "tasksystem" );

@@ -4,6 +4,7 @@
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/math/axisalignedbox.hpp"
 
 #include "debugrenderer_types.hpp"
 
@@ -501,6 +502,14 @@ namespace tiki
 			pCommand->box			= box;
 			pCommand->color			= color;
 		}
+	}
+
+	void debugrenderer::drawLineAxisAlignedBox( const AxisAlignedBox& axisAlignedBox, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		Box box;
+		box.create( axisAlignedBox.min, axisAlignedBox.max );
+
+		debugrenderer::drawLineBox( box, color );
 	}
 
 	void debugrenderer::drawLineAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )

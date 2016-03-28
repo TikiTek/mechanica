@@ -39,6 +39,7 @@ namespace tiki
 
 		struct PoolChunk : LinkedItem< PoolChunk >
 		{
+			T*						pData;
 		};
 
 		struct FreeElement
