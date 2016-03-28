@@ -8,14 +8,23 @@ namespace tiki
 {
 	enum AxisAlignedBoxVertices
 	{
+		//		   7-------6
+		//		  /|      /|
+		//		 / |     / |
+		//		3--+----2  |
+		//      |  4----+--5
+		//		| /	    | /
+		//		|/      |/
+		//		0-------1
+
 		AxisAlignedBoxVertices_XMinYMinZMin,
 		AxisAlignedBoxVertices_XMaxYMinZMin,
 		AxisAlignedBoxVertices_XMaxYMaxZMin,
+		AxisAlignedBoxVertices_XMinYMaxZMin,
+		AxisAlignedBoxVertices_XMinYMinZMax,
+		AxisAlignedBoxVertices_XMaxYMinZMax,
 		AxisAlignedBoxVertices_XMaxYMaxZMax,
 		AxisAlignedBoxVertices_XMinYMaxZMax,
-		AxisAlignedBoxVertices_XMinYMinZMax,
-		AxisAlignedBoxVertices_XMinYMaxZMin,
-		AxisAlignedBoxVertices_XMaxYMinZMax,
 
 		AxisAlignedBoxVertices_Count
 	};

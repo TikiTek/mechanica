@@ -29,7 +29,7 @@ namespace tiki
 	{
 	}
 
-	void FreeCamera::update( Camera& targetCamera, float timeDelta )
+	void FreeCamera::update( Camera& targetCamera, double timeDelta )
 	{
 		Quaternion cameraRotation;
 
@@ -38,7 +38,7 @@ namespace tiki
 			Vector2 rotation = m_rightStickState;
 			vector::add( rotation, m_mouseState );
 			vector::clear( m_mouseState );
-			vector::scale( rotation, timeDelta * 2.0f );
+			vector::scale( rotation, float( timeDelta * 2.0 ) );
 
 			vector::add( m_rotation, rotation );
 			m_rotation.y = f32::clamp( m_rotation.y, -f32::piOver2, f32::piOver2 );
@@ -50,6 +50,7 @@ namespace tiki
 		{
 			Vector2 cameraMovement = m_leftStickState;
 			vector::add( cameraMovement, m_keyboardState );
+			const float upDownState = (-m_leftTriggerState + m_rightTriggerState);
 
 			Vector3 cameraForward;
 			Vector3 cameraLeft;
@@ -58,9 +59,9 @@ namespace tiki
 			quaternion::getLeft( cameraLeft, cameraRotation );
 			quaternion::getUp( cameraUp, cameraRotation );
 
-			vector::scale( cameraForward,	cameraMovement.y * timeDelta * m_speed );
-			vector::scale( cameraLeft,		cameraMovement.x * timeDelta * m_speed );
-			vector::scale( cameraUp,		( -m_leftTriggerState + m_rightTriggerState ) * timeDelta * m_speed );
+			vector::scale( cameraForward,	float( cameraMovement.y * timeDelta * m_speed ) );
+			vector::scale( cameraLeft,		float( cameraMovement.x * timeDelta * m_speed ) );
+			vector::scale( cameraUp,		float( upDownState * timeDelta * m_speed ) );
 
 			vector::add( m_position, cameraForward );
 			vector::add( m_position, cameraLeft );

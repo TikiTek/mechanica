@@ -46,6 +46,8 @@ namespace tiki
 	void VoxelWorld::dispose()
 	{
 		removeVoxelRecursive( m_pRootVoxel );
+		m_pRootVoxel = nullptr;
+
 		m_voxels.dispose();
 
 		for( uint i = 0u; i < m_commands.getCount(); ++i )

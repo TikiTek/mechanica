@@ -3,8 +3,10 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/container/staticarray.hpp"
+#include "tiki/graphics/font.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/math/axisalignedbox.hpp"
+#include "tiki/math/camera.hpp"
+#include "tiki/resource/resourcemanager.hpp"
 
 #include "debugrenderer_types.hpp"
 
@@ -13,65 +15,280 @@
 namespace tiki
 {
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-	static DebugRenderCommand* s_pDebugRendererFirstCommand = nullptr;
-	static DebugRenderCommand* s_pDebugRendererLastCommand = nullptr;
-	static ZoneAllocator s_debugRendererData;
-
-	namespace debugrenderer
+	class DebugRenderer
 	{
-		template<class T>
-		T*		allocateCommand( uint extraMemory = 0u );
+		TIKI_NONCOPYABLE_CLASS( DebugRenderer );
 
-		void	flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color );
+	public:
 
-		void	flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command );
-		void	flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command );
-		void	flushDrawLineAxes( const ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command );
-		void	flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command );
-		void	flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color );
-		void	flushDrawLineSphere( const ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command );
-		void	flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command );
+								DebugRenderer();
+								~DebugRenderer();
 
-		void	flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command );
-		void	flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix );
+		void					create( ResourceManager& resourceManager );
+		void					dispose( ResourceManager& resourceManager );
 
-		void	flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command );
-		void	flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command );
+		template<class T> T*	allocateCommand2D( uint extraMemory = 0u );
+		template<class T> T*	allocateCommand3D( uint extraMemory = 0u );
 
-		void	flushSetOption( const ImmediateRenderer& renderer, const DebugRenderSetOptionCommand& command );
+		void					flush( const ImmediateRenderer& renderer, const Camera& camera, const RenderTarget* pRenderTarget );
+
+	private:
+
+		struct CommandList
+		{
+			CommandList()
+			{
+				clear();
+			}
+
+			void clear()
+			{
+				pFirstCommand	= nullptr;
+				pLastCommand	= nullptr;
+			}
+
+			DebugRenderCommand*	pFirstCommand;
+			DebugRenderCommand*	pLastCommand;
+		};
+
+		ZoneAllocator			m_data;
+
+		CommandList				m_list2D;
+		CommandList				m_list3D;
+
+		const Font*				m_pFont;
+
+		DebugRenderCommand*		allocateCommand( CommandList& list, uint size, DebugRenderCommandType type );
+
+		void					flushList( const CommandList& list, const ImmediateRenderer& renderer, const Camera& camera );
+
+		void					flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color );
+
+		void					flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command );
+		void					flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command );
+		void					flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const DebugRenderLineAxisAlignedBoxCommand& command );
+		void					flushDrawLineAxes( const ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command );
+		void					flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command );
+		void					flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color );
+		void					flushDrawLineSphere( const ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command );
+		void					flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command );
+
+		void					flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command );
+		void					flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix );
+
+		void					flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command );
+		void					flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command, const Camera& camera );
+
+		void					flushSetOption( const ImmediateRenderer& renderer, const DebugRenderSetOptionCommand& command );
+		
+	};
+
+	static DebugRenderer s_debugRenderer;
+
+	DebugRenderer::DebugRenderer()
+	{
+		m_pFont = nullptr;
+	}
+
+	DebugRenderer::~DebugRenderer()
+	{
+		TIKI_ASSERT( m_pFont == nullptr );
+	}
+
+	void DebugRenderer::create( ResourceManager& resourceManager )
+	{
+		m_data.create( 1u * 1024u * 1024u );
+
+		m_list2D.clear();
+		m_list3D.clear();
+
+		m_pFont = resourceManager.loadResource< Font >( "debug.font" );
+	}
+	
+	void DebugRenderer::dispose( ResourceManager& resourceManager )
+	{
+		resourceManager.unloadResource( m_pFont );
+		m_pFont = nullptr;
+
+		m_list2D.clear();
+		m_list3D.clear();
+
+		m_data.dispose();
 	}
 
 	template<class T>
-	T* debugrenderer::allocateCommand( uint extraMemory /*= 0u*/ )
+	T* DebugRenderer::allocateCommand2D( uint extraMemory /*= 0u*/ )
 	{
 		const uint sizeInBytes = sizeof( T ) + extraMemory;
-		T* pCommand = (T*)s_debugRendererData.allocate( sizeInBytes );
+		return (T*)allocateCommand( m_list2D, sizeInBytes, T::CommandType );
+	}
+
+	template<class T>
+	T* DebugRenderer::allocateCommand3D( uint extraMemory /*= 0u*/ )
+	{
+		const uint sizeInBytes = sizeof( T ) + extraMemory;
+		return (T*)allocateCommand( m_list3D, sizeInBytes, T::CommandType );
+	}
+
+	void DebugRenderer::flush( const ImmediateRenderer& renderer, const Camera& camera, const RenderTarget* pRenderTarget )
+	{
+		renderer.beginRenderPass( pRenderTarget, &camera );
+		flushList( m_list3D, renderer, camera );
+		renderer.endRenderPass();
+
+		renderer.beginRenderPass( pRenderTarget );
+		flushList( m_list2D, renderer, camera );
+		renderer.endRenderPass();
+
+		m_list2D.clear();
+		m_list3D.clear();
+
+		m_data.clear();
+	}
+
+	DebugRenderCommand* DebugRenderer::allocateCommand( CommandList& list, uint size, DebugRenderCommandType type )
+	{
+		DebugRenderCommand* pCommand = (DebugRenderCommand*)m_data.allocate( size );
 
 		if( pCommand )
 		{
-			if( s_pDebugRendererFirstCommand == nullptr )
+			if( list.pFirstCommand == nullptr )
 			{
-				s_pDebugRendererFirstCommand = pCommand;
-				s_pDebugRendererLastCommand = pCommand;
+				list.pFirstCommand = pCommand;
+				list.pLastCommand = pCommand;
 			}
 			else
 			{
-				s_pDebugRendererLastCommand->pNext = pCommand;
-				s_pDebugRendererLastCommand = pCommand;
+				list.pLastCommand->pNext = pCommand;
+				list.pLastCommand = pCommand;
 			}
 
 			pCommand->pNext = nullptr;
-			pCommand->type	= T::CommandType;
+			pCommand->type = type;
 		}
 		else
 		{
 			TIKI_TRACE_WARNING( "[debugrenderer] Can't draw debug commaand. Out of memory.\n" );
 		}
-		
+
 		return pCommand;
 	}
+	
+	void DebugRenderer::flushList( const CommandList& list, const ImmediateRenderer& renderer, const Camera& camera )
+	{
+		DebugRenderCommand* pCommand = list.pFirstCommand;
+		while( pCommand != nullptr )
+		{
+			switch( pCommand->type )
+			{
+			case DebugRenderCommandType_DrawLines:
+				{
+					const DebugRenderLinesCommand& command = *(const DebugRenderLinesCommand*)pCommand;
+					flushDrawLines( renderer, command.aPoints, command.pointCount, false, command.color );
+				}
+				break;
 
-	void debugrenderer::flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color )
+			case DebugRenderCommandType_DrawLineRay:
+				{
+					const DebugRenderLineRayCommand& command = *(const DebugRenderLineRayCommand*)pCommand;
+					flushDrawLineRay( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineBox:
+				{
+					const DebugRenderLineBoxCommand& command = *(const DebugRenderLineBoxCommand*)pCommand;
+					flushDrawLineBox( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineAxisAlignedBox:
+				{
+					const DebugRenderLineAxisAlignedBoxCommand& command = *(const DebugRenderLineAxisAlignedBoxCommand*)pCommand;
+					flushDrawLineAxisAlignedBox( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineAxes:
+				{
+					const DebugRenderLineAxesCommand& command = *(const DebugRenderLineAxesCommand*)pCommand;
+					flushDrawLineAxes( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineGrid:
+				{
+					const DebugRenderLineGridCommand& command = *(const DebugRenderLineGridCommand*)pCommand;
+					flushDrawLineGrid( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineCircle:
+				{
+					const DebugRenderLineCircleCommand& command = *(const DebugRenderLineCircleCommand*)pCommand;
+					flushDrawLineCircle( renderer, command.center, command.radius, command.normal, command.tangent, command.color );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineSphere:
+				{
+					const DebugRenderLineSphereCommand& command = *(const DebugRenderLineSphereCommand*)pCommand;
+					flushDrawLineSphere( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawLineFrustum:
+				{
+					const DebugRenderLineFrustumCommand& command = *(const DebugRenderLineFrustumCommand*)pCommand;
+					flushDrawLineFrustum( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawSolidBox:
+				{
+					const DebugRenderSolidBoxCommand& command = *(const DebugRenderSolidBoxCommand*)pCommand;
+					flushDrawSolidBox( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawSolidAxes:
+				{
+					const DebugRenderSolidAxesCommand& command = *(const DebugRenderSolidAxesCommand*)pCommand;
+					flushDrawSolidAxes( renderer, command.lineLength, command.lineOffset, command.worldMatrix );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawText:
+				{
+					const DebugRenderTextCommand& command = *(const DebugRenderTextCommand*)pCommand;
+					flushDrawText( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawText3D:
+				{
+					const DebugRenderText3DCommand& command = *(const DebugRenderText3DCommand*)pCommand;
+					flushDrawText3D( renderer, command, camera );
+				}
+				break;
+
+			case DebugRenderCommandType_SetOption:
+				{
+					const DebugRenderSetOptionCommand& command = *(const DebugRenderSetOptionCommand*)pCommand;
+					flushSetOption( renderer, command );
+				}
+				break;
+
+			default:
+				TIKI_TRACE_ERROR( "[debugrenderer] Invalid debug render command.\n" );
+				break;
+			}
+
+			pCommand = pCommand->pNext;
+		}
+	}
+
+	void DebugRenderer::flushDrawLines( const ImmediateRenderer& renderer, const Vector3* pPoints, uint pointCount, bool drawAsStrip, Color color )
 	{
 		renderer.setPrimitiveTopology( drawAsStrip ? PrimitiveTopology_LineStrip : PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
@@ -93,7 +310,7 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command )
+	void DebugRenderer::flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command )
 	{
 		Vector3 scaledDir = command.ray.direction;
 		vector::scale( scaledDir, command.length );
@@ -102,59 +319,58 @@ namespace tiki
 		vector::add( end, scaledDir );
 
 		const Vector3 points[] = { command.ray.origin, end };
-		debugrenderer::flushDrawLines( renderer, points, TIKI_COUNT( points ), false, command.color );
+		flushDrawLines( renderer, points, TIKI_COUNT( points ), false, command.color );
 	}
 
-	void debugrenderer::flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command )
+	void DebugRenderer::flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command )
 	{
 		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
 
-		Vector3 boxVertices[ 8 ];
-		command.box.getVertices( &boxVertices[ 0 ] );
+		Vector3 points[ 8 ];
+		command.box.getVertices( &points[ 0 ] );
 
 		StaticArray< ImmediateVertex > vertices;
 		renderer.beginImmediateGeometry( vertices, 24 );
 
 		// draw lower rect
-		createFloat3( vertices[ 0 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
-		createFloat3( vertices[ 1 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
+		createFloat3( vertices[ 0 ].position, points[ 0 ].x, points[ 0 ].y, points[ 0 ].z );
+		createFloat3( vertices[ 1 ].position, points[ 1 ].x, points[ 1 ].y, points[ 1 ].z );
 
-		createFloat3( vertices[ 2 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
-		createFloat3( vertices[ 3 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
+		createFloat3( vertices[ 2 ].position, points[ 1 ].x, points[ 1 ].y, points[ 1 ].z );
+		createFloat3( vertices[ 3 ].position, points[ 2 ].x, points[ 2 ].y, points[ 2 ].z );
 
-		createFloat3( vertices[ 4 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
-		createFloat3( vertices[ 5 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
+		createFloat3( vertices[ 4 ].position, points[ 2 ].x, points[ 2 ].y, points[ 2 ].z );
+		createFloat3( vertices[ 5 ].position, points[ 3 ].x, points[ 3 ].y, points[ 3 ].z );
 
-		createFloat3( vertices[ 6 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
-		createFloat3( vertices[ 7 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
+		createFloat3( vertices[ 6 ].position, points[ 3 ].x, points[ 3 ].y, points[ 3 ].z );
+		createFloat3( vertices[ 7 ].position, points[ 0 ].x, points[ 0 ].y, points[ 0 ].z );
 
 		// draw upper rect
-		createFloat3( vertices[ 8 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
-		createFloat3( vertices[ 9 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( vertices[ 8 ].position, points[ 4 ].x, points[ 4 ].y, points[ 4 ].z );
+		createFloat3( vertices[ 9 ].position, points[ 5 ].x, points[ 5 ].y, points[ 5 ].z );
 
-		createFloat3( vertices[ 10 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
-		createFloat3( vertices[ 11 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( vertices[ 10 ].position, points[ 5 ].x, points[ 5 ].y, points[ 5 ].z );
+		createFloat3( vertices[ 11 ].position, points[ 6 ].x, points[ 6 ].y, points[ 6 ].z );
 
-		createFloat3( vertices[ 12 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
-		createFloat3( vertices[ 13 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( vertices[ 12 ].position, points[ 6 ].x, points[ 6 ].y, points[ 6 ].z );
+		createFloat3( vertices[ 13 ].position, points[ 7 ].x, points[ 7 ].y, points[ 7 ].z );
 
-		createFloat3( vertices[ 14 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
-		createFloat3( vertices[ 15 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
-
-
+		createFloat3( vertices[ 14 ].position, points[ 7 ].x, points[ 7 ].y, points[ 7 ].z );
+		createFloat3( vertices[ 15 ].position, points[ 4 ].x, points[ 4 ].y, points[ 4 ].z );
+		
 		// draw vertical lines
-		createFloat3( vertices[ 16 ].position, boxVertices[ 0 ].x, boxVertices[ 0 ].y, boxVertices[ 0 ].z );
-		createFloat3( vertices[ 17 ].position, boxVertices[ 4 ].x, boxVertices[ 4 ].y, boxVertices[ 4 ].z );
+		createFloat3( vertices[ 16 ].position, points[ 0 ].x, points[ 0 ].y, points[ 0 ].z );
+		createFloat3( vertices[ 17 ].position, points[ 4 ].x, points[ 4 ].y, points[ 4 ].z );
 
-		createFloat3( vertices[ 18 ].position, boxVertices[ 1 ].x, boxVertices[ 1 ].y, boxVertices[ 1 ].z );
-		createFloat3( vertices[ 19 ].position, boxVertices[ 5 ].x, boxVertices[ 5 ].y, boxVertices[ 5 ].z );
+		createFloat3( vertices[ 18 ].position, points[ 1 ].x, points[ 1 ].y, points[ 1 ].z );
+		createFloat3( vertices[ 19 ].position, points[ 5 ].x, points[ 5 ].y, points[ 5 ].z );
 
-		createFloat3( vertices[ 20 ].position, boxVertices[ 2 ].x, boxVertices[ 2 ].y, boxVertices[ 2 ].z );
-		createFloat3( vertices[ 21 ].position, boxVertices[ 6 ].x, boxVertices[ 6 ].y, boxVertices[ 6 ].z );
+		createFloat3( vertices[ 20 ].position, points[ 2 ].x, points[ 2 ].y, points[ 2 ].z );
+		createFloat3( vertices[ 21 ].position, points[ 6 ].x, points[ 6 ].y, points[ 6 ].z );
 
-		createFloat3( vertices[ 22 ].position, boxVertices[ 3 ].x, boxVertices[ 3 ].y, boxVertices[ 3 ].z );
-		createFloat3( vertices[ 23 ].position, boxVertices[ 7 ].x, boxVertices[ 7 ].y, boxVertices[ 7 ].z );
+		createFloat3( vertices[ 22 ].position, points[ 3 ].x, points[ 3 ].y, points[ 3 ].z );
+		createFloat3( vertices[ 23 ].position, points[ 7 ].x, points[ 7 ].y, points[ 7 ].z );
 
 		// set color and uv
 		for( uint i = 0u; i < vertices.getCount(); ++i )
@@ -168,12 +384,74 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::flushDrawLineAxes( const ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command )
+	void DebugRenderer::flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const DebugRenderLineAxisAlignedBoxCommand& command )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
+
+		Vector3 points[ AxisAlignedBoxVertices_Count ];
+		command.box.getVertices( points );
+
+		StaticArray< ImmediateVertex > vertices;
+		renderer.beginImmediateGeometry( vertices, 24 );
+
+		// set color and uv
+		for( uint i = 0u; i < vertices.getCount(); ++i )
+		{
+			ImmediateVertex& current = vertices[ i ];
+			current.color	= command.color;
+			current.u		= 0u;
+			current.v		= 0u;
+		}
+
+		// draw lower rect
+		vector::toFloat( vertices[ 0 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMin ] );
+		vector::toFloat( vertices[ 1 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMin ] );
+
+		vector::toFloat( vertices[ 2 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMin ] );
+		vector::toFloat( vertices[ 3 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMin ] );
+
+		vector::toFloat( vertices[ 4 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMin ] );
+		vector::toFloat( vertices[ 5 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMin ] );
+
+		vector::toFloat( vertices[ 6 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMin ] );
+		vector::toFloat( vertices[ 7 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMin ] );
+
+		// draw upper rect
+		vector::toFloat( vertices[ 8 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMax ] );
+		vector::toFloat( vertices[ 9 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMax ] );
+
+		vector::toFloat( vertices[ 10 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMax ] );
+		vector::toFloat( vertices[ 11 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMax ] );
+
+		vector::toFloat( vertices[ 12 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMax ] );
+		vector::toFloat( vertices[ 13 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMax ] );
+
+		vector::toFloat( vertices[ 14 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMax ] );
+		vector::toFloat( vertices[ 15 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMax ] );
+		
+		// draw vertical lines
+		vector::toFloat( vertices[ 16 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMin ] );
+		vector::toFloat( vertices[ 17 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMax ] );
+
+		vector::toFloat( vertices[ 18 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMin ] );
+		vector::toFloat( vertices[ 19 ].position, points[ AxisAlignedBoxVertices_XMaxYMinZMax ] );
+
+		vector::toFloat( vertices[ 20 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMin ] );
+		vector::toFloat( vertices[ 21 ].position, points[ AxisAlignedBoxVertices_XMaxYMaxZMax ] );
+
+		vector::toFloat( vertices[ 22 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMin ] );
+		vector::toFloat( vertices[ 23 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMax ] );
+
+		renderer.endImmediateGeometry( vertices );
+	}
+
+	void DebugRenderer::flushDrawLineAxes( const ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command )
 	{
 
 	}
 
-	void debugrenderer::flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command )
+	void DebugRenderer::flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command )
 	{
 		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
@@ -221,7 +499,7 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color )
+	void DebugRenderer::flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color )
 	{
 		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
@@ -271,14 +549,14 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::flushDrawLineSphere( const ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command )
+	void DebugRenderer::flushDrawLineSphere( const ImmediateRenderer& renderer, const DebugRenderLineSphereCommand& command )
 	{
-		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitY, command.color );
-		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitZ, command.color );
-		debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitZ, Vector3::unitY, command.color );
+		flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitY, command.color );
+		flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitX, Vector3::unitZ, command.color );
+		flushDrawLineCircle( renderer, command.center, command.radius, Vector3::unitZ, Vector3::unitY, command.color );
 	}
 
-	void debugrenderer::flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command )
+	void DebugRenderer::flushDrawLineFrustum( const ImmediateRenderer& renderer, const DebugRenderLineFrustumCommand& command )
 	{
 		Vector3 cornerPoints[ 8u ];
 		if( !command.frustum.getCorners( cornerPoints ) )
@@ -313,12 +591,12 @@ namespace tiki
 		flushDrawLines( renderer, bottomRight, TIKI_COUNT( bottomRight ), true, command.color );
 	}
 
-	void debugrenderer::flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command )
+	void DebugRenderer::flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command )
 	{
 
 	}
 
-	void debugrenderer::flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix )
+	void DebugRenderer::flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix )
 	{
 		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
@@ -417,8 +695,7 @@ namespace tiki
 			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_BLUE;
 		}
-
-
+		
 		// todo: set immediate renderer world matrix?
 		for( uint i = 0; i < vertices.getCount(); ++i )
 		{
@@ -435,35 +712,41 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void debugrenderer::flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command )
+	void DebugRenderer::flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command )
 	{
-
+		renderer.drawText( command.position, *m_pFont, command.text, command.color );
 	}
 
-	void debugrenderer::flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command )
+	void DebugRenderer::flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command, const Camera& camera )
 	{
+		const Projection& projection = camera.getProjection();
 
+		Vector3 viewPosition = command.position;
+		matrix::transform( viewPosition, camera.getViewMatrix() );
+
+		vector::scale( viewPosition, 1.0f / viewPosition.z );
+
+		Vector4 clipPosition;
+		vector::set( clipPosition, viewPosition, 1.0f );
+		matrix::transform( clipPosition, projection.getMatrix() );
+
+		Vector2 screenPosition =
+		{
+			0.5f + (clipPosition.x * 0.5f),
+			0.5f - (clipPosition.y * 0.5f)
+		};
+
+		const Vector2 screenSize = vector::create( projection.getWidth(), projection.getHeight() );
+		vector::mul( screenPosition, screenSize );
+		
+		renderer.drawText( screenPosition, *m_pFont, command.text, command.color );
 	}
 
-	void debugrenderer::flushSetOption( const ImmediateRenderer& renderer, const DebugRenderSetOptionCommand& command )
+	void DebugRenderer::flushSetOption( const ImmediateRenderer& renderer, const DebugRenderSetOptionCommand& command )
 	{
 
 	}
 	
-	void debugrenderer::initialize( ResourceManager& resourceManager )
-	{
-		s_pDebugRendererFirstCommand = nullptr;
-		s_pDebugRendererLastCommand = nullptr;
-		s_debugRendererData.create( 1u * 1024u * 1024u );
-	}
-
-	void debugrenderer::shutdown( ResourceManager& resourceManager )
-	{
-		s_pDebugRendererFirstCommand = nullptr;
-		s_pDebugRendererLastCommand = nullptr;
-		s_debugRendererData.dispose();
-	}
-
 	void debugrenderer::drawLine( const Vector3& start, const Vector3& end, Color color /*= TIKI_COLOR_WHITE */ )
 	{
 		const Vector3 aPoints[] = { start, end };
@@ -474,7 +757,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pPoints != nullptr );
 
-		DebugRenderLinesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLinesCommand >( sizeof( Vector3 ) * capacity );
+		DebugRenderLinesCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLinesCommand >( sizeof( Vector3 ) * capacity );
 		if( pCommand != nullptr )
 		{
 			pCommand->color			= color;
@@ -485,7 +768,7 @@ namespace tiki
 
 	void debugrenderer::drawLineRay( const Ray& ray, float length /*= 100.0f*/, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderLineRayCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineRayCommand >();
+		DebugRenderLineRayCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineRayCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->ray			= ray;
@@ -496,7 +779,7 @@ namespace tiki
 
 	void debugrenderer::drawLineBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderLineBoxCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineBoxCommand >();
+		DebugRenderLineBoxCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineBoxCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->box			= box;
@@ -506,15 +789,17 @@ namespace tiki
 
 	void debugrenderer::drawLineAxisAlignedBox( const AxisAlignedBox& axisAlignedBox, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		Box box;
-		box.create( axisAlignedBox.min, axisAlignedBox.max );
-
-		debugrenderer::drawLineBox( box, color );
+		DebugRenderLineAxisAlignedBoxCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineAxisAlignedBoxCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->box			= axisAlignedBox;
+			pCommand->color			= color;
+		}
 	}
 
 	void debugrenderer::drawLineAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )
 	{
-		DebugRenderLineAxesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineAxesCommand >();
+		DebugRenderLineAxesCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineAxesCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->lineLength	= lineLength;
@@ -530,7 +815,7 @@ namespace tiki
 			return;
 		}
 
-		DebugRenderLineGridCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineGridCommand >();
+		DebugRenderLineGridCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineGridCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->gridSpace		= gridSpacing;
@@ -541,7 +826,7 @@ namespace tiki
 
 	void debugrenderer::drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderLineCircleCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineCircleCommand >();
+		DebugRenderLineCircleCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineCircleCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->center		= center;
@@ -554,7 +839,7 @@ namespace tiki
 
 	void debugrenderer::drawLineSphere( const Vector3& center, float radius, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderLineSphereCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineSphereCommand >();
+		DebugRenderLineSphereCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineSphereCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->center		= center;
@@ -565,7 +850,7 @@ namespace tiki
 
 	void debugrenderer::drawLineFrustum( const Frustum& frustum, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderLineFrustumCommand* pCommand = debugrenderer::allocateCommand< DebugRenderLineFrustumCommand >();
+		DebugRenderLineFrustumCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineFrustumCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->frustum		= frustum;
@@ -575,7 +860,7 @@ namespace tiki
 
 	void debugrenderer::drawSolidBox( const Box& box, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		DebugRenderSolidBoxCommand* pCommand = debugrenderer::allocateCommand< DebugRenderSolidBoxCommand >();
+		DebugRenderSolidBoxCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderSolidBoxCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->box			= box;
@@ -585,7 +870,7 @@ namespace tiki
 
 	void debugrenderer::drawSolidAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix )
 	{
-		DebugRenderSolidAxesCommand* pCommand = debugrenderer::allocateCommand< DebugRenderSolidAxesCommand >();
+		DebugRenderSolidAxesCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderSolidAxesCommand >();
 		if( pCommand != nullptr )
 		{
 			pCommand->lineLength	= lineLength;
@@ -601,7 +886,7 @@ namespace tiki
 		const string text = formatStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
-		DebugRenderTextCommand* pCommand = debugrenderer::allocateCommand< DebugRenderTextCommand >( text.getLength() + 1u );
+		DebugRenderTextCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderTextCommand >( text.getLength() + 1u );
 		if( pCommand != nullptr )
 		{
 			pCommand->position		= position;
@@ -617,7 +902,7 @@ namespace tiki
 		const string text = formatStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
-		DebugRenderText3DCommand* pCommand = debugrenderer::allocateCommand< DebugRenderText3DCommand >( text.getLength() + 1u );
+		DebugRenderText3DCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderText3DCommand >( text.getLength() + 1u );
 		if( pCommand != nullptr )
 		{
 			pCommand->position		= position;
@@ -626,119 +911,19 @@ namespace tiki
 		}
 	}
 
+	void debugrenderer::initialize( ResourceManager& resourceManager )
+	{
+		s_debugRenderer.create( resourceManager );
+	}
+
+	void debugrenderer::shutdown( ResourceManager& resourceManager )
+	{
+		s_debugRenderer.dispose( resourceManager );
+	}
+
 	void debugrenderer::flush( const ImmediateRenderer& renderer, const Camera& camera, const RenderTarget* pRenderTarget /* = nullptr */ )
 	{
-		renderer.beginRenderPass( pRenderTarget, &camera );
-
-		DebugRenderCommand* pCommand = s_pDebugRendererFirstCommand;
-		while( pCommand != nullptr )
-		{
-			switch( pCommand->type )
-			{
-			case DebugRenderCommandType_DrawLines:
-				{
-					const DebugRenderLinesCommand& command = *(const DebugRenderLinesCommand*)pCommand;
-					debugrenderer::flushDrawLines( renderer, command.aPoints, command.pointCount, false, command.color );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineRay:
-				{
-					const DebugRenderLineRayCommand& command = *(const DebugRenderLineRayCommand*)pCommand;
-					debugrenderer::flushDrawLineRay( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineBox:
-				{
-					const DebugRenderLineBoxCommand& command = *(const DebugRenderLineBoxCommand*)pCommand;
-					debugrenderer::flushDrawLineBox( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineAxes:
-				{
-					const DebugRenderLineAxesCommand& command = *(const DebugRenderLineAxesCommand*)pCommand;
-					debugrenderer::flushDrawLineAxes( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineGrid:
-				{
-					const DebugRenderLineGridCommand& command = *(const DebugRenderLineGridCommand*)pCommand;
-					debugrenderer::flushDrawLineGrid( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineCircle:
-				{
-					const DebugRenderLineCircleCommand& command = *(const DebugRenderLineCircleCommand*)pCommand;
-					debugrenderer::flushDrawLineCircle( renderer, command.center, command.radius, command.normal, command.tangent, command.color );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineSphere:
-				{
-					const DebugRenderLineSphereCommand& command = *(const DebugRenderLineSphereCommand*)pCommand;
-					debugrenderer::flushDrawLineSphere( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawLineFrustum:
-				{
-					const DebugRenderLineFrustumCommand& command = *(const DebugRenderLineFrustumCommand*)pCommand;
-					debugrenderer::flushDrawLineFrustum( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawSolidBox:
-				{
-					const DebugRenderSolidBoxCommand& command = *(const DebugRenderSolidBoxCommand*)pCommand;
-					debugrenderer::flushDrawSolidBox( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawSolidAxes:
-				{
-					const DebugRenderSolidAxesCommand& command = *(const DebugRenderSolidAxesCommand*)pCommand;
-					debugrenderer::flushDrawSolidAxes( renderer, command.lineLength, command.lineOffset, command.worldMatrix );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawText:
-				{
-					const DebugRenderTextCommand& command = *(const DebugRenderTextCommand*)pCommand;
-					debugrenderer::flushDrawText( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_DrawText3D:
-				{
-					const DebugRenderText3DCommand& command = *(const DebugRenderText3DCommand*)pCommand;
-					debugrenderer::flushDrawText3D( renderer, command );
-				}
-				break;
-
-			case DebugRenderCommandType_SetOption:
-				{
-					const DebugRenderSetOptionCommand& command = *(const DebugRenderSetOptionCommand*)pCommand;
-					debugrenderer::flushSetOption( renderer, command );
-				}
-				break;
-
-			default:
-				TIKI_TRACE_ERROR( "[debugrenderer] Invalid debug render command.\n" );
-				break;
-			}
-
-			pCommand = pCommand->pNext;
-		}
-
-		renderer.endRenderPass();
-
-		s_pDebugRendererFirstCommand = nullptr;
-		s_pDebugRendererLastCommand = nullptr;
-		s_debugRendererData.clear();
+		s_debugRenderer.flush( renderer, camera, pRenderTarget );
 	}
 #endif
 }

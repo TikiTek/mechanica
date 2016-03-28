@@ -2,6 +2,7 @@
 #ifndef TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 #define TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 
+#include "tiki/math/axisalignedbox.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/frustum.hpp"
 #include "tiki/math/matrix.hpp"
@@ -14,6 +15,7 @@ namespace tiki
 		DebugRenderCommandType_DrawLines,
 		DebugRenderCommandType_DrawLineRay,
 		DebugRenderCommandType_DrawLineBox,
+		DebugRenderCommandType_DrawLineAxisAlignedBox,
 		DebugRenderCommandType_DrawLineAxes,
 		DebugRenderCommandType_DrawLineGrid,
 		DebugRenderCommandType_DrawLineCircle,
@@ -59,6 +61,14 @@ namespace tiki
 		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawLineBox;
 
 		Box						box;
+		Color					color;
+	};
+
+	struct DebugRenderLineAxisAlignedBoxCommand : public DebugRenderCommand
+	{
+		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawLineAxisAlignedBox;
+
+		AxisAlignedBox			box;
 		Color					color;
 	};
 

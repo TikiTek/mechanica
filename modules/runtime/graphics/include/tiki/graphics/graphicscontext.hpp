@@ -113,8 +113,7 @@ namespace tiki
 		template<typename T>
 		T*					mapBuffer( const BaseBuffer& buffer );
 		void				unmapBuffer( const BaseBuffer& buffer );
-
-
+		
 		const RenderTarget&	getBackBuffer() const;
 
 	private: // friend

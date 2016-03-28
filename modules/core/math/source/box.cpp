@@ -6,6 +6,13 @@ namespace tiki
 {
 	Box::Box()
 	{
+		vector::clear( center );
+		vector::clear( extents );
+
+		// Init axis aligned
+		axis[ 0u ] = Vector3::unitX;
+		axis[ 1u ] = Vector3::unitY;
+		axis[ 2u ] = Vector3::unitZ;
 	}
 
 	Box::Box( const Vector3& _center, const Vector3& _extents )

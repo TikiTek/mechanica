@@ -47,6 +47,8 @@ namespace tiki
 		bool					create( const VoxelWorldParameters& parameters );
 		void					dispose();
 
+		const Vector3&			getWorldSize() const { return m_worldSize; }
+
 		const Voxel*			getRootVoxel() const { return m_pRootVoxel; }
 		const Voxel*			findVoxelAt( const Vector3& position );
 

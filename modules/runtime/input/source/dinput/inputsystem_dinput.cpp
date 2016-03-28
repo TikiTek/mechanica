@@ -1,4 +1,3 @@
-
 #include "tiki/input/inputsystem.hpp"
 
 #include "tiki/base/functions.hpp"

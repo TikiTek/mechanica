@@ -1,9 +1,7 @@
-
 #include "tiki/editorbase/editorcamera.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/input/inputevent.hpp"
-#include "tiki/math/camera.hpp"
 #include "tiki/math/intersection.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 
@@ -11,90 +9,64 @@ namespace tiki
 {
 	EditorCamera::EditorCamera()
 	{
-		m_pCamera			= nullptr;
-		m_pController		= nullptr;
-		m_ViewportWidth		= 0;
-		m_ViewportHeight	= 0;
-		m_MousePosX			= 0;
-		m_MousePosY			= 0;
-		m_Ray				= nullptr;
+		m_viewportWidth		= 0;
+		m_viewportHeight	= 0;
+		m_mousePosX			= 0;
+		m_mousePosY			= 0;
 	}
 
 	bool EditorCamera::create( GraphicsSystem& graphicsSystem )
 	{
 		Projection projection;
-		projection.createPerspective((float)graphicsSystem.getBackBuffer().getWidth() / graphicsSystem.getBackBuffer().getHeight(), f32::piOver4, 0.001f, 1000.0f );
-
+		projection.createPerspective( (float)graphicsSystem.getBackBuffer().getWidth(), (float)graphicsSystem.getBackBuffer().getHeight(), f32::piOver4, 0.001f, 1000.0f );
+				
 		const Vector3 position = { 0.0f, 0.0f, 3.0f };
-		const Quaternion rotation = Quaternion::identity;
-		m_pCamera = new Camera();
-		m_pCamera->create( position, rotation, &projection );
+		m_camera.create( position, Quaternion::identity, &projection );
+		m_controller.create( position, Quaternion::identity );
 		
-		m_pController = new FreeCamera();	
-		m_pController->create( position, Quaternion::identity );
-		
-		m_Ray = new Ray3();
-
 		return true;
 	}
 
 	void EditorCamera::dispose()
 	{		
-		delete m_pCamera;
-
-		if ( m_pController != nullptr )
-		{
-			m_pController->dispose();
-			delete m_pController;
-		}
-
-		delete m_Ray;
 	}
 
-	void EditorCamera::update( float timeDelta )
+	void EditorCamera::update( double timeDelta )
 	{
-		m_pController->update( *m_pCamera, timeDelta );
-		m_pCamera->getCameraRay( m_MousePosX, m_MousePosY, m_ViewportWidth, m_ViewportHeight, m_Ray );
+		m_controller.update( m_camera, timeDelta );
+		m_camera.getCameraRay( m_ray, (float)m_mousePosX, (float)m_mousePosY, (float)m_viewportWidth, (float)m_viewportHeight );
 	}
 
 	void EditorCamera::resize( int x, int y )
 	{
-		m_ViewportWidth  = x;
-		m_ViewportHeight = y;
+		m_viewportWidth  = x;
+		m_viewportHeight = y;
 
-		m_pCamera->getProjection().createPerspective( float( m_ViewportWidth ) / m_ViewportHeight, f32::piOver4, 0.001f, 1000.0f );
+		Projection projection;
+		projection.createPerspective( float( m_viewportWidth ), float( m_viewportHeight ), f32::piOver4, 0.001f, 1000.0f );
+
+		m_camera.setProjection( projection );
 	}
 
-	bool EditorCamera::processInputEvent( InputEvent& inputEvent )
+	bool EditorCamera::processInputEvent( const InputEvent& inputEvent )
 	{
 		if ( inputEvent.eventType == InputEventType_Mouse_Moved )
 		{
-			m_MousePosX = inputEvent.data.mouseMoved.xState;
-			m_MousePosY = inputEvent.data.mouseMoved.yState;
+			m_mousePosX = inputEvent.data.mouseMoved.xState;
+			m_mousePosY = inputEvent.data.mouseMoved.yState;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
 		{
-			m_pController->setMouseControl( true );
+			m_controller.setMouseControl( true );
 			return true;
 		}
 		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && inputEvent.data.mouseButton.button == MouseButton_Right )
 		{
-			m_pController->setMouseControl( false );
+			m_controller.setMouseControl( false );
 			return true;
 		}
 
-		return m_pController->processInputEvent( inputEvent );
+		return m_controller.processInputEvent( inputEvent );
 	}
-
-	const Camera& EditorCamera::getCamera()
-	{
-		return *m_pCamera;
-	}
-
-	const Ray3& EditorCamera::getMouseRay()
-	{
-		return *m_Ray;
-	}
-
 }

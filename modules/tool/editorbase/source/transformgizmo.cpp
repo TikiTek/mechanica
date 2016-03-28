@@ -1,35 +1,29 @@
-
 #include "tiki/editorbase/transformgizmo.hpp"
+
 #include "tiki/editorbase/editorcamera.hpp"
 
-#include "tiki/math/vector.hpp"
-#include "tiki/math/quaternion.hpp"
+#include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/math/box.hpp"
+#include "tiki/math/intersection.hpp"
+#include "tiki/math/plane.hpp"
+#include "tiki/math/quaternion.hpp"
+#include "tiki/math/sphere.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
 	TransformGizmo::TransformGizmo()
-		: m_GizmoMode( GizmoMode::None ),
-		m_SelectedAxis( AxisType::None )
 	{
-		m_LineOffset			= 1.0f;
-		m_LineLength			= 3.0f;
-		m_MultiAxisThickness	= 0.05f;
-		m_SingleAxisThickness	= 0.2f;
-		m_pAxisBounds			= nullptr;
-		m_pRotateBounds			= nullptr;
-		m_LeftMouseDown			= false;
-
-		m_pPosition				= nullptr;
-		m_pRotation				= nullptr;
-		m_pLastIntersection		= nullptr;
-		m_pIntersection			= nullptr;
-		m_pDelta				= nullptr;
-		m_pTranslationDelta		= nullptr;
-
-		m_pWorldMatrix			= nullptr;
+		m_gizmoMode				= GizmoMode_None;
+		m_selectedAxis			= AxisType_None;
+		
+		m_lineOffset			= 1.0f;
+		m_lineLength			= 3.0f;
+		m_multiAxisThickness	= 0.05f;
+		m_singleAxisThickness	= 0.2f;
+		m_leftMouseDown			= false;
 	}
 
 	TransformGizmo::~TransformGizmo()
@@ -37,273 +31,200 @@ namespace tiki
 
 	}
 
-	bool TransformGizmo::create( ImmediateRenderer* renderer, EditorCamera^ camera )
+	bool TransformGizmo::create( const EditorCamera& camera )
 	{
-		m_pRenderer = renderer;
-		m_pCamera	= camera;
+		m_pCamera	= &camera;
 
-		m_pAxisBounds = new Box[ 6 ];
-		
-		m_pAxisBounds[ AxisType::X  ].create( m_LineOffset, 0, 0, m_LineOffset + m_LineLength, m_SingleAxisThickness, m_SingleAxisThickness );
-		m_pAxisBounds[ AxisType::Y  ].create( 0, m_LineOffset, 0, m_SingleAxisThickness, m_LineOffset + m_LineLength, m_SingleAxisThickness );
-		m_pAxisBounds[ AxisType::Z  ].create( 0, 0, m_LineOffset, m_SingleAxisThickness, m_SingleAxisThickness, m_LineOffset + m_LineLength );
+		m_aAxisBounds[ AxisType_X  ].create( m_lineOffset, 0, 0, m_lineOffset + m_lineLength, m_singleAxisThickness, m_singleAxisThickness );
+		m_aAxisBounds[ AxisType_Y  ].create( 0, m_lineOffset, 0, m_singleAxisThickness, m_lineOffset + m_lineLength, m_singleAxisThickness );
+		m_aAxisBounds[ AxisType_Z  ].create( 0, 0, m_lineOffset, m_singleAxisThickness, m_singleAxisThickness, m_lineOffset + m_lineLength );
+		m_aAxisBounds[ AxisType_XZ ].create( 0, 0, 0, m_lineOffset, m_multiAxisThickness, m_lineOffset);
+		m_aAxisBounds[ AxisType_XY ].create( 0, 0, 0, m_lineOffset, m_lineOffset, m_multiAxisThickness );
+		m_aAxisBounds[ AxisType_YZ ].create( 0, 0, 0, m_multiAxisThickness, m_lineOffset, m_lineOffset );
 
-		m_pAxisBounds[ AxisType::XZ ].create( 0, 0, 0, m_LineOffset, m_MultiAxisThickness, m_LineOffset);
-		m_pAxisBounds[ AxisType::XY ].create( 0, 0, 0, m_LineOffset, m_LineOffset, m_MultiAxisThickness );
-		m_pAxisBounds[ AxisType::YZ ].create( 0, 0, 0, m_MultiAxisThickness, m_LineOffset, m_LineOffset );
-
-		m_pRotateBounds = new Sphere3[ 3 ];
-
-		float spherePos = m_LineOffset * 2.0f;
+		float spherePos = m_lineOffset * 2.0f;
 		float radius = 0.5f;
 
-		vector::set( m_pRotateBounds[ 0 ].Center, spherePos, 0, 0 );
-		m_pRotateBounds[ 0 ].Radius = radius;
+		vector::set( m_aRotateBounds[ 0 ].center, spherePos, 0, 0 );
+		m_aRotateBounds[ 0 ].radius = radius;
 
-		vector::set( m_pRotateBounds[ 1 ].Center, 0, spherePos, 0 );
-		m_pRotateBounds[ 1 ].Radius = radius;
+		vector::set( m_aRotateBounds[ 1 ].center, 0, spherePos, 0 );
+		m_aRotateBounds[ 1 ].radius = radius;
 
-		vector::set( m_pRotateBounds[ 2 ].Center, 0, 0, spherePos );
-		m_pRotateBounds[ 2 ].Radius = radius;
+		vector::set( m_aRotateBounds[ 2 ].center, 0, 0, spherePos );
+		m_aRotateBounds[ 2 ].radius = radius;
 
-		m_pPosition = new Vector3();
-		*m_pPosition = Vector3::zero;
+		m_position = Vector3::zero;
+		m_rotation = Quaternion::identity;
+		m_lastIntersection = Vector3::zero;
+		m_intersection = Vector3::zero;
+		m_delta = Vector3::zero;
+		m_translationDelta = Vector3::zero;
 
-		m_pRotation = new Quaternion();
-		*m_pRotation = Quaternion::identity;
-
-		m_pLastIntersection = new Vector3();
-		*m_pLastIntersection = Vector3::zero;
-
-		m_pIntersection = new Vector3();
-		*m_pIntersection = Vector3::zero;
-
-		m_pDelta = new Vector3();
-		*m_pDelta = Vector3::zero;
-
-		m_pTranslationDelta = new Vector3();
-		*m_pTranslationDelta = Vector3::zero;
-
-		m_pWorldMatrix = new Matrix43();
-		matrix::createIdentity( *m_pWorldMatrix );
+		matrix::createIdentity( m_worldMatrix );
 
 		return true;
 	}
 
 	void TransformGizmo::dispose()
 	{
-		if ( m_pWorldMatrix )
-		{
-			delete m_pWorldMatrix;
-			m_pWorldMatrix = nullptr;
-		}
-
-		if ( m_pTranslationDelta )
-		{
-			delete m_pTranslationDelta;
-			m_pTranslationDelta = nullptr;
-		}
-
-		if ( m_pDelta )
-		{
-			delete m_pDelta;
-			m_pDelta = nullptr;
-		}
-
-		if ( m_pIntersection )
-		{
-			delete m_pIntersection;
-			m_pIntersection = nullptr;
-		}
-
-		if ( m_pLastIntersection )
-		{
-			delete m_pLastIntersection;
-			m_pLastIntersection = nullptr;
-		}
-
-		if ( m_pRotation )
-		{
-			delete m_pRotation;
-			m_pRotation = nullptr;
-		}
-
-		if ( m_pPosition )
-		{
-			delete m_pPosition;
-			m_pPosition = nullptr;
-		}
-
-		if ( m_pRotateBounds )
-		{
-			delete[ ] m_pRotateBounds;
-			m_pRotateBounds = nullptr;
-		}
-
-		if ( m_pAxisBounds )
-		{
-			delete[] m_pAxisBounds;
-			m_pAxisBounds = nullptr;
-		}
-
 	}
 
-	bool TransformGizmo::processInputEvent( InputEvent& inputEvent )
+	bool TransformGizmo::processInputEvent( const InputEvent& inputEvent )
 	{
 		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Left )
 		{
-			m_LeftMouseDown = true;
+			m_leftMouseDown = true;
 		}
 		if ( inputEvent.eventType == InputEventType_Mouse_ButtonUp && inputEvent.data.mouseButton.button == MouseButton_Left )
 		{
-			m_LeftMouseDown = false;
+			m_leftMouseDown = false;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F1)
 		{
-			m_GizmoMode = GizmoMode::Translate;
+			m_gizmoMode = GizmoMode_Translate;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Up && inputEvent.data.keybaordKey.key == KeyboardKey_F1 )
 		{
-			m_GizmoMode = GizmoMode::None;
+			m_gizmoMode = GizmoMode_None;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F2 )
 		{
-			m_GizmoMode = GizmoMode::Scale;
+			m_gizmoMode = GizmoMode_Scale;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Up && inputEvent.data.keybaordKey.key == KeyboardKey_F2 )
 		{
-			m_GizmoMode = GizmoMode::None;
+			m_gizmoMode = GizmoMode_None;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_F3 )
 		{
-			m_GizmoMode = GizmoMode::Rotate;
+			m_gizmoMode = GizmoMode_Rotate;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Keyboard_Up && inputEvent.data.keybaordKey.key == KeyboardKey_F3 )
 		{
-			m_GizmoMode = GizmoMode::None;
+			m_gizmoMode = GizmoMode_None;
 		}
 
 		if ( inputEvent.eventType == InputEventType_Mouse_Moved )
 		{
-			m_MouseOffsetX = (float)inputEvent.data.mouseMoved.xOffset;
+			m_mouseOffsetX = (float)inputEvent.data.mouseMoved.xOffset;
 		}
 
 		return true;
 	}
 
-	void TransformGizmo::update(float timeDelta)
+	void TransformGizmo::update( double timeDelta )
 	{
 		pickAxis();
 
 		// save last intersection and reset 
-		*m_pLastIntersection = *m_pIntersection;
-		*m_pIntersection = Vector3::zero;
-		*m_pTranslationDelta = Vector3::zero;
-		quaternion::createIdentity( *m_pRotation);
-
-
-		if ( m_LeftMouseDown && m_SelectedAxis != AxisType::None )
+		m_lastIntersection = m_intersection;
+		m_intersection = Vector3::zero;
+		m_translationDelta = Vector3::zero;
+		quaternion::createIdentity( m_rotation);
+		
+		if ( m_leftMouseDown && m_selectedAxis != AxisType_None )
 		{
 			Vector3 delta = Vector3::zero;
 
-			if ( m_GizmoMode == GizmoMode::Translate || m_GizmoMode == GizmoMode::Scale)
+			if ( m_gizmoMode == GizmoMode_Translate || m_gizmoMode == GizmoMode_Scale)
 			{
-				switch ( m_SelectedAxis )	
+				switch ( m_selectedAxis )	
 				{
-				case AxisType::X:
-				case AxisType::XY:
+				case AxisType_X:
+				case AxisType_XY:
 					{
 						Plane plane;
-						plane.create( Vector3::forward, f32::abs( m_pPosition->z) );
+						plane.create( Vector3::forward, f32::abs( m_position.z ) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
 						{
-							*m_pIntersection = intersection;
+							m_intersection = intersection;
 
-							if ( !vector::isEquals( *m_pLastIntersection, Vector3::zero) )
+							if ( !vector::isEquals( m_lastIntersection, Vector3::zero) )
 							{
-								vector::set( *m_pDelta, m_pIntersection->x, m_pIntersection->y, m_pIntersection->z );
-								vector::sub( *m_pDelta, *m_pLastIntersection );
+								m_delta = m_intersection;
+								vector::sub( m_delta, m_lastIntersection );
 							}
 
-							if ( m_SelectedAxis == AxisType::X )
+							if ( m_selectedAxis == AxisType_X )
 							{
-								vector::set( delta, m_pDelta->x, 0.0f, 0.0f );
+								vector::set( delta, m_delta.x, 0.0f, 0.0f );
 							}
 							else
 							{
-								vector::set( delta, m_pDelta->x, m_pDelta->y, 0.0f );
+								vector::set( delta, m_delta.x, m_delta.y, 0.0f );
 							}
 						}
 					}
 					break;
-				case AxisType::Z:
-				case AxisType::YZ:
-				case AxisType::Y:
+				case AxisType_Z:
+				case AxisType_YZ:
+				case AxisType_Y:
 					{
 						Plane plane;
-						plane.create( Vector3::left, f32::abs( m_pPosition->x) );
+						plane.create( Vector3::left, f32::abs( m_position.x) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
 						{
-							*m_pIntersection = intersection;
+							m_intersection = intersection;
 
-							if ( !vector::isEquals( *m_pLastIntersection, Vector3::zero ) )
+							if ( !vector::isEquals( m_lastIntersection, Vector3::zero ) )
 							{
-								vector::set( *m_pDelta, m_pIntersection->x, m_pIntersection->y, m_pIntersection->z );
-								vector::sub( *m_pDelta, *m_pLastIntersection );
+								m_delta = m_intersection;
+								vector::sub( m_delta, m_lastIntersection );
 							}
 
-							if ( m_SelectedAxis == AxisType::Y )
+							if ( m_selectedAxis == AxisType_Y )
 							{
-								vector::set( delta, 0.0f, m_pDelta->y, 0.0f );
+								vector::set( delta, 0.0f, m_delta.y, 0.0f );
 							}
-							else if ( m_SelectedAxis == AxisType::Z )
+							else if ( m_selectedAxis == AxisType_Z )
 							{
-								vector::set( delta, 0.0f, 0.0f, m_pDelta->z );
+								vector::set( delta, 0.0f, 0.0f, m_delta.z );
 							}
 							else
 							{
-								vector::set( delta, 0.0f, m_pDelta->y, m_pDelta->z );
+								vector::set( delta, 0.0f, m_delta.y, m_delta.z );
 							}
 						}
 					}
 					break;
-				case AxisType::XZ:
+				case AxisType_XZ:
 					{
 						
 						Plane plane;
-						plane.create( Vector3::down, f32::abs(m_pPosition->y) ); // TODO: Anthony this is shit!
+						plane.create( Vector3::down, f32::abs( m_position.y ) ); // TODO: Anthony this is shit!
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
 						{
-							*m_pIntersection = intersection;
+							m_intersection = intersection;
 
-							if ( !vector::isEquals( *m_pLastIntersection, Vector3::zero ) )
+							if ( !vector::isEquals( m_lastIntersection, Vector3::zero ) )
 							{
-								vector::set( *m_pDelta, m_pIntersection->x, m_pIntersection->y, m_pIntersection->z );
-								vector::sub( *m_pDelta, *m_pLastIntersection );
+								m_delta = m_intersection;
+								vector::sub( m_delta, m_lastIntersection );
 							}
 						}
 
-						vector::set( delta, m_pDelta->x, 0.0f, m_pDelta->z );
+						vector::set( delta, m_delta.x, 0.0f, m_delta.z );
 					}
 					break;
-				case AxisType::RX:
-				case AxisType::RY:
-				case AxisType::RZ:
+				case AxisType_RX:
+				case AxisType_RY:
+				case AxisType_RZ:
 					break;
-				case AxisType::None:
-				case AxisType::Count:
+				case AxisType_None:
+				case AxisType_Count:
 				default:
 					TIKI_ASSERT( false );
 					break;
@@ -311,39 +232,39 @@ namespace tiki
 
 				// vector::Transform(delta, rotation);
 
-				if ( m_GizmoMode == GizmoMode::Translate )
+				if ( m_gizmoMode == GizmoMode_Translate )
 				{
 					
-					*m_pTranslationDelta = delta;
+					m_translationDelta = delta;
 
-					vector::add( *m_pPosition, *m_pTranslationDelta );
+					vector::add( m_position, m_translationDelta );
 
-					m_pWorldMatrix->pos = *m_pPosition;
+					m_worldMatrix.pos = m_position;
 
-					if ( !vector::isEquals( *m_pTranslationDelta, Vector3::zero ) )
+					if ( !vector::isEquals( m_translationDelta, Vector3::zero ) )
 					{
 						for ( int i = 0; i < 6; ++i )
 						{
-							m_pAxisBounds[ i ].translate( *m_pTranslationDelta );
+							m_aAxisBounds[ i ].translate( m_translationDelta );
 						}
 						for ( int i = 0; i < 3; ++i )
 						{
-							m_pRotateBounds[ i ].translate( *m_pTranslationDelta );
+							m_aRotateBounds[ i ].translate( m_translationDelta );
 						}
 
 					}
 
 					// TODO: OnTransformGizmoTranslateEvent(delta)
 				}
-				else if ( m_GizmoMode == GizmoMode::Scale )
+				else if ( m_gizmoMode == GizmoMode_Scale )
 				{
 					if ( !vector::isEquals( delta, Vector3::zero ) )
 					{
 						vector::add( delta, Vector3::one );
 
-						for ( int i = 0; i < AxisType::Count; ++i )
+						for ( int i = 0; i < AxisType_Count; ++i )
 						{
-							vector::mul( m_pAxisBounds[ i ].Extents, delta );
+							vector::mul( m_aAxisBounds[ i ].extents, delta );
 						}
 					}
 
@@ -351,97 +272,94 @@ namespace tiki
 				}
 
 			} // Translate Gizmo mode
-			else if ( m_GizmoMode == GizmoMode::Rotate )
+			else if ( m_gizmoMode == GizmoMode_Rotate )
 			{
-				float delta = m_MouseOffsetX * timeDelta;
+				const float delta = float( m_mouseOffsetX * timeDelta );
 
 				Quaternion rotation;
 
-				switch ( m_SelectedAxis )
+				switch ( m_selectedAxis )
 				{
-				case tiki::RX:
+				case AxisType_RX:
 					quaternion::fromAxisAngle( rotation, Vector3::unitX, delta );
 					break;
-				case tiki::RY:
+				case AxisType_RY:
 					quaternion::fromAxisAngle( rotation, Vector3::unitY, delta );
 					break;
-				case tiki::RZ:
+				case AxisType_RZ:
 					quaternion::fromAxisAngle( rotation, Vector3::forward, delta );
 					break;
-				case tiki::X:
-				case tiki::Y:
-				case tiki::Z:
-				case tiki::XZ:
-				case tiki::XY:
-				case tiki::YZ:
+				case AxisType_X:
+				case AxisType_Y:
+				case AxisType_Z:
+				case AxisType_XZ:
+				case AxisType_XY:
+				case AxisType_YZ:
 					break;
-				case tiki::Count:
-				case tiki::None:
+				case AxisType_Count:
+				case AxisType_None:
 					TIKI_ASSERT( false );
 				default:
 					break;
 				}
 
-				if ( !f32::isEquals( delta, 0.0f ) )
+				if ( !f32::isZero( delta ) )
 				{
-					*m_pRotation = rotation;
+					m_rotation = rotation;
 
-					quaternion::toMatrix( m_pWorldMatrix->rot, rotation );
+					quaternion::toMatrix( m_worldMatrix.rot, rotation );
 
 					for ( int i = 0; i < 3; ++i )
 					{
-						m_pAxisBounds[ i ].rotate( *m_pRotation );
+						m_aAxisBounds[ i ].rotate( m_rotation );
 					}
 
 					// TODO: OnTransformGizmoRotateEvent(delta)
 				}
-
 			}
-
-
 		}
 	}
 
 	void TransformGizmo::pickAxis()
 	{
 		// don't pick any axis if left mouse button is currently down or dragging the gizmo
-		if ( m_LeftMouseDown )
+		if ( m_leftMouseDown )
 		{
 			return;
 		}
 
 		Vector3 intersection;
 		bool picked = false;
-		for ( int i = 0; i <= AxisType::YZ; ++i )
+		for ( int i = 0; i <= AxisType_YZ; ++i )
 		{
 			AxisType current = (AxisType)i;
 			
-			if ( intersection::intersectRayBox( m_pCamera->getMouseRay(), m_pAxisBounds[ current ], intersection ) )
+			if ( intersection::intersectRayBox( m_pCamera->getMouseRay(), m_aAxisBounds[ current ], intersection ) )
 			{
-				m_SelectedAxis = current;
+				m_selectedAxis = current;
 				picked = true;
 			}
 		}
 
 		for ( int i = 0; i < 3; ++i )
 		{
-			AxisType current = AxisType::None;
+			AxisType current = AxisType_None;
 			if ( i == 0 )
 			{
-				current = AxisType::RX;
+				current = AxisType_RX;
 			}
 			else if ( i == 1 )
 			{
-				current = AxisType::RY;
+				current = AxisType_RY;
 			}
 			else
 			{
-				current = AxisType::RZ;
+				current = AxisType_RZ;
 			}
 
-			if ( intersection::intersectRaySphere( m_pCamera->getMouseRay( ), m_pRotateBounds[ i ], intersection ) )
+			if ( intersection::intersectRaySphere( m_pCamera->getMouseRay( ), m_aRotateBounds[ i ], intersection ) )
 			{
-				m_SelectedAxis	= current;
+				m_selectedAxis	= current;
 				picked			= true;
 			}
 		}
@@ -449,57 +367,55 @@ namespace tiki
 
 		if ( !picked )
 		{
-			m_SelectedAxis = AxisType::None;
+			m_selectedAxis = AxisType_None;
 		}
 	}
 
-	void TransformGizmo::render()
+	void TransformGizmo::render() const
 	{
 		//m_pRenderer->drawSphere( Vector3::forward, 3.0f, TIKI_COLOR_RED );
 
-		m_pRenderer->drawGrid( 2, 10, TIKI_COLOR_GRAY);
+		debugrenderer::drawLineGrid( 2, 10, TIKI_COLOR_GRAY);
 
 		for ( int i = 0; i < 6; ++i )
 		{
-			if ( m_SelectedAxis == (AxisType)i )
+			if ( m_selectedAxis == (AxisType)i )
 			{
-				m_pRenderer->drawBox( m_pAxisBounds[ i ], TIKI_COLOR_GREEN);
+				debugrenderer::drawLineBox( m_aAxisBounds[ i ], TIKI_COLOR_GREEN);
 			}
 			else
 			{
-				m_pRenderer->drawBox( m_pAxisBounds[ i ] );
+				debugrenderer::drawLineBox( m_aAxisBounds[ i ] );
 			}
 		}
 
 
 		for ( int i = 0; i < 3; ++i )
 		{
-			AxisType current = AxisType::None;
+			AxisType current = AxisType_None;
 			if ( i == 0 )
 			{
-				current = AxisType::RX;
+				current = AxisType_RX;
 			}
 			else if ( i == 1 )
 			{
-				current = AxisType::RY;
+				current = AxisType_RY;
 			}
 			else
 			{
-				current = AxisType::RZ;
+				current = AxisType_RZ;
 			}
 
-			if ( m_SelectedAxis == current )
+			if ( m_selectedAxis == current )
 			{
-				m_pRenderer->drawSphere( m_pRotateBounds[ i ].Center, m_pRotateBounds[ i ].Radius, TIKI_COLOR_GREEN );
+				debugrenderer::drawLineSphere( m_aRotateBounds[ i ].center, m_aRotateBounds[ i ].radius, TIKI_COLOR_GREEN );
 			}
 			else
 			{
-				m_pRenderer->drawSphere( m_pRotateBounds[ i ].Center, m_pRotateBounds[ i ].Radius );
+				debugrenderer::drawLineSphere( m_aRotateBounds[ i ].center, m_aRotateBounds[ i ].radius );
 			}
 		}
 
-
-		m_pRenderer->drawAxes( m_LineLength, m_LineOffset, *m_pWorldMatrix);
+		debugrenderer::drawSolidAxes( m_lineLength, m_lineOffset, m_worldMatrix);
 	}
-
 }
