@@ -14,10 +14,13 @@ namespace tiki
 		friend class GraphicsSystem;
 		friend class GraphicsContext;
 
+	public:
+
+								~BaseBuffer();
+
 	protected:
 
 								BaseBuffer();
-								~BaseBuffer();
 
 		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );

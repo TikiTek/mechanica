@@ -3,6 +3,7 @@
 #define __TIKI_VECTOR_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
+#include "tiki/math/basetypes.hpp"
 
 namespace tiki
 {
@@ -85,6 +86,20 @@ namespace tiki
 	{
 		const Vector4 vec = { source.x, source.y, source.z, source.w };
 		return vec;
+	}
+
+	TIKI_FORCE_INLINE void vector::toFloat( float2& target, const Vector2& source )
+	{
+		createFloat2( target, source.x, source.y );
+	}
+
+	TIKI_FORCE_INLINE void vector::toFloat( float3& target, const Vector3& source )
+	{
+		createFloat3( target, source.x, source.y, source.z );
+	}
+	TIKI_FORCE_INLINE void vector::toFloat( float4& target, const Vector4& source )
+	{
+		createFloat4( target, source.x, source.y, source.z, source.w );
 	}
 
 	TIKI_FORCE_INLINE Vector2& vector::clear( Vector2& vec )

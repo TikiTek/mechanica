@@ -1,5 +1,6 @@
 #include "tiki/framework/baseapplication.hpp"
 
+#include "tiki/base/platform.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/framework/frameworkfactories.hpp"
@@ -147,7 +148,9 @@ namespace tiki
 		fillBaseParameters( m_parameters );
 
 		WindowParameters windowParams;
+#if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 		windowParams.instanceHandle	= platform::getInstanceHandle();
+#endif
 		windowParams.width			= m_parameters.screenWidth;
 		windowParams.height			= m_parameters.screenHeight;
 		windowParams.pWindowTitle	= m_parameters.pWindowTitle;

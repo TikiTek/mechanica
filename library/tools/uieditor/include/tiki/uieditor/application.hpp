@@ -9,14 +9,14 @@ namespace tiki
 	class UiElement;
 	struct UiEvent;
 
-	class UiEditor : public ToolApplication
+	class Application : public ToolApplication
 	{
-		TIKI_NONCOPYABLE_CLASS( UiEditor );
+		TIKI_NONCOPYABLE_CLASS( Application );
 
 	public:
 
-									UiEditor();
-		virtual						~UiEditor();
+									Application();
+		virtual						~Application();
 
 	protected:
 

@@ -3,6 +3,7 @@
 
 #include "tiki/animation/animation.hpp"
 #include "tiki/base/timer.hpp"
+#include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/game/game.hpp"
 #include "tiki/gamestates/applicationstate.hpp"
@@ -14,12 +15,15 @@
 #include "tiki/graphics/texture.hpp"
 #include "tiki/input/inputsystem.hpp"
 #include "tiki/math/camera.hpp"
+#include "tiki/math/intersection.hpp"
 #include "tiki/math/projection.hpp"
 #include "tiki/math/quaternion.hpp"
+#include "tiki/math/ray.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/physics/physicsboxshape.hpp"
 #include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
+#include "tiki/voxelworld/voxeldebugdraw.hpp"
 
 namespace tiki
 {
@@ -34,6 +38,8 @@ namespace tiki
 	{
 		m_pGame			= nullptr;
 		m_pParentState	= nullptr;
+
+		vector::clear( m_mousePosition );
 	}
 
 	TestState::~TestState()
@@ -89,10 +95,18 @@ namespace tiki
 					m_pGame->getResourceManager()
 				) );
 
+				VoxelWorldParameters worldParameters;
+				worldParameters.worldSize = vector::create( 32.0f, 32.0f, 32.0f );
+				worldParameters.maxTreeDepth = 16u;
+				
+				TIKI_VERIFY( m_world.create( worldParameters ) );
+
 				return TransitionState_Finish;
 			}
 			else
 			{
+				m_world.dispose();
+
 				m_skybox.dispose(
 					m_pGame->getGraphicsSystem(),
 					m_pGame->getResourceManager()
@@ -307,6 +321,37 @@ namespace tiki
 		//		pEvent->data.sizeChanged.size.y / 2u
 		//	) );
 		//}
+
+		{
+			Plane bottomPlane;
+			bottomPlane.create( vector::create( 0.0f, m_world.getWorldSize().y / 2.0f, 0.0f ), Vector3::unitY );
+
+			Ray cameraRay;
+			m_gameClient.getView().getCamera().getCameraRay(
+				cameraRay,
+				m_mousePosition.x,
+				m_mousePosition.y,
+				float( m_pGame->getGraphicsSystem().getBackBuffer().getWidth() ),
+				float( m_pGame->getGraphicsSystem().getBackBuffer().getHeight() )
+			);
+
+			Vector3 planePoint;
+			if( intersection::intersectRayPlane( cameraRay, bottomPlane, planePoint ) )
+			{
+				AxisAlignedBox box;
+				box.createFromCenterExtends( planePoint, Vector3::one );
+
+				debugrenderer::drawLineRay( cameraRay );
+
+				debugrenderer::drawLineAxisAlignedBox( box, TIKI_COLOR_RED );
+				debugrenderer::drawText( vector::create( 50.0f, 100.0f ), TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", planePoint.x, planePoint.y, planePoint.z );
+
+				debugrenderer::drawText3D( Vector3::zero, TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", planePoint.x, planePoint.y, planePoint.z );
+			}
+		}
+
+		m_world.update();
+		voxel::drawVoxel( m_world.getRootVoxel() );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -381,6 +426,10 @@ namespace tiki
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
 	{
+		if( inputEvent.eventType == InputEventType_Mouse_Moved )
+		{
+			vector::set( m_mousePosition, float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) );
+		}
 
 		if ( m_freeCamera.processInputEvent( inputEvent ) )
 		{
@@ -447,5 +496,10 @@ namespace tiki
 		}
 
 		return false;
+	}
+
+	const tiki::RenderView& TestState::getRenderView() const
+	{
+		return m_gameClient.getView();
 	}
 }

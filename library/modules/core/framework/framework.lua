@@ -29,3 +29,4 @@ module:add_dependency( "webserverpages" );
 module:add_dependency( "toollibraries" );
 module:add_dependency( "runtimeshared" );
 module:add_dependency( "ui" );
+module:add_dependency( "debugrenderer" );

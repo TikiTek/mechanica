@@ -23,7 +23,7 @@ namespace tiki
 		bool		getMouseControl() const			{ return m_enableMouse; }
 		void		setMouseControl( bool enabled );
 
-		void		update( Camera& targetCamera, float timeDelta );
+		void		update( Camera& targetCamera, double timeDelta );
 
 		bool		processInputEvent( const InputEvent& inputEvent );
 

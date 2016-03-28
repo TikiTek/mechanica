@@ -1,113 +1,97 @@
 #pragma once
-
 #ifndef TIKI_TRANSFORMGIZMO_HPP_INCLUDED__
 #define TIKI_TRANSFORMGIZMO_HPP_INCLUDED__
 
+#include "tiki\math\box.hpp"
 #include "tiki\math\quaternion.hpp"
+#include "tiki\math\sphere.hpp"
 
 namespace tiki
 {
+	class ImmediateRenderer;
+	class EditorCamera;
+	struct InputEvent;
 
-class	ImmediateRenderer;
-struct	Quaternion;
-struct	Vector3;
-struct  InputEvent;
-struct  Box;
-struct  Sphere3;
-
-ref class EditorCamera;
-
-enum AxisType
-{
-	X,
-	Y,
-	Z,
-
-	XZ,
-	XY,
-	YZ,
-	
-	RX,
-	RY,
-	RZ,
-	
-	Count,
-
-	None
-};
-
-enum class GizmoMode
-{
-	Translate,
-	Rotate, 
-	Scale,
-
-	None
-};
-
-public ref class TransformGizmo
-{
-public:
-			TransformGizmo();
-			~TransformGizmo();
-	
-	bool	create( ImmediateRenderer* renderer, EditorCamera^ camera );
-	void	dispose();
-
-
-	bool	processInputEvent( InputEvent& inputEvent );
-
-	void	update( float timeDelta );
-	void	pickAxis();
-
-	void	render();
-
-
-	property Vector3 Position
+	enum AxisType
 	{
-		Vector3 get() { return *m_pPosition; }
-		void    set( Vector3 value ) { *m_pPosition = value; }
-	}
+		AxisType_X,
+		AxisType_Y,
+		AxisType_Z,
+		AxisType_XZ,
+		AxisType_XY,
+		AxisType_YZ,	
+		AxisType_RX,
+		AxisType_RY,
+		AxisType_RZ,
+	
+		AxisType_Count,
+		AxisType_None
+	};
 
-	property Quaternion Rotation
+	enum GizmoMode
 	{
-		Quaternion get( ) { return *m_pRotation; }
-		void       set( Quaternion value )  { *m_pRotation = value; }
-	}
+		GizmoMode_Translate,
+		GizmoMode_Rotate, 
+		GizmoMode_Scale,
 
-private:
-	AxisType			m_SelectedAxis;
-	GizmoMode			m_GizmoMode;
+		GizmoMode_Count,
+		GizmoMode_None
+	};
 
-	Vector3*			m_pPosition;
-	Quaternion*			m_pRotation;
+	class TransformGizmo
+	{
+	public:
 
-	float				m_LineOffset;
-	float				m_LineLength;
-	float				m_MultiAxisThickness;
-	float				m_SingleAxisThickness;
-
-	ImmediateRenderer*	m_pRenderer;
-	EditorCamera^		m_pCamera;
-
-	// TODO: GizmoAxis
-	Box*				m_pAxisBounds;
-	Sphere3*			m_pRotateBounds;
-
-	bool				m_LeftMouseDown;
-
-	Vector3*			m_pLastIntersection;
-	Vector3*			m_pIntersection;
-	Vector3*			m_pDelta;
-	Vector3*			m_pTranslationDelta;
-
-	Matrix43*			m_pWorldMatrix;
-
-	float				m_MouseOffsetX;
-};
+							TransformGizmo();
+							~TransformGizmo();
+	
+		bool				create( const EditorCamera& camera );
+		void				dispose();
 
 
+		bool				processInputEvent( const InputEvent& inputEvent );
 
+		void				update( double timeDelta );
+		void				pickAxis();
+
+		void				render() const;
+
+		const Vector3&		getPosition() const { return m_position; }
+		void				setPosition( const Vector3& position ) { m_position = position; }
+
+		const Quaternion&	getRotation() const { return m_rotation; }
+		void				setRotation( const Quaternion& rotation ) { m_rotation = rotation; }
+
+	private:
+
+		AxisType			m_selectedAxis;
+		GizmoMode			m_gizmoMode;
+
+		Vector3				m_position;
+		Quaternion			m_rotation;
+
+		float				m_lineOffset;
+		float				m_lineLength;
+		float				m_multiAxisThickness;
+		float				m_singleAxisThickness;
+
+		const EditorCamera*	m_pCamera;
+
+		// TODO: GizmoAxis
+		Box					m_aAxisBounds[ 6u ];
+		Sphere				m_aRotateBounds[ 3u ];
+
+		bool				m_leftMouseDown;
+
+		Vector3				m_lastIntersection;
+		Vector3				m_intersection;
+		Vector3				m_delta;
+		Vector3				m_translationDelta;
+
+		Matrix43			m_worldMatrix;
+
+		float				m_mouseOffsetX;
+	};
 }
 
 #endif // TIKI_TRANSFORMGIZMO_HPP_INCLUDED__

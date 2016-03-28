@@ -35,9 +35,9 @@ namespace tiki
 			 isStringEquals( userName, "tbode" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			//return GameStates_Test;
+			return GameStates_Test;
 			//return GameStates_BasicTest;
-			return GameStates_Play;
+			//return GameStates_Play;
 		}
 #endif
 
@@ -173,6 +173,10 @@ namespace tiki
 		if( m_gameFlow.isInState( GameStates_Play ) )
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->playState.getRenderView().getCamera() );
+		}
+		else if( m_gameFlow.isInState( GameStates_Test ) )
+		{
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->testState.getRenderView().getCamera() );
 		}
 #endif
 	}

@@ -1,11 +1,10 @@
-
 #include "tiki/framework/mainwindow.hpp"
 
 #include "tiki/base/memory.hpp"
 #include "tiki/input/inputsystem.hpp"
 
 #include <windows.h>
-#include <windowsx.h>
+//#include <windowsx.h>
 
 namespace tiki
 {

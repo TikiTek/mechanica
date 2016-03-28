@@ -371,8 +371,8 @@ namespace tiki
 		font.fillVertices( chars, TIKI_COUNT( chars ), pText, textLength );
 
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+		setShaderMode( ImmediateShaderMode_Font );
 
-		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 1u ) );
 		m_pContext->setPixelShaderTexture( 0u, &font.getTextureData() );
 
 		const size_t vertexCount = textLength * 4u;

@@ -50,6 +50,7 @@ namespace tiki
 			PoolChunk* pChunk = &m_chunks.getFirst();
 			m_chunks.removeSortedByValue( m_chunks.getFirst() );
 
+			pChunk->~PoolChunk();
 			TIKI_MEMORY_FREE( pChunk );
 		}		
 
@@ -139,6 +140,7 @@ namespace tiki
 		const uint size = chunkSize + (sizeof( T ) * m_grow);
 
 		PoolChunk* pChunk = (PoolChunk*)TIKI_MEMORY_ALLOC( size );
+		pChunk = new (pChunk) PoolChunk;
 		if( pChunk == nullptr )
 		{
 			return false;

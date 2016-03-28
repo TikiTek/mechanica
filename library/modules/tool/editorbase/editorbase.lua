@@ -8,3 +8,4 @@ module:add_files( "editorbase.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "base" );
+module:add_dependency( "debugrenderer" );

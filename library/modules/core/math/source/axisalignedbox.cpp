@@ -32,11 +32,11 @@ namespace tiki
 		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMinZMin ], min.x, min.y, min.z );
 		vector::set( aVertices[ AxisAlignedBoxVertices_XMaxYMinZMin ], max.x, min.y, min.z );
 		vector::set( aVertices[ AxisAlignedBoxVertices_XMaxYMaxZMin ], max.x, max.y, min.z );
+		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMaxZMin ], min.x, max.y, min.z );
+		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMinZMax ], min.x, min.y, max.z );
+		vector::set( aVertices[ AxisAlignedBoxVertices_XMaxYMinZMax ], max.x, min.y, max.z );
 		vector::set( aVertices[ AxisAlignedBoxVertices_XMaxYMaxZMax ], max.x, max.y, max.z );
 		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMaxZMax ], min.x, max.y, max.z );
-		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMinZMax ], min.x, min.y, max.z );
-		vector::set( aVertices[ AxisAlignedBoxVertices_XMinYMaxZMin ], min.x, max.y, min.z );
-		vector::set( aVertices[ AxisAlignedBoxVertices_XMaxYMinZMax ], max.x, min.y, max.z );
 	}
 	
 	void AxisAlignedBox::translate( const Vector3& translation )

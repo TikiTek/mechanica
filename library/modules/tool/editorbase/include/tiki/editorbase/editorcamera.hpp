@@ -1,14 +1,19 @@
+#pragma once
+#ifndef TIKI_EDITORCAMERA_HPP_INCLUDED
+#define TIKI_EDITORCAMERA_HPP_INCLUDED
+
 #include "tiki\base\types.hpp"
+
+#include "tiki/math/camera.hpp"
+#include "tiki/runtimeshared/freecamera.hpp"
+#include "tiki/math/ray.hpp"
 
 namespace tiki
 {
-	class Camera;
-	class FreeCamera;
 	class GraphicsSystem;
 	struct InputEvent;
-	struct Ray3;
 
-	public ref class EditorCamera
+	class EditorCamera
 	{
 	public:
 
@@ -17,27 +22,28 @@ namespace tiki
 		bool			create( GraphicsSystem& graphicsSystem );
 		void			dispose();
 
-		void			update( float timeDelta );
+		void			update( double timeDelta );
 
 		void			resize( int x, int y );
 
-		bool			processInputEvent( InputEvent& inputEvent );
+		bool			processInputEvent( const InputEvent& inputEvent );
 
-		const Camera&	getCamera();
-		const Ray3&		getMouseRay();
+		const Camera&	getCamera() const { return m_camera; }
+		const Ray&		getMouseRay() const { return m_ray; }
 
 	private:
 
-		Camera*			m_pCamera;
-		FreeCamera*		m_pController;
+		Camera			m_camera;
+		FreeCamera		m_controller;
 
-		int				m_ViewportWidth;
-		int				m_ViewportHeight;
+		int				m_viewportWidth;
+		int				m_viewportHeight;
 
-		sint16			m_MousePosX;
-		sint16			m_MousePosY;
+		sint16			m_mousePosX;
+		sint16			m_mousePosY;
 
-		Ray3*			m_Ray;
-
+		Ray				m_ray;
 	};
 }
+
+#endif // TIKI_EDITORCAMERA_HPP_INCLUDED

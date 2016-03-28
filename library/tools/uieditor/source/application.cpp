@@ -1,4 +1,4 @@
-#include "tiki/uieditor/uieditor.hpp"
+#include "tiki/uieditor/application.hpp"
 
 #include "tiki/ui/uielement.hpp"
 #include "tiki/ui/uisystem.hpp"
@@ -7,21 +7,21 @@
 
 namespace tiki
 {
-	UiEditor::UiEditor()
+	Application::Application()
 	{
 		m_pTestElement = nullptr;
 	}
 
-	UiEditor::~UiEditor()
+	Application::~Application()
 	{
 	}
 
-	void UiEditor::fillToolParameters( ToolApplicationParamters& parameters )
+	void Application::fillToolParameters( ToolApplicationParamters& parameters )
 	{
 		parameters.pGamebuildPath = "../../../../../../gamebuild";
 	}
 
-	bool UiEditor::initializeTool()
+	bool Application::initializeTool()
 	{
 		UiSystem& ui = getUiSystem();
 
@@ -91,39 +91,39 @@ namespace tiki
 		return true;
 	}
 
-	void UiEditor::shutdownTool()
+	void Application::shutdownTool()
 	{
 		getUiSystem().removeElement( m_pTestElement );
 	}
 
-	void UiEditor::updateTool( bool wantToShutdown )
+	void Application::updateTool( bool wantToShutdown )
 	{
 
 	}
 
-	void UiEditor::renderTool( GraphicsContext& graphicsContext ) const
+	void Application::renderTool( GraphicsContext& graphicsContext ) const
 	{
 		graphicsContext.clear( graphicsContext.getBackBuffer() );
 	}
 
-	bool UiEditor::processToolInputEvent( const InputEvent& inputEvent )
+	bool Application::processToolInputEvent( const InputEvent& inputEvent )
 	{
 		return false;
 	}
 
-	void UiEditor::processToolWindowEvent( const WindowEvent& windowEvent )
+	void Application::processToolWindowEvent( const WindowEvent& windowEvent )
 	{
 
 	}
 
-	void UiEditor::handleMouseOverEvent( UiElement* pSender, const UiEvent& eventData )
+	void Application::handleMouseOverEvent( UiElement* pSender, const UiEvent& eventData )
 	{
 		pSender->setToColorRectangleOne( TIKI_COLOR_BLUE );
 	}
 
 	ToolApplication& framework::getTool()
 	{
-		static UiEditor s_application;
+		static Application s_application;
 		return s_application;
 	}
 }

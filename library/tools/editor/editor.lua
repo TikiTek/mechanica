@@ -3,31 +3,30 @@
 local module = Module:new( "editor" );
 
 module:add_files( "source/*.*" );
-module:add_files( "editor.lua" );
+module:add_files( "editornative.lua" );
+module:add_files( "include/**/*.hpp" );
 
-module:set_flag( "WPF" );
+module:add_include_dir( "include" );
 
-module:add_library_file( "System" );
-module:add_library_file( "System.Core" );
-module:add_library_file( "System.Drawing" );
-module:add_library_file( "System.Windows.Forms" );
-module:add_library_file( "System.Xaml" );
-module:add_library_file( "WindowsBase" );
-module:add_library_file( "PresentationCore" );
-module:add_library_file( "PresentationFramework" );
-module:add_library_file( "Microsoft.CSharp" );
-module:add_library_file( "WindowsFormsIntegration" );
+module:add_dependency( "config" );
+module:add_dependency( "threading" );
+module:add_dependency( "toolbase" );
+module:add_dependency( "toollibraries" );
+module:add_dependency( "resource" );
+module:add_dependency( "graphics" );
+module:add_dependency( "graphicsresources" );
+module:add_dependency( "runtimeshared" );
+module:add_dependency( "input" );
+module:add_dependency( "editorbase" );
+module:add_dependency( "genericdata" );
+module:add_dependency( "toolapplication" );
 
-module:add_library_file( "editornative" );
-
-module:add_dependency( "wpftoolkit" );
+module:add_library_file( "converterlibrary" );
 
 local project = Project:new(
 	"editor",
 	{ "x32", "x64" },
-	{ "Debug", "Release" },
+	{ "Debug", "Release"},
 	module,
 	ProjectTypes.windowApplication
 );
-
-project.lang = ProjectLanguages.cs;

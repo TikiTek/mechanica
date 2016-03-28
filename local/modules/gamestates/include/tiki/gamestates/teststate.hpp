@@ -56,6 +56,8 @@ namespace tiki
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
+		const RenderView&		getRenderView() const;
+
 	private:
 		
 		Game*						m_pGame;
@@ -80,6 +82,8 @@ namespace tiki
 		DebugGuiLightingWindow		m_lightingWindow;
 
 		int							m_gbufferIndex;
+
+		Vector2						m_mousePosition;
 
 		bool						m_enablePhysicsDebug;
 		bool						m_enableBloom;
