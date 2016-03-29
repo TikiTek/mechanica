@@ -323,17 +323,13 @@ namespace tiki
 		//}
 
 		{
+			const Camera& camera = m_gameClient.getView().getCamera();
+
 			Plane bottomPlane;
-			bottomPlane.create( vector::create( 0.0f, m_world.getWorldSize().y / 2.0f, 0.0f ), Vector3::unitY );
+			bottomPlane.create( vector::create( 0.0f, m_world.getWorldSize().y / -2.0f, 0.0f ), Vector3::unitY );
 
 			Ray cameraRay;
-			m_gameClient.getView().getCamera().getCameraRay(
-				cameraRay,
-				m_mousePosition.x,
-				m_mousePosition.y,
-				float( m_pGame->getGraphicsSystem().getBackBuffer().getWidth() ),
-				float( m_pGame->getGraphicsSystem().getBackBuffer().getHeight() )
-			);
+			camera.getCameraRay( cameraRay, m_mousePosition );
 
 			Vector3 planePoint;
 			if( intersection::intersectRayPlane( cameraRay, bottomPlane, planePoint ) )

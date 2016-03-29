@@ -93,10 +93,10 @@ namespace tiki
 		Ray rayTopRight;
 		Ray rayBottomLeft;
 		Ray rayBottomRight;
-		camera.getCameraRay( rayTopLeft, left, top, width, height );
-		camera.getCameraRay( rayTopRight, right, top, width, height );
-		camera.getCameraRay( rayBottomLeft, left, bottom, width, height );
-		camera.getCameraRay( rayBottomRight, right, bottom, width, height );
+		camera.getCameraRay( rayTopLeft, vector::create( left, top ) );
+		camera.getCameraRay( rayTopRight, vector::create( right, top ) );
+		camera.getCameraRay( rayBottomLeft, vector::create( left, bottom ) );
+		camera.getCameraRay( rayBottomRight, vector::create( right, bottom ) );
 
 		intersection::intersectRayPlane( rayTopLeft, plane, topLeft );
 		intersection::intersectRayPlane( rayTopRight, plane, topRight );
