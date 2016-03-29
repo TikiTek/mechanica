@@ -70,13 +70,26 @@ namespace tiki
 		return m_frustum;
 	}
 
-	void Camera::getCameraRay( Ray& ray, float mousePosX, float mousePosY, float width, float height ) const
+	void Camera::getCameraRay( Ray& ray, const Vector2& screenPosition ) const
 	{
-		vector::set( ray.origin, mousePosX, mousePosY, 0.0f );
-		vector::set( ray.direction, mousePosX, mousePosY, 1.0f );
+		Vector2 clipPosition = 
+		{
+			-1.0f + (screenPosition.x / m_projection.getWidth()) * 2.0f,
+			 1.0f - (screenPosition.y / m_projection.getHeight()) * 2.0f
+		};
+		vector::clamp( clipPosition, Vector2::negativeOne, Vector2::one );
+		//vector::div( clipPosition, screenPosition, vector::create( m_projection.getWidth(), m_projection.getHeight() ) );
+		//vector::mul( clipPosition, vector::create( 0.5f, -0.5f ) );
+		//vector::add( clipPosition, vector::create( 0.5f, -0.5f ) );
 
-		matrix::unproject( ray.origin, 0.0f, 0.0f, width, height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
-		matrix::unproject( ray.direction, 0.0f, 0.0f, width, height, m_projection.getNearPlane(), m_projection.getFarPlane(), m_viewProjection );
+		vector::set( ray.origin, clipPosition, -1.0f );
+		vector::set( ray.direction, clipPosition, 1.0f );
+
+		Matrix44 inverseViewProjection;
+		matrix::invert( inverseViewProjection, m_viewProjection );
+
+		matrix::transform( ray.origin, inverseViewProjection );
+		matrix::transform( ray.direction, inverseViewProjection );
 
 		vector::sub( ray.direction, ray.origin );
 		vector::normalize( ray.direction );

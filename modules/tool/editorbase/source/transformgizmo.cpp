@@ -123,6 +123,10 @@ namespace tiki
 	{
 		pickAxis();
 
+		Vector3 forward = { 0.0f, 0.0f, -1.0f };
+		Vector3 left = { -1.0f, 0.0f, 0.0f };
+		Vector3 down = { 0.0f, -1.0f, 0.0f };
+
 		// save last intersection and reset 
 		m_lastIntersection = m_intersection;
 		m_intersection = Vector3::zero;
@@ -141,7 +145,7 @@ namespace tiki
 				case AxisType_XY:
 					{
 						Plane plane;
-						plane.create( Vector3::forward, f32::abs( m_position.z ) );
+						plane.create( forward, f32::abs( m_position.z ) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
@@ -170,7 +174,7 @@ namespace tiki
 				case AxisType_Y:
 					{
 						Plane plane;
-						plane.create( Vector3::left, f32::abs( m_position.x) );
+						plane.create( left, f32::abs( m_position.x) );
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
@@ -202,7 +206,7 @@ namespace tiki
 					{
 						
 						Plane plane;
-						plane.create( Vector3::down, f32::abs( m_position.y ) ); // TODO: Anthony this is shit!
+						plane.create( down, f32::abs( m_position.y ) ); // TODO: Anthony this is shit!
 
 						Vector3 intersection;
 						if ( intersection::intersectRayPlane( m_pCamera->getMouseRay(), plane, intersection ) )
@@ -287,7 +291,7 @@ namespace tiki
 					quaternion::fromAxisAngle( rotation, Vector3::unitY, delta );
 					break;
 				case AxisType_RZ:
-					quaternion::fromAxisAngle( rotation, Vector3::forward, delta );
+					quaternion::fromAxisAngle( rotation, forward, delta );
 					break;
 				case AxisType_X:
 				case AxisType_Y:
