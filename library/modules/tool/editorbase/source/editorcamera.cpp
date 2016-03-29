@@ -9,20 +9,17 @@ namespace tiki
 {
 	EditorCamera::EditorCamera()
 	{
-		m_viewportWidth		= 0;
-		m_viewportHeight	= 0;
-		m_mousePosX			= 0;
-		m_mousePosY			= 0;
 	}
 
 	bool EditorCamera::create( GraphicsSystem& graphicsSystem )
 	{
-		Projection projection;
-		projection.createPerspective( (float)graphicsSystem.getBackBuffer().getWidth(), (float)graphicsSystem.getBackBuffer().getHeight(), f32::piOver4, 0.001f, 1000.0f );
-				
+		vector::clear( m_mousePosition );
+
 		const Vector3 position = { 0.0f, 0.0f, 3.0f };
-		m_camera.create( position, Quaternion::identity, &projection );
+		m_camera.create( position, Quaternion::identity );
 		m_controller.create( position, Quaternion::identity );
+
+		resize( graphicsSystem.getBackBuffer().getWidth(), graphicsSystem.getBackBuffer().getHeight() );
 		
 		return true;
 	}
@@ -34,16 +31,13 @@ namespace tiki
 	void EditorCamera::update( double timeDelta )
 	{
 		m_controller.update( m_camera, timeDelta );
-		m_camera.getCameraRay( m_ray, (float)m_mousePosX, (float)m_mousePosY, (float)m_viewportWidth, (float)m_viewportHeight );
+		m_camera.getCameraRay( m_ray, m_mousePosition );
 	}
 
-	void EditorCamera::resize( int x, int y )
+	void EditorCamera::resize( uint x, uint y )
 	{
-		m_viewportWidth  = x;
-		m_viewportHeight = y;
-
 		Projection projection;
-		projection.createPerspective( float( m_viewportWidth ), float( m_viewportHeight ), f32::piOver4, 0.001f, 1000.0f );
+		projection.createPerspective( float( x ), float( y ), f32::piOver4, 0.001f, 1000.0f );
 
 		m_camera.setProjection( projection );
 	}
@@ -52,8 +46,7 @@ namespace tiki
 	{
 		if ( inputEvent.eventType == InputEventType_Mouse_Moved )
 		{
-			m_mousePosX = inputEvent.data.mouseMoved.xState;
-			m_mousePosY = inputEvent.data.mouseMoved.yState;
+			vector::set( m_mousePosition, float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) );
 		}
 
 		if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )

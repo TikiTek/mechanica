@@ -24,7 +24,7 @@ namespace tiki
 
 		void			update( double timeDelta );
 
-		void			resize( int x, int y );
+		void			resize( uint x, uint y );
 
 		bool			processInputEvent( const InputEvent& inputEvent );
 
@@ -36,11 +36,7 @@ namespace tiki
 		Camera			m_camera;
 		FreeCamera		m_controller;
 
-		int				m_viewportWidth;
-		int				m_viewportHeight;
-
-		sint16			m_mousePosX;
-		sint16			m_mousePosY;
+		Vector2			m_mousePosition;
 
 		Ray				m_ray;
 	};

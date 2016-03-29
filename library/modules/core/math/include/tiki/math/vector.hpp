@@ -16,6 +16,7 @@ namespace tiki
 
 		static const Vector2 zero;
 		static const Vector2 one;
+		static const Vector2 negativeOne;
 		static const Vector2 unitX;
 		static const Vector2 unitY;
 	}
@@ -31,12 +32,10 @@ namespace tiki
 
 		static const Vector3 zero;
 		static const Vector3 one;
+		static const Vector3 negativeOne;
 		static const Vector3 unitX;
 		static const Vector3 unitY;
 		static const Vector3 unitZ;
-		static const Vector3 forward;
-		static const Vector3 down;
-		static const Vector3 left;
 	}
 	TIKI_POST_ALIGN( 16 );
 
@@ -49,6 +48,7 @@ namespace tiki
 
 		static const Vector4 zero;
 		static const Vector4 one;
+		static const Vector4 negativeOne;
 		static const Vector4 unitX;
 		static const Vector4 unitY;
 		static const Vector4 unitZ;

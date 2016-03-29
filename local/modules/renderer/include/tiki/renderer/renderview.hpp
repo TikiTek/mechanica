@@ -19,7 +19,7 @@ namespace tiki
 			cameraRotation		= Quaternion::identity;
 			cameraFieldOfView	= f32::piOver4;
 			cameraNearPLane		= 0.001f;
-			cameraFarPLane		= 100.0f;
+			cameraFarPLane		= 1000.0f;
 		}
 
 		Vector3		cameraPosition;

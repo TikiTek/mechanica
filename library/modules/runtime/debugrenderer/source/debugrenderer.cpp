@@ -66,7 +66,7 @@ namespace tiki
 
 		void					flushDrawLineRay( const ImmediateRenderer& renderer, const DebugRenderLineRayCommand& command );
 		void					flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command );
-		void					flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const DebugRenderLineAxisAlignedBoxCommand& command );
+		void					flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const AxisAlignedBox& box, Color color );
 		void					flushDrawLineAxes( const ImmediateRenderer& renderer, const DebugRenderLineAxesCommand& command );
 		void					flushDrawLineGrid( const ImmediateRenderer& renderer, const DebugRenderLineGridCommand& command );
 		void					flushDrawLineCircle( const ImmediateRenderer& renderer, const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color );
@@ -205,7 +205,7 @@ namespace tiki
 			case DebugRenderCommandType_DrawLineAxisAlignedBox:
 				{
 					const DebugRenderLineAxisAlignedBoxCommand& command = *(const DebugRenderLineAxisAlignedBoxCommand*)pCommand;
-					flushDrawLineAxisAlignedBox( renderer, command );
+					flushDrawLineAxisAlignedBox( renderer, command.box, command.color );
 				}
 				break;
 
@@ -320,6 +320,10 @@ namespace tiki
 
 		const Vector3 points[] = { command.ray.origin, end };
 		flushDrawLines( renderer, points, TIKI_COUNT( points ), false, command.color );
+
+		AxisAlignedBox originBox;
+		originBox.createFromCenterExtends( command.ray.origin, vector::create( 0.5f, 0.5f, 0.5f ) );
+		flushDrawLineAxisAlignedBox( renderer, originBox, command.color );
 	}
 
 	void DebugRenderer::flushDrawLineBox( const ImmediateRenderer& renderer, const DebugRenderLineBoxCommand& command )
@@ -384,13 +388,13 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
-	void DebugRenderer::flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const DebugRenderLineAxisAlignedBoxCommand& command )
+	void DebugRenderer::flushDrawLineAxisAlignedBox( const ImmediateRenderer& renderer, const AxisAlignedBox& box, Color color )
 	{
 		renderer.setPrimitiveTopology( PrimitiveTopology_LineList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		Vector3 points[ AxisAlignedBoxVertices_Count ];
-		command.box.getVertices( points );
+		box.getVertices( points );
 
 		StaticArray< ImmediateVertex > vertices;
 		renderer.beginImmediateGeometry( vertices, 24 );
@@ -399,7 +403,7 @@ namespace tiki
 		for( uint i = 0u; i < vertices.getCount(); ++i )
 		{
 			ImmediateVertex& current = vertices[ i ];
-			current.color	= command.color;
+			current.color	= color;
 			current.u		= 0u;
 			current.v		= 0u;
 		}

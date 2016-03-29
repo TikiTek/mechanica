@@ -608,29 +608,29 @@ namespace tiki
 		);
 	}
 
-	TIKI_FORCE_INLINE void matrix::project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
-	{
-		transform( vec, mtx );
+	//TIKI_FORCE_INLINE void matrix::project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
+	//{
+	//	transform( vec, mtx );
 
-		vector::set( vec,
-					 ( ( 1.0f + vec.x ) * 0.5f * width ) + x,
-					 ( ( 1.0f - vec.y ) * 0.5f * height ) + y,
-					 ( vec.z * ( maxZ - minZ ) ) + minZ );
-	}
+	//	vector::set( vec,
+	//				 ( ( 1.0f + vec.x ) * 0.5f * width ) + x,
+	//				 ( ( 1.0f - vec.y ) * 0.5f * height ) + y,
+	//				 ( vec.z * ( maxZ - minZ ) ) + minZ );
+	//}
 
-	TIKI_FORCE_INLINE void matrix::unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
-	{
-		Matrix44 inverseMtx;
-		invert( inverseMtx, mtx );
+	//TIKI_FORCE_INLINE void matrix::unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx )
+	//{
+	//	Matrix44 inverseMtx;
+	//	invert( inverseMtx, mtx );
 
-		vector::set(vec,
-					( ( ( vec.x - x )  / width ) * 2.0f ) - 1.0f,
-				   -( ( ( ( vec.y - y ) / height ) * 2.0f ) - 1.0f ),
-					( vec.z - minZ ) / ( maxZ - minZ ) );
+	//	vector::set(vec,
+	//				( ( ( vec.x - x )  / width ) * 2.0f ) - 1.0f,
+	//			   -( ( ( ( vec.y - y ) / height ) * 2.0f ) - 1.0f ),
+	//				( vec.z - minZ ) / ( maxZ - minZ ) );
+	//	vector::clamp( vec, Vector3::negativeOne, Vector3::one );
 
-		transform( vec, inverseMtx );
-	}
-
+	//	transform( vec, inverseMtx );
+	//}
 }
 
 #endif // __TIKI_MATRIX_INL_INCLUDED__

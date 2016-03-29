@@ -117,9 +117,6 @@ namespace tiki
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix44& mtx );	// for coordinate
 		TIKI_FORCE_INLINE void		transform( Vector4& vec, const Matrix44& mtx );	// for coordinate
 
-		TIKI_FORCE_INLINE void		project( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx );
-		TIKI_FORCE_INLINE void		unproject( Vector3& vec, float x, float y, float width, float height, float minZ, float maxZ, const Matrix44& mtx );
-
 		void						compose( Matrix44& target, const Quaternion& rotation, const Vector3& translation, const Vector3& scale );
 		bool						decompose( Quaternion& rotation, Vector3& translation, Vector3& scale, const Matrix44& source );
 	}

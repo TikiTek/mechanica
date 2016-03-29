@@ -37,7 +37,7 @@ namespace tiki
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
 		const Frustum&		getFrustum() const;
-		void				getCameraRay( Ray& ray, float mousePosX, float mousePosY, float width, float height ) const;
+		void				getCameraRay( Ray& ray, const Vector2& screenPosition ) const;
 
 	private:
 
