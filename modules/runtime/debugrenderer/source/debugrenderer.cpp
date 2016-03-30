@@ -742,7 +742,8 @@ namespace tiki
 
 		const Vector2 screenSize = vector::create( projection.getWidth(), projection.getHeight() );
 		vector::mul( screenPosition, screenSize );
-		
+		vector::floor( screenPosition );
+
 		renderer.drawText( screenPosition, *m_pFont, command.text, command.color );
 	}
 

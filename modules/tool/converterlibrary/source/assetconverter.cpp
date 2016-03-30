@@ -30,9 +30,10 @@ namespace tiki
 		m_sourcePath	= parameters.sourcePath;
 
 		ConverterManagerParameter managerParameters;
-		managerParameters.sourcePath	= parameters.sourcePath;
-		managerParameters.outputPath	= parameters.outputPath;
-		managerParameters.forceRebuild	= parameters.forceRebuild;
+		managerParameters.sourcePath		= parameters.sourcePath;
+		managerParameters.outputPath		= parameters.outputPath;
+		managerParameters.pChangedFilesList	= &m_changedFiles;
+		managerParameters.forceRebuild		= parameters.forceRebuild;
 		m_converterMutex.create();
 		m_manager.create( managerParameters );
 
@@ -93,7 +94,7 @@ namespace tiki
 		}		
 		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
-		const bool result = m_manager.startConversion( nullptr, &m_converterMutex );
+		const bool result = m_manager.startConversion( &m_converterMutex );
 		TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
 
 		return result;
@@ -153,12 +154,7 @@ namespace tiki
 				MutexStackLock lock( m_converterMutex );
 
 				m_manager.queueFile( fileEvent.fileName );
-
-				List< string > outputFiles;
-				if ( m_manager.startConversion( &outputFiles ) )
-				{
-					m_changedFiles.addRange( outputFiles.getBegin(), outputFiles.getCount() );
-				}
+				m_manager.startConversion();
 			}
 			else
 			{

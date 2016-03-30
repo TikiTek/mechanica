@@ -18,14 +18,12 @@ namespace tiki
 	{
 		m_id				= id;
 		m_sectionData		= sectionData;
-		m_referenceCount	= 1u;
 
 		return createInternal( initData, factoryContext );
 	}
 
 	void Resource::dispose( const FactoryContext& factoryContext )
 	{
-		m_referenceCount = 0u;
 		disposeInternal( factoryContext );
 	}
 

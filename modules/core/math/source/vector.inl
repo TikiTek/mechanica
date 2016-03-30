@@ -652,6 +652,54 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2& vector::floor( Vector2& vec )
+	{
+		vec.x = f32::floor( vec.x );
+		vec.y = f32::floor( vec.y );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::floor( Vector3& vec )
+	{
+		vec.x = f32::floor( vec.x );
+		vec.y = f32::floor( vec.y );
+		vec.z = f32::floor( vec.z );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::floor( Vector4& vec )
+	{
+		vec.x = f32::floor( vec.x );
+		vec.y = f32::floor( vec.y );
+		vec.z = f32::floor( vec.z );
+		vec.w = f32::floor( vec.w );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector2& vector::ceil( Vector2& vec )
+	{
+		vec.x = f32::ceil( vec.x );
+		vec.y = f32::ceil( vec.y );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::ceil( Vector3& vec )
+	{
+		vec.x = f32::ceil( vec.x );
+		vec.y = f32::ceil( vec.y );
+		vec.z = f32::ceil( vec.z );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::ceil( Vector4& vec )
+	{
+		vec.x = f32::ceil( vec.x );
+		vec.y = f32::ceil( vec.y );
+		vec.z = f32::ceil( vec.z );
+		vec.w = f32::ceil( vec.w );
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector2& vector::lerp( Vector2& vec, const Vector2& start, const Vector2& end, float amount )
 	{
 		TIKI_ASSERT( amount >= 0.0f && amount <= 1.0f );
