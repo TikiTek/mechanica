@@ -82,23 +82,14 @@ namespace tiki
 	bool Frustum::getCorners( Vector3 aCorners[ FrustumCorner_Count ] ) const
 	{
 		bool ok = true;
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ],	m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
-		//ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
-
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Top ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Top ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Bottom ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Near ], m_planes[ FrustumPlane_Bottom ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Top ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Top ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ], m_planes[ FrustumPlane_Right ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Bottom ] );
-		ok = ok && getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ], m_planes[ FrustumPlane_Left ], m_planes[ FrustumPlane_Far ], m_planes[ FrustumPlane_Bottom ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearRightTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftTop ],		m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_NearLeftBottom ],	m_planes[ FrustumPlane_Near ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightBottom ],	m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Right ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarRightTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Right ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftTop ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Top ],		m_planes[ FrustumPlane_Left ] );
+		ok &= getThreePlanesIntersectionPoint( aCorners[ FrustumCorner_FarLeftBottom ],		m_planes[ FrustumPlane_Far ],	m_planes[ FrustumPlane_Bottom ],	m_planes[ FrustumPlane_Left ] );
 
 		return ok;
 	}

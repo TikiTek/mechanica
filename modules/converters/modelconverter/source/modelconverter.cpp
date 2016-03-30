@@ -24,7 +24,7 @@ namespace tiki
 
 	uint32 ModelConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 5u;
+		return 6u;
 	}
 
 	bool ModelConverter::canConvertType( crc32 typeCrc ) const 

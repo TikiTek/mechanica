@@ -587,9 +587,9 @@ namespace tiki
 		vector::set( vec4, vec, 1.0f );
 		vector::set(
 			vec,
-			vector::dot( vec4, mtx.x ) + mtx.w.x,
-			vector::dot( vec4, mtx.y ) + mtx.w.y,
-			vector::dot( vec4, mtx.z ) + mtx.w.z
+			vector::dot( vec4, mtx.x ),
+			vector::dot( vec4, mtx.y ),
+			vector::dot( vec4, mtx.z )
 		);
 		vector::scale(
 			vec,
