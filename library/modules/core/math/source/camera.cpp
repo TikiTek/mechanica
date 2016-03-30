@@ -5,6 +5,10 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/ray.hpp"
 
+#if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
+#include "tiki/debugrenderer/debugrenderer.hpp"
+#endif
+
 namespace tiki
 {
 	Camera::Camera()
@@ -81,8 +85,13 @@ namespace tiki
 		//vector::div( clipPosition, screenPosition, vector::create( m_projection.getWidth(), m_projection.getHeight() ) );
 		//vector::mul( clipPosition, vector::create( 0.5f, -0.5f ) );
 		//vector::add( clipPosition, vector::create( 0.5f, -0.5f ) );
+#if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
+		uint64 index = (uint64)this % 20ull;
+		float y = 200.0f + (index * 10.0f);
+		debugrenderer::drawText( vector::create( 50.0f, y ), TIKI_COLOR_WHITE, "%.5f, %.5f", clipPosition.x, clipPosition.y );
+#endif
 
-		vector::set( ray.origin, clipPosition, -1.0f );
+		vector::set( ray.origin, clipPosition, 0.0f );
 		vector::set( ray.direction, clipPosition, 1.0f );
 
 		Matrix44 inverseViewProjection;

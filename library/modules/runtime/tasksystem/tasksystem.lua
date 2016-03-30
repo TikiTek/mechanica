@@ -8,5 +8,4 @@ module:add_files( "tasksystem.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "base" );
-module:add_dependency( "toolbase" );
 module:add_dependency( "threading" );

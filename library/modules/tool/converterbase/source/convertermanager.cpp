@@ -35,9 +35,10 @@ namespace tiki
 
 	void ConverterManager::create( const ConverterManagerParameter& parameters )
 	{
-		m_sourcePath	= parameters.sourcePath;
-		m_outputPath	= parameters.outputPath;
-		m_rebuildForced	= parameters.forceRebuild;
+		m_sourcePath		= parameters.sourcePath;
+		m_outputPath		= parameters.outputPath;
+		m_pChangedFilesList	= parameters.pChangedFilesList;
+		m_rebuildForced		= parameters.forceRebuild;
 
 		TaskSystemParameters taskParameters;
 		m_taskSystem.create( taskParameters );
@@ -146,17 +147,11 @@ namespace tiki
 		m_files.add( fileName );
 	}
 
-	bool ConverterManager::startConversion( List< string >* pOutputFiles /* = nullptr */, Mutex* pConversionMutex /* = nullptr */ )
+	bool ConverterManager::startConversion( Mutex* pConversionMutex /* = nullptr */ )
 	{
 		if ( !prepareTasks() )
 		{
 			return false;
-		}
-
-		List< string > outputFiles;
-		if ( pOutputFiles == nullptr )
-		{
-			pOutputFiles = &outputFiles;
 		}
 
 		for (uint i = 0u; i < m_tasks.getCount(); ++i)
@@ -167,7 +162,7 @@ namespace tiki
 
 		m_taskSystem.waitForAllTasks();
 
-		return finalizeTasks( *pOutputFiles );
+		return finalizeTasks();
 	}
 
 	void ConverterManager::registerConverter( const ConverterBase* pConverter )
@@ -213,7 +208,7 @@ namespace tiki
 		m_loggingMutex.unlock();
 	}
 
-	void ConverterManager::parseParams( const XmlReader& xmlFile, const XmlElement* pRoot, Map< string, string >& arguments ) const
+	void ConverterManager::parseParams( const XmlReader& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const
 	{
 		const XmlElement* pParam = xmlFile.findFirstChild( "param", pRoot );
 		while ( pParam )
@@ -711,7 +706,7 @@ namespace tiki
 		return true;
 	}
 
-	bool ConverterManager::finalizeTasks( List< string >& externOutputFiles )
+	bool ConverterManager::finalizeTasks()
 	{
 		string whereAssetId;
 		string whereAssetIdFailed;
@@ -798,7 +793,10 @@ namespace tiki
 						outputFile.cStr()
 					);
 
-					externOutputFiles.add( outputFile );
+					if( m_pChangedFilesList != nullptr && !hasError )
+					{
+						m_pChangedFilesList->add( outputFile );
+					}
 				}
 			}
 

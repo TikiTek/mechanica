@@ -169,6 +169,13 @@ namespace tiki
 		TIKI_FORCE_INLINE Vector3&	clamp( Vector3& vec, const Vector3& min, const Vector3& max );
 		TIKI_FORCE_INLINE Vector4&	clamp( Vector4& vec, const Vector4& min, const Vector4& max );
 
+		TIKI_FORCE_INLINE Vector2&	floor( Vector2& vec );
+		TIKI_FORCE_INLINE Vector3&	floor( Vector3& vec );
+		TIKI_FORCE_INLINE Vector4&	floor( Vector4& vec );
+		TIKI_FORCE_INLINE Vector2&	ceil( Vector2& vec );
+		TIKI_FORCE_INLINE Vector3&	ceil( Vector3& vec );
+		TIKI_FORCE_INLINE Vector4&	ceil( Vector4& vec );
+
 		TIKI_FORCE_INLINE Vector2&	lerp( Vector2& vec, const Vector2& lhs, const Vector2& rhs, float amount );
 		TIKI_FORCE_INLINE Vector3&	lerp( Vector3& vec, const Vector3& lhs, const Vector3& rhs, float amount );
 		TIKI_FORCE_INLINE Vector4&	lerp( Vector4& vec, const Vector4& lhs, const Vector4& rhs, float amount );

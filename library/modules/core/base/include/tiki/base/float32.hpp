@@ -96,6 +96,16 @@ namespace tiki
 			return (float)fmod( value, divisor );
 		}
 
+		TIKI_FORCE_INLINE float floor( float value )
+		{
+			return (float)floorf( value );
+		}
+
+		TIKI_FORCE_INLINE float ceil( float value )
+		{
+			return (float)ceilf( value );
+		}
+
 		// return random value between 0 and 1
 		TIKI_FORCE_INLINE float random()
 		{

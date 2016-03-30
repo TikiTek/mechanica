@@ -26,13 +26,17 @@ namespace tiki
 	{
 		ConverterManagerParameter()
 		{
-			forceRebuild	= false;
+			pChangedFilesList	= nullptr;
+
+			forceRebuild		= false;
 		}
 
-		string	sourcePath;
-		string	outputPath;
+		string			sourcePath;
+		string			outputPath;
 
-		bool	forceRebuild;
+		List< string >*	pChangedFilesList;
+
+		bool			forceRebuild;
 	};
 
 	class ConverterManager
@@ -49,7 +53,7 @@ namespace tiki
 		// conversion
 		void					addTemplate( const string& fileName );
 		void					queueFile( const string& fileName );
-		bool					startConversion( List< string >* pOutputFiles = nullptr, Mutex* pConversionMutex = nullptr );
+		bool					startConversion( Mutex* pConversionMutex = nullptr );
 
 		// converter
 		void					registerConverter( const ConverterBase* pConverter );
@@ -112,6 +116,7 @@ namespace tiki
 		ConverterList				m_converters;
 
 		List< string >				m_files;
+		List< string >*				m_pChangedFilesList;
 
 		TaskSystem					m_taskSystem;
 		List< ConversionTask >		m_tasks;
@@ -125,7 +130,7 @@ namespace tiki
 		bool						writeConvertInputs( List< ConversionTask >& tasks );
 		bool						checkDependencies( List< ConversionTask >& tasks );
 
-		bool						finalizeTasks( List< string >& outputFiles );
+		bool						finalizeTasks();
 
 		static void					taskConvertFile( const TaskContext& context );
 		void						taskRegisterResult( uint64 threadId, ConversionResult& result );

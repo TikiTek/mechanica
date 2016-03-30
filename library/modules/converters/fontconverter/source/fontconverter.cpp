@@ -24,7 +24,7 @@ namespace tiki
 
 	uint32 FontConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 2u;
+		return 1u;
 	}
 
 	bool FontConverter::canConvertType( crc32 typeCrc ) const
@@ -123,10 +123,10 @@ namespace tiki
 
 				const uint imagePosX = imagePos.x + slot->bitmap_left;
 				const uint imagePosY = imagePos.y + slot->bitmap_top;
-				const uint charWidth = slot->bitmap.width + slot->bitmap_left;
-				const uint charHeight = slot->bitmap.rows + slot->bitmap_top;
+				const uint charWidth = slot->bitmap.width + slot->bitmap_left + 2u;
+				const uint charHeight = slot->bitmap.rows + (fontSize - slot->bitmap_top);
 
-				if ( imagePos.x + charWidth + 3u >= image.getWidth() )
+				if ( imagePos.x + charWidth + 1u >= image.getWidth() )
 				{
 					imagePos.x = 3u;
 					imagePos.y += fontSize + 6u;
@@ -135,12 +135,12 @@ namespace tiki
 				if ( !mode3D )
 				{
 					FontChar& inst = chars.add();
-					inst.width	= (float)charWidth + 2.0f;
+					inst.width	= (float)charWidth;
 					inst.height	= (float)charHeight;
-					inst.x1		= u16::floatToUnorm( (float)imagePos.x / floatSize );
-					inst.y1		= u16::floatToUnorm( (float)imagePos.y / floatSize );
-					inst.x2		= u16::floatToUnorm( ( (float)( imagePos.x + charWidth ) + 2.0f ) / floatSize );
-					inst.y2		= u16::floatToUnorm( (float)( imagePos.y + charHeight ) / floatSize );
+					inst.x1		= u16::floatToUnorm( float( imagePos.x )/ floatSize );
+					inst.y1		= u16::floatToUnorm( float( imagePos.y ) / floatSize );
+					inst.x2		= u16::floatToUnorm( float( imagePos.x + charWidth ) / floatSize );
+					inst.y2		= u16::floatToUnorm( float( imagePos.y + charHeight ) / floatSize );
 
 					if ( charIndex == ' ' )
 					{
@@ -148,8 +148,8 @@ namespace tiki
 					}
 				}
 
-				const uint xOffset = ( mode3D ? ( ( fontSize * charIndex ) + ( fontSize / 2u ) ) - ( slot->bitmap.width / 2u ) : imagePos.x );
-				const uint yOffset = ( mode3D ? ( fontSize / 2u ) - ( slot->bitmap.rows / 2u ) : imagePos.y + ( fontSize - slot->bitmap_top ) );
+				const uint xOffset = (mode3D ? ((fontSize * charIndex) + (fontSize / 2u)) - (slot->bitmap.width / 2u) : imagePos.x);
+				const uint yOffset = (mode3D ? (fontSize / 2u) - (slot->bitmap.rows / 2u) : imagePos.y + (fontSize - slot->bitmap_top));
 
 				float* pRow = image.getData() + ( yOffset * rowPitch ) + ( xOffset * image.getChannelCount() );
 				for (size_t y = 0u; y < (size_t)slot->bitmap.rows; ++y)
@@ -164,7 +164,7 @@ namespace tiki
 					pRow += rowPitch;
 				}
 
-				imagePos.x += uint32( charWidth ) + 3u;
+				imagePos.x += uint32( charWidth ) + 1u;
 			}
 
 			TextureWriterParameters writerParameters;
