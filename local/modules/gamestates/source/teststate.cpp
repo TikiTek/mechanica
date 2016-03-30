@@ -337,10 +337,12 @@ namespace tiki
 				AxisAlignedBox box;
 				box.createFromCenterExtends( planePoint, Vector3::one );
 
-				debugrenderer::drawLineRay( cameraRay );
+				debugrenderer::drawLineRay( cameraRay, 5.0f );
 
 				debugrenderer::drawLineAxisAlignedBox( box, TIKI_COLOR_RED );
 				debugrenderer::drawText( vector::create( 50.0f, 100.0f ), TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", planePoint.x, planePoint.y, planePoint.z );
+				debugrenderer::drawText( vector::create( 50.0f, 120.0f ), TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", cameraRay.origin.x, cameraRay.origin.y, cameraRay.origin.z );
+				debugrenderer::drawText( vector::create( 50.0f, 140.0f ), TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", cameraRay.direction.x, cameraRay.direction.y, cameraRay.direction.z );
 
 				debugrenderer::drawText3D( Vector3::zero, TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", planePoint.x, planePoint.y, planePoint.z );
 			}

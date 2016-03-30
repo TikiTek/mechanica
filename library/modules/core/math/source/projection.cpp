@@ -47,6 +47,18 @@ namespace tiki
 		createMatrix();
 	}
 
+	Vector2 Projection::getClipPosition( const Vector2& screenPosition ) const
+	{
+		Vector2 clipPosition =
+		{
+			-1.0f + (screenPosition.x / m_width) * 2.0f,
+			1.0f - (screenPosition.y / m_height) * 2.0f
+		};
+		vector::clamp( clipPosition, Vector2::negativeOne, Vector2::one );
+
+		return clipPosition;
+	}
+
 	void Projection::createMatrix()
 	{
 		matrix::clear( m_matrix );
@@ -87,11 +99,8 @@ namespace tiki
 				const float yScale = 1.0f / tanf( m_fieldOfView * 0.5f );
 				const float xScale = yScale / aspectRatio;
 
-				const float width = ( m_nearPlane / xScale ) * 2.0f;
-				const float height = ( m_nearPlane / yScale ) * 2.0f;
-
-				m_matrix.x.x = 2.0f * m_nearPlane / width;
-				m_matrix.y.y = 2.0f * m_nearPlane / height;
+				m_matrix.x.x = xScale;
+				m_matrix.y.y = yScale;
 				m_matrix.z.z = depthRange;
 				m_matrix.z.w = 1.0f;
 				m_matrix.w.z = -m_nearPlane * depthRange;

@@ -31,6 +31,8 @@ namespace tiki
 		float			getHeight() const		{ return m_height; }
 		float			getFieldOfView() const	{ return m_fieldOfView; }
 
+		Vector2			getClipPosition( const Vector2& screenPosition ) const;
+
 	private:
 
 		Matrix44		m_matrix;
