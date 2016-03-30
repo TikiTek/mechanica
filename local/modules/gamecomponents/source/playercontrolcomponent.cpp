@@ -85,23 +85,23 @@ namespace tiki
 		Plane plane;
 		plane.create( Vector3::zero, Vector3::unitY );
 
-		Vector3 topLeft = vector::create( left, top, 1.0f );
-		Vector3 topRight = vector::create( right, top, 1.0f );
-		Vector3 bottomLeft = vector::create( left, bottom, 1.0f );
-		Vector3 bottomRight = vector::create( right, bottom, 1.0f );
-		Ray rayTopLeft;
-		Ray rayTopRight;
-		Ray rayBottomLeft;
-		Ray rayBottomRight;
-		camera.getCameraRay( rayTopLeft, vector::create( left, top ) );
-		camera.getCameraRay( rayTopRight, vector::create( right, top ) );
-		camera.getCameraRay( rayBottomLeft, vector::create( left, bottom ) );
-		camera.getCameraRay( rayBottomRight, vector::create( right, bottom ) );
-
-		intersection::intersectRayPlane( rayTopLeft, plane, topLeft );
-		intersection::intersectRayPlane( rayTopRight, plane, topRight );
-		intersection::intersectRayPlane( rayBottomLeft, plane, bottomLeft );
-		intersection::intersectRayPlane( rayBottomRight, plane, bottomRight );
+		//Vector3 topLeft = vector::create( left, top, 1.0f );
+		//Vector3 topRight = vector::create( right, top, 1.0f );
+		//Vector3 bottomLeft = vector::create( left, bottom, 1.0f );
+		//Vector3 bottomRight = vector::create( right, bottom, 1.0f );
+		//Ray rayTopLeft;
+		//Ray rayTopRight;
+		//Ray rayBottomLeft;
+		//Ray rayBottomRight;
+		//camera.getCameraRay( rayTopLeft, vector::create( left, top ) );
+		//camera.getCameraRay( rayTopRight, vector::create( right, top ) );
+		//camera.getCameraRay( rayBottomLeft, vector::create( left, bottom ) );
+		//camera.getCameraRay( rayBottomRight, vector::create( right, bottom ) );
+		//
+		//intersection::intersectRayPlane( rayTopLeft, plane, topLeft );
+		//intersection::intersectRayPlane( rayTopRight, plane, topRight );
+		//intersection::intersectRayPlane( rayBottomLeft, plane, bottomLeft );
+		//intersection::intersectRayPlane( rayBottomRight, plane, bottomRight );
 		//vector::add( topLeft, cameraPosition );
 		//vector::add( topRight, cameraPosition );
 		//vector::add( bottomLeft, cameraPosition );
@@ -109,10 +109,10 @@ namespace tiki
 
 		debugrenderer::drawLineFrustum( camera.getFrustum() );
 
-		debugrenderer::drawLine( topLeft, topRight, TIKI_COLOR_RED );
-		debugrenderer::drawLine( topLeft, bottomLeft, TIKI_COLOR_RED );
-		debugrenderer::drawLine( bottomLeft, bottomRight, TIKI_COLOR_RED );
-		debugrenderer::drawLine( topRight, bottomRight, TIKI_COLOR_RED );
+		//debugrenderer::drawLine( topLeft, topRight, TIKI_COLOR_RED );
+		//debugrenderer::drawLine( topLeft, bottomLeft, TIKI_COLOR_RED );
+		//debugrenderer::drawLine( bottomLeft, bottomRight, TIKI_COLOR_RED );
+		//debugrenderer::drawLine( topRight, bottomRight, TIKI_COLOR_RED );
 
 		//const Vector3& camersPos = gameCamera.getCameraPosition();
 		//
