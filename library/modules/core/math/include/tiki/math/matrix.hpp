@@ -65,9 +65,13 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix43&	createIdentity( Matrix43& mtx );
 		TIKI_FORCE_INLINE Matrix44&	createIdentity( Matrix44& mtx );
 		TIKI_FORCE_INLINE Matrix33&	createScale( Matrix33& mtx, const Vector3& scale );
+		TIKI_FORCE_INLINE Matrix44&	createScale( Matrix44& mtx, const Vector3& scale );
 		TIKI_FORCE_INLINE Matrix33&	createRotationX( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix33&	createRotationY( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix33&	createRotationZ( Matrix33& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix44&	createRotationX( Matrix44& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix44&	createRotationY( Matrix44& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix44&	createRotationZ( Matrix44& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix44&	createTranslation( Matrix44& mtx, const Vector3& position );
 
 		TIKI_FORCE_INLINE Matrix33&	set( Matrix33& mtx, const Vector3& x, const Vector3& y, const Vector3& z );
@@ -75,20 +79,6 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Matrix33& rot );
 		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Matrix43& rotPos );
 		TIKI_FORCE_INLINE Matrix44&	set( Matrix44& mtx, const Vector4& x, const Vector4& y, const Vector4& z, const Vector4& w );
-
-		TIKI_FORCE_INLINE Matrix33&	add( Matrix33& mtx, const Matrix33& rhs );
-		TIKI_FORCE_INLINE Matrix43&	add( Matrix43& mtx, const Matrix43& rhs );
-		TIKI_FORCE_INLINE Matrix44&	add( Matrix44& mtx, const Matrix44& rhs );
-		TIKI_FORCE_INLINE Matrix33&	add( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs );
-		TIKI_FORCE_INLINE Matrix43&	add( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs );
-		TIKI_FORCE_INLINE Matrix44&	add( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs );
-
-		TIKI_FORCE_INLINE Matrix33&	sub( Matrix33& mtx, const Matrix33& rhs );
-		TIKI_FORCE_INLINE Matrix43&	sub( Matrix43& mtx, const Matrix43& rhs );
-		TIKI_FORCE_INLINE Matrix44&	sub( Matrix44& mtx, const Matrix44& rhs );
-		TIKI_FORCE_INLINE Matrix33&	sub( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs );
-		TIKI_FORCE_INLINE Matrix43&	sub( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs );
-		TIKI_FORCE_INLINE Matrix44&	sub( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs );
 
 		TIKI_FORCE_INLINE Matrix33&	mul( Matrix33& mtx, const Matrix33& rhs );
 		TIKI_FORCE_INLINE Matrix43&	mul( Matrix43& mtx, const Matrix43& rhs );
@@ -111,6 +101,8 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Matrix33&	transpose( Matrix33& mtx );
 		TIKI_FORCE_INLINE Matrix44&	transpose( Matrix44& mtx );
+		TIKI_FORCE_INLINE Matrix33&	transpose( Matrix33& mtx, const Matrix33& rhs );
+		TIKI_FORCE_INLINE Matrix44&	transpose( Matrix44& mtx, const Matrix44& rhs );
 
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix33& mtx );	// for normal
 		TIKI_FORCE_INLINE void		transform( Vector3& vec, const Matrix43& mtx );	// for coordinate
