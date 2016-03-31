@@ -24,14 +24,14 @@ namespace tiki
 	{
 		MemoryStream* pStream = (MemoryStream*)pUserData;
 
-		return pStream->read( pBuffer, size * count );
+		return (size_t)pStream->read( pBuffer, size * count );
 	}
 
 	static size_t curlWriteReceivingCallback( char *pBuffer, size_t size, size_t count, void* pUserData )
 	{
 		MemoryStream* pStream = (MemoryStream*)pUserData;
 
-		return pStream->write( pBuffer, size * count );
+		return (size_t)pStream->write( pBuffer, size * count );
 	}
 
 	HttpClient::HttpClient()
