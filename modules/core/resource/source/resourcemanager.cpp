@@ -301,7 +301,7 @@ namespace tiki
 		}
 #endif
 
-		const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType );
+		const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
 
 		const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
 		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );

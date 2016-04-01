@@ -43,11 +43,8 @@ namespace tiki
 		m_position = position;
 		m_rotation = rotation;
 
-		Matrix33 rotationMatrix;
-		quaternion::toMatrix( rotationMatrix, rotation );
+		quaternion::toMatrix( m_world, rotation );
 		
-		matrix::set( m_world, rotationMatrix );
-
 		Matrix44 translationMatrix;
 		matrix::createTranslation( translationMatrix, position );
 		matrix::mul( m_world, translationMatrix );

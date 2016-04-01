@@ -5,13 +5,13 @@
 
 namespace tiki
 {
-	enum GraphicsBufferType
+	enum BaseBufferTypes : uint8
 	{
-		GraphicsBufferType_ConstantBuffer,
-		GraphicsBufferType_IndexBuffer,
-		GraphicsBufferType_VertexBuffer,
+		BaseBufferTypes_ConstantBuffer,
+		BaseBufferTypes_IndexBuffer,
+		BaseBufferTypes_VertexBuffer,
 
-		GraphicsBufferType_Count
+		BaseBufferTypes_Count
 	};
 }
 

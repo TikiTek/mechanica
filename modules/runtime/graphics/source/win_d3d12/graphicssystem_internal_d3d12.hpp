@@ -16,6 +16,7 @@ namespace tiki
 	class GraphicsSystem;
 	class UploadHeapD3d12;
 	enum IndexType : uint8;
+	struct DynamicBufferData;
 	struct GraphicsSystemPlatformData;
 
 	enum GraphicsDiscriptorRange
@@ -64,6 +65,11 @@ namespace tiki
 		static void							unlockResourceCommandList( GraphicsSystem& graphicsSystem, ID3D12GraphicsCommandList*& pCommandList );
 
 		static void							setResourceBarrier( ID3D12GraphicsCommandList* pCommandList, ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter );
+
+		static DynamicBufferData*			createDynamicBuffer( GraphicsSystem& graphicsSystem, uint size );
+		static void							disposeDynamicBuffer( DynamicBufferData* pBuffer );
+
+		static DynamicBuffer				allocateDynamicBuffer( GraphicsSystem& graphicsSystem, DynamicBufferTypes type, uint size, uint alignment );
 
 		static bool							waitForGpu( GraphicsSystem& graphicsSystem );
 

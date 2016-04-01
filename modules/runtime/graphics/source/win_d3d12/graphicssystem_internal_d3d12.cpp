@@ -117,6 +117,111 @@ namespace tiki
 		pCommandList->ResourceBarrier( 1, &descBarrier );
 	}
 
+	/*static*/ DynamicBufferData* GraphicsSystemPlatform::createDynamicBuffer( GraphicsSystem& graphicsSystem, uint size )
+	{
+		GraphicsSystemPlatformData& platformData = graphicsSystem.m_platformData;
+
+		DynamicBufferData* pBuffer = TIKI_MEMORY_NEW_OBJECT( DynamicBufferData );
+		if( pBuffer == nullptr )
+		{
+			return nullptr;
+		}
+
+		HRESULT result = platformData.pDevice->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer( size ),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS( &pBuffer->pResource )
+		);
+
+		if( FAILED( result ) )
+		{
+			disposeDynamicBuffer( pBuffer );
+			return nullptr;
+		}
+		
+		result = pBuffer->pResource->Map( 0u, nullptr, (void**)&pBuffer->pMappedData );
+		if( FAILED( result ) )
+		{
+			disposeDynamicBuffer( pBuffer );
+			return nullptr;
+		}
+
+		pBuffer->size = size;
+		pBuffer->currentSize = 0u;
+
+		return pBuffer;		
+	}
+
+	/*static*/ void GraphicsSystemPlatform::disposeDynamicBuffer( DynamicBufferData* pBuffer )
+	{
+		if( pBuffer->pMappedData != nullptr )
+		{
+			TIKI_ASSERT( pBuffer->pResource != nullptr );
+
+			pBuffer->pMappedData = nullptr;
+			pBuffer->pResource->Unmap( 0u, nullptr );
+		}
+
+		if( pBuffer->pResource != nullptr )
+		{
+			pBuffer->pResource->Release();
+			pBuffer->pResource = nullptr;
+		}
+
+		TIKI_MEMORY_DELETE_OBJECT( pBuffer );
+	}
+
+	/*static*/ DynamicBuffer GraphicsSystemPlatform::allocateDynamicBuffer( GraphicsSystem& graphicsSystem, DynamicBufferTypes type, uint size, uint alignment )
+	{
+		TIKI_ASSERT( graphicsSystem.m_platformData.isInFrame );
+
+		GraphicsSystemFrame& frame = graphicsSystem.m_platformData.frames[ graphicsSystem.m_platformData.currentSwapBufferIndex ];
+
+		if( type == DynamicBufferTypes_ConstantBuffer )
+		{
+			alignment = TIKI_MAX( alignment, 256u );
+		}
+
+		DynamicBufferData* pBuffer = frame.pLastDynamicBuffer;
+		if( pBuffer == nullptr || (alignValue( pBuffer->currentSize, alignment ) + size) > pBuffer->size )
+		{
+			DynamicBufferData* pNewBuffer = GraphicsSystemPlatform::createDynamicBuffer( graphicsSystem, TIKI_MAX( size, GraphicsSystemDefaults_DynamicBufferSize ) );
+
+			if( pBuffer != nullptr )
+			{
+				pBuffer->pNext = pNewBuffer;		
+				frame.pLastDynamicBuffer = pNewBuffer;
+			}
+			else
+			{
+				frame.pFirstDynamicBuffer = pNewBuffer;
+				frame.pLastDynamicBuffer = pNewBuffer;
+			}
+
+			pBuffer = pNewBuffer;
+		}
+
+		pBuffer->currentSize = alignValue( pBuffer->currentSize, alignment );
+
+		DynamicBuffer dynamicBuffer;
+		if( pBuffer != nullptr )
+		{
+			dynamicBuffer.type = type;
+			dynamicBuffer.pResource = pBuffer->pResource;
+			dynamicBuffer.bufferOffset = pBuffer->currentSize;
+			dynamicBuffer.pMappedData = pBuffer->pMappedData + pBuffer->currentSize;
+			dynamicBuffer.dataSize = size;
+
+			pBuffer->currentSize += size;
+			frame.requiredDynamicBufferSize += size;
+		}
+
+		return dynamicBuffer;
+	}
+
 	/*static*/ bool GraphicsSystemPlatform::waitForGpu( GraphicsSystem& graphicsSystem )
 	{
 		GraphicsSystemPlatformData& platformData = graphicsSystem.m_platformData;

@@ -46,7 +46,7 @@ namespace tiki
 		const TextureFactoryContext& factory		= *static_cast< const TextureFactoryContext* >( &factoryContext );
 		const TextureInitializationData* pInitData	= static_cast< const TextureInitializationData* >( initData.pData );
 
-		return m_textureData.create( factory.graphicsSystem, pInitData->description, pInitData->data.getData() );
+		return m_textureData.create( factory.graphicsSystem, pInitData->description, pInitData->data.getData(), getFileName() );
 	}
 
 	void Texture::disposeInternal( const FactoryContext& factoryContext )

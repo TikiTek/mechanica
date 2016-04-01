@@ -50,7 +50,7 @@ namespace tiki
 		const FontFactoryContext* pFactory		= static_cast< const FontFactoryContext* >( &factoryContext );
 		const FontInitializationData* pInitData	= static_cast< const FontInitializationData* >( initData.pData );
 				
-		if ( m_textureData.create( pFactory->graphicsSystem, pInitData->textureDesc, pInitData->textureData.getData() ) )
+		if ( m_textureData.create( pFactory->graphicsSystem, pInitData->textureDesc, pInitData->textureData.getData(), getFileName() ) )
 		{
 			m_chars.create( pInitData->charArray.getData(), pInitData->charCount );
 			return true;

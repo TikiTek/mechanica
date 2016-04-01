@@ -9,6 +9,25 @@
 
 namespace tiki
 {
+	struct DynamicBufferData
+	{
+		DynamicBufferData()
+		{
+			pNext		= nullptr;
+			pResource	= nullptr;
+			size		= 0u;
+			currentSize	= 0u;
+		}
+
+		DynamicBufferData*	pNext;
+
+		ID3D12Resource*		pResource;
+
+		uint8*				pMappedData;
+		uint				size;
+		uint				currentSize;
+	};
+
 	struct GraphicsSystemFrame
 	{
 		GraphicsSystemFrame()
@@ -20,6 +39,10 @@ namespace tiki
 			backBufferColorHandle		= InvalidDescriptorHandle;
 
 			currentFence				= 0u;
+
+			pFirstDynamicBuffer			= nullptr;
+			pLastDynamicBuffer			= nullptr;
+			requiredDynamicBufferSize	= 0u;
 		}
 
 		ID3D12CommandAllocator*		pRenderCommandAllocator;
@@ -27,6 +50,10 @@ namespace tiki
 
 		ID3D12Resource*				pBackBufferColorResouce;
 		DescriptorHandle			backBufferColorHandle;
+		
+		DynamicBufferData*			pFirstDynamicBuffer;
+		DynamicBufferData*			pLastDynamicBuffer;
+		uint						requiredDynamicBufferSize;
 
 		uint64						currentFence;
 	};

@@ -151,6 +151,7 @@ namespace tiki
 			break;
 
 		case TextureType_2d:
+		case TextureType_Cube:
 			{
 				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, desc );
 				desc.Format				= dxFormat;
@@ -161,6 +162,11 @@ namespace tiki
 				desc.ArraySize			= description.arrayCount;
 				desc.SampleDesc.Count	= 1u;
 				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
+
+				if( m_description.type == TextureType_Cube )
+				{
+					desc.MiscFlags		= D3D11_RESOURCE_MISC_TEXTURECUBE;
+				}
 
 				result = pDevice->CreateTexture2D( &desc, pD3dInitData, &m_platformData.pTexture2d );
 			}
@@ -178,23 +184,6 @@ namespace tiki
 				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
 
 				result = pDevice->CreateTexture3D( &desc, pD3dInitData, &m_platformData.pTexture3d );
-			}
-			break;
-
-		case TextureType_Cube:
-			{
-				TIKI_DECLARE_STACKANDZERO( D3D11_TEXTURE2D_DESC, desc );
-				desc.Format				= dxFormat;
-				desc.Width				= description.width;
-				desc.Height				= description.height;
-				desc.Usage				= D3D11_USAGE_DEFAULT;
-				desc.MipLevels			= description.mipCount;
-				desc.ArraySize			= description.arrayCount;
-				desc.SampleDesc.Count	= 1u;
-				desc.BindFlags			= getD3dFlags( (TextureFlags)description.flags );
-				desc.MiscFlags			= D3D11_RESOURCE_MISC_TEXTURECUBE;
-
-				result = pDevice->CreateTexture2D( &desc, pD3dInitData, &m_platformData.pTexture2d );
 			}
 			break;
 

@@ -102,8 +102,6 @@ namespace tiki
 		const VertexInputBinding*	createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat );
 		void						disposeVertexInputBinding( const VertexInputBinding*& pVertexInputBinding );
 
-		DynamicBuffer				allocateDynamicBuffer( GraphicsBufferType type, uint size );
-
 		const VertexFormat*			getStockVertexFormat( StockVertexFormat format ) const;
 
 		GraphicsContext&			beginFrame();
@@ -123,16 +121,6 @@ namespace tiki
 			MaxVertexInputBindingCount	= 32u
 		};
 
-		struct DynamicGpuBuffer : public LinkedItem< DynamicGpuBuffer >
-		{
-			GraphicsBufferType	type;
-
-			BaseBuffer			gpuBuffer;
-			uint				size;
-			uint				currentGpuOffset;
-		};
-		typedef FixedArray< DynamicGpuBuffer*, GraphicsBufferType_Count > FixedDynamicGpuBufferArray;
-		
 		uint												m_frameNumber;
 		
 		GraphicsSystemPlatformData							m_platformData;
@@ -151,9 +139,6 @@ namespace tiki
 		GraphicsStateObjectCollection< VertexFormat >		m_vertexFormats;
 		GraphicsStateObjectCollection< VertexInputBinding >	m_vertexInputBindings;
 
-		FixedDynamicGpuBufferArray							m_lastDynamicBufferByType;
-		LinkedList< DynamicGpuBuffer >						m_dynamicBuffers;
-		
 		bool												createPlatform( const GraphicsSystemParameters& params );
 		void												disposePlatform();
 

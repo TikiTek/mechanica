@@ -46,7 +46,7 @@ namespace tiki
 			void					registerResourceType( fourcc type, const FactoryContext& factoryContext );
 			void					unregisterResourceType( fourcc type );
 
-			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
+			ResourceLoaderResult	loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType, bool isMainResource );
 			void					unloadResource( const Resource* pResource, fourcc resourceType );
 
 			ResourceLoaderResult	reloadResource( Resource* pResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
@@ -72,14 +72,14 @@ namespace tiki
 		
 		const FactoryContext*	findFactory( fourcc resourceType ) const;
 
-		ResourceLoaderResult	initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType );
+		ResourceLoaderResult	initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType, bool isMainResource );
 		ResourceLoaderResult	createResource( ResourceLoaderContext& context );
 		ResourceLoaderResult	loadResourceData( ResourceLoaderContext& context );
 		ResourceLoaderResult	initializeResource( ResourceLoaderContext& context );
 		void					cancelOperation( ResourceLoaderContext& context );
 
 		void					disposeResource( Resource* pResource, fourcc resourceType, bool freeResourceObject );
-		void					disposeResourceData( const ResourceSectionData& sectionData );
+		void					disposeResourceData( ResourceSectionData& sectionData );
 
 	};
 }

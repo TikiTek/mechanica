@@ -72,10 +72,6 @@ namespace tiki
 		}
 		m_currentRenderPassDepth = 0u;
 
-		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize * 10u, 4u, true );
-		m_immediateVertexCount	= 0u;
-		m_immediateVertexStride	= 0u;
-
 		invalidateState();
 
 		return true;
@@ -91,8 +87,6 @@ namespace tiki
 			GraphicsSystemPlatform::safeRelease( &m_platformData.pipelineStates[ i ].pPpielineState );
 		}
 		m_platformData.pipelineStates.clear();
-
-		m_immediateVertexData.dispose( graphicsSystem );
 	}
 
 	void GraphicsContext::clear( const RenderTarget& renderTarget, Color color /* = TIKI_COLOR_BLACK */, float depthValue /* = 1.0f */, uint8 stencilValue /* = 0u */, ClearMask clearMask /* = ClearMask_All */ )
@@ -317,11 +311,19 @@ namespace tiki
 	{
 		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
-			const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
-				UINT( GraphicsDiscriptorIndex_FirstVertexConstant + slot ),
-				buffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress()
-			);
+			D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = 0u;
+			if( buffer.m_isDynamic )
+			{
+				TIKI_ASSERT( buffer.m_dynamicBuffer.type != DynamicBufferTypes_Invalid );
+
+				gpuAddress = buffer.m_dynamicBuffer.pResource->GetGPUVirtualAddress() + buffer.m_dynamicBuffer.bufferOffset;
+			}
+			else
+			{
+				gpuAddress = buffer.m_pBuffer->GetGPUVirtualAddress();
+			}
+
+			m_platformData.pCommandList->SetGraphicsRootConstantBufferView( UINT( GraphicsDiscriptorIndex_FirstVertexConstant + slot ), gpuAddress );
 
 			m_apVertexConstants[ slot ] = &buffer;
 		}
@@ -364,11 +366,19 @@ namespace tiki
 	{
 		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
-			const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-			m_platformData.pCommandList->SetGraphicsRootConstantBufferView(
-				UINT( GraphicsDiscriptorIndex_FirstPixelConstant + slot ),
-				buffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress()
-			);
+			D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = 0u;
+			if( buffer.m_isDynamic )
+			{
+				TIKI_ASSERT( buffer.m_dynamicBuffer.type != DynamicBufferTypes_Invalid );
+
+				gpuAddress = buffer.m_dynamicBuffer.pResource->GetGPUVirtualAddress() + buffer.m_dynamicBuffer.bufferOffset;
+			}
+			else
+			{
+				gpuAddress = buffer.m_pBuffer->GetGPUVirtualAddress();
+			}
+
+			m_platformData.pCommandList->SetGraphicsRootConstantBufferView( UINT( GraphicsDiscriptorIndex_FirstPixelConstant + slot ), gpuAddress );
 
 			m_apPixelConstants[ slot ] = &buffer;
 		}
@@ -376,58 +386,62 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		const uint bufferIndex = (indexBuffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-
 		D3D12_INDEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= indexBuffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress();
-		bufferView.SizeInBytes		= UINT( indexBuffer.getCount() * indexBuffer.getIndexType() );
-		bufferView.Format			= GraphicsSystemPlatform::getD3dIndexFormat( indexBuffer.getIndexType() );
+		if( indexBuffer.m_isDynamic )
+		{
+			bufferView.BufferLocation	= indexBuffer.m_dynamicBuffer.pResource->GetGPUVirtualAddress() + indexBuffer.m_dynamicBuffer.bufferOffset;
+		}
+		else
+		{
+			bufferView.BufferLocation	= indexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		}
+
+		bufferView.SizeInBytes			= UINT( indexBuffer.getCount() * indexBuffer.getIndexType() );
+		bufferView.Format				= GraphicsSystemPlatform::getD3dIndexFormat( indexBuffer.getIndexType() );
 
 		m_platformData.pCommandList->IASetIndexBuffer( &bufferView );
 	}
 
 	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer )
 	{
-		const uint bufferIndex = (vertexBuffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-
 		D3D12_VERTEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= vertexBuffer.m_buffers[ bufferIndex ]->GetGPUVirtualAddress();
-		bufferView.SizeInBytes		= UINT( vertexBuffer.getCount() * vertexBuffer.getStride() );
-		bufferView.StrideInBytes	= UINT( vertexBuffer.getStride() );
+		if( vertexBuffer.m_isDynamic )
+		{
+			bufferView.BufferLocation	= vertexBuffer.m_dynamicBuffer.pResource->GetGPUVirtualAddress() + vertexBuffer.m_dynamicBuffer.bufferOffset;
+		}
+		else
+		{
+			bufferView.BufferLocation	= vertexBuffer.m_pBuffer->GetGPUVirtualAddress();
+		}
+
+		bufferView.SizeInBytes			= UINT( vertexBuffer.getCount() * vertexBuffer.getStride() );
+		bufferView.StrideInBytes		= UINT( vertexBuffer.getStride() );
 
 		m_platformData.pCommandList->IASetVertexBuffers( (UINT)slot, 1u, &bufferView );
 	}
 
 	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
 	{
-		if( m_platformData.immediateBufferSize + (vertexStride * vertexCount) > m_immediateVertexData.m_count * m_immediateVertexData.m_stride )
+		if( !m_immediateVertexData.create( *m_pGraphicsSystem, vertexCount, vertexStride ) )
 		{
 			TIKI_TRACE_WARNING( "[graphics] Unable to allocate memory from immediate buffer. Out of memory.\n" );
 			return nullptr;
 		}
-
-		m_immediateVertexStride	= vertexStride;
-		m_immediateVertexCount	= vertexCount;
 		
-		return m_platformData.pImmediateBufferData;
+		return mapBuffer( m_immediateVertexData );
 	}
 
 	void GraphicsContext::endImmediateGeometry()
 	{
 		TIKI_ASSERT( validateDrawCall() );
 
-		D3D12_VERTEX_BUFFER_VIEW bufferView;
-		bufferView.BufferLocation	= m_immediateVertexData.m_buffers[ m_pGraphicsSystem->m_platformData.currentSwapBufferIndex ]->GetGPUVirtualAddress() + m_platformData.immediateBufferSize;
-		bufferView.SizeInBytes		= UINT( m_immediateVertexCount * m_immediateVertexStride );
-		bufferView.StrideInBytes	= UINT( m_immediateVertexStride );
-		m_platformData.pCommandList->IASetVertexBuffers( 0u, 1u, &bufferView );
+		unmapBuffer( m_immediateVertexData );
+		setVertexBuffer( 0u, m_immediateVertexData );
 
 		prepareDrawCall();
-		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexCount, 1u, 0u, 0u );		
+		m_platformData.pCommandList->DrawInstanced( (UINT)m_immediateVertexData.m_count, 1u, 0u, 0u );		
 
-		const uint drawCallSize = m_immediateVertexStride * m_immediateVertexCount;
-		m_platformData.pImmediateBufferData	+= drawCallSize;
-		m_platformData.immediateBufferSize	+= drawCallSize;
+		m_immediateVertexData.dispose( *m_pGraphicsSystem );
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
@@ -448,21 +462,15 @@ namespace tiki
 
 	void* GraphicsContext::mapBuffer( const BaseBuffer& buffer )
 	{
-		const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-		TIKI_ASSERT( buffer.m_buffers[ bufferIndex ] != nullptr );
+		TIKI_ASSERT( buffer.m_isDynamic );
 
-		void* pData;
-		buffer.m_buffers[ bufferIndex ]->Map( 0u, nullptr, &pData );
-
-		return pData;
+		buffer.m_dynamicBuffer = GraphicsSystemPlatform::allocateDynamicBuffer( *m_pGraphicsSystem, buffer.m_dynamicBufferType, buffer.m_dynamicBufferSize, 1u );
+		return buffer.m_dynamicBuffer.pMappedData;
 	}
 
 	void GraphicsContext::unmapBuffer( const BaseBuffer& buffer )
 	{
-		const uint bufferIndex = (buffer.m_dynamic ? m_pGraphicsSystem->m_platformData.currentSwapBufferIndex : 0u);
-		TIKI_ASSERT( buffer.m_buffers[ bufferIndex ] != nullptr );
-
-		buffer.m_buffers[ bufferIndex ]->Unmap( 0u, nullptr );
+		TIKI_ASSERT( buffer.m_isDynamic );
 	}
 
 	const RenderTarget& GraphicsContext::getBackBuffer() const
@@ -472,14 +480,10 @@ namespace tiki
 	
 	void GraphicsContext::beginFrame()
 	{
-		m_platformData.pImmediateBufferData	= (uint8*)mapBuffer( m_immediateVertexData );
-		m_platformData.immediateBufferSize	= 0u;
 	}
 
 	void GraphicsContext::endFrame()
 	{
-		m_platformData.pImmediateBufferData = nullptr;
-		unmapBuffer( m_immediateVertexData );
 	}
 
 	void GraphicsContext::prepareDrawCall()

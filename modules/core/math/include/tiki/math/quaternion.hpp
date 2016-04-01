@@ -54,6 +54,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void			fromMatrix( Quaternion& quat, const Matrix33& matrix );
 		TIKI_FORCE_INLINE void			toMatrix( Matrix33& mtx, const Quaternion& quat );
+		TIKI_FORCE_INLINE void			toMatrix( Matrix44& mtx, const Quaternion& quat );
 
 		TIKI_FORCE_INLINE void			fromYawPitchRoll( Quaternion& quat, float yaw, float pitch, float roll );
 		TIKI_FORCE_INLINE void			toYawPitchRoll( Vector3& yawPitchRoll, const Quaternion& quat );

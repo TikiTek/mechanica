@@ -181,6 +181,16 @@ namespace tiki
 		{
 			GraphicsSystemFrame& frame = m_platformData.frames[ i ];
 
+			DynamicBufferData* pBuffer = frame.pFirstDynamicBuffer;
+			while( pBuffer != nullptr )
+			{
+				DynamicBufferData* pNext = pBuffer->pNext;
+				GraphicsSystemPlatform::disposeDynamicBuffer( pBuffer );
+				pBuffer = pNext;
+			}
+			frame.pFirstDynamicBuffer = nullptr;
+			frame.pLastDynamicBuffer = nullptr;
+
 			GraphicsSystemPlatform::safeRelease( &frame.pRenderCommandAllocator );
 			GraphicsSystemPlatform::safeRelease( &frame.pResourceCommandAllocator );
 			GraphicsSystemPlatform::safeRelease( &frame.pBackBufferColorResouce );
@@ -299,6 +309,30 @@ namespace tiki
 			m_platformData.samplerPool.getHeap()
 		};
 		m_platformData.pRenderCommandList->SetDescriptorHeaps( TIKI_COUNT( apDescriptorHeaps ), apDescriptorHeaps );
+
+		if( frame.pFirstDynamicBuffer != nullptr && (frame.requiredDynamicBufferSize > frame.pFirstDynamicBuffer->size || frame.requiredDynamicBufferSize < frame.pFirstDynamicBuffer->size / 3) )
+		{
+			DynamicBufferData* pBuffer = frame.pFirstDynamicBuffer;
+			while( pBuffer != nullptr )
+			{
+				DynamicBufferData* pNext = pBuffer->pNext;
+				GraphicsSystemPlatform::disposeDynamicBuffer( pBuffer );
+				pBuffer = pNext;
+			}
+
+			frame.pFirstDynamicBuffer = GraphicsSystemPlatform::createDynamicBuffer( *this, frame.requiredDynamicBufferSize * 2 );
+			frame.pLastDynamicBuffer = frame.pFirstDynamicBuffer;
+		}
+		else if ( frame.pFirstDynamicBuffer != nullptr )
+		{
+			DynamicBufferData* pBuffer = frame.pFirstDynamicBuffer;
+			while( pBuffer != nullptr )
+			{
+				pBuffer->currentSize = 0u;
+				pBuffer = pBuffer->pNext;
+			}			
+		}
+		frame.requiredDynamicBufferSize = 0u;
 
 		m_platformData.isInFrame = true;
 

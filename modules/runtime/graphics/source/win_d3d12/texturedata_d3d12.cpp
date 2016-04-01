@@ -61,8 +61,7 @@ namespace tiki
 	bool TextureData::create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData /* = nullptr */, const char* pDebugName /* = nullptr */ )
 	{
 		TIKI_ASSERT( m_platformData.pResource == nullptr );
-		TIKI_ASSERT( description.type != TextureType_Cube ); // cube textures need to be implemented
-
+		
 		m_description = description;
 
 		ID3D12Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
@@ -85,6 +84,7 @@ namespace tiki
 			break;
 
 		case TextureType_2d:
+		case TextureType_Cube:
 			resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 				dxFormat,
 				description.width,
@@ -108,8 +108,8 @@ namespace tiki
 			);
 			break;
 
-		case TextureType_Cube:
-			TIKI_TRACE_ERROR( "[TextureData::create] not implemented\n" );
+		default:
+			TIKI_BREAK( "TextureType not supported." );
 			break;
 		}
 
@@ -152,6 +152,7 @@ namespace tiki
 			uint width	= description.width;
 			uint height	= description.height;
 			uint depth	= TIKI_MAX( description.depth, 1u );
+			const uint8* pLevelData	= static_cast< const uint8* >(pTextureData);
 
 			const uint subResourceCount		= description.arrayCount * description.mipCount;
 			const uint requiredUploadSize	= GetRequiredIntermediateSize( m_platformData.pResource, 0u, (UINT)subResourceCount );
@@ -163,6 +164,7 @@ namespace tiki
 				return false;
 			}
 
+			uint initIndex = 0u;
 			D3D12_SUBRESOURCE_DATA subResources[ 32u ];
 			for( uint mipLevel = 0u; mipLevel < description.mipCount; ++mipLevel )
 			{
@@ -178,10 +180,18 @@ namespace tiki
 				//viewDesc.Placement.Height	= (UINT)height;
 				//viewDesc.Placement.Depth	= (UINT)depth;
 				//viewDesc.Placement.RowPitch	= (UINT)rowPitch;
+				
+				for( uint arrayIndex = 0u; arrayIndex < description.arrayCount; ++arrayIndex )
+				{
+					subResources[ initIndex ].pData			= pLevelData;
+					subResources[ initIndex ].RowPitch		= rowPitch;
+					subResources[ initIndex ].SlicePitch	= depthPitch;
 
-				subResources[ mipLevel ].pData		= pTextureData;
-				subResources[ mipLevel ].RowPitch	= rowPitch;
-				subResources[ mipLevel ].SlicePitch	= depthPitch;
+					TIKI_ASSERT( initIndex < TIKI_COUNT( subResources ) );
+					initIndex++;
+
+					pLevelData += depthPitch * depth;
+				}
 
 				width		= TIKI_MAX( width / 2u, 1u );
 				height		= TIKI_MAX( height / 2u, 1u );
