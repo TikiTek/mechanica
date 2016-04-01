@@ -15,6 +15,7 @@ namespace tiki
 	{
 		ResourceLoaderContext()
 		{
+			mainResource		= false;
 			streamOwner			= false;
 			pStream				= nullptr;
 
@@ -28,6 +29,7 @@ namespace tiki
 		fourcc					resourceType;
 		crc32					crcFileName;
 
+		bool					mainResource;
 		bool					streamOwner;
 		DataStream*				pStream;
 		
@@ -77,7 +79,7 @@ namespace tiki
 		m_factories.remove( type );
 	}
 
-	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
+	ResourceLoaderResult ResourceLoader::loadResource( const Resource** ppTargetResource, crc32 crcFileName, crc32 resourceKey, fourcc resourceType, bool isMainResource )
 	{
 		TIKI_ASSERT( ppTargetResource != nullptr );
 		TIKI_ASSERT( resourceKey != TIKI_INVALID_CRC32 );
@@ -92,7 +94,7 @@ namespace tiki
 		}
 
 		ResourceLoaderContext context;
-		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType );
+		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType, isMainResource );
 		if ( result != ResourceLoaderResult_Success )
 		{
 			cancelOperation( context );
@@ -134,7 +136,7 @@ namespace tiki
 		TIKI_ASSERT( pResource != nullptr );
 
 		ResourceLoaderContext context;
-		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType );
+		ResourceLoaderResult result = initializeLoaderContext( context, crcFileName, resourceKey, resourceType, true );
 		if ( result != ResourceLoaderResult_Success )
 		{
 			cancelOperation( context );
@@ -174,7 +176,7 @@ namespace tiki
 		return nullptr;
 	}
 	
-	ResourceLoaderResult ResourceLoader::initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType )
+	ResourceLoaderResult ResourceLoader::initializeLoaderContext( ResourceLoaderContext& context, crc32 crcFileName, crc32 resourceKey, fourcc resourceType, bool isMainResource )
 	{
 		const char* pFileName = m_pFileSystem->getFilenameByCrc( crcFileName );
 		if ( pFileName == nullptr )
@@ -185,6 +187,7 @@ namespace tiki
 		TIKI_ASSERT( m_pFileSystem->exists( pFileName ) );
 
 		context.resourceType		= resourceType;
+		context.mainResource		= isMainResource;
 		context.streamOwner			= true;
 		context.crcFileName			= crcFileName;
 		context.resourceId.key		= resourceKey;
@@ -415,7 +418,8 @@ namespace tiki
 					&context.sectionData.ppLinkedResources[ i ],
 					link.fileKey,
 					link.resourceKey,
-					link.resourceType
+					link.resourceType,
+					false
 				);
 			}
 
@@ -499,18 +503,25 @@ namespace tiki
 		{
 			TIKI_ASSERT( context.pFactory != nullptr );
 			unloadResource( context.pResource, context.resourceType );
+
 			context.pResource = nullptr;
+			context.sectionData = ResourceSectionData();
+		}
+		else
+		{
+			disposeResourceData( context.sectionData );
 		}
 
 		if ( context.pStream != nullptr && context.streamOwner )
 		{
 			context.pStream->dispose();
 			context.pStream = nullptr;
-
-			m_bufferAllocator.clear();
 		}
 
-		disposeResourceData( context.sectionData );
+		if( context.mainResource )
+		{
+			m_bufferAllocator.clear();
+		}
 
 		context.pFactory = nullptr;
 	}
@@ -533,16 +544,20 @@ namespace tiki
 		}
 	}
 
-	void ResourceLoader::disposeResourceData( const ResourceSectionData& sectionData )
+	void ResourceLoader::disposeResourceData( ResourceSectionData& sectionData )
 	{
 		for (uint i = 0u; i < sectionData.sectorCount; ++i)
 		{
 			TIKI_MEMORY_FREE( sectionData.ppSectorPointers[ i ] );
 		}
+		sectionData.ppSectorPointers = nullptr;
+		sectionData.sectorCount = 0u;
 
 		if ( sectionData.stringCount != 0u )
 		{
 			TIKI_MEMORY_FREE( sectionData.ppStringPointers[ 0u ] );
+			sectionData.ppStringPointers = nullptr;
+			sectionData.stringCount = 0u;
 		}
 
 		for (uint i = 0u; i < sectionData.linkCount; ++i)
@@ -551,10 +566,12 @@ namespace tiki
 			if ( pLinkResource != nullptr )
 			{
 				unloadResource( pLinkResource, pLinkResource->getType() );
-			}		
+			}
 		} 
 
 		TIKI_MEMORY_FREE( sectionData.ppLinkedResources );
+		sectionData.ppLinkedResources = nullptr;
+		sectionData.linkCount = 0u;
 	}
 
 }

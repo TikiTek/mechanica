@@ -18,7 +18,7 @@ namespace tiki
 	{
 		m_size = bufferSize;
 
-		if( !BaseBuffer::create( graphicsSystem, bufferSize, true, GraphicsBufferType_ConstantBuffer, nullptr, pDebugName ) )
+		if( !BaseBuffer::create( graphicsSystem, bufferSize, true, BaseBufferTypes_ConstantBuffer, nullptr, pDebugName ) )
 		{
 			dispose( graphicsSystem );
 			return false;

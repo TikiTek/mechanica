@@ -27,12 +27,50 @@ namespace tiki
 
 	enum
 	{
-		GraphicsSystemLimits_MaxUploadHeapSize		= 32u * 1024u * 1024u,
+		GraphicsSystemLimits_MaxUploadHeapSize		= 64u * 1024u * 1024u,
 		GraphicsSystemLimits_MaxShaderResourceViews	= 1024u,
 		GraphicsSystemLimits_MaxSamplers			= 128u,
 		GraphicsSystemLimits_MaxRenderTargetViews	= 128u,
 		GraphicsSystemLimits_MaxDepthStencilViews	= 128u,
 		GraphicsSystemLimits_MaxFrameCount			= 2u
+	};
+
+	enum
+	{
+		GraphicsSystemDefaults_DynamicBufferSize	= 1u * 1024u * 1024u
+	};
+
+	enum DynamicBufferTypes : uint8
+	{
+		DynamicBufferTypes_ConstantBuffer,
+		DynamicBufferTypes_IndexBuffer,
+		DynamicBufferTypes_VertexBuffer,
+		DynamicBufferTypes_UploadBuffer,
+
+		DynamicBufferTypes_Count,
+		DynamicBufferTypes_Invalid = 0xffu
+	};
+
+	struct DynamicBuffer
+	{
+		DynamicBuffer()
+		{
+			type = DynamicBufferTypes_Invalid;
+
+			pResource = nullptr;
+			bufferOffset = 0u;
+
+			pMappedData = nullptr;
+			dataSize = 0u;
+		}
+
+		DynamicBufferTypes	type;
+
+		ID3D12Resource*		pResource;
+		uint				bufferOffset;
+
+		void*				pMappedData;
+		uint				dataSize;
 	};
 }
 

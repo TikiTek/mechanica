@@ -21,15 +21,17 @@ namespace tiki
 								BaseBuffer();
 								~BaseBuffer();
 
-		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName );
+		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );
 
 	private:
 
-		typedef FixedArray< ID3D12Resource*, GraphicsSystemLimits_MaxFrameCount > BufferArray;
+		ID3D12Resource*			m_pBuffer;
+		mutable DynamicBuffer	m_dynamicBuffer;
+		DynamicBufferTypes		m_dynamicBufferType;
+		uint					m_dynamicBufferSize;
 
-		BufferArray				m_buffers;
-		bool					m_dynamic;
+		bool					m_isDynamic;
 
 	};
 }

@@ -109,7 +109,7 @@ namespace tiki
 				return false;
 			}
 
-			pData = alignPtr( useEnd ? pBottomData : m_pDataStart, alignment );
+			pData = alignPointer( useEnd ? pBottomData : m_pDataStart, alignment );
 		}
 		else if( requiredSpace > m_size )
 		{
@@ -123,7 +123,7 @@ namespace tiki
 		AllocationData& allocation = m_allocations.push();
 		allocation.frameIndex	= m_currentFrameIndex;
 		allocation.size			= size;
-		allocation.pData		= alignPtr( pData, alignment );
+		allocation.pData		= alignPointer( pData, alignment );
 
 		result.pData		= allocation.pData;
 		result.size			= size;

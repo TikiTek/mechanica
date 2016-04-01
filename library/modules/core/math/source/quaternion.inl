@@ -315,6 +315,30 @@ namespace tiki
 		mtx.z.y = 2.0f * ( yz - xw );
 		mtx.z.z = 1.0f - ( 2.0f * ( yy + xx ) );
 	}
+	
+	TIKI_FORCE_INLINE void quaternion::toMatrix( Matrix44& mtx, const Quaternion& quat )
+	{
+		const float xx = quat.x * quat.x;
+		const float yy = quat.y * quat.y;
+		const float zz = quat.z * quat.z;
+		const float xy = quat.x * quat.y;
+		const float zw = quat.z * quat.w;
+		const float zx = quat.z * quat.x;
+		const float yw = quat.y * quat.w;
+		const float yz = quat.y * quat.z;
+		const float xw = quat.x * quat.w;
+
+		matrix::createIdentity( mtx );
+		mtx.x.x = 1.0f - (2.0f * (yy + zz));
+		mtx.x.y = 2.0f * (xy + zw);
+		mtx.x.z = 2.0f * (zx - yw);
+		mtx.y.x = 2.0f * (xy - zw);
+		mtx.y.y = 1.0f - (2.0f * (zz + xx));
+		mtx.y.z = 2.0f * (yz + xw);
+		mtx.z.x = 2.0f * (zx + yw);
+		mtx.z.y = 2.0f * (yz - xw);
+		mtx.z.z = 1.0f - (2.0f * (yy + xx));
+	}
 
 	TIKI_FORCE_INLINE void quaternion::fromYawPitchRoll( Quaternion& quat, float yaw, float pitch, float roll )
 	{

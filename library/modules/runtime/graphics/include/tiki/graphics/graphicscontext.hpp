@@ -160,8 +160,6 @@ namespace tiki
 		const ConstantBuffer*		m_apPixelConstants[ GraphicsSystemLimits_PixelShaderConstantSlots ];
 
 		VertexBuffer				m_immediateVertexData;
-		uint						m_immediateVertexStride;
-		uint						m_immediateVertexCount;
 
 		void						invalidateState();
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )

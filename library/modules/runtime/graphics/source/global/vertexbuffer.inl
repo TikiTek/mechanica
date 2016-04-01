@@ -21,7 +21,7 @@ namespace tiki
 		m_stride	= vertexStride;
 		m_count		= vertexCount;
 
-		if( !BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, GraphicsBufferType_VertexBuffer, pInitData, pDebugName ) )
+		if( !BaseBuffer::create( graphicsSystem, vertexCount * vertexStride, dynamic, BaseBufferTypes_VertexBuffer, pInitData, pDebugName ) )
 		{
 			dispose( graphicsSystem );
 			return false;

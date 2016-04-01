@@ -10,17 +10,6 @@
 
 namespace tiki
 {
-	struct DynamicBuffer
-	{
-		GraphicsBufferType	type;
-
-		BaseBuffer*			pGpuBuffer;
-		uint				gpuBufferOffset;
-
-		void*				pData;
-		uint				dataSize;
-	};
-
 	struct GraphicsMatrix33
 	{
 		float	data[ 9u ];

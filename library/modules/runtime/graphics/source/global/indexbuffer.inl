@@ -21,7 +21,7 @@ namespace tiki
 		m_indexType	= type;
 		m_count		= indexCount;
 
-		if( !BaseBuffer::create( graphicsSystem, indexCount * (size_t)type, dynamic, GraphicsBufferType_IndexBuffer, pInitData, pDebugName ) )
+		if( !BaseBuffer::create( graphicsSystem, indexCount * (size_t)type, dynamic, BaseBufferTypes_IndexBuffer, pInitData, pDebugName ) )
 		{
 			dispose( graphicsSystem );
 			return false;
