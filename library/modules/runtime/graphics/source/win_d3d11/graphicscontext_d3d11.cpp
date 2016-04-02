@@ -55,8 +55,8 @@ namespace tiki
 		m_currentRenderPassDepth = 0u;
 
 		m_immediateVertexData.create( graphicsSystem, MaxImmediateGeometrySize / 4u, 4u );
-		m_immediateVertexCount	= 0u;
-		m_immediateVertexStride	= 0u;
+		m_platformData.immediateVertexCount		= 0u;
+		m_platformData.immediateVertexStride	= 0u;
 
 		invalidateState();
 
@@ -386,8 +386,8 @@ namespace tiki
 	{
 		TIKI_ASSERT( vertexStride * vertexCount <= MaxImmediateGeometrySize );
 
-		m_immediateVertexStride	= vertexStride;
-		m_immediateVertexCount	= vertexCount;
+		m_platformData.immediateVertexStride	= vertexStride;
+		m_platformData.immediateVertexCount		= vertexCount;
 
 		return mapBuffer( m_immediateVertexData );
 	}
@@ -398,10 +398,10 @@ namespace tiki
 		TIKI_ASSERT( validateDrawCall() );
 
 		const UINT offset = 0u;
-		const UINT vertexStride = static_cast< UINT >( m_immediateVertexStride );
+		const UINT vertexStride = static_cast< UINT >(m_platformData.immediateVertexStride );
 		m_platformData.pContext->IASetVertexBuffers( 0u, 1u, &m_immediateVertexData.m_pBuffer, &vertexStride, &offset );
 
-		m_platformData.pContext->Draw( (UINT)m_immediateVertexCount, 0u );
+		m_platformData.pContext->Draw( (UINT)m_platformData.immediateVertexCount, 0u );
 	}
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )

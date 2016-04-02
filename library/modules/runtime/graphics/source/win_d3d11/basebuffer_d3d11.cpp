@@ -9,19 +9,19 @@
 
 namespace tiki
 {
-	D3D11_BIND_FLAG getD3dBinding( GraphicsBufferType binding )
+	D3D11_BIND_FLAG getD3dBinding( BaseBufferTypes binding )
 	{
 		switch ( binding )
 		{
-		case GraphicsBufferType_ConstantBuffer:
+		case BaseBufferTypes_ConstantBuffer:
 			return D3D11_BIND_CONSTANT_BUFFER;
-		case GraphicsBufferType_IndexBuffer:
+		case BaseBufferTypes_IndexBuffer:
 			return D3D11_BIND_INDEX_BUFFER;
-		case GraphicsBufferType_VertexBuffer:
+		case BaseBufferTypes_VertexBuffer:
 			return D3D11_BIND_VERTEX_BUFFER;
 		}
 
-		TIKI_BREAK( "[graphics] wrong GraphicsBufferType.\n" );
+		TIKI_BREAK( "[graphics] wrong BaseBufferTypes.\n" );
 		return D3D11_BIND_UNORDERED_ACCESS;
 	}
 
@@ -36,7 +36,7 @@ namespace tiki
 		TIKI_ASSERT( m_pBuffer == nullptr );
 	}
 
-	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName )
 	{
 		TIKI_ASSERT( m_pBuffer == nullptr );
 
