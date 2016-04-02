@@ -22,7 +22,7 @@ namespace tiki
 
 								BaseBuffer();
 
-		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, GraphicsBufferType binding, const void* pInitData, const char* pDebugName );
+		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );
 		
 		uint					getSize() const;

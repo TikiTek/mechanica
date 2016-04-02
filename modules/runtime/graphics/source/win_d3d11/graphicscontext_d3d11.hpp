@@ -10,12 +10,18 @@ namespace tiki
 	{
 		GraphicsContextPlatformData()
 		{
-			pDevice		= nullptr;
-			pContext	= nullptr;
+			pDevice					= nullptr;
+			pContext				= nullptr;
+
+			immediateVertexCount	= 0u;
+			immediateVertexStride	= 0u;
 		}
 
 		ID3D11Device*			pDevice;
 		ID3D11DeviceContext*	pContext;
+
+		uint					immediateVertexCount;
+		uint					immediateVertexStride;
 	};
 }
 
