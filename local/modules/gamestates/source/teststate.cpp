@@ -97,7 +97,7 @@ namespace tiki
 
 				VoxelWorldParameters worldParameters;
 				worldParameters.worldSize = vector::create( 32.0f, 32.0f, 32.0f );
-				worldParameters.maxTreeDepth = 16u;
+				worldParameters.maxTreeDepth = 8u;
 				
 				TIKI_VERIFY( m_world.create( worldParameters ) );
 

@@ -168,7 +168,7 @@ namespace tiki
 		}
 		else
 		{
-			TIKI_TRACE_WARNING( "[debugrenderer] Can't draw debug commaand. Out of memory.\n" );
+			TIKI_TRACE_WARNING( "[debugrenderer] Can't draw debug command. Out of memory.\n" );
 		}
 
 		return pCommand;

@@ -45,10 +45,10 @@ namespace tiki
 		m_planes[ FrustumPlane_Bottom ].create( aCorners[ FrustumCorner_FarRightTop ], aCorners[ FrustumCorner_NearRightTop ], aCorners[ FrustumCorner_FarLeftTop ] );
 	}
 
-	FrustumIntersectionType Frustum::testIntersectionPoint( const Vector3& point ) const
-	{
-		return FrustumIntersectionType_Disjoint;
-	}
+	//FrustumIntersectionType Frustum::testIntersectionPoint( const Vector3& point ) const
+	//{
+	//	return FrustumIntersectionType_Disjoint;
+	//}
 
 	//FrustumIntersectionType Frustum::testIntersectionBoundingBox( const BoundingBox& box ) const
 	//{

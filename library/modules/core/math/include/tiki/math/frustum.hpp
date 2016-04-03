@@ -36,14 +36,6 @@ namespace tiki
 		FrustumCorner_Count
 	};
 	
-	enum FrustumIntersectionType
-	{
-		FrustumIntersectionType_Disjoint,
-		FrustumIntersectionType_Contains,
-		FrustumIntersectionType_Intersects
-	};
-
-
 	class Frustum
 	{
 	public:
@@ -51,7 +43,7 @@ namespace tiki
 		void					create( const Matrix44& viewProjection );
 		void					create( const Vector3 aCorners[ FrustumCorner_Count ] );
 
-		FrustumIntersectionType	testIntersectionPoint( const Vector3& point ) const;
+		//FrustumIntersectionType	testIntersectionPoint( const Vector3& point ) const;
 		//FrustumIntersectionType	testIntersectionBoundingBox( const BoundingBox& box ) const;
 		//FrustumIntersectionType	testIntersectionBoundingSphere( const BoundingSphere& sphere ) const;
 		
