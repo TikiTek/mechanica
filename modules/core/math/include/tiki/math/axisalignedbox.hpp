@@ -46,6 +46,7 @@ namespace tiki
 
 		bool		contains( const Vector3& point ) const;
 
+		Vector3		getCenter() const;
 		Vector3		getSize() const;
 
 		Vector3		min;
