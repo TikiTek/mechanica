@@ -35,8 +35,8 @@ namespace tiki
 			 isStringEquals( userName, "tbode" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			//return GameStates_Test;
-			return GameStates_BasicTest;
+			return GameStates_Test;
+			//return GameStates_BasicTest;
 			//return GameStates_Play;
 		}
 #endif
