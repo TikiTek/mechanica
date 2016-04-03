@@ -57,6 +57,14 @@ namespace tiki
 			max.x >= point.x && max.y >= point.y && max.z >= point.z;
 	}
 
+	Vector3 AxisAlignedBox::getCenter() const
+	{
+		Vector3 center;
+		vector::add( center, min, max );
+		vector::scale( center, 0.5f );
+		return center;
+	}
+
 	Vector3 AxisAlignedBox::getSize() const
 	{
 		return vector::sub( Vector3(), max, min );

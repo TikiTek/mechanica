@@ -105,6 +105,10 @@ namespace tiki
 		void							executeFillSphereCommand( Command& command );
 
 		void							finalizeCommand( Command& command );
+
+		void							fillVoxelForSphere( Voxel& voxel, Command& command, uint depth );
+
+		void							calculateBoundingBoxForVoxelChild( AxisAlignedBox& box, const Voxel& voxel, VoxelChilds child, uint depth );
 	};
 }
 

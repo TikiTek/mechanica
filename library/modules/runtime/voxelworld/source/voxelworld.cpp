@@ -1,5 +1,6 @@
 #include "tiki/voxelworld/voxelworld.hpp"
 
+#include "tiki/math/intersection.hpp"
 #include "tiki/tasksystem/task.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 
@@ -220,7 +221,7 @@ namespace tiki
 
 	void VoxelWorld::executeFillSphereCommand( Command& command )
 	{
-
+		fillVoxelForSphere( *m_pRootVoxel, command, 0u );
 	}
 
 	void VoxelWorld::finalizeCommand( Command& command )
@@ -231,5 +232,51 @@ namespace tiki
 			replaceVoxelRecursive( change.pOldVoxel, change.pNewVoxel );
 		}
 		command.changes.dispose();
+	}
+
+	void VoxelWorld::fillVoxelForSphere( Voxel& voxel, Command& command, uint depth )
+	{
+		const Sphere& sphere = command.command.data.sphere;
+
+		if( voxel.isFull || depth > m_maxTreeDepth || !intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox ) )
+		{
+			return;
+		}
+
+		for( uint i = 0u; i < voxel.children.getCount(); ++i )
+		{
+			Voxel* pChild = voxel.children[ i ];
+
+			if( pChild == nullptr )
+			{
+				AxisAlignedBox boundingBox;
+				calculateBoundingBoxForVoxelChild( boundingBox, *pChild, (VoxelChilds)i, depth );
+
+				if( intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox ) )
+				{
+					// create
+				}
+			}
+			else
+			{
+				fillVoxelForSphere( *pChild, command, depth + 1u );
+			}
+		}
+	}
+
+	void VoxelWorld::calculateBoundingBoxForVoxelChild( AxisAlignedBox& box, const Voxel& voxel, VoxelChilds child, uint depth )
+	{
+		const float inversePower = 1.0f / f32::pow( 2.0f, float( depth ) );
+		Vector3 size = m_worldSize;
+		vector::scale( size, inversePower );
+
+		// VoxelChilds_TopLeftFront
+		// VoxelChilds_TopRightFront
+		// VoxelChilds_TopLeftBack
+		// VoxelChilds_TopRightBack
+		// VoxelChilds_BottomLeftFront
+		// VoxelChilds_BottomRightFront
+		// VoxelChilds_BottomLeftBack
+		// VoxelChilds_BottomRightBack
 	}
 }

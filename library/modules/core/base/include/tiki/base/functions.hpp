@@ -143,6 +143,13 @@ namespace tiki
 		return true;
 	}
 
+	template<typename T>
+	TIKI_FORCE_INLINE void swap( T& value1, T& value2 )
+	{
+		T backup = value1;
+		value1 = value2;
+		value2 = backup;
+	}
 }
 
 #endif // TIKI_BASE_FUNCTIONS_HPP

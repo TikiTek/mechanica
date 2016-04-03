@@ -1,285 +1,396 @@
 #include "tiki/math/intersection.hpp"
 
 #include "tiki/base/float32.hpp"
+#include "tiki/base/functions.hpp"
+#include "tiki/math/axisalignedbox.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/plane.hpp"
 #include "tiki/math/ray.hpp"
 #include "tiki/math/sphere.hpp"
 
-namespace tiki 
+namespace tiki
 {
 	namespace intersection
 	{
-		bool intersectRaySphere( const Ray& ray, const Sphere& sphere, Vector3& intersectionPoint )
+		bool    doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint );
+		bool    clip( float denom, float numer, float& t0, float& t1 );
+	}
+
+	bool intersection::intersectRaySphere( const Ray& ray, const Sphere& sphere, Vector3& intersectionPoint )
+	{
+		float rayParameters[ 2 ];
+
+		Vector3 difference = ray.origin;
+		vector::sub( difference, sphere.center );
+
+		float a0 = vector::dot( difference, difference ) - sphere.radius * sphere.radius;
+		float a1, discr, root;
+
+		// p is inside sphere
+		if( a0 <= 0.f )
 		{
-			float rayParameters[ 2 ];
-
-			Vector3 difference = ray.origin; 
-			vector::sub( difference, sphere.center );
-
-			float a0 = vector::dot( difference, difference ) - sphere.radius * sphere.radius;
-			float a1, discr, root;
-
-			// p is inside sphere
-			if ( a0 <= 0.f )
-			{
-				a1					= vector::dot( ray.direction, difference );
-				discr				= a1 * a1 - a0;
-				root				= f32::sqrt( discr );
-				rayParameters[ 0 ]	= -a1 + root;
-
-				Vector3 scaledDir = ray.direction;
-				vector::scale( scaledDir, rayParameters[ 0 ] );
-
-				intersectionPoint = ray.origin;
-				vector::add( intersectionPoint, scaledDir );
-
-				return true;
-			}
-
-			// P is outside the sphere
 			a1 = vector::dot( ray.direction, difference );
-			if ( a1 >= 0.f )
-			{
-				return false;
-			}
-
 			discr = a1 * a1 - a0;
-			if ( discr < 0.f )
-			{
-				return false;
-			}
-			// intersection type is a segment ( we have 2 intersection points, just return the first one for now)
-			else if ( discr >= f32::zeroTolerance )
-			{
-				root = f32::sqrt( discr );
-				rayParameters[ 0 ] = -a1 - root;
-				rayParameters[ 1 ] = -a1 + root;
+			root = f32::sqrt( discr );
+			rayParameters[ 0 ] = -a1 + root;
 
-				Vector3 scaledDir = ray.direction;
-				vector::scale( scaledDir, rayParameters[ 0 ] );
+			Vector3 scaledDir = ray.direction;
+			vector::scale( scaledDir, rayParameters[ 0 ] );
 
-				intersectionPoint = ray.origin;
-				intersectionPoint = vector::add( intersectionPoint, scaledDir );
+			intersectionPoint = ray.origin;
+			vector::add( intersectionPoint, scaledDir );
 
-				return true;
-			}
-			// intersection type is a point
-			else
-			{
-				rayParameters[ 0 ] = -a1;
-
-				Vector3 scaledDir = ray.direction;
-				vector::scale( scaledDir, rayParameters[ 0 ] );
-
-				intersectionPoint = ray.origin;
-				intersectionPoint = vector::add( intersectionPoint, scaledDir );
-
-				return true;
-			}
+			return true;
 		}
 
-		bool intersectRayPlane( const Ray& ray, const Plane& plane, Vector3& intersectionPoint )
+		// P is outside the sphere
+		a1 = vector::dot( ray.direction, difference );
+		if( a1 >= 0.f )
 		{
-			// intersection = origin + t*direction, with t >= 0.
-			Vector3 normal;
-			plane.getNormal( normal );
-
-			float dirDotNormal		= vector::dot( ray.direction, normal );
-			float signedDistance	= plane.getDistanceTo( ray.origin );
-
-			// The line is not parallel to the plane, so they must intersect.
-			if ( f32::abs( dirDotNormal ) > f32::zeroTolerance )
-			{
-				// get t
-				float lineParameter = -signedDistance / dirDotNormal;
-
-				// t * direction;
-				intersectionPoint = ray.direction;
-				vector::scale( intersectionPoint, lineParameter );
-
-				// origin + t * direction;
-				vector::add( intersectionPoint, ray.origin );
-
-				return true;
-			}
-
-			// The Line and plane are parallel.  Determine if they are numerically close enough to be coincident.
-			if ( f32::abs( signedDistance <= f32::zeroTolerance ) )
-			{
-				// The line is coincident with the plane, so choose t = 0 for the parameter (initial value). 
-				intersectionPoint = ray.origin;
-				return true;
-			}
-
 			return false;
 		}
 
-		bool intersectRayBox( const Ray& ray, const Box& box, Vector3& intersectionPoint )
+		discr = a1 * a1 - a0;
+		if( discr < 0.f )
 		{
-			float WdU	[ 3 ];
-			float AWdU	[ 3 ];
-			float DdU	[ 3 ];
-			float ADdU	[ 3 ];
-			float AWxDdU[ 3 ];
-			float RHS;
+			return false;
+		}
+		// intersection type is a segment ( we have 2 intersection points, just return the first one for now)
+		else if( discr >= f32::zeroTolerance )
+		{
+			root = f32::sqrt( discr );
+			rayParameters[ 0 ] = -a1 - root;
+			rayParameters[ 1 ] = -a1 + root;
 
-			Vector3 diff = ray.origin;
-			vector::sub( diff, box.center );
+			Vector3 scaledDir = ray.direction;
+			vector::scale( scaledDir, rayParameters[ 0 ] );
 
-			WdU	[ 0 ] = vector::dot( ray.direction, box.axis[ 0 ] );
-			AWdU[ 0 ] = f32::abs( WdU[ 0 ] );
-			DdU [ 0 ] = vector::dot( diff, box.axis[ 0 ] );
-			ADdU[ 0 ] = f32::abs( DdU[ 0 ] );
-			if ( ADdU[ 0 ] > box.extents.x && DdU[ 0 ] * WdU[ 0 ] >= 0.0f )
-			{
-				return false;
-			}
+			intersectionPoint = ray.origin;
+			intersectionPoint = vector::add( intersectionPoint, scaledDir );
 
-			WdU	[ 1 ] = vector::dot( ray.direction, box.axis[ 1 ] );
-			AWdU[ 1 ] = f32::abs( WdU[ 1 ] );
-			DdU	[ 1 ] = vector::dot( diff, box.axis[ 1 ] );
-			ADdU[ 1 ] = f32::abs( DdU[ 1 ] );
-			if ( ADdU[ 1 ] > box.extents.y && DdU[ 1 ] * WdU[ 1 ] >= 0.0f )
-			{
-				return false;
-			}
+			return true;
+		}
+		// intersection type is a point
+		else
+		{
+			rayParameters[ 0 ] = -a1;
 
-			WdU	[ 2 ] = vector::dot( ray.direction, box.axis[ 2 ] );
-			AWdU[ 2 ] = f32::abs( WdU[ 2 ] );
-			DdU	[ 2 ] = vector::dot( diff, box.axis[ 2 ] );
-			ADdU[ 2 ] = f32::abs( DdU[ 2 ] );
-			if ( ADdU[ 2 ] > box.extents.z && DdU[ 2 ] * WdU[ 2 ] >= 0.0f )
-			{
-				return false;
-			}
+			Vector3 scaledDir = ray.direction;
+			vector::scale( scaledDir, rayParameters[ 0 ] );
 
-			Vector3 WxD;
-			vector::cross( WxD, ray.direction, diff );
+			intersectionPoint = ray.origin;
+			intersectionPoint = vector::add( intersectionPoint, scaledDir );
 
-			AWxDdU[ 0 ] = f32::abs( vector::dot( WxD, box.axis[ 0 ] ) ); 
-			RHS = box.extents.y * AWdU[ 2 ] + box.extents.z * AWdU[ 1 ];
-			if ( AWxDdU[ 0 ] > RHS )
-			{
-				return false;
-			}
+			return true;
+		}
+	}
 
-			AWxDdU[ 1 ] = f32::abs( vector::dot( WxD, box.axis[ 1 ] ) ); 
-			RHS = box.extents.x * AWdU[ 2 ] + box.extents.z * AWdU[ 0 ];
-			if ( AWxDdU[ 1 ] > RHS )
-			{
-				return false;
-			}
+	bool intersection::intersectRayPlane( const Ray& ray, const Plane& plane, Vector3& intersectionPoint )
+	{
+		// intersection = origin + t*direction, with t >= 0.
+		Vector3 normal;
+		plane.getNormal( normal );
 
-			AWxDdU[ 2 ] = f32::abs( vector::dot( WxD, box.axis[ 2 ] ) );
-			RHS = box.extents.x * AWdU[ 1 ] + box.extents.y * AWdU[ 0 ];
-			if ( AWxDdU[ 2 ] > RHS )
-			{
-				return false;
-			}
+		float dirDotNormal = vector::dot( ray.direction, normal );
+		float signedDistance = plane.getDistanceTo( ray.origin );
 
-			// Get intersection point
+		// The line is not parallel to the plane, so they must intersect.
+		if( f32::abs( dirDotNormal ) > f32::zeroTolerance )
+		{
+			// get t
+			float lineParameter = -signedDistance / dirDotNormal;
 
-			int quantity;
-			return doClipping( 0.0f, f32::maxValue, ray.origin, ray.direction, box, true, quantity, intersectionPoint );
+			// t * direction;
+			intersectionPoint = ray.direction;
+			vector::scale( intersectionPoint, lineParameter );
 
+			// origin + t * direction;
+			vector::add( intersectionPoint, ray.origin );
+
+			return true;
 		}
 
-		bool doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint )
+		// The Line and plane are parallel.  Determine if they are numerically close enough to be coincident.
+		if( f32::abs( signedDistance <= f32::zeroTolerance ) )
 		{
-			// Convert linear component to box coordinates.
-			Vector3 diff = origin;
-			vector::sub( diff, origin );
-
-			Vector3 BOrigin;
-			vector::set( BOrigin,
-				vector::dot( diff, box.axis[ 0 ] ),
-				vector::dot( diff, box.axis[ 1 ] ),
-				vector::dot( diff, box.axis[ 2 ] )
-			);
-
-			Vector3 BDirection;
-			vector::set( BDirection,
-				vector::dot( direction, box.axis[ 0 ] ),
-				vector::dot( direction, box.axis[ 1 ] ),
-				vector::dot( direction, box.axis[ 2 ] )
-			);
-
-			float saveT0 = t0, saveT1 = t1;
-			bool notAllClipped = clip( +BDirection.x, -BOrigin.x - box.extents.x, t0, t1 ) &&
-				clip( -BDirection.x, +BOrigin.x - box.extents.x, t0, t1 ) &&
-				clip( +BDirection.y, -BOrigin.y - box.extents.y, t0, t1 ) &&
-				clip( -BDirection.y, +BOrigin.y - box.extents.y, t0, t1 ) &&
-				clip( +BDirection.z, -BOrigin.z - box.extents.z, t0, t1 ) &&
-				clip( -BDirection.z, +BOrigin.z - box.extents.z, t0, t1 );
-
-			bool ret = false;
-
-			if ( notAllClipped && (solid || t0 != saveT0 || t1 != saveT1) )
-			{
-				if ( t1 > t0 )
-				{
-					// intersection type is a segment
-					ret = true;
-					quantity = 2;
-
-					Vector3 scaledDir;
-					vector::scale( scaledDir, t0 );
-					intersectionPoint = origin;
-					vector::add( intersectionPoint, scaledDir );
-
-					// NOTE: second intersectionPoint: point[ 1 ] = origin + t1*direction;
-				}
-				else
-				{
-					// intersection type is a point
-					ret = true;
-					quantity = 1;
-
-					Vector3 scaledDir;
-					vector::scale( scaledDir, t0 );
-					intersectionPoint = origin;
-					vector::add( intersectionPoint, scaledDir );
-				}
-			}
-
-			return ret;
+			// The line is coincident with the plane, so choose t = 0 for the parameter (initial value). 
+			intersectionPoint = ray.origin;
+			return true;
 		}
 
-		bool clip( float denom, float numer, float& t0, float& t1 )
-		{
-			// Return value is 'true' if line segment intersects the current test
-			// plane.  Otherwise 'false' is returned in which case the line segment
-			// is entirely clipped.
+		return false;
+	}
 
-			if ( denom > 0.0f )
+	bool intersection::intersectRayAxisAlignedBox( const Ray& ray, const AxisAlignedBox& box, Vector3& intersectionPoint )
+	{
+		float tmin = (box.min.x - ray.origin.x) / ray.direction.x;
+		float tmax = (box.max.x - ray.origin.x) / ray.direction.x;
+
+		if( tmin > tmax )
+		{
+			swap( tmin, tmax );
+		}
+
+		float tymin = (box.min.y - ray.origin.y) / ray.direction.y;
+		float tymax = (box.max.y - ray.origin.y) / ray.direction.y;
+
+		if( tymin > tymax )
+		{
+			swap( tymin, tymax );
+		}
+
+		if( (tmin > tymax) || (tymin > tmax) )
+		{
+			return false;
+		}
+
+		tmin = (tymin > tmin ? tymin : tmin);
+		tmax = (tymax < tmax ? tymax : tmax);
+
+		float tzmin = (box.min.z - ray.origin.z) / ray.direction.z;
+		float tzmax = (box.max.z - ray.origin.z) / ray.direction.z;
+
+		if( tzmin > tzmax )
+		{
+			swap( tzmin, tzmax );
+		}
+
+		if( (tmin > tzmax) || (tzmin > tmax) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool intersection::intersectRayBox( const Ray& ray, const Box& box, Vector3& intersectionPoint )
+	{
+		float WdU[ 3 ];
+		float AWdU[ 3 ];
+		float DdU[ 3 ];
+		float ADdU[ 3 ];
+		float AWxDdU[ 3 ];
+		float RHS;
+
+		Vector3 diff = ray.origin;
+		vector::sub( diff, box.center );
+
+		WdU[ 0 ] = vector::dot( ray.direction, box.axis[ 0 ] );
+		AWdU[ 0 ] = f32::abs( WdU[ 0 ] );
+		DdU[ 0 ] = vector::dot( diff, box.axis[ 0 ] );
+		ADdU[ 0 ] = f32::abs( DdU[ 0 ] );
+		if( ADdU[ 0 ] > box.extents.x && DdU[ 0 ] * WdU[ 0 ] >= 0.0f )
+		{
+			return false;
+		}
+
+		WdU[ 1 ] = vector::dot( ray.direction, box.axis[ 1 ] );
+		AWdU[ 1 ] = f32::abs( WdU[ 1 ] );
+		DdU[ 1 ] = vector::dot( diff, box.axis[ 1 ] );
+		ADdU[ 1 ] = f32::abs( DdU[ 1 ] );
+		if( ADdU[ 1 ] > box.extents.y && DdU[ 1 ] * WdU[ 1 ] >= 0.0f )
+		{
+			return false;
+		}
+
+		WdU[ 2 ] = vector::dot( ray.direction, box.axis[ 2 ] );
+		AWdU[ 2 ] = f32::abs( WdU[ 2 ] );
+		DdU[ 2 ] = vector::dot( diff, box.axis[ 2 ] );
+		ADdU[ 2 ] = f32::abs( DdU[ 2 ] );
+		if( ADdU[ 2 ] > box.extents.z && DdU[ 2 ] * WdU[ 2 ] >= 0.0f )
+		{
+			return false;
+		}
+
+		Vector3 WxD;
+		vector::cross( WxD, ray.direction, diff );
+
+		AWxDdU[ 0 ] = f32::abs( vector::dot( WxD, box.axis[ 0 ] ) );
+		RHS = box.extents.y * AWdU[ 2 ] + box.extents.z * AWdU[ 1 ];
+		if( AWxDdU[ 0 ] > RHS )
+		{
+			return false;
+		}
+
+		AWxDdU[ 1 ] = f32::abs( vector::dot( WxD, box.axis[ 1 ] ) );
+		RHS = box.extents.x * AWdU[ 2 ] + box.extents.z * AWdU[ 0 ];
+		if( AWxDdU[ 1 ] > RHS )
+		{
+			return false;
+		}
+
+		AWxDdU[ 2 ] = f32::abs( vector::dot( WxD, box.axis[ 2 ] ) );
+		RHS = box.extents.x * AWdU[ 1 ] + box.extents.y * AWdU[ 0 ];
+		if( AWxDdU[ 2 ] > RHS )
+		{
+			return false;
+		}
+
+		// Get intersection point
+
+		int quantity;
+		return doClipping( 0.0f, f32::maxValue, ray.origin, ray.direction, box, true, quantity, intersectionPoint );
+	}
+
+	bool intersection::intersectSphereAxisAlignedBox( const Sphere& sphere, const AxisAlignedBox& box )
+	{
+		const Vector3 boxCenter = box.getCenter();
+		const Vector3 boxHalfSize = vector::scale( box.getSize(), 0.5f );
+
+		Vector3 boxToSphere;
+		vector::sub( boxToSphere, sphere.center, boxCenter );
+
+		Vector3 boxPoint;
+		if( boxToSphere.x < -boxHalfSize.x )
+		{
+			boxPoint.x = -boxHalfSize.x;
+		}
+		else if( boxToSphere.x > boxHalfSize.x )
+		{
+			boxPoint.x = boxHalfSize.x;
+		}
+		else
+		{
+			boxPoint.x = boxToSphere.x;
+		}
+
+		// ...same for Y axis
+		if( boxToSphere.y < -boxHalfSize.y )
+		{
+			boxPoint.y = -boxHalfSize.y;
+		}
+		else if( boxToSphere.y > boxHalfSize.y )
+		{
+			boxPoint.y = boxHalfSize.y;
+		}
+		else
+		{
+			boxPoint.y = boxToSphere.y;
+		}
+
+		// ... same for Z axis
+		if( boxToSphere.z < -boxHalfSize.z )
+		{
+			boxPoint.z = -boxHalfSize.z;
+		}
+		else if( boxToSphere.x > boxHalfSize.z )
+		{
+			boxPoint.z = boxHalfSize.z;
+		}
+		else
+		{
+			boxPoint.z = boxToSphere.z;
+		}
+
+		// Now we have the closest point on the box, so get the distance from 
+		// that to the sphere center, and see if it's less than the radius
+
+		Vector3 distance;
+		vector::sub( distance, boxToSphere, boxPoint );
+
+		return vector::lengthSquared( distance ) < sphere.radius * sphere.radius;
+	}
+
+	bool intersection::intersectSphereSphere( const Sphere& sphere1, const Sphere& sphere2 )
+	{
+		const float bothRadius = sphere1.radius + sphere2.radius;
+		return vector::distanceSquared( sphere1.center, sphere2.center ) < (bothRadius * bothRadius);
+	}
+
+	bool intersection::doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint )
+	{
+		// Convert linear component to box coordinates.
+		Vector3 diff = origin;
+		vector::sub( diff, origin );
+
+		Vector3 BOrigin;
+		vector::set( BOrigin,
+			vector::dot( diff, box.axis[ 0 ] ),
+			vector::dot( diff, box.axis[ 1 ] ),
+			vector::dot( diff, box.axis[ 2 ] )
+		);
+
+		Vector3 BDirection;
+		vector::set( BDirection,
+			vector::dot( direction, box.axis[ 0 ] ),
+			vector::dot( direction, box.axis[ 1 ] ),
+			vector::dot( direction, box.axis[ 2 ] )
+		);
+
+		float saveT0 = t0, saveT1 = t1;
+		bool notAllClipped = clip( +BDirection.x, -BOrigin.x - box.extents.x, t0, t1 ) &&
+			clip( -BDirection.x, +BOrigin.x - box.extents.x, t0, t1 ) &&
+			clip( +BDirection.y, -BOrigin.y - box.extents.y, t0, t1 ) &&
+			clip( -BDirection.y, +BOrigin.y - box.extents.y, t0, t1 ) &&
+			clip( +BDirection.z, -BOrigin.z - box.extents.z, t0, t1 ) &&
+			clip( -BDirection.z, +BOrigin.z - box.extents.z, t0, t1 );
+
+		bool ret = false;
+
+		if( notAllClipped && (solid || t0 != saveT0 || t1 != saveT1) )
+		{
+			if( t1 > t0 )
 			{
-				if ( numer > denom*t1 )
-				{
-					return false;
-				}
-				if ( numer > denom*t0 )
-				{
-					t0 = numer / denom;
-				}
-				return true;
-			}
-			else if ( denom < 0.0f )
-			{
-				if ( numer > denom*t0 )
-				{
-					return false;
-				}
-				if ( numer > denom*t1 )
-				{
-					t1 = numer / denom;
-				}
-				return true;
+				// intersection type is a segment
+				ret = true;
+				quantity = 2;
+
+				Vector3 scaledDir;
+				vector::scale( scaledDir, t0 );
+				intersectionPoint = origin;
+				vector::add( intersectionPoint, scaledDir );
+
+				// NOTE: second intersectionPoint: point[ 1 ] = origin + t1*direction;
 			}
 			else
 			{
-				return numer <= 0.0f;
+				// intersection type is a point
+				ret = true;
+				quantity = 1;
+
+				Vector3 scaledDir;
+				vector::scale( scaledDir, t0 );
+				intersectionPoint = origin;
+				vector::add( intersectionPoint, scaledDir );
 			}
+		}
+
+		return ret;
+	}
+
+	bool intersection::clip( float denom, float numer, float& t0, float& t1 )
+	{
+		// Return value is 'true' if line segment intersects the current test
+		// plane.  Otherwise 'false' is returned in which case the line segment
+		// is entirely clipped.
+
+		if( denom > 0.0f )
+		{
+			if( numer > denom*t1 )
+			{
+				return false;
+			}
+			if( numer > denom*t0 )
+			{
+				t0 = numer / denom;
+			}
+			return true;
+		}
+		else if( denom < 0.0f )
+		{
+			if( numer > denom*t0 )
+			{
+				return false;
+			}
+			if( numer > denom*t1 )
+			{
+				t1 = numer / denom;
+			}
+			return true;
+		}
+		else
+		{
+			return numer <= 0.0f;
 		}
 	}
 }

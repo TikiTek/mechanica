@@ -345,6 +345,8 @@ namespace tiki
 				debugrenderer::drawText( vector::create( 50.0f, 140.0f ), TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", cameraRay.direction.x, cameraRay.direction.y, cameraRay.direction.z );
 
 				debugrenderer::drawText3D( Vector3::zero, TIKI_COLOR_WHITE, "%.4f, %.4f, %.4f", planePoint.x, planePoint.y, planePoint.z );
+
+				m_mouseWorldPosition = planePoint;
 			}
 		}
 
@@ -443,6 +445,17 @@ namespace tiki
 		{
 			switch ( inputEvent.data.keybaordKey.key )
 			{
+			case KeyboardKey_Space:
+				{
+					VoxelWorldTranformCommand command;
+					command.type = VoxelWorldTransformTypes_FillSphere;
+					command.data.sphere.center = m_mouseWorldPosition;
+					command.data.sphere.radius = 2.0f;
+
+					m_world.queueCommand( command );
+				}
+				return true;
+
 			case KeyboardKey_V:
 				{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
@@ -465,7 +478,7 @@ namespace tiki
 				m_enableBloom = !m_enableBloom;
 				return true;
 
-			case KeyboardKey_Space:
+			case KeyboardKey_P:
 				m_drawPlayer = !m_drawPlayer;
 				break;
 
