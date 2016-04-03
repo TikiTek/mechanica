@@ -84,6 +84,7 @@ namespace tiki
 		int							m_gbufferIndex;
 
 		Vector2						m_mousePosition;
+		Vector3						m_mouseWorldPosition;
 
 		bool						m_enablePhysicsDebug;
 		bool						m_enableBloom;
