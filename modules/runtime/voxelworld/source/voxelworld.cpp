@@ -236,9 +236,20 @@ namespace tiki
 
 	void VoxelWorld::fillVoxelForSphere( Voxel& voxel, Command& command, uint depth )
 	{
-		const Sphere& sphere = command.command.data.sphere;
+		if( voxel.isFull )
+		{
+			return;
+		}
 
-		if( voxel.isFull || depth > m_maxTreeDepth || !intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox ) )
+		const Sphere& sphere = command.command.data.sphere;
+		const IntersectionTypes intersect = intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox );
+
+		if( depth >= m_maxTreeDepth && intersect != IntersectionTypes_Disjoint )
+		{
+			voxel.isFull = true;
+			return;
+		}
+		else if( intersect == IntersectionTypes_Disjoint )
 		{
 			return;
 		}
@@ -250,11 +261,29 @@ namespace tiki
 			if( pChild == nullptr )
 			{
 				AxisAlignedBox boundingBox;
-				calculateBoundingBoxForVoxelChild( boundingBox, *pChild, (VoxelChilds)i, depth );
+				calculateBoundingBoxForVoxelChild( boundingBox, voxel, (VoxelChilds)i, depth );
 
-				if( intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox ) )
+				const IntersectionTypes childIntersect = intersection::intersectSphereAxisAlignedBox( sphere, voxel.boundingBox );
+				if( childIntersect == IntersectionTypes_Disjoint )
 				{
-					// create
+					continue;
+				}
+
+				pChild = m_voxels.push();
+				pChild->pParent = &voxel;
+				pChild->boundingBox = boundingBox;
+				pChild->voxelChildType = (VoxelChilds)i;
+
+				voxel.children[ i ] = pChild;
+				voxel.childCount++;
+				
+				if ( childIntersect == IntersectionTypes_Intersects )
+				{
+					fillVoxelForSphere( *pChild, command, depth + 1u );
+				}
+				else if( childIntersect == IntersectionTypes_Contains )
+				{
+					pChild->isFull = true;
 				}
 			}
 			else
@@ -266,17 +295,24 @@ namespace tiki
 
 	void VoxelWorld::calculateBoundingBoxForVoxelChild( AxisAlignedBox& box, const Voxel& voxel, VoxelChilds child, uint depth )
 	{
-		const float inversePower = 1.0f / f32::pow( 2.0f, float( depth ) );
-		Vector3 size = m_worldSize;
-		vector::scale( size, inversePower );
+		Vector3 size = voxel.boundingBox.getSize();
+		vector::scale( size, 0.5f );
 
-		// VoxelChilds_TopLeftFront
-		// VoxelChilds_TopRightFront
-		// VoxelChilds_TopLeftBack
-		// VoxelChilds_TopRightBack
-		// VoxelChilds_BottomLeftFront
-		// VoxelChilds_BottomRightFront
-		// VoxelChilds_BottomLeftBack
-		// VoxelChilds_BottomRightBack
+		static const Vector3 s_aChildPositions[] =
+		{
+			{ -0.5f,  0.5f, -0.5f }, // VoxelChilds_TopLeftFront
+			{  0.5f,  0.5f, -0.5f }, // VoxelChilds_TopRightFront
+			{ -0.5f,  0.5f,  0.5f }, // VoxelChilds_TopLeftBack
+			{  0.5f,  0.5f,  0.5f }, // VoxelChilds_TopRightBack
+			{ -0.5f, -0.5f, -0.5f }, // VoxelChilds_BottomLeftFront
+			{  0.5f, -0.5f, -0.5f }, // VoxelChilds_BottomRightFront
+			{ -0.5f, -0.5f,  0.5f }, // VoxelChilds_BottomLeftBack
+			{  0.5f, -0.5f,  0.5f }, // VoxelChilds_BottomRightBack
+		};
+		Vector3 childPosition;
+		vector::mul( childPosition, s_aChildPositions[ child ], size );
+		vector::add( childPosition, voxel.boundingBox.getCenter() );
+
+		box.createFromCenterExtends( childPosition, size );
 	}
 }

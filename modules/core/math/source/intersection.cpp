@@ -232,69 +232,55 @@ namespace tiki
 		return doClipping( 0.0f, f32::maxValue, ray.origin, ray.direction, box, true, quantity, intersectionPoint );
 	}
 
-	bool intersection::intersectSphereAxisAlignedBox( const Sphere& sphere, const AxisAlignedBox& box )
+	IntersectionTypes intersection::intersectSphereAxisAlignedBox( const Sphere& sphere, const AxisAlignedBox& box )
 	{
-		const Vector3 boxCenter = box.getCenter();
-		const Vector3 boxHalfSize = vector::scale( box.getSize(), 0.5f );
+		const Vector3 nearestBoxPoint = 
+		{
+			(sphere.center.x < box.min.x ? box.min.x - sphere.center.x : (sphere.center.x > box.max.x ? sphere.center.x - box.max.x : 0.0f)),
+			(sphere.center.y < box.min.y ? box.min.y - sphere.center.y : (sphere.center.y > box.max.y ? sphere.center.y - box.max.y : 0.0f)),
+			(sphere.center.z < box.min.z ? box.min.z - sphere.center.z : (sphere.center.z > box.max.z ? sphere.center.z - box.max.z : 0.0f)),
+		};
 
-		Vector3 boxToSphere;
-		vector::sub( boxToSphere, sphere.center, boxCenter );
+		const Vector3 farthestBoxPoint =
+		{
+			TIKI_MAX( f32::abs( sphere.center.x - box.min.x ), f32::abs( sphere.center.x - box.max.x ) ),
+			TIKI_MAX( f32::abs( sphere.center.y - box.min.y ), f32::abs( sphere.center.y - box.max.y ) ),
+			TIKI_MAX( f32::abs( sphere.center.z - box.min.z ), f32::abs( sphere.center.z - box.max.z ) )
+		};
 
-		Vector3 boxPoint;
-		if( boxToSphere.x < -boxHalfSize.x )
-		{
-			boxPoint.x = -boxHalfSize.x;
-		}
-		else if( boxToSphere.x > boxHalfSize.x )
-		{
-			boxPoint.x = boxHalfSize.x;
-		}
-		else
-		{
-			boxPoint.x = boxToSphere.x;
-		}
+		const float nearestDistance = vector::lengthSquared( nearestBoxPoint );
+		const float farthestDistance = vector::lengthSquared( farthestBoxPoint );
 
-		// ...same for Y axis
-		if( boxToSphere.y < -boxHalfSize.y )
+		const float radiusSquared = sphere.radius * sphere.radius;
+		if ( nearestDistance > radiusSquared )
 		{
-			boxPoint.y = -boxHalfSize.y;
-		}
-		else if( boxToSphere.y > boxHalfSize.y )
-		{
-			boxPoint.y = boxHalfSize.y;
-		}
-		else
-		{
-			boxPoint.y = boxToSphere.y;
+			return IntersectionTypes_Disjoint;
 		}
 
-		// ... same for Z axis
-		if( boxToSphere.z < -boxHalfSize.z )
+		if( farthestDistance < radiusSquared )
 		{
-			boxPoint.z = -boxHalfSize.z;
-		}
-		else if( boxToSphere.x > boxHalfSize.z )
-		{
-			boxPoint.z = boxHalfSize.z;
-		}
-		else
-		{
-			boxPoint.z = boxToSphere.z;
+			return IntersectionTypes_Contains;
 		}
 
-		// Now we have the closest point on the box, so get the distance from 
-		// that to the sphere center, and see if it's less than the radius
-
-		Vector3 distance;
-		vector::sub( distance, boxToSphere, boxPoint );
-
-		return vector::lengthSquared( distance ) < sphere.radius * sphere.radius;
+		return IntersectionTypes_Intersects;
 	}
 
-	bool intersection::intersectSphereSphere( const Sphere& sphere1, const Sphere& sphere2 )
+	IntersectionTypes intersection::intersectSphereSphere( const Sphere& sphere1, const Sphere& sphere2 )
 	{
 		const float bothRadius = sphere1.radius + sphere2.radius;
-		return vector::distanceSquared( sphere1.center, sphere2.center ) < (bothRadius * bothRadius);
+		const float distanceSquared = vector::distanceSquared( sphere1.center, sphere2.center );
+		if( distanceSquared > (bothRadius * bothRadius) )
+		{
+			return IntersectionTypes_Disjoint;
+		}
+
+		const float minRadius = TIKI_MIN( sphere1.radius, sphere2.radius );
+		if( distanceSquared < (minRadius * minRadius) )
+		{
+			return IntersectionTypes_Contains;
+		}
+
+		return IntersectionTypes_Intersects;
 	}
 
 	bool intersection::doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint )
