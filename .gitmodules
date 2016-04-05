@@ -1,0 +1,3 @@
+[submodule "blobs/lua"]
+	path = blobs/lua
+	url = git@github.com:lua/lua.git
