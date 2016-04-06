@@ -24,7 +24,7 @@ namespace tiki
 
 	uint32 FontConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 1u;
+		return 2u;
 	}
 
 	bool FontConverter::canConvertType( crc32 typeCrc ) const

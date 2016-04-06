@@ -127,34 +127,43 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
 			self.import_func(project);
 		end
-
-		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then
-			local all_files = {};
 		
-			for i,pattern in pairs( self.source_files ) do
-				local matches = os.matchfiles( pattern )
-				
-				for j,file_name in pairs( matches ) do
-					if not table.contains( all_files, file_name ) then
-						all_files[#all_files+1] = file_name;
-					end					
-				end
+		local all_files = {};
+	
+		for i,pattern in pairs( self.source_files ) do
+			local matches = os.matchfiles( pattern )
+			
+			if #matches == 0 then
+				throw("[finalize] '" .. pattern .. "' pattern in '" .. self.name .. "' matches no files.");
 			end
 			
-			for i,pattern in pairs( self.exclude_files ) do
-				local matches = os.matchfiles( pattern )
-				
-				for j,file_name in pairs( matches ) do
-					local index = table.index_of( all_files, file_name );
-					
-					while index >= 0 do
-						table.remove( all_files, index );
-					
-						index = table.index_of( all_files, file_name );
-					end
+			for j,file_name in pairs( matches ) do
+				if not io.exists( file_name ) then
+					throw("[finalize] '" .. file_name .. "'  in '" .. self.name .. "' don't exists.");
 				end
-			end			
+				
+				if not table.contains( all_files, file_name ) then
+					all_files[#all_files+1] = file_name;
+				end					
+			end
+		end
+		
+		for i,pattern in pairs( self.exclude_files ) do
+			local matches = os.matchfiles( pattern )
 			
+			for j,file_name in pairs( matches ) do
+				local index = table.index_of( all_files, file_name );
+				
+				while index >= 0 do
+					table.remove( all_files, index );
+				
+					index = table.index_of( all_files, file_name );
+				end
+			end
+		end
+
+		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then
+	
 			local ext = "cpp"
 			if self.module_type == ModuleTypes.UnityCModule then
 				ext = "c"
@@ -201,8 +210,7 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			
 			files( { unity_file_name } );
 		else
-			files( self.source_files );
-			excludes( self.exclude_files );
+			files( all_files );
 		end
 	end
 

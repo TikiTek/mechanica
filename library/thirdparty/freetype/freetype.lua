@@ -4,8 +4,11 @@ local module = Module:new( "freetype" );
 
 module.module_type = ModuleTypes.UnityCModule;
 
-module:add_files( "include/*.h" );
 module:add_files( "freetype.lua" );
+module:add_files( "zerror.c" );
+module:set_base_path( "blobs/freetype" );
+
+module:add_files( "include/*.h" );
 module:add_include_dir( "include" );
 
 module:add_files( "src/autofit/autofit.c" );
@@ -27,7 +30,6 @@ module:add_files( "src/base/ftsynth.c" );
 module:add_files( "src/base/ftsystem.c" );
 module:add_files( "src/base/fttype1.c" );
 module:add_files( "src/base/ftwinfnt.c" );
-module:add_files( "src/base/ftxf86.c" );
 module:add_files( "src/bdf/bdf.c" );
 module:add_files( "src/cache/ftcache.c" );
 module:add_files( "src/cff/cff.c" );
@@ -46,10 +48,9 @@ module:add_files( "src/truetype/truetype.c" );
 module:add_files( "src/type1/type1.c" );
 module:add_files( "src/type42/type42.c" );
 module:add_files( "src/winfonts/winfnt.c" );
-module:add_files( "src/zerror.c" );
 
 if is_windows then
-	module:add_files( "builds/win32/ftdebug.c" );
+	module:add_files( "builds/windows/ftdebug.c" );
 end
 
 module:set_define( "FT2_BUILD_LIBRARY", "1" );

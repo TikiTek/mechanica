@@ -15,8 +15,8 @@ module:add_files( "src/*.rc" );
 module:add_files( "lib/*.c" );
 module:add_files( "lib/*.h" );
 
-module:add_files( "lib/vauth/*.c" );
-module:add_files( "lib/vauth/*.h" );
+--module:add_files( "lib/vauth/*.c" );
+--module:add_files( "lib/vauth/*.h" );
 module:add_files( "lib/vtls/*.c" );
 module:add_files( "lib/vtls/*.h" );
 

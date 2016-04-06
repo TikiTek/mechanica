@@ -4,8 +4,8 @@ local module = Module:new( "bullet" );
 
 module.module_type = ModuleTypes.FilesModule;
 
-module:add_files( "src/BulletCollision/*" );
-module:add_files( "src/BulletDynamics/*" );
+--module:add_files( "src/BulletCollision/*" );
+--module:add_files( "src/BulletDynamics/*" );
 module:add_files( "src/BulletSoftBody/*" );
 module:add_files( "src/LinearMath/*" );
 module:add_files( "src/BulletCollision/BroadphaseCollision/*" );
