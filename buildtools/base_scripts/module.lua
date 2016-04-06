@@ -2,7 +2,6 @@
 Module = class{
 	name = nil,
 	module_type = 0,
-	base_path = "",
 	import_func = nil,
 	config = nil,
 	module_dependencies = {},
@@ -34,7 +33,6 @@ function Module:new( name, initFunc )
 	module_new.name			= name;
 	module_new.config		= PlatformConfiguration:new();
 	module_new.module_type	= ModuleTypes.UnityCppModule;
-	module_new.base_path	= os.getcwd();
 	
 	for i,module in pairs( global_module_storage ) do
 		if ( module.name == name ) then
@@ -54,7 +52,7 @@ function Module:new( name, initFunc )
 end
 
 function Module:set_base_path( base_path )
-	self.base_path = path.join( global_configuration.root_path, base_path );
+	self.config:set_base_path( base_path );
 end
 
 function Module:add_files( file_name, flags )
@@ -66,7 +64,7 @@ function Module:add_files( file_name, flags )
 		end
 	end
 
-	table.insert( target_list, path.join( self.base_path, file_name ) );
+	table.insert( target_list, path.join( self.config.base_path, file_name ) );
 end
 
 function Module:set_define( name, value, configuration, platform )
