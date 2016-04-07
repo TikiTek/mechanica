@@ -1,6 +1,10 @@
 
 #include "tiki/framework/baseapplication.hpp"
 
+#include "tiki/base/assert.hpp"
+#include "tiki/framework/mainwindow.hpp"
+#include "tiki/input/inputsystem.hpp"
+
 #include "SDL.h"
 
 namespace tiki
@@ -26,8 +30,8 @@ namespace tiki
 		SDL_Event sdlEvent;
 		while ( SDL_PollEvent( &sdlEvent ) )
 		{
-			MainWindowPlatform::processEvent( m_frameworkData.mainWindow, sdlEvent );
-			InputSystemPlatform::processEvent( m_frameworkData.inputSystem, sdlEvent );
+			MainWindowPlatform::processEvent( getMainWindow(), sdlEvent );
+			InputSystemPlatform::processEvent( getInputSystem(), sdlEvent );
 		}
 	}
 }
