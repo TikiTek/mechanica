@@ -60,6 +60,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION 
 	use_d3d11	= true;
 	--use_d3d12	= true;
 	--use_opengl	= true;
+	use_sdl		= true;
 	
 	global_configuration.enable_unity_builds = true	
 elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or _ACTION == "eclipse" then
