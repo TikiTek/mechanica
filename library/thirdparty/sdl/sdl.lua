@@ -4,10 +4,14 @@ local module = Module:new( "sdl" );
 
 module.module_type = ModuleTypes.UnityCModule;
 
+module:add_files( "sdl.lua" );
+module:add_files( "SDL_config.h" );
+module:add_include_dir( "." );
+module:set_base_path( "blobs/sdl" );
+
 module:add_files( "src/*.c" );
 module:add_files( "src/*.h" );
 module:add_files( "src/atomic/*.c" );
-module:add_files( "src/atomic/*.h" );
 module:add_files( "src/audio/*.c" );
 module:add_files( "src/audio/*.h" );
 module:add_files( "src/audio/disk/*.c" );
@@ -15,8 +19,6 @@ module:add_files( "src/audio/disk/*.h" );
 module:add_files( "src/audio/dummy/*.c" );
 module:add_files( "src/audio/dummy/*.h" );
 module:add_files( "src/cpuinfo/*.c" );
-module:add_files( "src/dynapi/*.c" );
-module:add_files( "src/dynapi/*.h" );
 module:add_files( "src/events/*.c" );
 module:add_files( "src/events/*.h" );
 module:add_files( "src/file/*.c" );
@@ -46,14 +48,12 @@ module:add_files( "src/video/*.c" );
 module:add_files( "src/video/*.h" );
 module:add_files( "src/video/dummy/*.c" );
 module:add_files( "src/video/dummy/*.h" );
-module:add_files( "sdl.lua" );
 
 if is_windows then
 	module:add_files( "src/audio/winmm/*.c" );
 	module:add_files( "src/audio/winmm/*.h" );
 	module:add_files( "src/core/windows/*.c" );
 	module:add_files( "src/core/windows/*.h" );
-	module:add_files( "src/filesystem/windows/*.c" );
 	module:add_files( "src/loadso/windows/*.c" );
 	module:add_files( "src/main/windows/*.c" );
 	module:add_files( "src/power/windows/*.c" );
@@ -67,15 +67,10 @@ if is_windows then
 		module:add_files( "src/audio/directsound/*.c" );
 		module:add_files( "src/audio/directsound/*.h" );
 		module:add_files( "src/audio/xaudio2/*.c" );
-		module:add_files( "src/audio/xaudio2/*.h" );
 		module:add_files( "src/haptic/windows/*.c" );
-		module:add_files( "src/haptic/windows/*.h" );
 		module:add_files( "src/joystick/windows/*.c" );
 		module:add_files( "src/joystick/windows/*.h" );
 		module:add_files( "src/render/direct3d/*.c" );
-		module:add_files( "src/render/direct3d/*.h" );
-		module:add_files( "src/render/direct3d11/*.c" );
-		module:add_files( "src/render/direct3d11/*.h" );
 		module:add_files( "src/render/opengles2/*.c" );
 		module:add_files( "src/render/opengles2/*.h" );
 	end
@@ -91,7 +86,5 @@ else
 	throw "Platform not implemented"
 end
 
-
-
-module:add_files( "include/**/*.h" );
+module:add_files( "include/*.h" );
 module:add_include_dir( "include" );

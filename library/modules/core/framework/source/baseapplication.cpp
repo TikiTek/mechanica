@@ -87,7 +87,7 @@ namespace tiki
 		return m_pBaseData->resourceManager;
 	}
 
-	InputSystem& BaseApplication::getIputSystem() const
+	InputSystem& BaseApplication::getInputSystem() const
 	{
 		return m_pBaseData->inputSystem;
 	}

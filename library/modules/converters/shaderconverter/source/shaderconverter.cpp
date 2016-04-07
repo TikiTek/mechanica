@@ -19,10 +19,7 @@
 #	include <d3dcompiler.h>
 #endif
 
-//#include "ShaderLang.h"
-#include "fpp.h"
-#include "trexpp.h"
-
+#include <TRexpp.h>
 #include <stdarg.h>
 
 namespace tiki
@@ -580,7 +577,7 @@ namespace tiki
 		List< ShaderConstantInfo > constants;
 
 		// preprocessor
-		sourceCode = preprocessSourceCode( sourceCode, args.fileName, &includeHandler );
+		//sourceCode = preprocessSourceCode( sourceCode, args.fileName, &includeHandler );
 
 		// parse uniforms
 		{
@@ -710,70 +707,70 @@ namespace tiki
 		debug::trace( pFormatString, TraceLevel_None, data );
 	}
 
-	string preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler )
-	{
-		fppTag aTags[ 64u ];
-		fppTag* pCurrentTag = aTags;
+	//string preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler )
+	//{
+	//	fppTag aTags[ 64u ];
+	//	fppTag* pCurrentTag = aTags;
 
-		FppContext context;
-		context.pSourceData			= sourceCode.cStr();
-		context.sourceLength		= sourceCode.getLength();
-		context.sourcePosition		= 0;
-		context.pTargetData			= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
-		context.pTargetData[ 0u ]	= '\0';
-		context.targetLength		= 1024u * 1024u;
-		context.targetPosition		= 0u;
+	//	FppContext context;
+	//	context.pSourceData			= sourceCode.cStr();
+	//	context.sourceLength		= sourceCode.getLength();
+	//	context.sourcePosition		= 0;
+	//	context.pTargetData			= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
+	//	context.pTargetData[ 0u ]	= '\0';
+	//	context.targetLength		= 1024u * 1024u;
+	//	context.targetPosition		= 0u;
 
-		for (uint i = 0u; i < pIncludeHandler->getIncludeDirs().getCount(); ++i)
-		{
-			pCurrentTag->tag	= FPPTAG_INCLUDE_DIR;
-			pCurrentTag->data	= (void*)pIncludeHandler->getIncludeDirs()[ i ].cStr();
-			pCurrentTag++;
-		}
+	//	for (uint i = 0u; i < pIncludeHandler->getIncludeDirs().getCount(); ++i)
+	//	{
+	//		pCurrentTag->tag	= FPPTAG_INCLUDE_DIR;
+	//		pCurrentTag->data	= (void*)pIncludeHandler->getIncludeDirs()[ i ].cStr();
+	//		pCurrentTag++;
+	//	}
 
-		const string sourceFileName = path::getFilename( fileName );
-		pCurrentTag->tag	= FPPTAG_INPUT_NAME;
-		pCurrentTag->data	= (void*)sourceFileName.cStr();
-		pCurrentTag++;
+	//	const string sourceFileName = path::getFilename( fileName );
+	//	pCurrentTag->tag	= FPPTAG_INPUT_NAME;
+	//	pCurrentTag->data	= (void*)sourceFileName.cStr();
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_INPUT;
-		pCurrentTag->data	= (void*)fppRead;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_INPUT;
+	//	pCurrentTag->data	= (void*)fppRead;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_OUTPUT;
-		pCurrentTag->data	= (void*)fppWrite;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_OUTPUT;
+	//	pCurrentTag->data	= (void*)fppWrite;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_ERROR;
-		pCurrentTag->data	= (void*)fppError;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_ERROR;
+	//	pCurrentTag->data	= (void*)fppError;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_USERDATA;
-		pCurrentTag->data	= (void*)&context;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_USERDATA;
+	//	pCurrentTag->data	= (void*)&context;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_LINE;
-		pCurrentTag->data	= (void*)FALSE;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_LINE;
+	//	pCurrentTag->data	= (void*)FALSE;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_IGNOREVERSION;
-		pCurrentTag->data	= (void*)FALSE;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_IGNOREVERSION;
+	//	pCurrentTag->data	= (void*)FALSE;
+	//	pCurrentTag++;
 
-		pCurrentTag->tag	= FPPTAG_END;
-		pCurrentTag->data	= nullptr;
-		pCurrentTag++;
+	//	pCurrentTag->tag	= FPPTAG_END;
+	//	pCurrentTag->data	= nullptr;
+	//	pCurrentTag++;
 
-		if ( fppPreProcess( aTags ) != 0 )
-		{
-			TIKI_TRACE_ERROR( "[shaderconverter] preprocessor failed.\n" );
-		}
+	//	if ( fppPreProcess( aTags ) != 0 )
+	//	{
+	//		TIKI_TRACE_ERROR( "[shaderconverter] preprocessor failed.\n" );
+	//	}
 
-		context.pTargetData[ context.targetPosition ] = '\0';
-		string resultSourceCode = context.pTargetData;
+	//	context.pTargetData[ context.targetPosition ] = '\0';
+	//	string resultSourceCode = context.pTargetData;
 
-		TIKI_MEMORY_FREE( context.pTargetData );
+	//	TIKI_MEMORY_FREE( context.pTargetData );
 
-		return resultSourceCode;
-	}
+	//	return resultSourceCode;
+	//}
 }

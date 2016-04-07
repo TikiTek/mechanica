@@ -7,7 +7,7 @@
 #include "tiki/base/stringparse.hpp"
 #include "tiki/container/list.hpp"
 
-#include "trexpp.h"
+#include "TRexpp.h"
 
 namespace tiki
 {

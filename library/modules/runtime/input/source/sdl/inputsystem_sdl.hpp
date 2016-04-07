@@ -2,8 +2,8 @@
 #ifndef __TIKI_INPUTSYSTEM_WIN32_HPP_INCLUDED__
 #define __TIKI_INPUTSYSTEM_WIN32_HPP_INCLUDED__
 
-#include "tiki/base/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/sortedsizedmap.hpp"
 
 struct SDL_KeyboardEvent;
 struct SDL_MouseButtonEvent;

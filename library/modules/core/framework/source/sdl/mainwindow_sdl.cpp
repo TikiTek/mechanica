@@ -40,9 +40,6 @@ namespace tiki
 
 	void MainWindow::update()
 	{
-		m_eventBuffer.clear();
-
-		//SDL_UpdateWindowSurface( m_platformData.pWindow );
 	}
 
 	WindowHandle MainWindow::getHandle() const
@@ -68,7 +65,7 @@ namespace tiki
 		return size;
 	}
 
-	const WindowEventBuffer& MainWindow::getEventBuffer() const
+	WindowEventBuffer& MainWindow::getEventBuffer()
 	{
 		return m_eventBuffer;
 	}

@@ -54,7 +54,7 @@ namespace tiki
 		MainWindow&						getMainWindow() const;
 		GraphicsSystem&					getGraphicsSystem() const;
 		ResourceManager&				getResourceManager() const;
-		InputSystem&					getIputSystem() const;
+		InputSystem&					getInputSystem() const;
 		UiSystem&						getUiSystem() const;
 		const Timer&					getFrameTimer() const;
 		const ImmediateRenderer&		getImmediateRenderer() const;
