@@ -3,14 +3,15 @@
 #define TIKI_RENDERTARGET_HPP__
 
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/graphicssystemlimits.hpp"
 #include "tiki/graphics/pixelformat.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/rendertarget_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
 #	include "../../../source/win_d3d12/rendertarget_d3d12.hpp"
-#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#	include "../../../source/global_opengl4/rendertarget_opengl4.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
+#	include "../../../source/global_vulkan/rendertarget_vulkan.hpp"
 #endif
 
 namespace tiki

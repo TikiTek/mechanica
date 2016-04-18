@@ -19,8 +19,8 @@ namespace tiki
 #	include "../../../source/win_d3d11/basebuffer_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
 #	include "../../../source/win_d3d12/basebuffer_d3d12.hpp"
-#elif TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#	include "../../../source/global_opengl4/basebuffer_opengl4.hpp"
+#elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
+#	include "../../../source/global_vulkan/basebuffer_vulkan.hpp"
 #endif
 
 #endif // TIKI_BASEBUFFER_HPP__
