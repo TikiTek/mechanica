@@ -8,8 +8,8 @@
 #	include "../../../source/win_d3d11/graphicsstates_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
 #	include "../../../source/win_d3d12/graphicsstates_d3d12.hpp"
-#elif  TIKI_ENABLED( TIKI_GRAPHICS_OPENGL4 )
-#	include "../../../source/global_opengl4/graphicsstates_opengl4.hpp"
+#elif  TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
+#	include "../../../source/global_vulkan/graphicsstates_vulkan.hpp"
 #else
 #	error Platform not supported
 #endif

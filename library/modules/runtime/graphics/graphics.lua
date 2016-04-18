@@ -25,13 +25,12 @@ elseif use_d3d12 then
 	module:add_library_file( "dxgi" );
 	
 	module:add_dependency( "d3dx12" );
-elseif use_opengl then
-	module:add_files( "source/global_opengl4/*.*" );
+elseif use_vulkan then
+	module:add_files( "source/global_vulkan/*.*" );
 	
-	module:add_dependency( "glew" );
+	module:add_dependency( "vulkan" );
 	
-	module:add_library_file( "opengl32" );
-	module:add_library_file( "glu32" );
+	module:add_library_file( "vulkan-1" );
 else
 	throw( "Graphics API not implemented" );
 end
