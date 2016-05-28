@@ -4,6 +4,8 @@ local module = Module:new( "curl" );
 
 module:add_files( "include/**.h" );
 module:add_include_dir( "include" );
+module:add_include_dir( "include/curl" );
+module:add_files( "source/*.c" );
 module:add_files( "curl.lua" );
 module:set_base_path( "blobs/curl" );
 
@@ -18,8 +20,8 @@ module:add_files( "src/*.rc" );
 module:add_files( "lib/*.c" );
 module:add_files( "lib/*.h" );
 
---module:add_files( "lib/vauth/*.c" );
---module:add_files( "lib/vauth/*.h" );
+module:add_files( "lib/vauth/*.c" );
+module:add_files( "lib/vauth/*.h" );
 module:add_files( "lib/vtls/*.c" );
 module:add_files( "lib/vtls/*.h" );
 
