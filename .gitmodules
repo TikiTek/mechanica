@@ -16,3 +16,6 @@
 [submodule "blobs/sdl"]
 	path = blobs/sdl
 	url = git@github.com:zielmicha/SDL2.git
+[submodule "blobs/curl"]
+	path = blobs/curl
+	url = https://github.com/curl/curl.git
