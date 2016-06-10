@@ -3,7 +3,9 @@
 #include "tiki/ui/uielement.hpp"
 #include "tiki/ui/uisystem.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+
 #include "tiki/toolui/tooluibutton.hpp"
+#include "tiki/toolui/tooluicheckbox.hpp"
 
 namespace tiki
 {
@@ -25,9 +27,13 @@ namespace tiki
 	{
 		UiSystem& ui = getUiSystem();
 
-		m_pTestElement = ToolUiButton::createButton( ui );
-		m_pTestElement->setWidth( UiSize( 100.0f ) );
-		m_pTestElement->setHeight( UiSize( 100.0f ) );
+		//m_pTestElement = ToolUiButton::createButton( ui );
+		//m_pTestElement->setWidth( UiSize( 100.0f ) );
+		//m_pTestElement->setHeight( UiSize( 100.0f ) );
+
+		m_pTestElement = ToolUiCheckBox::createCheckBox( ui );
+		//m_pTestElement->setWidth( UiSize( 100.0f ) );
+		//m_pTestElement->setHeight( UiSize( 100.0f ) );
 
 		//m_pTestElement = ui.addElement();
 		//m_pTestElement->setToColorRectangleOne( TIKI_COLOR_TRANSPARENT );
@@ -103,7 +109,7 @@ namespace tiki
 
 	void Application::renderTool( GraphicsContext& graphicsContext ) const
 	{
-		graphicsContext.clear( graphicsContext.getBackBuffer() );
+		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_RGB( 0x06, 0x06, 0x06 ) );
 	}
 
 	bool Application::processToolInputEvent( const InputEvent& inputEvent )

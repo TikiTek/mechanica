@@ -34,13 +34,15 @@ namespace tiki
 			"[WARNING] ",
 			"[ERROR] "
 		};
-		const uint prefixStringLength		= strlen( s_aTracePrefix[ level ] );
+		const uint prefixStringLength = strlen( s_aTracePrefix[ level ] ) - (pFormat[ 0u ] == '[' ? 1u : 0u);
+
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	pragma warning(push)
 #	pragma warning(disable: 4996)
-		const uint formattedStringLength		= _vsnprintf( nullptr, 0u, pFormat, pArgs );
+		const uint formattedStringLength = _vsnprintf( nullptr, 0u, pFormat, pArgs );
 #else
 		va_list startList = { *pArgs };
-		const uint formattedStringLength		= vsnprintf( nullptr, 0u, pFormat, pArgs );
+		const uint formattedStringLength = vsnprintf( nullptr, 0u, pFormat, pArgs );
 		pArgs = startList;
 #endif
 
@@ -55,7 +57,7 @@ namespace tiki
 			nullptr,
 			pArgs
 		);
-#	pragma warning(default: 4996)
+#	pragma warning(pop)
 #else
         vsnprintf(
             (char*)( message.cStr() + prefixStringLength ),
@@ -111,7 +113,7 @@ namespace tiki
 		va_start( argptr, pFormat );
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		debug::traceInternal( pFormat, TraceLevel_None, argptr );
+		debug::traceInternal( pFormat, TraceLevel_Debug, argptr );
 #endif
 
 		va_end( argptr );

@@ -461,7 +461,7 @@ namespace tiki
 		}
 		else
 		{
-			TIKI_TRACE_ERROR( "[input] Unable to initilaize Touch.\n" );
+			TIKI_TRACE_DEBUG( "[input] No touch device present.\n" );
 		}
 
 		return true;

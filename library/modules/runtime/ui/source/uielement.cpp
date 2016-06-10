@@ -20,19 +20,20 @@ namespace tiki
 	{
 	}
 
-	void UiElement::create( UiSystem* pUiSystem, UiElement* pParent )
+	void UiElement::create( UiSystem* pUiSystem, UiElement* pParent, crc32 typeCrc )
 	{
-		m_pUiSystem = pUiSystem;
+		m_pUiSystem			= pUiSystem;
+		m_typeCrc			= typeCrc;
+		m_pParent			= pParent;
+		m_pFont				= nullptr;
+		m_pText				= nullptr;
+		m_pTextureData		= nullptr;
+		m_mouseMoveState	= false;
 
-		m_pParent = pParent;
 		if( m_pParent )
 		{
 			m_pParent->m_children.push( this );
 		}
-
-		m_pFont				= nullptr;
-		m_pText				= nullptr;
-		m_pTextureData		= nullptr;
 
 		for( uint i = 0u; i < m_colors.getCount(); ++i )
 		{
