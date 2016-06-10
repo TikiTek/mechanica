@@ -19,9 +19,6 @@ namespace tiki
 		static UiElement*	createButton( UiSystem& uiSystem );
 		static void			disposeButton( UiSystem& uiSystem, UiElement* pElement );
 
-		//static void			setPosition( UiElement* pElement, UiPosition position );
-		//static void			setSize( UiElement* pElement, UiSize width, UiSize height );
-
 		static void			setText( UiElement* pElement, const char* pText );
 
 	private:

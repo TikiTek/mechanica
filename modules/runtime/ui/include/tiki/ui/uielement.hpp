@@ -37,6 +37,8 @@ namespace tiki
 								UiElement();
 								~UiElement();
 
+		crc32					getTypeCrc() const { return m_typeCrc; }
+
 		const UiPosition&		getPosition() const;
 		void					setPosition( const UiPosition& position );
 
@@ -66,7 +68,7 @@ namespace tiki
 
 	private: // friend
 
-		void					create( UiSystem* pUiSystem, UiElement* pParent );
+		void					create( UiSystem* pUiSystem, UiElement* pParent, crc32 typeCrc );
 		void					dispose();
 
 		void					registerScriptEventHandler( UiEventType type, const ScriptValue& handlerFunc );
@@ -79,6 +81,8 @@ namespace tiki
 		typedef FixedArray< LinkedList< UiEventHandler >, UiEventType_Count > UiEventHandlerArray;
 
 		UiSystem*				m_pUiSystem;
+
+		crc32					m_typeCrc;
 
 		bool					m_layoutChanged;
 		UiRectangle				m_layoutRectangle;

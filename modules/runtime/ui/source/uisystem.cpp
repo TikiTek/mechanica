@@ -49,7 +49,7 @@ namespace tiki
 		}
 
 		m_pRootElement = &m_elementPool.push();
-		m_pRootElement->create( this, nullptr );
+		m_pRootElement->create( this, nullptr, TIKI_INVALID_CRC32 );
 		m_pRootElement->setToColorRectangle( TIKI_COLOR_TRANSPARENT );
 
 		setScreenSize( (float)parameters.width, (float)parameters.height );
@@ -72,10 +72,10 @@ namespace tiki
 		m_scriptContext.dispose();
 	}
 
-	UiElement* UiSystem::addElement( UiElement* pParent /*= nullptr */ )
+	UiElement* UiSystem::addElement( UiElement* pParent /* = nullptr */, crc32 elementTypeCrc /* = TIKI_INVALID_CRC32 */ )
 	{
 		UiElement& element = m_elementPool.push();
-		element.create( this, !pParent ? m_pRootElement : pParent );
+		element.create( this, !pParent ? m_pRootElement : pParent, elementTypeCrc );
 
 		return &element;
 	}

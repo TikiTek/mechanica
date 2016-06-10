@@ -51,7 +51,7 @@ namespace tiki
 		bool			create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const UiSystemParameters& parameters );
 		void			dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
-		UiElement*		addElement( UiElement* pParent = nullptr );
+		UiElement*		addElement( UiElement* pParent = nullptr, crc32 elementTypeCrc = TIKI_INVALID_CRC32 );
 		void			removeElement( UiElement* pElement );
 
 		void			update();

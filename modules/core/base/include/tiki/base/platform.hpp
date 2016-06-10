@@ -27,16 +27,15 @@ namespace tiki
 
 		GraphicsApi_D3D11,
 		GraphicsApi_D3D12,
+		GraphicsApi_Vulkan,
 
 		GraphicsApi_Count,
-
-		GraphicsApi_OpenGL4,
 	};
 
 	namespace platform
 	{
 		PlatformType							getHostPlatform();
-		GraphicsApi							getHostGraphicsApi();
+		GraphicsApi								getHostGraphicsApi();
 
 		uint									getProcessorCount();
 
@@ -44,7 +43,7 @@ namespace tiki
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 		InstanceHandle							getInstanceHandle();
-		const StaticArray< const char* >&	getArguments();
+		const StaticArray< const char* >&		getArguments();
 		bool									hasArgument( const char* name );
 #endif
 	}
