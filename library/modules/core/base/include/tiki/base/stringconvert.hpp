@@ -85,7 +85,7 @@ namespace tiki
 			uint32 a = 0;
 			if (value < 0)
 			{
-				str[0] = string::numberMinus;
+				str[0] = '-';
 				a++;
 			}
 
@@ -98,7 +98,7 @@ namespace tiki
 				i3 += i2;
 				i3 *= 10;
 
-				str[a] = string::numberZero + (char)i2;
+				str[a] = '0' + (char)i2;
 
 				i++;
 				a++;

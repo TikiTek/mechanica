@@ -81,8 +81,6 @@ namespace tiki
 
 			m_mutex.lock();
 			const bool found = m_fileMap.findValue( &data, pFileName );
-			m_mutex.unlock();
-
 			if ( !found )
 			{
 				if ( !loadFile( pFileName, data.fullName, data.data ) )
@@ -90,11 +88,12 @@ namespace tiki
 					return false;
 				}
 			}
+			m_mutex.unlock();
 
 			fullName		= data.fullName;
 			*ppData			= data.data.cStr();
 			*pSizeInBytes	= data.data.getLength();
-
+			
 			return true;
 		}
 
@@ -157,10 +156,7 @@ namespace tiki
 				fileData.fullName	= fullName;
 				fileData.data		= data;
 
-				m_mutex.lock();
 				m_fileMap.set( pFileName, fileData );
-				m_mutex.unlock();
-
 				return true;
 			}
 
@@ -320,7 +316,7 @@ namespace tiki
 
 	bool ShaderConverter::initializeConverter()
 	{
-		m_baseSourceCode =	"#define TIKI_ON 2-\n"
+		m_pBaseSourceCode =	"#define TIKI_ON 2-\n"
 							"#define TIKI_OFF 1-\n"
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
@@ -425,7 +421,7 @@ namespace tiki
 						args.version	= shaderStart[ type ] + "_4_0";
 						args.debugMode	= debugMode;
 
-						args.defineCode = m_baseSourceCode;
+						args.defineCode = m_pBaseSourceCode;
 						args.defineCode += variant.defineCode;
 
 						for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )

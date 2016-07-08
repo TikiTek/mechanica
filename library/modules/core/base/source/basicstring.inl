@@ -8,140 +8,61 @@
 
 namespace tiki
 {
-	BasicString::StringRefData::StringRefData()
-		: pData( (char*)s_pEmptyString )
-		, dataLength( 0u )
-		, stringLength( 0u )
-		, refCount( 1 )
-	{
-	}
-
-	BasicString::StringRefData::StringRefData( uint strLen, uint dataLen )
-		: refCount( 1 )
-	{
-		pData			= TIKI_MEMORY_NEW_ARRAY( char, dataLen );
-		dataLength		= dataLen;
-		stringLength	= strLen;
-
-		pData[ strLen ] = 0;
-	}
-
-	BasicString::StringRefData::StringRefData( uint strLen, uint dataLen, const char* pBaseData, sint baseDataLen /*= -1*/ )
-		: refCount( 1 )
-	{
-		pData			= TIKI_MEMORY_NEW_ARRAY( char, dataLen );
-		dataLength		= dataLen;
-		stringLength	= strLen;
-
-		memory::copy( pData, pBaseData, sizeof(char) * (baseDataLen == -1 ? strLen : baseDataLen) );
-		pData[ strLen ] = 0;
-	}
-
-	BasicString::StringRefData::~StringRefData()
-	{
-		if ( pData != nullptr && pData != s_pEmptyString )
-		{
-			TIKI_MEMORY_DELETE_ARRAY( pData, dataLength );
-			pData = nullptr;
-		}
-	}
-
-	TIKI_FORCE_INLINE sint BasicString::StringRefData::addRef()
-	{
-		return ++refCount;
-	}
-
-	TIKI_FORCE_INLINE sint BasicString::StringRefData::releaseRef()
-	{
-		if ( this == &BasicString::emptyData )
-		{
-			return 0;
-		}
-
-		if (--refCount < 1)
-		{
-			TIKI_MEMORY_DELETE_OBJECT( this );
-			return 0;
-		}
-
-		return refCount;
-	}
-
 	TIKI_FORCE_INLINE BasicString::BasicString()
 	{
-		data = &emptyData;
+		m_pData			= nullptr;
+		m_dataSize		= 0u;
+		m_stringSize	= 0u;
 	}
 
-	TIKI_FORCE_INLINE BasicString::BasicString( uint len )
+	TIKI_FORCE_INLINE BasicString::BasicString( uint length )
 	{
-		data = TIKI_MEMORY_NEW_OBJECT( StringRefData )(
-			len,
-			calcLength( len + 1 )
-		);
+		m_pData = nullptr;
+
+		allocateData( length );
+		m_stringSize = length;
 	}
 
 	TIKI_FORCE_INLINE BasicString::BasicString( const char* pString )
 	{
-		allocData( pString, -1 );
+		m_pData = nullptr;
+
+		allocateDataForString( pString );
 	}
 
 	TIKI_FORCE_INLINE BasicString::BasicString( const char* pString, sint length )
 	{
-		allocData( pString, length );
+		m_pData = nullptr;
+
+		allocateDataForString( pString, length );
+		m_stringSize = length;
 	}
 
 	TIKI_FORCE_INLINE BasicString::BasicString( const BasicString& copy )
-		: data( copy.data )
 	{
-		data->addRef();
+		m_pData = nullptr;
+		
+		allocateDataForString( copy.m_pData );
 	}
 
 	TIKI_FORCE_INLINE BasicString::~BasicString()
 	{
-		if ( data )
-		{
-			data->releaseRef();
-			data = nullptr;
-		}
-	}
-
-	TIKI_FORCE_INLINE void BasicString::allocData( const char* pString, sint length = -1 )
-	{
-		if ( pString == nullptr )
-		{
-			data = &emptyData;
-		}
-		else
-		{
-			uint len = (length == -1 ? getStringSize( pString ) : length);
-
-			if ( len == 0 )
-			{
-				data = &emptyData;
-				return;
-			}
-
-			data = TIKI_MEMORY_NEW_OBJECT( StringRefData )(
-				len,
-				calcLength( len + 1 ),
-				pString
-			);
-		}
+		freeData();
 	}
 
 	TIKI_FORCE_INLINE uint BasicString::getLength() const
 	{
-		return data->stringLength;
+		return m_stringSize;
 	}
 
 	TIKI_FORCE_INLINE bool BasicString::isEmpty() const
 	{
-		return data->stringLength == 0;
+		return m_stringSize == 0;
 	}
 
 	TIKI_FORCE_INLINE const char* BasicString::cStr() const
 	{
-		return data->pData;
+		return m_pData;
 	}
 
 	TIKI_FORCE_INLINE void BasicString::split( Array< BasicString >& output, const BasicString& seperator ) const
@@ -153,22 +74,22 @@ namespace tiki
 
 		uint i = 0;
 		uint lastIndex = 0;
-		while (i < count)
+		while( i < count )
 		{
-			const uint index = indexOf(seperator, lastIndex + seperator.data->stringLength);
+			const uint index = indexOf( seperator, lastIndex + seperator.m_stringSize );
 
 			list.push(
 				subString( lastIndex, sint( index - lastIndex ) )
 			);
 
-			lastIndex = index + seperator.data->stringLength;
+			lastIndex = index + seperator.m_stringSize;
 			i++;
 		}
 
-		if (data->stringLength - lastIndex > 0)
+		if( m_stringSize - lastIndex > 0 )
 		{
 			list.push(
-				subString( lastIndex, sint( data->stringLength - lastIndex ) )
+				subString( lastIndex, sint( m_stringSize - lastIndex ) )
 			);
 		}
 
@@ -176,76 +97,80 @@ namespace tiki
 		list.dispose();
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::replace(char oldValue, char newValue) const
+	TIKI_FORCE_INLINE BasicString BasicString::replace( char oldValue, char newValue ) const
 	{
 		BasicString str = *this;
 
 		uint i = 0;
-		while (i < data->stringLength)
+		while( i < m_stringSize )
 		{
-			if (str[i] == oldValue) str[i] = newValue;
+			if( str[ i ] == oldValue )
+			{
+				str[ i ] = newValue;
+			}
+
 			i++;
 		}
 
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::replace(const BasicString& oldValue, const BasicString& newValue) const
+	TIKI_FORCE_INLINE BasicString BasicString::replace( const BasicString& oldValue, const BasicString& newValue ) const
 	{
-		const uint count = countSubstring(oldValue);
-		const uint length = data->stringLength - (count * oldValue.data->stringLength) + (count * newValue.data->stringLength);
+		const uint count = countSubstring( oldValue );
+		const uint length = m_stringSize - (count * oldValue.m_stringSize) + (count * newValue.m_stringSize);
 
-		if ( count == 0 )
+		if( count == 0 )
 		{
 			return *this;
 		}
 
-		BasicString str = BasicString(length);
+		BasicString str( length );
 
 		uint i = 0;
 		uint offsetOld = 0;
 		uint offsetNew = 0;
-		while (i < count)
+		while( i < count )
 		{
-			const uint index		= indexOf(oldValue, offsetOld);
+			const uint index		= indexOf( oldValue, offsetOld );
 			const uint oldDifferent	= index - offsetOld;
 
-			memory::copy(str.data->pData + offsetNew, data->pData + offsetOld, sizeof(char) * (index - offsetOld));
+			memory::copy( str.m_pData + offsetNew, m_pData + offsetOld, index - offsetOld );
 			offsetOld += oldDifferent;
 			offsetNew += oldDifferent;
 
-			memory::copy(str.data->pData + offsetNew, newValue.data->pData, sizeof(char) * newValue.data->stringLength);
-			offsetOld += oldValue.data->stringLength;
-			offsetNew += newValue.data->stringLength;
+			memory::copy( str.m_pData + offsetNew, newValue.m_pData, newValue.m_stringSize );
+			offsetOld += oldValue.m_stringSize;
+			offsetNew += newValue.m_stringSize;
 
 			i++;
 		}
 
-		memory::copy( str.data->pData + offsetNew, data->pData + offsetOld, sizeof(char) * (data->stringLength - offsetOld));
+		memory::copy( str.m_pData + offsetNew, m_pData + offsetOld, m_stringSize - offsetOld );
 
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::subString(uint startIndex, sint length /*= -1*/ ) const
+	TIKI_FORCE_INLINE BasicString BasicString::subString( uint startIndex, sint length /*= -1*/ ) const
 	{
-		if (length == -1 || startIndex + length > data->stringLength)
+		if( length == -1 || startIndex + length > m_stringSize )
 		{
-			length = data->stringLength - startIndex;
+			length = m_stringSize - startIndex;
 		}
-		TIKI_ASSERT ( startIndex < data->stringLength || length == 0 );
+		TIKI_ASSERT( startIndex < m_stringSize || length == 0 );
 
-		if ( length == 0 )
+		if( length == 0 )
 		{
 			return BasicString();
 		}
 
-		if ( length == data->stringLength && startIndex == 0u )
+		if( length == m_stringSize && startIndex == 0u )
 		{
 			return BasicString( *this );
 		}
 
 		return BasicString(
-			data->pData + startIndex,
+			m_pData + startIndex,
 			length
 		);
 	}
@@ -253,9 +178,9 @@ namespace tiki
 	TIKI_FORCE_INLINE BasicString BasicString::trim() const
 	{
 		uint start = 0u;
-		uint length = data->stringLength;
+		uint length = m_stringSize;
 
-		if ( length == 0u )
+		if( length == 0u )
 		{
 			return *this;
 		}
@@ -265,9 +190,9 @@ namespace tiki
 		{
 			isWhiteSpace = false;
 
-			for (uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
+			for( uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i )
 			{
-				if ( data->pData[ start ] == whiteSpaces[ i ] )
+				if( m_pData[ start ] == whiteSpaces[ i ] )
 				{
 					isWhiteSpace = true;
 					start++;
@@ -276,15 +201,15 @@ namespace tiki
 				}
 			}
 		}
-		while ( isWhiteSpace );
+		while( isWhiteSpace );
 
 		do
 		{
 			isWhiteSpace = false;
 
-			for (uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i)
+			for( uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i )
 			{
-				if ( data->pData[ start + length - 1u ] == whiteSpaces[ i ] )
+				if( m_pData[ start + length - 1u ] == whiteSpaces[ i ] )
 				{
 					isWhiteSpace = true;
 					length--;
@@ -292,25 +217,25 @@ namespace tiki
 				}
 			}
 		}
-		while ( isWhiteSpace );
+		while( isWhiteSpace );
 
 		return subString( start, length );
 	}
 
-	TIKI_FORCE_INLINE uint BasicString::countSubstring(const BasicString& str) const
+	TIKI_FORCE_INLINE uint BasicString::countSubstring( const BasicString& str ) const
 	{
-		if (str.data->stringLength > data->stringLength)
+		if( str.m_stringSize > m_stringSize )
 			return 0u;
 
 		uint i = 0;
 		uint c = 0;
-		while (i < data->stringLength)
+		while( i < m_stringSize )
 		{
 			uint b = 0;
 			bool found = true;
-			while (b < str.data->stringLength)
+			while( b < str.m_stringSize )
 			{
-				if (data->pData[i + b] != str.data->pData[b])
+				if( m_pData[ i + b ] != str.m_pData[ b ] )
 				{
 					found = false;
 					break;
@@ -318,10 +243,10 @@ namespace tiki
 				b++;
 			}
 
-			if (found)
+			if( found )
 			{
 				c++;
-				i += str.data->stringLength;
+				i += str.m_stringSize;
 			}
 			else
 			{
@@ -334,23 +259,24 @@ namespace tiki
 
 	TIKI_FORCE_INLINE BasicString BasicString::insert( const BasicString& str, uint index ) const
 	{
-		BasicString oStr = BasicString(data->stringLength + str.data->stringLength);
+		BasicString oStr = BasicString( m_stringSize + str.m_stringSize );
 
-		memory::copy(oStr.data->pData, data->pData, sizeof(char) * index);
-		memory::copy(oStr.data->pData + index, str.data->pData, sizeof(char) * str.data->stringLength);
-		memory::copy(oStr.data->pData + index + str.data->stringLength, data->pData + index, sizeof(char) * (data->stringLength - index));
+		memory::copy( oStr.m_pData, m_pData, sizeof( char ) * index );
+		memory::copy( oStr.m_pData + index, str.m_pData, sizeof( char ) * str.m_stringSize );
+		memory::copy( oStr.m_pData + index + str.m_stringSize, m_pData + index, sizeof( char ) * (m_stringSize - index) );
 
 		return oStr;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::remove( uint startIndex, uint len ) const
+	TIKI_FORCE_INLINE BasicString BasicString::remove( uint startIndex, uint length ) const
 	{
-		BasicString oStr = BasicString(data->stringLength - len);
+		BasicString str = BasicString( m_stringSize - length );
 
-		memory::copy(oStr.data->pData, data->pData, sizeof(char) * startIndex);
-		memory::copy(oStr.data->pData + startIndex, data->pData + startIndex + len, sizeof(char) * (data->stringLength - startIndex - len));
+		memory::copy( str.m_pData, m_pData, sizeof( char ) * startIndex );
+		memory::copy( str.m_pData + startIndex, m_pData + startIndex + length, sizeof( char ) * (m_stringSize - startIndex - length) );
+		str.m_pData[ str.m_stringSize ] = '\0';
 
-		return oStr;
+		return str;
 	}
 
 	TIKI_FORCE_INLINE BasicString BasicString::toLower() const
@@ -358,10 +284,10 @@ namespace tiki
 		BasicString str = *this;
 
 		uint i = 0;
-		while (i < data->stringLength)
+		while( i < m_stringSize )
 		{
-			if (str[i] >= letterBigA && str[i] <= letterBigZ)
-				str[i] -= letterBigZ - letterLittleZ;
+			if( str[ i ] >= 'A' && str[ i ] <= 'Z' )
+				str[ i ] -= 'Z' - 'z';
 
 			i++;
 		}
@@ -374,10 +300,10 @@ namespace tiki
 		BasicString str = *this;
 
 		uint i = 0;
-		while (i < data->stringLength)
+		while( i < m_stringSize )
 		{
-			if (str[i] >= letterLittleA && str[i] <= letterLittleZ)
-				str[i] -= letterLittleZ - letterBigZ;
+			if( str[ i ] >= 'a' && str[ i ] <= 'z' )
+				str[ i ] -= 'z' - 'Z';
 
 			i++;
 		}
@@ -393,9 +319,9 @@ namespace tiki
 	TIKI_FORCE_INLINE int BasicString::indexOf( char c, uint index ) const
 	{
 		uint i = index;
-		while ( i < data->stringLength )
+		while( i < m_stringSize )
 		{
-			if ( data->pData[ i ] == c )
+			if( m_pData[ i ] == c )
 			{
 				return int( i );
 			}
@@ -412,18 +338,18 @@ namespace tiki
 
 	TIKI_FORCE_INLINE int BasicString::indexOf( const BasicString& str, uint index ) const
 	{
-		if (str.data->stringLength > data->stringLength) return -1;
+		if( str.m_stringSize > m_stringSize ) return -1;
 
 		uint i = index;
-		uint c = data->stringLength - str.data->stringLength;
+		uint c = m_stringSize - str.m_stringSize;
 
 		do
 		{
 			uint b = 0;
 			bool found = true;
-			while (b < str.data->stringLength)
+			while( b < str.m_stringSize )
 			{
-				if (data->pData[ i + b ] != str.data->pData[ b ])
+				if( m_pData[ i + b ] != str.m_pData[ b ] )
 				{
 					found = false;
 					break;
@@ -431,29 +357,29 @@ namespace tiki
 				b++;
 			}
 
-			if ( found )
+			if( found )
 			{
 				return int( i );
 			}
 
 			i++;
 		}
-		while (i <= c);
+		while( i <= c );
 
 		return -1;
 	}
 
 	TIKI_FORCE_INLINE int BasicString::lastIndexOf( char c ) const
 	{
-		return lastIndexOf( c, data->stringLength - 1u );
+		return lastIndexOf( c, m_stringSize - 1u );
 	}
 
 	TIKI_FORCE_INLINE int BasicString::lastIndexOf( char c, uint index ) const
 	{
 		int i = int( index );
-		while (i >= 0)
+		while( i >= 0 )
 		{
-			if ( data->pData[i] == c ) return i;
+			if( m_pData[ i ] == c ) return i;
 			i--;
 		}
 
@@ -462,19 +388,19 @@ namespace tiki
 
 	TIKI_FORCE_INLINE int BasicString::lastIndexOf( const BasicString& str ) const
 	{
-		return lastIndexOf( str, data->stringLength - str.data->stringLength );
+		return lastIndexOf( str, m_stringSize - str.m_stringSize );
 	}
 
 	TIKI_FORCE_INLINE int BasicString::lastIndexOf( const BasicString& str, uint index ) const
 	{
 		int i = (int)index;
-		while (i >= 0)
+		while( i >= 0 )
 		{
 			int b = 0;
 			bool found = true;
-			while (b < (int)str.data->stringLength)
+			while( b < (int)str.m_stringSize )
 			{
-				if (data->pData[i + b] != str.data->pData[b])
+				if( m_pData[ i + b ] != str.m_pData[ b ] )
 				{
 					found = false;
 					break;
@@ -482,7 +408,7 @@ namespace tiki
 				b++;
 			}
 
-			if (found)
+			if( found )
 			{
 				return i;
 			}
@@ -505,41 +431,41 @@ namespace tiki
 
 	TIKI_FORCE_INLINE bool BasicString::startsWith( char c ) const
 	{
-		if (data->stringLength < 1) return false;
+		if( m_stringSize < 1 ) return false;
 
-		return data->pData[0] == c;
+		return m_pData[ 0 ] == c;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::startsWith(const BasicString& str) const
+	TIKI_FORCE_INLINE bool BasicString::startsWith( const BasicString& str ) const
 	{
-		if (data->stringLength < str.data->stringLength) return false;
+		if( m_stringSize < str.m_stringSize ) return false;
 
 		uint i = 0;
-		while (i < str.data->stringLength)
+		while( i < str.m_stringSize )
 		{
-			if (data->pData[i] != str.data->pData[i]) return false;
+			if( m_pData[ i ] != str.m_pData[ i ] ) return false;
 			i++;
 		}
 
 		return true;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::endsWith(char c) const
+	TIKI_FORCE_INLINE bool BasicString::endsWith( char c ) const
 	{
-		if (data->stringLength < 1) return false;
+		if( m_stringSize < 1 ) return false;
 
-		return data->pData[data->stringLength - 1] == c;
+		return m_pData[ m_stringSize - 1 ] == c;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::endsWith(const BasicString& str) const
+	TIKI_FORCE_INLINE bool BasicString::endsWith( const BasicString& str ) const
 	{
-		if (data->stringLength < str.data->stringLength) return false;
+		if( m_stringSize < str.m_stringSize ) return false;
 
 		uint b = 0;
-		uint i = data->stringLength - str.data->stringLength;
-		while (i < data->stringLength)
+		uint i = m_stringSize - str.m_stringSize;
+		while( i < m_stringSize )
 		{
-			if (data->pData[i] != str.data->pData[b]) return false;
+			if( m_pData[ i ] != str.m_pData[ b ] ) return false;
 			i++;
 			b++;
 		}
@@ -549,54 +475,32 @@ namespace tiki
 
 	TIKI_FORCE_INLINE const char* BasicString::operator*() const
 	{
-		return data->pData;
+		return m_pData;
 	}
 
-	TIKI_FORCE_INLINE char BasicString::operator[](uint index) const
+	TIKI_FORCE_INLINE char BasicString::operator[]( uint index ) const
 	{
-		if (index >= data->stringLength)
-			throw "Index > Length";
-
-		return data->pData[index];
+		TIKI_ASSERT( index < m_stringSize );
+		return m_pData[ index ];
 	}
 
-	TIKI_FORCE_INLINE char& BasicString::operator[](uint index)
+	TIKI_FORCE_INLINE char& BasicString::operator[]( uint index )
 	{
-		if (index >= data->stringLength)
-			throw "Index > Length";
-
-		if (data->refCount > 1)
-		{
-			StringRefData* oldData = data;
-
-			data = TIKI_MEMORY_NEW_OBJECT( StringRefData )(
-				data->stringLength,
-				data->dataLength,
-				data->pData
-			);
-
-			oldData->releaseRef();
-		}
-
-		return data->pData[index];
+		TIKI_ASSERT( index < m_stringSize );
+		return m_pData[ index ];
 	}
 
 	TIKI_FORCE_INLINE bool BasicString::operator==( const BasicString& rhs ) const
 	{
-		if ( data == rhs.data )
-		{
-			return true;
-		}
-
-		if (data->stringLength != rhs.data->stringLength)
+		if( m_stringSize != rhs.m_stringSize )
 		{
 			return false;
 		}
 
 		uint i = 0;
-		while ( i < data->stringLength )
+		while( i < m_stringSize )
 		{
-			if ( data->pData[ i ] != rhs.data->pData[ i ] )
+			if( m_pData[ i ] != rhs.m_pData[ i ] )
 			{
 				return false;
 			}
@@ -611,106 +515,140 @@ namespace tiki
 		return !(*this == rhs);
 	}
 
-	TIKI_FORCE_INLINE BasicString& BasicString::operator=(const BasicString& rhs)
+	TIKI_FORCE_INLINE BasicString& BasicString::operator=( const BasicString& rhs )
 	{
-		StringRefData* oldData = data;
-
-		data = rhs.data;
-		data->addRef();
-
-		oldData->releaseRef();
+		freeData();
+		allocateDataForString( rhs.m_pData );
 
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::operator+(const BasicString& rhs) const
+	TIKI_FORCE_INLINE BasicString BasicString::operator+( const BasicString& rhs ) const
 	{
-		uint len = data->stringLength + rhs.data->stringLength;
-		BasicString str = BasicString(len);
+		uint length = m_stringSize + rhs.m_stringSize;
+		BasicString str = BasicString( length );
 
-		memory::copy(str.data->pData, data->pData, sizeof(char) * data->stringLength);
-		memory::copy(str.data->pData + data->stringLength, rhs.data->pData, sizeof(char) * rhs.data->stringLength);
-		str.data->pData[len] = 0;
+		memory::copy( str.m_pData, m_pData, m_stringSize );
+		memory::copy( str.m_pData + m_stringSize, rhs.m_pData, rhs.m_stringSize );
+		str.m_pData[ length ] = '\0';
 
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString& BasicString::operator+=(const BasicString& rhs)
+	TIKI_FORCE_INLINE BasicString& BasicString::operator+=( const BasicString& rhs )
 	{
-		uint sl = data->stringLength;
-		uint len = data->stringLength + rhs.data->stringLength;
+		const uint sl = m_stringSize;
+		const uint length = m_stringSize + rhs.m_stringSize;
 
-		if (data->refCount != 1 || data->dataLength <= len)
+		if( m_dataSize <= length )
 		{
-			StringRefData* oldData = data;
-
-			data = TIKI_MEMORY_NEW_OBJECT( StringRefData )(
-				len,
-				calcLength(len + 1),
-				oldData->pData,
-				oldData->stringLength
-			);
-
-			oldData->releaseRef();
+			reallocateData( length );
 		}
 
-		memory::copy(data->pData + sl, rhs.data->pData, sizeof(char) * rhs.data->stringLength);
-		data->pData[len] = 0;
-		data->stringLength = len;
+		memory::copy( m_pData + sl, rhs.m_pData, rhs.m_stringSize );
+		m_pData[ length ] = 0;
+		m_stringSize = length;
 
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator>(const BasicString& rhs) const
+	TIKI_FORCE_INLINE bool BasicString::operator>( const BasicString& rhs ) const
 	{
-		if (data == rhs.data) return false;
-
 		uint i = 0;
-		uint c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
-		while (i < c && data->pData[i] == rhs.data->pData[i])
+		uint c = (m_stringSize < rhs.m_stringSize ? m_stringSize : rhs.m_stringSize);
+		while( i < c && m_pData[ i ] == rhs.m_pData[ i ] )
 		{
 			i++;
 		}
 
-		return data->pData[i] > rhs.data->pData[i];
+		return m_pData[ i ] > rhs.m_pData[ i ];
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator>=(const BasicString& rhs) const
+	TIKI_FORCE_INLINE bool BasicString::operator>=( const BasicString& rhs ) const
 	{
-		return (*this > rhs) || (*this == rhs);
+		return (*this == rhs) || (*this > rhs);
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator<(const BasicString& rhs) const
+	TIKI_FORCE_INLINE bool BasicString::operator<( const BasicString& rhs ) const
 	{
-		if (data == rhs.data) return false;
-
 		uint i = 0;
-		uint c = (data->stringLength < rhs.data->stringLength ? data->stringLength : rhs.data->stringLength);
-		while (i < c && data->pData[i] == rhs.data->pData[i])
+		uint c = (m_stringSize < rhs.m_stringSize ? m_stringSize : rhs.m_stringSize);
+		while( i < c && m_pData[ i ] == rhs.m_pData[ i ] )
 		{
 			i++;
 		}
 
-		return data->pData[i] < rhs.data->pData[i];
+		return m_pData[ i ] < rhs.m_pData[ i ];
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator<=(const BasicString& rhs) const
+	TIKI_FORCE_INLINE bool BasicString::operator<=( const BasicString& rhs ) const
 	{
-		return (*this < rhs) || (*this == rhs);
-	}
-
-	TIKI_FORCE_INLINE uint BasicString::calcLength( uint neededLen ) const
-	{
-		uint len = 2;
-		while (len < neededLen) { len *= 2; }
-		return len;
+		return (*this == rhs) || (*this < rhs);
 	}
 
 	TIKI_FORCE_INLINE string operator+( const char* str1, const string& str2 )
 	{
-		return string(str1) + str2;
+		return string( str1 ) + str2;
 	}
 
+	TIKI_FORCE_INLINE void BasicString::allocateData( sint length )
+	{
+		TIKI_ASSERT( m_pData == nullptr );
+
+		m_dataSize		= calculateLength( length );
+		m_stringSize	= 0u;
+
+		m_pData			= (char*)TIKI_MEMORY_ALLOC( m_dataSize );
+	}
+	
+	TIKI_FORCE_INLINE void BasicString::reallocateData( sint length )
+	{
+		char* pOldData = m_pData;
+		
+		m_dataSize	= calculateLength( length );
+		m_pData		= (char*)TIKI_MEMORY_ALLOC( m_dataSize );
+
+		memory::copy( m_pData, pOldData, m_stringSize );
+		m_pData[ m_stringSize ] = '\0';
+
+		TIKI_MEMORY_FREE( pOldData );
+	}
+
+	TIKI_FORCE_INLINE void BasicString::allocateDataForString( const char* pString, sint length /* = -1 */ )
+	{
+		if( pString == nullptr )
+		{
+			freeData();
+		}
+		else
+		{
+			uint stringSize = getStringSize( pString );
+			stringSize = TIKI_MIN( stringSize, (uint)length );
+			TIKI_ASSERT( length == -1 || stringSize <= (uint)length );
+
+			const uint dataSize = (length == -1 ? stringSize : (uint)length);
+
+			allocateData( dataSize );
+			memory::copy( m_pData, pString, stringSize );
+			m_pData[ stringSize ] = '\0';
+
+			m_stringSize = stringSize;
+		}
+	}
+
+	TIKI_FORCE_INLINE void BasicString::freeData()
+	{
+		TIKI_MEMORY_FREE( m_pData );
+		m_pData			= nullptr;
+		m_dataSize		= 0u;
+		m_stringSize	= 0u;
+	}
+
+	TIKI_FORCE_INLINE uint BasicString::calculateLength( uint neededLength ) const
+	{
+		neededLength++;
+		return getNextPowerOfTwo( neededLength );
+	}
 }
 
 #endif // TIKI_BASICSTRING_INL_INCLUDED__

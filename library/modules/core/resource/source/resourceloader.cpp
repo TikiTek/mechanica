@@ -352,7 +352,7 @@ namespace tiki
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
 
-			void* pSectionData = TIKI_MEMORY_ALLOC_ALIGNED( sectionHeader.sizeInBytes, 1u << sectionHeader.alignment );
+			void* pSectionData = TIKI_MEMORY_ALLOC_ALIGNED( sectionHeader.sizeInBytes, (uint)1u << sectionHeader.alignment );
 			if ( pSectionData == nullptr )
 			{
 				return ResourceLoaderResult_OutOfMemory;

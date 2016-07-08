@@ -51,7 +51,7 @@ namespace tiki
 			bool			debugMode;
 		};
 
-		string					m_baseSourceCode;
+		const char*				m_pBaseSourceCode;
 
 		List< string >			m_includeDirs;
 		ShaderFileStorage*		m_pFileStorage;

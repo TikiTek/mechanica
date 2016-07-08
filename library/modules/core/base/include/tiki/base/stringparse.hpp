@@ -84,12 +84,12 @@ namespace tiki
 
 		static bool getSiged(string& str)
 		{
-			if (str[0] == string::numberPlus)
+			if (str[0] == '+')
 			{
 				str = str.subString( 1u );
 			}
 
-			if (str[0] == string::numberMinus)
+			if (str[0] == '-')
 			{
 				str = str.subString( 1u );
 				return false;
@@ -106,10 +106,10 @@ namespace tiki
 			uint32 i = 0;
 			while (i < str.data->stringLength)
 			{
-				if (str[i] >= BasicString::numberZero && str[i] <= BasicString::numberNine)
+				if (str[i] >= '0' && str[i] <= '9')
 				{
 					int p = int( str.data->stringLength - ( i + 1 ) );
-					TUInt c = str[i] - BasicString::numberZero;
+					TUInt c = str[i] - '0';
 
 					num += c * (TUInt)pow(10.0, p);
 				}

@@ -497,7 +497,7 @@ namespace tiki
 	{
 		if ( tasks.isEmpty() )
 		{
-			return false;
+			return true;
 		}
 
 		bool result = true;
@@ -622,7 +622,7 @@ namespace tiki
 
 	bool ConverterManager::checkDependencies( List< ConversionTask >& tasks )
 	{
-		if ( !m_dataBase.isCreated() || m_rebuildForced )
+		if ( m_isNewDatabase || m_rebuildForced )
 		{
 			return true;
 		}
@@ -643,6 +643,7 @@ namespace tiki
 		}
 
 		// check dependencies
+		if( !whereAssetId.isEmpty() )
 		{
 			AutoDispose< SqliteQuery > query;
 			if ( !query->create( m_dataBase, "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE " + whereAssetId ) )
