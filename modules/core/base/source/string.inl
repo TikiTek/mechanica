@@ -8,6 +8,11 @@ namespace tiki
 {
 	TIKI_FORCE_INLINE uint getStringSize( const char* pSource )
 	{
+		if( pSource == nullptr )
+		{
+			return 0u;
+		}
+
 		uint length = (uint)-1;		
 		while ( pSource[ ++length ] != '\0' );
 
@@ -16,12 +21,16 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint getStringLength( const char* pSource )
 	{
+		if( pSource == nullptr )
+		{
+			return 0u;
+		}
+
 		uint index = 0;
 		uint length = 0;
-
 		while ( pSource[ index ] != '\0' )
 		{
-			length += !(pSource[ index ] & 0x80);
+			length += !(pSource[ index ] & 0x80); // wrong!
 			index++;
 		}
 

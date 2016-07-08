@@ -9,13 +9,10 @@ namespace tiki
 {
 	class BasicString
 	{
-		friend class ParseString;
-		friend class StringConvert;
-
 	public:
 
 		TIKI_FORCE_INLINE					BasicString();
-		TIKI_FORCE_INLINE explicit			BasicString( uint len );
+		TIKI_FORCE_INLINE explicit			BasicString( uint length );
 		TIKI_FORCE_INLINE					BasicString( const char* pString );
 		TIKI_FORCE_INLINE					BasicString( const char* pString, sint length );
 		TIKI_FORCE_INLINE					BasicString( const BasicString& copy );
@@ -33,7 +30,7 @@ namespace tiki
 		TIKI_FORCE_INLINE BasicString		trim() const;
 
 		TIKI_FORCE_INLINE BasicString		insert( const BasicString& str, uint index ) const;
-		TIKI_FORCE_INLINE BasicString		remove( uint startIndex, uint len ) const;
+		TIKI_FORCE_INLINE BasicString		remove( uint startIndex, uint length ) const;
 
 		TIKI_FORCE_INLINE BasicString		toLower() const;
 		TIKI_FORCE_INLINE BasicString		toUpper() const;
@@ -74,41 +71,19 @@ namespace tiki
 
 	private:
 
-		struct StringRefData
-		{
-			char*					pData;
-			uint					dataLength;
-			uint					stringLength;
+		char*						m_pData;
+		uint						m_dataSize;
+		uint						m_stringSize;
+		//uint						m_stringLength; // TODO
 
-			sint	    			refCount;
-
-			static const char*		s_pEmptyString;
-
-			TIKI_FORCE_INLINE		StringRefData();
-			TIKI_FORCE_INLINE		StringRefData( uint strLen, uint dataLen );
-			TIKI_FORCE_INLINE		StringRefData( uint strLen, uint dataLen, const char* pBaseData, sint baseDataLen = -1 );
-			TIKI_FORCE_INLINE		~StringRefData();
-
-			TIKI_FORCE_INLINE sint	addRef();
-			TIKI_FORCE_INLINE sint	releaseRef();
-		};
-
-		StringRefData*				data;
-
-		static const char			letterBigA;
-		static const char			letterBigZ;
-		static const char			letterLittleA;
-		static const char			letterLittleZ;
-		static const char			numberDot;
-		static const char			numberZero;
-		static const char			numberNine;
-		static const char			numberPlus;
-		static const char			numberMinus;
 		static const char			whiteSpaces[ 4u ];
-		static StringRefData		emptyData;
 
-		TIKI_FORCE_INLINE void		allocData( const char* pString, sint length );
-		TIKI_FORCE_INLINE uint		calcLength( uint neededLen ) const;
+		TIKI_FORCE_INLINE void		allocateData( sint length );
+		TIKI_FORCE_INLINE void		reallocateData( sint length );
+		TIKI_FORCE_INLINE void		allocateDataForString( const char* pString, sint length = -1 );
+		TIKI_FORCE_INLINE void		freeData();
+
+		TIKI_FORCE_INLINE uint		calculateLength( uint neededLength ) const;
 
 	};
 
