@@ -152,7 +152,7 @@ namespace tiki
 					writer.writeData( bitmap.getBegin(), bitmap.getCount() );
 					break;
 
-				case GraphicsApi_OpenGL4:
+				case GraphicsApi_Vulkan:
 					{
 						const uint bytesPerPixel = getBitsPerPixel( format ) / 8u;
 						const uint bytesPerLine = bytesPerPixel * width;

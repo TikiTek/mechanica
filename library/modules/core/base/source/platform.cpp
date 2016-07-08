@@ -21,7 +21,7 @@ namespace tiki
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
 		return GraphicsApi_D3D12;
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-		return GraphicsApi_OpenGL4;
+		return GraphicsApi_Vulkan;
 #else
 #	error not supported
 #endif

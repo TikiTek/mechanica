@@ -489,8 +489,8 @@ namespace tiki
 		case GraphicsApi_D3D12:
 			return compileD3dShader( targetData, args, includeHandler );
 
-		case GraphicsApi_OpenGL4:
-			return compileOpenGl4Shader( targetData, args, includeHandler );
+		case GraphicsApi_Vulkan:
+			return compileVulkanShader( targetData, args, includeHandler );
 
 		default:
 			TIKI_TRACE_ERROR( "Graphics API not supported.\n" );
@@ -569,7 +569,7 @@ namespace tiki
 #endif
 	}
 
-	bool ShaderConverter::compileOpenGl4Shader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const
+	bool ShaderConverter::compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const
 	{
 		m_openGlMutex.lock();
 
