@@ -3,6 +3,7 @@
 #define TIKI_STRING_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/memory.hpp"
 
 namespace tiki
 {
@@ -68,6 +69,16 @@ namespace tiki
 		pTargetBuffer[ length ] = '\0';
 
 		return length;
+	}
+
+	TIKI_FORCE_INLINE char* dublicateString( const char* pSource )
+	{
+		const uint sourceLength = getStringSize( pSource );
+
+		char* pNewString = (char*)TIKI_MEMORY_ALLOC( sourceLength + 1u );
+		copyString( pNewString, sourceLength + 1u, pSource );
+
+		return pNewString;
 	}
 	
 	TIKI_FORCE_INLINE bool isStringEquals( const char* pString1, const char* pString2 )

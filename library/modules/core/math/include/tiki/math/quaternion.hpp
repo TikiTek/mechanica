@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	TIKI_PRE_ALIGN( 16 ) struct Quaternion
+	TIKI_ALIGN_PREFIX( 16 ) struct Quaternion
 	{
 		float x;
 		float y;
@@ -17,7 +17,7 @@ namespace tiki
 		static const Quaternion one;
 		static const Quaternion identity;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
 	namespace quaternion
 	{

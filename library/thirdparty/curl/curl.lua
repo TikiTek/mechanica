@@ -17,6 +17,8 @@ module:add_files( "src/*.c" );
 module:add_files( "src/*.h" );
 module:add_files( "src/*.rc" );
 
+module:add_files( "src/tool_main.c", { exclude = true } );
+
 module:add_files( "lib/*.c" );
 module:add_files( "lib/*.h" );
 

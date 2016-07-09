@@ -87,10 +87,17 @@ namespace tiki
 	
 #endif
 
-#define TIKI_DEFAULT_ALIGNMENT	0u
-#define TIKI_INVALID_CRC32		0xffffffffu
-#define TIKI_MAX_PATH				512u
-#define TIKI_TIME_OUT_INFINITY	0x7fffffffffffffff
+#define TIKI_DEFAULT_ALIGNMENT			0u
+#define TIKI_INVALID_CRC32				0xffffffffu
+#define TIKI_MAX_PATH					512u
+#define TIKI_TIME_OUT_INFINITY			0x7fffffffffffffff
+
+#define TIKI_CONCAT( x1, x2 )			TIKI_CONCAT_HELPER( x1, x2 )
+#define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
+#define TIKI_STRING( text )				# text
+
+#define TIKI_PURE						= 0
+
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
@@ -140,6 +147,40 @@ namespace tiki
 
 #endif
 
+#if _MANAGED
+
+#	define TIKI_ALIGN_PREFIX( var )
+#	define TIKI_ALIGN_POSTFIX( var )
+#	define TIKI_ALIGNOF( type )			( __alignof( type ) )
+
+#	define TIKI_OVERRIDE				override
+#	define TIKI_FINAL					sealed
+
+#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
+
+#	define TIKI_ALIGN_PREFIX( var )		__declspec( align( var ) )
+#	define TIKI_ALIGN_POSTFIX( var )
+#	define TIKI_ALIGNOF( type )			( __alignof( type ) )
+
+#	define TIKI_OVERRIDE				override
+#	define TIKI_FINAL					sealed
+
+#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+
+#	define TIKI_ALIGN_PREFIX( var )
+#	define TIKI_ALIGN_POSTFIX( var )	__attribute__( ( aligned( var ) ) )
+#	define TIKI_ALIGNOF( type )			( __alignof__( type ) )
+
+#if __cplusplus <= 199711L
+#	define TIKI_OVERRIDE				override
+#	define TIKI_FINAL					final
+#else
+#	define TIKI_OVERRIDE
+#	define TIKI_FINAL
+#endif
+
+#endif
+
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
 		class_name ( const class_name & );			\
@@ -173,46 +214,6 @@ namespace tiki
 	static const handle_name Invalid ## handle_name = (handle_name)TIKI_SIZE_T_MAX
 
 #define TIKI_FLAGS_ENUM( type )	TIKI_FORCE_INLINE type operator|( type a, type b ) { return (type)(sint64( a ) | sint64( b )); }
-
-#define TIKI_CONCAT( x1, x2 )			TIKI_CONCAT_HELPER( x1, x2 )
-#define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
-#define TIKI_STRING( text )				# text
-
-#	define TIKI_PURE					= 0
-
-#if _MANAGED
-
-#	define TIKI_PRE_ALIGN( var )
-#	define TIKI_POST_ALIGN( var )
-#	define TIKI_ALIGNOF( type )		( __alignof( type ) )
-
-#	define TIKI_OVERRIDE			override
-#	define TIKI_FINAL				sealed
-
-#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
-
-#	define TIKI_PRE_ALIGN( var )	__declspec( align( var ) )
-#	define TIKI_POST_ALIGN( var )
-#	define TIKI_ALIGNOF( type )		( __alignof( type ) )
-
-#	define TIKI_OVERRIDE			override
-#	define TIKI_FINAL				sealed
-
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
-
-#	define TIKI_PRE_ALIGN( var )
-#	define TIKI_POST_ALIGN( var )	__attribute__( ( aligned( var ) ) )
-#	define TIKI_ALIGNOF( type )		( __alignof__( type ) )
-
-#if __cplusplus <= 199711L
-#	define TIKI_OVERRIDE			override
-#	define TIKI_FINAL				final
-#else
-#	define TIKI_OVERRIDE
-#	define TIKI_FINAL
-#endif
-
-#endif
 
 #define TIKI_MIN( a, b ) ( a < b ? a : b )
 #define TIKI_MAX( a, b ) ( a > b ? a : b )
