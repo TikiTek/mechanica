@@ -8,7 +8,7 @@ namespace tiki
 {
 	struct Quaternion;
 
-	TIKI_PRE_ALIGN( 16 ) struct Matrix33
+	TIKI_ALIGN_PREFIX( 16 ) struct Matrix33
 	{
 		Vector3 x;
 		Vector3 y;
@@ -18,9 +18,9 @@ namespace tiki
 		static const Matrix33 one;
 		static const Matrix33 identity;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
-	TIKI_PRE_ALIGN( 16 ) struct Matrix43
+	TIKI_ALIGN_PREFIX( 16 ) struct Matrix43
 	{
 		Matrix33	rot;
 		Vector3		pos;
@@ -29,9 +29,9 @@ namespace tiki
 		static const Matrix43 one;
 		static const Matrix43 identity;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
-	TIKI_PRE_ALIGN( 16 ) struct Matrix44
+	TIKI_ALIGN_PREFIX( 16 ) struct Matrix44
 	{
 		Vector4 x;
 		Vector4 y;
@@ -42,7 +42,7 @@ namespace tiki
 		static const Matrix44 one;
 		static const Matrix44 identity;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
 	namespace matrix
 	{

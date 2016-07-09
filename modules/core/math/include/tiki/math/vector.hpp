@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-	TIKI_PRE_ALIGN( 8 ) struct Vector2
+	TIKI_ALIGN_PREFIX( 8 ) struct Vector2
 	{
 		float x;
 		float y;
@@ -20,9 +20,9 @@ namespace tiki
 		static const Vector2 unitX;
 		static const Vector2 unitY;
 	}
-	TIKI_POST_ALIGN( 8 );
+	TIKI_ALIGN_POSTFIX( 8 );
 
-	TIKI_PRE_ALIGN( 16 ) struct Vector3
+	TIKI_ALIGN_PREFIX( 16 ) struct Vector3
 	{
 		float x;
 		float y;
@@ -37,9 +37,9 @@ namespace tiki
 		static const Vector3 unitY;
 		static const Vector3 unitZ;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
-	TIKI_PRE_ALIGN( 16 ) struct Vector4
+	TIKI_ALIGN_PREFIX( 16 ) struct Vector4
 	{
 		float x;
 		float y;
@@ -54,7 +54,7 @@ namespace tiki
 		static const Vector4 unitZ;
 		static const Vector4 unitW;
 	}
-	TIKI_POST_ALIGN( 16 );
+	TIKI_ALIGN_POSTFIX( 16 );
 
 	namespace vector
 	{
