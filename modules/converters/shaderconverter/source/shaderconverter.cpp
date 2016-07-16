@@ -72,7 +72,7 @@ namespace tiki
 			}
 		}
 
-		bool getFile( const char* pFileName, string& fullName, const void** ppData, uint* pSizeInBytes )
+		bool getFile( const char* pFileName, const char** ppFullName, const void** ppData, uint* pSizeInBytes )
 		{
 			TIKI_ASSERT( ppData != nullptr );
 			TIKI_ASSERT( pSizeInBytes != nullptr );
@@ -83,16 +83,16 @@ namespace tiki
 			const bool found = m_fileMap.findValue( &data, pFileName );
 			if ( !found )
 			{
-				if ( !loadFile( pFileName, data.fullName, data.data ) )
+				if ( !loadFile( pFileName, data ) )
 				{
 					return false;
 				}
 			}
 			m_mutex.unlock();
 
-			fullName		= data.fullName;
-			*ppData			= data.data.cStr();
-			*pSizeInBytes	= data.data.getLength();
+			*ppFullName		= data.pFullName;
+			*ppData			= data.pData;
+			*pSizeInBytes	= getStringSize( data.pData );
 			
 			return true;
 		}
@@ -106,8 +106,8 @@ namespace tiki
 
 		struct FileData
 		{
-			string	fullName;
-			string	data;
+			const char*	pFullName;
+			const char*	pData;
 		};
 
 		Mutex					m_mutex;
@@ -116,9 +116,10 @@ namespace tiki
 		List< string >			m_includeDirs;
 		Map< string, FileData >	m_fileMap;
 
-		bool loadFile( const char* pFileName, string& fullName, string& data )
+		bool loadFile( const char* pFileName, FileData& data )
 		{
 			bool found = false;
+
 			const string inputFilename = pFileName;
 			fullName = inputFilename;
 
@@ -150,11 +151,11 @@ namespace tiki
 				}
 
 				data = text.getBegin();
-				text.dispose();
 
 				FileData fileData;
 				fileData.fullName	= fullName;
-				fileData.data		= data;
+				fileData.data		= dublicateString( text.getBegin() );
+				text.dispose();
 
 				m_fileMap.set( pFileName, fileData );
 				return true;

@@ -53,12 +53,16 @@ namespace tiki
 
 	void unittest::addFailure( const char* pName )
 	{
+		const string traceText = formatString( "[unittest] Test failed: %s\n", pName );
+		debug::trace( "\n" );
+		debug::trace( traceText.cStr() );
+
 		if( debug::isDebuggerActive() )
 		{
 			debug::breakPoint();
 		}
 
-		getUnitTestSystem().currentLog += formatString( "[unittest] Test failed: %s\n", pName );
+		getUnitTestSystem().currentLog += traceText;
 		getUnitTestSystem().currentResult = false;
 	}
 
@@ -86,10 +90,9 @@ namespace tiki
 				system.currentLog = "";
 				system.currentResult = true;
 
-				bool testResult = test.pFunc();
-				testResult &= system.currentResult;
+				test.pFunc();
 
-				if ( testResult )
+				if ( system.currentResult )
 				{
 					debug::trace( " OK.\n" );
 					testSuccess++;
@@ -107,6 +110,6 @@ namespace tiki
 
 		debug::trace( "\nUnitTests finish: %u of %u success.", testSuccess, testCount );
 		debug::trace( "\n=====================================\n", testSuccess, testCount );
-		return testCount - testSuccess;
+		return (int)(testCount - testSuccess);
 	}
 }

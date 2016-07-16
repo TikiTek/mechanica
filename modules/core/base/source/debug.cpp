@@ -34,7 +34,7 @@ namespace tiki
 			"[WARNING] ",
 			"[ERROR] "
 		};
-		const uint prefixStringLength = strlen( s_aTracePrefix[ level ] ) - (pFormat[ 0u ] == '[' ? 1u : 0u);
+		const uint prefixStringLength = strlen( s_aTracePrefix[ level ] ) - (level > 0 && pFormat[ 0u ] == '[' ? 1u : 0u);
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	pragma warning(push)

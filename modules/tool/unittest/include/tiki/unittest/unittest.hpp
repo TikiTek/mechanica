@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	typedef bool(*UnitTestFunction)();
+	typedef void(*UnitTestFunction)();
 
 	namespace unittest
 	{
@@ -25,7 +25,7 @@ namespace tiki
 #define TIKI_BEGIN_UNITTEST( name ) TIKI_UNITTEST_PREMAINCODE( name, unittest::beginUnitTest( #name ); )
 
 #define TIKI_ADD_TEST( func_name )		\
-	bool func_name	## ();				\
+	void func_name	## ();				\
 	TIKI_UNITTEST_PREMAINCODE(			\
 		func_name,						\
 		unittest::addTest(				\
@@ -35,7 +35,7 @@ namespace tiki
 			func_name					\
 		);								\
 	);									\
-	bool func_name ## ()
+	void func_name ## ()
 
 #define TIKI_UT_CHECK( expr ) if ( !( expr ) ) ::tiki::unittest::addFailure( #expr )
 

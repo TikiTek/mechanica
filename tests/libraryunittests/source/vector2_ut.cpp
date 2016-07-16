@@ -11,7 +11,8 @@ namespace tiki
 		const Vector2 test1 = { 1.0f, 2.0f };
 		const Vector2 test2 = vector::create( 1.0f, 2.0f );
 
-		return test1.x == test2.x && test1.y == test2.y;
+		TIKI_UT_CHECK( test1.x == test2.x );
+		TIKI_UT_CHECK( test1.y == test2.y );
 	}
 
 	TIKI_ADD_TEST( Vector2Set )
@@ -19,7 +20,8 @@ namespace tiki
 		Vector2 test = { 1.0f, 2.0f };
 		vector::set( test, 2.0f, 3.0f );
 
-		return test.x == 2.0f && test.y == 3.0f;
+		TIKI_UT_CHECK( test.x == 2.0f );
+		TIKI_UT_CHECK( test.y == 3.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2IsEquals )
@@ -27,14 +29,14 @@ namespace tiki
 		const Vector2 test1 = { 1.0f, 2.0f };
 		const Vector2 test2 = { 1.1f, 2.1f };
 
-		return vector::isEquals( test1, test2, 0.2f );
+		TIKI_UT_CHECK( vector::isEquals( test1, test2, 0.2f ) );
 	}
 
 	TIKI_ADD_TEST( Vector2IsZero )
 	{
 		const Vector2 test = { 0.1f, -0.1f };
 
-		return vector::isZero( test, 0.2f );
+		TIKI_UT_CHECK( vector::isZero( test, 0.2f ) );
 	}
 
 	TIKI_ADD_TEST( Vector2Add )
@@ -50,7 +52,8 @@ namespace tiki
 		const Vector2 add = { 3.0f, -3.0f };
 		vector::add( test, add );
 
-		return test.x == 5.0f && test.y == -2.0f;
+		TIKI_UT_CHECK( test.x == 5.0f );
+		TIKI_UT_CHECK( test.y == -2.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Sub )
@@ -60,7 +63,8 @@ namespace tiki
 		const Vector2 sub = { 3.0f, -3.0f };
 		vector::sub( test, sub );
 
-		return test.x == -2.0f && test.y == 5.0f;
+		TIKI_UT_CHECK( test.x == -2.0f );
+		TIKI_UT_CHECK( test.y == 5.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Mul )
@@ -70,7 +74,8 @@ namespace tiki
 		const Vector2 mul = { 3.0f, -3.0f };
 		vector::mul( test, mul );
 
-		return test.x == 3.0f && test.y == -6.0f;
+		TIKI_UT_CHECK( test.x == 3.0f );
+		TIKI_UT_CHECK( test.y == -6.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Div )
@@ -80,7 +85,8 @@ namespace tiki
 		const Vector2 div = { 3.0f, -3.0f };
 		vector::div( test, div );
 
-		return test.x == 2.0f && test.y == -3.0f;
+		TIKI_UT_CHECK( test.x == 2.0f );
+		TIKI_UT_CHECK( test.y == -3.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Scale )
@@ -88,7 +94,8 @@ namespace tiki
 		Vector2 test = { 1.0f, 2.0f };
 		vector::scale( test, 2.0f );
 
-		return test.x == 2.0f && test.y == 4.0f;
+		TIKI_UT_CHECK( test.x == 2.0f );
+		TIKI_UT_CHECK( test.y == 4.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Negate )
@@ -96,7 +103,8 @@ namespace tiki
 		Vector2 test = { 1.0f, 2.0f };
 		vector::negate( test );
 
-		return test.x == -1.0f && test.y == -2.0f;
+		TIKI_UT_CHECK( test.x == -1.0f );
+		TIKI_UT_CHECK( test.y == -2.0f );
 	}
 
 	TIKI_ADD_TEST( Vector2Length )
@@ -104,7 +112,7 @@ namespace tiki
 		const Vector2 test = { 1.0f, 2.0f };
 		const float legnth = vector::length( test );
 
-		return f32::isEquals( legnth, 2.2360679774997896964091736687313f, 0.01f );
+		TIKI_UT_CHECK( f32::isEquals( legnth, 2.2360679774997896964091736687313f, 0.01f ) );
 	}
 
 	TIKI_ADD_TEST( Vector2LengthSquared )
@@ -112,7 +120,7 @@ namespace tiki
 		const Vector2 test = { 1.0f, 2.0f };
 		const float legnth = vector::lengthSquared( test );
 
-		return f32::isEquals( legnth, 5.0f );
+		TIKI_UT_CHECK( f32::isEquals( legnth, 5.0f ) );
 	}
 
 	TIKI_ADD_TEST( Vector2Normalize )
@@ -122,8 +130,6 @@ namespace tiki
 				
 		TIKI_UT_CHECK( f32::isEquals( test.x, 0.4472135954999579392818347337462f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, 0.8944271909999158785636694674925f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Truncate )
@@ -133,8 +139,6 @@ namespace tiki
 
 		TIKI_UT_CHECK( f32::isEquals( test.x, 0.4472135954999579392818347337462f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, 0.8944271909999158785636694674925f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Distance )
@@ -145,8 +149,6 @@ namespace tiki
 		const float distance = vector::distance( test1, test2 );
 
 		TIKI_UT_CHECK( f32::isEquals( distance, 3.1622776601683793319988935444327f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Dot )
@@ -157,8 +159,6 @@ namespace tiki
 		const float dot = vector::dot( test1, test2 );
 
 		TIKI_UT_CHECK( f32::isEquals( dot, 10.0f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Reflect )
@@ -171,8 +171,6 @@ namespace tiki
 
 		TIKI_UT_CHECK( f32::isEquals( test.x, 0.5f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, -0.5f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Clamp )
@@ -185,8 +183,6 @@ namespace tiki
 
 		TIKI_UT_CHECK( f32::isEquals( test.x, 0.0f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, 4.0f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Vector2Lerp )
@@ -199,7 +195,5 @@ namespace tiki
 
 		TIKI_UT_CHECK( f32::isEquals( test.x, 2.0f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, 2.0f ) );
-
-		return true;
 	}
 }

@@ -12,17 +12,25 @@ namespace tiki
 
 						Path();
 
-		void			createCompletePath( const char* pPath );
-		void			createCombinedPath( const char* pPath1, const char* pPath2 );
+		void			setCompletePath( const char* pPath );
+		void			setCombinedPath( const char* pPath1, const char* pPath2 );
+		void			setFilenameWithExtension( const char* pFilename );
+		void			setPrefix( const char* pPrefix );
+		void			setDirectory( const char* pDirectory );
+		void			setFilename( const char* pFilename );
+		void			setExtension( const char* pExtension );
+
+		bool			pop();
+		void			push( const char* pName );
+		bool			push( const Path& path );
 
 		const char*		getPrefix() const { return m_prefix; }
 		const char*		getDirectory() const { return m_directory; }
 		const char*		getFilename() const { return m_filename; }
 		const char*		getExtension() const { return m_extension; }
 
-		void			pop();
-		void			push( const char* pName );
-
+		const char*		getDirectoryWithPrefix();
+		const char*		getFilenameWithExtension();
 		const char*		getCompletePath();
 
 	private:
@@ -51,6 +59,8 @@ namespace tiki
 		char		m_directory[ MaxDirectoryLength ];
 		char		m_filename[ MaxFileNameLength ];
 		char		m_extension[ MaxExtensionLength ];
+
+		void		buildPath( BufferState targetState );
 	};
 }
 
