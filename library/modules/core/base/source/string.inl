@@ -71,6 +71,12 @@ namespace tiki
 		return length;
 	}
 
+	TIKI_FORCE_INLINE uint appendString( char* pTargetbuffer, uint bufferSize, const char* pSource )
+	{
+		const uint index = getStringSize( pTargetbuffer );
+		copyString( pTargetbuffer + index, bufferSize - index, pSource );
+	}
+
 	TIKI_FORCE_INLINE char* dublicateString( const char* pSource )
 	{
 		const uint sourceLength = getStringSize( pSource );
@@ -79,6 +85,11 @@ namespace tiki
 		copyString( pNewString, sourceLength + 1u, pSource );
 
 		return pNewString;
+	}
+
+	TIKI_FORCE_INLINE bool isStringEmpty( const char* pString )
+	{
+		return pString == nullptr || pString[ 0u ] == '\0';
 	}
 	
 	TIKI_FORCE_INLINE bool isStringEquals( const char* pString1, const char* pString2 )
@@ -104,6 +115,18 @@ namespace tiki
 		}
 
 		return pString1[ index ] == pString2[ index ] != '\0';
+	}
+
+	TIKI_FORCE_INLINE void stringReplace( char* pString, char oldChar, char newChar )
+	{
+		const uint stringSize = getStringSize( pString );
+		for( uint i = 0u; i < stringSize; ++i )
+		{
+			if( pString[ i ] == oldChar )
+			{
+				pString[ i ] = newChar;
+			}
+		}
 	}
 
 	TIKI_FORCE_INLINE uint stringIndexOf( const char* pString, char c, uint index /* = 0 */ )

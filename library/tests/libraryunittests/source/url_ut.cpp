@@ -88,144 +88,128 @@ namespace tiki
 	{
 		Url url;		
 		Map<string, string> arguments;
-		if ( !createUrlHttpFull( url, arguments ) )
-		{
-			return false;
-		}
-
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlCheckHttpMin )
 	{
 		Url url;		
-		if ( !url.createFromString( "http://example.org" ) )
-		{
-			return false;
-		}
-
-		return checkUrlIntegrity( url, "http", "", "", "example.org", "", "", nullptr, "" );
+		TIKI_UT_CHECK( url.createFromString( "http://example.org" ) );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "", "", "example.org", "", "", nullptr, "" ) );
 	}
 
 	TIKI_ADD_TEST( UrlCheckHttpPath )
 	{
 		Url url;		
-		if ( !url.createFromString( "http://example.org/path/to/file.html" ) )
-		{
-			return false;
-		}
-
-		return checkUrlIntegrity( url, "http", "", "", "example.org", "", "/path/to/file.html", nullptr, "" );
+		TIKI_UT_CHECK( url.createFromString( "http://example.org/path/to/file.html" ) );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "", "", "example.org", "", "/path/to/file.html", nullptr, "" ) );
 	}
 
 	TIKI_ADD_TEST( UrlCheckMailto )
 	{
 		Url url;		
-		if ( !url.createFromString( "mailto:max.mustermann@example.org" ) )
-		{
-			return false;
-		}
-
-		return checkUrlIntegrity( url, "mailto", "max.mustermann", "", "example.org", "", "", nullptr, "" );
+		TIKI_UT_CHECK( url.createFromString( "mailto:max.mustermann@example.org" ) );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "mailto", "max.mustermann", "", "example.org", "", "", nullptr, "" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetProtocol )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
-		url.setProtokol( "ftp ");
+		url.setProtokol( "ftp " );
 
-		return checkUrlIntegrity( url, "ftp", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "ftp", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetAuthData )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		url.setAuthData( "max.mustermann", "abc123" );
 
-		return checkUrlIntegrity( url, "ftp", "max.mustermann", "abc123", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "ftp", "max.mustermann", "abc123", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetDomain )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		url.setDomain( "www.example.org" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "www.example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "www.example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetPort )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		url.setPort( "8080" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "8080", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "8080", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetPath )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		url.setPath( "path/to/file.html" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/path/to/file.html", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/path/to/file.html", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetNewQuery )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		arguments.set( "strasse", "bb" );
 		url.setQueryValue( "strasse", "bb" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetExistingQuery )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		arguments.set( "stadt", "cc" );
 		url.setQueryValue( "stadt", "cc" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "geschichte" ) );
 	}
 
 	TIKI_ADD_TEST( UrlSetFragment )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
 		url.setFragment( "history" );
 
-		return checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "history" );
+		TIKI_UT_CHECK( checkUrlIntegrity( url, "http", "hans", "geheim", "example.org", "80", "/demo/example.cgi", &arguments, "history" ) );
 	}
 
 	TIKI_ADD_TEST( UrlGetPathWithoutQuery )
 	{
 		Url url;		
 		Map<string, string> arguments;
-		createUrlHttpFull( url, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url, arguments ) );
 
-		return url.getUrlWithoutQuery() == "http://hans:geheim@example.org:80/demo/example.cgi";
+		TIKI_UT_CHECK( url.getUrlWithoutQuery() == "http://hans:geheim@example.org:80/demo/example.cgi" );
 	}
 
 	TIKI_ADD_TEST( UrlMatch1 )
@@ -233,12 +217,12 @@ namespace tiki
 		Url url1;
 		Url url2;
 		Map<string, string> arguments;
-		createUrlHttpFull( url1, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url1, arguments ) );
 		url2 = url1;
 
 		url1.setPath( "/*/example.cgi" );
 
-		return url1.match( url2 );
+		TIKI_UT_CHECK( url1.match( url2 ) );
 	}
 
 	TIKI_ADD_TEST( UrlMatch2 )
@@ -246,12 +230,12 @@ namespace tiki
 		Url url1;
 		Url url2;
 		Map<string, string> arguments;
-		createUrlHttpFull( url1, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url1, arguments ) );
 		url2 = url1;
 
 		url1.setPath( "/*/*.cgi" );
 
-		return url1.match( url2 );
+		TIKI_UT_CHECK( url1.match( url2 ) );
 	}
 
 	TIKI_ADD_TEST( UrlMatch3 )
@@ -259,11 +243,11 @@ namespace tiki
 		Url url1;
 		Url url2;
 		Map<string, string> arguments;
-		createUrlHttpFull( url1, arguments );
+		TIKI_UT_CHECK( createUrlHttpFull( url1, arguments ) );
 		url2 = url1;
 
 		url1.setPath( "/*/*.*" );
 
-		return url1.match( url2 );
+		TIKI_UT_CHECK( url1.match( url2 ) );
 	}
 }

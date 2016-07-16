@@ -32,8 +32,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w, 1.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44CreateRationX )
@@ -60,8 +58,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w, 1.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44CreateRationY )
@@ -88,8 +84,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w, 1.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44CreateRationZ )
@@ -116,8 +110,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, 0.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w, 1.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44Mul )
@@ -161,8 +153,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, 24.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, 31.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w, 14.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44Inverse )
@@ -196,8 +186,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( testInverse.w.y,  0.239130434783f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( testInverse.w.z, -0.016304347826f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( testInverse.w.w, -0.086956521739f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44Transpose )
@@ -232,8 +220,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.w.y, -3.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.z, -1.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w.w,  1.0f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44Transform3 )
@@ -252,8 +238,6 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.x, -0.9f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.y, -0.4f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.z,  1.2f, 0.001f ) );
-
-		return true;
 	}
 
 	TIKI_ADD_TEST( Matrix44Transform4 )
@@ -273,7 +257,5 @@ namespace tiki
 		TIKI_UT_CHECK( f32::isEquals( test.y, -7.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.z, 11.0f, 0.001f ) );
 		TIKI_UT_CHECK( f32::isEquals( test.w, 11.0f, 0.001f ) );
-
-		return true;
 	}
 }

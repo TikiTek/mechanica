@@ -25,13 +25,9 @@ namespace tiki
 			uint value = TIKI_SIZE_T_MAX;
 			map.findValue( &value, i );
 
-			if ( value != ( maxIndex - i ) )
-			{
-				return false;
-			}
+			TIKI_UT_CHECK( value == (maxIndex - i) );
 		}
 
 		map.dispose();
-		return true;
 	}
 }

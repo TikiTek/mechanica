@@ -147,6 +147,7 @@ namespace tiki
 		}
 
 		memory::copy( str.m_pData + offsetNew, m_pData + offsetOld, m_stringSize - offsetOld );
+		str.m_pData[ str.m_stringSize ] = '\0';
 
 		return str;
 	}
@@ -264,6 +265,7 @@ namespace tiki
 		memory::copy( oStr.m_pData, m_pData, sizeof( char ) * index );
 		memory::copy( oStr.m_pData + index, str.m_pData, sizeof( char ) * str.m_stringSize );
 		memory::copy( oStr.m_pData + index + str.m_stringSize, m_pData + index, sizeof( char ) * (m_stringSize - index) );
+		oStr.m_pData[ oStr.m_stringSize ] = '\0';
 
 		return oStr;
 	}
