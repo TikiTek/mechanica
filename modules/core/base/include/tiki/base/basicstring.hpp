@@ -53,6 +53,18 @@ namespace tiki
 		TIKI_FORCE_INLINE bool				endsWith(char c) const;
 		TIKI_FORCE_INLINE bool				endsWith(const BasicString& str) const;
 
+		TIKI_FORCE_INLINE char*				getBegin() { return m_pData; }
+		TIKI_FORCE_INLINE const char*		getBegin() const { return m_pData; }
+
+		TIKI_FORCE_INLINE char*				getEnd() { return m_pData + m_stringSize; }
+		TIKI_FORCE_INLINE const char*		getEnd() const { return m_pData + m_stringSize; }
+
+		TIKI_FORCE_INLINE char&				getFirst() { return m_pData[ 0u ]; }
+		TIKI_FORCE_INLINE const char&		getFirst() const { return m_pData[ 0u ]; }
+
+		TIKI_FORCE_INLINE char&				getLast() { return m_pData[ m_stringSize - 1u ]; }
+		TIKI_FORCE_INLINE const char&		getLast() const { return m_pData[ m_stringSize - 1u ]; }
+
 		TIKI_FORCE_INLINE const char*		operator*() const;
 		TIKI_FORCE_INLINE char				operator[](uint index) const;
 		TIKI_FORCE_INLINE char&				operator[](uint index);
@@ -68,6 +80,12 @@ namespace tiki
 		TIKI_FORCE_INLINE bool				operator>=(const BasicString& rhs) const;
 		TIKI_FORCE_INLINE bool				operator<(const BasicString& rhs) const;
 		TIKI_FORCE_INLINE bool				operator<=(const BasicString& rhs) const;
+
+		TIKI_FORCE_INLINE char*				begin() { return getBegin(); }
+		TIKI_FORCE_INLINE const char*		begin() const { return getBegin(); }
+
+		TIKI_FORCE_INLINE char*				end() { return getEnd(); }
+		TIKI_FORCE_INLINE const char*		end() const { return getEnd(); }
 
 	private:
 

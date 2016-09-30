@@ -19,7 +19,7 @@ namespace tiki
 		m_width		= width;
 		m_height	= height;
 
-		m_data.create( width * height * ChannelCount );
+		m_data.create( width * height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 		memory::zero( m_data.getBegin(), m_data.getCount() * sizeof( float ) );
 	}
 
@@ -30,7 +30,7 @@ namespace tiki
 		m_width		= imageToCopy.m_width;
 		m_height	= imageToCopy.m_height;
 
-		m_data.create( imageToCopy.m_data.getBegin(), imageToCopy.m_data.getCount() );
+		m_data.create( imageToCopy.m_data.getBegin(), imageToCopy.m_data.getCount(), TIKI_DEFAULT_ALIGNMENT, false );
 	}
 
 	bool HdrImage::createFromFile( const char* pFileName )
@@ -56,7 +56,7 @@ namespace tiki
 		m_width		= pContext->width;
 		m_height	= pContext->height;
 
-		m_data.create( m_width * m_height * ChannelCount );
+		m_data.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 
 		const uint8* pPixelData = (const uint8*)pContext->blending_image_data;
 		for (size_t i = 0u; i < m_data.getCount(); ++i)
@@ -86,8 +86,8 @@ namespace tiki
 			return;
 		}
 
-		Array< HdrColor > tempImage;
-		tempImage.create( targetWidth * targetHeight );
+		Array< float > tempImage;
+		tempImage.create( targetWidth * targetHeight * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 
 		// source: http://paint-mono.googlecode.com/svn/trunk/src/PdnLib/Surface.cs
 		HdrColor* pSourceData = static_cast< HdrColor* >( static_cast< void* >( m_data.getBegin() ) );
@@ -105,7 +105,7 @@ namespace tiki
 			int srcBottomInt = (int)srcBottomFloor;
 
 			const uint destRowIndex = ( dstY * targetWidth );
-			HdrColor* pDest = &tempImage[ destRowIndex ];
+			HdrColor* pDest = (HdrColor*)&tempImage[ destRowIndex * ChannelCount ];
 
 			for (uint dstX = 0u; dstX < targetWidth; ++dstX)
 			{
@@ -257,13 +257,11 @@ namespace tiki
 			}
 		}
 
-		m_data.dispose();
-		m_data.create( (float*)tempImage.getBegin(), tempImage.getCount() * ChannelCount );
+		m_data.swap( tempImage );
+		tempImage.dispose();
 
 		m_width		= targetWidth;
-		m_height	= targetHeight;
-
-		tempImage.dispose();
+		m_height	= targetHeight;		
 	}
 
 	void HdrImage::cropImage( const uint4& rect )
@@ -276,23 +274,20 @@ namespace tiki
 			return;
 		}
 
-		SizedArray< float > tempImage;
-		tempImage.create( rect.z * rect.w * ChannelCount );
+		Array< float > tempImage;
+		tempImage.create( rect.z * rect.w * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 
 		for (size_t i = 0u; i < rect.w; ++i)
 		{
 			const float* row = m_data.getBegin() + ( rect.y * m_width * ChannelCount ) + ( i * m_width * ChannelCount ) + ( rect.x * ChannelCount );
-
-			tempImage.pushRange( row, rect.z * ChannelCount );
+			memory::copy( &tempImage[ i * rect.z * ChannelCount ], row, rect.z * sizeof( float ) * ChannelCount );
 		}
 
-		m_data.dispose();
-		m_data.create( tempImage.getBegin(), tempImage.getCount() );
+		m_data.swap( tempImage );
+		tempImage.dispose();
 
 		m_width		= rect.z;
 		m_height	= rect.w;
-
-		tempImage.dispose();
 	}
 
 	void HdrImage::covertGamma( const GammaType gammaType )
@@ -322,20 +317,22 @@ namespace tiki
 
 	void HdrImage::flipImage( FlipDirection direction )
 	{
-		SizedArray< float > tempImage;
-		tempImage.create( m_data.getCount() );
+		Array< float > tempImage;
+		tempImage.create( m_data.getCount(), TIKI_DEFAULT_ALIGNMENT, false );
 
 		const uint lineSize = m_width * ChannelCount;
 		switch ( direction )
 		{
 		case FlipDirection_Horizontal:
 			{
+				float* pTargetData = tempImage.getBegin();
 				for (uint y = 0u; y < m_height; ++y)
 				{
 					for (uint x = m_width - 1u; x < m_width; --x)
 					{
 						const uint lineOffset = x * ChannelCount;
-						tempImage.pushRange( &m_data[ y * lineSize + lineOffset ], ChannelCount );
+						memory::copy( pTargetData, &m_data[ y * lineSize + lineOffset ], sizeof( float ) * ChannelCount );
+						pTargetData += ChannelCount;
 					}
 				}
 			}
@@ -343,9 +340,11 @@ namespace tiki
 
 		case FlipDirection_Vertical:
 			{
+				float* pTargetData = tempImage.getBegin();
 				for (uint y = m_height - 1u; y < m_height; --y)
 				{
-					tempImage.pushRange( &m_data[ y * lineSize ], lineSize );
+					memory::copy( pTargetData, &m_data[ y * lineSize ], lineSize * sizeof( float ) * ChannelCount );
+					pTargetData += lineSize * ChannelCount;
 				}
 			}
 			break;
@@ -355,8 +354,7 @@ namespace tiki
 			break;
 		}
 
-		m_data.dispose();
-		m_data.create( tempImage.getBegin(), tempImage.getCount() );
+		m_data.swap( tempImage );
 		tempImage.dispose();
 	}
 
@@ -366,7 +364,7 @@ namespace tiki
 		{
 		case PixelFormat_R8:
 			{
-				target.create( m_width * m_height );
+				target.create( m_width * m_height, TIKI_DEFAULT_ALIGNMENT, false );
 				uint8* pTargetData = (uint8*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
@@ -378,7 +376,7 @@ namespace tiki
 		case PixelFormat_R8G8B8A8:
 		case PixelFormat_R8G8B8A8_Gamma:
 			{
-				target.create( m_width * m_height * ChannelCount );
+				target.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 				uint8* pTargetData = (uint8*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
@@ -392,7 +390,7 @@ namespace tiki
 			break;
 		case PixelFormat_R32G32B32_Float:
 			{
-				target.create( m_width * m_height * 3u * sizeof( float ) );
+				target.create( m_width * m_height * 3u * sizeof( float ), TIKI_DEFAULT_ALIGNMENT, false );
 				float* pTargetData = (float*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
@@ -407,7 +405,7 @@ namespace tiki
 			break;
 		case PixelFormat_R32G32B32A32_Float:
 			{
-				target.create( m_width * m_height * 4u * sizeof( float ) );
+				target.create( m_width * m_height * 4u * sizeof( float ), TIKI_DEFAULT_ALIGNMENT, false );
 				float* pTargetData = (float*)target.getBegin();
 
 				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)

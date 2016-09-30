@@ -17,20 +17,20 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool Array< T >::create( uint capacity, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE bool Array< T >::create( uint capacity, size_t aligment /* = TIKI_DEFAULT_ALIGNMENT */, bool constructElements /* = true */ )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
 		m_capacity	= capacity;
-		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment );
+		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
 
 		return m_pData != nullptr;
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool Array< T >::create( const T* pInitData, uint capacity, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE bool Array< T >::create( ConstIterator pInitData, uint capacity, size_t aligment /*= TIKI_DEFAULT_ALIGNMENT*/, bool constructElements /* = true */ )
 	{
-		if ( create( capacity, aligment ) == false )
+		if ( !create( capacity, aligment, constructElements ) )
 		{
 			return false;
 		}
@@ -55,8 +55,21 @@ namespace tiki
 		m_pData		= nullptr;
 	}
 
+	template<typename T>
+	TIKI_FORCE_INLINE void Array<T>::swap( Array< T >& other )
+	{
+		T* pDataBackup = m_pData;
+		uint capacityBackup = m_capacity;
+
+		m_pData		= other.m_pData;
+		m_capacity	= other.m_capacity;
+
+		other.m_pData		= pDataBackup;
+		other.m_capacity	= capacityBackup;
+	}
+
 	template< typename T >
-	TIKI_FORCE_INLINE uint tiki::Array<T>::getIndexOf( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uint Array<T>::getIndexOf( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_pData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -65,7 +78,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE size_t Array< T >::getIndexOf( const T& value ) const
+	TIKI_FORCE_INLINE size_t Array< T >::getIndexOf( ConstReference value ) const
 	{
 		for (uint i = 0u; i < m_capacity; ++i)
 		{

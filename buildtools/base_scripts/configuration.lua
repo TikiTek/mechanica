@@ -76,15 +76,19 @@ function Configuration:apply( shader_dirs, binary_dirs, binary_files )
 		end
 	end
 	
-	if table.containsValue(self.flags, 'NoRTTI') then
-		rtti 'Off'
-		table.removeValue(self.flags, 'NoRTTI')
-	end
+	--for i, v in pairs( self.flags ) do
+	--	print( v );
+	--end
+	
+	--if table.containsValue(self.flags, 'NoRTTI') then
+	--	rtti 'Off'
+	--	table.removeValue(self.flags, 'NoRTTI')
+	--end
 
-	if table.containsValue(self.flags, 'NoExceptions') then
-		exceptionhandling 'Off'
-		table.removeValue(self.flags, 'NoExceptions')
-	end
+	--if table.containsValue(self.flags, 'NoExceptions') then
+	--	exceptionhandling 'Off'
+	--	table.removeValue(self.flags, 'NoExceptions')
+	--end
 	
 	flags( self.flags );
 

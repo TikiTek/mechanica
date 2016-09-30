@@ -79,9 +79,9 @@ namespace tiki
 
 	template<typename T>
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */, bool constructElements /*= false*/ )
 #else
-	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/, bool constructElements /*= false*/ )
 #endif
 	{
 		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
@@ -95,11 +95,14 @@ namespace tiki
 		void* pNew = memory::allocAligned( sizeof( T ) * count, alignment );
 #endif
 
-		T* pArray = static_cast< T*>( pNew );
-		for (uint i = 0u; i < count; ++i)
+		T* pArray = static_cast<T*>(pNew);
+		if( constructElements )
 		{
-			T* pItem = new( &pArray[ i ] ) T;
-			TIKI_ASSERT( pItem == &pArray[ i ] );
+			for( uint i = 0u; i < count; ++i )
+			{
+				T* pItem = new(&pArray[ i ]) T;
+				TIKI_ASSERT( pItem == &pArray[ i ] );
+			}
 		}
 
 		return pArray;
