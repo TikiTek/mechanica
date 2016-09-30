@@ -24,7 +24,7 @@ namespace tiki
 		TIKI_FORCE_INLINE					SizedArray();
 		TIKI_FORCE_INLINE					~SizedArray();
 
-		TIKI_FORCE_INLINE bool				create( uint capacity );
+		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
 		TIKI_FORCE_INLINE void				dispose();
 
 		TIKI_FORCE_INLINE void				clear();

@@ -25,9 +25,11 @@ namespace tiki
 		TIKI_FORCE_INLINE					Array();
 		TIKI_FORCE_INLINE					~Array();
 
-		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
-		TIKI_FORCE_INLINE bool				create( ConstIterator pInitData, uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
+		TIKI_FORCE_INLINE bool				create( ConstIterator pInitData, uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
 		TIKI_FORCE_INLINE void				dispose();
+
+		TIKI_FORCE_INLINE void				swap( Array< T >& other );
 
 		TIKI_FORCE_INLINE uint				getCount() const	{ return m_capacity; }
 		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_capacity; }
@@ -58,9 +60,8 @@ namespace tiki
 
 	private:
 
-		uint	m_capacity;
 		T*		m_pData;
-
+		uint	m_capacity;
 	};
 }
 

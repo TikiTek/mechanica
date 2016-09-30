@@ -121,9 +121,9 @@ namespace tiki
 			bool found = false;
 
 			const string inputFilename = pFileName;
-			fullName = inputFilename;
+			string fullName = inputFilename;
 
-			if ( file::exists( fullName.cStr() ) )
+			if ( file::exists( inputFilename.cStr() ) )
 			{
 				found = true;
 			}
@@ -150,14 +150,11 @@ namespace tiki
 					return false;
 				}
 
-				data = text.getBegin();
-
-				FileData fileData;
-				fileData.fullName	= fullName;
-				fileData.data		= dublicateString( text.getBegin() );
+				data.pFullName	= dublicateString( fullName.cStr() );
+				data.pData		= dublicateString( text.getBegin() );
 				text.dispose();
 
-				m_fileMap.set( pFileName, fileData );
+				m_fileMap.set( pFileName, data );
 				return true;
 			}
 
@@ -187,10 +184,10 @@ namespace tiki
 
 		bool loadFile( const char* pFileName, const void** ppData, uint* pSizeInBytes )
 		{
-			string fullName;
-			if ( m_storage.getFile( pFileName, fullName, ppData, pSizeInBytes ) )
+			const char* pFullName;
+			if ( m_storage.getFile( pFileName, &pFullName, ppData, pSizeInBytes ) )
 			{
-				m_result.addDependency( ConversionResult::DependencyType_File, fullName, 0u );
+				m_result.addDependency( ConversionResult::DependencyType_File, pFullName, 0u );
 
 				return true;
 			}

@@ -18,7 +18,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool SizedArray< T >::create( uint capacity )
+	TIKI_FORCE_INLINE bool SizedArray< T >::create( uint capacity, size_t aligment /* = TIKI_DEFAULT_ALIGNMENT */, bool constructElements /* = true */ )
 	{
 		TIKI_ASSERT( capacity > 0u );
 		TIKI_ASSERT( m_pData == nullptr );
@@ -26,7 +26,7 @@ namespace tiki
 		TIKI_ASSERT( m_capacity == 0u );
 
 		m_capacity	= capacity;
-		m_pData		= TIKI_MEMORY_NEW_ARRAY( T, capacity );
+		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
 		if ( m_pData == nullptr )
 		{
 			dispose();

@@ -15,25 +15,25 @@
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 
-#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size, __FILE__, __LINE__ )
-#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )				::tiki::memory::allocAligned( size, __FILE__, __LINE__, alignment )
+#	define TIKI_MEMORY_ALLOC( size )											::tiki::memory::allocAligned( size, __FILE__, __LINE__ )
+#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )							::tiki::memory::allocAligned( size, __FILE__, __LINE__, alignment )
 
-#	define TIKI_MEMORY_NEW_OBJECT( type )							::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__ ) ) type
-#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )		::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__, alignment ) ) type
+#	define TIKI_MEMORY_NEW_OBJECT( type )										::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__ ) ) type
+#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )					::new ( ::tiki::memory::newObjectAligned< type >( __FILE__, __LINE__, alignment ) ) type
 
-#	define TIKI_MEMORY_NEW_ARRAY( type, count )						::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__ )
-#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment )	::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__, alignment )
+#	define TIKI_MEMORY_NEW_ARRAY( type, count, construct )						::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__, TIKI_DEFAULT_ALIGNMENT, construct  )
+#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment, construct )	::tiki::memory::newArrayAligned< type >( count, __FILE__, __LINE__, alignment, construct )
 
 #else
 
-#	define TIKI_MEMORY_ALLOC( size )								::tiki::memory::allocAligned( size )
-#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )				::tiki::memory::allocAligned( size, alignment )
+#	define TIKI_MEMORY_ALLOC( size )											::tiki::memory::allocAligned( size )
+#	define TIKI_MEMORY_ALLOC_ALIGNED( size, alignment )							::tiki::memory::allocAligned( size, alignment )
 
-#	define TIKI_MEMORY_NEW_OBJECT( type )							::new ( ::tiki::memory::newObjectAligned< type >() ) type
-#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )		::new ( ::tiki::memory::newObjectAligned< type >( alignment ) ) type
+#	define TIKI_MEMORY_NEW_OBJECT( type )										::new ( ::tiki::memory::newObjectAligned< type >() ) type
+#	define TIKI_MEMORY_NEW_OBJECT_ALIGNED( type, alignment )					::new ( ::tiki::memory::newObjectAligned< type >( alignment ) ) type
 
-#	define TIKI_MEMORY_NEW_ARRAY( type, count )						::tiki::memory::newArrayAligned< type >( count )
-#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment )	::tiki::memory::newArrayAligned< type >( count, alignment )
+#	define TIKI_MEMORY_NEW_ARRAY( type, count, construct )						::tiki::memory::newArrayAligned< type >( count, construct )
+#	define TIKI_MEMORY_NEW_ARRAY_ALIGNED( type, count, alignment, construct )	::tiki::memory::newArrayAligned< type >( count, alignment, construct )
 
 #endif
 
@@ -52,7 +52,7 @@ namespace tiki
 		TIKI_FORCE_INLINE T*	newObjectAligned( const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = false);
 
 #else
 		void*					allocAligned( uint size, uint alignment = TIKI_MINIMUM_ALIGNMENT );
@@ -61,7 +61,7 @@ namespace tiki
 		TIKI_FORCE_INLINE T*	newObjectAligned( uint alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, uint alignment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = false );
 #endif
 
 		void					freeAligned( void* pPtr );
