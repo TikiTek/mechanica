@@ -54,7 +54,7 @@ if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION 
 	module:set_define( "_WINSOCK_DEPRECATED_NO_WARNINGS" );	
 	module:set_define( "_HAS_EXCEPTIONS", "0" );	
 	
-	module:set_flag("MultiProcessorCompile");
+	--module:set_flag("MultiProcessorCompile");
 	
 	use_msvc	= true;
 	use_d3d11	= true;
@@ -116,4 +116,4 @@ module:set_define( "TIKI_BUILD_MINGW", iff( use_mingw, "TIKI_ON", "TIKI_OFF" ) )
 --module:set_flag( "FatalWarnings" );
 module:set_flag( "NoRTTI" );
 module:set_flag( "NoExceptions" );
-module:set_flag( "NoMinimalRebuild" );
+--module:set_flag( "NoMinimalRebuild" );
