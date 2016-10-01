@@ -8,4 +8,3 @@ Implement reflection for Generic Data
 Shadows (ray tracer?)
 Implement Particles
 Fix math
-Git blobs
