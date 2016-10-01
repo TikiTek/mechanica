@@ -1,5 +1,6 @@
--- library/buildtools/base_scripts
+-- library/buildtools/genie_scripts
 
+dofile( "toolchain.lua" )
 dofile( "global.lua" )
 dofile( "configuration.lua" )
 dofile( "module.lua" )
