@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
-#define __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS3DDEBUGDRAW_HPP_INCLUDED
+#define TIKI_PHYSICS3DDEBUGDRAW_HPP_INCLUDED
 
 #include "LinearMath/btIDebugDraw.h"
 
@@ -10,14 +10,14 @@
 
 namespace tiki
 {
-	class PhysicsDebugDraw : public btIDebugDraw
+	class Physics3dDebugDraw : public btIDebugDraw
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsDebugDraw );
+		TIKI_NONCOPYABLE_CLASS( Physics3dDebugDraw );
 
 	public:
 
-						PhysicsDebugDraw();
-						~PhysicsDebugDraw();
+						Physics3dDebugDraw();
+						~Physics3dDebugDraw();
 
 		void			create();
 		void			dispose();
@@ -44,4 +44,4 @@ namespace tiki
 
 #endif
 
-#endif // __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
+#endif // TIKI_PHYSICS3DDEBUGDRAW_HPP_INCLUDED

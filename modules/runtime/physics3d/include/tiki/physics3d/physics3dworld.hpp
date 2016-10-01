@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_PHYSICSWORLD_HPP_INCLUDED__
-#define __TIKI_PHYSICSWORLD_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS3DWORLD_HPP_INCLUDED
+#define TIKI_PHYSICS3DWORLD_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -12,41 +12,41 @@
 #include "BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h"
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	include "tiki/physics/physicsdebugdraw.hpp"
+#	include "tiki/physics3d/physics3ddebugdraw.hpp"
 #endif
 
 class btDiscreteDynamicsWorld;
 
 namespace tiki
 {
-	class PhysicsBody;
-	class PhysicsCharacterController;
-	class PhysicsCollider;
-	class PhysicsCollisionObject;
-	class PhysicsShape;
+	class Physics3dBody;
+	class Physics3dCharacterController;
+	class Physics3dCollider;
+	class Physics3dCollisionObject;
+	class Physics3dShape;
 	struct Vector3;
 
-	class PhysicsWorld
+	class Physics3dWorld
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsWorld );
+		TIKI_NONCOPYABLE_CLASS( Physics3dWorld );
 
 	public:
 
-					PhysicsWorld();
-					~PhysicsWorld();
+					Physics3dWorld();
+					~Physics3dWorld();
 
 		void		create( const Vector3& gravity );
 		void		dispose();
 
-		void		addBody( PhysicsBody& body );
-		void		removeBody( PhysicsBody& body );
-		void		addCollider( PhysicsCollider& collider );
-		void		removeCollider( PhysicsCollider& collider );
-		void		addCharacterController( PhysicsCharacterController& controller );
-		void		removeCharacterController( PhysicsCharacterController& controller );
+		void		addBody( Physics3dBody& body );
+		void		removeBody( Physics3dBody& body );
+		void		addCollider( Physics3dCollider& collider );
+		void		removeCollider( Physics3dCollider& collider );
+		void		addCharacterController( Physics3dCharacterController& controller );
+		void		removeCharacterController( Physics3dCharacterController& controller );
 
-		bool		checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const;
-		bool		checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const;
+		bool		checkIntersection( const Physics3dShape& physicsShape, const Vector3& position ) const;
+		bool		checkIntersection( const Physics3dCollisionObject& physicsObject1, const Physics3dCollisionObject& physicsObject2 ) const;
 
 		void		update( float timeStep );
 
@@ -64,10 +64,9 @@ namespace tiki
 		btDiscreteDynamicsWorld*			m_pPhysicWorld;
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		PhysicsDebugDraw					m_debugDraw;
+		Physics3dDebugDraw					m_debugDraw;
 #endif
-
 	};
 }
 
-#endif // __TIKI_PHYSICSWORLD_HPP_INCLUDED__
+#endif // TIKI_PHYSICS3DWORLD_HPP_INCLUDED
