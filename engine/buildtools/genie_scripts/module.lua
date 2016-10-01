@@ -123,8 +123,6 @@ function Module:resolve_dependency( target_list )
 end
 
 function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
-	--self.module_type = ModuleTypes.FilesModule;
-	
 	if ( configuration_obj == nil and platform == nil ) then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
 			self.import_func(project);
@@ -187,7 +185,7 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			local unity_content = table.concat( c, "\n" );
 
 			files( all_files );
-			exclude( all_files );
+			excludes( all_files );
 			
 			local create_unity = true
 			if os.isfile( unity_file_name ) then
