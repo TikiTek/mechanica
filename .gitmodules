@@ -19,3 +19,6 @@
 [submodule "blobs/curl"]
 	path = blobs/curl
 	url = https://github.com/curl/curl.git
+[submodule "blobs/box2d"]
+	path = blobs/box2d
+	url = https://github.com/erincatto/Box2D.git
