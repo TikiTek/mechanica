@@ -1,4 +1,3 @@
-
 #include "tiki/gamestates/teststate.hpp"
 
 #include "tiki/animation/animation.hpp"
@@ -20,7 +19,7 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/ray.hpp"
 #include "tiki/math/rectangle.hpp"
-#include "tiki/physics/physicsboxshape.hpp"
+#include "tiki/physics3d/physics3dboxshape.hpp"
 #include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 #include "tiki/voxelworld/voxeldebugdraw.hpp"
@@ -488,7 +487,7 @@ namespace tiki
 
 			case KeyboardKey_Z:
 				{
-					PhysicsBoxShape shape;
+					Physics3dBoxShape shape;
 					shape.create( vector::create( 0.5f, 0.5f, 0.5f ) );
 
 					bool test = m_gameClient.getPhysicsWorld().checkIntersection( shape, vector::create( 0.0f, 0.25f, 0.0f ) );

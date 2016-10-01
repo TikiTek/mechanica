@@ -151,10 +151,10 @@ namespace tiki
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
 
-		PhysicsCharacterControllerComponentInitData controllerInitData;
+		Physics3dCharacterControllerComponentInitData controllerInitData;
 		createFloat3( controllerInitData.position, position.x, position.y, position.z );
 		controllerInitData.gravity				= 0.00001f;
-		controllerInitData.shape.type			= PhysicsShapeType_Capsule;
+		controllerInitData.shape.type			= Physics3dShapeType_Capsule;
 		controllerInitData.shape.capsuleRadius	= 0.5f;
 		controllerInitData.shape.capsuleHeight	= 1.0f;
 
@@ -211,11 +211,11 @@ namespace tiki
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
 
-		PhysicsBodyComponentInitData bodyInitData;
+		Physics3dBodyComponentInitData bodyInitData;
 		createFloat3( bodyInitData.position, position.x, position.y, position.z );
 		bodyInitData.mass			= 100.0f;
 		bodyInitData.freeRotation	= true;
-		bodyInitData.shape.type		= PhysicsShapeType_Box;
+		bodyInitData.shape.type		= Physics3dShapeType_Box;
 		createFloat3( bodyInitData.shape.boxSize, 1.0f, 1.0f, 1.0f );
 
 		LifeTimeComponentInitData lifeTimeInitData;
@@ -247,11 +247,11 @@ namespace tiki
 		StaticModelComponentInitData modelInitData;
 		modelInitData.model = pModel;
 
-		PhysicsBodyComponentInitData bodyInitData;
+		Physics3dBodyComponentInitData bodyInitData;
 		createFloat3( bodyInitData.position, position.x, position.y, position.z );
 		bodyInitData.mass			= 100.0f;
 		bodyInitData.freeRotation	= true;
-		bodyInitData.shape.type		= PhysicsShapeType_Box;
+		bodyInitData.shape.type		= Physics3dShapeType_Box;
 		createFloat3( bodyInitData.shape.boxSize, 0.5f, 0.5f, 0.5f );
 
 		LifeTimeComponentInitData lifeTimeInitData;
@@ -287,9 +287,9 @@ namespace tiki
 		TerrainComponentInitData terrainInitData;
 		terrainInitData.model = pModel;
 
-		PhysicsColliderComponentInitData colliderInitData;
+		Physics3dColliderComponentInitData colliderInitData;
 		createFloat3( colliderInitData.position, position.x, position.y + 0.005f, position.z );
-		colliderInitData.shape.type = PhysicsShapeType_Box;
+		colliderInitData.shape.type = Physics3dShapeType_Box;
 		createFloat3( colliderInitData.shape.boxSize, 100.00f, 0.01f, 100.0f );
 
 		EntityTemplateComponent entityComponents[] =

@@ -1,11 +1,8 @@
-
 #include "tiki/gamecomponents/playercontrolcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/physicsbodycomponent.hpp"
-#include "tiki/components/physicscharactercontrollercomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/gameplay/gamecamera.hpp"
@@ -16,6 +13,8 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/ray.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/physics3dcomponents/physics3dbodycomponent.hpp"
+#include "tiki/physics3dcomponents/physics3dcharactercontrollercomponent.hpp"
 
 #include "gamecomponents.hpp"
 
@@ -23,12 +22,12 @@ namespace tiki
 {
 	TIKI_DEBUGPROP_FLOAT( s_controlBorder, "GameComponents/PlayerControlBorder", 0.0f, 0.0f, 300.0f );
 
-    struct PhysicsCharacterControllerComponentState;
+    struct Physics3dCharacterControllerComponentState;
 
 	struct PlayerControlComponentState : public ComponentState
 	{
 		TransformComponentState*					pTransform;
-		PhysicsCharacterControllerComponentState*	pPhysicsController;
+		Physics3dCharacterControllerComponentState*	pPhysicsController;
 
 		float										speed;
 		Vector2										rotation;
@@ -47,7 +46,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
 	}
 
-	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent )
+	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const Physics3dCharacterControllerComponent& physicsCharacterControllerComponent )
 	{
 		TIKI_ASSERT( m_pTransformComponent							== nullptr );
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
@@ -181,7 +180,7 @@ namespace tiki
 	bool PlayerControlComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerControlComponentState* pState, const PlayerControlComponentInitData* pInitData )
 	{
 		pState->pTransform			= (TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
-		pState->pPhysicsController	= (PhysicsCharacterControllerComponentState*)componentIterator.getFirstOfType( m_pPhysicsCharacterControllerComponent->getTypeId() );
+		pState->pPhysicsController	= (Physics3dCharacterControllerComponentState*)componentIterator.getFirstOfType( m_pPhysicsCharacterControllerComponent->getTypeId() );
 
 		pState->speed = pInitData->speed;
 		vector::clear( pState->rotation );

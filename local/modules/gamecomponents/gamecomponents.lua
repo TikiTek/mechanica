@@ -8,4 +8,4 @@ module:add_files( "gamecomponents.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "componentbase" );
-module:add_dependency( "physics" );
+module:add_dependency( "physics3d" );
