@@ -57,7 +57,7 @@ namespace tiki
 		va_end( argptr );
 	}
 
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, const char* format, ... )
 	{

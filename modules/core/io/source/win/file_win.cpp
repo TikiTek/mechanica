@@ -127,7 +127,7 @@ namespace tiki
 		return 0u;
 	}
 
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 	bool file::exists( const char* pFileName )
 	{

@@ -21,7 +21,7 @@ namespace tiki
 	typedef __int32				sint32;
 	typedef __int64				sint64;
 
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 	typedef unsigned char			uint8;
 	typedef unsigned short			uint16;
@@ -77,7 +77,7 @@ namespace tiki
 
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 
-#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+#if TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 #	define TIKI_OFFSETOF( type, member )		( __builtin_offsetof( type, member ) )
 
@@ -127,7 +127,7 @@ namespace tiki
 #		define TIKI_FORCE_INLINE	__forceinline
 #		define TIKI_NO_INLINE		__declspec(noinline)
 
-#	elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#	elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 #		define TIKI_INLINE			inline
 #		define TIKI_FORCE_INLINE	inline //__attribute__((always_inline))
@@ -165,7 +165,7 @@ namespace tiki
 #	define TIKI_OVERRIDE				override
 #	define TIKI_FINAL					sealed
 
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 #	define TIKI_ALIGN_PREFIX( var )
 #	define TIKI_ALIGN_POSTFIX( var )	__attribute__( ( aligned( var ) ) )

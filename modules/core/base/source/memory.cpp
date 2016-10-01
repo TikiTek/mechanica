@@ -5,7 +5,7 @@
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	include <memory.h>
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 #	include <string.h>
 #endif
 
@@ -25,7 +25,7 @@ namespace tiki
 
 		void* pMemory = nullptr;
 
-#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+#if TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 		pMemory = malloc( size );
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	if TIKI_ENABLED( TIKI_BUILD_DEBUG )
@@ -41,7 +41,7 @@ namespace tiki
 
 	void memory::freeAligned( void* pPtr )
 	{
-#if TIKI_ENABLED( TIKI_BUILD_MINGW )
+#if TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 		return free( pPtr );
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	if TIKI_ENABLED( TIKI_BUILD_DEBUG )		

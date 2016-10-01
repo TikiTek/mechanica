@@ -189,16 +189,24 @@ function class_instance( class )
 end
 
 function import( fname )
-	local fileName = path.join( fname, fname .. ".lua" );
-	if os.isfile( fileName ) then
-		dofile( fileName );
-	else
-		include( fname );
+	local fileName = path.join( os.getcwd(), fname, fname .. ".lua" );
+	if not os.isfile( fileName ) then
+		fileName = path.join( os.getcwd(), fname, "modules.lua" );
 	end
+	if not os.isfile( fileName ) then
+		fileName = path.join( os.getcwd(), fname, "premake4.lua" );
+	end
+	
+	if not os.isfile( fileName ) then
+		throw( "Can not import " .. fname .. " from " .. os.getcwd() );
+	end
+
+	--print( "Import: " .. fileName );
+	dofile( fileName );
 end
 
 function import_sub_directories()
-	for i,dir in pairs( os.matchdirs("*") ) do
+	for i,dir in pairs( os.matchdirs("*") ) do		
 		import( dir );
 	end
 end
