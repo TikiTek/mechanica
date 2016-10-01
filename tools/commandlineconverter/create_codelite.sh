@@ -1,3 +1,3 @@
 cd project
-../../../buildtools/premake/premake5 /outpath=../build codelite
+../../../buildtools/genie/genie /outpath=../build codelite
 cd ..

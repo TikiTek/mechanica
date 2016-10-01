@@ -11,7 +11,17 @@ ProjectLanguages = {
 	cs		= "C#"
 };
 
-Project = class{ name = nul, type = nil, lang = ProjectLanguages.cpp, module = nil, buildoptions = nil, config = nil, platforms = {}, configurations = {} };
+Project = class{
+	name = nil,
+	uuid = nil,
+	type = nil,
+	lang = ProjectLanguages.cpp,
+	module = nil,
+	buildoptions = nil,
+	config = nil,
+	platforms = {},
+	configurations = {}
+};
 
 global_project_storage = {};
 
@@ -26,7 +36,7 @@ function find_project( project_name )
 	return nil;
 end
 
-function Project:new( name, platforms, configurations, module, type2 )
+function Project:new( name, uuid, platforms, configurations, module, projectType )
 	if not name then 
 		throw( "[Project:new] No name given." );
 	end
@@ -39,13 +49,14 @@ function Project:new( name, platforms, configurations, module, type2 )
 		throw( "[Project:new] No module given." );
 	end
 
-	if not type2 then 
+	if not projectType then 
 		throw( "[Project:new] type is invalid." );
 	end
 
 	local project_new = class_instance( self );
 	project_new.name			= name;
-	project_new.type			= type2;
+	project_new.uuid			= uuid;
+	project_new.type			= projectType;
 	project_new.config			= PlatformConfiguration:new();
 	project_new.module			= module;
 	project_new.configurations	= configurations;
@@ -110,6 +121,7 @@ end
 
 function Project:finalize()
 	project( self.name )
+	uuid( self.uuid );
 	kind( self.type );
 	language( self.lang );
 	

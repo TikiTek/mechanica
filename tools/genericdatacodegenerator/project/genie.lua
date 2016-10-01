@@ -1,5 +1,5 @@
 -- library/tools/genericdatacodegenerator/project
 
-include "../../../buildtools/base_scripts"
+include "../../../buildtools/genie_scripts"
 
 finalize( "genericdatacodegenerator", { find_project( "genericdatacodegenerator" ) } );

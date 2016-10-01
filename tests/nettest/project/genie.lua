@@ -1,5 +1,5 @@
 -- library/tests/unittest/project
 
-include "../../../buildtools/base_scripts"
+include "../../../buildtools/genie_scripts"
 
 finalize( "tiki3nettest", { find_project( "nettest" ) } );

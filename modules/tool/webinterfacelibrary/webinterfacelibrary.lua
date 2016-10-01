@@ -12,6 +12,7 @@ module:add_dependency( "webserver" );
 
 local project = Project:new(
 	"webinterfacelibrary",
+	"bb5d3b50-3b21-446c-9fed-001c74b273f2",
 	{ "x32", "x64" },
 	{ "Debug", "Release", "Master" },
 	module,
