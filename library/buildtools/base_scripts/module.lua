@@ -6,7 +6,8 @@ Module = class{
 	config = nil,
 	module_dependencies = {},
 	source_files = {},
-	exclude_files = {}	
+	exclude_files = {},
+	stack_trace = ""
 };
 
 global_module_storage = {};
@@ -29,17 +30,18 @@ function find_module( module_name )
 end
 
 function Module:new( name, initFunc )
+	for i,module in pairs( global_module_storage ) do
+		if ( module.name == name ) then
+			throw( "Module name already used: " .. name .. "\n" .. module.stack_trace );
+		end
+	end
+
 	local module_new = class_instance( self );
 	module_new.name			= name;
 	module_new.config		= PlatformConfiguration:new();
 	module_new.module_type	= ModuleTypes.UnityCppModule;
-	
-	for i,module in pairs( global_module_storage ) do
-		if ( module.name == name ) then
-			throw( "Module name already used: " .. name );
-		end
-	end
-	
+	module_new.stack_trace	= debug.traceback();
+		
 	table.insert( global_module_storage, module_new );
 
 	if ( initFunc ~= nil and type( initFunc ) == "function" ) then

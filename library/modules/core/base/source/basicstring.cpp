@@ -42,7 +42,7 @@ namespace tiki
 		return str;
 	}
 
-#elif TIKI_ENABLED( TIKI_BUILD_MINGW )
+#elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
 	string formatStringArgs( const char* pFormat, va_list argptr )
 	{
