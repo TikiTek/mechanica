@@ -254,6 +254,8 @@ function finalize( output_name, projects )
 	platforms( var_platforms );
 	location( _OPTIONS[ "outpath" ] )
 
+	toolchain( _OPTIONS[ "outpath" ], "" );
+
 	for i,project in pairs( projects ) do
 		print( "Project: " .. project.name );
 

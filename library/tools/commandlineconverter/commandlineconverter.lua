@@ -15,6 +15,7 @@ module:add_library_file( "converterlibrary" );
 
 local project = Project:new(
 	"commandlineconverter",
+	"575bd0eb-4477-443f-8b4f-5c8a1f72bf86",
 	{ "x32", "x64" },
 	{ "Debug", "Release" },
 	module,

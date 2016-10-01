@@ -16,6 +16,7 @@ module:set_define( "TIKI_BUILD_TOOLS", "TIKI_ON" );
 
 local project = Project:new(
 	"uieditor",
+	"ce188937-8610-427a-9397-fc75e2d584c3",
 	{ "x32", "x64" },
 	{ "Debug", "Release" },
 	module,

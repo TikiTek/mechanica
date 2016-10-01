@@ -25,6 +25,7 @@ module:add_library_file( "converterlibrary" );
 
 local project = Project:new(
 	"editor",
+	"a51d9621-4869-4572-827d-b3e201305cbc",
 	{ "x32", "x64" },
 	{ "Debug", "Release"},
 	module,

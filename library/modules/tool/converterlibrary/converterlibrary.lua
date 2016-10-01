@@ -17,6 +17,7 @@ module:add_dependency( "genericdataconverter" );
 
 local project = Project:new(
 	"converterlibrary",
+	"a7beb386-b92c-4c98-9250-c9394bd86b42",
 	{ "x32", "x64" },
 	{ "Debug", "Release", "Master" },
 	module,

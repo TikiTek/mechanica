@@ -1,4 +1,4 @@
--- local/mastering/premake5.lua
+-- local/mastering
 
 local currentDir = os.getcwd();
 local baseDir = "../../..";

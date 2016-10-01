@@ -58,6 +58,7 @@ function toolchain(_buildDir, _libDir)
 			{ "winphone81",    "Windows Phone 8.1"               },
 			{ "winstore81",    "Windows Store 8.1"               },
 			{ "winstore82",    "Universal Windows App"           },
+			{ "uwp",    	   "Universal Windows App"           },
 			{ "durango",       "Durango"                         },
 			{ "orbis",         "Orbis"                           },
 		},
@@ -110,7 +111,7 @@ function toolchain(_buildDir, _libDir)
 	-- Avoid error when invoking genie --help.
 	if (_ACTION == nil) then return false end
 
-	location (path.join(_buildDir, "projects", _ACTION))
+	location (path.join(_buildDir, _ACTION))
 
 	if _ACTION == "clean" then
 		os.rmdir(_buildDir)
@@ -158,7 +159,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(ANDROID_NDK_ARM)/bin/arm-linux-androideabi-gcc"
 			premake.gcc.cxx = "$(ANDROID_NDK_ARM)/bin/arm-linux-androideabi-g++"
 			premake.gcc.ar  = "$(ANDROID_NDK_ARM)/bin/arm-linux-androideabi-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-android-arm"))
+			location (path.join(_buildDir, _ACTION .. "-android-arm"))
 
 		elseif "android-mips" == _OPTIONS["gcc"] then
 
@@ -169,7 +170,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(ANDROID_NDK_MIPS)/bin/mipsel-linux-android-gcc"
 			premake.gcc.cxx = "$(ANDROID_NDK_MIPS)/bin/mipsel-linux-android-g++"
 			premake.gcc.ar  = "$(ANDROID_NDK_MIPS)/bin/mipsel-linux-android-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-android-mips"))
+			location (path.join(_buildDir, _ACTION .. "-android-mips"))
 
 		elseif "android-x86" == _OPTIONS["gcc"] then
 
@@ -180,7 +181,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(ANDROID_NDK_X86)/bin/i686-linux-android-gcc"
 			premake.gcc.cxx = "$(ANDROID_NDK_X86)/bin/i686-linux-android-g++"
 			premake.gcc.ar  = "$(ANDROID_NDK_X86)/bin/i686-linux-android-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-android-x86"))
+			location (path.join(_buildDir, _ACTION .. "-android-x86"))
 
 		elseif "asmjs" == _OPTIONS["gcc"] then
 
@@ -192,68 +193,68 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cxx  = "\"$(EMSCRIPTEN)/em++\""
 			premake.gcc.ar   = "\"$(EMSCRIPTEN)/emar\""
 			premake.gcc.llvm = true
-			location (path.join(_buildDir, "projects", _ACTION .. "-asmjs"))
+			location (path.join(_buildDir, _ACTION .. "-asmjs"))
 
 		elseif "freebsd" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-freebsd"))
+			location (path.join(_buildDir, _ACTION .. "-freebsd"))
 
 		elseif "ios-arm"   == _OPTIONS["gcc"]
 			or "ios-arm64" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-" .. _OPTIONS["gcc"]))
+			location (path.join(_buildDir, _ACTION .. "-" .. _OPTIONS["gcc"]))
 
 		elseif "ios-simulator" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-ios-simulator"))
+			location (path.join(_buildDir, _ACTION .. "-ios-simulator"))
 
 		elseif "tvos-arm64" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-tvos-arm64"))
+			location (path.join(_buildDir, _ACTION .. "-tvos-arm64"))
 
 		elseif "tvos-simulator" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-tvos-simulator"))
+			location (path.join(_buildDir, _ACTION .. "-tvos-simulator"))
 
 		elseif "linux-gcc" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux"))
+			location (path.join(_buildDir, _ACTION .. "-linux"))
 
 		elseif "linux-gcc-afl" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "afl-gcc"
 			premake.gcc.cxx = "afl-g++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux"))
+			location (path.join(_buildDir, _ACTION .. "-linux"))
 
 		elseif "linux-gcc-5" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "gcc-5"
 			premake.gcc.cxx = "g++-5"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux"))
+			location (path.join(_buildDir, _ACTION .. "-linux"))
 
 		elseif "linux-clang" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "clang"
 			premake.gcc.cxx = "clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux-clang"))
+			location (path.join(_buildDir, _ACTION .. "-linux-clang"))
 
 		elseif "linux-clang-afl" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "afl-clang"
 			premake.gcc.cxx = "afl-clang++"
 			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux-clang"))
+			location (path.join(_buildDir, _ACTION .. "-linux-clang"))
 
 		elseif "linux-mips-gcc" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux-mips-gcc"))
+			location (path.join(_buildDir, _ACTION .. "-linux-mips-gcc"))
 
 		elseif "linux-arm-gcc" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux-arm-gcc"))
+			location (path.join(_buildDir, _ACTION .. "-linux-arm-gcc"))
 
 		elseif "linux-steamlink" == _OPTIONS["gcc"] then
 			if not os.getenv("MARVELL_SDK_PATH") then
@@ -263,7 +264,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(MARVELL_SDK_PATH)/toolchain/bin/armv7a-cros-linux-gnueabi-gcc"
 			premake.gcc.cxx = "$(MARVELL_SDK_PATH)/toolchain/bin/armv7a-cros-linux-gnueabi-g++"
 			premake.gcc.ar  = "$(MARVELL_SDK_PATH)/toolchain/bin/armv7a-cros-linux-gnueabi-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-linux-steamlink"))
+			location (path.join(_buildDir, _ACTION .. "-linux-steamlink"))
 
 		elseif "mingw-gcc" == _OPTIONS["gcc"] then
 			local mingwToolchain = "x86_64-w64-mingw32"
@@ -278,7 +279,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(MINGW)/bin/" .. mingwToolchain .. "-gcc"
 			premake.gcc.cxx = "$(MINGW)/bin/" .. mingwToolchain .. "-g++"
 			premake.gcc.ar  = "$(MINGW)/bin/ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-mingw-gcc"))
+			location (path.join(_buildDir, _ACTION .. "-mingw-gcc"))
 
 		elseif "mingw-clang" == _OPTIONS["gcc"] then
 			premake.gcc.cc   = "$(CLANG)/bin/clang"
@@ -286,7 +287,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.ar   = "$(MINGW)/bin/ar"
 --			premake.gcc.ar   = "$(CLANG)/bin/llvm-ar"
 --			premake.gcc.llvm = true
-			location (path.join(_buildDir, "projects", _ACTION .. "-mingw-clang"))
+			location (path.join(_buildDir, _ACTION .. "-mingw-clang"))
 
 		elseif "nacl" == _OPTIONS["gcc"] then
 
@@ -304,7 +305,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = naclToolchain .. "gcc"
 			premake.gcc.cxx = naclToolchain .. "g++"
 			premake.gcc.ar  = naclToolchain .. "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-nacl"))
+			location (path.join(_buildDir, _ACTION .. "-nacl"))
 
 		elseif "nacl-arm" == _OPTIONS["gcc"] then
 
@@ -322,10 +323,10 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = naclToolchain .. "gcc"
 			premake.gcc.cxx = naclToolchain .. "g++"
 			premake.gcc.ar  = naclToolchain .. "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-nacl-arm"))
+			location (path.join(_buildDir, _ACTION .. "-nacl-arm"))
 
 		elseif "netbsd" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-netbsd"))
+			location (path.join(_buildDir, _ACTION .. "-netbsd"))
 
 		elseif "osx" == _OPTIONS["gcc"] then
 
@@ -339,7 +340,7 @@ function toolchain(_buildDir, _libDir)
 				premake.gcc.cxx = "$(OSXCROSS)/target/bin/" .. osxToolchain .. "clang++"
 				premake.gcc.ar  = "$(OSXCROSS)/target/bin/" .. osxToolchain .. "ar"
 			end
-			location (path.join(_buildDir, "projects", _ACTION .. "-osx"))
+			location (path.join(_buildDir, _ACTION .. "-osx"))
 
 		elseif "pnacl" == _OPTIONS["gcc"] then
 
@@ -357,7 +358,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = naclToolchain .. "clang"
 			premake.gcc.cxx = naclToolchain .. "clang++"
 			premake.gcc.ar  = naclToolchain .. "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-pnacl"))
+			location (path.join(_buildDir, _ACTION .. "-pnacl"))
 
 		elseif "orbis" == _OPTIONS["gcc"] then
 
@@ -370,7 +371,7 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = orbisToolchain .. "clang"
 			premake.gcc.cxx = orbisToolchain .. "clang++"
 			premake.gcc.ar  = orbisToolchain .. "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-orbis"))
+			location (path.join(_buildDir, _ACTION .. "-orbis"))
 
 		elseif "qnx-arm" == _OPTIONS["gcc"] then
 
@@ -381,16 +382,16 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.cc  = "$(QNX_HOST)/usr/bin/arm-unknown-nto-qnx8.0.0eabi-gcc"
 			premake.gcc.cxx = "$(QNX_HOST)/usr/bin/arm-unknown-nto-qnx8.0.0eabi-g++"
 			premake.gcc.ar  = "$(QNX_HOST)/usr/bin/arm-unknown-nto-qnx8.0.0eabi-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-qnx-arm"))
+			location (path.join(_buildDir, _ACTION .. "-qnx-arm"))
 
 		elseif "rpi" == _OPTIONS["gcc"] then
-			location (path.join(_buildDir, "projects", _ACTION .. "-rpi"))
+			location (path.join(_buildDir, _ACTION .. "-rpi"))
 
 		elseif "riscv" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "$(RISCV_DIR)/bin/riscv64-unknown-elf-gcc"
 			premake.gcc.cxx = "$(RISCV_DIR)/bin/riscv64-unknown-elf-g++"
 			premake.gcc.ar  = "$(RISCV_DIR)/bin/riscv64-unknown-elf-ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-riscv"))
+			location (path.join(_buildDir, _ACTION .. "-riscv"))
 
 		end
 	elseif _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION == "vs2015" then
@@ -401,30 +402,37 @@ function toolchain(_buildDir, _libDir)
 			else
 				premake.vstudio.toolset = ("LLVM-" .. _ACTION)
 			end
-			location (path.join(_buildDir, "projects", _ACTION .. "-clang"))
+			location (path.join(_buildDir, _ACTION .. "-clang"))
 
 		elseif "winphone8" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = "v110_wp80"
-			location (path.join(_buildDir, "projects", _ACTION .. "-winphone8"))
+			location (path.join(_buildDir, _ACTION .. "-winphone8"))
 
 		elseif "winphone81" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = "v120_wp81"
 			premake.vstudio.storeapp = "8.1"
 			platforms { "ARM" }
-			location (path.join(_buildDir, "projects", _ACTION .. "-winphone81"))
+			location (path.join(_buildDir, _ACTION .. "-winphone81"))
 
 		elseif "winstore81" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = "v120"
 			premake.vstudio.storeapp = "8.1"
 			platforms { "ARM" }
-			location (path.join(_buildDir, "projects", _ACTION .. "-winstore81"))
+			location (path.join(_buildDir, _ACTION .. "-winstore81"))
 
 		elseif "winstore82" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = "v140"
 			premake.vstudio.storeapp = "8.2"
 			platforms { "ARM" }
-			location (path.join(_buildDir, "projects", _ACTION .. "-winstore82"))
+			location (path.join(_buildDir, _ACTION .. "-winstore82"))
 
+		elseif "uwp" == _OPTIONS["vs"] then
+			premake.vstudio.toolset = "v140"
+			premake.vstudio.storeapp = "8.2"
+			premake.action.current().vstudio.windowsTargetPlatformVersion = "10.0"
+			platforms { "ARM" }
+			location (path.join(_buildDir, _ACTION .. "-uwp"))
+			
 		elseif "durango" == _OPTIONS["vs"] then
 			if not os.getenv("DurangoXDK") then
 				print("DurangoXDK not found.")
@@ -433,7 +441,7 @@ function toolchain(_buildDir, _libDir)
 			premake.vstudio.toolset = "v140"
 			premake.vstudio.storeapp = "durango"
 			platforms { "Durango" }
-			location (path.join(_buildDir, "projects", _ACTION .. "-durango"))
+			location (path.join(_buildDir, _ACTION .. "-durango"))
 		elseif "orbis" == _OPTIONS["vs"] then
 
 			if not os.getenv("SCE_ORBIS_SDK_DIR") then
@@ -441,35 +449,35 @@ function toolchain(_buildDir, _libDir)
 			end
 
 			platforms { "Orbis" }
-			location (path.join(_buildDir, "projects", _ACTION .. "-orbis"))
+			location (path.join(_buildDir, _ACTION .. "-orbis"))
 
 		end
 
 		elseif ("vs2012-xp") == _OPTIONS["vs"] then
 			premake.vstudio.toolset = ("v110_xp")
-			location (path.join(_buildDir, "projects", _ACTION .. "-xp"))
+			location (path.join(_buildDir, _ACTION .. "-xp"))
 
 		elseif "vs2013-xp" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = ("v120_xp")
-			location (path.join(_buildDir, "projects", _ACTION .. "-xp"))
+			location (path.join(_buildDir, _ACTION .. "-xp"))
 
 		elseif "vs2015-xp" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = ("v140_xp")
-			location (path.join(_buildDir, "projects", _ACTION .. "-xp"))
+			location (path.join(_buildDir, _ACTION .. "-xp"))
 
 	elseif _ACTION == "xcode4" then
 
 		if "osx" == _OPTIONS["xcode"] then
 			premake.xcode.toolset = "macosx"
-			location (path.join(_buildDir, "projects", _ACTION .. "-osx"))
+			location (path.join(_buildDir, _ACTION .. "-osx"))
 
 		elseif "ios" == _OPTIONS["xcode"] then
 			premake.xcode.toolset = "iphoneos"
-			location (path.join(_buildDir, "projects", _ACTION .. "-ios"))
+			location (path.join(_buildDir, _ACTION .. "-ios"))
 
 		elseif "tvos" == _OPTIONS["xcode"] then
 			premake.xcode.toolset = "appletvos"
-			location (path.join(_buildDir, "projects", _ACTION .. "-tvos"))
+			location (path.join(_buildDir, _ACTION .. "-tvos"))
 		end
 	end
 

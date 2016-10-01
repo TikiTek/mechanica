@@ -21,6 +21,7 @@ module:add_library_file( "webinterfacelibrary" );
 
 local game_project = Project:new(
 	"game",
+	"6fc90403-3d7c-4a18-bbf7-836585a92f5c",
 	{ "x32", "x64" },
 	{ "Debug", "Release", "Master" },
 	module,
