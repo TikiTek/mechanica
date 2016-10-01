@@ -2,7 +2,7 @@
 #include "tiki/gameplay/gamesession.hpp"
 
 #include "tiki/graphics/model.hpp"
-#include "tiki/physics/physicsboxshape.hpp"
+#include "tiki/physics3d/physics3dboxshape.hpp"
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
@@ -68,7 +68,7 @@ namespace tiki
 
 	void GameSession::update( float timeDelta, float totalGameTime )
 	{
-		const PhysicsCharacterControllerComponentState* pPlayerControllerState = (const PhysicsCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
+		const Physics3dCharacterControllerComponentState* pPlayerControllerState = (const Physics3dCharacterControllerComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_playerEntityId, m_gameClient.getPhysicsCharacterControllerComponent().getTypeId() );
 
 		GameClientUpdateContext gameClientUpdateContext;
 		gameClientUpdateContext.timeDelta		= timeDelta;

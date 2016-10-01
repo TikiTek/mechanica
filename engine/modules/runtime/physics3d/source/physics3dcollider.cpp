@@ -1,23 +1,22 @@
-
-#include "tiki/physics/physicscollider.hpp"
+#include "tiki/physics3d/physics3dcollider.hpp"
 
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics3d/physics3dshape.hpp"
 
-#include "physicsinternal.hpp"
+#include "physics3dinternal.hpp"
 
 namespace tiki
 {
-	PhysicsCollider::PhysicsCollider()
+	Physics3dCollider::Physics3dCollider()
 	{
 	}
 
-	PhysicsCollider::~PhysicsCollider()
+	Physics3dCollider::~Physics3dCollider()
 	{
 		TIKI_ASSERT( m_collitionObject.getUserPointer() == nullptr );
 	}
 
-	void PhysicsCollider::create( const PhysicsShape& shape, const Vector3& position )
+	void Physics3dCollider::create( const Physics3dShape& shape, const Vector3& position )
 	{
 		dispose();
 
@@ -30,12 +29,12 @@ namespace tiki
 		m_collitionObject.setUserPointer( this );
 	}
 
-	void PhysicsCollider::dispose()
+	void Physics3dCollider::dispose()
 	{
 		m_collitionObject.setUserPointer( nullptr );
 	}
 
-	void* PhysicsCollider::getNativeObject() const
+	void* Physics3dCollider::getNativeObject() const
 	{
 		return (void*)&m_collitionObject;
 	}

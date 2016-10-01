@@ -10,7 +10,7 @@ namespace tiki
 {
 	class Camera;
 	class GameCamera;
-	class PhysicsCharacterControllerComponent;
+	class Physics3dCharacterControllerComponent;
 	class TransformComponent;
 	struct InputEvent;
 	struct PlayerControlComponentInitData;
@@ -31,7 +31,7 @@ namespace tiki
 		explicit			PlayerControlComponent();
 		virtual				~PlayerControlComponent();
 
-		bool				create( const TransformComponent& transformComponent, const PhysicsCharacterControllerComponent& physicsCharacterControllerComponent );
+		bool				create( const TransformComponent& transformComponent, const Physics3dCharacterControllerComponent& physicsCharacterControllerComponent );
 		void				dispose();
 
 		void				update( const GameCamera& gameCamera, const Camera& camera, float timeDelta );
@@ -59,10 +59,10 @@ namespace tiki
 			bool		jump;
 		};
 
-		const TransformComponent*					m_pTransformComponent;
-		const PhysicsCharacterControllerComponent*	m_pPhysicsCharacterControllerComponent;
+		const TransformComponent*						m_pTransformComponent;
+		const Physics3dCharacterControllerComponent*	m_pPhysicsCharacterControllerComponent;
 
-		PlayerInputState							m_inputState;
+		PlayerInputState								m_inputState;
 
 	};
 }

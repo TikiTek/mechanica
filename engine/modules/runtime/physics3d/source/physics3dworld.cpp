@@ -1,18 +1,17 @@
-
-#include "tiki/physics/physicsworld.hpp"
+#include "tiki/physics3d/physics3dworld.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsbody.hpp"
-#include "tiki/physics/physicscharactercontroller.hpp"
-#include "tiki/physics/physicscollider.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics3d/physics3dbody.hpp"
+#include "tiki/physics3d/physics3dcharactercontroller.hpp"
+#include "tiki/physics3d/physics3dcollider.hpp"
+#include "tiki/physics3d/physics3dshape.hpp"
 
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
 
-#include "physicsinternal.hpp"
+#include "physics3dinternal.hpp"
 
 namespace tiki
 {	
@@ -46,19 +45,19 @@ namespace tiki
 
 	};
 
-	PhysicsWorld::PhysicsWorld()
+	Physics3dWorld::Physics3dWorld()
 		: m_physicConfig(), m_physicDispatcher( &m_physicConfig ),
 		m_physicOverlappingPair( btVector3( -1000.0f, -1000.0f, -1000.0f ), btVector3( 1000.0f, 1000.0f, 1000.0f ) )
 	{
 		m_pPhysicWorld = nullptr;
 	}
 
-	PhysicsWorld::~PhysicsWorld()
+	Physics3dWorld::~Physics3dWorld()
 	{
 		TIKI_ASSERT( m_pPhysicWorld == nullptr );
 	}
 
-	void PhysicsWorld::create( const Vector3& gravity )
+	void Physics3dWorld::create( const Vector3& gravity )
 	{
 		m_pPhysicWorld = TIKI_MEMORY_NEW_OBJECT( btDiscreteDynamicsWorld )(
 			&m_physicDispatcher,
@@ -76,7 +75,7 @@ namespace tiki
 #endif
 	}
 
-	void PhysicsWorld::dispose()
+	void Physics3dWorld::dispose()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if ( m_pPhysicWorld != nullptr )
@@ -93,35 +92,35 @@ namespace tiki
 		}
 	}
 
-	void PhysicsWorld::addBody( PhysicsBody& body )
+	void Physics3dWorld::addBody( Physics3dBody& body )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->addRigidBody( &body.m_ridgidBody );		
 	}
 
-	void PhysicsWorld::removeBody( PhysicsBody& body )
+	void Physics3dWorld::removeBody( Physics3dBody& body )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->removeRigidBody( &body.m_ridgidBody );
 	}
 
-	void PhysicsWorld::addCollider( PhysicsCollider& collider )
+	void Physics3dWorld::addCollider( Physics3dCollider& collider )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->addCollisionObject( &collider.m_collitionObject );
 	}
 
-	void PhysicsWorld::removeCollider( PhysicsCollider& collider )
+	void Physics3dWorld::removeCollider( Physics3dCollider& collider )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
 		m_pPhysicWorld->removeCollisionObject( &collider.m_collitionObject );
 	}
 	
-	void PhysicsWorld::addCharacterController( PhysicsCharacterController& controller )
+	void Physics3dWorld::addCharacterController( Physics3dCharacterController& controller )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
@@ -129,7 +128,7 @@ namespace tiki
 		m_pPhysicWorld->addAction( &controller.m_controller );
 	}
 
-	void PhysicsWorld::removeCharacterController( PhysicsCharacterController& controller )
+	void Physics3dWorld::removeCharacterController( Physics3dCharacterController& controller )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
@@ -137,7 +136,7 @@ namespace tiki
 		m_pPhysicWorld->removeCollisionObject( &controller.m_ghostObject );
 	}
 
-	bool PhysicsWorld::checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const
+	bool Physics3dWorld::checkIntersection( const Physics3dShape& physicsShape, const Vector3& position ) const
 	{
 		btCollisionShape* pShape = static_cast< btCollisionShape* >( physicsShape.getNativeShape() );
 
@@ -156,7 +155,7 @@ namespace tiki
 		return callback.getCollides();
 	}
 
-	bool PhysicsWorld::checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const
+	bool Physics3dWorld::checkIntersection( const Physics3dCollisionObject& physicsObject1, const Physics3dCollisionObject& physicsObject2 ) const
 	{
 		btCollisionObject* pCollisionObject1 = (btCollisionObject*)physicsObject1.getNativeObject();
 		btCollisionObject* pCollisionObject2 = (btCollisionObject*)physicsObject2.getNativeObject();
@@ -167,7 +166,7 @@ namespace tiki
 		return callback.getCollides();
 	}
 
-	void PhysicsWorld::update( float timeStep )
+	void Physics3dWorld::update( float timeStep )
 	{
 		TIKI_ASSERT( m_pPhysicWorld != nullptr );
 
@@ -178,7 +177,7 @@ namespace tiki
 	}
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-	void PhysicsWorld::renderDebug()
+	void Physics3dWorld::renderDebug()
 	{
 		if ( s_drawDebug )
 		{

@@ -1,13 +1,12 @@
-
 #include "tiki/gamecomponents/coincomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/lifetimecomponent.hpp"
-#include "tiki/components/physicsbodycomponent.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
-#include "tiki/physics/physicsworld.hpp"
+#include "tiki/physics3d/physics3dworld.hpp"
+#include "tiki/physics3dcomponents/physics3dbodycomponent.hpp"
 
 #include "gamecomponents.hpp"
 
@@ -15,12 +14,12 @@ namespace tiki
 {
 	struct CoinComponentState : public ComponentState
 	{
-		TransformComponentState*	pTransform;
-		LifeTimeComponentState*		pLifeTime;
-		PhysicsBodyComponentState*	pPhysicsBody;
+		TransformComponentState*		pTransform;
+		LifeTimeComponentState*			pLifeTime;
+		Physics3dBodyComponentState*	pPhysicsBody;
 
-		bool						collected;
-		float						value;
+		bool							collected;
+		float							value;
 	};
 
 	CoinComponent::CoinComponent()
@@ -41,7 +40,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
 	}
 
-	bool CoinComponent::create( const TransformComponent& transformComponent, const PhysicsBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const PhysicsWorld& physicsWorld )
+	bool CoinComponent::create( const TransformComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld )
 	{
 		m_pTransformComponent	= &transformComponent;
 		m_pPhysicsBodyComponent	= &physicsBodyComponent;
@@ -61,7 +60,7 @@ namespace tiki
 		m_pPhysicsWorld			= nullptr;
 	}
 
-	void CoinComponent::update( const PhysicsCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime )
+	void CoinComponent::update( const Physics3dCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime )
 	{
 		Iterator componentStates = getIterator();
 
@@ -98,7 +97,7 @@ namespace tiki
 	bool CoinComponent::internalInitializeState( ComponentEntityIterator& componentIterator, CoinComponentState* pState, const CoinComponentInitData* pInitData )
 	{
 		pState->pTransform = (TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
-		pState->pPhysicsBody = (PhysicsBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
+		pState->pPhysicsBody = (Physics3dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
 		pState->pLifeTime = (LifeTimeComponentState*)componentIterator.getFirstOfType( m_pLifeTimeComponent->getTypeId() );
 
 		if ( pState->pTransform == nullptr || pState->pPhysicsBody == nullptr || pState->pLifeTime == nullptr )

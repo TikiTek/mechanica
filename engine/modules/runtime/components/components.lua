@@ -9,4 +9,3 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "componentbase" );
 module:add_dependency( "entitysystem" );
-module:add_dependency( "physics" );

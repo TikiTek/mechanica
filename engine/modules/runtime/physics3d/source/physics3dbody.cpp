@@ -1,26 +1,25 @@
-
-#include "tiki/physics/physicsbody.hpp"
+#include "tiki/physics3d/physics3dbody.hpp"
 
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics3d/physics3dshape.hpp"
 
 #include "BulletCollision/CollisionShapes/btCollisionShape.h"
 
-#include "physicsinternal.hpp"
+#include "physics3dinternal.hpp"
 
 namespace tiki
 {
-	PhysicsBody::PhysicsBody()
+	Physics3dBody::Physics3dBody()
 		: m_ridgidBody( 1.0f, nullptr, nullptr )
 	{
 	}
 
-	PhysicsBody::~PhysicsBody()
+	Physics3dBody::~Physics3dBody()
 	{
 		TIKI_ASSERT( m_ridgidBody.getUserPointer() == nullptr );
 	}
 
-	void PhysicsBody::create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
+	void Physics3dBody::create( const Physics3dShape& shape, const Vector3& position, float mass, bool freeRotation )
 	{
 		dispose();
 
@@ -45,7 +44,7 @@ namespace tiki
 		m_ridgidBody.setActivationState( 1u );
 	}
 
-	void PhysicsBody::dispose()
+	void Physics3dBody::dispose()
 	{
 		m_ridgidBody.setUserPointer( nullptr );
 
@@ -55,22 +54,22 @@ namespace tiki
 		}
 	}
 
-	void PhysicsBody::applyForce( const Vector3& force )
+	void Physics3dBody::applyForce( const Vector3& force )
 	{
 		m_ridgidBody.applyCentralImpulse( toBulletVector( force ) );
 	}
 
-	void PhysicsBody::getPosition( Vector3& position ) const
+	void Physics3dBody::getPosition( Vector3& position ) const
 	{
 		position = toTikiVector( m_ridgidBody.getWorldTransform().getOrigin() );
 	}
 
-	void PhysicsBody::getRotation( Quaternion& rotation ) const
+	void Physics3dBody::getRotation( Quaternion& rotation ) const
 	{
 		rotation = toTikiQuaternion( m_ridgidBody.getWorldTransform().getRotation() );
 	}
 
-	void* PhysicsBody::getNativeObject() const
+	void* Physics3dBody::getNativeObject() const
 	{
 		return (void*)&m_ridgidBody;
 	}

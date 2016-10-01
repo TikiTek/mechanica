@@ -123,7 +123,7 @@ function Module:resolve_dependency( target_list )
 end
 
 function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
-	self.module_type = ModuleTypes.FilesModule;
+	--self.module_type = ModuleTypes.FilesModule;
 	
 	if ( configuration_obj == nil and platform == nil ) then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
@@ -165,7 +165,6 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 		end
 
 		if global_configuration.enable_unity_builds and ( self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule ) then
-	
 			local ext = "cpp"
 			if self.module_type == ModuleTypes.UnityCModule then
 				ext = "c"
@@ -173,7 +172,7 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			
 			local unity_file_name = path.join( _OPTIONS[ "unity_dir" ], self.name .. "_unity." .. ext );			
 			local c = {};
-			c[#c+1] = "// Unity file created by Premake";
+			c[#c+1] = "// Unity file created by GENie";
 			c[#c+1] = "";
 			c[#c+1] = "#define TIKI_CURRENT_MODULE \"" .. self.name .. "\"";
 			c[#c+1] = "";
@@ -188,6 +187,7 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			local unity_content = table.concat( c, "\n" );
 
 			files( all_files );
+			exclude( all_files );
 			
 			local create_unity = true
 			if os.isfile( unity_file_name ) then

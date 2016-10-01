@@ -1,46 +1,45 @@
-
-#include "tiki/components/physicsbodycomponent.hpp"
+#include "tiki/physics3dcomponents/physics3dbodycomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/transformcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsbody.hpp"
-#include "tiki/physics/physicsboxshape.hpp"
-#include "tiki/physics/physicscapsuleshape.hpp"
-#include "tiki/physics/physicssphereshape.hpp"
-#include "tiki/physics/physicsworld.hpp"
+#include "tiki/physics3d/physics3dbody.hpp"
+#include "tiki/physics3d/physics3dboxshape.hpp"
+#include "tiki/physics3d/physics3dcapsuleshape.hpp"
+#include "tiki/physics3d/physics3dsphereshape.hpp"
+#include "tiki/physics3d/physics3dworld.hpp"
 
-#include "physicscomponents_shared.hpp"
+#include "physics3dcomponents_shared.hpp"
 
 #include "components.hpp"
 
 namespace tiki
 {
-	struct PhysicsBodyComponentState : public ComponentState
+	struct Physics3dBodyComponentState : public ComponentState
 	{
 		TransformComponentState*	pTransform;
 
-		PhysicsComponentShape		shape;
+		Physics3dComponentShape		shape;
 
-		PhysicsBody					body;
+		Physics3dBody				body;
 	};
 
-	PhysicsBodyComponent::PhysicsBodyComponent()
+	Physics3dBodyComponent::Physics3dBodyComponent()
 	{
 		m_pPhysicsWorld			= nullptr;
 
 		m_pTranformComponent	= nullptr;
 	}
 
-	PhysicsBodyComponent::~PhysicsBodyComponent()
+	Physics3dBodyComponent::~Physics3dBodyComponent()
 	{
 		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
 		TIKI_ASSERT( m_pTranformComponent	== nullptr );
 	}
 
-	bool PhysicsBodyComponent::create( PhysicsWorld& physicsWorld, const TransformComponent& transformComponent )
+	bool Physics3dBodyComponent::create( Physics3dWorld& physicsWorld, const TransformComponent& transformComponent )
 	{
 		m_pPhysicsWorld			= &physicsWorld;
 
@@ -49,14 +48,14 @@ namespace tiki
 		return true;
 	}
 
-	void PhysicsBodyComponent::dispose()
+	void Physics3dBodyComponent::dispose()
 	{
 		m_pPhysicsWorld			= nullptr;
 
 		m_pTranformComponent	= nullptr;
 	}
 
-	void PhysicsBodyComponent::update()
+	void Physics3dBodyComponent::update()
 	{
 		ConstIterator componentStates = getConstIterator();
 
@@ -73,54 +72,54 @@ namespace tiki
 		}
 	}
 
-	void PhysicsBodyComponent::applyForce( PhysicsBodyComponentState* pState, const Vector3& force ) const
+	void Physics3dBodyComponent::applyForce( Physics3dBodyComponentState* pState, const Vector3& force ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		pState->body.applyForce( force );
 	}
 
-	void PhysicsBodyComponent::getPosition( Vector3& targetPosition, const PhysicsBodyComponentState* pState ) const
+	void Physics3dBodyComponent::getPosition( Vector3& targetPosition, const Physics3dBodyComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		pState->body.getPosition( targetPosition );
 	}
 
-	void PhysicsBodyComponent::getRotation( Quaternion& targetRotation, const PhysicsBodyComponentState* pState ) const
+	void Physics3dBodyComponent::getRotation( Quaternion& targetRotation, const Physics3dBodyComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		pState->body.getRotation( targetRotation );
 	}
 
-	const PhysicsCollisionObject& PhysicsBodyComponent::getPhysicsObject( const PhysicsBodyComponentState* pState ) const
+	const Physics3dCollisionObject& Physics3dBodyComponent::getPhysicsObject( const Physics3dBodyComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		return pState->body;
 	}
 
-	crc32 PhysicsBodyComponent::getTypeCrc() const
+	crc32 Physics3dBodyComponent::getTypeCrc() const
 	{
-		return crcString( "PhysicsBodyComponent" );
+		return crcString( "Physics3dBodyComponent" );
 	}
 
-	uint32 PhysicsBodyComponent::getStateSize() const
+	uint32 Physics3dBodyComponent::getStateSize() const
 	{
-		return sizeof( PhysicsBodyComponentState );
+		return sizeof( Physics3dBodyComponentState );
 	}
 
-	const char* PhysicsBodyComponent::getTypeName() const
+	const char* Physics3dBodyComponent::getTypeName() const
 	{
-		return "PhysicsBodyComponent";
+		return "Physics3dBodyComponent";
 	}
 
-	bool PhysicsBodyComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PhysicsBodyComponentState* pState, const PhysicsBodyComponentInitData* pInitData )
+	bool Physics3dBodyComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics3dBodyComponentState* pState, const Physics3dBodyComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
-		pState = new( pState ) PhysicsBodyComponentState;
+		pState = new( pState ) Physics3dBodyComponentState;
 
 		pState->pTransform = (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
 		if ( pState->pTransform == nullptr )
@@ -128,7 +127,7 @@ namespace tiki
 			return false;
 		}
 
-		PhysicsShape* pShape = createPhysicsComponentShape( pState->shape, pInitData->shape );
+		Physics3dShape* pShape = createPhysics3dComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )
 		{
 			return false;
@@ -140,7 +139,7 @@ namespace tiki
 		return true;
 	}
 
-	void PhysicsBodyComponent::internalDisposeState( PhysicsBodyComponentState* pState )
+	void Physics3dBodyComponent::internalDisposeState( Physics3dBodyComponentState* pState )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
@@ -149,8 +148,8 @@ namespace tiki
 		m_pPhysicsWorld->removeBody( pState->body );
 		pState->body.dispose();
 
-		disposePhysicsComponentShape( pState->shape );
+		disposePhysics3dComponentShape( pState->shape );
 
-		pState->~PhysicsBodyComponentState();
+		pState->~Physics3dBodyComponentState();
 	}
 }

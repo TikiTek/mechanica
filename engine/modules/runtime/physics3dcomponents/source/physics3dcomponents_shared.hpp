@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_PHYSICSCOMPONENTS_SHARED_HPP_INCLUDED__
-#define __TIKI_PHYSICSCOMPONENTS_SHARED_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS3DCOMPONENTS_SHARED_HPP_INCLUDED
+#define TIKI_PHYSICS3DCOMPONENTS_SHARED_HPP_INCLUDED
 
 #include "tiki/math/vector.hpp"
 
@@ -8,33 +8,33 @@
 
 namespace tiki
 {
-	struct PhysicsComponentShape
+	struct Physics3dComponentShape
 	{
-		PhysicsShapeType			shapeType;
+		Physics3dShapeType			shapeType;
 
-		PhysicsBoxShape				boxShape;
-		PhysicsCapsuleShape			capsuleShape;
-		PhysicsSphereShape			sphereShape;
+		Physics3dBoxShape			boxShape;
+		Physics3dCapsuleShape		capsuleShape;
+		Physics3dSphereShape		sphereShape;
 	};
 
-	TIKI_INLINE PhysicsShape* createPhysicsComponentShape( PhysicsComponentShape& shape, const PhysicsComponentShapeInitData& initData )
+	TIKI_INLINE Physics3dShape* createPhysics3dComponentShape( Physics3dComponentShape& shape, const Physics3dComponentShapeInitData& initData )
 	{
 		shape.shapeType	= initData.type;
 
-		PhysicsShape* pShape = nullptr;
+		Physics3dShape* pShape = nullptr;
 		switch ( shape.shapeType )
 		{
-		case PhysicsShapeType_Box:
+		case Physics3dShapeType_Box:
 			shape.boxShape.create( vector::create( initData.boxSize ) );
 			pShape = &shape.boxShape;
 			break;
 
-		case PhysicsShapeType_Capsule:
+		case Physics3dShapeType_Capsule:
 			shape.capsuleShape.create( initData.capsuleHeight, initData.capsuleRadius );
 			pShape = &shape.capsuleShape;
 			break;
 
-		case PhysicsShapeType_Sphere:
+		case Physics3dShapeType_Sphere:
 			shape.sphereShape.create( initData.sphereRadius );
 			pShape = &shape.sphereShape;
 			break;
@@ -47,19 +47,19 @@ namespace tiki
 		return pShape;
 	}
 
-	TIKI_INLINE void disposePhysicsComponentShape( PhysicsComponentShape& shape )
+	TIKI_INLINE void disposePhysics3dComponentShape( Physics3dComponentShape& shape )
 	{
 		switch ( shape.shapeType )
 		{
-		case PhysicsShapeType_Box:
+		case Physics3dShapeType_Box:
 			shape.boxShape.dispose();
 			break;
 
-		case PhysicsShapeType_Capsule:
+		case Physics3dShapeType_Capsule:
 			shape.capsuleShape.dispose();
 			break;
 
-		case PhysicsShapeType_Sphere:
+		case Physics3dShapeType_Sphere:
 			shape.sphereShape.dispose();
 			break;
 
@@ -70,4 +70,4 @@ namespace tiki
 	}
 }
 
-#endif // __TIKI_PHYSICSCOMPONENTS_SHARED_HPP_INCLUDED__
+#endif // TIKI_PHYSICS3DCOMPONENTS_SHARED_HPP_INCLUDED

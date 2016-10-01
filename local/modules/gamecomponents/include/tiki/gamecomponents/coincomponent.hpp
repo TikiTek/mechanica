@@ -9,9 +9,9 @@
 namespace tiki
 {
 	class LifeTimeComponent;
-	class PhysicsBodyComponent;
-	class PhysicsCollisionObject;
-	class PhysicsWorld;
+	class Physics3dBodyComponent;
+	class Physics3dCollisionObject;
+	class Physics3dWorld;
 	class TransformComponent;
 	struct CoinComponentInitData;
 	struct CoinComponentState;
@@ -27,10 +27,10 @@ namespace tiki
 		explicit			CoinComponent();
 		virtual				~CoinComponent();
 
-		bool				create( const TransformComponent& transformComponent, const PhysicsBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const PhysicsWorld& physicsWorld );
+		bool				create( const TransformComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld );
 		void				dispose();
 
-		void				update( const PhysicsCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime );
+		void				update( const Physics3dCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime );
 
 		virtual crc32		getTypeCrc() const;
 		virtual uint32		getStateSize() const;
@@ -44,10 +44,10 @@ namespace tiki
 	private:
 
 		const TransformComponent*		m_pTransformComponent;
-		const PhysicsBodyComponent*		m_pPhysicsBodyComponent;
+		const Physics3dBodyComponent*		m_pPhysicsBodyComponent;
 		const LifeTimeComponent*		m_pLifeTimeComponent;
 
-		const PhysicsWorld*				m_pPhysicsWorld;
+		const Physics3dWorld*				m_pPhysicsWorld;
 
 	};
 }

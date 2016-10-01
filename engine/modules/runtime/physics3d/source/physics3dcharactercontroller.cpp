@@ -1,24 +1,23 @@
+#include "tiki/physics3d/physics3dcharactercontroller.hpp"
 
-#include "tiki/physics/physicscharactercontroller.hpp"
+#include "tiki/physics3d/physics3dshape.hpp"
 
-#include "tiki/physics/physicsshape.hpp"
-
-#include "physicsinternal.hpp"
+#include "physics3dinternal.hpp"
 
 #include "BulletCollision/CollisionShapes/btConvexShape.h"
 
 namespace tiki
 {	
-	PhysicsCharacterController::PhysicsCharacterController()
+	Physics3dCharacterController::Physics3dCharacterController()
 		: m_controller( nullptr, nullptr, 1.0f )
 	{
 	}
 
-	PhysicsCharacterController::~PhysicsCharacterController()
+	Physics3dCharacterController::~Physics3dCharacterController()
 	{
 	}
 
-	void PhysicsCharacterController::create( const PhysicsShape& shape, const Vector3& position, float gravity )
+	void Physics3dCharacterController::create( const Physics3dShape& shape, const Vector3& position, float gravity )
 	{
 		btConvexShape* pShape = static_cast< btConvexShape* >( shape.getNativeShape() );
 
@@ -34,36 +33,36 @@ namespace tiki
 		m_controller.setGravity( gravity );
 	}
 
-	void PhysicsCharacterController::dispose()
+	void Physics3dCharacterController::dispose()
 	{
 	}
 
-	void PhysicsCharacterController::move( const Vector3& direction )
+	void Physics3dCharacterController::move( const Vector3& direction )
 	{
 		m_controller.setWalkDirection( toBulletVector( direction ) );
 	}
 
-	void PhysicsCharacterController::jump()
+	void Physics3dCharacterController::jump()
 	{
 		m_controller.jump();
 	}
 
-	void PhysicsCharacterController::getPosition( Vector3& targetPosition ) const
+	void Physics3dCharacterController::getPosition( Vector3& targetPosition ) const
 	{
 		targetPosition = toTikiVector( m_ghostObject.getWorldTransform().getOrigin() );
 	}
 
-	void PhysicsCharacterController::getRotation( Quaternion& targetRotation ) const
+	void Physics3dCharacterController::getRotation( Quaternion& targetRotation ) const
 	{
 		targetRotation = toTikiQuaternion( m_ghostObject.getWorldTransform().getRotation() );
 	}
 
-	void PhysicsCharacterController::setRotation( const Quaternion& rotation )
+	void Physics3dCharacterController::setRotation( const Quaternion& rotation )
 	{
 		m_ghostObject.getWorldTransform().setRotation( toBulletQuaternion( rotation ) );
 	}
 
-	void* PhysicsCharacterController::getNativeObject() const
+	void* Physics3dCharacterController::getNativeObject() const
 	{
 		return (void*)&m_ghostObject;
 	}
