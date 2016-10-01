@@ -1,4 +1,0 @@
-<tikiasset>
-  <input file="unit_sphere.dae" type="model" />
-  <param key="scale" value="0.1" />
-</tikiasset>

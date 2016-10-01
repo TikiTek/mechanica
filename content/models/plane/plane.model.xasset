@@ -1,5 +1,0 @@
-<tikiasset>
-  <input file="plane.dae" type="model" />
-  <param key="material" value="MATE:plane.material" />
-  <param key="scale" value="1" />
-</tikiasset>

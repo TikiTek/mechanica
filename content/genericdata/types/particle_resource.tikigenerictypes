@@ -1,3 +1,0 @@
-<tikigenerictypes base="particle">
-	<resource name="ParticleEffect" base="ParticleEffectData" postfix="particle" fourcc="PAFX" />
-</tikigenerictypes>

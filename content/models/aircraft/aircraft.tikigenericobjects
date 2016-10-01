@@ -1,7 +1,0 @@
-<tikigenericobjects>
-	<resource type="Material">
-		<object type="FallbackRenderEffectData">
-			<field type="{reference Texture}" name="defaultTexture" value="TEXR:checker.texture" />
-		</object>
-	</resource>
-</tikigenericobjects>

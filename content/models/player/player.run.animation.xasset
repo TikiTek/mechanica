@@ -1,5 +1,0 @@
-<tikiasset>
-  <input file="player_run.animation.dae" type="animation" />
-  <param key="scale" value="0.01" />
-  <param key="prebound_model" value="player.model.dae" />
-</tikiasset>

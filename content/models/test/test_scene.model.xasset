@@ -1,5 +1,0 @@
-<tikiasset>
-  <input file="test.dae" type="model" />
-  <param key="material" value="MATE:test_scene.material" />
-  <param key="scale" value="0.1" />
-</tikiasset>

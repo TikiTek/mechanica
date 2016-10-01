@@ -1,6 +1,0 @@
-<tikiasset>
-	<input file="ascii.psd" type="texture" />
-	<param key="type" value="3d" />
-	<param key="slice_size" value="128" />
-	<param key="generate_mipmaps" value="false" />   
-</tikiasset>

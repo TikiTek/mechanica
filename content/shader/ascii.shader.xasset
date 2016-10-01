@@ -1,3 +1,0 @@
-<tikiasset template="shader_defaults">
-  <input file="../../local/modules/renderer/source/shader/ascii.fx" type="shader" />
-<tikiasset>
