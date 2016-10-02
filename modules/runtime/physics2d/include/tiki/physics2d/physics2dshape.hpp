@@ -1,20 +1,19 @@
 #pragma once
-#ifndef __TIKI_PHYSICSSHAPE_HPP_INCLUDED__
-#define __TIKI_PHYSICSSHAPE_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS2DSHAPE_HPP_INCLUDED
+#define TIKI_PHYSICS2DSHAPE_HPP_INCLUDED
 
-#include "tiki/physics/physicsbody.hpp"
+#include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class PhysicsShape
+	class Physics2dShape
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PhysicsShape );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( Physics2dShape );
 
 	public:
 
-		virtual void*	getNativeShape() const = 0;
-
+		virtual void*	getNativeShape() const TIKI_PURE;
 	};
 }
 
-#endif // __TIKI_PHYSICSSHAPE_HPP_INCLUDED__
+#endif // TIKI_PHYSICS2DSHAPE_HPP_INCLUDED

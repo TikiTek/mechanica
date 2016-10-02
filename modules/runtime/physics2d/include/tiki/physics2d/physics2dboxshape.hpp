@@ -3,32 +3,31 @@
 #define __TIKI_PHYSICSBOXSHAPE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics2d/physics2dshape.hpp"
 
-#include "BulletCollision/CollisionShapes/btBoxShape.h"
+#include <Box2D/Collision/Shapes/b2PolygonShape.h>
 
 namespace tiki
 {
-	struct Vector3;
+	struct Vector2;
 
-	class PhysicsBoxShape : public PhysicsShape
+	class Physics2dBoxShape : public Physics2dShape
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsBoxShape );
+		TIKI_NONCOPYABLE_CLASS( Physics2dBoxShape );
 
 	public:
 
-						PhysicsBoxShape();
-						~PhysicsBoxShape();
+						Physics2dBoxShape();
+						~Physics2dBoxShape();
 
-		void			create( const Vector3& size );
+		void			create( const Vector2& size );
 		void			dispose();
 
-		virtual void*	getNativeShape() const;
+		virtual void*	getNativeShape() const TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 
-		btBoxShape		m_shape;
-
+		b2PolygonShape	m_shape;
 	};
 }
 

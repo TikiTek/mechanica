@@ -1,42 +1,30 @@
-
-#include "tiki/physics/physicscollider.hpp"
+#include "tiki/physics2d/physics2dcollider.hpp"
 
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics2d/physics2dshape.hpp"
 
-#include "physicsinternal.hpp"
+#include "physics2dinternal.hpp"
 
 namespace tiki
 {
-	PhysicsCollider::PhysicsCollider()
+	Physics2dCollider::Physics2dCollider()
 	{
 	}
 
-	PhysicsCollider::~PhysicsCollider()
+	Physics2dCollider::~Physics2dCollider()
 	{
-		TIKI_ASSERT( m_collitionObject.getUserPointer() == nullptr );
 	}
 
-	void PhysicsCollider::create( const PhysicsShape& shape, const Vector3& position )
+	void Physics2dCollider::create( const Physics2dShape& shape, const Vector2& position )
 	{
-		dispose();
-
-		btTransform transform;
-		transform.setIdentity();
-		transform.setOrigin( toBulletVector( position ) );
-
-		m_collitionObject.setCollisionShape( static_cast< btCollisionShape* >( shape.getNativeShape() ) );
-		m_collitionObject.setWorldTransform( transform );
-		m_collitionObject.setUserPointer( this );
 	}
 
-	void PhysicsCollider::dispose()
+	void Physics2dCollider::dispose()
 	{
-		m_collitionObject.setUserPointer( nullptr );
 	}
 
-	void* PhysicsCollider::getNativeObject() const
+	void* Physics2dCollider::getNativeObject() const
 	{
-		return (void*)&m_collitionObject;
+		return m_pBody;
 	}
 }
