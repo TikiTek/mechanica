@@ -14,6 +14,8 @@ module:add_dependency( "gameflowsystem" );
 module:add_dependency( "gamestates" );
 module:add_dependency( "genericdata" );
 
+module:add_dependency( "physics2d" );
+
 module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 
 module:add_library_file( "converterlibrary" );
