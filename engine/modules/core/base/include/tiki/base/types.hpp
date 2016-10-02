@@ -171,7 +171,7 @@ namespace tiki
 #	define TIKI_ALIGN_POSTFIX( var )	__attribute__( ( aligned( var ) ) )
 #	define TIKI_ALIGNOF( type )			( __alignof__( type ) )
 
-#if __cplusplus <= 199711L
+#if __cplusplus > 199711L
 #	define TIKI_OVERRIDE				override
 #	define TIKI_FINAL					final
 #else
@@ -181,6 +181,10 @@ namespace tiki
 
 #endif
 
+#define TIKI_OVERRIDE_FINAL				TIKI_OVERRIDE TIKI_FINAL
+
+#if __cplusplus > 199711L
+#else
 #define TIKI_NONCOPYABLE_CLASS( class_name )		\
 	private:										\
 		class_name ( const class_name & );			\
@@ -207,6 +211,7 @@ namespace tiki
 	public:												\
 		class_name () { }						        \
 		~ class_name () { }
+#endif
 
 #define TIKI_DEFINE_HANLE( handle_name )		\
 	struct handle_name ## Type;					\

@@ -1,44 +1,42 @@
 #pragma once
-#ifndef __TIKI_PHYSICSBODY_HPP_INCLUDED__
-#define __TIKI_PHYSICSBODY_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS2DBODY_HPP_INCLUDED
+#define TIKI_PHYSICS2DBODY_HPP_INCLUDED
 
-#include "tiki/physics/physicscollisionobject.hpp"
+#include "tiki/physics2d/physics2dcollisionobject.hpp"
 
 #include "tiki/base/types.hpp"
 
-#include "BulletDynamics/Dynamics/btRigidBody.h"
+class b2Body;
 
 namespace tiki
 {
-	class PhysicsShape;
-	struct Quaternion;
-	struct Vector3;
+	class Physics2dShape;
+	struct Vector2;
 	
-	class PhysicsBody : public PhysicsCollisionObject
+	class Physics2dBody : public Physics2dCollisionObject
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsBody );
-		friend class PhysicsWorld;
+		TIKI_NONCOPYABLE_CLASS( Physics2dBody );
+		friend class Physics2dWorld;
 
 	public:
 
-							PhysicsBody();
-		virtual				~PhysicsBody();
+							Physics2dBody();
+		virtual				~Physics2dBody();
 
-		void				create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation );
+		void				create( const Physics2dShape& shape, const Vector2& position, float mass, float sensity, float friction );
 		void				dispose();
 
-		void				applyForce( const Vector3& direction );
+		void				applyForce( const Vector2& direction );
 
-		void				getPosition( Vector3& position ) const;
-		void				getRotation( Quaternion& rotation ) const;
+		Vector2				getPosition() const;
+		float				getRotation() const;
 
-		virtual void*		getNativeObject() const;
-		
+		virtual void*		getNativeObject() const TIKI_OVERRIDE_FINAL;
+
 	private:
 
-		btRigidBody			m_ridgidBody;
-
+		b2Body*				m_pBody;
 	};
 }
 
-#endif // __TIKI_PHYSICSBODY_HPP_INCLUDED__
+#endif // TIKI_PHYSICS2DBODY_HPP_INCLUDED

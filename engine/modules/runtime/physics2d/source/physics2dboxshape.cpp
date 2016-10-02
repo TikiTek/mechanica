@@ -1,31 +1,29 @@
-
-#include "tiki/physics/physicsboxshape.hpp"
+#include "tiki/physics2d/physics2dboxshape.hpp"
 
 #include "tiki/math/vector.hpp"
 
-#include "physicsinternal.hpp"
+#include "physics2dinternal.hpp"
 
 namespace tiki
 {
-	PhysicsBoxShape::PhysicsBoxShape()
-		: m_shape( btVector3( 1.0f, 1.0f, 1.0f ) )
+	Physics2dBoxShape::Physics2dBoxShape()
 	{
 	}
 
-	PhysicsBoxShape::~PhysicsBoxShape()
+	Physics2dBoxShape::~Physics2dBoxShape()
 	{
 	}
 	
-	void PhysicsBoxShape::create( const Vector3& size )
+	void Physics2dBoxShape::create( const Vector2& size )
 	{
-		m_shape = btBoxShape( toBulletVector( size ) * 0.5f );
+		m_shape.SetAsBox( size.x, size.y );
 	}
 
-	void PhysicsBoxShape::dispose()
+	void Physics2dBoxShape::dispose()
 	{
 	}
 
-	void* PhysicsBoxShape::getNativeShape() const
+	void* Physics2dBoxShape::getNativeShape() const
 	{
 		return (void*)&m_shape;
 	}

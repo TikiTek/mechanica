@@ -14,6 +14,7 @@ namespace tiki
 	TIKI_DEBUGPROP_INT( s_stepPositionIterations, "DrawDebug", 2, 1, 100 );
 
 	Physics2dWorld::Physics2dWorld()
+		: m_world( b2Vec2() )
 	{
 	}
 

@@ -1,76 +1,46 @@
-#include "tiki/physics/physicsbody.hpp"
+#include "tiki/physics2d/physics2dbody.hpp"
 
 #include "tiki/math/vector.hpp"
-#include "tiki/physics/physicsshape.hpp"
+#include "tiki/physics2d/physics2dshape.hpp"
 
-#include "BulletCollision/CollisionShapes/btCollisionShape.h"
+#include "physics2dinternal.hpp"
 
-#include "physicsinternal.hpp"
+#include <Box2D/Dynamics/b2Body.h>
 
 namespace tiki
 {
-	PhysicsBody::PhysicsBody()
-		: m_ridgidBody( 1.0f, nullptr, nullptr )
+	Physics2dBody::Physics2dBody()
 	{
 	}
 
-	PhysicsBody::~PhysicsBody()
+	Physics2dBody::~Physics2dBody()
 	{
-		TIKI_ASSERT( m_ridgidBody.getUserPointer() == nullptr );
 	}
 
-	void PhysicsBody::create( const PhysicsShape& shape, const Vector3& position, float mass, bool freeRotation )
+	void Physics2dBody::create( const Physics2dShape& shape, const Vector2& position, float mass, float sensity, float friction )
 	{
-		dispose();
-
-		btTransform transform;
-		transform.setIdentity();
-		transform.setOrigin( toBulletVector( position ) );
-
-		btCollisionShape* pShape = static_cast< btCollisionShape* >( shape.getNativeShape() );
-		btVector3 localInertia;
-		if ( freeRotation )
-		{
-			pShape->calculateLocalInertia( mass, localInertia );
-		}
-		else
-		{
-			localInertia = toBulletVector( Vector3::zero );
-		}
-
-		m_ridgidBody = btRigidBody( mass, nullptr, pShape, localInertia );
-		m_ridgidBody.setCenterOfMassTransform( transform );
-		m_ridgidBody.setUserPointer( this );
-		m_ridgidBody.setActivationState( 1u );
 	}
 
-	void PhysicsBody::dispose()
+	void Physics2dBody::dispose()
 	{
-		m_ridgidBody.setUserPointer( nullptr );
-
-		if ( m_ridgidBody.getMotionState() != nullptr )
-		{
-			delete( m_ridgidBody.getMotionState() );
-		}
 	}
 
-	void PhysicsBody::applyForce( const Vector3& force )
+	void Physics2dBody::applyForce( const Vector2& force )
 	{
-		m_ridgidBody.applyCentralImpulse( toBulletVector( force ) );
 	}
 
-	void PhysicsBody::getPosition( Vector3& position ) const
+	Vector2 Physics2dBody::getPosition() const
 	{
-		position = toTikiVector( m_ridgidBody.getWorldTransform().getOrigin() );
+		return toTikiVector( m_pBody->GetPosition() );
 	}
 
-	void PhysicsBody::getRotation( Quaternion& rotation ) const
+	float Physics2dBody::getRotation() const
 	{
-		rotation = toTikiQuaternion( m_ridgidBody.getWorldTransform().getRotation() );
+		return m_pBody->GetAngle();
 	}
 
-	void* PhysicsBody::getNativeObject() const
+	void* Physics2dBody::getNativeObject() const
 	{
-		return (void*)&m_ridgidBody;
+		return m_pBody;
 	}
 }

@@ -1,8 +1,8 @@
 #pragma once
-#ifndef __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
-#define __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED
+#define TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED
 
-#include "LinearMath/btIDebugDraw.h"
+#include <Box2D/Common/b2Draw.h>
 
 #include "tiki/base/types.hpp"
 
@@ -10,38 +10,30 @@
 
 namespace tiki
 {
-	class PhysicsDebugDraw : public btIDebugDraw
+	class Physics2dDebugDraw : public b2Draw
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsDebugDraw );
+		TIKI_NONCOPYABLE_CLASS( Physics2dDebugDraw );
 
 	public:
 
-						PhysicsDebugDraw();
-						~PhysicsDebugDraw();
+						Physics2dDebugDraw();
+		virtual			~Physics2dDebugDraw();
 
 		void			create();
 		void			dispose();
 
-		virtual void	drawLine( const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor );
-		virtual void	drawLine( const btVector3& from, const btVector3& to, const btVector3& color );
-		virtual void	drawTriangle( const btVector3& a, const btVector3& b, const btVector3& c, const btVector3& color, btScalar alpha );
+		virtual void	DrawPolygon( const b2Vec2* vertices, int32 vertexCount, const b2Color& color ) TIKI_OVERRIDE_FINAL;
+		virtual void	DrawSolidPolygon( const b2Vec2* vertices, int32 vertexCount, const b2Color& color ) TIKI_OVERRIDE_FINAL;
 
-		virtual void	drawSphere( const btVector3& p, btScalar radius, const btVector3& color );
-		virtual void	drawContactPoint( const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color );
-		virtual void	draw3dText( const btVector3& location, const char* textString );
+		virtual void	DrawCircle( const b2Vec2& center, float32 radius, const b2Color& color ) TIKI_OVERRIDE_FINAL;
+		virtual void	DrawSolidCircle( const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color ) TIKI_OVERRIDE_FINAL;
 
-		virtual void	reportErrorWarning( const char* warningString );
-
-		virtual void	setDebugMode( int debugMode )	{ m_debugMode = debugMode; }
-		virtual int		getDebugMode() const			{ return m_debugMode; }
-
-	private:
-		
-		int				m_debugMode;
-
+		virtual void	DrawSegment( const b2Vec2& p1, const b2Vec2& p2, const b2Color& color ) TIKI_OVERRIDE_FINAL;
+		virtual void	DrawTransform( const b2Transform& xf ) TIKI_OVERRIDE_FINAL;
+		virtual void	DrawPoint( const b2Vec2& p, float32 size, const b2Color& color ) TIKI_OVERRIDE_FINAL;
 	};
 }
 
 #endif
 
-#endif // __TIKI_PHYSICSDEBUGDRAW_HPP_INCLUDED__
+#endif // TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED

@@ -1,38 +1,37 @@
 #pragma once
-#ifndef __TIKI_PHYSICSCOLLIDER_HPP_INCLUDED__
-#define __TIKI_PHYSICSCOLLIDER_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS2DCOLLIDER_HPP_INCLUDED
+#define TIKI_PHYSICS2DCOLLIDER_HPP_INCLUDED
 
-#include "tiki/physics/physicscollisionobject.hpp"
+#include "tiki/physics2d/physics2dcollisionobject.hpp"
 
 #include "tiki/base/types.hpp"
 
-#include "BulletCollision/CollisionDispatch/btCollisionObject.h"
+class b2Body;
 
 namespace tiki
 {
-	class PhysicsShape;
-	struct Vector3;
+	class Physics2dShape;
+	struct Vector2;
 	
-	class PhysicsCollider : public PhysicsCollisionObject
+	class Physics2dCollider : public Physics2dCollisionObject
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsCollider );
+		TIKI_NONCOPYABLE_CLASS( Physics2dCollider );
 		friend class PhysicsWorld;
 
 	public:
 
-							PhysicsCollider();
-		virtual				~PhysicsCollider();
+						Physics2dCollider();
+		virtual			~Physics2dCollider();
 
-		void				create( const PhysicsShape& shape, const Vector3& position );
-		void				dispose();
+		void			create( const Physics2dShape& shape, const Vector2& position );
+		void			dispose();
 
-		virtual void*		getNativeObject() const;
+		virtual void*	getNativeObject() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		btCollisionObject	m_collitionObject;
-
+		b2Body*			m_pBody;
 	};
 }
 
-#endif // __TIKI_PHYSICSCOLLIDER_HPP_INCLUDED__
+#endif // TIKI_PHYSICS2DCOLLIDER_HPP_INCLUDED

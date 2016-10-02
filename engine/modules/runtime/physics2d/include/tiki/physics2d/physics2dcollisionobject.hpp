@@ -1,23 +1,22 @@
 #pragma once
-#ifndef __TIKI_PHYSICSCOLLISIONOBJECT_HPP_INCLUDED__
-#define __TIKI_PHYSICSCOLLISIONOBJECT_HPP_INCLUDED__
+#ifndef TIKI_PHYSICS2DCOLLISIONOBJECT_HPP_INCLUDED
+#define TIKI_PHYSICS2DCOLLISIONOBJECT_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class PhysicsCollisionObject
+	class Physics2dCollisionObject
 	{
-		TIKI_NONCOPYABLE_CLASS( PhysicsCollisionObject );
+		TIKI_NONCOPYABLE_CLASS( Physics2dCollisionObject );
 
 	public:
 
-						PhysicsCollisionObject()	{}
-		virtual			~PhysicsCollisionObject()	{}
+						Physics2dCollisionObject()	{}
+		virtual			~Physics2dCollisionObject()	{}
 
-		virtual void*	getNativeObject() const = 0;
-
+		virtual void*	getNativeObject() const TIKI_PURE;
 	};
 }
 
-#endif // __TIKI_PHYSICSCOLLISIONOBJECT_HPP_INCLUDED__
+#endif // TIKI_PHYSICS2DCOLLISIONOBJECT_HPP_INCLUDED
