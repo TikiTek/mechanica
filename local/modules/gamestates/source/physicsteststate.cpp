@@ -7,6 +7,16 @@
 
 namespace tiki
 {
+	class Bla : public Physics2dShape
+	{
+	public:
+
+		virtual b2Shape* getNativeShape() const TIKI_OVERRIDE_FINAL
+		{
+			return nullptr;
+		}
+	};
+
 	PhysicsTestState::PhysicsTestState()
 	{
 		m_pGame			= nullptr;
@@ -50,7 +60,7 @@ namespace tiki
 				Physics2dBoxShape boxShape;
 				boxShape.create( vector::create( 20.0f, 0.2f ) );
 				
-				TIKI_VERIFY( m_collider.create( m_world, boxShape, vector::create( 0.0f, 1.0f ) ) );
+				//TIKI_VERIFY( m_collider.create( m_world, boxShape, vector::create( 0.0f, 1.0f ) ) );
 
 				Physics2dCircleShape circleShape;
 				circleShape.create( 0.45f );
@@ -60,10 +70,39 @@ namespace tiki
 				TIKI_VERIFY( m_playerCircle.create( m_world, circleShape, vector::create( 0.0f, -0.3f ), 1.0f, 1.0f ) );
 				TIKI_VERIFY( m_playerJoint.createAsRevolute( m_world, m_playerBox, vector::create( 0.0f, 1.2f ), m_playerCircle, Vector2::zero, true, 2000.0f ) );
 
+				boxShape.create( vector::create( 5.0f, 0.2f ) );
+				TIKI_VERIFY( m_body1.create( m_world, boxShape, vector::create( 0.0f, 0.0f ), 100.0f, 1.0f ) );
+
+				boxShape.create( vector::create( 0.5f, 0.5f ) );
+				TIKI_VERIFY( m_body2.create( m_world, boxShape, vector::create( 2.0f, -2.5f ), 1.0f, 1.0f ) );
+				//TIKI_VERIFY( m_joint.createAsRope( m_world, m_body1, Vector2::zero, m_body2, Vector2::zero, 1.5f ) );
+
+				const Vector2 position = m_body1.getPosition();
+
+				Bla bla;
 				boxShape.create( vector::create( 0.05f, 0.05f ) );
-				TIKI_VERIFY( m_body1.create( m_world, boxShape, vector::create( 0.2f, -0.5f ), 1.0f, 1.0f ) );
-				TIKI_VERIFY( m_body2.create( m_world, boxShape, vector::create( 0.1f, 0.5f ), 1.0f, 1.0f ) );
-				TIKI_VERIFY( m_joint.createAsRope( m_world, m_body1, Vector2::zero, m_body2, Vector2::zero, 1.5f ) );
+				for( uint i = 0u; i < TIKI_COUNT( m_colliders ); ++i )
+				{
+					const float x = (i == 0 || i == 1 ? 3.0f : -3.0f);
+					const float y = (i == 0 || i == 2 ? 1.0f : -1.0f);
+
+					const float lx = (i == 0 || i == 1 ? 2.5f : -2.5f);
+					const float ly = (i == 0 || i == 2 ? 0.0f : -0.0f);
+
+					const Vector2 colliderPosition = vector::create( x, y );
+					const Vector2 localOffst = vector::create( lx, ly );
+					
+					Vector2 localPosition;
+					vector::add( localPosition, position, localOffst );
+
+					Vector2 distance;
+					vector::sub( distance, localPosition, colliderPosition );
+
+					const float ff = (i == 0 || i == 2 ? 1.1f : 1.0f);
+
+					m_colliders[ i ].create( m_world, bla, colliderPosition );
+					m_joints[ i ].createAsRope( m_world, m_colliders[ i ], Vector2::zero, m_body1, vector::create( lx, ly ), vector::length( distance ) * ff );
+				}
 
 				return TransitionState_Finish;
 			}
@@ -71,14 +110,22 @@ namespace tiki
 			{
 				TIKI_ASSERT( isInital );
 
-				m_collider.dispose( m_world );
-				m_joint.dispose( m_world );
-				m_body2.dispose( m_world );
-				m_body1.dispose( m_world );
+				//m_joint.dispose( m_world );
 
 				m_playerJoint.dispose( m_world );
 				m_playerBox.dispose( m_world );
 				m_playerCircle.dispose( m_world );
+
+				for( uint i = 0u; i < TIKI_COUNT( m_colliders); ++i )
+				{
+					m_joints[ i ].dispose( m_world );
+					m_colliders[ i ].dispose( m_world );
+				}
+
+				m_body2.dispose( m_world );
+				m_body1.dispose( m_world );
+
+				//m_collider.dispose( m_world );
 
 				m_world.dispose();
 
@@ -120,7 +167,7 @@ namespace tiki
 	{
 		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_XKCD_BRIGHT_BLUE );
 
-		debugrenderer::drawLine( vector::create( 0.0f, 0.0f, 0.0f ), vector::create( 100.0f, 100.0f, 0.0f ), TIKI_COLOR_RED );
+		//debugrenderer::drawLine( vector::create( 0.0f, 0.0f, 0.0f ), vector::create( 100.0f, 100.0f, 0.0f ), TIKI_COLOR_RED );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_world.renderDebug();

@@ -15,7 +15,7 @@ namespace tiki
 		TIKI_ASSERT( m_pJoint == nullptr );
 	}
 
-	bool Physics2dJoint::createAsRope( Physics2dWorld& world, const Physics2dBody& body1, const Vector2& localAnchor1, const Physics2dBody& body2, const Vector2& localAnchor2, float maxLength )
+	bool Physics2dJoint::createAsRope( Physics2dWorld& world, const Physics2dCollisionObject& body1, const Vector2& localAnchor1, const Physics2dCollisionObject& body2, const Vector2& localAnchor2, float maxLength )
 	{
 		b2RopeJointDef jointDef;
 		jointDef.bodyA				= body1.getNativeObject();
@@ -30,7 +30,7 @@ namespace tiki
 		return m_pJoint != nullptr;
 	}
 
-	bool Physics2dJoint::createAsRevolute( Physics2dWorld& world, const Physics2dBody& body1, const Vector2& localAnchor1, const Physics2dBody& body2, const Vector2& localAnchor2, bool enableMotor, float maxMotorTorque )
+	bool Physics2dJoint::createAsRevolute( Physics2dWorld& world, const Physics2dCollisionObject& body1, const Vector2& localAnchor1, const Physics2dCollisionObject& body2, const Vector2& localAnchor2, bool enableMotor, float maxMotorTorque )
 	{
 		b2RevoluteJointDef jointDef;
 		jointDef.bodyA				= body1.getNativeObject();

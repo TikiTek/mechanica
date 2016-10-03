@@ -17,8 +17,8 @@ namespace tiki
 					Physics2dJoint();
 					~Physics2dJoint();
 
-		bool		createAsRope( Physics2dWorld& world, const Physics2dBody& body1, const Vector2& localAnchor1, const Physics2dBody& body2, const Vector2& localAnchor2, float maxLength );
-		bool		createAsRevolute( Physics2dWorld& world, const Physics2dBody& body1, const Vector2& localAnchor1, const Physics2dBody& body2, const Vector2& localAnchor2, bool enableMotor, float maxMotorTorque );
+		bool		createAsRope( Physics2dWorld& world, const Physics2dCollisionObject& body1, const Vector2& localAnchor1, const Physics2dCollisionObject& body2, const Vector2& localAnchor2, float maxLength );
+		bool		createAsRevolute( Physics2dWorld& world, const Physics2dCollisionObject& body1, const Vector2& localAnchor1, const Physics2dCollisionObject& body2, const Vector2& localAnchor2, bool enableMotor, float maxMotorTorque );
 		void		dispose( Physics2dWorld& world );
 
 		void		setRevoluteMotorSteed( float motorSpeed );
