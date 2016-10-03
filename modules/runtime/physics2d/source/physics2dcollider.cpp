@@ -9,22 +9,63 @@ namespace tiki
 {
 	Physics2dCollider::Physics2dCollider()
 	{
+		m_pBody		= nullptr;
+		m_pFixture	= nullptr;
 	}
 
 	Physics2dCollider::~Physics2dCollider()
 	{
+		TIKI_ASSERT( m_pBody == nullptr );
+		TIKI_ASSERT( m_pFixture == nullptr );
 	}
 
-	void Physics2dCollider::create( const Physics2dShape& shape, const Vector2& position )
+	bool Physics2dCollider::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position )
 	{
+		b2BodyDef bodyDef;
+		bodyDef.type			= b2_staticBody;
+		bodyDef.position		= toBox2DVector( position );
+		bodyDef.fixedRotation	= true;
+		bodyDef.userData		= this;
+
+		m_pBody = world.getNativeWorld().CreateBody( &bodyDef );
+		if( m_pBody == nullptr )
+		{
+			return false;
+		}
+
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape	= (b2Shape*)shape.getNativeShape();
+		fixtureDef.density	= 1.0f;
+		fixtureDef.friction	= 1.0f;
+		fixtureDef.userData	= this;
+
+		m_pFixture = m_pBody->CreateFixture( &fixtureDef );
+		if( m_pFixture == nullptr )
+		{
+			dispose( world );
+			return false;
+		}
+
+		return true;
 	}
 
-	void Physics2dCollider::dispose()
+	void Physics2dCollider::dispose( Physics2dWorld& world )
 	{
+		if( m_pFixture != nullptr )
+		{
+			m_pBody->DestroyFixture( m_pFixture );
+			m_pFixture = nullptr;
+		}
+
+		if( m_pBody != nullptr )
+		{
+			world.getNativeWorld().DestroyBody( m_pBody );
+			m_pBody = nullptr;
+		}
 	}
 
-	void* Physics2dCollider::getNativeObject() const
-	{
+	b2Body* Physics2dCollider::getNativeObject() const
+	{	
 		return m_pBody;
 	}
 }

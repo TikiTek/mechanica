@@ -19,8 +19,8 @@ namespace tiki
 	{
 	}
 
-	void* Physics2dCircleShape::getNativeShape() const
+	b2Shape* Physics2dCircleShape::getNativeShape() const
 	{
-		return (void*)&m_shape;
+		return const_cast<b2Shape*>(static_cast<const b2Shape*>(&m_shape));
 	}
 }

@@ -4,6 +4,8 @@
 
 #include "tiki/base/types.hpp"
 
+class b2Body;
+
 namespace tiki
 {
 	class Physics2dCollisionObject
@@ -15,7 +17,7 @@ namespace tiki
 						Physics2dCollisionObject()	{}
 		virtual			~Physics2dCollisionObject()	{}
 
-		virtual void*	getNativeObject() const TIKI_PURE;
+		virtual b2Body*	getNativeObject() const TIKI_PURE;
 	};
 }
 

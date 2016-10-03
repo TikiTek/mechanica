@@ -2,6 +2,7 @@
 #ifndef TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 #define TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 
+#include "tiki/container/fixedarray.hpp"
 #include "tiki/math/axisalignedbox.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/frustum.hpp"
@@ -24,6 +25,9 @@ namespace tiki
 
 		DebugRenderCommandType_DrawSolidBox,
 		DebugRenderCommandType_DrawSolidAxes,
+		DebugRenderCommandType_DrawSolidTriangle,
+		DebugRenderCommandType_DrawSolidCircle,
+		DebugRenderCommandType_DrawSolidRectangle,
 
 		DebugRenderCommandType_DrawText,
 		DebugRenderCommandType_DrawText3D,
@@ -133,6 +137,36 @@ namespace tiki
 		float					lineLength;
 		float					lineOffset;
 		Matrix43				worldMatrix;
+	};
+
+	struct DebugRenderSolidTriangleCommand : public DebugRenderCommand
+	{
+		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawSolidTriangle;
+
+		FixedArray<Vector3, 3u>	points;
+		Color					color;
+	};
+
+	struct DebugRenderSolidCircleCommand : public DebugRenderCommand
+	{
+		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawSolidCircle;
+
+		Vector3					center;
+		float					radius;
+		Vector3					normal;
+		Vector3					tangent;
+		Color					color;
+	};
+
+	struct DebugRenderSolidRectangleCommand : public DebugRenderCommand
+	{
+		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawSolidRectangle;
+
+		Vector3					center;
+		Vector2					extends;
+		Vector3					normal;
+		Vector3					tangent;
+		Color					color;
 	};
 
 	struct DebugRenderTextCommand : public DebugRenderCommand

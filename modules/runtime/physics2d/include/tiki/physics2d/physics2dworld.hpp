@@ -6,7 +6,7 @@
 
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-#	include "tiki/physics3d/physics3ddebugdraw.hpp"
+#	include "tiki/physics2d/physics2ddebugdraw.hpp"
 #endif
 
 #include <Box2D/Dynamics/b2World.h>
@@ -27,12 +27,7 @@ namespace tiki
 		void		create( const Vector2& gravity );
 		void		dispose();
 
-		//void		addBody( PhysicsBody& body );
-		//void		removeBody( PhysicsBody& body );
-		//void		addCollider( PhysicsCollider& collider );
-		//void		removeCollider( PhysicsCollider& collider );
-		//void		addCharacterController( PhysicsCharacterController& controller );
-		//void		removeCharacterController( PhysicsCharacterController& controller );
+		b2World&	getNativeWorld() { return m_world; }
 
 		//bool		checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const;
 		//bool		checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const;

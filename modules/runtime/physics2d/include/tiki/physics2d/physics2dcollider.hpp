@@ -6,31 +6,30 @@
 
 #include "tiki/base/types.hpp"
 
-class b2Body;
-
 namespace tiki
 {
+	class Physics2dWorld;
 	class Physics2dShape;
 	struct Vector2;
 	
 	class Physics2dCollider : public Physics2dCollisionObject
 	{
 		TIKI_NONCOPYABLE_CLASS( Physics2dCollider );
-		friend class PhysicsWorld;
 
 	public:
 
 						Physics2dCollider();
 		virtual			~Physics2dCollider();
 
-		void			create( const Physics2dShape& shape, const Vector2& position );
-		void			dispose();
+		bool			create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position );
+		void			dispose( Physics2dWorld& world );
 
-		virtual void*	getNativeObject() const TIKI_OVERRIDE_FINAL;
+		virtual b2Body*	getNativeObject() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		b2Body*			m_pBody;
+		b2Fixture*		m_pFixture;
 	};
 }
 

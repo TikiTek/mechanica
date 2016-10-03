@@ -16,17 +16,17 @@ namespace tiki
 
 	public:
 
-						Physics2dCircleShape();
-						~Physics2dCircleShape();
+							Physics2dCircleShape();
+							~Physics2dCircleShape();
 
-		void			create( float radius );
-		void			dispose();
+		void				create( float radius );
+		void				dispose();
 
-		virtual void*	getNativeShape() const TIKI_OVERRIDE_FINAL;
+		virtual b2Shape*	getNativeShape() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		b2CircleShape	m_shape;
+		b2CircleShape		m_shape;
 	};
 }
 

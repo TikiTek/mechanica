@@ -17,17 +17,17 @@ namespace tiki
 
 	public:
 
-						Physics2dBoxShape();
-						~Physics2dBoxShape();
+							Physics2dBoxShape();
+							~Physics2dBoxShape();
 
-		void			create( const Vector2& size );
-		void			dispose();
+		void				create( const Vector2& size );
+		void				dispose();
 
-		virtual void*	getNativeShape() const TIKI_OVERRIDE TIKI_FINAL;
+		virtual b2Shape*	getNativeShape() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		b2PolygonShape	m_shape;
+		b2PolygonShape		m_shape;
 	};
 }
 
