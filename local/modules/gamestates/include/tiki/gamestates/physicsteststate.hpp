@@ -6,6 +6,7 @@
 
 #include "tiki/physics2d/physics2dbody.hpp"
 #include "tiki/physics2d/physics2dcollider.hpp"
+#include "tiki/physics2d/physics2djoint.hpp"
 #include "tiki/physics2d/physics2dworld.hpp"
 
 namespace tiki
@@ -49,7 +50,13 @@ namespace tiki
 
 		Physics2dWorld			m_world;
 
-		Physics2dBody			m_body;
+		Physics2dBody			m_playerBox;
+		Physics2dBody			m_playerCircle;
+		Physics2dJoint			m_playerJoint;
+
+		Physics2dBody			m_body1;
+		Physics2dBody			m_body2;
+		Physics2dJoint			m_joint;
 		Physics2dCollider		m_collider;
 
 		bool					m_mouseRightState;
