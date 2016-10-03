@@ -35,17 +35,21 @@ namespace tiki
 			return false;
 		}
 
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape	= (b2Shape*)shape.getNativeShape();
-		fixtureDef.density	= 1.0f;
-		fixtureDef.friction	= 1.0f;
-		fixtureDef.userData	= this;
-
-		m_pFixture = m_pBody->CreateFixture( &fixtureDef );
-		if( m_pFixture == nullptr )
+		b2Shape* pShape = shape.getNativeShape();
+		if( pShape != nullptr )
 		{
-			dispose( world );
-			return false;
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape	= pShape;
+			fixtureDef.density	= 1.0f;
+			fixtureDef.friction	= 1.0f;
+			fixtureDef.userData	= this;
+
+			m_pFixture = m_pBody->CreateFixture( &fixtureDef );
+			if( m_pFixture == nullptr )
+			{
+				dispose( world );
+				return false;
+			}
 		}
 
 		return true;
