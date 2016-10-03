@@ -59,6 +59,9 @@ namespace tiki
 		Physics2dJoint			m_joint;
 		Physics2dCollider		m_collider;
 
+		Physics2dCollider		m_colliders[ 4u ];
+		Physics2dJoint			m_joints[ 4u ];
+
 		bool					m_mouseRightState;
 	};
 }
