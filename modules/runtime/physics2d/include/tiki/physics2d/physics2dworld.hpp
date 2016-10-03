@@ -24,7 +24,7 @@ namespace tiki
 					Physics2dWorld();
 					~Physics2dWorld();
 
-		void		create( const Vector2& gravity );
+		void		create( const Vector2& gravity, float simulationToDrawFactor );
 		void		dispose();
 
 		b2World&	getNativeWorld() { return m_world; }

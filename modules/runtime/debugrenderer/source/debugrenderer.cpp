@@ -766,8 +766,10 @@ namespace tiki
 		renderer.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 		renderer.setShaderMode( ImmediateShaderMode_Color );
 
-		const uint verticesPerCircle = TIKI_MAX( 16u, command.radius * 8u );
-		const uint vertexCount = verticesPerCircle + 1u;
+		const uint iterationsPerCircle = TIKI_MAX( 16u, uint( command.radius * 0.5f ) );
+		const float anglePerIteration = f32::twoPi / iterationsPerCircle;
+
+		const uint vertexCount = iterationsPerCircle * 3u;
 
 		StaticArray< ImmediateVertex > vertices;
 		renderer.beginImmediateGeometry( vertices, vertexCount );
@@ -778,28 +780,37 @@ namespace tiki
 		Vector3 scaleAxe2 = command.tangent;
 		vector::scale( scaleAxe2, command.radius );
 
-		uint i = 0u;
-		for( ; i < verticesPerCircle; i++ )
+		Vector3 firstVertex;
+		vector::add( firstVertex, scaleAxe2, command.center );
+
+		uint vertexIndex = 0u;
+		Vector3 lastVertex = firstVertex;
+		for( uint i = 1u; i < iterationsPerCircle; i++ )
 		{
+			Vector3 vtx = scaleAxe1;
+			vector::scale( vtx, f32::sin( anglePerIteration * i ) );
+
+			Vector3 vty = scaleAxe2;
+			vector::scale( vty, f32::cos( anglePerIteration * i ) );
+
 			Vector3 vt;
-			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
-			vector::scale( vt, f32::sin( (f32::twoPi / verticesPerCircle) * i ) );
-
-			Vector3 vtySin;
-			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
-			vector::scale( vtySin, f32::cos( (f32::twoPi / verticesPerCircle) * i ) );
-
-			vector::add( vt, vtySin );
+			vector::add( vt, vtx, vty );
 			vector::add( vt, command.center );
 
-			vector::toFloat( vertices[ i ].position, vt );
+			vector::toFloat( vertices[ vertexIndex++ ].position, command.center );
+			vector::toFloat( vertices[ vertexIndex++ ].position, vt );
+			vector::toFloat( vertices[ vertexIndex++ ].position, lastVertex );
+
+			lastVertex = vt;
 		}
 
 		// add last vertex from end to start
-		vertices[ i++ ].position = vertices[ 0 ].position;
+		vector::toFloat( vertices[ vertexIndex++ ].position, command.center );
+		vector::toFloat( vertices[ vertexIndex++ ].position, firstVertex );
+		vector::toFloat( vertices[ vertexIndex++ ].position, lastVertex );
 
 		// set color and uv
-		TIKI_ASSERT( i == vertexCount );
+		TIKI_ASSERT( vertexIndex == vertexCount );
 		for( uint i = 0u; i < vertexCount; ++i )
 		{
 			ImmediateVertex& current = vertices[ i ];

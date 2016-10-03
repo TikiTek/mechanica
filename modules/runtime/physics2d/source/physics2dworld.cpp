@@ -22,12 +22,12 @@ namespace tiki
 	{
 	}
 
-	void Physics2dWorld::create( const Vector2& gravity )
+	void Physics2dWorld::create( const Vector2& gravity, float simulationToDrawFactor )
 	{
-		m_world.SetGravity( toBox2DVector( gravity ) );
+		m_world.SetGravity( toPhysicsVector( gravity ) );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		m_debugDraw.create();
+		m_debugDraw.create( simulationToDrawFactor );
 		m_world.SetDebugDraw( &m_debugDraw );
 #endif
 	}
