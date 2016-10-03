@@ -9,17 +9,17 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE b2Vec2 toBox2DVector( const Vector2& vec )
+	TIKI_FORCE_INLINE b2Vec2 toPhysicsVector( const Vector2& vec )
 	{
 		return b2Vec2( vec.x, vec.y );
 	}
 
-	TIKI_FORCE_INLINE Vector2 toTikiVector( const b2Vec2& vec )
+	TIKI_FORCE_INLINE Vector2 toEngineVector( const b2Vec2& vec )
 	{
 		return vector::create( vec.x, vec.y );
 	}
 
-	TIKI_FORCE_INLINE Vector3 toTikiVector( const b2Vec2& vec, float z )
+	TIKI_FORCE_INLINE Vector3 toEngineVector( const b2Vec2& vec, float z )
 	{
 		return vector::create( vec.x, vec.y, z );
 	}

@@ -24,12 +24,15 @@ namespace tiki
 		TIKI_ASSERT( m_pFixture	== nullptr );
 	}
 
-	bool Physics2dBody::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction )
+	bool Physics2dBody::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation /* = false */ )
 	{
+		TIKI_ASSERT( m_pBody == nullptr );
+
 		b2BodyDef bodyDef;
-		bodyDef.type		= b2_dynamicBody;
-		bodyDef.position	= toBox2DVector( position );
-		bodyDef.userData	= this;
+		bodyDef.type			= b2_dynamicBody;
+		bodyDef.position		= toPhysicsVector( position );
+		bodyDef.fixedRotation	= fixedRotation;
+		bodyDef.userData		= this;
 
 		m_pBody = world.getNativeWorld().CreateBody( &bodyDef );
 		if( m_pBody == nullptr )
@@ -49,7 +52,7 @@ namespace tiki
 			dispose( world );
 			return false;
 		}
-
+		
 		return true;
 	}
 
@@ -70,12 +73,12 @@ namespace tiki
 
 	void Physics2dBody::applyForce( const Vector2& force, const Vector2& point /* = Vector2::zero */ )
 	{
-		m_pBody->ApplyForce( toBox2DVector( force ), toBox2DVector( point ), true );
+		m_pBody->ApplyForce( toPhysicsVector( force ), toPhysicsVector( point ), true );
 	}
 
 	Vector2 Physics2dBody::getPosition() const
 	{
-		return toTikiVector( m_pBody->GetPosition() );
+		return toEngineVector( m_pBody->GetPosition() );
 	}
 
 	float Physics2dBody::getRotation() const

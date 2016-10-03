@@ -1,8 +1,9 @@
 #include "tiki/gamestates/physicsteststate.hpp"
 
-#include "tiki/physics2d/physics2dboxshape.hpp"
-#include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
+#include "tiki/graphics/color_xkcd.hpp"
+#include "tiki/physics2d/physics2dboxshape.hpp"
+#include "tiki/physics2d/physics2dcircleshape.hpp"
 
 namespace tiki
 {
@@ -44,15 +45,25 @@ namespace tiki
 
 				m_camera.create( Vector3::zero, Quaternion::identity, &projection );
 
-				m_world.create( vector::create( 0.0f, 9.81f ) );
+				m_world.create( vector::create( 0.0f, 9.81f ), 100.0f );
 
 				Physics2dBoxShape boxShape;
-				boxShape.create( vector::create( 200.0f, 20.0f ) );
+				boxShape.create( vector::create( 20.0f, 0.2f ) );
 				
-				TIKI_VERIFY( m_collider.create( m_world, boxShape, vector::create( 0.0f, 25.0f ) ) );
+				TIKI_VERIFY( m_collider.create( m_world, boxShape, vector::create( 0.0f, 1.0f ) ) );
 
-				boxShape.create( vector::create( 5.0f, 5.0f ) );
-				TIKI_VERIFY( m_body.create( m_world, boxShape, vector::create( 0.0f, 0.0f ), 1.0f, 1.0f ) );
+				Physics2dCircleShape circleShape;
+				circleShape.create( 0.45f );
+				boxShape.create( vector::create( 0.9f, 2.4f ) );
+
+				TIKI_VERIFY( m_playerBox.create( m_world, boxShape, vector::create( 0.0f, -1.5f ), 1.0f, 1.0f, true ) );
+				TIKI_VERIFY( m_playerCircle.create( m_world, circleShape, vector::create( 0.0f, -0.3f ), 1.0f, 1.0f ) );
+				TIKI_VERIFY( m_playerJoint.createAsRevolute( m_world, m_playerBox, vector::create( 0.0f, 1.2f ), m_playerCircle, Vector2::zero, true, 2000.0f ) );
+
+				boxShape.create( vector::create( 0.05f, 0.05f ) );
+				TIKI_VERIFY( m_body1.create( m_world, boxShape, vector::create( 0.2f, -0.5f ), 1.0f, 1.0f ) );
+				TIKI_VERIFY( m_body2.create( m_world, boxShape, vector::create( 0.1f, 0.5f ), 1.0f, 1.0f ) );
+				TIKI_VERIFY( m_joint.createAsRope( m_world, m_body1, Vector2::zero, m_body2, Vector2::zero, 1.5f ) );
 
 				return TransitionState_Finish;
 			}
@@ -61,7 +72,13 @@ namespace tiki
 				TIKI_ASSERT( isInital );
 
 				m_collider.dispose( m_world );
-				m_body.dispose( m_world );
+				m_joint.dispose( m_world );
+				m_body2.dispose( m_world );
+				m_body1.dispose( m_world );
+
+				m_playerJoint.dispose( m_world );
+				m_playerBox.dispose( m_world );
+				m_playerCircle.dispose( m_world );
 
 				m_world.dispose();
 
@@ -115,10 +132,12 @@ namespace tiki
 		if( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
 		{
 			m_mouseRightState = true;
+			return true;
 		}
 		else if( inputEvent.eventType == InputEventType_Mouse_ButtonUp && inputEvent.data.mouseButton.button == MouseButton_Right )
 		{
 			m_mouseRightState = false;
+			return true;
 		}
 		else if( inputEvent.eventType == InputEventType_Mouse_Moved && m_mouseRightState )
 		{
@@ -127,11 +146,21 @@ namespace tiki
 			cameraPosition.y -= inputEvent.data.mouseMoved.yOffset;
 
 			m_camera.setTransform( cameraPosition, Quaternion::identity );
+
+			return true;
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		{
 			switch ( inputEvent.data.keybaordKey.key )
 			{
+			case KeyboardKey_Left:
+				m_playerJoint.setRevoluteMotorSteed( -14.0f );
+				return true;
+
+			case KeyboardKey_Right:
+				m_playerJoint.setRevoluteMotorSteed( 14.0f );
+				return true;
+
 			case KeyboardKey_Z:
 				{
 					//Physics2dBoxShape shape;
@@ -145,6 +174,16 @@ namespace tiki
 
 			default:
 				break;
+			}
+		}
+		else if( inputEvent.eventType == InputEventType_Keyboard_Up )
+		{
+			switch( inputEvent.data.keybaordKey.key )
+			{
+			case KeyboardKey_Left:
+			case KeyboardKey_Right:
+				m_playerJoint.setRevoluteMotorSteed( 0.0f );
+				return true;
 			}
 		}
 

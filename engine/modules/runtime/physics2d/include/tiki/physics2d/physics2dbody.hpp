@@ -24,7 +24,7 @@ namespace tiki
 							Physics2dBody();
 		virtual				~Physics2dBody();
 
-		bool				create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction );
+		bool				create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation = false );
 		void				dispose( Physics2dWorld& world );
 
 		void				applyForce( const Vector2& force, const Vector2& point = Vector2::zero );

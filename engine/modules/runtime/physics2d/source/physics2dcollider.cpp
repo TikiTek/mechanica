@@ -21,9 +21,11 @@ namespace tiki
 
 	bool Physics2dCollider::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position )
 	{
+		TIKI_ASSERT( m_pBody == nullptr );
+
 		b2BodyDef bodyDef;
 		bodyDef.type			= b2_staticBody;
-		bodyDef.position		= toBox2DVector( position );
+		bodyDef.position		= toPhysicsVector( position );
 		bodyDef.fixedRotation	= true;
 		bodyDef.userData		= this;
 

@@ -16,7 +16,7 @@ namespace tiki
 	
 	void Physics2dBoxShape::create( const Vector2& size )
 	{
-		m_shape.SetAsBox( size.x, size.y );
+		m_shape.SetAsBox( size.x * 0.5f, size.y * 0.5f );
 	}
 
 	void Physics2dBoxShape::dispose()
