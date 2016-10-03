@@ -7,6 +7,7 @@
 #include "tiki/gamestates/creditsstate.hpp"
 #include "tiki/gamestates/introstate.hpp"
 #include "tiki/gamestates/menustate.hpp"
+#include "tiki/gamestates/physicsteststate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
 #include "tiki/renderer/renderview.hpp"
@@ -22,6 +23,7 @@ namespace tiki
 		CreditsState		creditsState;
 		TestState			testState;
 		BasicTestState		basicTestState;
+		PhysicsTestState	physicsTestState;
 	};
 
 	static GameStates getStartState()
@@ -32,10 +34,10 @@ namespace tiki
 
 		if ( isStringEquals( userName, "Tim") ||
 			 isStringEquals( userName, "tim.boden" ) ||
-			 isStringEquals( userName, "tbode" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			return GameStates_Test;
+			return GameStates_PhysicsTest;
+			//return GameStates_Test;
 			//return GameStates_BasicTest;
 			//return GameStates_Play;
 		}
@@ -75,6 +77,7 @@ namespace tiki
 		m_pStates->playState.create( this, &m_pStates->applicationState );
 		m_pStates->testState.create( this, &m_pStates->applicationState );
 		m_pStates->basicTestState.create( this );
+		m_pStates->physicsTestState.create( this );
 
 		GameStateDefinition gameDefinition[] =
 		{
@@ -85,7 +88,8 @@ namespace tiki
 					{ &m_pStates->playState,		1u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F8
 					{ &m_pStates->creditsState,		1u,	CreditsStateTransitionSteps_Count,		"CreditsState" },		// F9
 					{ &m_pStates->testState,		1u,	TestStateTransitionSteps_Count,			"TestState" },			// F10
-				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" }		// F11
+				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" },		// F11
+				{ &m_pStates->physicsTestState,		0u,	PhysicsTestStateTransitionSteps_Count,	"PhysicsTestState" }	// F12
 		};
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == GameStates_Count );
 
@@ -134,6 +138,7 @@ namespace tiki
 			m_pStates->creditsState.dispose();
 			m_pStates->testState.dispose();
 			m_pStates->basicTestState.dispose();
+			m_pStates->physicsTestState.dispose();
 
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
@@ -177,6 +182,10 @@ namespace tiki
 		else if( m_gameFlow.isInState( GameStates_Test ) )
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->testState.getRenderView().getCamera() );
+		}
+		else if( m_gameFlow.isInState( GameStates_PhysicsTest ) )
+		{
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->physicsTestState.getCamera() );
 		}
 #endif
 	}

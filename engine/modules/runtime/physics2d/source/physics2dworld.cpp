@@ -9,9 +9,9 @@
 
 namespace tiki
 {	
-	TIKI_DEBUGPROP_BOOL( s_drawDebug, "DrawDebug", true );
-	TIKI_DEBUGPROP_INT( s_stepVelocityIterations, "DrawDebug", 6, 1, 100 );
-	TIKI_DEBUGPROP_INT( s_stepPositionIterations, "DrawDebug", 2, 1, 100 );
+	TIKI_DEBUGPROP_BOOL( s_drawDebug, "Physics2dDrawDebug", true );
+	TIKI_DEBUGPROP_INT( s_stepVelocityIterations, "StepVelocityIterations", 6, 1, 100 );
+	TIKI_DEBUGPROP_INT( s_stepPositionIterations, "StepPositionIterations", 2, 1, 100 );
 
 	Physics2dWorld::Physics2dWorld()
 		: m_world( b2Vec2() )
@@ -39,50 +39,6 @@ namespace tiki
 		m_debugDraw.dispose();
 #endif
 	}
-
-	//void Physics2dWorld::addBody( PhysicsBody& body )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->addRigidBody( &body.m_ridgidBody );		
-	//}
-
-	//void Physics2dWorld::removeBody( PhysicsBody& body )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->removeRigidBody( &body.m_ridgidBody );
-	//}
-
-	//void Physics2dWorld::addCollider( PhysicsCollider& collider )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->addCollisionObject( &collider.m_collitionObject );
-	//}
-
-	//void Physics2dWorld::removeCollider( PhysicsCollider& collider )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->removeCollisionObject( &collider.m_collitionObject );
-	//}
-	//
-	//void Physics2dWorld::addCharacterController( PhysicsCharacterController& controller )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->addCollisionObject( &controller.m_ghostObject, btBroadphaseProxy::CharacterFilter, ( btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter ) );
-	//	m_pPhysicWorld->addAction( &controller.m_controller );
-	//}
-
-	//void Physics2dWorld::removeCharacterController( PhysicsCharacterController& controller )
-	//{
-	//	TIKI_ASSERT( m_pPhysicWorld != nullptr );
-
-	//	m_pPhysicWorld->removeAction( &controller.m_controller );
-	//	m_pPhysicWorld->removeCollisionObject( &controller.m_ghostObject );
-	//}
 
 	//bool Physics2dWorld::checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const
 	//{

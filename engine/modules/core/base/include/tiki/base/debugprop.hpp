@@ -59,7 +59,7 @@ namespace tiki
 			debugprop::unregisterProperty( *this );
 		}
 
-		Type		getType() const		{ return m_type; }
+		Type			getType() const		{ return m_type; }
 		const char*		getFullName() const	{ return m_pName; }
 		const char*		getModule() const	{ return m_pModule; }
 		const char*		getName() const
@@ -72,7 +72,7 @@ namespace tiki
 
 	protected:
 
-		Type		m_type;
+		Type			m_type;
 		const char*		m_pName;
 		const char*		m_pModule;
 

@@ -38,6 +38,9 @@ namespace tiki
 
 		void	drawSolidBox( const Box& box, Color color = TIKI_COLOR_WHITE );
 		void	drawSolidAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix );
+		void	drawSolidTriangle( const Vector3& point1, const Vector3& point2, const Vector3& point3, Color color = TIKI_COLOR_WHITE );
+		void	drawSolidCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color = TIKI_COLOR_WHITE );
+		void	drawSolidRectangle( const Vector3& center, const Vector2& extends, const Vector3& normal, const Vector3& tangent, Color color = TIKI_COLOR_WHITE );
 
 		void	drawText( const Vector2& position, Color color, const char* pTextFormat, ... );
 		void	drawText3D( const Vector3& position, Color color, const char* pTextFormat, ... );

@@ -18,6 +18,11 @@ namespace tiki
 	{
 		return vector::create( vec.x, vec.y );
 	}
+
+	TIKI_FORCE_INLINE Vector3 toTikiVector( const b2Vec2& vec, float z )
+	{
+		return vector::create( vec.x, vec.y, z );
+	}
 }
 
 #endif // TIKI_PHYSICS2DINTERNAL_HPP_INCLUDED

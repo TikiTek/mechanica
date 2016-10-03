@@ -23,6 +23,7 @@ namespace tiki
 				GameStates_Credits,
 				GameStates_Test,
 			GameStates_BasicTest,
+			GameStates_PhysicsTest,
 
 		GameStates_Count
 	};

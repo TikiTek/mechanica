@@ -75,6 +75,9 @@ namespace tiki
 
 		void					flushDrawSolidBox( const ImmediateRenderer& renderer, const DebugRenderSolidBoxCommand& command );
 		void					flushDrawSolidAxes( const ImmediateRenderer& renderer, float lineLength, float lineOffset, const Matrix43& worldMatrix );
+		void					flushDrawSolidTriangle( const ImmediateRenderer& renderer, const DebugRenderSolidTriangleCommand& command );
+		void					flushDrawSolidCircle( const ImmediateRenderer& renderer, const DebugRenderSolidCircleCommand& command );
+		void					flushDrawSolidRectangle( const ImmediateRenderer& renderer, const DebugRenderSolidRectangleCommand& command );
 
 		void					flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command );
 		void					flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command, const Camera& camera );
@@ -255,6 +258,27 @@ namespace tiki
 				{
 					const DebugRenderSolidAxesCommand& command = *(const DebugRenderSolidAxesCommand*)pCommand;
 					flushDrawSolidAxes( renderer, command.lineLength, command.lineOffset, command.worldMatrix );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawSolidTriangle:
+				{
+					const DebugRenderSolidTriangleCommand& command = *(const DebugRenderSolidTriangleCommand*)pCommand;
+					flushDrawSolidTriangle( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawSolidCircle:
+				{
+					const DebugRenderSolidCircleCommand& command = *(const DebugRenderSolidCircleCommand*)pCommand;
+					flushDrawSolidCircle( renderer, command );
+				}
+				break;
+
+			case DebugRenderCommandType_DrawSolidRectangle:
+				{
+					const DebugRenderSolidRectangleCommand& command = *(const DebugRenderSolidRectangleCommand*)pCommand;
+					flushDrawSolidRectangle( renderer, command );
 				}
 				break;
 
@@ -716,6 +740,124 @@ namespace tiki
 		renderer.endImmediateGeometry( vertices );
 	}
 
+	void DebugRenderer::flushDrawSolidTriangle( const ImmediateRenderer& renderer, const DebugRenderSolidTriangleCommand& command )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_TriangleList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
+
+		StaticArray< ImmediateVertex > vertices;
+		renderer.beginImmediateGeometry( vertices, command.points.getCount() );
+
+		for( uint i = 0u; i < command.points.getCount(); ++i )
+		{
+			ImmediateVertex& vertex = vertices[ i ];
+
+			vector::toFloat( vertex.position, command.points[ i ] );
+			vertex.u		= 0u;
+			vertex.v		= 0u;
+			vertex.color	= command.color;
+		}
+
+		renderer.endImmediateGeometry( vertices );
+	}
+
+	void DebugRenderer::flushDrawSolidCircle( const ImmediateRenderer& renderer, const DebugRenderSolidCircleCommand& command )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_TriangleList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
+
+		const uint verticesPerCircle = TIKI_MAX( 16u, command.radius * 8u );
+		const uint vertexCount = verticesPerCircle + 1u;
+
+		StaticArray< ImmediateVertex > vertices;
+		renderer.beginImmediateGeometry( vertices, vertexCount );
+
+		Vector3 scaleAxe1 = command.normal;
+		vector::scale( scaleAxe1, command.radius );
+
+		Vector3 scaleAxe2 = command.tangent;
+		vector::scale( scaleAxe2, command.radius );
+
+		uint i = 0u;
+		for( ; i < verticesPerCircle; i++ )
+		{
+			Vector3 vt;
+			vector::set( vt, scaleAxe1.x, scaleAxe1.y, scaleAxe1.z );
+			vector::scale( vt, f32::sin( (f32::twoPi / verticesPerCircle) * i ) );
+
+			Vector3 vtySin;
+			vector::set( vtySin, scaleAxe2.x, scaleAxe2.y, scaleAxe2.z );
+			vector::scale( vtySin, f32::cos( (f32::twoPi / verticesPerCircle) * i ) );
+
+			vector::add( vt, vtySin );
+			vector::add( vt, command.center );
+
+			vector::toFloat( vertices[ i ].position, vt );
+		}
+
+		// add last vertex from end to start
+		vertices[ i++ ].position = vertices[ 0 ].position;
+
+		// set color and uv
+		TIKI_ASSERT( i == vertexCount );
+		for( uint i = 0u; i < vertexCount; ++i )
+		{
+			ImmediateVertex& current = vertices[ i ];
+			current.color	= command.color;
+			current.u		= 0u;
+			current.v		= 0u;
+		}
+
+		renderer.endImmediateGeometry( vertices );
+	}
+
+	void DebugRenderer::flushDrawSolidRectangle( const ImmediateRenderer& renderer, const DebugRenderSolidRectangleCommand& command )
+	{
+		renderer.setPrimitiveTopology( PrimitiveTopology_TriangleList );
+		renderer.setShaderMode( ImmediateShaderMode_Color );
+
+		static const Vector3 s_rectanglePoints[] =
+		{ 
+			{ -0.5f,  0.5f, 0.0f },
+			{ -0.5f, -0.5f, 0.0f },
+			{  0.5f, -0.5f, 0.0f },
+			{ -0.5f,  0.5f, 0.0f },
+			{  0.5f, -0.5f, 0.0f },
+			{  0.5f,  0.5f, 0.0f },
+		};
+
+		StaticArray< ImmediateVertex > vertices;
+		renderer.beginImmediateGeometry( vertices, TIKI_COUNT( s_rectanglePoints ) );
+
+		Vector3 scaleAxe1 = command.normal;
+		vector::scale( scaleAxe1, command.extends.x );
+
+		Vector3 scaleAxe2 = command.tangent;
+		vector::scale( scaleAxe2, command.extends.y );
+		
+		for( uint i = 0u; i < TIKI_COUNT( s_rectanglePoints ); ++i )
+		{
+			ImmediateVertex& vertex = vertices[ i ];
+
+			Vector3 vtx = scaleAxe1;
+			vector::scale( vtx, s_rectanglePoints[ i ].x );
+
+			Vector3 vty = scaleAxe2;
+			vector::scale( vty, s_rectanglePoints[ i ].y );
+
+			Vector3 vt;
+			vector::add( vt, vtx, vty );
+			vector::add( vt, command.center );
+
+			vector::toFloat( vertex.position, vt );
+			vertex.color	= command.color;
+			vertex.u		= 0u;
+			vertex.v		= 0u;
+		}
+
+		renderer.endImmediateGeometry( vertices );
+	}
+
 	void DebugRenderer::flushDrawText( const ImmediateRenderer& renderer, const DebugRenderTextCommand& command )
 	{
 		renderer.drawText( command.position, *m_pFont, command.text, command.color );
@@ -881,6 +1023,44 @@ namespace tiki
 			pCommand->lineLength	= lineLength;
 			pCommand->lineOffset	= lineOffset;
 			pCommand->worldMatrix	= worldMatrix;
+		}
+	}
+
+	void debugrenderer::drawSolidTriangle( const Vector3& point1, const Vector3& point2, const Vector3& point3, Color color /* = TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderSolidTriangleCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderSolidTriangleCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->points[ 0u ]	= point1;
+			pCommand->points[ 1u ]	= point2;
+			pCommand->points[ 2u ]	= point3;
+			pCommand->color	= color;
+		}
+	}
+
+	void debugrenderer::drawSolidCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderSolidCircleCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderSolidCircleCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->center		= center;
+			pCommand->radius		= radius;
+			pCommand->normal		= normal;
+			pCommand->tangent		= tangent;
+			pCommand->color			= color;
+		}
+	}
+
+	void debugrenderer::drawSolidRectangle( const Vector3& center, const Vector2& extends, const Vector3& normal, const Vector3& tangent, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		DebugRenderSolidRectangleCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderSolidRectangleCommand >();
+		if( pCommand != nullptr )
+		{
+			pCommand->center		= center;
+			pCommand->extends		= extends;
+			pCommand->normal		= normal;
+			pCommand->tangent		= tangent;
+			pCommand->color			= color;
 		}
 	}
 

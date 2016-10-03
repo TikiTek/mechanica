@@ -4,6 +4,8 @@
 
 #include "tiki/base/types.hpp"
 
+class b2Shape;
+
 namespace tiki
 {
 	class Physics2dShape
@@ -12,7 +14,7 @@ namespace tiki
 
 	public:
 
-		virtual void*	getNativeShape() const TIKI_PURE;
+		virtual b2Shape*	getNativeShape() const TIKI_PURE;
 	};
 }
 
