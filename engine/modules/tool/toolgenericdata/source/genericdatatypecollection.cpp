@@ -14,6 +14,7 @@
 #include "tiki/toolbase/directory_tool.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/genericdatatypepointer.hpp"
 #include "tiki/toolgenericdata/genericdatatypereference.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
@@ -161,21 +162,13 @@ namespace tiki
 	{
 		m_pModeEnum = nullptr;
 
-		List< GenericDataType* > types;
+		while( !m_types.isEmpty() )
 		{
-			types.reserve( m_types.getCount() );
-			for ( GenericDataType& type : m_types )
-			{
-				types.add( &type );
-			}
-			m_types.clear();
-		}
+			GenericDataType& type = m_types.getFirst();
 
-		for (uint i = 0u; i < types.getCount(); ++i)
-		{
-			TIKI_MEMORY_DELETE_OBJECT( types[ i ] );
+			m_types.removeSortedByValue( type );
+			TIKI_MEMORY_DELETE_OBJECT( &type );
 		}
-		types.dispose();
 	}
 
 	bool GenericDataTypeCollection::addType( GenericDataType& type )
@@ -243,16 +236,14 @@ namespace tiki
 		return GenericDataTypeMode_Invalid;
 	}
 
-	const GenericDataTypeArray* GenericDataTypeCollection::makeArrayType( const GenericDataType* pType )
+	const GenericDataTypeArray* GenericDataTypeCollection::makeArrayType( const GenericDataType* pBaseType )
 	{
 		GenericDataTypeArray* pArrayType = nullptr;
-		if ( !m_arrays.findValue( const_cast< const GenericDataTypeArray** >( &pArrayType ), pType ) )
+		if ( !m_arrays.findValue( const_cast< const GenericDataTypeArray** >( &pArrayType ), pBaseType ) )
 		{
-			string name = pType->getName();
-			name += "[]";
-
-			pArrayType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeArray )( *this, name, pType, GenericDataTypeMode_ToolAndRuntime );
-			m_arrays.set( pType, pArrayType );
+			const string name = "ResArray<" + pBaseType->getName() + ">";
+			pArrayType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeArray )( *this, name, pBaseType, GenericDataTypeMode_ToolAndRuntime );
+			m_arrays.set( pBaseType, pArrayType );
 
 			TIKI_VERIFY( addType( *pArrayType ) );
 		}
@@ -265,9 +256,7 @@ namespace tiki
 		GenericDataTypeReference* pReferenceType = nullptr;
 		if ( !m_references.findValue( const_cast< const GenericDataTypeReference** >( &pReferenceType ), pBaseType ) )
 		{
-			string name = pBaseType->getName();
-			name += "&";
-
+			const string name = "ResRef<" + pBaseType->getName() + ">";
 			pReferenceType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeReference )( *this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType );
 			m_references.set( pBaseType, pReferenceType );
 
@@ -275,6 +264,21 @@ namespace tiki
 		}
 
 		return pReferenceType;
+	}
+
+	const GenericDataTypePointer* GenericDataTypeCollection::makePointerType( const GenericDataTypeStruct* pBaseType )
+	{
+		GenericDataTypePointer* pPointerType = nullptr;
+		if( !m_pointers.findValue( const_cast<const GenericDataTypePointer**>(&pPointerType), pBaseType ) )
+		{
+			const string name = pBaseType->getName() + "*";
+			pPointerType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypePointer )(*this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType);
+			m_pointers.set( pBaseType, pPointerType );
+
+			TIKI_VERIFY( addType( *pPointerType ) );
+		}
+
+		return pPointerType;
 	}
 
 	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
@@ -336,6 +340,29 @@ namespace tiki
 				}
 
 				pType = makeReferenceType( pTypedType );
+			}
+			else if( modifier.modifier == "pointer" )
+			{
+				const GenericDataTypeStruct* pTypedType = nullptr;
+				if( pType == nullptr )
+				{
+					pType = findTypeByName( modifier.content );
+					if( pType == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
+						return nullptr;
+					}
+
+					if( pType->getType() != GenericDataTypeType_Struct )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Pointer needs a Struct type as base. '%s' is not a resource.\n", modifier.content.cStr() );
+						return nullptr;
+					}
+
+					pTypedType = (const GenericDataTypeStruct*)pType;
+				}
+
+				pType = makePointerType( pTypedType );
 			}
 			else
 			{
@@ -503,6 +530,11 @@ namespace tiki
 		{
 			return outValue.setReference( content, pType );
 		}
+		else if( pType->getType() == GenericDataTypeType_Pointer )
+		{
+			TIKI_NOT_IMPLEMENTED;
+			//return outValue.setReference( content, pType );
+		}
 
 		return false;
 	}
@@ -522,9 +554,9 @@ namespace tiki
 		static const char* s_pFactoriesCreateFormat = "\t\t%sGenericDataResource::registerResourceType( resourceManager );\n";
 		static const char* s_pFactoriesDisposeFormat = "\t\t%sGenericDataResource::unregisterResourceType( resourceManager );\n";
 
-		string factoriesIncludeCode;
-		string factoriesCreateCode;
-		string factoriesDisposeCode;
+		string factoriesIncludeCode = "";
+		string factoriesCreateCode = "";
+		string factoriesDisposeCode = "";
 		Map<string, GenericDataExportData> moduleCode;
 		for (const GenericDataType& type : m_types)
 		{
@@ -593,13 +625,13 @@ namespace tiki
 				factoriesIncludeCode += formatString( s_pFactoriesIncludeFormat, fileName.cStr() );
 			}
 
-			string referencesCode;
+			string referencesCode = "";
 			for (uint refIndex = 0u; refIndex < kvp.value.references.getCount(); ++refIndex)
 			{
 				referencesCode += formatString( s_pReference, kvp.value.references[ refIndex ]->getBaseType()->getName().cStr() );
 			}
 
-			string dependenciesIncludeCode;
+			string dependenciesIncludeCode = "";
 			for (uint depIndex = 0u; depIndex < moduleData.dependencies.getCount(); ++depIndex)
 			{
 				dependenciesIncludeCode += formatString( s_pDependencyInclude, moduleData.dependencies[ depIndex ].cStr() );
@@ -742,7 +774,7 @@ namespace tiki
 		ok &= addType( *pBoolean );
 		ok &= addType( *pString );
 
-		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, "GenericDataTypeMode", GenericDataTypeMode_ToolOnly, *pUInt8 );
+		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, "GenericDataTypeMode", GenericDataTypeMode_ToolOnly, pUInt8 );
 		pGenericDataTypeMode->addValue( "Invalid",			0, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "RuntimeOnly",		1, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "ToolOnly",			2, GenericDataTypeMode_ToolOnly );
@@ -853,15 +885,10 @@ namespace tiki
 				{
 				case GenericDataTypeType_Enum:
 					{
-						if ( pBaseType == nullptr )
-						{
-							pBaseType = findTypeByName( "int" );
-						}
-
-						if ( pBaseType->getType() == GenericDataTypeType_ValueType )
+						if ( pBaseType == nullptr || pBaseType->getType() == GenericDataTypeType_ValueType )
 						{
 							const GenericDataTypeValueType* pTypesBase = (const GenericDataTypeValueType*)pBaseType;
-							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, *pTypesBase );
+							pType = TIKI_MEMORY_NEW_OBJECT( GenericDataTypeEnum )( *this, pNameAtt->content, mode, pTypesBase );
 						}
 						else
 						{

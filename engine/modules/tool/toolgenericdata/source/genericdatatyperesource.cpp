@@ -9,8 +9,8 @@ namespace tiki
 {
 	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, mode )
+		, m_pBaseType( pBaseType )
 	{
-		m_pBaseType = pBaseType;
 	}
 
 	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )

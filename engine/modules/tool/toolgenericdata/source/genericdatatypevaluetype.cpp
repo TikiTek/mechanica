@@ -7,8 +7,8 @@ namespace tiki
 {
 	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
 		: GenericDataType( collection, name, mode )
+		, m_type( type )
 	{
-		m_type = type;
 	}
 
 	GenericDataTypeValueType::~GenericDataTypeValueType()

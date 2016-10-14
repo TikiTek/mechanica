@@ -5,8 +5,8 @@ namespace tiki
 {
 	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode )
 		: GenericDataType( collection, name, mode )
+		, m_pBaseType( pBaseType )
 	{
-		m_pBaseType = pBaseType;
 	}
 
 	GenericDataTypeArray::~GenericDataTypeArray()
@@ -30,17 +30,17 @@ namespace tiki
 
 	uint GenericDataTypeArray::getAlignment() const
 	{
-		return 8;
+		return 8u;
 	}
 
 	uint GenericDataTypeArray::getSize() const
 	{
-		return 4 + 8;
+		return 16u;
 	}
 
 	string GenericDataTypeArray::getExportName() const
 	{
-		return formatString( "StaticArray< %s >", m_pBaseType->getName().cStr() );
+		return formatString( "ResArray< %s >", m_pBaseType->getExportName().cStr() );
 	}
 
 	crc32 GenericDataTypeArray::getTypeCrc() const

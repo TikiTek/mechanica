@@ -103,28 +103,35 @@ namespace tiki
 	{
 	public:
 
-		ResRef()
+		TIKI_FORCE_INLINE ResRef()
 			: m_pRef( nullptr )
 		{
 		}
 
-		ResRef( const T* pRef )
+		TIKI_FORCE_INLINE ResRef( const T* pRef )
 			: m_pRef( pRef )
 		{
 		}
 
-		ResRef( const ResRef< T >& ref )
+		TIKI_FORCE_INLINE ResRef( const ResRef< T >& ref )
 			: m_pRef( ref.m_pRef )
 		{
 		}
 
-		~ResRef()
+		TIKI_FORCE_INLINE ~ResRef()
 		{
 			m_pRef = nullptr;
 		}
 
-		TIKI_FORCE_INLINE const T*	getData() const { return m_pRef; }
-		TIKI_FORCE_INLINE const T*	operator->() const { return m_pRef; }
+		TIKI_FORCE_INLINE const T* getData() const
+		{
+			return m_pRef;
+		}
+
+		TIKI_FORCE_INLINE const T* operator->() const
+		{
+			return m_pRef;
+		}
 
 	private:
 
@@ -134,7 +141,63 @@ namespace tiki
 		TIKI_PRE_ALIGN( 8 )	struct
 		{
 			const T*	m_pRef;
-			void*		m_pPadding;
+			size_t		m_pad0;
+		} TIKI_POST_ALIGN( 8 );
+#endif
+	};
+
+	template<typename T>
+	struct ResArray
+	{
+	public:
+
+		TIKI_FORCE_INLINE ResArray()
+			: m_pData( nullptr )
+			, m_size( 0u )
+		{
+		}
+
+		TIKI_FORCE_INLINE ResArray( const T* pData, size_t size )
+			: m_pData( pRef )
+			, m_size( size )
+		{
+		}
+
+		TIKI_FORCE_INLINE ResArray( const ResArray< T >& copy )
+			: m_pData( copy.m_pData )
+			, m_size( copy.m_size )
+		{
+		}
+
+		TIKI_FORCE_INLINE ~ResArray()
+		{
+			m_pData	= nullptr;
+			m_size	= 0u;
+		}
+
+		TIKI_FORCE_INLINE size_t getSize() const
+		{
+			return m_size;
+		}
+
+		TIKI_FORCE_INLINE const T* operator[]( size_t index ) const
+		{
+			TIKI_ASSERT( index < m_size );
+			return m_pData[ index ];
+		}
+
+	private:
+
+#if TIKI_ENABLED( TIKI_BUILD_64BIT )
+		const T*		m_pData;
+		size_t			m_size;
+#else
+		TIKI_PRE_ALIGN( 8 )	struct
+		{
+			const T*	m_pRef;
+			size_t		m_pad0;
+			size_t		m_size;
+			size_t		m_pad1;
 		} TIKI_POST_ALIGN( 8 );
 #endif
 	};

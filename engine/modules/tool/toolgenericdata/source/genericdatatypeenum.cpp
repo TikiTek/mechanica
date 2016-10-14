@@ -8,9 +8,9 @@
 
 namespace tiki
 {
-	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType& baseType )
+	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
 		: GenericDataType( collection, name, mode )
-		, m_pBaseType( &baseType )
+		, m_pBaseType( pBaseType )
 	{
 	}
 
@@ -87,7 +87,7 @@ namespace tiki
 	bool GenericDataTypeEnum::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		static const char* s_pBaseFormat			= "\n"
-													  "\tenum %s : %s\n"
+													  "\tenum %s %s\n"
 													  "\t{\n"
 													  "%s"
 													  "\n"
@@ -114,18 +114,24 @@ namespace tiki
 		}
 		
 		string invalidValue = "-1";
-		if( m_pBaseType->isUnsignedInteger() )
+		if( m_pBaseType != nullptr && m_pBaseType->isUnsignedInteger() )
 		{
 			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
 			
 			string format = formatString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
 			invalidValue = formatString( format.cStr(), maxValue );
 		}
+
+		string baseString = "";
+		if( m_pBaseType != nullptr )
+		{
+			baseString = ": " + m_pBaseType->getExportName();
+		}
 		
 		targetData.code += formatString(
 			s_pBaseFormat,
 			getExportName().cStr(),
-			m_pBaseType->getExportName().cStr(),
+			baseString.cStr(),
 			valuesCode.cStr(),
 			getExportName().cStr(),
 			getExportName().cStr(),
@@ -142,11 +148,21 @@ namespace tiki
 
 	uint GenericDataTypeEnum::getAlignment() const
 	{
+		if( m_pBaseType == nullptr )
+		{
+			return 4u;
+		}
+
 		return m_pBaseType->getAlignment();
 	}
 
 	uint GenericDataTypeEnum::getSize() const
 	{
+		if( m_pBaseType == nullptr )
+		{
+			return 4u;
+		}
+
 		return m_pBaseType->getSize();
 	}
 

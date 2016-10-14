@@ -7,8 +7,8 @@ namespace tiki
 {
 	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
 		: GenericDataType( collection, name, mode )
+		, m_pBaseType( pBaseType )
 	{
-		m_pBaseType = pBaseType;
 	}
 
 	GenericDataTypeReference::~GenericDataTypeReference()

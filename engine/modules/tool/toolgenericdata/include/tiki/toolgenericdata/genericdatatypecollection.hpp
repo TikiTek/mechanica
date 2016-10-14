@@ -15,8 +15,10 @@ namespace tiki
 {
 	class GenericDataTypeArray;
 	class GenericDataTypeEnum;
+	class GenericDataTypePointer;
 	class GenericDataTypeReference;
 	class GenericDataTypeResource;
+	class GenericDataTypeStruct;
 	class GenericDataValue;
 	struct GenericDataModuleData;
 
@@ -40,8 +42,9 @@ namespace tiki
 
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
-		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pType );
+		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pBaseType );
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
+		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
 
 		const GenericDataType*			parseType( const string& typeString );
 		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
@@ -59,10 +62,12 @@ namespace tiki
 		typedef Map< string, GenericDataModuleData > ModuleMap;
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
 		typedef Map< const GenericDataTypeResource*, const GenericDataTypeReference* > TypeReferenceMap;
+		typedef Map< const GenericDataTypeStruct*, const GenericDataTypePointer* > TypePointerMap;
 
 		LinkedList< GenericDataType >	m_types;
 		TypeArrayMap					m_arrays;
 		TypeReferenceMap				m_references;
+		TypePointerMap					m_pointers;
 
 		const GenericDataTypeEnum*		m_pModeEnum;
 
