@@ -138,11 +138,11 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_BUILD_64BIT )
 		const T*		m_pRef;
 #else
-		TIKI_PRE_ALIGN( 8 )	struct
+		TIKI_ALIGN_PREFIX( 8 )	struct
 		{
 			const T*	m_pRef;
 			size_t		m_pad0;
-		} TIKI_POST_ALIGN( 8 );
+		} TIKI_ALIGN_POSTFIX( 8 );
 #endif
 	};
 
@@ -192,13 +192,13 @@ namespace tiki
 		const T*		m_pData;
 		size_t			m_size;
 #else
-		TIKI_PRE_ALIGN( 8 )	struct
+		TIKI_ALIGN_PREFIX( 8 )	struct
 		{
 			const T*	m_pRef;
 			size_t		m_pad0;
 			size_t		m_size;
 			size_t		m_pad1;
-		} TIKI_POST_ALIGN( 8 );
+		} TIKI_ALIGN_POSTFIX( 8 );
 #endif
 	};
 
