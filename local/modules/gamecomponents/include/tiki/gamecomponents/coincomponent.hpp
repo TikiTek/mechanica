@@ -12,7 +12,7 @@ namespace tiki
 	class Physics3dBodyComponent;
 	class Physics3dCollisionObject;
 	class Physics3dWorld;
-	class TransformComponent;
+	class Transform3dComponent;
 	struct CoinComponentInitData;
 	struct CoinComponentState;
 
@@ -27,7 +27,7 @@ namespace tiki
 		explicit			CoinComponent();
 		virtual				~CoinComponent();
 
-		bool				create( const TransformComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld );
+		bool				create( const Transform3dComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld );
 		void				dispose();
 
 		void				update( const Physics3dCollisionObject* pPlayerCollider, CollectedCoinIdArray& collectedCoins, float totalGameTime );
@@ -43,11 +43,11 @@ namespace tiki
 
 	private:
 
-		const TransformComponent*		m_pTransformComponent;
-		const Physics3dBodyComponent*		m_pPhysicsBodyComponent;
+		const Transform3dComponent*		m_pTransformComponent;
+		const Physics3dBodyComponent*	m_pPhysicsBodyComponent;
 		const LifeTimeComponent*		m_pLifeTimeComponent;
 
-		const Physics3dWorld*				m_pPhysicsWorld;
+		const Physics3dWorld*			m_pPhysicsWorld;
 
 	};
 }

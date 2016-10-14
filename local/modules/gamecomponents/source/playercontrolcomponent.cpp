@@ -3,7 +3,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/gameplay/gamecamera.hpp"
 #include "tiki/input/inputevent.hpp"
@@ -26,7 +26,7 @@ namespace tiki
 
 	struct PlayerControlComponentState : public ComponentState
 	{
-		TransformComponentState*					pTransform;
+		Transform3dComponentState*					pTransform;
 		Physics3dCharacterControllerComponentState*	pPhysicsController;
 
 		float										speed;
@@ -46,7 +46,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
 	}
 
-	bool PlayerControlComponent::create( const TransformComponent& transformComponent, const Physics3dCharacterControllerComponent& physicsCharacterControllerComponent )
+	bool PlayerControlComponent::create( const Transform3dComponent& transformComponent, const Physics3dCharacterControllerComponent& physicsCharacterControllerComponent )
 	{
 		TIKI_ASSERT( m_pTransformComponent							== nullptr );
 		TIKI_ASSERT( m_pPhysicsCharacterControllerComponent			== nullptr );
@@ -179,7 +179,7 @@ namespace tiki
 
 	bool PlayerControlComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerControlComponentState* pState, const PlayerControlComponentInitData* pInitData )
 	{
-		pState->pTransform			= (TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pTransform			= (Transform3dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		pState->pPhysicsController	= (Physics3dCharacterControllerComponentState*)componentIterator.getFirstOfType( m_pPhysicsCharacterControllerComponent->getTypeId() );
 
 		pState->speed = pInitData->speed;

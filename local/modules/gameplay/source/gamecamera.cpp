@@ -2,8 +2,8 @@
 #include "tiki/gameplay/gamecamera.hpp"
 
 #include "tiki/base/debugprop.hpp"
-#include "tiki/components/terraincomponent.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/terraincomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/math/camera.hpp"
 
 namespace tiki

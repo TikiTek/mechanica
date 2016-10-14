@@ -3,10 +3,10 @@
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
 #include "tiki/components/lifetimecomponent.hpp"
-#include "tiki/components/skinnedmodelcomponent.hpp"
-#include "tiki/components/staticmodelcomponent.hpp"
-#include "tiki/components/terraincomponent.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/skinnedmodelcomponent.hpp"
+#include "tiki/components3d/staticmodelcomponent.hpp"
+#include "tiki/components3d/terraincomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/gamecomponents/coincomponent.hpp"
 #include "tiki/gamecomponents/playercontrolcomponent.hpp"
@@ -77,7 +77,7 @@ namespace tiki
 
 		const Physics3dCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
 		const PlayerControlComponent&					getPlayerControlComponent() const { return m_playerControlComponent; }
-		const TransformComponent&						getTransformComponent() const { return m_transformComponent; }
+		const Transform3dComponent&						getTransformComponent() const { return m_transformComponent; }
 		const TerrainComponent&							getTerrainComponent() const { return m_terrainComponent; }
 
 	private:
@@ -106,7 +106,7 @@ namespace tiki
 		SkinnedModelComponent					m_skinnedModelComponent;
 		StaticModelComponent					m_staticModelComponent;
 		TerrainComponent						m_terrainComponent;
-		TransformComponent						m_transformComponent;
+		Transform3dComponent					m_transformComponent;
 
 		PlayerControlComponent					m_playerControlComponent;
 		CoinComponent							m_coinComponent;
