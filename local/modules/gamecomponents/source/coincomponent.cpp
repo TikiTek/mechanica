@@ -3,7 +3,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components/lifetimecomponent.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/physics3d/physics3dworld.hpp"
 #include "tiki/physics3dcomponents/physics3dbodycomponent.hpp"
@@ -14,7 +14,7 @@ namespace tiki
 {
 	struct CoinComponentState : public ComponentState
 	{
-		TransformComponentState*		pTransform;
+		Transform3dComponentState*		pTransform;
 		LifeTimeComponentState*			pLifeTime;
 		Physics3dBodyComponentState*	pPhysicsBody;
 
@@ -40,7 +40,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
 	}
 
-	bool CoinComponent::create( const TransformComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld )
+	bool CoinComponent::create( const Transform3dComponent& transformComponent, const Physics3dBodyComponent& physicsBodyComponent, const LifeTimeComponent& lifeTimeComponent, const Physics3dWorld& physicsWorld )
 	{
 		m_pTransformComponent	= &transformComponent;
 		m_pPhysicsBodyComponent	= &physicsBodyComponent;
@@ -96,7 +96,7 @@ namespace tiki
 
 	bool CoinComponent::internalInitializeState( ComponentEntityIterator& componentIterator, CoinComponentState* pState, const CoinComponentInitData* pInitData )
 	{
-		pState->pTransform = (TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pTransform = (Transform3dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		pState->pPhysicsBody = (Physics3dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
 		pState->pLifeTime = (LifeTimeComponentState*)componentIterator.getFirstOfType( m_pLifeTimeComponent->getTypeId() );
 

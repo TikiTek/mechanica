@@ -1,5 +1,4 @@
-
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
@@ -7,11 +6,11 @@
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 
-#include "components.hpp"
+#include "components3d.hpp"
 
 namespace tiki
 {
-	struct TransformComponentState : public ComponentState
+	struct Transform3dComponentState : public ComponentState
 	{
 		Vector3		position;
 		Quaternion	rotation;
@@ -21,7 +20,7 @@ namespace tiki
 		Matrix43	worldTransform;
 	};
 
-	static void checkAndUpdateWorldTransform( TransformComponentState* pState )
+	static void checkAndUpdateWorldTransform( Transform3dComponentState* pState )
 	{
 		if ( pState->needUpdate )
 		{
@@ -34,25 +33,25 @@ namespace tiki
 		}
 	}
 
-	TransformComponent::TransformComponent()
+	Transform3dComponent::Transform3dComponent()
 	{
 	}
 
-	TransformComponent::~TransformComponent()
+	Transform3dComponent::~Transform3dComponent()
 	{
 	}
 
-	bool TransformComponent::create()
+	bool Transform3dComponent::create()
 	{
 		return true;
 	}
 
-	void TransformComponent::dispose()
+	void Transform3dComponent::dispose()
 	{
 
 	}
 
-	void TransformComponent::update()
+	void Transform3dComponent::update()
 	{
 		Iterator componentStates = getIterator();
 
@@ -63,28 +62,28 @@ namespace tiki
 		}
 	}
 
-	void TransformComponent::getPosition( Vector3& targetPosition, const TransformComponentState* pState ) const
+	void Transform3dComponent::getPosition( Vector3& targetPosition, const Transform3dComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		targetPosition = pState->position;
 	}
 
-	void TransformComponent::getRotation( Quaternion& targetRotation, const TransformComponentState* pState ) const
+	void Transform3dComponent::getRotation( Quaternion& targetRotation, const Transform3dComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
 		targetRotation = pState->rotation;
 	}
 
-	void TransformComponent::getWorldTransform( Matrix43& targetMatrix, const TransformComponentState* pState ) const
+	void Transform3dComponent::getWorldTransform( Matrix43& targetMatrix, const Transform3dComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 		
 		targetMatrix = pState->worldTransform;
 	}
 
-	void TransformComponent::setPosition( TransformComponentState* pState, const Vector3& position ) const
+	void Transform3dComponent::setPosition( Transform3dComponentState* pState, const Vector3& position ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
@@ -92,7 +91,7 @@ namespace tiki
 		pState->needUpdate	= true;
 	}
 
-	void TransformComponent::setRotation( TransformComponentState* pState, const Quaternion& rotation ) const
+	void Transform3dComponent::setRotation( Transform3dComponentState* pState, const Quaternion& rotation ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 
@@ -100,22 +99,22 @@ namespace tiki
 		pState->needUpdate	= true;
 	}
 
-	crc32 TransformComponent::getTypeCrc() const
+	crc32 Transform3dComponent::getTypeCrc() const
 	{
-		return crcString( "TransformComponent" );
+		return crcString( "Transform3dComponent" );
 	}
 
-	uint32 TransformComponent::getStateSize() const
+	uint32 Transform3dComponent::getStateSize() const
 	{
-		return sizeof( TransformComponentState );
+		return sizeof( Transform3dComponentState );
 	}
 
-	const char* TransformComponent::getTypeName() const
+	const char* Transform3dComponent::getTypeName() const
 	{
-		return "TransformComponent";
+		return "Transform3dComponent";
 	}
 
-	bool TransformComponent::internalInitializeState( ComponentEntityIterator& componentIterator, TransformComponentState* pState, const TransformComponentInitData* pInitData )
+	bool Transform3dComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Transform3dComponentState* pState, const Transform3dComponentInitData* pInitData )
 	{
 		vector::set( pState->position, pInitData->position );
 		quaternion::set( pState->rotation, pInitData->rotation );
@@ -127,7 +126,7 @@ namespace tiki
 		return true;
 	}
 
-	void TransformComponent::internalDisposeState( TransformComponentState* pState )
+	void Transform3dComponent::internalDisposeState( Transform3dComponentState* pState )
 	{
 		vector::clear( pState->position );
 		quaternion::clear( pState->rotation );

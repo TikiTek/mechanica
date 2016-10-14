@@ -2,7 +2,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/physics3d/physics3dboxshape.hpp"
@@ -19,7 +19,7 @@ namespace tiki
 {
 	struct Physics3dCharacterControllerComponentState : public ComponentState
 	{
-		TransformComponentState*		pTransform;
+		Transform3dComponentState*		pTransform;
 
 		Physics3dComponentShape			shape;
 		Physics3dCharacterController	controller;
@@ -38,7 +38,7 @@ namespace tiki
 		TIKI_ASSERT( m_pTranformComponent	== nullptr );
 	}
 
-	bool Physics3dCharacterControllerComponent::create( Physics3dWorld& physicsWorld, const TransformComponent& transformComponent )
+	bool Physics3dCharacterControllerComponent::create( Physics3dWorld& physicsWorld, const Transform3dComponent& transformComponent )
 	{
 		m_pPhysicsWorld			= &physicsWorld;
 
@@ -133,7 +133,7 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		pState = new( pState ) Physics3dCharacterControllerComponentState;
-		pState->pTransform	= (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() ) ;
+		pState->pTransform	= (Transform3dComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() ) ;
 
 		Physics3dShape* pShape = createPhysics3dComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )

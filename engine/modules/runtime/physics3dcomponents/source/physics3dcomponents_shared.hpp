@@ -4,7 +4,7 @@
 
 #include "tiki/math/vector.hpp"
 
-#include "components.hpp"
+#include "physic3dcomponents.hpp"
 
 namespace tiki
 {

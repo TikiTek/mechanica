@@ -295,20 +295,13 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE uint List< T >::getNextSize(uint targetSize)
 	{
-		uint capacity = TIKI_MAX( 2u, m_capacity );
-
-		while ( capacity <= targetSize )
-		{
-			capacity *= 2;
-		}
-
-		return capacity;
+		return getNextPowerOfTwo( TIKI_MAX( 8u, targetSize ) );
 	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::checkArraySize( uint neddedSize )
 	{
-		if ( m_capacity < neddedSize )
+		if ( neddedSize > m_capacity )
 		{
 			const uint capacity = getNextSize( neddedSize );
 			T* pNewData = TIKI_MEMORY_NEW_ARRAY( T, capacity, true );

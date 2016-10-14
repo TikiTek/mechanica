@@ -8,7 +8,7 @@ namespace tiki
 {
 	class Physics3dCollisionObject;
 	class Physics3dWorld;
-	class TransformComponent;
+	class Transform3dComponent;
 	struct Physics3dBodyComponentInitData;
 	struct Physics3dBodyComponentState;
 	struct Quaternion;
@@ -23,7 +23,7 @@ namespace tiki
 		explicit						Physics3dBodyComponent();
 		virtual							~Physics3dBodyComponent();
 
-		bool							create( Physics3dWorld& physicsWorld, const TransformComponent& transformComponent );
+		bool							create( Physics3dWorld& physicsWorld, const Transform3dComponent& transformComponent );
 		void							dispose();
 
 		void							update();
@@ -48,7 +48,7 @@ namespace tiki
 
 		Physics3dWorld*				m_pPhysicsWorld;
 
-		const TransformComponent*	m_pTranformComponent;
+		const Transform3dComponent*	m_pTranformComponent;
 
 	};
 }

@@ -2,7 +2,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/math/quaternion.hpp"
 #include "tiki/math/vector.hpp"
 #include "tiki/physics3d/physics3dbody.hpp"
@@ -19,7 +19,7 @@ namespace tiki
 {
 	struct Physics3dBodyComponentState : public ComponentState
 	{
-		TransformComponentState*	pTransform;
+		Transform3dComponentState*	pTransform;
 
 		Physics3dComponentShape		shape;
 
@@ -39,7 +39,7 @@ namespace tiki
 		TIKI_ASSERT( m_pTranformComponent	== nullptr );
 	}
 
-	bool Physics3dBodyComponent::create( Physics3dWorld& physicsWorld, const TransformComponent& transformComponent )
+	bool Physics3dBodyComponent::create( Physics3dWorld& physicsWorld, const Transform3dComponent& transformComponent )
 	{
 		m_pPhysicsWorld			= &physicsWorld;
 
@@ -121,7 +121,7 @@ namespace tiki
 
 		pState = new( pState ) Physics3dBodyComponentState;
 
-		pState->pTransform = (TransformComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
+		pState->pTransform = (Transform3dComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
 		if ( pState->pTransform == nullptr )
 		{
 			return false;

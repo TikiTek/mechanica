@@ -237,7 +237,7 @@ namespace tiki
 		const float totalGameTime	= float( m_pGame->getFrameTimer().getTotalTime() );
 		const float timeValue		= (float)m_pGame->getFrameTimer().getTotalTime() / 10.0f;
 
-		TransformComponentState* pState = (TransformComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
+		Transform3dComponentState* pState = (Transform3dComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_boxesEntityId, 0u );
 
 		Vector3 position ={ 0.0f, 3.0f, 0.0f };
 		m_gameClient.getTransformComponent().setPosition( pState, position );

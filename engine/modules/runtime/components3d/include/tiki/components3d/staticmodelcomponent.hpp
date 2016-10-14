@@ -6,7 +6,7 @@
 namespace tiki
 {
 	class RenderScene;
-	class TransformComponent;
+	class Transform3dComponent;
 	struct StaticModelComponentInitData;
 	struct StaticModelComponentState;
 
@@ -19,7 +19,7 @@ namespace tiki
 		explicit			StaticModelComponent();
 		virtual				~StaticModelComponent();
 
-		bool				create( TransformComponent& transformComponent );
+		bool				create( Transform3dComponent& transformComponent );
 		void				dispose();
 
 		void				render( RenderScene& scene ) const;
@@ -35,7 +35,7 @@ namespace tiki
 
 	private:
 
-		const TransformComponent*	m_pTransformComponent;
+		const Transform3dComponent*	m_pTransformComponent;
 
 	};
 }

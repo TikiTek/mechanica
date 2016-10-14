@@ -10,8 +10,9 @@
 #include "tiki/renderer/renderercontext.hpp"
 #include "tiki/renderer/renderview.hpp"
 
-#include "components.hpp"
+#include "components3d.hpp"
 #include "gamecomponents.hpp"
+#include "physic3dcomponents.hpp"
 
 namespace tiki
 {
@@ -143,7 +144,7 @@ namespace tiki
 	
 	EntityId GameClient::createPlayerEntity( const Model* pModel, const Vector3& position )
 	{
-		TransformComponentInitData transformInitData;
+		Transform3dComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
@@ -179,7 +180,7 @@ namespace tiki
 
 	EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
 	{
-		TransformComponentInitData transformInitData;
+		Transform3dComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
@@ -203,7 +204,7 @@ namespace tiki
 	
 	EntityId GameClient::createBoxEntity( const Model* pModel, const Vector3& position )
 	{
-		TransformComponentInitData transformInitData;
+		Transform3dComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
@@ -239,7 +240,7 @@ namespace tiki
 	
 	EntityId GameClient::createCoinEntity( const Model* pModel, const Vector3& position )
 	{
-		TransformComponentInitData transformInitData;
+		Transform3dComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 0.5f, 0.5f, 0.5f );
@@ -279,7 +280,7 @@ namespace tiki
 
 	EntityId GameClient::createTerrainEntity( const Model* pModel, const Vector3& position )
 	{
-		TransformComponentInitData transformInitData;
+		Transform3dComponentInitData transformInitData;
 		createFloat3( transformInitData.position, position.x, position.y, position.z );
 		createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
 		createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );

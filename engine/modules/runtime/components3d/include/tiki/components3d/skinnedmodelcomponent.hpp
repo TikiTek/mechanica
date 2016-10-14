@@ -9,7 +9,7 @@
 namespace tiki
 {
 	class RenderScene;
-	class TransformComponent;
+	class Transform3dComponent;
 	struct SkinnedModelComponentInitData;
 	struct SkinnedModelComponentState;
 
@@ -22,7 +22,7 @@ namespace tiki
 								SkinnedModelComponent();
 		virtual					~SkinnedModelComponent();
 		
-		bool					create( TransformComponent& transformComponent );
+		bool					create( Transform3dComponent& transformComponent );
 		void					dispose();
 
 		void					render( RenderScene& scene ) const;
