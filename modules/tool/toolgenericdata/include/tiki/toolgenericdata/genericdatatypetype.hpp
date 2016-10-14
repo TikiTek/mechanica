@@ -14,7 +14,8 @@ namespace tiki
 		GenericDataTypeType_Resource,
 		GenericDataTypeType_Array,
 		GenericDataTypeType_Reference,
-	
+		GenericDataTypeType_Pointer,
+
 		GenericDataTypeType_Count,
 	};
 }

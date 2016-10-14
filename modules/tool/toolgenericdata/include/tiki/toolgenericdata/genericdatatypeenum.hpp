@@ -24,7 +24,7 @@ namespace tiki
 
 	public:
 
-											GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType& baseType );
+											GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType );
 		virtual								~GenericDataTypeEnum();
 
 		virtual bool						loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;

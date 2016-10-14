@@ -161,7 +161,7 @@ namespace tiki
 		static const char* s_pBaseTypeFormat	= " : public %s";
 		static const char* s_pFieldFormat		= "\t\t%s %s;\n";
 
-		string fieldsCode;
+		string fieldsCode = "";
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
@@ -185,7 +185,7 @@ namespace tiki
 			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
 		}
 
-		string baseTypeCode;
+		string baseTypeCode = "";
 		if ( m_pBaseType != nullptr )
 		{
 			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
