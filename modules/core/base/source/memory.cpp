@@ -16,9 +16,9 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	void* memory::allocAligned( size_t size, const char* pFileName, int lineNumber, size_t alignment /*= TIKI_MINIMUM_ALIGNMENT*/ )
+	void* memory::allocAligned( size_t size, const char* pFileName, int lineNumber, size_t alignment )
 #else
-	void* memory::allocAligned( size_t size, size_t alignment /*= TIKI_MINIMUM_ALIGNMENT*/ )
+	void* memory::allocAligned( size_t size, size_t alignment )
 #endif
 	{
 		TIKI_ASSERT( alignment != TIKI_DEFAULT_ALIGNMENT );

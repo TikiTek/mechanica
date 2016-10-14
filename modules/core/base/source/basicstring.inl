@@ -648,8 +648,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint BasicString::calculateLength( uint neededLength ) const
 	{
-		neededLength++;
-		return getNextPowerOfTwo( neededLength );
+		return getNextPowerOfTwo( neededLength + 1u );
 	}
 }
 

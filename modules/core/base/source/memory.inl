@@ -59,9 +59,9 @@ namespace tiki
 
 	template<typename T>
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	TIKI_FORCE_INLINE T* memory::newObjectAligned( const char* pFileName, int lineNumber, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE T* memory::newObjectAligned( const char* pFileName, int lineNumber, uint alignment )
 #else
-	TIKI_FORCE_INLINE T* memory::newObjectAligned( uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE T* memory::newObjectAligned( uint alignment )
 #endif
 	{
 		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
@@ -79,9 +79,9 @@ namespace tiki
 
 	template<typename T>
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */, bool constructElements /*= false*/ )
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment, bool constructElements )
 #else
-	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/, bool constructElements /*= false*/ )
+	TIKI_FORCE_INLINE T* memory::newArrayAligned( uint count, uint alignment, bool constructElements )
 #endif
 	{
 		if ( alignment == TIKI_DEFAULT_ALIGNMENT )

@@ -1,9 +1,8 @@
-
-#include "tiki/components/skinnedmodelcomponent.hpp"
+#include "tiki/components3d/skinnedmodelcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/graphics/model.hpp"
 #include "tiki/math/matrix.hpp"
 
@@ -29,7 +28,7 @@ namespace tiki
 		TIKI_ASSERT( m_transformTypeId == InvalidComponentTypeId );
 	}
 
-	bool SkinnedModelComponent::create( TransformComponent& transformComponent )
+	bool SkinnedModelComponent::create( Transform3dComponent& transformComponent )
 	{
 		m_transformTypeId = transformComponent.getTypeId();
 		if ( m_transformTypeId == InvalidComponentTypeId )

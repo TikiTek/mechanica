@@ -1,20 +1,19 @@
-
-#include "tiki/components/terraincomponent.hpp"
+#include "tiki/components3d/terraincomponent.hpp"
 
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/renderer/renderscene.hpp"
 
 #include "components.hpp"
 
 namespace tiki
 {
-	struct TransformComponentState;
+	struct Transform3dComponentState;
 
 	struct TerrainComponentState : public ComponentState
 	{
-		const TransformComponentState*	pTransform;
-		const Model*					pModel;
+		const Transform3dComponentState*	pTransform;
+		const Model*						pModel;
 	};
 
 	TerrainComponent::TerrainComponent()
@@ -27,7 +26,7 @@ namespace tiki
 		TIKI_ASSERT( m_pTransformComponent == nullptr );
 	}
 
-	bool TerrainComponent::create( TransformComponent& transformComponent )
+	bool TerrainComponent::create( Transform3dComponent& transformComponent )
 	{
 		m_pTransformComponent = &transformComponent;
 
@@ -70,7 +69,7 @@ namespace tiki
 
 	bool TerrainComponent::internalInitializeState( ComponentEntityIterator& componentIterator, TerrainComponentState* pState, const TerrainComponentInitData* pInitData )
 	{
-		pState->pTransform = (const TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pTransform = (const Transform3dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		if ( pState->pTransform == nullptr )
 		{
 			return false;

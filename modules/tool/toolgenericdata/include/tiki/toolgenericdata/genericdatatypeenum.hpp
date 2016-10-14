@@ -46,10 +46,9 @@ namespace tiki
 
 	private:
 
-		const GenericDataTypeValueType*	m_pBaseType;
+		const GenericDataTypeValueType*		m_pBaseType;
 
 		List< GenericDataEnumValue >		m_values;
-
 	};
 }
 

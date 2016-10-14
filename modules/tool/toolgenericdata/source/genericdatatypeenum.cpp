@@ -190,9 +190,10 @@ namespace tiki
 	void GenericDataTypeEnum::addValue( const string& name, sint64 value, GenericDataTypeMode mode /*= GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		GenericDataEnumValue& field = m_values.add();
-		field.name	= name;
-		field.value	= value;
-		field.mode	= mode;
+		field.name		= name;
+		field.hasValue	= true;
+		field.value		= value;
+		field.mode		= mode;
 	}
 
 	void GenericDataTypeEnum::removeValue( const string& name )

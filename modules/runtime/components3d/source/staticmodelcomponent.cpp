@@ -1,20 +1,19 @@
-
-#include "tiki/components/staticmodelcomponent.hpp"
+#include "tiki/components3d/staticmodelcomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/components/componentstate.hpp"
-#include "tiki/components/transformcomponent.hpp"
+#include "tiki/components3d/transform3dcomponent.hpp"
 #include "tiki/renderer/renderscene.hpp"
 
-#include "components.hpp"
+#include "components3d.hpp"
 
 namespace tiki
 {
-	struct TransformComponentState;
+	struct Transform3dComponentState;
 
 	struct StaticModelComponentState : public ComponentState
 	{
-		const TransformComponentState*	pTransform;
+		const Transform3dComponentState*	pTransform;
 		const Model*					pModel;
 	};
 
@@ -28,7 +27,7 @@ namespace tiki
 		TIKI_ASSERT( m_pTransformComponent == nullptr );
 	}
 
-	bool StaticModelComponent::create( TransformComponent& transformComponent )
+	bool StaticModelComponent::create( Transform3dComponent& transformComponent )
 	{
 		m_pTransformComponent = &transformComponent;
 
@@ -71,7 +70,7 @@ namespace tiki
 
 	bool StaticModelComponent::internalInitializeState( ComponentEntityIterator& componentIterator, StaticModelComponentState* pState, const StaticModelComponentInitData* pInitData )
 	{
-		pState->pTransform = (const TransformComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pTransform = (const Transform3dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		if ( pState->pTransform == nullptr )
 		{
 			return false;

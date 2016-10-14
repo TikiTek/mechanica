@@ -7,7 +7,7 @@
 namespace tiki
 {
 	class RenderScene;
-	class TransformComponent;
+	class Transform3dComponent;
 	struct TerrainComponentInitData;
 	struct TerrainComponentState;
 	struct Vector2;
@@ -21,7 +21,7 @@ namespace tiki
 		explicit			TerrainComponent();
 		virtual				~TerrainComponent();
 
-		bool				create( TransformComponent& transformComponent );
+		bool				create( Transform3dComponent& transformComponent );
 		void				dispose();
 
 		void				render( RenderScene& scene ) const;
@@ -38,7 +38,7 @@ namespace tiki
 
 	private:
 
-		const TransformComponent*	m_pTransformComponent;
+		const Transform3dComponent*	m_pTransformComponent;
 
 	};
 }
