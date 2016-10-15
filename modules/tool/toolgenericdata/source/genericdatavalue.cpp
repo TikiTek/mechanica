@@ -434,8 +434,15 @@ namespace tiki
 
 				return true;
 			}
+			else if( typeType == GenericDataTypeType_Pointer )
+			{
+				m_pType		= pType;
+				m_valueType	= GenericDataValueType_Pointer;
+
+				return true;
+			}
 		}
-		else if ( m_pType == pType )
+		else if ( m_pType->isTypeCompatible( pType ) )
 		{
 			return true;
 		}

@@ -81,14 +81,16 @@ namespace tiki
 	{
 		if ( !hasField( name ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Struct of Type '%s' has no field named '&s'.\n", m_pType->getName().cStr(), name.cStr() );
+			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Struct of Type '%s' has no field named '%s'.\n", m_pType->getName().cStr(), name.cStr() );
 			return false;
 		}
 
 		GenericDataValue& currentValue = m_fields[ name ];
-		if ( currentValue.getType() != value.getType() )
+		if ( currentValue.getType()->isTypeCompatible( value.getType() ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s') to field '%s'!\n", value.getType()->getName().cStr(), currentValue.getType()->getName().cStr(), name.cStr() );
+			const char* pCurrentType = (currentValue.getType() != nullptr ? currentValue.getType()->getName().cStr() : "null");
+			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
+			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s') to field '%s'!\n", pNewType, pCurrentType, name.cStr() );
 			return false;
 		}
 

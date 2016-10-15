@@ -42,6 +42,8 @@ namespace tiki
 
 		GenericDataTypeMode				findModeByName( const string& name ) const;
 
+		const GenericDataTypeValueType*	getEnumDefaultBaseType() const;
+
 		const GenericDataTypeArray*		makeArrayType( const GenericDataType* pBaseType );
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
@@ -70,6 +72,7 @@ namespace tiki
 		TypePointerMap					m_pointers;
 
 		const GenericDataTypeEnum*		m_pModeEnum;
+		const GenericDataTypeValueType*	m_pEnumDefaultType;
 
 		ModuleMap						m_modules;
 		

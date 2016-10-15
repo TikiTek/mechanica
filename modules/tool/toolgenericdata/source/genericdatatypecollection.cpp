@@ -236,6 +236,11 @@ namespace tiki
 		return GenericDataTypeMode_Invalid;
 	}
 
+	const GenericDataTypeValueType* GenericDataTypeCollection::getEnumDefaultBaseType() const
+	{
+		return m_pEnumDefaultType;
+	}
+
 	const GenericDataTypeArray* GenericDataTypeCollection::makeArrayType( const GenericDataType* pBaseType )
 	{
 		GenericDataTypeArray* pArrayType = nullptr;
@@ -439,7 +444,7 @@ namespace tiki
 				}
 				else if ( modifier.modifier == "reference" )
 				{
-
+					TIKI_NOT_IMPLEMENTED;
 				}
 				else if ( modifier.modifier == "bit" )
 				{
@@ -484,6 +489,10 @@ namespace tiki
 						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' must have a struct type. '%s' is not a struct.\n", modifier.modifier.cStr(), pParentType->getName().cStr() );
 						return false;
 					}
+				}
+				else if( modifier.modifier == "crc" )
+				{
+					content = StringConvert::ToString( crcString( content ) );
 				}
 				else
 				{
@@ -743,7 +752,7 @@ namespace tiki
 		GenericDataTypeValueType* pFloat64	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "float64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
 
 		GenericDataTypeValueType* pCrc32	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "crc32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
-		GenericDataTypeValueType* pTimeMS	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "timems",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
+		GenericDataTypeValueType* pTimeMs	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "timems",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
 		ok &= addType( *pShort );
 		ok &= addType( *pInt );
@@ -766,7 +775,7 @@ namespace tiki
 		ok &= addType( *pFloat64 );
 
 		ok &= addType( *pCrc32 );
-		ok &= addType( *pTimeMS );
+		ok &= addType( *pTimeMs );
 
 		GenericDataTypeValueType* pBoolean	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "bool", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_Boolean );
 		GenericDataTypeValueType* pString	= TIKI_MEMORY_NEW_OBJECT( GenericDataTypeValueType )( *this, "string", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_String );
@@ -780,6 +789,7 @@ namespace tiki
 		pGenericDataTypeMode->addValue( "ToolOnly",			2, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "ToolAndRuntime",	3, GenericDataTypeMode_ToolOnly );
 		m_pModeEnum = pGenericDataTypeMode;
+		m_pEnumDefaultType = pInt;
 
 		ok &= addType( *pGenericDataTypeMode );
 
