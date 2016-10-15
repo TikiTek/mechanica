@@ -64,7 +64,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pNode );
 		TIKI_ASSERT( pElement );
-		TIKI_ASSERT( pElement->elements );
+
 		return xml_element_find_element( (XmlElement*)pElement, pName, nullptr );
 	}
 

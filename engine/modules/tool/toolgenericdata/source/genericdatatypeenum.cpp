@@ -12,6 +12,10 @@ namespace tiki
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
+		if( m_pBaseType == nullptr )
+		{
+			m_pBaseType = m_collection.getEnumDefaultBaseType();
+		}
 	}
 
 	GenericDataTypeEnum::~GenericDataTypeEnum()
@@ -65,15 +69,26 @@ namespace tiki
 
 					if ( pValueAtt != nullptr )
 					{
+						GenericDataValue value;
+						if( !m_collection.parseValue( value, pValueAtt->content, m_pBaseType, this ) )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to parse value for enum value.\n", getName().cStr() );
+							return false;
+						}
+
 						field.hasValue	= true;
-						field.value		= ParseString::parseInt64( pValueAtt->content );
+						if( !value.getSignedValue( field.value ) )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value is not an integer value.\n", getName().cStr() );
+							return false;
+						}
 
 						currentValue = field.value + 1;
 					}
 				}
 				else
 				{
-					TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field or array has not all required attributes. name is required.\n", getName().cStr() );
+					TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value requires an name attribute.\n", getName().cStr() );
 					return false;
 				}				
 			}
@@ -114,7 +129,7 @@ namespace tiki
 		}
 		
 		string invalidValue = "-1";
-		if( m_pBaseType != nullptr && m_pBaseType->isUnsignedInteger() )
+		if( m_pBaseType->isUnsignedInteger() )
 		{
 			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
 			
@@ -123,7 +138,7 @@ namespace tiki
 		}
 
 		string baseString = "";
-		if( m_pBaseType != nullptr )
+		if( m_pBaseType != m_collection.getEnumDefaultBaseType() )
 		{
 			baseString = ": " + m_pBaseType->getExportName();
 		}

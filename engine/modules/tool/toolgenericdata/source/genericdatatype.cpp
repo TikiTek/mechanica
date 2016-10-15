@@ -19,6 +19,11 @@ namespace tiki
 		return m_name;
 	}
 
+	bool GenericDataType::isTypeCompatible( const GenericDataType* pType ) const
+	{
+		return this == pType;
+	}
+
 	const string& GenericDataType::getModule() const
 	{
 		return m_module;
