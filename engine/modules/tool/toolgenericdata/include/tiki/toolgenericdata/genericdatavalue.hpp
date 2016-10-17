@@ -40,6 +40,7 @@ namespace tiki
 		GenericDataValueType_Enum,
 
 		GenericDataValueType_Reference,
+		GenericDataValueType_Pointer,
 
 		GenericDataValueType_Count
 	};
@@ -80,6 +81,11 @@ namespace tiki
 
 		bool					getReference( string& refText ) const;
 		bool					setReference( const string& refText, const GenericDataType* pType );
+
+		bool					getPointer( GenericDataObject*& pValue ) const;
+		bool					setPointer( GenericDataObject* pValue );
+
+		bool					setValue( const GenericDataValue& value );
 
 	private:
 

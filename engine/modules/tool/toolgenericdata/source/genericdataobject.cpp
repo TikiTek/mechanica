@@ -86,15 +86,12 @@ namespace tiki
 		}
 
 		GenericDataValue& currentValue = m_fields[ name ];
-		if ( !currentValue.getType()->isTypeCompatible( value.getType() ) )
+		if( !currentValue.setValue( value ) )
 		{
-			const char* pCurrentType = (currentValue.getType() != nullptr ? currentValue.getType()->getName().cStr() : "null");
-			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s') to field '%s'!\n", pNewType, pCurrentType, name.cStr() );
+			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value to field '%s'!\n", name.cStr() );
 			return false;
 		}
 
-		currentValue = value;
 		return true;
 	}
 
@@ -103,7 +100,7 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		if ( pDataKey != nullptr )
 		{
-			writer.openDataSection( 0u, AllocatorType_MainMemory );
+			writer.openDataSection( 0u, AllocatorType_MainMemory, getType()->getAlignment() );
 			*pDataKey = writer.addDataPoint();
 		}
 
