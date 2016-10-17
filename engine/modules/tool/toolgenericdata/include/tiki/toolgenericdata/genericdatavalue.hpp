@@ -40,7 +40,6 @@ namespace tiki
 		GenericDataValueType_Enum,
 
 		GenericDataValueType_Reference,
-		GenericDataValueType_Pointer,
 
 		GenericDataValueType_Count
 	};

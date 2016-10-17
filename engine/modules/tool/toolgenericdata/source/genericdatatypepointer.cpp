@@ -51,23 +51,18 @@ namespace tiki
 
 	bool GenericDataTypePointer::isTypeCompatible( const GenericDataType* pType ) const
 	{
-		if( GenericDataType::isTypeCompatible( pType ) )
+		if( GenericDataType::isTypeCompatible( pType ) || m_pBaseType->isTypeCompatible( pType ) )
 		{
 			return true;
 		}
 
-		const GenericDataTypeStruct* pBaseType = m_pBaseType;
-		while( pBaseType != nullptr )
+		if( pType->getType() != GenericDataTypeType_Struct )
 		{
-			if( pBaseType->isTypeCompatible( pType ) )
-			{
-				return true;
-			}
-
-			pBaseType = pBaseType->getBaseType();
+			return false;
 		}
 
-		return false;
+		const GenericDataTypeStruct* pOtherType = (const GenericDataTypeStruct*)pType;
+		return m_pBaseType->isTypeCompatible( pOtherType->getBaseType() );
 	}
 
 	const GenericDataTypeStruct* GenericDataTypePointer::getBaseType() const
