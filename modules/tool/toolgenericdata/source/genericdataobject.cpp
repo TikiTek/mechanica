@@ -86,7 +86,7 @@ namespace tiki
 		}
 
 		GenericDataValue& currentValue = m_fields[ name ];
-		if ( currentValue.getType()->isTypeCompatible( value.getType() ) )
+		if ( !currentValue.getType()->isTypeCompatible( value.getType() ) )
 		{
 			const char* pCurrentType = (currentValue.getType() != nullptr ? currentValue.getType()->getName().cStr() : "null");
 			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");

@@ -406,7 +406,7 @@ namespace tiki
 
 				return true;
 			}
-			else if ( typeType == GenericDataTypeType_Struct )
+			else if ( typeType == GenericDataTypeType_Struct || typeType == GenericDataTypeType_Pointer )
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Object;
@@ -431,13 +431,6 @@ namespace tiki
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Reference;
-
-				return true;
-			}
-			else if( typeType == GenericDataTypeType_Pointer )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Pointer;
 
 				return true;
 			}
