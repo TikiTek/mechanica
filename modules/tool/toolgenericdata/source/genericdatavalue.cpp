@@ -382,6 +382,42 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataValue::getPointer( GenericDataObject*& pValue ) const
+	{
+		if( m_valueType == GenericDataValueType_Pointer )
+		{
+			pValue = m_value.pObject;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::setPointer( GenericDataObject* pValue )
+	{
+		if( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Struct ) )
+		{
+			return false;
+		}
+
+		m_value.pObject = pValue;
+		return true;
+	}
+
+	bool GenericDataValue::setValue( const GenericDataValue& value )
+	{
+		if( !m_pType->isTypeCompatible( value.getType() ) )
+		{
+			const char* pCurrentType = (m_pType != nullptr ? m_pType->getName().cStr() : "null");
+			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
+			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s')!\n", pNewType, pCurrentType );
+			return false;
+		}
+
+		m_value = value.m_value;
+		return true;
+	}
+
 	bool GenericDataValue::setType( const GenericDataType* pType, GenericDataTypeType expectedType )
 	{
 		if ( pType == nullptr )
@@ -406,7 +442,7 @@ namespace tiki
 
 				return true;
 			}
-			else if ( typeType == GenericDataTypeType_Struct || typeType == GenericDataTypeType_Pointer )
+			else if ( typeType == GenericDataTypeType_Struct )
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Object;
@@ -431,6 +467,13 @@ namespace tiki
 			{
 				m_pType		= pType;
 				m_valueType	= GenericDataValueType_Reference;
+
+				return true;
+			}
+			else if( typeType == GenericDataTypeType_Pointer )
+			{
+				m_pType		= pType;
+				m_valueType	= GenericDataValueType_Pointer;
 
 				return true;
 			}

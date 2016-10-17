@@ -1,4 +1,3 @@
-
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
 #include "tiki/io/xmlreader.hpp"
@@ -7,6 +6,7 @@
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/genericdatatypepointer.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
 
@@ -277,6 +277,23 @@ namespace tiki
 				GenericDataObject* pObject = nullptr;
 				if ( value.getObject( pObject ) )
 				{
+					if( pObject == nullptr )
+					{
+						if( pType->getType() != GenericDataTypeType_Struct )
+						{
+							return false;
+						}
+						const GenericDataTypeStruct* pStructType = (const GenericDataTypeStruct*)pType;
+
+						GenericDataObject defaultObject( m_collection );
+						if( !defaultObject.create( pStructType ) )
+						{
+							return false;
+						}
+
+						return defaultObject.writeToResource( nullptr, writer );
+					}
+
 					if ( pObject != nullptr && pObject->writeToResource( nullptr, writer ) )
 					{
 						return true;
@@ -351,6 +368,12 @@ namespace tiki
 				string refText;
 				if ( value.getReference( refText ) )
 				{
+					if( refText.isEmpty() )
+					{
+						writer.writeReference( nullptr );
+						return true;
+					}
+
 					ReferenceKey key;
 					if ( readResourceReference( writer, refText, key ) )
 					{
@@ -358,6 +381,26 @@ namespace tiki
 						return true;
 					}
 				}
+			}
+			break;
+
+		case GenericDataValueType_Pointer:
+			{
+				if( pType->getType() != GenericDataTypeType_Pointer )
+				{
+					return false;
+				}
+
+				GenericDataObject* pObject = nullptr;
+				if( !value.getPointer( pObject ) )
+				{
+					return false;
+				}
+
+				ReferenceKey dataKey;
+				const bool ok = pObject->writeToResource( &dataKey, writer );
+				writer.writeReference( ok ? &dataKey : nullptr );
+				return ok;
 			}
 			break;
 		}
