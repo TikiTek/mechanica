@@ -92,7 +92,6 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix44&	scale( Matrix44& mtx, float val );
 
 		TIKI_FORCE_INLINE bool		invert( Matrix33& mtx, const Matrix33& source );	// try to invert. returns false if determinant is zero.
-		TIKI_FORCE_INLINE bool		invert( Matrix43& mtx, const Matrix43& source );	// try to invert. returns false if determinant is zero.
 		TIKI_FORCE_INLINE bool		invert( Matrix44& mtx, const Matrix44& source );	// try to invert. returns false if determinant is zero.
 
 		TIKI_FORCE_INLINE Matrix33&	lerp( Matrix33& mtx, const Matrix33& start, const Matrix33& end, const float amount );
