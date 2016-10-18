@@ -268,60 +268,43 @@ namespace tiki
 
 	TIKI_FORCE_INLINE Matrix33& matrix::mul( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs )
 	{
-		Matrix33 right = rhs;
-		transpose( right );
+		Matrix33 rhsTransposed;
+		matrix::transpose( rhsTransposed, rhs );
 
-		const Vector3 x = lhs.x;
-		const Vector3 y = lhs.y;
-		const Vector3 z = lhs.z;
-
-		mtx.x.x = vector::dot( x, right.x );
-		mtx.x.y = vector::dot( x, right.y );
-		mtx.x.z = vector::dot( x, right.z );
-		mtx.y.x = vector::dot( y, right.x );
-		mtx.y.y = vector::dot( y, right.y );
-		mtx.y.z = vector::dot( y, right.z );
-		mtx.z.x = vector::dot( z, right.x );
-		mtx.z.y = vector::dot( z, right.y );
-		mtx.z.z = vector::dot( z, right.z );
+		mtx = lhs;
+		matrix::transform( mtx.x, rhsTransposed );
+		matrix::transform( mtx.y, rhsTransposed );
+		matrix::transform( mtx.z, rhsTransposed );
 
 		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix43& matrix::mul( Matrix43& mtx, const Matrix43& lhs, const Matrix43& rhs )
 	{
-		matrix::mul( mtx.rot, lhs.rot,rhs.rot );
-		vector::add( mtx.pos, lhs.pos,rhs.pos );
+		Matrix33 rhsTransposed;
+		matrix::transpose( rhsTransposed, rhs.rot );
+
+		mtx = lhs;
+		matrix::transform( mtx.rot.x, rhsTransposed );
+		matrix::transform( mtx.rot.y, rhsTransposed );
+		matrix::transform( mtx.rot.z, rhsTransposed );
+		
+		matrix::transform( mtx.pos, rhsTransposed );
+		vector::add( mtx.pos, rhs.pos );
 
 		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix44& matrix::mul( Matrix44& mtx, const Matrix44& lhs, const Matrix44& rhs )
 	{
-		Matrix44 right = rhs;
-		transpose( right );
+		Matrix44 rhsTransposed;
+		transpose( rhsTransposed, rhs );
 
-		const Vector4 x = lhs.x;
-		const Vector4 y = lhs.y;
-		const Vector4 z = lhs.z;
-		const Vector4 w = lhs.w;
-
-		mtx.x.x = vector::dot( x, right.x );
-		mtx.x.y = vector::dot( x, right.y );
-		mtx.x.z = vector::dot( x, right.z );
-		mtx.x.w = vector::dot( x, right.w );
-		mtx.y.x = vector::dot( y, right.x );
-		mtx.y.y = vector::dot( y, right.y );
-		mtx.y.z = vector::dot( y, right.z );
-		mtx.y.w = vector::dot( y, right.w );
-		mtx.z.x = vector::dot( z, right.x );
-		mtx.z.y = vector::dot( z, right.y );
-		mtx.z.z = vector::dot( z, right.z );
-		mtx.z.w = vector::dot( z, right.w );
-		mtx.w.x = vector::dot( w, right.x );
-		mtx.w.y = vector::dot( w, right.y );
-		mtx.w.z = vector::dot( w, right.z );
-		mtx.w.w = vector::dot( w, right.w );
+		mtx = lhs;
+		matrix::transform( mtx.x, rhsTransposed );
+		matrix::transform( mtx.y, rhsTransposed );
+		matrix::transform( mtx.z, rhsTransposed );
+		matrix::transform( mtx.w, rhsTransposed );
 
 		return mtx;
 	}
@@ -374,18 +357,6 @@ namespace tiki
 		mtx.z.z = source.x.x * source.y.y - source.x.y * source.y.x;
 
 		scale( mtx, 1.0f / det );
-
-		return true;
-	}
-
-	TIKI_FORCE_INLINE bool matrix::invert( Matrix43& mtx, const Matrix43& source )
-	{
-		if( !matrix::invert( mtx.rot, source.rot ) )
-		{
-			return false;
-		}
-
-		vector::negate( mtx.pos );
 
 		return true;
 	}
