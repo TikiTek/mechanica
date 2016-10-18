@@ -1,17 +1,13 @@
 #pragma once
-#ifndef __TIKI_GAMESTATE_HPP_INCLUDED__
-#define __TIKI_GAMESTATE_HPP_INCLUDED__
+#ifndef TIKI_GAMESESSION_HPP_INCLUDED
+#define TIKI_GAMESESSION_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/components/component_types.hpp"
-#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
 	class GameClient;
-	class GameRenderer;
 	class Model;
 	class ResourceManager;
 	struct ViewData;
@@ -31,11 +27,9 @@ namespace tiki
 		void						dispose( ResourceManager& resourceManager );
 
 		void						update( float timeDelta, float totalGameTime );
-		void						render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext );
+		void						render( GraphicsContext& graphicsContext );
 
 		bool						processInputEvent( const InputEvent& inputEvent );
-
-		EntityId					getPlayerEntityId() const { return m_playerEntityId; }
 
 		GameClient&					getGameClient() { return m_gameClient; }
 		const GameClient&			getGameClient() const { return m_gameClient; }
@@ -43,17 +37,7 @@ namespace tiki
 	private:
 
 		GameClient					m_gameClient;
-
-		EntityId					m_playerEntityId;
-		TransformComponentState*	m_pPlayerTransformState;
-		const Model*				m_pModelPlayer;
-		
-		const Model*				m_pModelTerrain;
-		const Model*				m_pModelCoin;
-		
-		EntityId					m_planeEntityId;
-
 	};
 }
 
-#endif // __TIKI_GAMESTATE_HPP_INCLUDED__
+#endif // TIKI_GAMESESSION_HPP_INCLUDED

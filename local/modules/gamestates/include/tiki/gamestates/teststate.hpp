@@ -4,16 +4,11 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
-#include "tiki/animation/animationjoint.hpp"
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/graphics/skinningdata.hpp"
 #include "tiki/renderer/postbloom.hpp"
-#include "tiki/renderer/postskybox.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
-#include "tiki/voxelworld/voxelworld.hpp"
 
-#include "tiki/game/debuggui_lighting.hpp"
 #include "tiki/game/debuggui_testwindow.hpp"
 
 namespace tiki
@@ -65,39 +60,21 @@ namespace tiki
 
 		const Font*					m_pFont;
 		const Font*					m_pFontBig;
-		const Model*				m_pModelBox;
-		const Model*				m_pModelBoxes;
-		const Model*				m_pModelPlane;
-		const Model*				m_pModelPlayer;
-		const Animation*			m_pAnimationPlayer;
 
-		bool						m_drawPlayer;
-		Array< AnimationJoint >		m_animationData;
-		SkinningData				m_skinningData;
-
-		GameRenderer*				m_pGameRenderer;
 		FreeCamera					m_freeCamera;
 
 		DebugGuiTestWindow			m_testWindow;
-		DebugGuiLightingWindow		m_lightingWindow;
-
-		int							m_gbufferIndex;
 
 		Vector2						m_mousePosition;
-		Vector3						m_mouseWorldPosition;
 
 		bool						m_enablePhysicsDebug;
 		bool						m_enableBloom;
 		PostProcessBloom			m_bloom;
-		PostProcessSkybox			m_skybox;
 
 		GameClient					m_gameClient;
 
 		EntityId					m_boxesEntityId;
 		EntityId					m_planeEntityId;
-
-		VoxelWorld					m_world;
-
 	};
 }
 

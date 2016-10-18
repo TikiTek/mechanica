@@ -3,24 +3,23 @@
 #define TIKI_GAMECLIENT_HPP__INCLUDED
 
 #include "tiki/components/lifetimecomponent.hpp"
-#include "tiki/components3d/skinnedmodelcomponent.hpp"
-#include "tiki/components3d/staticmodelcomponent.hpp"
-#include "tiki/components3d/terraincomponent.hpp"
-#include "tiki/components3d/transform3dcomponent.hpp"
+#include "tiki/components2d/texturecomponent.hpp"
+#include "tiki/components2d/transform2dcomponent.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
-#include "tiki/gamecomponents/coincomponent.hpp"
-#include "tiki/gamecomponents/playercontrolcomponent.hpp"
-#include "tiki/gameplay/gamecamera.hpp"
-#include "tiki/physics3d/physics3dworld.hpp"
-#include "tiki/physics3dcomponents/physics3dbodycomponent.hpp"
-#include "tiki/physics3dcomponents/physics3dcharactercontrollercomponent.hpp"
-#include "tiki/physics3dcomponents/physics3dcollidercomponent.hpp"
+#include "tiki/math/camera.hpp"
+#include "tiki/mechanica_components/playercontrolcomponent.hpp"
+#include "tiki/mechanica_components/wigglecomponent.hpp"
+#include "tiki/physics2d/physics2dworld.hpp"
+#include "tiki/physics2dcomponents/physics2dbodycomponent.hpp"
+#include "tiki/physics2dcomponents/physics2dcollidercomponent.hpp"
+#include "tiki/physics2dcomponents/physics2djointcomponent.hpp"
 #include "tiki/renderer/renderscene.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 
 namespace tiki
 {
 	class GameRenderer;
+	class GraphicsContext;
 	class Model;
 	struct InputEvent;
 	struct ViewData;
@@ -30,16 +29,12 @@ namespace tiki
 		GameClientUpdateContext()
 		{
 			pPlayerCollider = nullptr;
-			pTerrainState	= nullptr;
 		}
 
 		float							totalGameTime;
 		float							timeDelta;
 
-		const Physics3dCollisionObject*	pPlayerCollider;
-		const TerrainComponentState*	pTerrainState;
-
-		CollectedCoinIdArray			collectedCoins;
+		const Physics2dCollisionObject*	pPlayerCollider;
 	};
 
 	class GameClient
@@ -54,31 +49,26 @@ namespace tiki
 		bool											create();
 		void											dispose();
 
-		EntityId										createPlayerEntity( const Model* pModel, const Vector3& position );
-		EntityId										createModelEntity( const Model* pModel, const Vector3& position );
-		EntityId										createBoxEntity( const Model* pModel, const Vector3& position );
-		EntityId										createCoinEntity( const Model* pModel, const Vector3& position );
-		EntityId										createTerrainEntity( const Model* pModel, const Vector3& position );
+		//EntityId										createPlayerEntity( const Model* pModel, const Vector3& position );
+		//EntityId										createModelEntity( const Model* pModel, const Vector3& position );
+		//EntityId										createBoxEntity( const Model* pModel, const Vector3& position );
+		//EntityId										createCoinEntity( const Model* pModel, const Vector3& position );
+		//EntityId										createTerrainEntity( const Model* pModel, const Vector3& position );
 
 		void											disposeEntity( EntityId entityId );
 
 		void											update( GameClientUpdateContext& updateContext );
-		void											render( GameRenderer& gameRenderer, GraphicsContext& graphicsContext );
+		void											render( GraphicsContext& graphicsContext );
 
 		bool											processInputEvent( const InputEvent& inputEvent );
 
 		EntitySystem&									getEntitySystem()	{ return m_entitySystem; }
-		Physics3dWorld&									getPhysicsWorld()	{ return m_physicsWorld; }
+		Physics2dWorld&									getPhysicsWorld()	{ return m_physicsWorld; }
 
 		RenderScene&									getScene()			{ return m_renderScene; }
-		const RenderScene&								etScene() const		{ return m_renderScene; }
-		RenderView&										getView()			{ return *m_pRenderView; }
-		const RenderView&								getView() const		{ return *m_pRenderView; }
-
-		const Physics3dCharacterControllerComponent&	getPhysicsCharacterControllerComponent() const { return m_physicsCharacterControllerComponent; }
-		const PlayerControlComponent&					getPlayerControlComponent() const { return m_playerControlComponent; }
-		const Transform3dComponent&						getTransformComponent() const { return m_transformComponent; }
-		const TerrainComponent&							getTerrainComponent() const { return m_terrainComponent; }
+		const RenderScene&								getScene() const	{ return m_renderScene; }
+		RenderView&										getView()			{ TIKI_ASSERT( m_pRenderView ); return *m_pRenderView; }
+		const RenderView&								getView() const		{ TIKI_ASSERT( m_pRenderView ); return *m_pRenderView; }
 
 	private:
 
@@ -91,26 +81,22 @@ namespace tiki
 
 		EntitySystem							m_entitySystem;
 
-		Physics3dWorld							m_physicsWorld;
+		Physics2dWorld							m_physicsWorld;
 
 		RenderScene								m_renderScene;
 		RenderView*								m_pRenderView;
 
-		GameCamera								m_gameCamera;
+		Camera									m_gameCamera;
 		FreeCamera								m_freeCamera;
 
 		LifeTimeComponent						m_lifeTimeComponent;
-		Physics3dBodyComponent					m_physicsBodyComponent;
-		Physics3dCharacterControllerComponent	m_physicsCharacterControllerComponent;
-		Physics3dColliderComponent				m_physicsColliderComponent;
-		SkinnedModelComponent					m_skinnedModelComponent;
-		StaticModelComponent					m_staticModelComponent;
-		TerrainComponent						m_terrainComponent;
-		Transform3dComponent					m_transformComponent;
-
+		Physics2dBodyComponent					m_physicsBodyComponent;
+		Physics2dColliderComponent				m_physicsColliderComponent;
+		Physics2dJointComponent					m_physicsJointComponent;
 		PlayerControlComponent					m_playerControlComponent;
-		CoinComponent							m_coinComponent;
-
+		TextureComponent						m_textureComponent;
+		Transform2dComponent					m_transformComponent;
+		WiggleComponent							m_wiggleComponent;
 	};
 }
 

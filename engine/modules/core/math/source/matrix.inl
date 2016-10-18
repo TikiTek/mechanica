@@ -424,14 +424,6 @@ namespace tiki
 		return mtx;
 	}
 
-	TIKI_FORCE_INLINE Matrix43& matrix::lerp( Matrix43& mtx, const Matrix43& start, const Matrix43& end, const float amount )
-	{
-		matrix::lerp( mtx.rot, start.rot, end.rot, amount );
-		vector::lerp( mtx.pos, start.pos, end.pos, amount );
-
-		return mtx;
-	}
-
 	TIKI_FORCE_INLINE Matrix44& matrix::lerp( Matrix44& mtx, const Matrix44& start, const Matrix44& end, const float amount )
 	{
 		vector::lerp( mtx.x, start.x, end.x, amount );

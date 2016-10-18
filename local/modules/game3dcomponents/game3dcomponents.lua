@@ -1,6 +1,6 @@
--- local/modules/gamecomponents
+-- local/modules/game3dcomponents
 
-local module = Module:new( "gamecomponents" );
+local module = Module:new( "game3dcomponents" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );

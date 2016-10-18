@@ -136,7 +136,7 @@ namespace tiki
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
-		m_gameSession.render( *m_pGameRenderer, graphicsContext );
+		m_gameSession.render( graphicsContext );
 
 		m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
 
