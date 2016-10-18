@@ -1,6 +1,7 @@
 
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/stringconvert.hpp"
@@ -590,11 +591,10 @@ namespace tiki
 		}
 
 		static const char* s_pBaseFormat =	"#pragma once\n"
-											"#ifndef TIKI_%s_INCLUDED__\n"
-											"#define TIKI_%s_INCLUDED__\n"
+											"#ifndef TIKI_%s_INCLUDED\n"
+											"#define TIKI_%s_INCLUDED\n"
 											"\n"
 											"#include \"tiki/base/types.hpp\"\n"
-											"%s"
 											"%s"
 											"%s"
 											"%s"
@@ -611,14 +611,13 @@ namespace tiki
 											"\t#pragma warning( pop )\n"
 											"}\n"
 											"\n"
-											"#endif // TIKI_%s_INCLUDED__\n";
+											"#endif // TIKI_%s_INCLUDED\n";
 
-		static const char* s_pReference			= "\tclass %s;\n";
-		static const char* s_pStringInclude		= "#include \"tiki/base/basicstring.hpp\"\n";
-		static const char* s_pArrayInclude		= "#include \"tiki/container/staticarray.hpp\"\n";
-		static const char* s_pResourceInclude	= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
-		static const char* s_pReferenceInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
-		static const char* s_pDependencyInclude	= "#include \"%s.hpp\"\n";
+		static const char* s_pReference				= "\tclass %s;\n";
+		static const char* s_pStringInclude			= "#include \"tiki/base/basicstring.hpp\"\n";
+		static const char* s_pResourceInclude		= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
+		static const char* s_pResourceFileInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
+		static const char* s_pDependencyInclude		= "#include \"%s.hpp\"\n";
 
 		for (uint moduleIndex = 0u; moduleIndex < moduleCode.getCount(); ++moduleIndex)
 		{
@@ -655,9 +654,8 @@ namespace tiki
 				fileNameDefine.cStr(),
 				fileNameDefine.cStr(),
 				(kvp.value.containsString ? s_pStringInclude : ""),
-				(kvp.value.containsArray ? s_pArrayInclude : ""),
 				(kvp.value.containsResource ? s_pResourceInclude : ""),
-				(!kvp.value.references.isEmpty() ? s_pReferenceInclude : ""),
+				(kvp.value.containsArray || !kvp.value.references.isEmpty() ? s_pResourceFileInclude : ""),
 				dependenciesIncludeCode.cStr(),
 				referencesCode.cStr(),
 				kvp.value.code.cStr(),
@@ -668,8 +666,8 @@ namespace tiki
 		}
 
 		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
-														"#ifndef TIKI_GENERICDATAFACTORIES_INCLUDED__\n"
-														"#define TIKI_GENERICDATAFACTORIES_INCLUDED__\n"
+														"#ifndef TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n"
+														"#define TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n"
 														"\n"
 														"#include \"tiki/base/types.hpp\"\n"
 														"\n"
@@ -689,7 +687,7 @@ namespace tiki
 														"\t};\n"
 														"}\n"
 														"\n"
-														"#endif // TIKI_GENERICDATAFACTORIES_INCLUDED__\n";
+														"#endif // TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n";
 
 		static const char* s_pFactoriesSourceFormat =	"\n"
 														"#include \"genericdatafactories.hpp\"\n"
