@@ -70,7 +70,7 @@ namespace tiki
 		pState->body.applyForce( force, localPoint );
 	}
 
-	const Physics2dCollisionObject& Physics2dBodyComponent::getPhysicsObject( const Physics2dBodyComponentState* pState ) const
+	const Physics2dBody& Physics2dBodyComponent::getPhysicsObject( const Physics2dBodyComponentState* pState ) const
 	{
 		TIKI_ASSERT( pState != nullptr );
 		return pState->body;

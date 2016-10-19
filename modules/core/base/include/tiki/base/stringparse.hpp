@@ -31,7 +31,7 @@ namespace tiki
 				return parseSingedHex( string );
 			}
 
-			return (sint64)atol( string );
+			return (sint64)atoll( string );
 			//return parseSigedInteger<char, sint64>(string);
 		}
 
@@ -54,18 +54,18 @@ namespace tiki
 				return parseUnsingedHex( string );
 			}
 
-			return (uint64)atol( string );
+			return (uint64)atoll( string );
 			//return parseUnsigedInteger<char, uint64>(string);
 		}
 
 		static sint64 parseSingedHex(const char* string)
 		{
-			return (sint64)strtol( string, nullptr, 16 );
+			return (sint64)strtoll( string, nullptr, 16 );
 		}
 
 		static uint64 parseUnsingedHex(const char* string)
 		{
-			return (uint64)strtol( string, nullptr, 16 );
+			return (uint64)strtoll( string, nullptr, 16 );
 		}
 
 		static float parseSingle( const char* string )

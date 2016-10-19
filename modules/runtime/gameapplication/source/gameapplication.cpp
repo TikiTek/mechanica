@@ -61,7 +61,7 @@ namespace tiki
 
 	bool GameApplication::initializeApplication()
 	{
-		m_pGameData = TIKI_MEMORY_NEW_OBJECT( GameApplicationkData );
+		m_pGameData = TIKI_NEW( GameApplicationkData );
 
 		if ( !initializeDebugSystems() )
 		{

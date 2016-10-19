@@ -139,7 +139,7 @@ namespace tiki
 		const uint chunkSize = alignValue( sizeof( PoolChunk ), TIKI_ALIGNOF( T ) );
 		const uint size = chunkSize + (sizeof( T ) * m_grow);
 
-		PoolChunk* pChunk = (PoolChunk*)TIKI_MEMORY_ALLOC( size );
+		PoolChunk* pChunk = (PoolChunk*)TIKI_ALLOC( size );
 		pChunk = new (pChunk) PoolChunk;
 		if( pChunk == nullptr )
 		{

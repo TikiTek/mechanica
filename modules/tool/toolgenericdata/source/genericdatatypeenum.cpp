@@ -111,7 +111,7 @@ namespace tiki
 													  "\t};\n";
 
 		static const char* s_pValueFormat			= "\t\t%s_%s,\n";
-		static const char* s_pValueFormatWithValue	= "\t\t%s_%s = %i,\n";
+		static const char* s_pValueFormatWithValue	= "\t\t%s_%s = %d,\n";
 
 		string valuesCode;
 		for (uint i = 0u; i < m_values.getCount(); ++i)

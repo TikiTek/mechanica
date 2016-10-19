@@ -32,7 +32,7 @@ namespace tiki
 		m_capacity		= getNextSize( count );
 		m_count			= count;
 		m_isReadOnly	= readOnly;
-		m_pData			= TIKI_MEMORY_NEW_ARRAY( T, m_capacity, true );
+		m_pData			= TIKI_NEW_ARRAY( T, m_capacity, true );
 
 		for (uint i = 0u; i < m_count; ++i)
 		{
@@ -278,7 +278,7 @@ namespace tiki
 		
 		if ( m_count > 0u )
 		{
-			m_pData = TIKI_MEMORY_NEW_ARRAY( T, m_capacity, true );
+			m_pData = TIKI_NEW_ARRAY( T, m_capacity, true );
 		}
 		else
 		{
@@ -304,7 +304,7 @@ namespace tiki
 		if ( neddedSize > m_capacity )
 		{
 			const uint capacity = getNextSize( neddedSize );
-			T* pNewData = TIKI_MEMORY_NEW_ARRAY( T, capacity, true );
+			T* pNewData = TIKI_NEW_ARRAY( T, capacity, true );
 
 			for (uint i = 0u; i < m_count; ++i)
 			{

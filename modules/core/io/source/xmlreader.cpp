@@ -99,7 +99,7 @@ namespace tiki
 	/*static*/ void* XmlReader::allocateMemory( ::size_t _bytes, void* pUserData )
 	{
 		XmlReader* pXml	= static_cast<XmlReader*>(pUserData);
-		pXml->m_pData	= TIKI_MEMORY_ALLOC( _bytes );
+		pXml->m_pData	= TIKI_ALLOC( _bytes );
 
 		if( pXml->m_pData == nullptr )
 		{

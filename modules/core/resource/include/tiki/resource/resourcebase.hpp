@@ -67,7 +67,7 @@ namespace tiki
 
 		static Resource* factoryContextGenericCreateResourceFunction()
 		{
-			return TIKI_MEMORY_NEW_OBJECT( T );
+			return TIKI_NEW( T );
 		}
 
 		static void factoryContextGenericDisposeResourceFunction( Resource* pResource )

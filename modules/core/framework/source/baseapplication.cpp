@@ -109,7 +109,7 @@ namespace tiki
 
 	bool BaseApplication::initialize()
 	{
-		m_pBaseData = TIKI_MEMORY_NEW_OBJECT( BaseApplicationkData );
+		m_pBaseData = TIKI_NEW( BaseApplicationkData );
 
 		if( !initializePlatform() )
 		{

@@ -139,7 +139,7 @@ namespace tiki
 		const Thread* pThread = getThreadById( getCurrentThreadId() );
 		if ( pThread == nullptr )
 		{
-			Thread* pCurrentThread = TIKI_MEMORY_NEW_OBJECT( Thread );
+			Thread* pCurrentThread = TIKI_NEW( Thread );
 			pCurrentThread->m_platformData.threadHandle	= GetCurrentThread();
 			pCurrentThread->m_platformData.threadId		= GetCurrentThreadId();
 

@@ -28,7 +28,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData = TIKI_MEMORY_NEW_ARRAY_ALIGNED( Pair, size, alignment, true );
+		m_pData = TIKI_NEW_ARRAY_ALIGNED( Pair, size, alignment, true );
 		if ( m_pData == nullptr )
 		{
 			return false;

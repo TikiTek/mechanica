@@ -1,8 +1,8 @@
-
 #include "tiki/entitysystem/entitysystem.hpp"
 
 #include "tiki/components/component.hpp"
-#include "tiki/components/entitytemplate.hpp"
+
+#include "entities.hpp"
 
 namespace tiki
 {
@@ -148,7 +148,7 @@ namespace tiki
 		return m_typeMapping.findValue( &targetTypeId, componentTypeCrc );
 	}
 
-	EntityId EntitySystem::createEntityFromTemplate( uint targetPoolIndex, const EntityTemplate& entityTemplate )
+	EntityId EntitySystem::createEntityFromTemplate( uint targetPoolIndex, const EntityTemplateData& entityTemplate )
 	{
 		TIKI_ASSERT( targetPoolIndex < m_pools.getCount() );
 
@@ -178,19 +178,19 @@ namespace tiki
 		ComponentState* pFirstState = nullptr;
 		for (uint i = 0u; i < entityTemplate.components.getCount(); ++i)
 		{
-			const EntityTemplateComponent& entityComponent = entityTemplate.components[ i ];
+			const EntityComponent& entityComponent = entityTemplate.components[ i ];
 
 			ComponentTypeId typeId;
-			if ( !m_typeMapping.findValue( &typeId, entityComponent.typeCrc ) )
+			if ( !m_typeMapping.findValue( &typeId, entityComponent.componentType ) )
 			{
-				TIKI_TRACE_ERROR( "[entitysystem] Cound find component type with CRC: 0x%08x\n", entityComponent.typeCrc );
+				TIKI_TRACE_ERROR( "[entitysystem] Cound find component type with CRC: 0x%08x\n", entityComponent.componentType );
 				continue;
 			}
 
 			ComponentState* pComponentState = m_storage.allocateState( typeId );
 			if ( pComponentState == nullptr )
 			{
-				TIKI_TRACE_ERROR( "[entitysystem] Cound allocate component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
+				TIKI_TRACE_ERROR( "[entitysystem] Cound allocate component state for component with CRC: 0x%08x\n", entityComponent.componentType );
 				continue;
 			}
 			pComponentState->entityId = entityId;
@@ -198,9 +198,9 @@ namespace tiki
 			// initialize state
 			ComponentBase* pComponent = m_typeRegister.getTypeComponent( typeId );
 			ComponentEntityIterator iterator = ComponentEntityIterator( pFirstState );
-			if ( !pComponent->initializeState( iterator, pComponentState, entityComponent.pInitData ) )
+			if ( !pComponent->initializeState( iterator, pComponentState, entityComponent.initData.getData() ) )
 			{
-				TIKI_TRACE_ERROR( "[entitysystem] Cound initialize component state for component with CRC: 0x%08x\n", entityComponent.typeCrc );
+				TIKI_TRACE_ERROR( "[entitysystem] Cound initialize component state for component with CRC: 0x%08x\n", entityComponent.componentType );
 				m_storage.freeState( pComponentState );
 				continue;
 			}
@@ -227,6 +227,11 @@ namespace tiki
 
 	void EntitySystem::disposeEntity( EntityId entityId )
 	{
+		if( entityId == InvalidEntityId )
+		{
+			return;
+		}
+
 		if ( !m_entitiesToDeletion.isFull() )
 		{
 			m_entitiesToDeletion.push( entityId );

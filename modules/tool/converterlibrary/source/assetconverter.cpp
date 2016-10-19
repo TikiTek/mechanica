@@ -8,7 +8,7 @@ namespace tiki
 {
 	IAssetConverter* createAssetConverter()
 	{
-		return TIKI_MEMORY_NEW_OBJECT( AssetConverter );
+		return TIKI_NEW( AssetConverter );
 	}
 
 	void disposeAssetConverter( IAssetConverter* pObject )
@@ -47,7 +47,7 @@ namespace tiki
 		
 		TIKI_TRACE_INFO( "AssetConverter: started\n" );
 
-		if ( m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase )
+		if ( (m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase) || parameters.waitForConversion )
 		{
 			if ( !convertAll() )
 			{

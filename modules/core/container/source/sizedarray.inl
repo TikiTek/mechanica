@@ -26,7 +26,7 @@ namespace tiki
 		TIKI_ASSERT( m_capacity == 0u );
 
 		m_capacity	= capacity;
-		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
+		m_pData		= TIKI_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
 		if ( m_pData == nullptr )
 		{
 			dispose();

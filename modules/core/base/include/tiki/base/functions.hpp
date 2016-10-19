@@ -130,11 +130,11 @@ namespace tiki
 	template<typename TTarget, typename TSource>
 	TIKI_FORCE_INLINE bool rangeCheckCast( TTarget& outValue, const TSource& value )
 	{
-		if ( value < NumberLimits< TTarget >::lowest() )
+		if ( (TTarget)value < NumberLimits< TTarget >::lowest() )
 		{
 			return false;
 		}
-		else if ( value > NumberLimits< TTarget >::max() )
+		else if ( (TTarget)value > NumberLimits< TTarget >::max() )
 		{
 			return false;
 		}

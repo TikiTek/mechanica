@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
-#define __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
+#ifndef TIKI_ENTITYSYSTEM_HPP_INCLUDED
+#define TIKI_ENTITYSYSTEM_HPP_INCLUDED
 
 #include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/container/sizedarray.hpp"
@@ -10,7 +10,7 @@
 
 namespace tiki
 {
-	struct EntityTemplate;
+	struct EntityTemplateData;
 
 	enum
 	{
@@ -54,7 +54,7 @@ namespace tiki
 
 		bool					getComponentTypeIdByCrc( ComponentTypeId& targetTypeId, crc32 componentTypeCrc ) const;
 
-		EntityId				createEntityFromTemplate( uint targetPoolIndex, const EntityTemplate& entityTemplate );
+		EntityId				createEntityFromTemplate( uint targetPoolIndex, const EntityTemplateData& entityTemplate );
 		void					disposeEntity( EntityId entityId );
 
 		ComponentState*			getFirstComponentOfEntity( EntityId entityId );
@@ -104,4 +104,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_ENTITYSYSTEM_HPP_INCLUDED__
+#endif // TIKI_ENTITYSYSTEM_HPP_INCLUDED

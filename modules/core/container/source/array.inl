@@ -22,7 +22,7 @@ namespace tiki
 		TIKI_ASSERT( m_pData == nullptr );
 
 		m_capacity	= capacity;
-		m_pData		= TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
+		m_pData		= TIKI_NEW_ARRAY_ALIGNED( T, capacity, aligment, constructElements );
 
 		return m_pData != nullptr;
 	}

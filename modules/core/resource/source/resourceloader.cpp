@@ -285,7 +285,7 @@ namespace tiki
 		const ResourceHeader& header = context.pResourceHeaders[ context.resourceHeaderIndex ];
 
 		const uint pointerCount	= header.sectionCount + header.stringCount + header.linkCount;
-		void** ppPointers		= static_cast< void** >( TIKI_MEMORY_ALLOC( sizeof( void* ) * pointerCount ) );
+		void** ppPointers		= static_cast< void** >( TIKI_ALLOC( sizeof( void* ) * pointerCount ) );
 		context.sectionData.sectorCount			= header.sectionCount;
 		context.sectionData.stringCount			= header.stringCount;
 		context.sectionData.linkCount			= header.linkCount;
@@ -352,7 +352,7 @@ namespace tiki
 		{
 			const SectionHeader& sectionHeader = pSectionHeaders[ i ];
 
-			void* pSectionData = TIKI_MEMORY_ALLOC_ALIGNED( sectionHeader.sizeInBytes, (uint)1u << sectionHeader.alignment );
+			void* pSectionData = TIKI_ALLOC_ALIGNED( sectionHeader.sizeInBytes, (uint)1u << sectionHeader.alignment );
 			if ( pSectionData == nullptr )
 			{
 				return ResourceLoaderResult_OutOfMemory;
@@ -381,7 +381,7 @@ namespace tiki
 		// load strings
 		if ( header.stringCount > 0u )
 		{
-			char* pBlock = static_cast< char* >( TIKI_MEMORY_ALLOC( header.stringSizeInBytes ) );
+			char* pBlock = static_cast< char* >( TIKI_ALLOC( header.stringSizeInBytes ) );
 			if ( pBlock == nullptr )
 			{
 				return ResourceLoaderResult_OutOfMemory;

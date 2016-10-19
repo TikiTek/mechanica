@@ -338,7 +338,7 @@ namespace tiki
 		}
 		charArray.dispose();
 
-		m_pFileStorage = TIKI_MEMORY_NEW_OBJECT( ShaderFileStorage )( m_includeDirs );
+		m_pFileStorage = TIKI_NEW( ShaderFileStorage )( m_includeDirs );
 
 		m_openGlMutex.create();
 
@@ -710,7 +710,7 @@ namespace tiki
 	//	context.pSourceData			= sourceCode.cStr();
 	//	context.sourceLength		= sourceCode.getLength();
 	//	context.sourcePosition		= 0;
-	//	context.pTargetData			= (char*)TIKI_MEMORY_ALLOC( 1024u * 1024u );
+	//	context.pTargetData			= (char*)TIKI_ALLOC( 1024u * 1024u );
 	//	context.pTargetData[ 0u ]	= '\0';
 	//	context.targetLength		= 1024u * 1024u;
 	//	context.targetPosition		= 0u;

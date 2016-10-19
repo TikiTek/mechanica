@@ -27,7 +27,7 @@ namespace tiki
 		}
 
 		m_pType		= pResourceType;
-		m_pObject	= TIKI_MEMORY_NEW_OBJECT( GenericDataObject )( m_collection );
+		m_pObject	= TIKI_NEW( GenericDataObject )( m_collection );
 		
 		return m_pObject->create( pObjectType );
 	}

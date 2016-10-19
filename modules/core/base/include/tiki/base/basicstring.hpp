@@ -21,6 +21,7 @@ namespace tiki
 		TIKI_FORCE_INLINE uint				getLength() const;
 		TIKI_FORCE_INLINE bool				isEmpty() const;
 
+		TIKI_FORCE_INLINE char*				getBuffer();
 		TIKI_FORCE_INLINE const char*		cStr() const;
 
 		TIKI_FORCE_INLINE void				split( Array< BasicString >& output, const BasicString& seperator ) const;

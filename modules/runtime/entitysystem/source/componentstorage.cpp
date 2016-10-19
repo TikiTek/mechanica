@@ -44,7 +44,7 @@ namespace tiki
 		m_chunkSize		= chunkSize;
 
 		const uint dataSize = chunkSize * chunkCount;
-		m_pMemory = static_cast< uint8* >( TIKI_MEMORY_ALLOC_ALIGNED( dataSize, ChunkAlignment ) );
+		m_pMemory = static_cast< uint8* >( TIKI_ALLOC_ALIGNED( dataSize, ChunkAlignment ) );
 
 		if ( !m_chunks.create( chunkCount ) )
 		{

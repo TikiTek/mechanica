@@ -402,7 +402,7 @@ namespace tiki
 			return false;
 		}
 
-		m_platformData.pStates[ 0u ] = static_cast< InputSystemState* >( TIKI_MEMORY_ALLOC( sizeof( InputSystemState ) * 2u ) );
+		m_platformData.pStates[ 0u ] = static_cast< InputSystemState* >( TIKI_ALLOC( sizeof( InputSystemState ) * 2u ) );
 		m_platformData.pStates[ 1u ] = m_platformData.pStates[ 0u ] + 1u;
 		memory::zero( m_platformData.pStates[ 0u ], sizeof( InputSystemState ) * 2u );
 

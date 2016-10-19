@@ -624,6 +624,11 @@ namespace tiki
 	{
 		if ( m_isNewDatabase || m_rebuildForced )
 		{
+			for( ConversionTask& task : tasks )
+			{
+				task.parameters.isBuildRequired = true;
+			}
+
 			return true;
 		}
 
@@ -642,64 +647,97 @@ namespace tiki
 			whereAssetId += formatString( "asset_id = '%u'", task.parameters.assetId );
 		}
 
-		// check dependencies
 		if( !whereAssetId.isEmpty() )
 		{
-			AutoDispose< SqliteQuery > query;
-			if ( !query->create( m_dataBase, "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE " + whereAssetId ) )
+			// check output files
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
-				return false;
-			}
-
-			while ( query->nextRow() )
-			{
-				const uint assetId = query->getIntegerField( "asset_id" );
-
-				ConversionTask* pTask = nullptr;
-				if ( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
+				AutoDispose< SqliteQuery > query;
+				if( !query->create( m_dataBase, "SELECT asset_id, filename FROM output_files WHERE " + whereAssetId ) )
 				{
-					continue;
+					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
+					return false;
 				}
 
-				if ( pTask->parameters.isBuildRequired )
+				while( query->nextRow() )
 				{
-					continue;
-				}
+					const uint assetId = query->getIntegerField( "asset_id" );
 
-				const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query->getIntegerField( "type" );
-				const string identifier	= query->getTextField( "identifier" );
-				const int valueInt		= query->getIntegerField( "value_int" );
-
-				switch ( type )
-				{
-				case ConversionResult::DependencyType_Converter:
+					ConversionTask* pTask = nullptr;
+					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
 					{
-						const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->parameters.typeCrc );
-						if ( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
-						{
-							pTask->parameters.isBuildRequired = true;
-						}
+						continue;
 					}
-					break;
 
-				case ConversionResult::DependencyType_File:
+					if( pTask->parameters.isBuildRequired )
 					{
-						const crc32 fileChangeCrc = file::getLastChangeCrc( identifier.cStr() );
-						if ( fileChangeCrc != (crc32)valueInt )
-						{
-							pTask->parameters.isBuildRequired = true;
-						}
+						continue;
 					}
-					break;
 
-				case ConversionResult::DependencyType_Type:
+					if( !file::exists( query->getTextField( "filename" ).cStr() ) )
 					{
-						// TODO
 						pTask->parameters.isBuildRequired = true;
 					}
-					break;
+				}
+			}
 
+			// check dependency files
+			{
+				AutoDispose< SqliteQuery > query;
+				if( !query->create( m_dataBase, "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE " + whereAssetId ) )
+				{
+					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
+					return false;
+				}
+
+				while( query->nextRow() )
+				{
+					const uint assetId = query->getIntegerField( "asset_id" );
+
+					ConversionTask* pTask = nullptr;
+					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
+					{
+						continue;
+					}
+
+					if( pTask->parameters.isBuildRequired )
+					{
+						continue;
+					}
+
+					const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query->getIntegerField( "type" );
+					const string identifier	= query->getTextField( "identifier" );
+					const int valueInt		= query->getIntegerField( "value_int" );
+
+					switch( type )
+					{
+					case ConversionResult::DependencyType_Converter:
+						{
+							const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->parameters.typeCrc );
+							if( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
+							{
+								pTask->parameters.isBuildRequired = true;
+							}
+						}
+						break;
+
+					case ConversionResult::DependencyType_File:
+						{
+							const crc32 fileChangeCrc = file::getLastChangeCrc( identifier.cStr() );
+							if( fileChangeCrc != (crc32)valueInt )
+							{
+								pTask->parameters.isBuildRequired = true;
+							}
+						}
+						break;
+
+					case ConversionResult::DependencyType_Type:
+						{
+							// TODO
+							pTask->parameters.isBuildRequired = true;
+						}
+						break;
+
+					}
 				}
 			}
 		}

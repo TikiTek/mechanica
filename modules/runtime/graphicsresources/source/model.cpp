@@ -60,7 +60,7 @@ namespace tiki
 
 		if ( modelInitData.hierarchy.getData() != nullptr )
 		{
-			m_pHierarchy = TIKI_MEMORY_NEW_OBJECT( ModelHierarchy );
+			m_pHierarchy = TIKI_NEW( ModelHierarchy );
 			TIKI_VERIFY( m_pHierarchy->initialize( *modelInitData.hierarchy.getData() ) );
 		}
 
