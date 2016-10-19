@@ -5,6 +5,14 @@
 
 namespace tiki
 {
+	const Matrix22 Matrix22::zero		= { 0.0f, 0.0f, 0.0f, 0.0f };
+	const Matrix22 Matrix22::one		= { 1.0f, 1.0f, 1.0f, 1.0f };
+	const Matrix22 Matrix22::identity	= { 1.0f, 0.0f, 0.0f, 1.0f };
+										  
+	const Matrix32 Matrix32::zero		= { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	const Matrix32 Matrix32::one		= { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f };
+	const Matrix32 Matrix32::identity	= { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	
 	const Matrix33 Matrix33::zero		= { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 	const Matrix33 Matrix33::one		= { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 	const Matrix33 Matrix33::identity	= { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f };

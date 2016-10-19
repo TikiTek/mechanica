@@ -104,13 +104,16 @@ namespace tiki
 		TIKI_FORCE_INLINE Matrix33&	createScale( Matrix33& mtx, const Vector3& scale );
 		TIKI_FORCE_INLINE Matrix44&	createScale( Matrix44& mtx, const Vector3& scale );
 
-		TIKI_FORCE_INLINE Matrix22&	createRotationX( Matrix22& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix33&	createRotationX( Matrix33& mtx, float angle );
-		TIKI_FORCE_INLINE Matrix33&	createRotationY( Matrix33& mtx, float angle );
-		TIKI_FORCE_INLINE Matrix33&	createRotationZ( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix44&	createRotationX( Matrix44& mtx, float angle );
+
+		TIKI_FORCE_INLINE Matrix33&	createRotationY( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix44&	createRotationY( Matrix44& mtx, float angle );
+
+		TIKI_FORCE_INLINE Matrix22&	createRotationZ( Matrix22& mtx, float angle );
+		TIKI_FORCE_INLINE Matrix33&	createRotationZ( Matrix33& mtx, float angle );
 		TIKI_FORCE_INLINE Matrix44&	createRotationZ( Matrix44& mtx, float angle );
+
 		TIKI_FORCE_INLINE Matrix32&	createTranslation( Matrix32& mtx, const Vector2& position );
 		TIKI_FORCE_INLINE Matrix43&	createTranslation( Matrix43& mtx, const Vector3& position );
 		TIKI_FORCE_INLINE Matrix44&	createTranslation( Matrix44& mtx, const Vector3& position );

@@ -9,6 +9,19 @@
 
 namespace tiki
 {
+	//////////////////////////////////////////////////////////////////////////
+	// isEquals
+
+	TIKI_FORCE_INLINE bool matrix::isEquals( const Matrix22& lhs, const Matrix22& rhs, float epsilon /*= f32::epsilon */ )
+	{
+		return vector::isEquals( lhs.x, rhs.x, epsilon ) && vector::isEquals( lhs.y, rhs.y, epsilon );
+	}
+
+	TIKI_FORCE_INLINE bool matrix::isEquals( const Matrix32& lhs, const Matrix32& rhs, float epsilon /*= f32::epsilon */ )
+	{
+		return matrix::isEquals( lhs.rot, rhs.rot, epsilon ) && vector::isEquals( lhs.pos, rhs.pos, epsilon );
+	}
+
 	TIKI_FORCE_INLINE bool matrix::isEquals( const Matrix33& lhs, const Matrix33& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return vector::isEquals( lhs.x, rhs.x, epsilon ) && vector::isEquals( lhs.y, rhs.y, epsilon ) && vector::isEquals( lhs.z, rhs.z, epsilon );
@@ -22,6 +35,19 @@ namespace tiki
 	TIKI_FORCE_INLINE bool matrix::isEquals( const Matrix44& lhs, const Matrix44& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return vector::isEquals( lhs.x, rhs.x, epsilon ) && vector::isEquals( lhs.y, rhs.y, epsilon ) && vector::isEquals( lhs.z, rhs.z, epsilon ) && vector::isEquals( lhs.w, rhs.w, epsilon );
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// isIdentity
+
+	TIKI_FORCE_INLINE bool matrix::isIdentity( const Matrix22& mtx, float epsilon /*= f32::epsilon */ )
+	{
+		return vector::isEquals( mtx.x, Vector2::unitX, epsilon ) && vector::isEquals( mtx.y, Vector2::unitY, epsilon );
+	}
+
+	TIKI_FORCE_INLINE bool matrix::isIdentity( const Matrix32& mtx, float epsilon /*= f32::epsilon */ )
+	{
+		return matrix::isIdentity( mtx.rot, epsilon ) && vector::isZero( mtx.pos, epsilon );
 	}
 
 	TIKI_FORCE_INLINE bool matrix::isIdentity( const Matrix33& mtx, float epsilon /*= f32::epsilon*/ )
@@ -39,6 +65,19 @@ namespace tiki
 		return vector::isEquals( mtx.x, Vector4::unitX, epsilon ) && vector::isEquals( mtx.y, Vector4::unitY, epsilon ) && vector::isEquals( mtx.z, Vector4::unitZ, epsilon ) && vector::isEquals( mtx.w, Vector4::unitW, epsilon );
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// isZero
+
+	TIKI_FORCE_INLINE bool matrix::isZero( const Matrix22& mtx, float epsilon /*= f32::epsilon */ )
+	{
+		return vector::isZero( mtx.x, epsilon ) && vector::isZero( mtx.y, epsilon );
+	}
+
+	TIKI_FORCE_INLINE bool matrix::isZero( const Matrix32& mtx, float epsilon /*= f32::epsilon */ )
+	{
+		return matrix::isZero( mtx.rot, epsilon ) && vector::isZero( mtx.pos, epsilon );
+	}
+
 	TIKI_FORCE_INLINE bool matrix::isZero( const Matrix33& mtx, float epsilon /*= f32::epsilon*/ )
 	{
 		return vector::isZero( mtx.x, epsilon ) && vector::isZero( mtx.y, epsilon ) && vector::isZero( mtx.z, epsilon );
@@ -52,6 +91,23 @@ namespace tiki
 	TIKI_FORCE_INLINE bool matrix::isZero( const Matrix44& mtx, float epsilon /*= f32::epsilon*/ )
 	{
 		return vector::isZero( mtx.x, epsilon ) && vector::isZero( mtx.y, epsilon ) && vector::isZero( mtx.z, epsilon ) && vector::isZero( mtx.w, epsilon );
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// clear
+
+	TIKI_FORCE_INLINE Matrix22& matrix::clear( Matrix22& mtx )
+	{
+		vector::clear( mtx.x );
+		vector::clear( mtx.y );
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix32& matrix::clear( Matrix32& mtx )
+	{
+		matrix::clear( mtx.rot );
+		vector::clear( mtx.pos );
+		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::clear( Matrix33& mtx )
@@ -75,6 +131,23 @@ namespace tiki
 		vector::clear( mtx.y );
 		vector::clear( mtx.z );
 		vector::clear( mtx.w );
+		return mtx;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// createIdentity
+
+	TIKI_FORCE_INLINE Matrix22& matrix::createIdentity( Matrix22& mtx )
+	{
+		mtx.x = Vector2::unitX;
+		mtx.y = Vector2::unitY;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix32& matrix::createIdentity( Matrix32& mtx )
+	{
+		matrix::createIdentity( mtx.rot );
+		vector::clear( mtx.pos );
 		return mtx;
 	}
 
@@ -102,6 +175,17 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// createScale
+	
+	TIKI_FORCE_INLINE Matrix22& matrix::createScale( Matrix22& mtx, const Vector2& scale )
+	{
+		matrix::clear( mtx );
+		mtx.x.x = scale.x;
+		mtx.y.y = scale.y;
+		return mtx;
+	}
+	
 	TIKI_FORCE_INLINE Matrix33& matrix::createScale( Matrix33& mtx, const Vector3& scale )
 	{
 		matrix::clear( mtx );
@@ -121,6 +205,9 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// createRotationX
+	
 	TIKI_FORCE_INLINE Matrix33& matrix::createRotationX( Matrix33& mtx, float angle )
 	{
 		const float s = sinf( angle );
@@ -131,32 +218,6 @@ namespace tiki
 		mtx.y.z = s;
 		mtx.z.y = -s;
 		mtx.z.z = c;
-		return mtx;
-	}
-
-	TIKI_FORCE_INLINE Matrix33& matrix::createRotationY( Matrix33& mtx, float angle )
-	{
-		const float s = sinf( angle );
-		const float c = cosf( angle );
-		matrix::clear( mtx );
-		mtx.x.x = c;
-		mtx.x.z = -s;
-		mtx.y.y = 1.0f;
-		mtx.z.x = s;
-		mtx.z.z = c;
-		return mtx;
-	}
-
-	TIKI_FORCE_INLINE Matrix33& matrix::createRotationZ( Matrix33& mtx, float angle )
-	{
-		const float s = sinf( angle );
-		const float c = cosf( angle );
-		matrix::clear( mtx );
-		mtx.x.x = c;
-		mtx.x.y = s;
-		mtx.y.x = -s;
-		mtx.y.y = c;
-		mtx.z.z = 1.0f;
 		return mtx;
 	}
 
@@ -174,6 +235,22 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// createRotationY
+
+	TIKI_FORCE_INLINE Matrix33& matrix::createRotationY( Matrix33& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = c;
+		mtx.x.z = -s;
+		mtx.y.y = 1.0f;
+		mtx.z.x = s;
+		mtx.z.z = c;
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix44& matrix::createRotationY( Matrix44& mtx, float angle )
 	{
 		const float s = sinf( angle );
@@ -185,6 +262,34 @@ namespace tiki
 		mtx.z.x = s;
 		mtx.z.z = c;
 		mtx.w.w = 1.0f;
+		return mtx;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// createRotationZ
+
+	TIKI_FORCE_INLINE Matrix22& matrix::createRotationZ( Matrix22& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = c;
+		mtx.x.y = s;
+		mtx.y.x = -s;
+		mtx.y.y = c;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix33& matrix::createRotationZ( Matrix33& mtx, float angle )
+	{
+		const float s = sinf( angle );
+		const float c = cosf( angle );
+		matrix::clear( mtx );
+		mtx.x.x = c;
+		mtx.x.y = s;
+		mtx.y.x = -s;
+		mtx.y.y = c;
+		mtx.z.z = 1.0f;
 		return mtx;
 	}
 
@@ -202,10 +307,37 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// createTranslation
+
+	TIKI_FORCE_INLINE Matrix32& matrix::createTranslation( Matrix32& mtx, const Vector2& position )
+	{
+		matrix::createIdentity( mtx.rot );
+		mtx.pos = position;
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix43& matrix::createTranslation( Matrix43& mtx, const Vector3& position )
+	{
+		matrix::createIdentity( mtx.rot );
+		mtx.pos = position;
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix44& matrix::createTranslation( Matrix44& mtx, const Vector3& position )
 	{
 		matrix::createIdentity( mtx );
 		vector::set( mtx.w, position, 1.0f );
+		return mtx;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// set
+
+	TIKI_FORCE_INLINE Matrix32& matrix::set( Matrix32& mtx, const Matrix22& rot, const Vector2& pos )
+	{
+		mtx.rot = rot;
+		mtx.pos = pos;
 		return mtx;
 	}
 
@@ -251,6 +383,20 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// mul
+
+	TIKI_FORCE_INLINE Matrix22& matrix::mul( Matrix22& mtx, const Matrix22& rhs )
+	{
+		return mul( mtx, mtx, rhs );
+	}
+
+
+	TIKI_FORCE_INLINE Matrix32& matrix::mul( Matrix32& mtx, const Matrix32& rhs )
+	{
+		return mul( mtx, mtx, rhs );
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::mul( Matrix33& mtx, const Matrix33& rhs )
 	{
 		return mul( mtx, mtx, rhs );
@@ -264,6 +410,33 @@ namespace tiki
 	TIKI_FORCE_INLINE Matrix44& matrix::mul( Matrix44& mtx, const Matrix44& rhs )
 	{
 		return mul( mtx, mtx, rhs );
+	}
+
+	TIKI_FORCE_INLINE Matrix22& matrix::mul( Matrix22& mtx, const Matrix22& lhs, const Matrix22& rhs )
+	{
+		Matrix22 rhsTransposed;
+		matrix::transpose( rhsTransposed, rhs );
+
+		mtx = lhs;
+		matrix::transform( mtx.x, rhsTransposed );
+		matrix::transform( mtx.y, rhsTransposed );
+
+		return mtx;
+	}
+
+	TIKI_FORCE_INLINE Matrix32& matrix::mul( Matrix32& mtx, const Matrix32& lhs, const Matrix32& rhs )
+	{
+		Matrix22 rhsTransposed;
+		matrix::transpose( rhsTransposed, rhs.rot );
+
+		mtx = lhs;
+		matrix::transform( mtx.rot.x, rhsTransposed );
+		matrix::transform( mtx.rot.y, rhsTransposed );
+
+		matrix::transform( mtx.pos, rhsTransposed );
+		vector::add( mtx.pos, rhs.pos );
+
+		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::mul( Matrix33& mtx, const Matrix33& lhs, const Matrix33& rhs )
@@ -308,6 +481,9 @@ namespace tiki
 
 		return mtx;
 	}
+	
+	//////////////////////////////////////////////////////////////////////////
+	// scale
 
 	TIKI_FORCE_INLINE Matrix33& matrix::scale( Matrix33& mtx, float val )
 	{
@@ -331,6 +507,27 @@ namespace tiki
 		vector::scale( mtx.z, val );
 		vector::scale( mtx.w, val );
 		return mtx;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// invert
+
+	TIKI_FORCE_INLINE bool matrix::invert( Matrix22& mtx, const Matrix22& source )
+	{
+		const float det = source.x.x * source.y.y - source.x.y * source.y.x;
+		if( f32::isZero( det ) )
+		{
+			return false;
+		}
+
+		mtx.x.x = source.y.y;
+		mtx.x.y = -source.x.y;
+		mtx.y.x = -source.y.x;
+		mtx.y.y = source.x.x;
+
+		scale( mtx, 1.0f / det );
+
+		return true;
 	}
 
 	TIKI_FORCE_INLINE bool matrix::invert( Matrix33& mtx, const Matrix33& source )
@@ -415,6 +612,17 @@ namespace tiki
 		return true;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// lerp
+
+	TIKI_FORCE_INLINE Matrix22& matrix::lerp( Matrix22& mtx, const Matrix22& start, const Matrix22& end, const float amount )
+	{
+		vector::lerp( mtx.x, start.x, end.x, amount );
+		vector::lerp( mtx.y, start.y, end.y, amount );
+
+		return mtx;
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::lerp( Matrix33& mtx, const Matrix33& start, const Matrix33& end, const float amount )
 	{
 		vector::lerp( mtx.x, start.x, end.x, amount );
@@ -434,6 +642,14 @@ namespace tiki
 		return mtx;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// transpose
+
+	TIKI_FORCE_INLINE Matrix22& matrix::transpose( Matrix22& mtx )
+	{
+		return matrix::transpose( mtx, mtx );
+	}
+
 	TIKI_FORCE_INLINE Matrix33& matrix::transpose( Matrix33& mtx )
 	{
 		return matrix::transpose( mtx, mtx );
@@ -442,6 +658,19 @@ namespace tiki
 	TIKI_FORCE_INLINE Matrix44& matrix::transpose( Matrix44& mtx )
 	{
 		return matrix::transpose( mtx, mtx );
+	}
+
+	TIKI_FORCE_INLINE Matrix22& matrix::transpose( Matrix22& mtx, const Matrix22& rhs )
+	{
+		const Vector2 x = rhs.x;
+		const Vector2 y = rhs.y;
+
+		mtx.x.x = x.x;
+		mtx.x.y = y.x;
+		mtx.y.x = x.y;
+		mtx.y.y = y.y;
+
+		return mtx;
 	}
 
 	TIKI_FORCE_INLINE Matrix33& matrix::transpose( Matrix33& mtx, const Matrix33& rhs )
@@ -488,6 +717,24 @@ namespace tiki
 		mtx.w.w = w.w;
 
 		return mtx;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// transform
+
+	TIKI_FORCE_INLINE void matrix::transform( Vector2& vec, const Matrix22& mtx )
+	{
+		vector::set(
+			vec,
+			vector::dot( vec, mtx.x ),
+			vector::dot( vec, mtx.y )
+		);
+	}
+
+	TIKI_FORCE_INLINE void matrix::transform( Vector2& vec, const Matrix32& mtx )
+	{
+		matrix::transform( vec, mtx.rot );
+		vector::add( vec, mtx.pos );
 	}
 
 	TIKI_FORCE_INLINE void matrix::transform( Vector3& vec, const Matrix33& mtx )
