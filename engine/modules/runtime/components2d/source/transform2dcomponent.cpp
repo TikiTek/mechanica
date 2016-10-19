@@ -24,7 +24,7 @@ namespace tiki
 	{
 		if ( pState->needUpdate )
 		{
-			matrix::createRotationX( pState->worldTransform.rot, pState->rotation );
+			matrix::createRotationZ( pState->worldTransform.rot, pState->rotation );
 			vector::scale( pState->worldTransform.rot.x, pState->scale.x );
 			vector::scale( pState->worldTransform.rot.y, pState->scale.y );
 
