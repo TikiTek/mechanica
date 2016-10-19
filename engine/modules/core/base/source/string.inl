@@ -81,7 +81,7 @@ namespace tiki
 	{
 		const uint sourceLength = getStringSize( pSource );
 
-		char* pNewString = (char*)TIKI_MEMORY_ALLOC( sourceLength + 1u );
+		char* pNewString = (char*)TIKI_ALLOC( sourceLength + 1u );
 		copyString( pNewString, sourceLength + 1u, pSource );
 
 		return pNewString;

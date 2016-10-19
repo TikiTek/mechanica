@@ -25,7 +25,7 @@ namespace tiki
 	template<typename T>
 	bool Queue<T>::create( uint capacity, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		m_pData = TIKI_MEMORY_NEW_ARRAY_ALIGNED( T, capacity, alignment, true );
+		m_pData = TIKI_NEW_ARRAY_ALIGNED( T, capacity, alignment, true );
 		if ( m_pData == nullptr )
 		{
 			return false;

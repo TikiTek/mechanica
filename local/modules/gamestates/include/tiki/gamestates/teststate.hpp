@@ -51,17 +51,18 @@ namespace tiki
 
 		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
 
-		const RenderView&		getRenderView() const;
+		const Camera&			getCamera() const;
 
 	private:
 		
-		Game*						m_pGame;
-		ApplicationState*			m_pParentState;
+		Game*										m_pGame;
+		ApplicationState*							m_pParentState;
 
-		const Font*					m_pFont;
-		const Font*					m_pFontBig;
-
-		FreeCamera					m_freeCamera;
+		const Font*									m_pFont;
+		const Font*									m_pFontBig;
+		const EntityTemplateGenericDataResource*	m_pIsland1;
+		const EntityTemplateGenericDataResource*	m_pIsland2;
+		const EntityTemplateGenericDataResource*	m_pIsland3;
 
 		DebugGuiTestWindow			m_testWindow;
 

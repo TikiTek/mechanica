@@ -10,6 +10,7 @@ namespace tiki
 {
 	class Physics2dBodyComponent;
 	class Physics2dWorld;
+	class Transform2dComponent;
 	struct WiggleComponentInitData;
 	struct WiggleComponentState;
 
@@ -24,7 +25,7 @@ namespace tiki
 		explicit			WiggleComponent();
 		virtual				~WiggleComponent();
 
-		bool				create( Physics2dWorld& physicsWorld, const Physics2dBodyComponent& physicsBodyComponent );
+		bool				create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent );
 		void				dispose();
 
 		virtual crc32		getTypeCrc() const;
@@ -38,9 +39,11 @@ namespace tiki
 
 	private:
 
+		Physics2dWorld*					m_pPhysicsWorld;
+
+		const Transform2dComponent*		m_pTransformComponent;
 		const Physics2dBodyComponent*	m_pPhysicsBodyComponent;
 
-		const Physics2dWorld*			m_pPhysicsWorld;
 
 	};
 }

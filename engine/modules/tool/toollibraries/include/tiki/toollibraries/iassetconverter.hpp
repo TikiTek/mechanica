@@ -13,6 +13,7 @@ namespace tiki
 	{
 		AssetConverterParamter()
 		{
+			waitForConversion			= false;
 			forceRebuild				= false;
 			rebuildOnMissingDatabase	= true;
 		}
@@ -20,6 +21,7 @@ namespace tiki
 		string	sourcePath;
 		string	outputPath;
 
+		bool	waitForConversion;
 		bool	forceRebuild;
 		bool	rebuildOnMissingDatabase;
 	};

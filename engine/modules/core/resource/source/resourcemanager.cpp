@@ -48,9 +48,10 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
 		AssetConverterParamter converterParameters;
-		converterParameters.sourcePath		= "../../../../../content";
-		converterParameters.outputPath		= "../../../../../gamebuild";
-		converterParameters.forceRebuild	= true;
+		converterParameters.sourcePath			= "../../../../../content";
+		converterParameters.outputPath			= "../../../../../gamebuild";
+		converterParameters.waitForConversion	= false;
+		converterParameters.forceRebuild		= false;
 
 		m_pAssetConverter = createAssetConverter();
 		if ( !m_pAssetConverter->create( converterParameters ) )

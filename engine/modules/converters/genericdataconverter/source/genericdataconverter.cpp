@@ -27,7 +27,7 @@ namespace tiki
 			//return pType->getTypeCrc();
 		}
 
-		return 12; //(uint32)-1;
+		return 16; //(uint32)-1;
 	}
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const

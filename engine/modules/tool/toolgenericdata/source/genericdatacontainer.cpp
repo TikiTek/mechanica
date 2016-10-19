@@ -453,7 +453,7 @@ namespace tiki
 				}
 
 				const GenericDataTypeStruct* pTypedChildType = (const GenericDataTypeStruct*)pChildType;
-				GenericDataObject* pObject = TIKI_MEMORY_NEW_OBJECT( GenericDataObject )( m_collection );
+				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( m_collection );
 				if ( !pObject->create( pTypedChildType ) )
 				{
 					TIKI_MEMORY_DELETE_OBJECT( pObject );
@@ -478,7 +478,7 @@ namespace tiki
 				}
 
 				const GenericDataTypeArray* pTypedChildType = (const GenericDataTypeArray*)pChildType;
-				GenericDataArray* pArray = TIKI_MEMORY_NEW_OBJECT( GenericDataArray )( m_collection );
+				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( m_collection );
 				if ( !pArray->create( pTypedChildType ) )
 				{
 					TIKI_MEMORY_DELETE_OBJECT( pArray );

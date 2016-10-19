@@ -158,7 +158,7 @@ namespace tiki
 		}
 
 		TIKI_FORCE_INLINE ResArray( const T* pData, size_t size )
-			: m_pData( pRef )
+			: m_pData( pData )
 			, m_size( size )
 		{
 		}
@@ -175,7 +175,7 @@ namespace tiki
 			m_size	= 0u;
 		}
 
-		TIKI_FORCE_INLINE size_t getSize() const
+		TIKI_FORCE_INLINE size_t getCount() const
 		{
 			return m_size;
 		}

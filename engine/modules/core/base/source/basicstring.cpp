@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	const char BasicString::whiteSpaces[ 4u ]				= { ' ', '\t', '\r', '\n' };
+	const char BasicString::whiteSpaces[ 4u ] = { ' ', '\t', '\r', '\n' };
 
 	string formatString( const char* pFormat, ... )
 	{

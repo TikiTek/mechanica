@@ -16,9 +16,9 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	void* memory::allocAligned( size_t size, const char* pFileName, int lineNumber, size_t alignment )
+	void* memory::allocateAlignedMemory( uint size, const char* pFileName, int lineNumber, uint alignment, bool zeroMemory )
 #else
-	void* memory::allocAligned( size_t size, size_t alignment )
+	void* memory::allocateAlignedMemory( size_t size, size_t alignment, bool zeroMemory )
 #endif
 	{
 		TIKI_ASSERT( alignment != TIKI_DEFAULT_ALIGNMENT );
@@ -34,6 +34,11 @@ namespace tiki
 		pMemory = _aligned_malloc( size, alignment );
 #	endif
 #endif
+
+		if( zeroMemory )
+		{
+			memory::zero( pMemory, size );
+		}
 
 		TIKI_ASSERT( (uint)pMemory % alignment == 0u );
 		return pMemory;

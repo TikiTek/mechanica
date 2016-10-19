@@ -118,6 +118,18 @@ namespace tiki
 			value = m_value.s64;
 			return true;
 
+		case GenericDataValueType_UnsingedInteger8:
+			return rangeCheckCast( value, m_value.u8 );
+
+		case GenericDataValueType_UnsingedInteger16:
+			return rangeCheckCast( value, m_value.u16 );
+
+		case GenericDataValueType_UnsingedInteger32:
+			return rangeCheckCast( value, m_value.u32 );
+
+		case GenericDataValueType_UnsingedInteger64:
+			return rangeCheckCast( value, m_value.u64 );
+
 		default:
 			break;
 		}
@@ -172,6 +184,18 @@ namespace tiki
 		case GenericDataValueType_UnsingedInteger64:
 			value = m_value.u64;
 			return true;
+
+		case GenericDataValueType_SingedInteger8:
+			return rangeCheckCast( value, m_value.s8 );
+
+		case GenericDataValueType_SingedInteger16:
+			return rangeCheckCast( value, m_value.s16 );
+
+		case GenericDataValueType_SingedInteger32:
+			return rangeCheckCast( value, m_value.s32 );
+
+		case GenericDataValueType_SingedInteger64:
+			return rangeCheckCast( value, m_value.s64 );
 
 		default:
 			break;

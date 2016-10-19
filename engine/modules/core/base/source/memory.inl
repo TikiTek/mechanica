@@ -59,9 +59,9 @@ namespace tiki
 
 	template<typename T>
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	TIKI_FORCE_INLINE T* memory::newObjectAligned( const char* pFileName, int lineNumber, uint alignment )
+	TIKI_FORCE_INLINE T* memory::allocateAlignedObject( const char* pFileName, int lineNumber, uint alignment, bool zeroMemory )
 #else
-	TIKI_FORCE_INLINE T* memory::newObjectAligned( uint alignment )
+	TIKI_FORCE_INLINE T* memory::allocateAlignedObject( uint alignment, bool zeroMemory )
 #endif
 	{
 		if ( alignment == TIKI_DEFAULT_ALIGNMENT )
@@ -70,10 +70,11 @@ namespace tiki
 		}
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		void* pNew = memory::allocAligned( sizeof( T ), pFileName, lineNumber, alignment );
+		void* pNew = memory::allocateAlignedMemory( sizeof( T ), pFileName, lineNumber, alignment, zeroMemory );
 #else
-		void* pNew = memory::allocAligned( sizeof( T ), alignment );
+		void* pNew = memory::allocateAlignedMemory( sizeof( T ), alignment, zeroMemory );
 #endif
+
 		return static_cast< T*>( pNew );
 	}
 
@@ -90,9 +91,9 @@ namespace tiki
 		}
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		void* pNew = memory::allocAligned( sizeof( T ) * count, pFileName, lineNumber, alignment );
+		void* pNew = memory::allocateAlignedMemory( sizeof( T ) * count, pFileName, lineNumber, alignment, false );
 #else
-		void* pNew = memory::allocAligned( sizeof( T ) * count, alignment );
+		void* pNew = memory::allocateAlignedMemory( sizeof( T ) * count, alignment, false );
 #endif
 
 		T* pArray = static_cast<T*>(pNew);

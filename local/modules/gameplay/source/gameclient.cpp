@@ -1,41 +1,38 @@
-
 #include "tiki/gameplay/gameclient.hpp"
 
 #include "tiki/base/debugprop.hpp"
-#include "tiki/components/entitytemplate.hpp"
+#include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/renderer/gamerenderer.hpp"
-#include "tiki/renderer/renderercontext.hpp"
-#include "tiki/renderer/renderview.hpp"
 
-#include "components3d.hpp"
-#include "gamecomponents.hpp"
-#include "physic3dcomponents.hpp"
+#include "components2d.hpp"
+#include "mechanica_components.hpp"
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", true );
+	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", false );
+	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", true );
 
 	GameClient::GameClient()
 	{
-		m_pRenderView = nullptr;
 	}
 
 	GameClient::~GameClient()
 	{
-		TIKI_ASSERT( m_pRenderView == nullptr );
 	}
 
-	bool GameClient::create()
+	bool GameClient::create( GraphicsSystem& graphicsSystem )
 	{
+		m_pGraphicsSystem = &graphicsSystem;
+
 		EntitySystemParameters entitySystemParams;
 		entitySystemParams.typeRegisterMaxCount		= MaxTypeCount;
 		entitySystemParams.storageChunkSize			= ChunkSize;
 		entitySystemParams.storageChunkCount		= ChunkCount;
 
-		EntityPool entityPools[] =
+		static const EntityPool s_entityPools[] =
 		{
 			{    1u,   1u },	// player
 			{ 1000u, 999u },	// enemies
@@ -44,7 +41,7 @@ namespace tiki
 			{ 4000u, 999u },	// projectiles
 		};
 
-		entitySystemParams.entityPools.create( entityPools, TIKI_COUNT( entityPools ) );
+		entitySystemParams.entityPools.create( s_entityPools, TIKI_COUNT( s_entityPools ) );
 
 		if ( !m_entitySystem.create( entitySystemParams ) )
 		{
@@ -52,7 +49,7 @@ namespace tiki
 			return false;
 		}
 
-		m_physicsWorld.create( vector::create( 0.0f, -9.81f ), 100.0f );
+		m_physicsWorld.create( vector::create( 0.0f, 9.81f ), 1.0f );
 
 		TIKI_VERIFY( m_transformComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
@@ -69,36 +66,32 @@ namespace tiki
 		TIKI_VERIFY( m_physicsJointComponent.create( m_physicsWorld ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsJointComponent ) );
 
-		TIKI_VERIFY( m_playerControlComponent.create( m_physicsWorld, m_transformComponent ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerControlComponent ) );
+		TIKI_VERIFY( m_playerComponent.create( m_physicsWorld, m_transformComponent ) );
+		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerComponent ) );
 
 		TIKI_VERIFY( m_lifeTimeComponent.create() );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
 
-		TIKI_VERIFY( m_wiggleComponent.create( m_physicsWorld, m_physicsBodyComponent ) );
+		TIKI_VERIFY( m_wiggleComponent.create( m_physicsWorld, m_transformComponent, m_physicsBodyComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_wiggleComponent ) );
+
+		const RenderTarget& backBuffer = m_pGraphicsSystem->getBackBuffer();
+		const float screenWidth = (float)backBuffer.getWidth() / 10.0f;
+		const float screenHeight = (float)backBuffer.getHeight() / -10.0f;
+
+		Projection projection;
+		projection.createOrthographic( screenWidth, screenHeight, 0.0f, 10.0f );
+
+		m_gameCamera.create( Vector3::zero, Quaternion::identity, &projection );
 
 		m_freeCamera.create( Vector3::zero, Quaternion::identity );
 		m_freeCamera.setMouseControl( true );
-
-		RenderSceneParameters sceneParameters;
-		if( !m_renderScene.create( sceneParameters ) )
-		{
-			dispose();
-			return false;
-		}
-
-		RenderViewParameters viewParameters;
-		m_pRenderView = m_renderScene.addView( viewParameters );
-		
+						
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
-		m_renderScene.removeView( m_pRenderView );
-		m_renderScene.dispose();
-
 		m_entitySystem.update(); // to dispose all entities
 
 		m_freeCamera.dispose();
@@ -108,12 +101,13 @@ namespace tiki
 		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsJointComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
-		m_entitySystem.unregisterComponentType( &m_playerControlComponent );
+		m_entitySystem.unregisterComponentType( &m_playerComponent );
 		m_entitySystem.unregisterComponentType( &m_textureComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_wiggleComponent.dispose();
 		m_lifeTimeComponent.dispose();
-		m_playerControlComponent.dispose();
+		m_playerComponent.dispose();
 		m_physicsJointComponent.dispose();
 		m_physicsColliderComponent.dispose();
 		m_physicsBodyComponent.dispose();
@@ -123,43 +117,36 @@ namespace tiki
 		m_physicsWorld.dispose();
 
 		m_entitySystem.dispose();
+
+		m_pGraphicsSystem = nullptr;
 	}
 	
-	//EntityId GameClient::createPlayerEntity( const Model* pModel, const Vector3& position )
-	//{
-	//	Transform3dComponentInitData transformInitData;
-	//	createFloat3( transformInitData.position, position.x, position.y, position.z );
-	//	createFloat4( transformInitData.rotation, 0.0f, 0.0f, 0.0f, 1.0f );
-	//	createFloat3( transformInitData.scale, 1.0f, 1.0f, 1.0f );
+	EntityId GameClient::createPlayerEntity( const Vector2& position )
+	{
+		Transform2dComponentInitData transformInitData;
+		createFloat2( transformInitData.position, position.x, position.y );
+		transformInitData.rotation = 0.0f;
+		createFloat2( transformInitData.scale, 1.0f, 1.0f );
 
-	//	StaticModelComponentInitData modelInitData;
-	//	modelInitData.model = pModel;
+		PlayerComponentInitData playerInitData;
+		playerInitData.speed = 0.1f;
 
-	//	Physics3dCharacterControllerComponentInitData controllerInitData;
-	//	createFloat3( controllerInitData.position, position.x, position.y, position.z );
-	//	controllerInitData.gravity				= 0.00001f;
-	//	controllerInitData.shape.type			= Physics3dShapeType_Capsule;
-	//	controllerInitData.shape.capsuleRadius	= 0.5f;
-	//	controllerInitData.shape.capsuleHeight	= 1.0f;
+		EntityComponent entityComponents[] =
+		{
+			{ m_transformComponent.getTypeCrc(),	&transformInitData },
+			{ m_playerComponent.getTypeCrc(),		&playerInitData }
+		};
 
-	//	PlayerControlComponentInitData playerControlInitData;
-	//	playerControlInitData.speed = 0.1f;
+		EntityTemplateData entityTemplate;
+		entityTemplate.components = ResArray< EntityComponent >( entityComponents, TIKI_COUNT( entityComponents ) );
 
-	//	EntityTemplateComponent entityComponents[] =
-	//	{
-	//		{ m_transformComponent.getTypeCrc(),					&transformInitData },
-	//		{ m_physicsCharacterControllerComponent.getTypeCrc(),	&controllerInitData },
-	//		{ m_staticModelComponent.getTypeCrc(),					&modelInitData },
-	//		{ m_playerControlComponent.getTypeCrc(),				&playerControlInitData }
-	//	};
+		return m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
+	}
 
-	//	EntityTemplate entityTemplate;
-	//	entityTemplate.components.create( entityComponents, TIKI_COUNT( entityComponents ) );
-
-	//	const EntityId result = m_entitySystem.createEntityFromTemplate( 0u, entityTemplate );
-	//	entityTemplate.components.dispose();
-	//	return result;
-	//}
+	EntityId GameClient::createEntityFromTemplate( const EntityTemplateData& entityTemplate )
+	{
+		return m_entitySystem.createEntityFromTemplate( 1u, entityTemplate );
+	}
 
 	//EntityId GameClient::createModelEntity( const Model* pModel, const Vector3& position )
 	//{
@@ -300,27 +287,11 @@ namespace tiki
 	{
 		const timems timeMs = timems( updateContext.timeDelta * 1000.0f );
 
-		m_renderScene.clearState();
-
 		m_entitySystem.update();
-
-		Camera camera;
-		camera.create( m_pRenderView->getCamera() );
-		//m_gameCamera.update( camera, updateContext.pTerrainState, updateContext.timeDelta );
-
-		if( s_useFreeCamera )
-		{
-			m_freeCamera.update( m_pRenderView->getCamera(), updateContext.timeDelta );
-		}
-		else
-		{
-			m_pRenderView->getCamera().create( camera );
-		}
-
 		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsBodyComponent.update();
-		m_playerControlComponent.update( camera, updateContext.timeDelta );
+		m_playerComponent.update( m_gameCamera, updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 
 		m_transformComponent.update();
@@ -328,9 +299,18 @@ namespace tiki
 
 	void GameClient::render( GraphicsContext& graphicsContext )
 	{
+		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_XKCD_BRIGHT_BLUE );
+
 		//m_textureComponent.render( m_renderScene );
 
 		//gameRenderer.renderView( graphicsContext, graphicsContext.getBackBuffer(), *m_pRenderView );
+
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		if( s_drawPhysicsDebug )
+		{
+			m_physicsWorld.renderDebug();
+		}
+#endif
 	}
 	
 	bool GameClient::processInputEvent( const InputEvent& inputEvent )
@@ -340,7 +320,7 @@ namespace tiki
 			return m_freeCamera.processInputEvent( inputEvent );
 		}
 
-		if ( m_playerControlComponent.processInputEvent( inputEvent ) )
+		if ( m_playerComponent.processInputEvent( inputEvent ) )
 		{
 			return true;
 		}

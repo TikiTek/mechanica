@@ -100,8 +100,11 @@ namespace tiki
 
 				if ( isInital )
 				{
-					resourceRequestPool.beginLoadResource< Font >( &m_pFont,					"debug.font" );
-					resourceRequestPool.beginLoadResource< Font >( &m_pFontBig,					"big.font" );
+					resourceRequestPool.beginLoadResource< Font >( &m_pFont,									"debug.font" );
+					resourceRequestPool.beginLoadResource< Font >( &m_pFontBig,									"big.font" );
+					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland1,	"island1.entity" );
+					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland2,	"island2.entity" );
+					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland3,	"island4.entity" );
 				}
 
 				if ( resourceRequestPool.isFinish() )
@@ -122,6 +125,9 @@ namespace tiki
 
 				ResourceManager& resourceManager = m_pGame->getResourceManager();
 
+				resourceManager.unloadResource( m_pIsland1 );
+				resourceManager.unloadResource( m_pIsland2 );
+				resourceManager.unloadResource( m_pIsland3 );
 				resourceManager.unloadResource( m_pFontBig );
 				resourceManager.unloadResource( m_pFont );
 				
@@ -132,10 +138,10 @@ namespace tiki
 		case TestStateTransitionSteps_CreateGameClient:
 			if ( isCreating )
 			{
-				TIKI_VERIFY( m_gameClient.create() );
+				TIKI_VERIFY( m_gameClient.create( m_pGame->getGraphicsSystem() ) );
 
-				m_boxesEntityId		= InvalidEntityId; // m_gameClient.createModelEntity( m_pModelBoxes, Vector3::zero );
-				m_planeEntityId		= InvalidEntityId; // m_gameClient.createTerrainEntity( m_pModelPlane, vector::create( 0.0f, -0.1f, 0.0f ) );
+				m_boxesEntityId		= m_gameClient.createPlayerEntity( Vector2::zero );
+				m_planeEntityId		= m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
 
 				return TransitionState_Finish;
 			}
@@ -154,8 +160,6 @@ namespace tiki
 			{
 				if ( isCreating )
 				{
-					m_freeCamera.create( vector::create( 0.0f, 0.0f, 1.0f ), Quaternion::identity );
-
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )					
 					m_testWindow.create( m_pGame->getDebugGui() );
 #endif
@@ -170,8 +174,6 @@ namespace tiki
 				{
 					//m_lightingWindow.dispose();
 					m_testWindow.dispose();
-
-					m_freeCamera.dispose();
 
 					return TransitionState_Finish;
 				}
@@ -196,8 +198,6 @@ namespace tiki
 		gameClientUpdateContext.timeDelta		= timeDelta;
 		gameClientUpdateContext.totalGameTime	= totalGameTime;
 		m_gameClient.update( gameClientUpdateContext );
-
-		m_freeCamera.update( m_gameClient.getView().getCamera(), timeDelta );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -251,11 +251,6 @@ namespace tiki
 			vector::set( m_mousePosition, float( inputEvent.data.mouseMoved.xState ), float( inputEvent.data.mouseMoved.yState ) );
 		}
 
-		if ( m_freeCamera.processInputEvent( inputEvent ) )
-		{
-			return true;
-		}
-
 		if ( m_gameClient.processInputEvent( inputEvent ) )
 		{
 			return true;
@@ -277,16 +272,16 @@ namespace tiki
 				break;
 			}
 		}
-		else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
-		{
-			m_freeCamera.setMouseControl( !m_freeCamera.getMouseControl() );
-		}
+		//else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
+		//{
+		//	m_freeCamera.setMouseControl( !m_freeCamera.getMouseControl() );
+		//}
 
 		return false;
 	}
 
-	const tiki::RenderView& TestState::getRenderView() const
+	const Camera& TestState::getCamera() const
 	{
-		return m_gameClient.getView();
+		return m_gameClient.getCamera();
 	}
 }

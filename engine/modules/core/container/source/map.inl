@@ -180,7 +180,7 @@ namespace tiki
 
 		if ( m_count > 0u )
 		{
-			m_pData = TIKI_MEMORY_NEW_ARRAY( Pair, m_capacity, true );
+			m_pData = TIKI_NEW_ARRAY( Pair, m_capacity, true );
 		}
 		else
 		{
@@ -269,7 +269,7 @@ namespace tiki
 		if ( m_capacity < neddedSize )
 		{
 			const uint capacity = getNextSize( neddedSize );
-			Pair* pNewData = TIKI_MEMORY_NEW_ARRAY( Pair, capacity, true );
+			Pair* pNewData = TIKI_NEW_ARRAY( Pair, capacity, true );
 
 			for (uint i = 0u; i < m_count; ++i)
 			{

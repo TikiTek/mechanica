@@ -64,33 +64,34 @@ namespace tiki
 
 			const TInt absoluteValue = (TInt)abs( (sint64)value );
 			const TInt valLog10 = (TInt)log10( (double)absoluteValue );
-			const TInt stringLength = valLog10 + 1 + (value < 0 ? 1 : 0);
+			const TInt numberLength = valLog10 + 1;
 			TInt i2 = (TInt)pow( 10.0, (double)valLog10 );
 
-			string str = string( stringLength );
+			string str = string( (uint)numberLength + (value < 0 ? 1u : 0u) );
 
 			TInt a = 0;
+			char* pTarget = str.getBuffer();
 			if (value < 0)
 			{
-				str[0] = '-';
+				pTarget[ 0u ] = '-';
 				a++;
 			}
 
 			TInt i = 0;
 			TInt i3 = 0;
-			while (a < stringLength )
+			while (i < numberLength )
 			{
-				i2 = absoluteValue / (TInt)pow(10.0, (double)(stringLength - i) - 1);
+				i2 = absoluteValue / (TInt)pow(10.0, (double)(numberLength - i) - 1);
 				i2 -= i3;
 				i3 += i2;
 				i3 *= 10;
 
-				str[a] = '0' + (char)i2;
+				pTarget[a] = '0' + (char)i2;
 
 				i++;
 				a++;
 			}
-			str[ stringLength - 1u ] = '\0';
+			pTarget[ a ] = '\0';
 
 			return str;
 		}

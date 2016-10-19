@@ -23,7 +23,7 @@ namespace tiki
 									GameSession();
 									~GameSession();
 
-		bool						create( ResourceManager& resourceManager );
+		bool						create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void						dispose( ResourceManager& resourceManager );
 
 		void						update( float timeDelta, float totalGameTime );

@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	class Physics2dCollisionObject;
+	class Physics2dBody;
 	class Physics2dWorld;
 	class Transform2dComponent;
 	struct Physics2dBodyComponentInitData;
@@ -30,7 +30,7 @@ namespace tiki
 
 		void							applyForce( Physics2dBodyComponentState* pState, const Vector2& force, const Vector2& localPoint = Vector2::zero ) const;
 
-		const Physics2dCollisionObject&	getPhysicsObject( const Physics2dBodyComponentState* pState ) const;
+		const Physics2dBody&			getPhysicsObject( const Physics2dBodyComponentState* pState ) const;
 
 		virtual crc32					getTypeCrc() const;
 		virtual uint32					getStateSize() const;

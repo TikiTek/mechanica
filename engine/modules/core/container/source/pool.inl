@@ -28,7 +28,7 @@ namespace tiki
 	{
 		TIKI_COMPILETIME_ASSERT( sizeof( T ) >= sizeof( FreeElement ) );
 
-		m_pData = (T*)TIKI_MEMORY_ALLOC( sizeof( T ) * capacity );
+		m_pData = (T*)TIKI_ALLOC( sizeof( T ) * capacity );
 		if ( m_pData == nullptr )
 		{
 			return false;

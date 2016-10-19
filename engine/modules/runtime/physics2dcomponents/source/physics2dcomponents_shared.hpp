@@ -39,7 +39,7 @@ namespace tiki
 
 		case Physics2dShapeType_Polygon:
 			TIKI_ASSERT( isPointerAligned( initData.vertices.getData(), TIKI_ALIGNOF( Vector2 ) ) );
-			shape.polygonShape.create( (const Vector2*)initData.vertices.getData(), initData.vertices.getSize() );
+			shape.polygonShape.create( (const Vector2*)initData.vertices.getData(), initData.vertices.getCount() );
 			pShape = &shape.polygonShape;
 			break;
 

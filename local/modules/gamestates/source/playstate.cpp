@@ -83,7 +83,7 @@ namespace tiki
 
 			if ( isCreating )
 			{
-				if( !m_gameSession.create( m_pGame->getResourceManager() ) )
+				if( !m_gameSession.create( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() ) )
 				{
 					return TransitionState_Error;
 				}
@@ -127,11 +127,6 @@ namespace tiki
 		const float totalGameTime = float( m_pGame->getFrameTimer().getTotalTime() );
 
 		m_gameSession.update( timeDelta, totalGameTime );
-
-		DirectionalLightData& directionalLight = m_gameSession.getGameClient().getScene().addDirectionalLight();
-		vector::set( directionalLight.direction, s_lightDirectionX, s_lightDirectionY, s_lightDirectionZ );
-		vector::normalize( directionalLight.direction );
-		directionalLight.color = TIKI_COLOR_WHITE;
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
@@ -189,8 +184,8 @@ namespace tiki
 		}
 	}
 
-	const RenderView& PlayState::getRenderView() const
+	const Camera& PlayState::getCamera() const
 	{
-		return m_gameSession.getGameClient().getView();
+		return m_gameSession.getGameClient().getCamera();
 	}
 }

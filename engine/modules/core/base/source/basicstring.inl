@@ -60,6 +60,11 @@ namespace tiki
 		return m_stringSize == 0;
 	}
 
+	TIKI_FORCE_INLINE char* BasicString::getBuffer()
+	{
+		return m_pData;
+	}
+
 	TIKI_FORCE_INLINE const char* BasicString::cStr() const
 	{
 		return m_pData;
@@ -600,7 +605,7 @@ namespace tiki
 		m_dataSize		= calculateLength( length );
 		m_stringSize	= 0u;
 
-		m_pData			= (char*)TIKI_MEMORY_ALLOC( m_dataSize );
+		m_pData			= (char*)TIKI_ALLOC( m_dataSize );
 	}
 	
 	TIKI_FORCE_INLINE void BasicString::reallocateData( sint length )
@@ -608,7 +613,7 @@ namespace tiki
 		char* pOldData = m_pData;
 		
 		m_dataSize	= calculateLength( length );
-		m_pData		= (char*)TIKI_MEMORY_ALLOC( m_dataSize );
+		m_pData		= (char*)TIKI_ALLOC( m_dataSize );
 
 		memory::copy( m_pData, pOldData, m_stringSize );
 		m_pData[ m_stringSize ] = '\0';

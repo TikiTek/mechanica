@@ -31,7 +31,7 @@ namespace tiki
 			TIKI_MEMORY_FREE( m_pData );
 		}
 
-		m_pData = (uint8*)TIKI_MEMORY_ALLOC( (uint)m_capacity );
+		m_pData = (uint8*)TIKI_ALLOC( (uint)m_capacity );
 		memory::copy( m_pData, copy.m_pData, (uint)m_length );
 	}
 
@@ -46,7 +46,7 @@ namespace tiki
 
 		if (capacity > 0u )
 		{
-			m_pData		= (uint8*)TIKI_MEMORY_ALLOC( (uint)capacity );
+			m_pData		= (uint8*)TIKI_ALLOC( (uint)capacity );
 		}
 		else
 		{
@@ -62,7 +62,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
-		m_pData			= (uint8*)TIKI_MEMORY_ALLOC( (uint)length );
+		m_pData			= (uint8*)TIKI_ALLOC( (uint)length );
 		m_pos			= 0u;
 		m_length		= length;
 		m_capacity		= length;
@@ -192,7 +192,7 @@ namespace tiki
 		const FileSize bufferSize = getNextPowerOfTwo( requiredSize );
 		TIKI_ASSERT( bufferSize >= requiredSize );
 
-		uint8* pNewData	= (uint8*)TIKI_MEMORY_ALLOC( (uint)bufferSize );
+		uint8* pNewData	= (uint8*)TIKI_ALLOC( (uint)bufferSize );
 		if ( pNewData != nullptr )
 		{
 			memory::copy( pNewData, m_pData, (uint)m_length );

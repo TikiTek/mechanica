@@ -42,7 +42,7 @@ namespace tiki
 		virtual bool				processInputEvent( const InputEvent& inputEvent );
 		virtual void				processWindowEvent( const WindowEvent& windowEvent );
 
-		const RenderView&			getRenderView() const;
+		const Camera&				getCamera() const;
 
 	private:
 

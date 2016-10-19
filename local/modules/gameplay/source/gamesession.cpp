@@ -15,9 +15,9 @@ namespace tiki
 	{
 	}
 
-	bool GameSession::create( ResourceManager& resourceManager )
+	bool GameSession::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
 	{
-		if( !m_gameClient.create() )
+		if( !m_gameClient.create( graphicsSystem ) )
 		{
 			return false;
 		}		
