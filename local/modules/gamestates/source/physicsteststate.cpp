@@ -4,19 +4,10 @@
 #include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/physics2d/physics2dboxshape.hpp"
 #include "tiki/physics2d/physics2dcircleshape.hpp"
+#include "tiki/physics2d/physics2dnoneshape.hpp"
 
 namespace tiki
 {
-	class Bla : public Physics2dShape
-	{
-	public:
-
-		virtual b2Shape* getNativeShape() const TIKI_OVERRIDE_FINAL
-		{
-			return nullptr;
-		}
-	};
-
 	PhysicsTestState::PhysicsTestState()
 	{
 		m_pGame			= nullptr;
@@ -79,7 +70,7 @@ namespace tiki
 
 				const Vector2 position = m_body1.getPosition();
 
-				Bla bla;
+				Physics2dNoneShape bla;
 				boxShape.create( vector::create( 0.05f, 0.05f ) );
 				for( uint i = 0u; i < TIKI_COUNT( m_colliders ); ++i )
 				{

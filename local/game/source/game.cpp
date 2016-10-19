@@ -36,8 +36,8 @@ namespace tiki
 			 isStringEquals( userName, "tim.boden" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			return GameStates_PhysicsTest;
-			//return GameStates_Test;
+			//return GameStates_PhysicsTest;
+			return GameStates_Test;
 			//return GameStates_BasicTest;
 			//return GameStates_Play;
 		}
@@ -68,9 +68,11 @@ namespace tiki
 		GraphicsSystem& graphicsSystem		= getGraphicsSystem();
 		ResourceManager& resourceManager	= getResourceManager();
 
+		EntityTemplateGenericDataResource::registerResourceType( resourceManager );
+
 		m_resourceRequestPool.create( resourceManager );
 
-		m_pStates = TIKI_MEMORY_NEW_OBJECT( States );
+		m_pStates = TIKI_NEW_ZERO( States );
 		m_pStates->applicationState.create( this );
 		m_pStates->introState.create( &m_pStates->applicationState );
 		m_pStates->menuState.create( this, &m_pStates->applicationState );
@@ -143,6 +145,8 @@ namespace tiki
 			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
 		}
 
+		EntityTemplateGenericDataResource::unregisterResourceType( resourceManager );
+
 		m_resourceRequestPool.dispose();
 	}
 
@@ -177,11 +181,11 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if( m_gameFlow.isInState( GameStates_Play ) )
 		{
-			debugrenderer::flush( getImmediateRenderer(), m_pStates->playState.getRenderView().getCamera() );
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->playState.getCamera() );
 		}
 		else if( m_gameFlow.isInState( GameStates_Test ) )
 		{
-			debugrenderer::flush( getImmediateRenderer(), m_pStates->testState.getRenderView().getCamera() );
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->testState.getCamera() );
 		}
 		else if( m_gameFlow.isInState( GameStates_PhysicsTest ) )
 		{

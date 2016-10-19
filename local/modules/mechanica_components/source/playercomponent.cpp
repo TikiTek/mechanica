@@ -1,4 +1,4 @@
-#include "tiki/mechanica_components/playercontrolcomponent.hpp"
+#include "tiki/mechanica_components/playercomponent.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/debugprop.hpp"
@@ -18,7 +18,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_FLOAT( s_controlBorder, "GameComponents/PlayerControlBorder", 0.0f, 0.0f, 300.0f );
+	TIKI_DEBUGPROP_FLOAT( s_playerBorder, "GameComponents/PlayerBorder", 0.0f, 0.0f, 300.0f );
 
 	struct PlayerInputState
 	{
@@ -28,7 +28,7 @@ namespace tiki
 		bool		jump;
 	};
 
-	struct PlayerControlComponentState : public ComponentState
+	struct PlayerComponentState : public ComponentState
 	{
 		Transform2dComponentState*	pTransform;
 
@@ -39,19 +39,19 @@ namespace tiki
 		PlayerInputState			inputState;
 	};
 
-	PlayerControlComponent::PlayerControlComponent()
+	PlayerComponent::PlayerComponent()
 	{
 		m_pTransformComponent	= nullptr;
 		m_pPhysicsWorld			= nullptr;
 	}
 
-	PlayerControlComponent::~PlayerControlComponent()
+	PlayerComponent::~PlayerComponent()
 	{
 		TIKI_ASSERT( m_pTransformComponent	== nullptr );
 		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
 	}
 
-	bool PlayerControlComponent::create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent )
+	bool PlayerComponent::create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent )
 	{
 		TIKI_ASSERT( m_pTransformComponent	== nullptr );
 		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
@@ -63,13 +63,13 @@ namespace tiki
 		return true;
 	}
 
-	void PlayerControlComponent::dispose()
+	void PlayerComponent::dispose()
 	{
 		m_pTransformComponent	= nullptr;
 		m_pPhysicsWorld			= nullptr;
 	}
 
-	void PlayerControlComponent::update( Camera& camera, float timeDelta )
+	void PlayerComponent::update( Camera& camera, float timeDelta )
 	{
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;
@@ -82,16 +82,16 @@ namespace tiki
 			//Quaternion rotation;
 			//quaternion::fromYawPitchRoll( rotation, rotationFactor, 0.0f, 0.0f );
 			//
-			//m_pPhysicsCharacterControllerComponent->move( pState->pPhysicsController, walkForce );
+			//m_pPhysicsCharacterlerComponent->move( pState->pPhysicsler, walkForce );
 			//m_pTransformComponent->setRotation( pState->pTransform, rotation );
 		}
 	}
 
-	bool PlayerControlComponent::processInputEvent( const InputEvent& inputEvent )
+	bool PlayerComponent::processInputEvent( const InputEvent& inputEvent )
 	{
-		//if ( inputEvent.eventType == InputEventType_Controller_StickChanged && inputEvent.deviceId == 0u )
+		//if ( inputEvent.eventType == InputEventType_ler_StickChanged && inputEvent.deviceId == 0u )
 		//{
-		//	const InputEventControllerStickData& stickData = inputEvent.data.controllerStick;
+		//	const InputEventlerStickData& stickData = inputEvent.data.lerStick;
 		//	Vector2& targetVector = ( stickData.stickIndex == 0u ? m_inputState.leftStick : m_inputState.rightStick );
 
 		//	targetVector.x = stickData.xState;
@@ -99,7 +99,7 @@ namespace tiki
 
 		//	return true;
 		//}
-		//else if ( inputEvent.eventType == InputEventType_Controller_ButtonDown && inputEvent.data.controllerButton.button == ControllerButton_A && inputEvent.deviceId == 0u )
+		//else if ( inputEvent.eventType == InputEventType_ler_ButtonDown && inputEvent.data.lerButton.button == lerButton_A && inputEvent.deviceId == 0u )
 		//{
 		//	m_inputState.jump = true;
 		//}
@@ -107,22 +107,22 @@ namespace tiki
 		return false;
 	}
 
-	crc32 PlayerControlComponent::getTypeCrc() const
+	crc32 PlayerComponent::getTypeCrc() const
 	{
-		return MechanicaComponentType_PlayerControl;
+		return MechanicaComponentType_Player;
 	}
 
-	uint32 PlayerControlComponent::getStateSize() const
+	uint32 PlayerComponent::getStateSize() const
 	{
-		return sizeof( PlayerControlComponentState );
+		return sizeof( PlayerComponentState );
 	}
 
-	const char* PlayerControlComponent::getTypeName() const
+	const char* PlayerComponent::getTypeName() const
 	{
-		return "PlayerControlComponent";
+		return "PlayerComponent";
 	}
 
-	bool PlayerControlComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerControlComponentState* pState, const PlayerControlComponentInitData* pInitData )
+	bool PlayerComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerComponentState* pState, const PlayerComponentInitData* pInitData )
 	{
 		pState->pTransform = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 
@@ -135,7 +135,7 @@ namespace tiki
 		return true;
 	}
 
-	void PlayerControlComponent::internalDisposeState( PlayerControlComponentState* pState )
+	void PlayerComponent::internalDisposeState( PlayerComponentState* pState )
 	{
 	}
 }
