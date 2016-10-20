@@ -68,6 +68,7 @@ namespace tiki
 		{
 			EntityId			id;
 			ComponentState*		pFirstComponent;
+			ComponentState*		pLastComponent;
 		};
 
 		struct EntityPoolInfo

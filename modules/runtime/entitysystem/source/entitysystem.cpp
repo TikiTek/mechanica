@@ -193,7 +193,8 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[entitysystem] Cound allocate component state for component with CRC: 0x%08x\n", entityComponent.componentType );
 				continue;
 			}
-			pComponentState->entityId = entityId;
+			pComponentState->entityId					= entityId;
+			pComponentState->pPrevComponentOfSameEntity	= pLastState;
 
 			// initialize state
 			ComponentBase* pComponent = m_typeRegister.getTypeComponent( typeId );
@@ -204,7 +205,7 @@ namespace tiki
 				m_storage.freeState( pComponentState );
 				continue;
 			}
-
+						
 			if ( pLastState != nullptr )
 			{
 				pLastState->pNextComponentOfSameEntity = pComponentState;
@@ -221,6 +222,7 @@ namespace tiki
 		EntityData& entityData = m_entities[ entityIndex ];
 		entityData.id				= entityId;
 		entityData.pFirstComponent	= pFirstState;
+		entityData.pLastComponent	= pLastState;
 
 		return entityId;
 	}
@@ -259,10 +261,10 @@ namespace tiki
 		TIKI_ASSERT( pEntityData->id == entityId );
 
 
-		ComponentState* pComponentState = pEntityData->pFirstComponent;
+		ComponentState* pComponentState = pEntityData->pLastComponent;
 		while ( pComponentState != nullptr )
 		{
-			ComponentState* pNextState = pComponentState->pNextComponentOfSameEntity;
+			ComponentState* pPrevState = pComponentState->pPrevComponentOfSameEntity;
 
 			ComponentBase* pComponent = m_typeRegister.getTypeComponent( pComponentState->typeId );
 			pComponent->disposeState( pComponentState );
@@ -273,7 +275,7 @@ namespace tiki
 			pComponent->checkIntegrity();
 #endif
 
-			pComponentState = pNextState;
+			pComponentState = pPrevState;
 		}
 
 		pEntityData->id					= InvalidEntityId;
