@@ -4,6 +4,7 @@
 
 #include "tiki/base/types.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
 
 #include <Box2D/Common/b2Math.h>
 

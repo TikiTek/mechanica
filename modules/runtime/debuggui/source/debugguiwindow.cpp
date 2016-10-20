@@ -78,23 +78,28 @@ namespace tiki
 		m_isMoving &= visible;
 	}
 
-	void DebugGuiWindow::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiWindow::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
-		m_titleRectangle.x		= boundingRectangle.x + DebugGui_DefaultPadding;
-		m_titleRectangle.y		= boundingRectangle.y + DebugGui_DefaultPadding;
-		m_titleRectangle.width	= boundingRectangle.width - ( DebugGui_DefaultPadding * 2.0f + 25.0f );
-		m_titleRectangle.height = TitleHeight;
+		m_titleRectangle = createAxisAlignedRectangle(
+			boundingRectangle.getLeft() + DebugGui_DefaultPadding,
+			boundingRectangle.getTop() + DebugGui_DefaultPadding,
+			boundingRectangle.getWidth() - (DebugGui_DefaultPadding * 2.0f + 25.0f),
+			TitleHeight
+		);
 
-		m_clientRectangle.x			= boundingRectangle.x + DebugGui_DefaultPadding;
-		m_clientRectangle.y			= m_titleRectangle.y + m_titleRectangle.height + DebugGui_DefaultPadding;
-		m_clientRectangle.width		= boundingRectangle.width - ( DebugGui_DefaultPadding * 2.0f );
-		m_clientRectangle.height	= boundingRectangle.height - m_titleRectangle.height - ( DebugGui_DefaultPadding * 3.0f );
+		m_clientRectangle = createAxisAlignedRectangle(
+			boundingRectangle.getLeft() + DebugGui_DefaultPadding,
+			m_titleRectangle.getBottom() + DebugGui_DefaultPadding,
+			boundingRectangle.getWidth() - (DebugGui_DefaultPadding * 2.0f),
+			boundingRectangle.getWidth() - m_titleRectangle.getHeight() - (DebugGui_DefaultPadding * 3.0f)
+		);
 
-		Rectangle minimizeRect;
-		minimizeRect.x		= boundingRectangle.x + boundingRectangle.width - ( 25.0f + DebugGui_DefaultPadding );
-		minimizeRect.y		= boundingRectangle.y + DebugGui_DefaultPadding;
-		minimizeRect.width	= 25.0f;
-		minimizeRect.height	= 25.0f;
+		AxisAlignedRectangle minimizeRect = createAxisAlignedRectangle(
+			boundingRectangle.getRight() - (25.0f + DebugGui_DefaultPadding),
+			boundingRectangle.getTop() + DebugGui_DefaultPadding,
+			25.0f,
+			25.0f
+		);
 		m_minimizeButton.setRectangle( minimizeRect );
 
 		m_pLayout->setRectangle( m_clientRectangle );
@@ -142,7 +147,7 @@ namespace tiki
 		renderer.drawRectangle( m_clientRectangle, TIKI_COLOR( 196, 196, 196, 128 ) );
 
 		Vector2 textPosition = { DebugGui_DefaultPadding, DebugGui_DefaultPadding };
-		vector::add( textPosition, m_titleRectangle.getXY() );
+		vector::add( textPosition, m_titleRectangle.min );
 		renderer.drawText( textPosition, *getDefaultFont(), m_aTitle, TIKI_COLOR_WHITE );
 
 		m_pLayout->render( renderer );
@@ -165,10 +170,10 @@ namespace tiki
 			}
 			else
 			{
-				const float leftDistance	= state.mousePosition.x - getRectangle().x;
-				const float rightDistance	= ( getRectangle().x + getRectangle().width ) - state.mousePosition.x;
-				const float topDistance		= state.mousePosition.y - getRectangle().y;
-				const float bottomDistance	= ( getRectangle().y + getRectangle().height ) - state.mousePosition.y;
+				const float leftDistance	= state.mousePosition.x - getRectangle().getLeft();
+				const float rightDistance	= ( getRectangle().getLeft() + getRectangle().getWidth() ) - state.mousePosition.x;
+				const float topDistance		= state.mousePosition.y - getRectangle().getTop();
+				const float bottomDistance	= ( getRectangle().getTop() + getRectangle().getHeight() ) - state.mousePosition.y;
 
 				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && leftDistance > 0.0f && leftDistance < DebugGui_DefaultPadding ? WindowResizeMask_Left : WindowResizeMask_None );
 				m_resizeMode |= ( topDistance > 0.0f && bottomDistance > 0.0f && rightDistance > 0.0f && rightDistance < DebugGui_DefaultPadding ? WindowResizeMask_Right : WindowResizeMask_None );
@@ -186,9 +191,8 @@ namespace tiki
 		{
 			if ( m_isMoving )
 			{
-				Rectangle rectangle = getRectangle();
-				rectangle.x += inputEvent.data.mouseMoved.xOffset;
-				rectangle.y += inputEvent.data.mouseMoved.yOffset;
+				AxisAlignedRectangle rectangle = getRectangle();
+				rectangle.translate( vector::create( inputEvent.data.mouseMoved.xOffset, inputEvent.data.mouseMoved.yOffset ) );
 				setRectangle( rectangle );
 				return true;
 			}
@@ -196,36 +200,34 @@ namespace tiki
 			{
 				const InputEventMouseMovedData& moveData = inputEvent.data.mouseMoved;
 
-				Rectangle rectangle = getRectangle();
+				AxisAlignedRectangle rectangle = getRectangle();
 
 				if ( isBitSet( m_resizeMode, WindowResizeMask_Left ) )
 				{
-					if ( getMinimumSize().x >= rectangle.width - moveData.xOffset )
+					if ( getMinimumSize().x >= rectangle.getWidth() - moveData.xOffset )
 					{
 						return true;
 					}
 
-					rectangle.x		+= moveData.xOffset;
-					rectangle.width	-= moveData.xOffset;
+					rectangle.min.x += moveData.xOffset;
 				}
 				else if ( isBitSet( m_resizeMode, WindowResizeMask_Right ) )
 				{
-					rectangle.width	+= moveData.xOffset;
+					rectangle.max.x	+= moveData.xOffset;
 				}
 
 				if ( isBitSet( m_resizeMode, WindowResizeMask_Top ) )
 				{
-					if ( getMinimumSize().y >= rectangle.height - moveData.yOffset )
+					if ( getMinimumSize().y >= rectangle.getHeight() - moveData.yOffset )
 					{
 						return true;
 					}
 
-					rectangle.y			+= moveData.yOffset;
-					rectangle.height	-= moveData.yOffset;
+					rectangle.min.y += moveData.yOffset;
 				}
 				else if ( isBitSet( m_resizeMode, WindowResizeMask_Bottom ) )
 				{
-					rectangle.height += moveData.yOffset;
+					rectangle.max.y += moveData.yOffset;
 				}
 
 				setRectangle( rectangle );

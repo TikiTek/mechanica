@@ -86,6 +86,22 @@ namespace tiki
 		return m_pBody->GetAngle();
 	}
 
+	AxisAlignedRectangle Physics2dBody::getShapeBounds() const
+	{
+		b2AABB aabb;
+		m_pFixture->GetShape()->ComputeAABB( &aabb, m_pBody->GetTransform(), 0u );
+
+		return createAxisAlignedRectangleMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
+	}
+
+	AxisAlignedRectangle Physics2dBody::getBodyBounds() const
+	{
+		b2AABB aabb;
+		m_pFixture->GetShape()->ComputeAABB( &aabb, m_pBody->GetTransform(), 0u );
+
+		return createAxisAlignedRectangleMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
+	}
+
 	b2Body* Physics2dBody::getNativeObject() const
 	{
 		return m_pBody;

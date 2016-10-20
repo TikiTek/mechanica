@@ -60,23 +60,27 @@ namespace tiki
 		}
 	}
 
-	void DebugGuiCheckBox::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiCheckBox::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
 		const float boxWidth = getPadding().left * 3.0f;
 		const float boxHeight = getPadding().top * 3.0f;
 
-		m_textPosition.x = boundingRectangle.x + ( 5.0f * getPadding().left );
-		m_textPosition.y = boundingRectangle.y + getPadding().top;
+		m_textPosition.x = boundingRectangle.getLeft() + ( 5.0f * getPadding().left );
+		m_textPosition.y = boundingRectangle.getTop() + getPadding().top;
 
-		m_box.x			= boundingRectangle.x + getPadding().left;
-		m_box.y			= boundingRectangle.y + getPadding().top;
-		m_box.width		= boxWidth;
-		m_box.height	= boxHeight;
+		m_box = createAxisAlignedRectangle(
+			boundingRectangle.getLeft() + getPadding().left,
+			boundingRectangle.getTop() + getPadding().top,
+			boxWidth,
+			boxHeight
+		);
 
-		m_checker.width		= boxWidth * 0.6f;
-		m_checker.height	= boxHeight * 0.6f;
-		m_checker.x			= boundingRectangle.x + getPadding().left + ( ( boxWidth - m_checker.width ) / 2.0f );
-		m_checker.y			= boundingRectangle.y + getPadding().top + ( ( boxHeight - m_checker.height ) / 2.0f );
+		m_checker = createAxisAlignedRectangle(
+			boundingRectangle.getLeft() + getPadding().left + ((boxWidth - m_checker.getWidth()) / 2.0f),
+			boundingRectangle.getTop() + getPadding().top + ((boxHeight - m_checker.getHeight()) / 2.0f),
+			boxWidth * 0.6f,
+			boxHeight * 0.6f
+		);
 	}
 
 	bool DebugGuiCheckBox::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

@@ -182,6 +182,13 @@ namespace tiki
 		TIKI_FORCE_INLINE Vector2&	smooth( Vector2& vec, const Vector2& lhs, const Vector2& rhs, float amount );
 		TIKI_FORCE_INLINE Vector3&	smooth( Vector3& vec, const Vector3& lhs, const Vector3& rhs, float amount );
 		TIKI_FORCE_INLINE Vector4&	smooth( Vector4& vec, const Vector4& lhs, const Vector4& rhs, float amount );
+
+		TIKI_FORCE_INLINE Vector2&	minimum( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	minimum( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	minimum( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
+		TIKI_FORCE_INLINE Vector2&	maximum( Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		TIKI_FORCE_INLINE Vector3&	maximum( Vector3& vec, const Vector3& lhs, const Vector3& rhs );
+		TIKI_FORCE_INLINE Vector4&	maximum( Vector4& vec, const Vector4& lhs, const Vector4& rhs );
 	}
 }
 

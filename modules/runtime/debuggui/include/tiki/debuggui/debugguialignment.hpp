@@ -31,7 +31,7 @@ namespace tiki
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 

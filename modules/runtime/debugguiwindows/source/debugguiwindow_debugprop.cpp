@@ -170,7 +170,7 @@ namespace tiki
 
 		folderNames.dispose();
 
-		setRectangle( Rectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
+		setRectangle( createAxisAlignedRectangle( 20.0, 40.0f, 200.0f, 400.0f ) );
 	}
 
 	void DebugGuiWindowDebugProp::dispose()
@@ -225,7 +225,7 @@ namespace tiki
 
 						if ( m_pSelectedNode != nullptr )
 						{
-							m_pSelectedNode = findNearestNode( m_pSelectedNode->nodeLayout.getRectangle().getXY(), up, m_pSelectedNode );
+							m_pSelectedNode = findNearestNode( m_pSelectedNode->nodeLayout.getRectangle().min, up, m_pSelectedNode );
 						}
 
 						if ( m_pSelectedNode == nullptr )
@@ -549,7 +549,7 @@ namespace tiki
 			return false;
 		}
 
-		const float distance = sourcePositionY - node.nodeLayout.getRectangle().y;
+		const float distance = sourcePositionY - node.nodeLayout.getRectangle().getTop();
 		const float absDistance = f32::abs( distance );
 
 		if ( absDistance < nearestAbsDistance )

@@ -35,7 +35,7 @@ namespace tiki
 		return textSize;
 	}
 
-	void DebugGuiLabel::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiLabel::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
 	}
 
@@ -45,7 +45,7 @@ namespace tiki
 
 	void DebugGuiLabel::render( ImmediateRenderer& renderer )
 	{
-		renderer.drawText( getRectangle().getXY(), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
+		renderer.drawText( getRectangle().min, *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
 	}
 
 	bool DebugGuiLabel::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

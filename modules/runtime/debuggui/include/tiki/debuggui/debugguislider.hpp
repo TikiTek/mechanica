@@ -27,21 +27,21 @@ namespace tiki
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 
-		float			m_minValue;
-		float			m_maxValue;
-		float			m_value;
+		float					m_minValue;
+		float					m_maxValue;
+		float					m_value;
 
-		bool			m_mouseOver;
-		bool			m_mouseDown;
+		bool					m_mouseOver;
+		bool					m_mouseDown;
 
-		Rectangle		m_line;
-		Rectangle		m_slider;
+		AxisAlignedRectangle	m_line;
+		AxisAlignedRectangle	m_slider;
 
-		void			setSliderRectangle();
+		void					setSliderRectangle();
 
 	};
 }

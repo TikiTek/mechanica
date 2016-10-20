@@ -15,17 +15,18 @@ namespace tiki
 		}
 	}
 
-	void DebugGuiMinimumLayout::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiMinimumLayout::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
 		const Vector2 minSize = getMinimumSize();
 
 		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
 		{
-			Rectangle rectangle;
-			rectangle.x = boundingRectangle.x;
-			rectangle.y = boundingRectangle.y;
-			rectangle.width = minSize.x;
-			rectangle.height = minSize.y;
+			AxisAlignedRectangle rectangle = createAxisAlignedRectangle(
+				boundingRectangle.getLeft(),
+				boundingRectangle.getTop(),
+				minSize.x,
+				minSize.y
+			);
 			it->setRectangle( rectangle );
 		}
 	}

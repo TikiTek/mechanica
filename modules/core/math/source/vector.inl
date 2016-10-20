@@ -741,6 +741,54 @@ namespace tiki
 	{
 		return lerp( vec, start, end, amount * amount * ( 3.0f - 2.0f * amount ) );
 	}
+
+	TIKI_FORCE_INLINE Vector2& vector::minimum( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = TIKI_MIN( lhs.x, rhs.x );
+		vec.y = TIKI_MIN( lhs.y, rhs.y );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::minimum( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = TIKI_MIN( lhs.x, rhs.x );
+		vec.y = TIKI_MIN( lhs.y, rhs.y );
+		vec.z = TIKI_MIN( lhs.z, rhs.z );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::minimum( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = TIKI_MIN( lhs.x, rhs.x );
+		vec.y = TIKI_MIN( lhs.y, rhs.y );
+		vec.z = TIKI_MIN( lhs.z, rhs.z );
+		vec.w = TIKI_MIN( lhs.w, rhs.w );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector2& vector::maximum( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		vec.x = TIKI_MAX( lhs.x, rhs.x );
+		vec.y = TIKI_MAX( lhs.y, rhs.y );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector3& vector::maximum( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
+	{
+		vec.x = TIKI_MAX( lhs.x, rhs.x );
+		vec.y = TIKI_MAX( lhs.y, rhs.y );
+		vec.z = TIKI_MAX( lhs.z, rhs.z );
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4& vector::maximum( Vector4& vec, const Vector4& lhs, const Vector4& rhs )
+	{
+		vec.x = TIKI_MAX( lhs.x, rhs.x );
+		vec.y = TIKI_MAX( lhs.y, rhs.y );
+		vec.z = TIKI_MAX( lhs.z, rhs.z );
+		vec.w = TIKI_MAX( lhs.w, rhs.w );
+		return vec;
+	}
 }
 
 #endif // __TIKI_VECTOR_INL_INCLUDED__

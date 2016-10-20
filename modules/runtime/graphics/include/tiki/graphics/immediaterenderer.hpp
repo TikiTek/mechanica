@@ -29,7 +29,7 @@ namespace tiki
 	class TextureData;
 	class VertexFormat;
 	class VertexInputBinding;
-	struct Rectangle; 
+	struct AxisAlignedRectangle;
 	struct Vector2;
 
 	enum ImmediateBlendState
@@ -89,9 +89,9 @@ namespace tiki
 		void				setPrimitiveTopology( PrimitiveTopology topology ) const;
 		void				setShaderMode( ImmediateShaderMode shaderMode) const;
 
-		void				drawRectangle( const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
-		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, Color color = TIKI_COLOR_WHITE ) const;
-		void				drawTexturedRectangle( const TextureData& texture, const Rectangle& dest, const Rectangle& src, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawRectangle( const AxisAlignedRectangle& destinationCoodinates, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawTexturedRectangle( const TextureData& texture, const AxisAlignedRectangle& destinationCoodinates, Color color = TIKI_COLOR_WHITE ) const;
+		void				drawTexturedRectangle( const TextureData& texture, const AxisAlignedRectangle& destinationCoodinates, const AxisAlignedRectangle& sourceCoodinates, Color color = TIKI_COLOR_WHITE ) const;
 		void				drawText( const Vector2& position, const Font& font, const char* pText, Color color = TIKI_COLOR_WHITE ) const;
 
 		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const;

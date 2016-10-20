@@ -5,6 +5,7 @@
 #include "tiki/physics2d/physics2dcollisionobject.hpp"
 
 #include "tiki/base/types.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
 #include "tiki/math/vector.hpp"
 
 class b2Fixture;
@@ -21,18 +22,21 @@ namespace tiki
 
 	public:
 
-							Physics2dBody();
-		virtual				~Physics2dBody();
+								Physics2dBody();
+		virtual					~Physics2dBody();
 
-		bool				create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation = false );
-		void				dispose( Physics2dWorld& world );
+		bool					create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation = false );
+		void					dispose( Physics2dWorld& world );
 
-		void				applyForce( const Vector2& force, const Vector2& point = Vector2::zero );
+		void					applyForce( const Vector2& force, const Vector2& point = Vector2::zero );
 
-		Vector2				getPosition() const;
-		float				getRotation() const;
+		Vector2					getPosition() const;
+		float					getRotation() const;
 
-		virtual b2Body*		getNativeObject() const TIKI_OVERRIDE_FINAL;
+		AxisAlignedRectangle	getShapeBounds() const;
+		AxisAlignedRectangle	getBodyBounds() const;
+
+		virtual b2Body*			getNativeObject() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
