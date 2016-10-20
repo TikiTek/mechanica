@@ -1,4 +1,3 @@
-
 #include "tiki/gamestates/basicteststate.hpp"
 
 #include "tiki/base/timer.hpp"
@@ -7,7 +6,7 @@
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/math/rectangle.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -115,11 +114,11 @@ namespace tiki
 		m_renderer.beginRendering( graphicsContext );
 		m_renderer.beginRenderPass();
 
-		m_renderer.drawRectangle( Rectangle( 50.0f, 50.0f, 100.0f, 100.0f ), aColors[ (colorIndex + 1u) % TIKI_COUNT( aColors ) ] );
-		m_renderer.drawTexturedRectangle( m_pTestTexture->getTextureData(), Rectangle( 200.0f, 50.0f, 100.0f, 100.0f ), TIKI_COLOR_WHITE );
-		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), Rectangle( 350.0f, 50.0f, 256.0f, 256.0f ), TIKI_COLOR_WHITE );
-		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), Rectangle( 350.0f, 350.0f, 20, 20), Rectangle( 140.0f, 20.0f, 20.0f, 20.0f ), TIKI_COLOR_WHITE );
-		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), Rectangle( 350.0f, 400.0f, 8, 9 ), Rectangle( 147.0f, 21.0f, 8.0f, 9.0f ), TIKI_COLOR_WHITE );
+		m_renderer.drawRectangle( createAxisAlignedRectangle( 50.0f, 50.0f, 100.0f, 100.0f ), aColors[ (colorIndex + 1u) % TIKI_COUNT( aColors ) ] );
+		m_renderer.drawTexturedRectangle( m_pTestTexture->getTextureData(), createAxisAlignedRectangle( 200.0f, 50.0f, 100.0f, 100.0f ), TIKI_COLOR_WHITE );
+		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), createAxisAlignedRectangle( 350.0f, 50.0f, 256.0f, 256.0f ), TIKI_COLOR_WHITE );
+		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), createAxisAlignedRectangle( 350.0f, 350.0f, 20, 20), createAxisAlignedRectangle( 140.0f, 20.0f, 20.0f, 20.0f ), TIKI_COLOR_WHITE );
+		m_renderer.drawTexturedRectangle( m_pTestFont->getTextureData(), createAxisAlignedRectangle( 350.0f, 400.0f, 8, 9 ), createAxisAlignedRectangle( 147.0f, 21.0f, 8.0f, 9.0f ), TIKI_COLOR_WHITE );
 
 		m_renderer.drawText( Vector2::zero, *m_pTestFont, "Hello World!", aColors[ (colorIndex + 1u) % TIKI_COUNT( aColors ) ] );
 		m_renderer.drawText( vector::create( 0.0f, 10.0f ), *m_pTestFont, "-.,;:+-!\"$%&/()=?", aColors[ (colorIndex + 1u) % TIKI_COUNT( aColors ) ] );

@@ -143,13 +143,13 @@ namespace tiki
 		// renderer output
 		{
 			const TextureData& texture = m_pGameRenderer->getAccumulationBuffer();
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
+			const AxisAlignedRectangle rect = createAxisAlignedRectangle( 0.0f, 0.0f, (float)texture.getWidth(), (float)texture.getHeight() );
 			m_immediateRenderer.drawTexturedRectangle( texture, rect );
 		}
 
 		// bloom
 		{
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
+			const AxisAlignedRectangle rect = createAxisAlignedRectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
 			m_immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
 		}
 
