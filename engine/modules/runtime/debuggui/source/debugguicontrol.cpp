@@ -12,6 +12,7 @@ namespace tiki
 		: m_padding( DebugGui_DefaultPadding )
 		, m_pParent( nullptr )
 	{
+		m_rectangle.clear();
 	}
 
 	const DebugGuiControl* DebugGuiControl::getParent() const

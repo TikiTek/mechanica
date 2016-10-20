@@ -91,7 +91,7 @@ namespace tiki
 			boundingRectangle.getLeft() + DebugGui_DefaultPadding,
 			m_titleRectangle.getBottom() + DebugGui_DefaultPadding,
 			boundingRectangle.getWidth() - (DebugGui_DefaultPadding * 2.0f),
-			boundingRectangle.getWidth() - m_titleRectangle.getHeight() - (DebugGui_DefaultPadding * 3.0f)
+			boundingRectangle.getHeight() - m_titleRectangle.getHeight() - (DebugGui_DefaultPadding * 3.0f)
 		);
 
 		AxisAlignedRectangle minimizeRect = createAxisAlignedRectangle(
