@@ -4,6 +4,7 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
+#include "tiki/math/camera.hpp"
 #include "tiki/physics2d/physics2dbody.hpp"
 #include "tiki/physics2d/physics2dcollider.hpp"
 #include "tiki/physics2d/physics2djoint.hpp"

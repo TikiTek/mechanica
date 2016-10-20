@@ -6,7 +6,7 @@
 
 #include "tiki/gameplay/gamesession.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/renderer/postbloom.hpp"
+#include "tiki/rendereffects/postbloom.hpp"
 
 namespace tiki
 {
@@ -49,9 +49,9 @@ namespace tiki
 		Game*						m_pGame;
 		ApplicationState*			m_pParentState;
 
-		GameRenderer*				m_pGameRenderer;
-		ImmediateRenderer			m_immediateRenderer;
-		PostProcessBloom			m_bloom;
+		Renderer2d*					m_pRenderer;
+		//ImmediateRenderer			m_immediateRenderer;
+		//PostProcessBloom			m_bloom;
 
 		GameSession					m_gameSession;
 

@@ -4,9 +4,7 @@
 
 #include "tiki/gameflow/gameflowstate.hpp"
 
-#include "tiki/renderer/fallbackrendereffect.hpp"
-#include "tiki/renderer/gamerenderer.hpp"
-#include "tiki/renderer/scenerendereffect.hpp"
+#include "tiki/renderer2d/renderer2d.hpp"
 
 namespace tiki
 {
@@ -31,7 +29,7 @@ namespace tiki
 		void					create( Game* pGame );
 		void					dispose();
 
-		GameRenderer&			getGameRenderer() { return m_renderer; }
+		Renderer2d&				getRenderer() { return m_renderer; }
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
 
@@ -45,11 +43,7 @@ namespace tiki
 
 		Game*					m_pGame;
 
-		GameRenderer			m_renderer;
-
-		FallbackRenderEffect	m_fallbackRenderEffect;
-		SceneRenderEffect		m_sceneRenderEffect;
-
+		Renderer2d				m_renderer;
 	};
 }
 
