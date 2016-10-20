@@ -14,14 +14,14 @@ namespace tiki
 
 		DebugGuiVerticalLayout();
 
-		virtual Vector2	getMinimumSize();
+		virtual Vector2	getMinimumSize() TIKI_OVERRIDE_FINAL;
 
 		bool			getExpandChildren() const;
 		void			setExpandChildren( bool value );
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

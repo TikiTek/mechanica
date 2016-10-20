@@ -83,11 +83,7 @@ namespace tiki
 	{
 		m_screenSize = screenSize;
 
-		Rectangle minimizeLayoutRect;
-		minimizeLayoutRect.x		= 0.0f;
-		minimizeLayoutRect.y		= screenSize.y - 35.0f;
-		minimizeLayoutRect.width	= screenSize.x;
-		minimizeLayoutRect.height	= 35.0f;
+		const AxisAlignedRectangle minimizeLayoutRect = createAxisAlignedRectangle( 0.0f, screenSize.y - 35.0f, screenSize.x, 35.0f );
 		m_minimizedLayout.setRectangle( minimizeLayoutRect );
 	}
 
@@ -124,12 +120,8 @@ namespace tiki
 		m_renderer.drawRectangle( m_minimizedLayout.getRectangle(), TIKI_COLOR( 255, 255, 255, 128 ) );
 		m_minimizedLayout.render( m_renderer );
 
-		Rectangle mouseReactangle;
-		mouseReactangle.x = m_inputState.mousePosition.x;
-		mouseReactangle.y = m_inputState.mousePosition.y;
-		mouseReactangle.width = 10.0f;
-		mouseReactangle.height = 10.0f;
-		m_renderer.drawRectangle( mouseReactangle, TIKI_COLOR_RED );
+		const AxisAlignedRectangle mouseRectangle = createAxisAlignedRectangle( m_inputState.mousePosition.x, m_inputState.mousePosition.y, 10.0f, 10.0f );
+		m_renderer.drawRectangle( mouseRectangle, TIKI_COLOR_RED );
 
 		m_renderer.endRenderPass();
 		m_renderer.endRendering();

@@ -27,7 +27,7 @@ namespace tiki
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle ) TIKI_OVERRIDE TIKI_FINAL;
 
 	private:
 
@@ -36,15 +36,15 @@ namespace tiki
 			CheckerSize	= 9
 		};
 
-		bool			m_value;
-		bool			m_mouseOver;
-		bool			m_mouseDown;
+		bool					m_value;
+		bool					m_mouseOver;
+		bool					m_mouseDown;
 
-		char			m_aText[ DebugGui_MaxTextLength ];
+		char					m_aText[ DebugGui_MaxTextLength ];
 
-		Vector2			m_textPosition;
-		Rectangle		m_box;
-		Rectangle		m_checker;
+		Vector2					m_textPosition;
+		AxisAlignedRectangle	m_box;
+		AxisAlignedRectangle	m_checker;
 
 	};
 }

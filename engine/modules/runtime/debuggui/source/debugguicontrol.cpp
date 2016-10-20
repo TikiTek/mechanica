@@ -1,7 +1,7 @@
-
 #include "tiki/debuggui/debugguicontrol.hpp"
 
 #include "tiki/debuggui/debuggui.hpp"
+#include "tiki/math/vector.hpp"
 
 namespace tiki
 {
@@ -40,18 +40,19 @@ namespace tiki
 		refreshRectangle();
 	}
 
-	const Rectangle& DebugGuiControl::getRectangle() const
+	const AxisAlignedRectangle& DebugGuiControl::getRectangle() const
 	{
 		return m_rectangle;
 	}
 
-	void DebugGuiControl::setRectangle( const Rectangle& boundingRectangle )
+	void DebugGuiControl::setRectangle( const AxisAlignedRectangle& boundingRectangle )
 	{
 		const Vector2 minSize = getMinimumSize();
-		Rectangle rectangle = boundingRectangle;
-		rectangle.width = TIKI_MAX( minSize.x, rectangle.width );
-		rectangle.height = TIKI_MAX( minSize.y, rectangle.height );
-		m_rectangle = rectangle;
+
+		Vector2 extends = boundingRectangle.getSize();
+		vector::maximum( extends, extends, minSize );
+
+		m_rectangle = createAxisAlignedRectangle( boundingRectangle.getLeft(), boundingRectangle.getTop(), extends.x, extends.y );
 
 		handleRectangleChanged( m_rectangle );
 	}

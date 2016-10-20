@@ -37,12 +37,12 @@ namespace tiki
 		refreshRectangle();
 	}
 
-	void DebugGuiVerticalLayout::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiVerticalLayout::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
-		const float x			= boundingRectangle.x + getPadding().left;
+		const float x			= boundingRectangle.getLeft() + getPadding().left;
 		const float paddingY	= getPadding().bottom + ( getPadding().top * TIKI_MAX( 1.0f, (float)getChildCount() ) );
-		const float maxWidth	= boundingRectangle.width - getPadding().getWidth();
-		const float maxHeight	= boundingRectangle.height - paddingY;
+		const float maxWidth	= boundingRectangle.getWidth() - getPadding().getWidth();
+		const float maxHeight	= boundingRectangle.getHeight() - paddingY;
 
 		const Vector2 minSize = getMinimumSize();
 		const float minSizeYWithoutPadding = minSize.y - paddingY;
@@ -50,21 +50,17 @@ namespace tiki
 		const float scale = ( m_expandChildren ? expandingScale : 1.0f );
 		TIKI_ASSERT( scale >= 1.0f );
 
-		float currentY = boundingRectangle.y + getPadding().top;
+		float currentY = boundingRectangle.getTop() + getPadding().top;
 		for ( LinkedIterator< DebugGuiControl > it = getChildrenBegin(); it != getChildrenEnd(); ++it )
 		{
 			const Vector2 childMinSize = it->getMinimumSize();
 
-			Rectangle childRect;
-			childRect.x			= x;
-			childRect.y			= currentY;
-			childRect.width		= maxWidth;
-			childRect.height	= childMinSize.y * scale;
+			AxisAlignedRectangle childRect = createAxisAlignedRectangle( x, currentY, maxWidth, childMinSize.y * scale );
 			TIKI_ASSERT( childRect.getRight() <= boundingRectangle.getRight() );
 			TIKI_ASSERT( childRect.getBottom() <= boundingRectangle.getBottom() );
 			it->setRectangle( childRect );
 
-			currentY += childRect.height + getPadding().top;
+			currentY += childRect.getHeight() + getPadding().top;
 		}
 	}
 }

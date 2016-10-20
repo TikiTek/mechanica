@@ -6,47 +6,43 @@
 
 namespace tiki
 {
+	enum RectangleVertex
+	{
+		//      2
+		//     / \
+		//    /   \
+		//   /     \
+		//	3       1   
+		//   \     /
+		//	  \   /
+		//	   \ /
+		//	    0
+		
+
+		RectangleVertex_XMinYMin,
+		RectangleVertex_XMaxYMin,
+		RectangleVertex_XMaxYMax,
+		RectangleVertex_XMinYMax,
+
+		RectangleVertex_Count
+	};
+
 	struct Rectangle
 	{
-		float x;
-		float y;
-		float width;
-		float height;
+		Vector2						center;
+		Vector2						extends;
+		float						rotation;
 
-		TIKI_FORCE_INLINE Rectangle( )
-			: x( 0.0f ), y( 0.0f ), width( 0.0f ), height( 0.0f )
-		{
-		}
+		TIKI_FORCE_INLINE void		createFromCenterExtends( const Vector2& center, const Vector2& extents, float rotation );
+		TIKI_FORCE_INLINE void		createFromMinMax( const Vector2& _min, const Vector2& _max );
+		TIKI_FORCE_INLINE void		createFromMinMax( float minX, float minY, float maxX, float maxY );
 
-		TIKI_FORCE_INLINE Rectangle( float _x, float _y, float _width, float _height )
-			: x( _x ), y( _y ), width( _width ), height( _height )
-		{
-		}
+		TIKI_FORCE_INLINE void		clear();
 
-		TIKI_FORCE_INLINE bool contains( const Vector2& point ) const
-		{
-			return ( point.x >= x ) && ( point.x <= x + width ) && ( point.y >= y ) && ( point.y <= y + height );
-		}
+		TIKI_FORCE_INLINE void		getVertices( Vector2 aVertices[ RectangleVertex_Count ] ) const;
 
-		TIKI_FORCE_INLINE float getRight() const
-		{
-			return x + width;
-		}
-
-		TIKI_FORCE_INLINE float getBottom() const
-		{
-			return y + height;
-		}
-
-		TIKI_FORCE_INLINE Vector2 getXY() const
-		{
-			return vector::create( x, y );
-		}
-
-		TIKI_FORCE_INLINE Vector2 getWidthHeight() const
-		{
-			return vector::create( width, height );
-		}
+		TIKI_FORCE_INLINE void		translate( const Vector2& translation );
+		TIKI_FORCE_INLINE void		extend( const Vector2& _extents );
 	};
 }
 

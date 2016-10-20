@@ -9,10 +9,10 @@
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
-#include "tiki/math/rectangle.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -213,42 +213,36 @@ namespace tiki
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, shaderMode ) );
 	}
 
-	void ImmediateRenderer::drawRectangle( const Rectangle& d, Color color /*= TIKI_COLOR_WHITE */ ) const
+	void ImmediateRenderer::drawRectangle( const AxisAlignedRectangle& destinationCoodinates, Color color /* = TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
-		const float posLeft		= d.x;
-		const float posRight	= d.x + d.width;
-		const float posTop		= d.y;
-		const float posBottom	= d.y + d.height;
-
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 2u ) );
 
 		StaticArray< ImmediateVertex > vertices;
 		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		createFloat3( vertices[ 0u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getBottom(), 0.0f );
 		vertices[ 0u ].u			= 0u;
 		vertices[ 0u ].v			= 0u;
 		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
+		createFloat3( vertices[ 1u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getTop(), 0.0f );
 		vertices[ 1u ].u			= 0u;
 		vertices[ 1u ].v			= 0u;
 		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
+		createFloat3( vertices[ 2u ].position, destinationCoodinates.getRight(), destinationCoodinates.getBottom(), 0.0f );
 		vertices[ 2u ].u			= 0u;
 		vertices[ 2u ].v			= 0u;
 		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
+		createFloat3( vertices[ 3u ].position, destinationCoodinates.getRight(), destinationCoodinates.getTop(), 0.0f );
 		vertices[ 3u ].u			= 0u;
 		vertices[ 3u ].v			= 0u;
 		vertices[ 3u ].color		= color;
@@ -258,17 +252,11 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, Color color /*= TIKI_COLOR_WHITE*/  ) const
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const AxisAlignedRectangle& destinationCoodinates, Color color /* = TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
-		const float posLeft		= d.x;
-		const float posRight	= d.x + d.width;
-		const float posTop		= d.y;
-		const float posBottom	= d.y + d.height;
-
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
 
@@ -276,25 +264,25 @@ namespace tiki
 		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
+		createFloat3( vertices[ 0u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getBottom(), 0.0f );
 		vertices[ 0u ].u			= u16::floatToUnorm( 0.0f );
 		vertices[ 0u ].v			= u16::floatToUnorm( 1.0f );
 		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
+		createFloat3( vertices[ 1u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getTop(), 0.0f );
 		vertices[ 1u ].u			= u16::floatToUnorm( 0.0f );
 		vertices[ 1u ].v			= u16::floatToUnorm( 0.0f );
 		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
+		createFloat3( vertices[ 2u ].position, destinationCoodinates.getRight(), destinationCoodinates.getBottom(), 0.0f );
 		vertices[ 2u ].u			= u16::floatToUnorm( 1.0f );
 		vertices[ 2u ].v			= u16::floatToUnorm( 1.0f );
 		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
+		createFloat3( vertices[ 3u ].position, destinationCoodinates.getRight(), destinationCoodinates.getTop(), 0.0f );
 		vertices[ 3u ].u			= u16::floatToUnorm( 1.0f );
 		vertices[ 3u ].v			= u16::floatToUnorm( 0.0f );
 		vertices[ 3u ].color		= color;
@@ -304,23 +292,14 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const Rectangle& d, const Rectangle& s, Color color /*= TIKI_COLOR_WHITE*/ ) const
+	void ImmediateRenderer::drawTexturedRectangle( const TextureData& texture, const AxisAlignedRectangle& destinationCoodinates, const AxisAlignedRectangle& sourceCoodinates, Color color /* = TIKI_COLOR_WHITE */ ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
 		const float uScale = 1.0f / (float)texture.getWidth();
 		const float vScale = 1.0f / (float)texture.getHeight();
 
-		const float uRight	= s.x + s.width;
-		const float vBottom	= s.y + s.height;
-
-		const float posLeft		= d.x;
-		const float posRight	= d.x + d.width;
-		const float posTop		= d.y;
-		const float posBottom	= d.y + d.height;
-
 		m_pContext->setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-
 		m_pContext->setPixelShader( m_pShaderSet->getShader( ShaderType_PixelShader, 0u ) );
 		m_pContext->setPixelShaderTexture( 0u, &texture );
 
@@ -328,27 +307,27 @@ namespace tiki
 		m_pContext->beginImmediateGeometry( vertices, 4u );
 
 		// bottom left
-		createFloat3( vertices[ 0u ].position, posLeft, posBottom, 0.0f );
-		vertices[ 0u ].u			= u16::floatToUnorm( s.x * uScale );
-		vertices[ 0u ].v			= u16::floatToUnorm( vBottom * vScale );
+		createFloat3( vertices[ 0u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getBottom(), 0.0f );
+		vertices[ 0u ].u			= u16::floatToUnorm( sourceCoodinates.getLeft() * uScale );
+		vertices[ 0u ].v			= u16::floatToUnorm( sourceCoodinates.getBottom() * vScale );
 		vertices[ 0u ].color		= color;
 
 		// top left
-		createFloat3( vertices[ 1u ].position, posLeft, posTop, 0.0f );
-		vertices[ 1u ].u			= u16::floatToUnorm( s.x * uScale );
-		vertices[ 1u ].v			= u16::floatToUnorm( s.y * vScale );
+		createFloat3( vertices[ 1u ].position, destinationCoodinates.getLeft(), destinationCoodinates.getTop(), 0.0f );
+		vertices[ 1u ].u			= u16::floatToUnorm( sourceCoodinates.getLeft() * uScale );
+		vertices[ 1u ].v			= u16::floatToUnorm( sourceCoodinates.getTop() * vScale );
 		vertices[ 1u ].color		= color;
 
 		// bottom right
-		createFloat3( vertices[ 2u ].position, posRight, posBottom, 0.0f );
-		vertices[ 2u ].u			= u16::floatToUnorm( uRight * uScale );
-		vertices[ 2u ].v			= u16::floatToUnorm( vBottom * vScale );
+		createFloat3( vertices[ 2u ].position, destinationCoodinates.getRight(), destinationCoodinates.getBottom(), 0.0f );
+		vertices[ 2u ].u			= u16::floatToUnorm( sourceCoodinates.getRight() * uScale );
+		vertices[ 2u ].v			= u16::floatToUnorm( sourceCoodinates.getBottom() * vScale );
 		vertices[ 2u ].color		= color;
 
 		// top right
-		createFloat3( vertices[ 3u ].position, posRight, posTop, 0.0f );
-		vertices[ 3u ].u			= u16::floatToUnorm( uRight * uScale );
-		vertices[ 3u ].v			= u16::floatToUnorm( s.y * vScale );
+		createFloat3( vertices[ 3u ].position, destinationCoodinates.getRight(), destinationCoodinates.getTop(), 0.0f );
+		vertices[ 3u ].u			= u16::floatToUnorm( sourceCoodinates.getRight() * uScale );
+		vertices[ 3u ].v			= u16::floatToUnorm( sourceCoodinates.getTop() * vScale );
 		vertices[ 3u ].color		= color;
 
 		vertices.dispose();

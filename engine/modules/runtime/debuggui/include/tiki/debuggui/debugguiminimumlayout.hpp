@@ -18,7 +18,7 @@ namespace tiki
 
 	protected:
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle );
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle );
 
 	};
 }

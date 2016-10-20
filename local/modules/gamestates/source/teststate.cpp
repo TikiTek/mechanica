@@ -1,6 +1,5 @@
 #include "tiki/gamestates/teststate.hpp"
 
-#include "tiki/animation/animation.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/debugrenderer/debugrenderer.hpp"
 #include "tiki/framework/mainwindow.hpp"
@@ -10,16 +9,11 @@
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/graphicstypes.hpp"
-#include "tiki/graphics/model.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/input/inputsystem.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
 #include "tiki/math/camera.hpp"
-#include "tiki/math/intersection.hpp"
 #include "tiki/math/projection.hpp"
-#include "tiki/math/quaternion.hpp"
-#include "tiki/math/ray.hpp"
-#include "tiki/math/rectangle.hpp"
-#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
 namespace tiki
@@ -165,7 +159,7 @@ namespace tiki
 #endif
 					//m_lightingWindow.create( m_pGame->getDebugGui() );
 
-					m_testWindow.setRectangle( Rectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
+					m_testWindow.setRectangle( createAxisAlignedRectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
 					//m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
 
 					return TransitionState_Finish;
@@ -221,7 +215,7 @@ namespace tiki
 
 		if ( m_enableBloom )
 		{
-			const Rectangle rect = Rectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
+			const AxisAlignedRectangle rect = createAxisAlignedRectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
 			immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
 		}
 

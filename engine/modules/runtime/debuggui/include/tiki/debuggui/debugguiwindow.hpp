@@ -20,7 +20,7 @@ namespace tiki
 
 	public:
 
-		virtual bool	isInHierarchy() const TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool	isInHierarchy() const TIKI_OVERRIDE_FINAL;
 
 		virtual Vector2	getMinimumSize() TIKI_OVERRIDE;
 
@@ -44,7 +44,7 @@ namespace tiki
 
 		void			setTitle( const char* pTitle );
 
-		virtual void	handleRectangleChanged( const Rectangle& boundingRectangle ) TIKI_OVERRIDE;
+		virtual void	handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle ) TIKI_OVERRIDE;
 
 		virtual bool	processGuiEvent( const DebugGuiEvent& guiEvent );
 
@@ -56,7 +56,7 @@ namespace tiki
 
 		enum
 		{
-			TitleHeight		= 25
+			TitleHeight = 25
 		};
 
 		enum WindowResizeMask
@@ -69,20 +69,20 @@ namespace tiki
 			WindowResizeMask_Bottom	= 1u << 3u
 		};
 		
-		DebugGui*			m_pDebugGui;
-		DebugGuiLayout*		m_pLayout;
+		DebugGui*				m_pDebugGui;
+		DebugGuiLayout*			m_pLayout;
 
-		DebugGuiButton		m_minimizeButton;
-		DebugGuiButton		m_minimizedButton;
+		DebugGuiButton			m_minimizeButton;
+		DebugGuiButton			m_minimizedButton;
 
-		char				m_aTitle[ DebugGui_MaxTextLength ];
+		char					m_aTitle[ DebugGui_MaxTextLength ];
 
-		bool				m_isMoving;
-		bool				m_isVisible;
-		uint32				m_resizeMode;
+		bool					m_isMoving;
+		bool					m_isVisible;
+		uint32					m_resizeMode;
 		
-		Rectangle			m_titleRectangle;
-		Rectangle			m_clientRectangle;
+		AxisAlignedRectangle	m_titleRectangle;
+		AxisAlignedRectangle	m_clientRectangle;
 		
 	};
 }

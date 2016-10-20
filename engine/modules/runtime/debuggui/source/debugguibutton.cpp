@@ -35,7 +35,7 @@ namespace tiki
 		refreshRectangle();
 	}
 
-	void DebugGuiButton::handleRectangleChanged( const Rectangle& /*boundingRectangle*/ )
+	void DebugGuiButton::handleRectangleChanged( const AxisAlignedRectangle& /*boundingRectangle*/ )
 	{
 	}
 
@@ -57,7 +57,7 @@ namespace tiki
 
 		renderer.drawRectangle( getRectangle(), color );
 		Vector2 position = getPadding().getLeftTop();
-		renderer.drawText( vector::add( position, getRectangle().getXY() ), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
+		renderer.drawText( vector::add( position, getRectangle().min ), *getDefaultFont(), m_aText, TIKI_COLOR_WHITE );
 	}
 
 	bool DebugGuiButton::processInputEvent( const InputEvent& inputEvent, const DebugGuiInputState& state )

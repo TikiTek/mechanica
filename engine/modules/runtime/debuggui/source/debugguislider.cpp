@@ -54,14 +54,16 @@ namespace tiki
 		renderer.drawRectangle( m_slider, TIKI_COLOR( 255, 255, 255, 224 ) );
 	}
 
-	void DebugGuiSlider::handleRectangleChanged( const Rectangle& boundingRectangle )
+	void DebugGuiSlider::handleRectangleChanged( const AxisAlignedRectangle& boundingRectangle )
 	{
-		const float yMid = boundingRectangle.y + ( boundingRectangle.height / 2.0f );
+		const float yMid = boundingRectangle.getTop() + ( boundingRectangle.getHeight() / 2.0f );
 
-		m_line.x		= boundingRectangle.x + getPadding().left;
-		m_line.y		= yMid - ( getPadding().left / 2.0f );
-		m_line.width	= boundingRectangle.width - getPadding().getWidth();
-		m_line.height	= getPadding().top;
+		m_line = createAxisAlignedRectangle(
+			boundingRectangle.getLeft() + getPadding().left,
+			yMid - (getPadding().left / 2.0f),
+			boundingRectangle.getWidth() - getPadding().getWidth(),
+			getPadding().top
+		);
 
 		setSliderRectangle();
 	}
@@ -74,7 +76,7 @@ namespace tiki
 
 			if ( m_mouseDown )
 			{
-				const float normalizeValue = f32::clamp( ( state.mousePosition.x - getRectangle().x ) / getRectangle().width, 0.0f, 1.0f );
+				const float normalizeValue = f32::clamp( ( state.mousePosition.x - getRectangle().getLeft() ) / getRectangle().getWidth(), 0.0f, 1.0f );
 				m_value = m_minValue + ( normalizeValue * ( m_maxValue - m_minValue ) );
 				setSliderRectangle();
 				pushEvent( DebugGuiEvent( this, DebugGuiEventType_ValueChanged ) );
@@ -96,12 +98,15 @@ namespace tiki
 
 	void DebugGuiSlider::setSliderRectangle()
 	{
-		const float yMid = getRectangle().y + ( getRectangle().height / 2.0f );
-		const float xSlider = getRectangle().x + getPadding().left + ( ( ( m_value - m_minValue ) / ( m_maxValue - m_minValue ) ) * ( getRectangle().width - getPadding().getWidth() ) );
+		const float yMid = getRectangle().getTop() + ( getRectangle().getHeight() / 2.0f );
+		const float xSlider = getRectangle().getLeft() + getPadding().left + ( ( ( m_value - m_minValue ) / ( m_maxValue - m_minValue ) ) * ( getRectangle().getWidth() - getPadding().getWidth() ) );
 
-		m_slider.x		= xSlider - getPadding().left;
-		m_slider.height	= TIKI_MIN( 25.0f, getRectangle().height );
-		m_slider.y		= yMid - ( m_slider.height / 2.0f );
-		m_slider.width	= getPadding().getWidth();
+		const float sliderHeight = TIKI_MIN( 25.0f, getRectangle().getHeight() );
+		m_slider = createAxisAlignedRectangle(
+			xSlider - getPadding().left,
+			yMid - (sliderHeight / 2.0f),
+			getPadding().getWidth(),
+			sliderHeight
+		);
 	}
 }

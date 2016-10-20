@@ -31,7 +31,7 @@ namespace tiki
 		return false;
 	}
 
-	void DebugGuiSpacer::handleRectangleChanged( const Rectangle& /*boundingRectangle*/ )
+	void DebugGuiSpacer::handleRectangleChanged( const AxisAlignedRectangle& /*boundingRectangle*/ )
 	{
 	}
 }
