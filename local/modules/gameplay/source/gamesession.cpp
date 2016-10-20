@@ -2,7 +2,6 @@
 
 #include "tiki/graphics/model.hpp"
 #include "tiki/physics2d/physics2dboxshape.hpp"
-#include "tiki/renderer/renderercontext.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki

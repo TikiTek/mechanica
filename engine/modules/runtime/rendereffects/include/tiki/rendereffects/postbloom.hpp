@@ -1,14 +1,16 @@
 #pragma once
-#ifndef __TIKI_POSTBLOOM_HPP_INCLUDED__
-#define __TIKI_POSTBLOOM_HPP_INCLUDED__
+#ifndef TIKI_POSTBLOOM_HPP_INCLUDED
+#define TIKI_POSTBLOOM_HPP_INCLUDED
 
 #include "tiki/container/array.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
-#include "tiki/renderer/postblur.hpp"
+#include "tiki/rendereffects/postblur.hpp"
 
 namespace tiki
 {
+	class ResourceRequestPool;
+
 	struct PostProcessBloomParameters
 	{
 		PostProcessBloomParameters()
@@ -29,15 +31,16 @@ namespace tiki
 
 	public:
 
-		PostProcessBloom();
-		~PostProcessBloom();
+							PostProcessBloom();
+							~PostProcessBloom();
 
-		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessBloomParameters& parameters );
-		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		bool				create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, const PostProcessBloomParameters& parameters );
+		bool				createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
+		void				dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		
 		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount = TIKI_SIZE_T_MAX );
 
-		void				render( GraphicsContext& graphicsContext, const TextureData& accumulationData, const TextureData& selfilluData ) const;
+		void				render( GraphicsContext& graphicsContext, const TextureData& sourceData, const TextureData* pSelfIlluminationData ) const;
 
 		const TextureData&	getResultData() const;
 		const TextureData&	getResultData( uint index ) const { return m_textures[ index ]; }
@@ -69,4 +72,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_POSTBLOOM_HPP_INCLUDED__
+#endif // TIKI_POSTBLOOM_HPP_INCLUDED

@@ -1,12 +1,9 @@
-
-#include "tiki/renderer/postascii.hpp"
+#include "tiki/rendereffects/postascii.hpp"
 
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shaderset.hpp"
 #include "tiki/graphics/stockvertex.hpp"
-#include "tiki/renderer/renderercontext.hpp"
-#include "tiki/renderer/renderview.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "shader/ascii_shader.hpp"
@@ -114,16 +111,16 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	void PostProcessAscii::render( GraphicsContext& graphicsContext, const RenderView& view, const RendererContext& rendererContext ) const
+	void PostProcessAscii::render( GraphicsContext& graphicsContext, const Camera& camera, const TextureData* pOffscreenColorData, const TextureData* pOffscreenDepthData ) const
 	{
 		// down sample
 		{
 			Matrix44 inverseProjection;
-			matrix::invert( inverseProjection, view.getCamera().getProjection().getMatrix() );
+			matrix::invert( inverseProjection, camera.getProjection().getMatrix() );
 
 			AsciiPixelConstantData* pPixelConstants = static_cast< AsciiPixelConstantData* >( graphicsContext.mapBuffer( m_pixelConstants ) );
 			TIKI_ASSERT( pPixelConstants != nullptr );
-			createFloat4( pPixelConstants->param0, view.getFarPlane(), (float)rendererContext.rendererWidth, (float)rendererContext.rendererHeight, 0.0f );
+			createFloat4( pPixelConstants->param0, camera.getProjection().getFarPlane(), (float)pOffscreenColorData->getWidth(), (float)pOffscreenColorData->getHeight(), 0.0f );
 			createGraphicsMatrix44( pPixelConstants->inverseProjection, inverseProjection );
 			graphicsContext.unmapBuffer( m_pixelConstants );
 		}
@@ -134,8 +131,8 @@ namespace tiki
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 
-		graphicsContext.setPixelShaderTexture( 0u, rendererContext.pAccumulationBuffer );
-		graphicsContext.setPixelShaderTexture( 1u, rendererContext.pDepthBuffer );
+		graphicsContext.setPixelShaderTexture( 0u, pOffscreenColorData );
+		graphicsContext.setPixelShaderTexture( 1u, pOffscreenDepthData );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerLinear );
 		graphicsContext.setPixelShaderSamplerState( 1u, m_pSamplerNearest );
 

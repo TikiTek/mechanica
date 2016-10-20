@@ -3,9 +3,9 @@
 #define __TIKI_POSTASCII_HPP_INCLUDED__
 
 #include "tiki/graphics/constantbuffer.hpp"
-#include "tiki/graphics/constantbuffer.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/texturedata.hpp"
+#include "tiki/math/camera.hpp"
 
 namespace tiki
 {
@@ -55,7 +55,7 @@ namespace tiki
 		const TextureData&	getDownSampleData() const	{ return m_downSampleData; }
 		const TextureData&	getResultData() const		{ return m_finalResultData; }
 
-		void				render( GraphicsContext& graphicsContext, const RenderView& view, const RendererContext& rendererContext ) const;
+		void				render( GraphicsContext& graphicsContext, const Camera& camera, const TextureData* pOffscreenColorData, const TextureData* pOffscreenDepthData ) const;
 		
 	private:
 

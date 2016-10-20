@@ -30,6 +30,7 @@ namespace tiki
 	class VertexFormat;
 	class VertexInputBinding;
 	struct AxisAlignedRectangle;
+	struct ImmediateVertex;
 	struct Vector2;
 
 	enum ImmediateBlendState
@@ -58,14 +59,6 @@ namespace tiki
 		ImmediateShaderMode_Count
 	};
 
-	struct ImmediateVertex
-	{
-		float3	position;
-		uint16	u;
-		uint16	v;
-		Color	color;
-	};
-	
 	class ImmediateRenderer
 	{
 		TIKI_NONCOPYABLE_CLASS( ImmediateRenderer );

@@ -18,17 +18,10 @@
 
 namespace tiki
 {
-	struct FallbackVertex
-	{
-		float3	position;
-		float4	color;
-		float2	texCoord;
-	};
-	
 	TestState::TestState()
 	{
 		m_pGame			= nullptr;
-		m_pParentState	= nullptr;
+		m_pApplicationState	= nullptr;
 
 		vector::clear( m_mousePosition );
 	}
@@ -36,25 +29,22 @@ namespace tiki
 	TestState::~TestState()
 	{
 		TIKI_ASSERT( m_pGame == nullptr );
-		TIKI_ASSERT( m_pParentState == nullptr );
+		TIKI_ASSERT( m_pApplicationState == nullptr );
 	}
 
-	void TestState::create( Game* pGame, ApplicationState* pParentState )
+	void TestState::create( Game* pGame, ApplicationState* pApplicationState )
 	{
-		m_pGame			= pGame;
-		m_pParentState	= pParentState;
+		m_pGame				= pGame;
+		m_pApplicationState	= m_pApplicationState;
 
-		m_pFont					= nullptr;
-		m_pFontBig				= nullptr;
-
-		m_enableBloom			= true;
-		m_enablePhysicsDebug	= false;
+		m_pFont				= nullptr;
+		m_pFontBig			= nullptr;
 	}
 
 	void TestState::dispose()
 	{
-		m_pGame			= nullptr;
-		m_pParentState	= nullptr;
+		m_pGame = nullptr;
+		m_pApplicationState = nullptr;
 	}
 
 	TransitionState TestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -64,24 +54,12 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
-				PostProcessBloomParameters bloomParameters;	
-				bloomParameters.width		= m_pGame->getGraphicsSystem().getBackBuffer().getWidth() / 2u;
-				bloomParameters.height		= m_pGame->getGraphicsSystem().getBackBuffer().getHeight() / 2u;
-				bloomParameters.passCount	= 6u;
-				TIKI_VERIFY( m_bloom.create(
-					m_pGame->getGraphicsSystem(),
-					m_pGame->getResourceManager(),
-					bloomParameters
-				) );
+
 
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_bloom.dispose(
-					m_pGame->getGraphicsSystem(),
-					m_pGame->getResourceManager()
-				);
 
 				return TransitionState_Finish;
 			}
@@ -154,20 +132,12 @@ namespace tiki
 			{
 				if ( isCreating )
 				{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )					
-					m_testWindow.create( m_pGame->getDebugGui() );
-#endif
-					//m_lightingWindow.create( m_pGame->getDebugGui() );
 
-					m_testWindow.setRectangle( createAxisAlignedRectangle( 500.0, 40.0f, 200.0f, 400.0f ) );
-					//m_lightingWindow.setRectangle( Rectangle( 1000.0, 100.0f, 250.0f, 100.0f ) );
 
 					return TransitionState_Finish;
 				}
 				else
 				{
-					//m_lightingWindow.dispose();
-					m_testWindow.dispose();
 
 					return TransitionState_Finish;
 				}
@@ -201,41 +171,35 @@ namespace tiki
 
 	void TestState::postRender( GraphicsContext& graphicsContext )
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		const ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
-
-		if ( m_enableBloom )
-		{
-			//m_bloom.render( graphicsContext, m_pGameRenderer->getAccumulationBuffer(), m_pGameRenderer->getGeometryBufferBxIndex( 2u ) );
-		}
-
-		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
-
-		immediateRenderer.beginRenderPass();
-
-		if ( m_enableBloom )
-		{
-			const AxisAlignedRectangle rect = createAxisAlignedRectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
-			immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
-		}
-
-		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
-		//immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
-
-		const float timeDelta = (float)m_pGame->getFrameTimer().getElapsedTime();
-
-		char buffer[ 128u ];
-		formatStringBuffer( buffer, TIKI_COUNT( buffer ), " FPS: %.2f", 1.0f / timeDelta );
-
-		immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
-
-		immediateRenderer.endRenderPass();
-
-		if ( m_enablePhysicsDebug )
-		{
-			m_gameClient.getPhysicsWorld().renderDebug();
-		}
-#endif
+//#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+//		const ImmediateRenderer& immediateRenderer = m_pGame->getImmediateRenderer();
+//
+//
+//
+//		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_BLACK );
+//
+//		immediateRenderer.beginRenderPass();
+//
+//		if ( m_enableBloom )
+//		{
+//			const AxisAlignedRectangle rect = createAxisAlignedRectangle( 0.0f, 0.0f, (float)m_bloom.getResultData().getWidth() * 2.0f, (float)m_bloom.getResultData().getHeight() * 2.0f );
+//			immediateRenderer.drawTexturedRectangle( m_bloom.getResultData(), rect );
+//		}
+//
+//		//const Rectangle rect2 = Rectangle( 50.0f, 50.0f, (float)m_pFont->getTextureData().getWidth(), (float)m_pFont->getTextureData().getHeight() );
+//		//immediateRenderer.drawTexture( &m_pFont->getTextureData(), rect2 );
+//
+//		const float timeDelta = (float)m_pGame->getFrameTimer().getElapsedTime();
+//
+//		char buffer[ 128u ];
+//		formatStringBuffer( buffer, TIKI_COUNT( buffer ), " FPS: %.2f", 1.0f / timeDelta );
+//
+//		immediateRenderer.drawText( Vector2::zero, *m_pFont, buffer, TIKI_COLOR_GREEN );
+//
+//		immediateRenderer.endRenderPass();
+//
+//
+//#endif
 	}
 
 	bool TestState::processInputEvent( const InputEvent& inputEvent )
@@ -254,14 +218,6 @@ namespace tiki
 		{
 			switch ( inputEvent.data.keybaordKey.key )
 			{
-			case KeyboardKey_B:
-				m_enableBloom = !m_enableBloom;
-				return true;
-
-			case KeyboardKey_F2:
-				m_enablePhysicsDebug = !m_enablePhysicsDebug;
-				break;
-
 			default:
 				break;
 			}

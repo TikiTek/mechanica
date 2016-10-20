@@ -1,5 +1,4 @@
-
-#include "tiki/renderer/postblur.hpp"
+#include "tiki/rendereffects/postblur.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shaderset.hpp"
@@ -34,20 +33,13 @@ namespace tiki
 		TIKI_ASSERT( m_pInputBinding	== nullptr );
 	}
 
-	bool PostProcessBlur::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, uint width, uint height, PixelFormat format /*= PixelFormat_Color*/ )
+	bool PostProcessBlur::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, uint maxWidth, uint maxHeight, PixelFormat format /* = PixelFormat_Color */ )
 	{
 		bool success = true;
 
 		m_format = format;
 		
-		m_pShader = resourceManager.loadResource< ShaderSet >( "blur.shader" );
-		success &= ( m_pShader != nullptr );
-
-		if ( m_pShader != nullptr )
-		{
-			m_pInputBinding = graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
-			success &= ( m_pInputBinding != nullptr );
-		}
+		resourcePool.beginLoadResource( &m_pShader, "blur.shader" );
 
 		m_pBlendState		= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
@@ -56,18 +48,36 @@ namespace tiki
 		success &= ( m_pBlendState != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
 
 		success &= m_pixelConstants.create( graphicsSystem, sizeof( BlurPixelConstantData ), "BlurPixelConstants" );
-		success &= createRenderTargets( graphicsSystem, width, height );
+		success &= createRenderTargets( graphicsSystem, maxWidth, maxHeight );
 
 		if ( !success )
 		{
-			dispose( graphicsSystem, resourceManager );
+			dispose( graphicsSystem, resourcePool );
 			return false;
 		}
 
 		return true;
 	}
 
-	void PostProcessBlur::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool PostProcessBlur::createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool )
+	{
+		if( m_pShader == nullptr )
+		{
+			dispose( graphicsSystem, resourcePool );
+			return false;
+		}
+
+		m_pInputBinding = graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if( m_pInputBinding == nullptr )
+		{
+			dispose( graphicsSystem, resourcePool );
+			return false;
+		}
+
+		return true;
+	}
+
+	void PostProcessBlur::dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool )
 	{
 		disposeRenderTargets( graphicsSystem );
 
@@ -85,7 +95,7 @@ namespace tiki
 		graphicsSystem.disposeVertexInputBinding( m_pInputBinding );
 		m_pInputBinding = nullptr;
 
-		resourceManager.unloadResource( m_pShader );
+		resourcePool.unloadResource( m_pShader );
 		m_pShader = nullptr;
 	}
 

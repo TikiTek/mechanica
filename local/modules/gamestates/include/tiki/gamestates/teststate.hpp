@@ -6,7 +6,7 @@
 
 #include "tiki/debuggui/debuggui.hpp"
 #include "tiki/gameplay/gameclient.hpp"
-#include "tiki/renderer/postbloom.hpp"
+#include "tiki/rendereffects/postbloom.hpp"
 #include "tiki/runtimeshared/freecamera.hpp"
 
 #include "tiki/game/debuggui_testwindow.hpp"
@@ -40,7 +40,7 @@ namespace tiki
 								TestState();
 		virtual					~TestState();
 
-		void					create( Game* pGame, ApplicationState* pParentState );
+		void					create( Game* pGame, ApplicationState* pApplicationState );
 		void					dispose();
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
@@ -56,7 +56,7 @@ namespace tiki
 	private:
 		
 		Game*										m_pGame;
-		ApplicationState*							m_pParentState;
+		ApplicationState*							m_pApplicationState;
 
 		const Font*									m_pFont;
 		const Font*									m_pFontBig;
@@ -64,18 +64,12 @@ namespace tiki
 		const EntityTemplateGenericDataResource*	m_pIsland2;
 		const EntityTemplateGenericDataResource*	m_pIsland3;
 
-		DebugGuiTestWindow			m_testWindow;
+		Vector2										m_mousePosition;
 
-		Vector2						m_mousePosition;
+		GameClient									m_gameClient;
 
-		bool						m_enablePhysicsDebug;
-		bool						m_enableBloom;
-		PostProcessBloom			m_bloom;
-
-		GameClient					m_gameClient;
-
-		EntityId					m_boxesEntityId;
-		EntityId					m_planeEntityId;
+		EntityId									m_boxesEntityId;
+		EntityId									m_planeEntityId;
 	};
 }
 

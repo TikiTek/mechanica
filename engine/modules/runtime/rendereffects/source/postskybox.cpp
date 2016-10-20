@@ -1,5 +1,4 @@
-
-#include "tiki/renderer/postskybox.hpp"
+#include "tiki/rendereffects/postskybox.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shaderset.hpp"

@@ -1,9 +1,8 @@
-
-#include "tiki/renderer/postbloom.hpp"
+#include "tiki/rendereffects/postbloom.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shaderset.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resourcerequestpool.hpp"
 
 #include "shader/bloom_shader.hpp"
 
@@ -30,46 +29,61 @@ namespace tiki
 		TIKI_ASSERT( m_pSamplerState		== nullptr );
 	}
 
-	bool PostProcessBloom::create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, const PostProcessBloomParameters& parameters )
+	bool PostProcessBloom::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, const PostProcessBloomParameters& parameters )
 	{
-		bool success = true;
-
 		m_width		= parameters.width;
 		m_height	= parameters.height;
 		m_passCount	= parameters.passCount;
 
-		m_pShader = resourceManager.loadResource< ShaderSet >( "bloom.shader" );
-		success &= ( m_pShader != nullptr );
-
-		if ( m_pShader != nullptr )
-		{
-			m_pInputBinding = graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
-			success &= ( m_pInputBinding != nullptr );
-		}
+		resourcePool.beginLoadResource( &m_pShader, "bloom.shader" );
 
 		m_pBlendStateCuroff	= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pBlendStateAdd	= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
 		m_pRasterizerState	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
-		success &= ( m_pBlendStateCuroff != nullptr ) && ( m_pBlendStateAdd != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
+		bool success = ( m_pBlendStateCuroff != nullptr ) && ( m_pBlendStateAdd != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
 
-		success &= m_blur.create( graphicsSystem, resourceManager, m_width, m_height, PixelFormat_R16G16B16A16_Float );
+		success &= m_blur.create( graphicsSystem, resourcePool, m_width, m_height, PixelFormat_R16G16B16A16_Float );
 		success &= createRenderTargets( graphicsSystem );
 
 		if ( !success )
 		{
-			dispose( graphicsSystem, resourceManager );
+			dispose( graphicsSystem, resourcePool );
 			return false;
 		}
 
 		return true;
 	}
 
-	void PostProcessBloom::dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager )
+	bool PostProcessBloom::createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool )
+	{
+		if( m_pShader == nullptr )
+		{
+			dispose( graphicsSystem, resourcePool );
+			return false;
+		}
+
+		m_pInputBinding = graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		if( !m_pInputBinding )
+		{
+			dispose( graphicsSystem, resourcePool );
+			return false;
+		}
+
+		if( !m_blur.createResources( graphicsSystem, resourcePool ) )
+		{
+			dispose( graphicsSystem, resourcePool );
+			return false;
+		}
+
+		return true;
+	}
+
+	void PostProcessBloom::dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool )
 	{
 		disposeRenderTargets( graphicsSystem );
-		m_blur.dispose( graphicsSystem, resourceManager );
+		m_blur.dispose( graphicsSystem, resourcePool );
 
 		graphicsSystem.disposeSamplerState( m_pSamplerState );
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
@@ -85,7 +99,7 @@ namespace tiki
 		graphicsSystem.disposeVertexInputBinding( m_pInputBinding );
 		m_pInputBinding = nullptr;
 
-		resourceManager.unloadResource( m_pShader );
+		resourcePool.unloadResource( m_pShader );
 		m_pShader = nullptr;
 	}
 
@@ -105,7 +119,7 @@ namespace tiki
 		return createRenderTargets( graphicsSystem );
 	}
 
-	void PostProcessBloom::render( GraphicsContext& graphicsContext, const TextureData& accumulationData, const TextureData& selfilluData ) const
+	void PostProcessBloom::render( GraphicsContext& graphicsContext, const TextureData& sourceData, const TextureData* pSelfIlluminationData ) const
 	{
 		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
@@ -123,8 +137,8 @@ namespace tiki
 			if ( passIndex == 0u )
 			{
 				graphicsContext.setBlendState( m_pBlendStateCuroff );
-				graphicsContext.setPixelShaderTexture( 0u, &accumulationData );
-				graphicsContext.setPixelShaderTexture( 1u, &selfilluData );
+				graphicsContext.setPixelShaderTexture( 0u, &sourceData );
+				graphicsContext.setPixelShaderTexture( 1u, pSelfIlluminationData );
 			}
 			else
 			{

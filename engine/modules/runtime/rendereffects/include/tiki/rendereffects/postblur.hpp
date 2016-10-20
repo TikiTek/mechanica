@@ -15,7 +15,7 @@ namespace tiki
 	class GraphicsContext;
 	class GraphicsSystem;
 	class RasterizerState;
-	class ResourceManager;
+	class ResourceRequestPool;
 	class SamplerState;
 	class ShaderSet;
 	class VertexInputBinding;
@@ -26,11 +26,12 @@ namespace tiki
 
 	public:
 
-		PostProcessBlur();
-		~PostProcessBlur();
+				PostProcessBlur();
+				~PostProcessBlur();
 
-		bool	create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager, uint width, uint height, PixelFormat format = PixelFormat_Color );
-		void	dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
+		bool	create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, uint maxWidth, uint maxHeight, PixelFormat format = PixelFormat_Color );
+		bool	createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
+		void	dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		
 		bool	resize( GraphicsSystem& graphicsSystem, uint width, uint height );
 

@@ -10,7 +10,6 @@
 #include "tiki/gamestates/physicsteststate.hpp"
 #include "tiki/gamestates/playstate.hpp"
 #include "tiki/gamestates/teststate.hpp"
-#include "tiki/renderer/renderview.hpp"
 
 namespace tiki
 {

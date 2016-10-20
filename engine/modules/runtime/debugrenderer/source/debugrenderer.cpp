@@ -5,6 +5,7 @@
 #include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/graphics/immediatevertex.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 

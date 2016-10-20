@@ -10,7 +10,6 @@ module:add_include_dir( "include" );
 module:add_dependency( "framework" );
 module:add_dependency( "graphics" );
 module:add_dependency( "resource" );
-module:add_dependency( "renderer" );
+module:add_dependency( "renderer2d" );
 module:add_dependency( "gameflowsystem" );
 module:add_dependency( "gameplay" );
-module:add_dependency( "particle" );

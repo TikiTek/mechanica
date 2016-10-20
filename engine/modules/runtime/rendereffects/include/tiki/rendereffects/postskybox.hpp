@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_POSTSKYBOX_HPP_INCLUDED__
-#define TIKI_POSTSKYBOX_HPP_INCLUDED__
+#ifndef TIKI_POSTSKYBOX_HPP_INCLUDED
+#define TIKI_POSTSKYBOX_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -52,4 +52,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_POSTSKYBOX_HPP_INCLUDED__
+#endif // TIKI_POSTSKYBOX_HPP_INCLUDED

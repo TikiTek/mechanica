@@ -46,21 +46,21 @@ namespace tiki
 					{
 						resourceRequestPool.resetError();
 
-						GameRendererParamaters params;
-						params.rendererWidth	= graphicsSystem.getBackBuffer().getWidth();
-						params.rendererHeight	= graphicsSystem.getBackBuffer().getHeight();
+						//GameRendererParamaters params;
+						//params.rendererWidth	= graphicsSystem.getBackBuffer().getWidth();
+						//params.rendererHeight	= graphicsSystem.getBackBuffer().getHeight();
 
-						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, params ) )
-						{
-							TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
-							return TransitionState_Error;
-						}
+						//if ( !m_renderer.create( graphicsSystem, resourceRequestPool, params ) )
+						//{
+						//	TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
+						//	return TransitionState_Error;
+						//}
 
-						if( !m_renderer.registerRenderEffect( m_fallbackRenderEffect, resourceRequestPool ) ||
-							!m_renderer.registerRenderEffect( m_sceneRenderEffect, resourceRequestPool ) )
-						{
-							return TransitionState_Error;
-						}
+						//if( !m_renderer.registerRenderEffect( m_fallbackRenderEffect, resourceRequestPool ) ||
+						//	!m_renderer.registerRenderEffect( m_sceneRenderEffect, resourceRequestPool ) )
+						//{
+						//	return TransitionState_Error;
+						//}
 					}
 
 					if ( resourceRequestPool.isFinish() )
@@ -70,11 +70,11 @@ namespace tiki
 							return TransitionState_Error;
 						}
 
-						if ( !m_renderer.createShaderResources( graphicsSystem, resourceRequestPool ) )
-						{
-							TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer shaders.\n" );
-							return TransitionState_Error;
-						}
+						//if ( !m_renderer.createShaderResources( graphicsSystem, resourceRequestPool ) )
+						//{
+						//	TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer shaders.\n" );
+						//	return TransitionState_Error;
+						//}
 
 						return TransitionState_Finish;
 					}
@@ -85,10 +85,10 @@ namespace tiki
 				{
 					TIKI_ASSERT( isInital );
 
-					m_renderer.unregisterRenderEffect( m_sceneRenderEffect, resourceRequestPool );
-					m_renderer.unregisterRenderEffect( m_fallbackRenderEffect, resourceRequestPool );
+					//m_renderer.unregisterRenderEffect( m_sceneRenderEffect, resourceRequestPool );
+					//m_renderer.unregisterRenderEffect( m_fallbackRenderEffect, resourceRequestPool );
 
-					m_renderer.dispose( resourceRequestPool );
+					//m_renderer.dispose( resourceRequestPool );
 				}
 
 				return TransitionState_Finish;
@@ -117,10 +117,11 @@ namespace tiki
 	{
 		if ( windowEvent.type == WindowEventType_SizeChanged )
 		{
-			if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
-			{
-				m_renderer.dispose( m_pGame->getResourceRequestPool() );
-			}
+			//if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
+			//{
+			//	m_renderer.dispose( m_pGame->getResourceRequestPool() );
+			//	m_pGame->getGameFlowSystem().startTransition( GameStates_Root )
+			//}
 		}
 	}
 }
