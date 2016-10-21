@@ -637,7 +637,8 @@ namespace tiki
 					inputEvent.eventType	= InputEventType_Mouse_Wheel;
 					inputEvent.deviceType	= InputDeviceType_Mouse;
 					inputEvent.deviceId		= 0u;
-					inputEvent.data.mouseWheel.offset = ( pPreviousState->mouse.lZ - pCurrentState->mouse.lZ );
+					inputEvent.data.mouseWheel.offset = (sint16)pCurrentState->mouse.lZ;
+					inputEvent.data.mouseWheel.offset = (sint16)( pPreviousState->mouse.lZ - pCurrentState->mouse.lZ );
 				}
 			}
 		}

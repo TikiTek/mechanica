@@ -9,6 +9,8 @@
 #include "tiki/math/vector.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
+#include "shader/2d_sprite_shader.hpp"
+
 namespace tiki
 {
 	Renderer2d::Renderer2d()
@@ -32,13 +34,19 @@ namespace tiki
 		TIKI_ASSERT( m_pGraphicsSystem == nullptr );
 	}
 
-	bool Renderer2d::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, uint16 width, uint16 height, uint layerCount )
+	bool Renderer2d::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, const Renderer2dCreationParameters& parameters )
 	{
 		m_pGraphicsSystem	= &graphicsSystem;
 		m_pSpriteShader		= nullptr;
 		m_pCompositeShader	= nullptr;
+		m_currentZoom		= 1.0f;
+		m_targetZoom		= 1.0f;
 
-		if( !m_chunks.create( 16u ) || !m_layers.create( layerCount ) )
+		m_camera.create();
+
+		if( !m_chunks.create( 16u ) ||
+			!m_layers.create( parameters.layerCount ) ||
+			!m_vertexConstants.create( graphicsSystem, sizeof( SpriteVertexConstantData ), "2d_sprite_vertex" ) )
 		{
 			dispose( resourcePool );
 			return false;
@@ -46,7 +54,7 @@ namespace tiki
 
 		m_pBlendState		= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
-		m_pRasterizerState	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
+		m_pRasterizerState	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_None, WindingOrder_Clockwise );
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 		if( m_pBlendState == nullptr || m_pDepthState == nullptr || m_pRasterizerState == nullptr || m_pSamplerState == nullptr )
 		{
@@ -55,8 +63,8 @@ namespace tiki
 		}
 
 		PostProcessBloomParameters bloomParameters;
-		bloomParameters.width		= width / 2u;
-		bloomParameters.height		= height / 2u;
+		bloomParameters.width		= parameters.width / 2u;
+		bloomParameters.height		= parameters.height / 2u;
 		bloomParameters.passCount	= 6u;
 		if( !m_bloom.create( graphicsSystem, resourcePool, bloomParameters ) )
 		{
@@ -64,7 +72,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !resize( width, height ) )
+		if( !resize( parameters.width, parameters.height ) )
 		{
 			dispose( resourcePool );
 			return false;
@@ -74,6 +82,8 @@ namespace tiki
 
 		const AxisAlignedRectangle defaultRectangle = createAxisAlignedRectangle( 0.0f, 0.0f, 1.0f, 1.0f );
 		defaultRectangle.getVertices( m_defaultTexCoords );
+
+		m_drawToWorldFactor = parameters.drawToWorldFactor;
 
 		return true;
 	}
@@ -107,6 +117,7 @@ namespace tiki
 	{
 		m_bloom.dispose( *m_pGraphicsSystem, resourcePool );
 
+		m_vertexConstants.dispose( *m_pGraphicsSystem );
 		m_layers.dispose();
 		m_chunks.dispose();
 
@@ -132,13 +143,16 @@ namespace tiki
 		m_offscreenTarget.dispose( *m_pGraphicsSystem );
 		m_offscreenColorData.dispose( *m_pGraphicsSystem );
 
+		Projection projection;
+		projection.createOrthographic( width, width, 0.0f, 10.0f );
+
 		TextureDescription textureDescription;
 		textureDescription.width	= width;
 		textureDescription.height	= height;
 		textureDescription.type		= TextureType_2d;
-		textureDescription.flags	= TextureFlags_RenderTarget;
+		textureDescription.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
 		textureDescription.format	= PixelFormat_R8G8B8A8_Gamma;		
-		if( !m_offscreenColorData.create( *m_pGraphicsSystem, textureDescription ) )
+		if( !m_offscreenColorData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenColorData" ) )
 		{
 			return false;
 		}
@@ -153,7 +167,32 @@ namespace tiki
 		return m_bloom.resize( *m_pGraphicsSystem, width / 2u, height / 2u );
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId )
+	{
+		RenderLayer& layer = m_layers[ layerId ];
+
+		RenderCommand& command = allocateCommand( layer );
+		command.pTexture = &texture;
+
+		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+			Vector2::zero,
+			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
+		);
+
+		Vector2 rectangleVertices[ RectanglePoint_Count ];
+		destinationRectangle.getVertices( rectangleVertices );
+
+		for( uint i = 0u; i < command.vertices.getCount(); ++i )
+		{
+			RenderVertex& vertex = command.vertices[ i ];
+
+			matrix::transform( rectangleVertices[ i ], worldTransform );
+			vector::toFloat( vertex.position, rectangleVertices[ i ] );
+			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+		}
+	}
+
+	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -172,7 +211,7 @@ namespace tiki
 		}		
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -194,7 +233,7 @@ namespace tiki
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -213,7 +252,7 @@ namespace tiki
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -235,7 +274,7 @@ namespace tiki
 		}
 	}
 
-	void Renderer2d::queueText( Font* pFont, const Vector2& position, const char* pText, uint layerId )
+	void Renderer2d::queueText( Font* pFont, const Vector2& position, const char* pText, uint32 layerId )
 	{
 		TIKI_ASSERT( pFont != nullptr );
 		TIKI_ASSERT( pText != nullptr );
@@ -266,17 +305,39 @@ namespace tiki
 		}
 	}
 
+	void Renderer2d::update( float deltaTime )
+	{
+		m_currentZoom = f32::lerp( m_currentZoom, m_targetZoom, deltaTime );
+
+		const float offscreenWidth = (float)m_offscreenColorData.getWidth() / (100.0f * m_currentZoom);
+		const float offscreenHeight = (float)m_offscreenColorData.getHeight() / (-100.0f * m_currentZoom);
+
+		Projection projection;
+		projection.createOrthographic( offscreenWidth, offscreenHeight, 0.0f, 10.0f );
+
+		m_camera.setProjection( projection );
+	}
+
 	void Renderer2d::render( GraphicsContext& graphicsContext, const Renderer2dRenderParameters& parameters )
 	{
+		SpriteVertexConstantData* pVertexData = graphicsContext.mapBuffer< SpriteVertexConstantData >( m_vertexConstants );
+		createGraphicsMatrix44( pVertexData->projection, m_camera.getViewProjectionMatrix() );
+		graphicsContext.unmapBuffer( m_vertexConstants );
+
+		graphicsContext.clear( m_offscreenTarget, parameters.backgroundColor );
 		graphicsContext.beginRenderPass( m_offscreenTarget );
 
+		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 		graphicsContext.setVertexShader( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pSpriteShader->getShader( ShaderType_PixelShader, 0u ) );
 
+		graphicsContext.setBlendState( m_pBlendState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setVertexInputBinding( m_pSpriteInputBinding );
 		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
+
+		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstants );
 
 		for( uint layerIndex = 0u; layerIndex < m_layers.getCount(); ++layerIndex )
 		{
@@ -322,6 +383,7 @@ namespace tiki
 		graphicsContext.setVertexShader( m_pCompositeShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pCompositeShader->getShader( ShaderType_PixelShader, 0u ) );
 
+		graphicsContext.setBlendState( m_pBlendState );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setVertexInputBinding( m_pCompositeInputBinding );
@@ -340,6 +402,19 @@ namespace tiki
 		graphicsContext.drawFullScreenQuadPos2Tex2();
 
 		graphicsContext.endRenderPass();
+	}
+
+	void Renderer2d::setTargetZoom( float zoom )
+	{
+		m_targetZoom = zoom;
+	}
+
+	void Renderer2d::setCameraPosition( const Vector2& position )
+	{
+		Vector3 position3;
+		vector::set( position3, position, 0.0f );
+
+		m_camera.setTransform( position3, Quaternion::identity );
 	}
 
 	Renderer2d::RenderCommand& Renderer2d::allocateCommand( RenderLayer& layer )

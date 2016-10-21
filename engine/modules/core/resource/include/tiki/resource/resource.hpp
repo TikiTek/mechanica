@@ -10,7 +10,7 @@
 
 #define TIKI_DEFINE_RESOURCE( class_name, cc )											\
 	public:																				\
-	virtual fourcc getType() const TIKI_OVERRIDE TIKI_FINAL { return s_resourceType; } 	\
+	virtual fourcc getType() const TIKI_OVERRIDE_FINAL { return s_resourceType; } 	\
 	static fourcc getResourceType() { return s_resourceType; }							\
 	private:																			\
 	static const fourcc s_resourceType = cc;											\

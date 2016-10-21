@@ -35,7 +35,7 @@ namespace tiki
 	void TestState::create( Game* pGame, ApplicationState* pApplicationState )
 	{
 		m_pGame				= pGame;
-		m_pApplicationState	= m_pApplicationState;
+		m_pApplicationState	= pApplicationState;
 
 		m_pFont				= nullptr;
 		m_pFontBig			= nullptr;
@@ -54,12 +54,13 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
-
+				m_pRenderer = &m_pApplicationState->getRenderer();
 
 				return TransitionState_Finish;
 			}
 			else
 			{
+				m_pRenderer = nullptr;
 
 				return TransitionState_Finish;
 			}
@@ -166,7 +167,7 @@ namespace tiki
 
 	void TestState::render( GraphicsContext& graphicsContext )
 	{
-		m_gameClient.render( graphicsContext );
+		m_gameClient.render( *m_pRenderer );
 	}
 
 	void TestState::postRender( GraphicsContext& graphicsContext )
@@ -214,6 +215,13 @@ namespace tiki
 			return true;
 		}
 
+		if (inputEvent.eventType == InputEventType_Mouse_Wheel)
+		{
+			float wheelState = (float)inputEvent.data.mouseWheel.state / 1200.0f;
+			wheelState = f32::clamp( wheelState, 0.0f, 2.0f );
+
+			m_pRenderer->setTargetZoom( wheelState );
+		}
 		//if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		//{
 		//	switch ( inputEvent.data.keybaordKey.key )
@@ -228,10 +236,5 @@ namespace tiki
 		//}
 
 		return false;
-	}
-
-	const Camera& TestState::getCamera() const
-	{
-		return m_gameClient.getCamera();
 	}
 }

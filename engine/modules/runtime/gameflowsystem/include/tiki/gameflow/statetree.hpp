@@ -58,6 +58,7 @@ namespace tiki
 
 		uint						getActiveStates( uint* pTargetActiveStates, uint capacity ) const;
 
+		bool						isInState( uint stateIndex ) const;
 		uint						getCurrentState() const				{ return ( isInTransition() ? m_transition.currentState : m_currentState ); }
 		uint						getTransitionState() const			{ return m_transition.getCurrentTransitionState(); }
 		bool						isInTransition() const				{ return m_currentState == InvalidStateIndex; }

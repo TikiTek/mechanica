@@ -62,6 +62,7 @@ namespace tiki
 		TIKI_VALIDATE_EXPR( m_pRasterizerState != nullptr,					"RasterizerState must be set" );
 		TIKI_VALIDATE_EXPR( m_pVertexInputBinding != nullptr,				"VertexInputBinding must be set" );
 
+		TIKI_ASSERT( result );
 		return result;
 #undef TIKI_VALIDATE_EXPR
 	}

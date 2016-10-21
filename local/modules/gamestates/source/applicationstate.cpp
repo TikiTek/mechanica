@@ -1,6 +1,6 @@
-
 #include "tiki/gamestates/applicationstate.hpp"
 
+#include "tiki/base/timer.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/game/game.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
@@ -46,10 +46,13 @@ namespace tiki
 					{
 						resourceRequestPool.resetError();
 
-						uint16 width	= (uint16)graphicsSystem.getBackBuffer().getWidth();
-						uint16 height	= (uint16)graphicsSystem.getBackBuffer().getHeight();
+						Renderer2dCreationParameters parameters;
+						parameters.width				= (uint16)graphicsSystem.getBackBuffer().getWidth();
+						parameters.height				= (uint16)graphicsSystem.getBackBuffer().getHeight();
+						parameters.layerCount			= 5u;
+						parameters.drawToWorldFactor	= 0.01f;
 
-						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, width, height, 5u ) )
+						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, parameters ) )
 						{
 							TIKI_TRACE_ERROR( "[applicationstate] Could not create Renderer.\n" );
 							return TransitionState_Error;
@@ -101,10 +104,14 @@ namespace tiki
 
 	void ApplicationState::update()
 	{
+		m_renderer.update( (float)m_pGame->getFrameTimer().getElapsedTime() );
 	}
 
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
+		Renderer2dRenderParameters parameters;
+		
+		m_renderer.render( graphicsContext, parameters );
 	}
 
 	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )
@@ -116,11 +123,11 @@ namespace tiki
 	{
 		if ( windowEvent.type == WindowEventType_SizeChanged )
 		{
-			//if ( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
-			//{
-			//	m_renderer.dispose( m_pGame->getResourceRequestPool() );
-			//	m_pGame->getGameFlowSystem().startTransition( GameStates_Root )
-			//}
+			if( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
+			{
+				m_renderer.dispose( m_pGame->getResourceRequestPool() );
+				m_pGame->getGameFlowSystem().startTransition( GameStates_Root );
+			}
 		}
 	}
 }

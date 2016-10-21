@@ -43,20 +43,20 @@ namespace tiki
 		void					create( Game* pGame, ApplicationState* pApplicationState );
 		void					dispose();
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE_FINAL;
 
-		virtual void			update() TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			update() TIKI_OVERRIDE_FINAL;
+		virtual void			render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
+		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
-
-		const Camera&			getCamera() const;
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
 
 	private:
 		
 		Game*										m_pGame;
 		ApplicationState*							m_pApplicationState;
+
+		Renderer2d*									m_pRenderer;
 
 		const Font*									m_pFont;
 		const Font*									m_pFontBig;

@@ -12,8 +12,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_useFreeCamera, "GameClient/UseFreeCamera", false );
-	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", true );
+	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", false );
 
 	GameClient::GameClient()
 	{
@@ -75,26 +74,12 @@ namespace tiki
 		TIKI_VERIFY( m_wiggleComponent.create( m_physicsWorld, m_transformComponent, m_physicsBodyComponent ) );
 		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_wiggleComponent ) );
 
-		const RenderTarget& backBuffer = m_pGraphicsSystem->getBackBuffer();
-		const float screenWidth = (float)backBuffer.getWidth() / 10.0f;
-		const float screenHeight = (float)backBuffer.getHeight() / -10.0f;
-
-		Projection projection;
-		projection.createOrthographic( screenWidth, screenHeight, 0.0f, 10.0f );
-
-		m_gameCamera.create( Vector3::zero, Quaternion::identity, &projection );
-
-		m_freeCamera.create( Vector3::zero, Quaternion::identity );
-		m_freeCamera.setMouseControl( true );
-						
 		return true;
 	}
 
 	void GameClient::dispose()
 	{
 		m_entitySystem.update(); // to dispose all entities
-
-		m_freeCamera.dispose();
 
 		m_entitySystem.unregisterComponentType( &m_wiggleComponent );
 		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
@@ -291,19 +276,15 @@ namespace tiki
 		m_physicsWorld.update( updateContext.timeDelta );
 
 		m_physicsBodyComponent.update();
-		m_playerComponent.update( m_gameCamera, updateContext.timeDelta );
+		m_playerComponent.update( updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 
 		m_transformComponent.update();
 	}
 
-	void GameClient::render( GraphicsContext& graphicsContext )
+	void GameClient::render( Renderer2d& renderer )
 	{
-		graphicsContext.clear( graphicsContext.getBackBuffer(), TIKI_COLOR_XKCD_BRIGHT_BLUE );
-
-		//m_textureComponent.render( m_renderScene );
-
-		//gameRenderer.renderView( graphicsContext, graphicsContext.getBackBuffer(), *m_pRenderView );
+		m_textureComponent.render( renderer );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if( s_drawPhysicsDebug )
@@ -315,11 +296,6 @@ namespace tiki
 	
 	bool GameClient::processInputEvent( const InputEvent& inputEvent )
 	{
-		if( s_useFreeCamera )
-		{
-			return m_freeCamera.processInputEvent( inputEvent );
-		}
-
 		if ( m_playerComponent.processInputEvent( inputEvent ) )
 		{
 			return true;

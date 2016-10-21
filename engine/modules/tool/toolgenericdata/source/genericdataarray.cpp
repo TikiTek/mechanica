@@ -144,7 +144,7 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataArray::applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
+	bool GenericDataArray::applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
 	{
 		return addElement( value );
 	}

@@ -46,7 +46,7 @@ namespace tiki
 		virtual const char*				getElementName() const TIKI_OVERRIDE;
 		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE;
 
-		virtual bool					applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
+		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
 
 	private:
 

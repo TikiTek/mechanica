@@ -20,8 +20,8 @@
 
 namespace tiki
 {
-	class GraphicsContext;
 	class GraphicsSystem;
+	class Renderer2d;
 	struct InputEvent;
 
 	struct GameClientUpdateContext
@@ -51,15 +51,12 @@ namespace tiki
 		void											disposeEntity( EntityId entityId );
 
 		void											update( GameClientUpdateContext& updateContext );
-		void											render( GraphicsContext& graphicsContext );
+		void											render( Renderer2d& renderer );
 
 		bool											processInputEvent( const InputEvent& inputEvent );
 
 		EntitySystem&									getEntitySystem()	{ return m_entitySystem; }
 		Physics2dWorld&									getPhysicsWorld()	{ return m_physicsWorld; }
-
-		Camera&											getCamera() { return m_gameCamera; }
-		const Camera&									getCamera() const { return m_gameCamera; }
 
 	private:
 
@@ -76,8 +73,6 @@ namespace tiki
 
 		Physics2dWorld							m_physicsWorld;
 
-		Camera									m_gameCamera;
-		FreeCamera								m_freeCamera;
 
 		LifeTimeComponent						m_lifeTimeComponent;
 		Physics2dBodyComponent					m_physicsBodyComponent;

@@ -50,7 +50,6 @@ namespace tiki
 		GenericDataObject*				m_pObject;
 
 		const GenericDataType*			findTypeForNode( XmlReader& reader, const _XmlElement* pElement, GenericDataTypeType type ) const;
-
 	};
 }
 

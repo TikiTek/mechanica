@@ -29,6 +29,7 @@ namespace tiki
 			vector::scale( pState->worldTransform.rot.y, pState->scale.y );
 
 			pState->worldTransform.pos = pState->position;
+			pState->needUpdate = false;
 		}
 	}
 

@@ -22,7 +22,7 @@ namespace tiki
 
 	public:
 
-		bool							importFromXml( XmlReader& reader, const _XmlElement* pObjectRootNode );
+		bool							importFromXml( const XmlReader& reader, const _XmlElement* pObjectRootNode );
 
 	protected:
 
@@ -34,14 +34,9 @@ namespace tiki
 		virtual const char*				getElementName() const TIKI_PURE;
 		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		virtual bool					applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_PURE;
+		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_PURE;
 
 		bool							writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const;
-
-	private:
-
-		bool							loadValueFromXml( GenericDataValue& outValue, XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pElementType, const GenericDataType* pParentType );
-
 	};
 }
 

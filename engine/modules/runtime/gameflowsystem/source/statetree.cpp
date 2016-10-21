@@ -51,6 +51,31 @@ namespace tiki
 		return activeStateCount;
 	}
 
+	bool StateTree::isInState( uint stateIndex ) const
+	{
+		const uint currentStateIndex		= getCurrentState();
+		const uint currentTransitionIndex	= isInTransition() ? m_transition.getCurrentTransitionState() : InvalidStateIndex;
+		const StateDefinition& currentState	= m_stateDefinition[ currentStateIndex ];
+
+		for( uint i = 1u; i < currentState.hierarchyLength; ++i )
+		{
+			const uint currentStateIndex = currentState.stateHierarchy[ i ];
+			TIKI_ASSERT( currentStateIndex != InvalidStateIndex );
+
+			if( currentStateIndex == currentTransitionIndex )
+			{
+				break;
+			}
+
+			if( currentStateIndex == stateIndex )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void StateTree::startTransition( uint targetStateIndex )
 	{
 		TIKI_ASSERT( targetStateIndex < m_stateDefinition.getCount() );
