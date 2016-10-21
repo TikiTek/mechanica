@@ -27,7 +27,7 @@ namespace tiki
 		bool				create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent );
 		void				dispose();
 
-		void				update( Camera& camera, float timeDelta );
+		void				update( float timeDelta );
 		
 		bool				processInputEvent( const InputEvent& inputEvent );
 

@@ -178,17 +178,13 @@ namespace tiki
 		m_touchSystem.render( getImmediateRenderer() );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		if( m_gameFlow.isInState( GameStates_Play ) )
-		{
-			debugrenderer::flush( getImmediateRenderer(), m_pStates->playState.getCamera() );
-		}
-		else if( m_gameFlow.isInState( GameStates_Test ) )
-		{
-			debugrenderer::flush( getImmediateRenderer(), m_pStates->testState.getCamera() );
-		}
-		else if( m_gameFlow.isInState( GameStates_PhysicsTest ) )
+		if( m_gameFlow.isInState( GameStates_PhysicsTest ) )
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->physicsTestState.getCamera() );
+		}
+		else if( m_gameFlow.isInState( GameStates_Application ) )
+		{
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
 		}
 #endif
 	}

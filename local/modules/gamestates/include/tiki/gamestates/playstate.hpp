@@ -31,7 +31,7 @@ namespace tiki
 									PlayState();
 		virtual						~PlayState();
 
-		void						create( Game* pGame, ApplicationState* pParentState );
+		void						create( Game* pGame, ApplicationState* pApplicationState );
 		void						dispose();
 
 		virtual TransitionState		processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
@@ -42,12 +42,10 @@ namespace tiki
 		virtual bool				processInputEvent( const InputEvent& inputEvent );
 		virtual void				processWindowEvent( const WindowEvent& windowEvent );
 
-		const Camera&				getCamera() const;
-
 	private:
 
 		Game*						m_pGame;
-		ApplicationState*			m_pParentState;
+		ApplicationState*			m_pApplicationState;
 
 		Renderer2d*					m_pRenderer;
 		//ImmediateRenderer			m_immediateRenderer;

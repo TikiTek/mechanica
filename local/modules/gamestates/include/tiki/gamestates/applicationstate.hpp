@@ -31,13 +31,13 @@ namespace tiki
 
 		Renderer2d&				getRenderer() { return m_renderer; }
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE_FINAL;
 
-		virtual void			update() TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			update() TIKI_OVERRIDE_FINAL;
+		virtual void			postRender( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
+		virtual void			processWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

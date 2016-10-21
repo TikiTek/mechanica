@@ -39,15 +39,15 @@ namespace tiki
 
 	protected:
 
-		virtual void			fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual bool			initializeGame() TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			shutdownGame() TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE_FINAL;
+		virtual bool			initializeGame() TIKI_OVERRIDE_FINAL;
+		virtual void			shutdownGame() TIKI_OVERRIDE_FINAL;
 
-		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE TIKI_FINAL;
+		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE_FINAL;
+		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE_FINAL;
 
-		virtual bool			processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE TIKI_FINAL;
-		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool			processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
+		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

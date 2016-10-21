@@ -40,7 +40,7 @@ namespace tiki
 
 	void GameSession::render( GraphicsContext& graphicsContext )
 	{
-		m_gameClient.render( graphicsContext );
+		//m_gameClient.render( graphicsContext );
 	}
 
 	bool GameSession::processInputEvent( const InputEvent& inputEvent )

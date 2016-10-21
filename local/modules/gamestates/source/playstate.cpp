@@ -13,28 +13,28 @@ namespace tiki
 {
 	PlayState::PlayState()
 	{
-		m_pGame			= nullptr;
-		m_pParentState	= nullptr;
-		m_pRenderer		= nullptr;
+		m_pGame				= nullptr;
+		m_pApplicationState	= nullptr;
+		m_pRenderer			= nullptr;
 	}
 
 	PlayState::~PlayState()
 	{
-		TIKI_ASSERT( m_pGame			== nullptr );
-		TIKI_ASSERT( m_pParentState		== nullptr );
-		TIKI_ASSERT( m_pRenderer		== nullptr );
+		TIKI_ASSERT( m_pGame				== nullptr );
+		TIKI_ASSERT( m_pApplicationState	== nullptr );
+		TIKI_ASSERT( m_pRenderer			== nullptr );
 	}
 
-	void PlayState::create( Game* pGame, ApplicationState* pParentState )
+	void PlayState::create( Game* pGame, ApplicationState* pApplicationState )
 	{
-		m_pGame			= pGame;
-		m_pParentState	= pParentState;
+		m_pGame				= pGame;
+		m_pApplicationState	= pApplicationState;
 	}
 
 	void PlayState::dispose()
 	{
-		m_pGame			= nullptr;
-		m_pParentState	= nullptr;
+		m_pGame				= nullptr;
+		m_pApplicationState	= nullptr;
 	}
 
 	TransitionState PlayState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
@@ -177,10 +177,5 @@ namespace tiki
 		//		m_bloom.dispose( m_pGame->getGraphicsSystem(), m_pGame->getResourceManager() );
 		//	}
 		//}
-	}
-
-	const Camera& PlayState::getCamera() const
-	{
-		return m_gameSession.getGameClient().getCamera();
 	}
 }
