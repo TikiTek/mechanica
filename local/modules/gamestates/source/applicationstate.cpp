@@ -46,15 +46,14 @@ namespace tiki
 					{
 						resourceRequestPool.resetError();
 
-						//GameRendererParamaters params;
-						//params.rendererWidth	= graphicsSystem.getBackBuffer().getWidth();
-						//params.rendererHeight	= graphicsSystem.getBackBuffer().getHeight();
+						uint16 width	= (uint16)graphicsSystem.getBackBuffer().getWidth();
+						uint16 height	= (uint16)graphicsSystem.getBackBuffer().getHeight();
 
-						//if ( !m_renderer.create( graphicsSystem, resourceRequestPool, params ) )
-						//{
-						//	TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer.\n" );
-						//	return TransitionState_Error;
-						//}
+						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, width, height, 5u ) )
+						{
+							TIKI_TRACE_ERROR( "[applicationstate] Could not create Renderer.\n" );
+							return TransitionState_Error;
+						}
 
 						//if( !m_renderer.registerRenderEffect( m_fallbackRenderEffect, resourceRequestPool ) ||
 						//	!m_renderer.registerRenderEffect( m_sceneRenderEffect, resourceRequestPool ) )
@@ -70,11 +69,11 @@ namespace tiki
 							return TransitionState_Error;
 						}
 
-						//if ( !m_renderer.createShaderResources( graphicsSystem, resourceRequestPool ) )
-						//{
-						//	TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer shaders.\n" );
-						//	return TransitionState_Error;
-						//}
+						if ( !m_renderer.createResources( graphicsSystem, resourceRequestPool ) )
+						{
+							TIKI_TRACE_ERROR( "[applicationstate] Could not create GameRenderer shaders.\n" );
+							return TransitionState_Error;
+						}
 
 						return TransitionState_Finish;
 					}
@@ -88,7 +87,7 @@ namespace tiki
 					//m_renderer.unregisterRenderEffect( m_sceneRenderEffect, resourceRequestPool );
 					//m_renderer.unregisterRenderEffect( m_fallbackRenderEffect, resourceRequestPool );
 
-					//m_renderer.dispose( resourceRequestPool );
+					m_renderer.dispose( resourceRequestPool );
 				}
 
 				return TransitionState_Finish;

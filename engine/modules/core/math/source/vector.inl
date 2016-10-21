@@ -97,9 +97,25 @@ namespace tiki
 	{
 		createFloat3( target, source.x, source.y, source.z );
 	}
+
+	TIKI_FORCE_INLINE void vector::toFloat( float3& target, const Vector2& source, float z )
+	{
+		createFloat3( target, source.x, source.y, z );
+	}
+
 	TIKI_FORCE_INLINE void vector::toFloat( float4& target, const Vector4& source )
 	{
 		createFloat4( target, source.x, source.y, source.z, source.w );
+	}
+
+	TIKI_FORCE_INLINE void vector::toFloat( float4& target, const Vector3& source, float w )
+	{
+		createFloat4( target, source.x, source.y, source.z, w );
+	}
+
+	TIKI_FORCE_INLINE void vector::toFloat( float4& target, const Vector2& source, float z, float w )
+	{
+		createFloat4( target, source.x, source.y, z, w );
 	}
 
 	TIKI_FORCE_INLINE Vector2& vector::clear( Vector2& vec )

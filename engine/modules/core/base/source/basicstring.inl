@@ -163,12 +163,12 @@ namespace tiki
 		{
 			length = m_stringSize - startIndex;
 		}
-		TIKI_ASSERT( startIndex < m_stringSize || length == 0 );
 
-		if( length == 0 )
+		if( length <= 0 )
 		{
 			return BasicString();
 		}
+		TIKI_ASSERT( startIndex < m_stringSize );
 
 		if( length == m_stringSize && startIndex == 0u )
 		{

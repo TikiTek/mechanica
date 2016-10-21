@@ -12,7 +12,7 @@ namespace tiki
 	{
 		m_pShader			= nullptr;
 
-		m_pBlendStateCuroff	= nullptr;
+		m_pBlendStateCutoff	= nullptr;
 		m_pBlendStateAdd	= nullptr;
 		m_pDepthState		= nullptr;
 		m_pRasterizerState	= nullptr;
@@ -22,7 +22,7 @@ namespace tiki
 	PostProcessBloom::~PostProcessBloom()
 	{
 		TIKI_ASSERT( m_pShader				== nullptr );
-		TIKI_ASSERT( m_pBlendStateCuroff	== nullptr );
+		TIKI_ASSERT( m_pBlendStateCutoff	== nullptr );
 		TIKI_ASSERT( m_pBlendStateAdd		== nullptr );
 		TIKI_ASSERT( m_pDepthState			== nullptr );
 		TIKI_ASSERT( m_pRasterizerState		== nullptr );
@@ -35,14 +35,12 @@ namespace tiki
 		m_height	= parameters.height;
 		m_passCount	= parameters.passCount;
 
-		resourcePool.beginLoadResource( &m_pShader, "bloom.shader" );
-
-		m_pBlendStateCuroff	= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendStateCutoff	= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );
 		m_pBlendStateAdd	= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
 		m_pRasterizerState	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
-		bool success = ( m_pBlendStateCuroff != nullptr ) && ( m_pBlendStateAdd != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
+		bool success = ( m_pBlendStateCutoff != nullptr ) && ( m_pBlendStateAdd != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
 
 		success &= m_blur.create( graphicsSystem, resourcePool, m_width, m_height, PixelFormat_R16G16B16A16_Float );
 		success &= createRenderTargets( graphicsSystem );
@@ -52,6 +50,8 @@ namespace tiki
 			dispose( graphicsSystem, resourcePool );
 			return false;
 		}
+
+		resourcePool.beginLoadResource( &m_pShader, "bloom.shader" );
 
 		return true;
 	}
@@ -89,12 +89,7 @@ namespace tiki
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
 		graphicsSystem.disposeDepthStencilState( m_pDepthState );
 		graphicsSystem.disposeBlendState( m_pBlendStateAdd );
-		graphicsSystem.disposeBlendState( m_pBlendStateCuroff );
-		m_pBlendStateCuroff	= nullptr;
-		m_pBlendStateAdd	= nullptr;
-		m_pDepthState		= nullptr;
-		m_pRasterizerState	= nullptr;
-		m_pSamplerState		= nullptr;
+		graphicsSystem.disposeBlendState( m_pBlendStateCutoff );
 
 		graphicsSystem.disposeVertexInputBinding( m_pInputBinding );
 		m_pInputBinding = nullptr;
@@ -105,6 +100,11 @@ namespace tiki
 
 	bool PostProcessBloom::resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount /*= TIKI_SIZE_T_MAX*/ )
 	{
+		if( m_width == width && m_height == height && (m_passCount == passCount ||passCount == TIKI_SIZE_T_MAX) )
+		{
+			return true;
+		}
+
 		disposeRenderTargets( graphicsSystem );
 
 		m_width		= width;
@@ -119,13 +119,13 @@ namespace tiki
 		return createRenderTargets( graphicsSystem );
 	}
 
-	void PostProcessBloom::render( GraphicsContext& graphicsContext, const TextureData& sourceData, const TextureData* pSelfIlluminationData ) const
+	void PostProcessBloom::render( GraphicsContext& graphicsContext, const PostProcessBloomRenderParameters& parameters ) const
 	{
 		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
 
-			const uint32 pixelShaderIndex = ( passIndex == 0u ? 1u : 0u );
+			const uint32 pixelShaderIndex = ( passIndex == 0u ? (parameters.pSelfIlluminationData != nullptr ? 2u : 1u) : 0u );
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 			graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, pixelShaderIndex ) );
 
@@ -136,9 +136,9 @@ namespace tiki
 
 			if ( passIndex == 0u )
 			{
-				graphicsContext.setBlendState( m_pBlendStateCuroff );
-				graphicsContext.setPixelShaderTexture( 0u, &sourceData );
-				graphicsContext.setPixelShaderTexture( 1u, pSelfIlluminationData );
+				graphicsContext.setBlendState( m_pBlendStateCutoff );
+				graphicsContext.setPixelShaderTexture( 0u, parameters.pSourceData );
+				graphicsContext.setPixelShaderTexture( 1u, parameters.pSelfIlluminationData );
 			}
 			else
 			{
@@ -157,11 +157,11 @@ namespace tiki
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
 
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
-			graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 2u ) );
+			graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, 0u ) );
 
 			if ( passIndex == 0u )
 			{
-				graphicsContext.setBlendState( m_pBlendStateCuroff );
+				graphicsContext.setBlendState( m_pBlendStateCutoff );
 			}
 			else
 			{

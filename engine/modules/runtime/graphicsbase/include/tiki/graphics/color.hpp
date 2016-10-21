@@ -4,6 +4,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/basetypes.hpp"
+#include "tiki/math/vector.hpp"
 
 #include "base.hpp"
 
@@ -82,7 +83,10 @@ namespace tiki
 
 	struct HdrColor
 	{
-		float r, g, b, a;
+		float r;
+		float g;
+		float b;
+		float a;
 	};
 
 	namespace color
@@ -180,6 +184,16 @@ namespace tiki
 			target.g = getFloatChannelG( c );
 			target.b = getFloatChannelB( c );
 			target.a = getFloatChannelA( c );
+		}
+
+		TIKI_FORCE_INLINE void toVector3( Vector3& target, const HdrColor& c )
+		{
+			vector::set( target, c.r, c.g, c.b );
+		}
+
+		TIKI_FORCE_INLINE void toVector4( Vector4& target, const HdrColor& c )
+		{
+			vector::set( target, c.r, c.g, c.b, c.a );
 		}
 	}
 }

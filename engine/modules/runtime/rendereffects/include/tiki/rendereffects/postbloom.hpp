@@ -25,6 +25,13 @@ namespace tiki
 		uint	passCount;
 	};
 
+	struct PostProcessBloomRenderParameters
+	{
+		const TextureData*	pSourceData;
+		const TextureData*	pSelfIlluminationData;
+		Vector3				cutoffThreshold;
+	};
+
 	class PostProcessBloom
 	{
 		TIKI_NONCOPYABLE_CLASS( PostProcessBloom );
@@ -40,7 +47,7 @@ namespace tiki
 		
 		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount = TIKI_SIZE_T_MAX );
 
-		void				render( GraphicsContext& graphicsContext, const TextureData& sourceData, const TextureData* pSelfIlluminationData ) const;
+		void				render( GraphicsContext& graphicsContext, const PostProcessBloomRenderParameters& parameters ) const;
 
 		const TextureData&	getResultData() const;
 		const TextureData&	getResultData( uint index ) const { return m_textures[ index ]; }
@@ -55,7 +62,7 @@ namespace tiki
 		uint						m_height;
 		uint						m_passCount;
 
-		const BlendState*			m_pBlendStateCuroff;
+		const BlendState*			m_pBlendStateCutoff;
 		const BlendState*			m_pBlendStateAdd;
 		const DepthStencilState*	m_pDepthState;
 		const RasterizerState*		m_pRasterizerState;
@@ -63,9 +70,10 @@ namespace tiki
 
 		const VertexInputBinding*	m_pInputBinding;
 		
+		ConstantBuffer				m_cutoffPixelConstants;
 		Array< TextureData >		m_textures;
 		Array< RenderTarget >		m_renderTargets;
-
+		
 		bool						createRenderTargets( GraphicsSystem& graphicsSystem );
 		void						disposeRenderTargets( GraphicsSystem& graphicsSystem );
 

@@ -5,16 +5,16 @@
 
 TIKI_GRAPHICS_NAMESPACE_BEGIN
 
-struct BloomBlurPixelConstantData
+struct BloomCutoffPixelConstantData
 {
-	float4 param0;	// xy: pixel offset
+	float4 param0;	// xyz: cutoff threshold per channel, w: unused
 };
 
 #ifndef __cplusplus
 
-float2 getBlurPixelOffset( BloomBlurPixelConstantData data )
+float3 getCutoffThresold( BloomBlurPixelConstantData data )
 {
-	return data.param0.xy;
+	return data.param0.xyz;
 }
 
 #endif
