@@ -67,6 +67,11 @@ namespace tiki
 		m_textureData.dispose( pFactory->graphicsSystem );
 	}
 	
+	const FontChar& Font::getChar( char c ) const
+	{
+		return m_chars[ c ];
+	}
+
 	void Font::calcuateTextSize( Vector2& textSize, const char* pText, uint textLength ) const
 	{
 		textSize = Vector2::zero;

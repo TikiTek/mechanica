@@ -10,12 +10,12 @@ namespace tiki
 		vector::clear( max );
 	}
 
-	TIKI_FORCE_INLINE void AxisAlignedRectangle::getVertices( Vector2 aVertices[ AxisAlignedRectangleVertex_Count ] ) const
+	TIKI_FORCE_INLINE void AxisAlignedRectangle::getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const
 	{
-		vector::set( aVertices[ AxisAlignedRectangleVertex_XMinYMin ], min.x, min.y );
-		vector::set( aVertices[ AxisAlignedRectangleVertex_XMaxYMin ], max.x, min.y );
-		vector::set( aVertices[ AxisAlignedRectangleVertex_XMaxYMax ], max.x, max.y );
-		vector::set( aVertices[ AxisAlignedRectangleVertex_XMinYMax ], min.x, max.y );
+		vector::set( aVertices[ RectanglePoint_XMinYMin ], min.x, min.y );
+		vector::set( aVertices[ RectanglePoint_XMaxYMin ], max.x, min.y );
+		vector::set( aVertices[ RectanglePoint_XMaxYMax ], max.x, max.y );
+		vector::set( aVertices[ RectanglePoint_XMinYMax ], min.x, max.y );
 	}
 	
 	TIKI_FORCE_INLINE void AxisAlignedRectangle::translate( const Vector2& translation )

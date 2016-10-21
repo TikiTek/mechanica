@@ -26,6 +26,8 @@ namespace tiki
 
 		const TextureData&		getTextureData() const { return m_textureData; }
 
+		const FontChar&			getChar( char c ) const;
+
 		void					calcuateTextSize( Vector2& textSize, const char* pText, uint textLength ) const;
 		void					fillVertices( FontChar* pChars, uint capacity, const char* pText, uint textLength ) const;
 

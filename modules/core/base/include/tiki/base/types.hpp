@@ -124,7 +124,7 @@ namespace tiki
 #	if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 #		define TIKI_INLINE			inline
-#		define TIKI_FORCE_INLINE	__forceinline
+#		define TIKI_FORCE_INLINE	inline //__forceinline
 #		define TIKI_NO_INLINE		__declspec(noinline)
 
 #	elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )

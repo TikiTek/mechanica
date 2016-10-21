@@ -79,7 +79,10 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void		toFloat( float2& target, const Vector2& source );
 		TIKI_FORCE_INLINE void		toFloat( float3& target, const Vector3& source );
+		TIKI_FORCE_INLINE void		toFloat( float3& target, const Vector2& source, float z );
 		TIKI_FORCE_INLINE void		toFloat( float4& target, const Vector4& source );
+		TIKI_FORCE_INLINE void		toFloat( float4& target, const Vector3& source, float w );
+		TIKI_FORCE_INLINE void		toFloat( float4& target, const Vector2& source, float z, float w );
 
 		TIKI_FORCE_INLINE Vector2&	clear( Vector2& vec );
 		TIKI_FORCE_INLINE Vector3&	clear( Vector3& vec );

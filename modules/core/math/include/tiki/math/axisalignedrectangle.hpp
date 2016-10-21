@@ -2,26 +2,16 @@
 #ifndef TIKI_AXISALIGNEDRECTANGLE_HPP_INCLUDED
 #define TIKI_AXISALIGNEDRECTANGLE_HPP_INCLUDED
 
+#include "tiki/math/rectanglepoint.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
 {
-	enum AxisAlignedRectangleVertex
-	{
-		//	3-------2
-		//  |       |
-		//	|  	    |
-		//	|       |
-		//	0-------1
-
-		AxisAlignedRectangleVertex_XMinYMin,
-		AxisAlignedRectangleVertex_XMaxYMin,
-		AxisAlignedRectangleVertex_XMaxYMax,
-		AxisAlignedRectangleVertex_XMinYMax,
-
-		AxisAlignedRectangleVertex_Count
-	};
-
+	//	3-------2
+	//  |       |
+	//	|  	    |
+	//	|       |
+	//	0-------1
 	struct AxisAlignedRectangle
 	{
 	public:
@@ -31,7 +21,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void		clear();
 
-		TIKI_FORCE_INLINE void		getVertices( Vector2 aVertices[ AxisAlignedRectangleVertex_Count ] ) const;
+		TIKI_FORCE_INLINE void		getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const;
 
 		TIKI_FORCE_INLINE void		translate( const Vector2& translation );
 		TIKI_FORCE_INLINE void		extend( const Vector2& extents );
