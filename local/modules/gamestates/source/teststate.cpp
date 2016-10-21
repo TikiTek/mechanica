@@ -214,14 +214,14 @@ namespace tiki
 			return true;
 		}
 
-		if ( inputEvent.eventType == InputEventType_Keyboard_Down )
-		{
-			switch ( inputEvent.data.keybaordKey.key )
-			{
-			default:
-				break;
-			}
-		}
+		//if ( inputEvent.eventType == InputEventType_Keyboard_Down )
+		//{
+		//	switch ( inputEvent.data.keybaordKey.key )
+		//	{
+		//	default:
+		//		break;
+		//	}
+		//}
 		//else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
 		//{
 		//	m_freeCamera.setMouseControl( !m_freeCamera.getMouseControl() );
