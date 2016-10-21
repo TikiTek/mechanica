@@ -6,10 +6,10 @@ namespace tiki
 {
 	enum RectanglePoint
 	{
-		RectanglePoint_XMinYMin,
-		RectanglePoint_XMaxYMin,
-		RectanglePoint_XMaxYMax,
 		RectanglePoint_XMinYMax,
+		RectanglePoint_XMinYMin,
+		RectanglePoint_XMaxYMax,
+		RectanglePoint_XMaxYMin,
 
 		RectanglePoint_Count
 	};

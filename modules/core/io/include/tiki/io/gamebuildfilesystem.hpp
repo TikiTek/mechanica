@@ -19,10 +19,10 @@ namespace tiki
 		bool				create( const char* pGamebuildPath, uint maxStreamCount = 4u );
 		void				dispose();
 
-		virtual const char*	getFilenameByCrc( crc32 filenameCrc ) const TIKI_OVERRIDE TIKI_FINAL;
+		virtual const char*	getFilenameByCrc( crc32 filenameCrc ) const TIKI_OVERRIDE_FINAL;
 
-		virtual bool		exists( const char* pFileName ) const TIKI_OVERRIDE TIKI_FINAL;
-		virtual DataStream*	open( const char* pFileName, DataAccessMode accessMode ) TIKI_OVERRIDE TIKI_FINAL;
+		virtual bool		exists( const char* pFileName ) const TIKI_OVERRIDE_FINAL;
+		virtual DataStream*	open( const char* pFileName, DataAccessMode accessMode ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

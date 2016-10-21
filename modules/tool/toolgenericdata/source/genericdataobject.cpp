@@ -152,7 +152,7 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataObject::applyElementValue( XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
+	bool GenericDataObject::applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
 	{
 		const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pElement );
 		if ( pNameAtt == nullptr )

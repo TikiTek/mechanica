@@ -57,8 +57,6 @@ namespace tiki
 			{
 				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildElement );
 				const XmlAttribute* pTypeAtt = reader.findAttributeByName( "type", pChildElement );
-				const XmlAttribute* pModeAtt = reader.findAttributeByName( "mode", pChildElement );
-				const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
 				if ( pNameAtt && pTypeAtt )
 				{
 					const GenericDataType* pType = m_collection.parseType( pTypeAtt->content );
@@ -109,6 +107,7 @@ namespace tiki
 						return false;
 					}
 
+					const XmlAttribute* pModeAtt = reader.findAttributeByName("mode", pChildElement);
 					if ( pModeAtt != nullptr )
 					{
 						if ( !isValue )
@@ -129,11 +128,23 @@ namespace tiki
 						}
 					}
 
+					const XmlAttribute* pValueAtt = reader.findAttributeByName("value", pChildElement);
 					if ( pValueAtt != nullptr )
 					{
 						if ( !m_collection.parseValue( field.defaultValue, pValueAtt->content, pType, this ) )
 						{
-							TIKI_TRACE_INFO( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
+						}
+					}
+					else
+					{
+						const XmlElement* pValueElement = reader.findFirstChild( "value", pChildElement );
+						if (pValueElement != nullptr)
+						{
+							if (!pType->loadValueFromXml( field.defaultValue, reader, pValueElement, this ))
+							{
+								TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value node can't be parsed.\n", getName().cStr() );
+							}
 						}
 					}
 				}

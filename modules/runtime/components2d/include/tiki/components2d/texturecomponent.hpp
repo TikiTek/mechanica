@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	class RenderScene;
+	class Renderer2d;
 	class Transform2dComponent;
 	struct TextureComponentInitData;
 	struct TextureComponentState;
@@ -24,7 +24,7 @@ namespace tiki
 		bool				create( Transform2dComponent& transformComponent );
 		void				dispose();
 
-		//void				render( RenderScene& scene ) const;
+		void				render( Renderer2d& renderer ) const;
 
 		virtual crc32		getTypeCrc() const TIKI_OVERRIDE_FINAL;
 		virtual uint32		getStateSize() const TIKI_OVERRIDE_FINAL;

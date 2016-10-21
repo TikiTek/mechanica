@@ -439,6 +439,7 @@ namespace tiki
 		}
 
 		m_value = value.m_value;
+		m_text = value.m_text;
 		return true;
 	}
 

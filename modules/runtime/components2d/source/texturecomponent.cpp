@@ -3,6 +3,7 @@
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components2d/transform2dcomponent.hpp"
 #include "tiki/graphics/texture.hpp"
+#include "tiki/renderer2d/renderer2d.hpp"
 
 #include "components2d.hpp"
 
@@ -14,6 +15,7 @@ namespace tiki
 	{
 		const Transform2dComponentState*	pTransform;
 		const Texture*						pTexture;
+		uint32								layerId;
 	};
 
 	TextureComponent::TextureComponent()
@@ -38,19 +40,18 @@ namespace tiki
 		m_pTransformComponent = nullptr;
 	}
 
-	//void TextureComponent::render( RenderScene& scene ) const
-	//{
-	//	ConstIterator componentStates = getConstIterator();
+	void TextureComponent::render( Renderer2d& renderer ) const
+	{
+		ConstIterator componentStates = getConstIterator();
 
-	//	const State* pState = nullptr;
-	//	while ( pState = componentStates.getNext() )
-	//	{
-	//		Matrix43 worldTransform;
-	//		m_pTransformComponent->getWorldTransform( worldTransform, pState->pTransform );
-
-	//		scene.queueModel( pState->pModel, &worldTransform, nullptr );
-	//	}
-	//}
+		const State* pState = nullptr;
+		while ( pState = componentStates.getNext() )
+		{
+			const Matrix32& worldTransform = m_pTransformComponent->getWorldTransform( pState->pTransform );
+			
+			renderer.queueSprite( pState->pTexture->getTextureData(), worldTransform, pState->layerId );
+		}
+	}
 
 	crc32 TextureComponent::getTypeCrc() const
 	{
@@ -69,19 +70,11 @@ namespace tiki
 
 	bool TextureComponent::internalInitializeState( ComponentEntityIterator& componentIterator, TextureComponentState* pState, const TextureComponentInitData* pInitData )
 	{
-		pState->pTransform = (const Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
-		if ( pState->pTransform == nullptr )
-		{
-			return false;
-		}
+		pState->pTransform	= (const Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pTexture	= pInitData->texture.getData();
+		pState->layerId		= pInitData->layerId;
 
-		pState->pTexture = pInitData->texture.getData();
-		if ( pState->pTexture == nullptr )
-		{
-			return false;
-		}
-
-		return true;
+		return (pState->pTransform != nullptr && pState->pTexture != nullptr);
 	}
 
 	void TextureComponent::internalDisposeState( TextureComponentState* pState )

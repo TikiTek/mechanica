@@ -42,14 +42,13 @@ namespace tiki
 
 		void				startTransition( int stateIndex );
 
-		bool				isInState( int stateIndex ) const;
+		bool				isInState( int stateIndex ) const	{ return m_stateTree.isInState( stateIndex ); }
+		bool				isInTransition() const				{ return m_stateTree.isInTransition(); }
+		uint				getCurrentState() const				{ return m_stateTree.getCurrentState(); }
 
-		bool				isInTransition() const	{ return m_stateTree.isInTransition(); }
-		uint				getCurrentState() const	{ return m_stateTree.getCurrentState(); }
+		uint				getStateCount() const				{ return m_stateCount; }
 
-		uint				getStateCount() const	{ return m_stateCount; }
-
-		bool				isCreated() const		{ return m_isCreated; }
+		bool				isCreated() const					{ return m_isCreated; }
 
 	private:
 

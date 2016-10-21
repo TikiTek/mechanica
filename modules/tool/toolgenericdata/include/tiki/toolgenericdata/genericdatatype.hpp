@@ -13,8 +13,9 @@ struct _XmlElement;
 namespace tiki
 {
 	class GenericDataTypeCollection;
-	class XmlReader;
 	class GenericDataTypeReference;
+	class GenericDataValue;
+	class XmlReader;
 
 	enum GenericDataTypeMode
 	{
@@ -67,6 +68,8 @@ namespace tiki
 
 		const string&				getModule() const;
 		void						setModule( const string& value );
+
+		bool						loadValueFromXml( GenericDataValue& outValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const;
 
 	protected:
 
