@@ -631,14 +631,13 @@ namespace tiki
 					}
 				}
 
-				if ( pCurrentState->mouse.lZ != pPreviousState->mouse.lZ )
+				if ( pCurrentState->mouse.lZ != 0 )
 				{
 					InputEvent& inputEvent = m_events.push();
 					inputEvent.eventType	= InputEventType_Mouse_Wheel;
 					inputEvent.deviceType	= InputDeviceType_Mouse;
 					inputEvent.deviceId		= 0u;
 					inputEvent.data.mouseWheel.offset = (sint16)pCurrentState->mouse.lZ;
-					inputEvent.data.mouseWheel.offset = (sint16)( pPreviousState->mouse.lZ - pCurrentState->mouse.lZ );
 				}
 			}
 		}

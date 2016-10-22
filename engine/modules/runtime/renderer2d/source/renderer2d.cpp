@@ -175,7 +175,7 @@ namespace tiki
 		command.pTexture = &texture;
 
 		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
-			Vector2::zero,
+			worldTransform.pos,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
 
@@ -313,7 +313,7 @@ namespace tiki
 		const float offscreenHeight = (float)m_offscreenColorData.getHeight() / -100.0f;
 
 		Projection projection;
-		projection.createOrthographic( offscreenWidth * m_currentZoom, offscreenHeight * m_currentZoom, 0.0f, 10.0f );
+		projection.createOrthographic( offscreenWidth / m_currentZoom, offscreenHeight / m_currentZoom, 0.0f, 10.0f );
 
 		m_camera.setProjection( projection );
 	}

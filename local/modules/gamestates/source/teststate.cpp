@@ -163,6 +163,8 @@ namespace tiki
 		gameClientUpdateContext.timeDelta		= timeDelta;
 		gameClientUpdateContext.totalGameTime	= totalGameTime;
 		m_gameClient.update( gameClientUpdateContext );
+
+		debugrenderer::drawText( Vector2::zero, TIKI_COLOR_GREEN, " Zoom: %.2f, FPS: %.2f", m_pRenderer->getTargetZoom(), 1.0f / timeDelta );
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )
@@ -217,7 +219,9 @@ namespace tiki
 
 		if (inputEvent.eventType == InputEventType_Mouse_Wheel)
 		{
-			m_pRenderer->setTargetZoom( m_pRenderer->getTargetZoom() + ((float)inputEvent.data.mouseWheel.offset / 1200.0f) );
+			const float wheelDelta = (float)inputEvent.data.mouseWheel.offset / 1200.0f;
+			const float targetZoom = m_pRenderer->getTargetZoom() + wheelDelta;
+			m_pRenderer->setTargetZoom( targetZoom );
 		}
 		//if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		//{
