@@ -85,6 +85,7 @@ namespace tiki
 			{
 				if ( !loadFile( pFileName, data ) )
 				{
+					m_mutex.unlock();
 					return false;
 				}
 			}
@@ -349,7 +350,7 @@ namespace tiki
 	{
 		m_openGlMutex.dispose();
 
-		TIKI_MEMORY_DELETE_OBJECT( m_pFileStorage );
+		TIKI_DELETE( m_pFileStorage );
 		m_pFileStorage = nullptr;
 
 		m_includeDirs.dispose();
@@ -763,7 +764,7 @@ namespace tiki
 	//	context.pTargetData[ context.targetPosition ] = '\0';
 	//	string resultSourceCode = context.pTargetData;
 
-	//	TIKI_MEMORY_FREE( context.pTargetData );
+	//	TIKI_FREE( context.pTargetData );
 
 	//	return resultSourceCode;
 	//}
