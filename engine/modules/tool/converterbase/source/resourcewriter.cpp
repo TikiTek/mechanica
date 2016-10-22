@@ -145,11 +145,16 @@ namespace tiki
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		FileStream fileStream;
-		fileStream.create( m_fileName.cStr(), DataAccessMode_Write );
+		if (fileStream.create( m_fileName.cStr(), DataAccessMode_Write ))
+		{
+			fileStream.write( stream.getData(), stream.getLength() );
+			fileStream.dispose();
+		}
+		else
+		{
+			TIKI_TRACE_ERROR( "[converter] Unable to open resource file '%s'!\n", m_fileName.cStr() );
+		}
 
-		fileStream.write( stream.getData(), stream.getLength() );
-
-		fileStream.dispose();
 		stream.dispose();
 
 		m_resources.dispose();
