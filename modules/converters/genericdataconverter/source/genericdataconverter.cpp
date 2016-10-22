@@ -24,10 +24,10 @@ namespace tiki
 		const GenericDataType* pType = nullptr;
 		if ( m_resourceTypeMap.findValue( &pType, typeCrc ) )
 		{
-			//return pType->getTypeCrc();
+			return pType->getTypeCrc();
 		}
 
-		return 17; //(uint32)-1;
+		return (uint32)-1;
 	}
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const
