@@ -49,7 +49,7 @@ namespace tiki
 						Renderer2dCreationParameters parameters;
 						parameters.width				= (uint16)graphicsSystem.getBackBuffer().getWidth();
 						parameters.height				= (uint16)graphicsSystem.getBackBuffer().getHeight();
-						parameters.layerCount			= 5u;
+						parameters.layerCount			= 6u;
 						parameters.drawToWorldFactor	= 0.01f;
 
 						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, parameters ) )

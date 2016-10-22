@@ -141,7 +141,7 @@ namespace tiki
 			m_pStates->basicTestState.dispose();
 			m_pStates->physicsTestState.dispose();
 
-			TIKI_MEMORY_DELETE_OBJECT( m_pStates );
+			TIKI_DELETE( m_pStates );
 		}
 
 		EntityTemplateGenericDataResource::unregisterResourceType( resourceManager );
