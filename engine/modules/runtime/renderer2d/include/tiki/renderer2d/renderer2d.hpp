@@ -82,7 +82,9 @@ namespace tiki
 		
 		const Camera&		getCamera() const { return m_camera; }
 
-		void				setTargetZoom( float zoom );
+		float				getTargetZoom() const { return m_targetZoom; }
+		void				setTargetZoom( float zoom ) { m_targetZoom = zoom; }
+		void				setZoom( float zoom );
 		void				setCameraPosition( const Vector2& position );
 
 	private:

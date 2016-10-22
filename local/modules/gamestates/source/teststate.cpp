@@ -217,10 +217,7 @@ namespace tiki
 
 		if (inputEvent.eventType == InputEventType_Mouse_Wheel)
 		{
-			float wheelState = (float)inputEvent.data.mouseWheel.state / 1200.0f;
-			wheelState = f32::clamp( wheelState, 0.0f, 2.0f );
-
-			m_pRenderer->setTargetZoom( wheelState );
+			m_pRenderer->setTargetZoom( m_pRenderer->getTargetZoom() + ((float)inputEvent.data.mouseWheel.offset / 1200.0f) );
 		}
 		//if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		//{

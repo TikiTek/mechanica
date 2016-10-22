@@ -309,11 +309,11 @@ namespace tiki
 	{
 		m_currentZoom = f32::lerp( m_currentZoom, m_targetZoom, deltaTime );
 
-		const float offscreenWidth = (float)m_offscreenColorData.getWidth() / (100.0f * m_currentZoom);
-		const float offscreenHeight = (float)m_offscreenColorData.getHeight() / (-100.0f * m_currentZoom);
+		const float offscreenWidth = (float)m_offscreenColorData.getWidth() / 100.0f;
+		const float offscreenHeight = (float)m_offscreenColorData.getHeight() / -100.0f;
 
 		Projection projection;
-		projection.createOrthographic( offscreenWidth, offscreenHeight, 0.0f, 10.0f );
+		projection.createOrthographic( offscreenWidth * m_currentZoom, offscreenHeight * m_currentZoom, 0.0f, 10.0f );
 
 		m_camera.setProjection( projection );
 	}
@@ -404,9 +404,10 @@ namespace tiki
 		graphicsContext.endRenderPass();
 	}
 
-	void Renderer2d::setTargetZoom( float zoom )
+	void Renderer2d::setZoom( float zoom )
 	{
 		m_targetZoom = zoom;
+		m_currentZoom = zoom;
 	}
 
 	void Renderer2d::setCameraPosition( const Vector2& position )
