@@ -41,6 +41,7 @@ namespace tiki
 		m_rebuildForced		= parameters.forceRebuild;
 
 		TaskSystemParameters taskParameters;
+		taskParameters.maxTaskCount = 1024u;
 		m_taskSystem.create( taskParameters );
 
 		if ( !directory::exists( m_outputPath.cStr() ) )
