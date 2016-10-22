@@ -59,7 +59,7 @@ namespace tiki
 
 		const Font*				m_pFont;
 
-		DebugRenderCommand*		allocateCommand( CommandList& list, uint size, DebugRenderCommandType type );
+		DebugRenderCommand*		allocateCommand( CommandList& list, uint size, uint alignment, DebugRenderCommandType type );
 
 		void					flushList( const CommandList& list, const ImmediateRenderer& renderer, const Camera& camera );
 
@@ -101,7 +101,7 @@ namespace tiki
 
 	void DebugRenderer::create( ResourceManager& resourceManager )
 	{
-		m_data.create( 1u * 1024u * 1024u );
+		m_data.create( 1u * 1024u * 1024u, 16u );
 
 		m_list2D.clear();
 		m_list3D.clear();
@@ -124,14 +124,14 @@ namespace tiki
 	T* DebugRenderer::allocateCommand2D( uint extraMemory /*= 0u*/ )
 	{
 		const uint sizeInBytes = sizeof( T ) + extraMemory;
-		return (T*)allocateCommand( m_list2D, sizeInBytes, T::CommandType );
+		return (T*)allocateCommand( m_list2D, sizeInBytes, TIKI_ALIGNOF( T ), T::CommandType );
 	}
 
 	template<class T>
 	T* DebugRenderer::allocateCommand3D( uint extraMemory /*= 0u*/ )
 	{
 		const uint sizeInBytes = sizeof( T ) + extraMemory;
-		return (T*)allocateCommand( m_list3D, sizeInBytes, T::CommandType );
+		return (T*)allocateCommand( m_list3D, sizeInBytes, TIKI_ALIGNOF( T ), T::CommandType );
 	}
 
 	void DebugRenderer::flush( const ImmediateRenderer& renderer, const Camera& camera, const RenderTarget* pRenderTarget )
@@ -150,9 +150,9 @@ namespace tiki
 		m_data.clear();
 	}
 
-	DebugRenderCommand* DebugRenderer::allocateCommand( CommandList& list, uint size, DebugRenderCommandType type )
+	DebugRenderCommand* DebugRenderer::allocateCommand( CommandList& list, uint size, uint alignment, DebugRenderCommandType type )
 	{
-		DebugRenderCommand* pCommand = (DebugRenderCommand*)m_data.allocate( size );
+		DebugRenderCommand* pCommand = (DebugRenderCommand*)m_data.allocate( size, alignment );
 
 		if( pCommand )
 		{

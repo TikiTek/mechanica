@@ -61,7 +61,6 @@ namespace tiki
 
 	struct InputEventMouseWheelData
 	{
-		sint16 state;
 		sint16 offset;
 	};
 
