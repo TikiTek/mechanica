@@ -65,9 +65,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( TIKI_TEXCOORD0 );
 
 #if TIKI_CUTOFF
-	float3 accumulationColor = TIKI_TEX2D( t_accumulation, s_samplerLinear, texCoord ).rgb;
-
-	float3 sourceColor = accumulationColor
+	float3 sourceColor = TIKI_TEX2D( t_accumulation, s_samplerLinear, texCoord ).rgb;
 #if TIKI_CUTOFF > 1
 	float3 selfilluColor = TIKI_TEX2D( t_selfillu, s_samplerLinear, texCoord ).rgb;
 	sourceColor += selfilluColor;
@@ -76,7 +74,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	sourceColor *= (sourceColor >= getCutoffThresold( c_pixelData ));
 	//float colorValue = dot( diffuseColor, float3( 0.2126f, 0.7152f, 0.0722f ) );
 
-	float4 color = float4(sourceColor, sourceColor.r * sourceColor.g * sourceColor.b ) );
+	float4 color = float4(sourceColor, sourceColor.r * sourceColor.g * sourceColor.b );
 #else
 	float4 color = TIKI_TEX2D( t_pass, s_samplerLinear, texCoord );
 	color = TIKI_SATURATE( color );
