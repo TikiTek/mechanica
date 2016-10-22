@@ -13,7 +13,7 @@ namespace tiki
 
 	void disposeAssetConverter( IAssetConverter* pObject )
 	{
-		TIKI_MEMORY_DELETE_OBJECT( pObject );
+		TIKI_DELETE( pObject );
 		Thread::shutdownSystem();
 	}
 

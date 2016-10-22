@@ -41,7 +41,7 @@ namespace tiki
 
 	void ZoneAllocator::dispose()
 	{
-		TIKI_MEMORY_FREE( m_pMemory );
+		TIKI_FREE( m_pMemory );
 		m_pMemory		= nullptr;
 		m_pCurrent		= nullptr;
 		m_size			= 0u;

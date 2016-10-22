@@ -48,7 +48,7 @@ namespace tiki
 
 	void XmlReader::dispose()
 	{
-		TIKI_MEMORY_FREE( m_pData );
+		TIKI_FREE( m_pData );
 
 		m_pNode	= nullptr;
 		m_pData	= nullptr;

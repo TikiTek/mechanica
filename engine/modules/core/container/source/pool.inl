@@ -56,7 +56,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_count == 0u );
 
-		TIKI_MEMORY_FREE( m_pData );
+		TIKI_FREE( m_pData );
 
 		m_pData			= nullptr;
 		m_pFirstFree	= nullptr;

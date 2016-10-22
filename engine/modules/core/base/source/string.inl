@@ -74,7 +74,7 @@ namespace tiki
 	TIKI_FORCE_INLINE uint appendString( char* pTargetbuffer, uint bufferSize, const char* pSource )
 	{
 		const uint index = getStringSize( pTargetbuffer );
-		copyString( pTargetbuffer + index, bufferSize - index, pSource );
+		return copyString( pTargetbuffer + index, bufferSize - index, pSource );
 	}
 
 	TIKI_FORCE_INLINE char* dublicateString( const char* pSource )

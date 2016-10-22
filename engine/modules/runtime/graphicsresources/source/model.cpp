@@ -81,7 +81,7 @@ namespace tiki
 		if ( m_pHierarchy )
 		{
 			m_pHierarchy->dispose();
-			TIKI_MEMORY_DELETE_OBJECT( m_pHierarchy );
+			TIKI_DELETE( m_pHierarchy );
 			m_pHierarchy = nullptr;
 		}
 

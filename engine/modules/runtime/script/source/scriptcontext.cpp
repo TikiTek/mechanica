@@ -103,7 +103,7 @@ namespace tiki
 	{
 		if( nsize == 0u )
 		{
-			TIKI_MEMORY_FREE( pPointer );
+			TIKI_FREE( pPointer );
 			return nullptr;
 		}
 		else if( pPointer == nullptr )
@@ -115,7 +115,7 @@ namespace tiki
 			void* pNewData = TIKI_ALLOC( nsize );
 			memory::copy( pNewData, pPointer, TIKI_MIN( nsize, osize ) );
 
-			TIKI_MEMORY_FREE( pPointer );
+			TIKI_FREE( pPointer );
 
 			return pNewData;
 		}

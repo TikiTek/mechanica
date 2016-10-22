@@ -168,7 +168,7 @@ namespace tiki
 			GenericDataType& type = m_types.getFirst();
 
 			m_types.removeSortedByValue( type );
-			TIKI_MEMORY_DELETE_OBJECT( &type );
+			TIKI_DELETE( &type );
 		}
 	}
 
@@ -950,7 +950,7 @@ namespace tiki
 							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] unable to load type with name '%s' from xml.\n", pType->getName().cStr() );
 
 							removeType( *pType );
-							TIKI_MEMORY_DELETE_OBJECT( pType );
+							TIKI_DELETE( pType );
 							pType = nullptr;
 
 							ok = false;
@@ -958,7 +958,7 @@ namespace tiki
 					}
 					else
 					{
-						TIKI_MEMORY_DELETE_OBJECT( pType );
+						TIKI_DELETE( pType );
 						pType = nullptr;
 
 						ok = false;

@@ -15,6 +15,7 @@ namespace tiki
 	{
 		const Transform2dComponentState*	pTransform;
 		const Texture*						pTexture;
+		Vector2								offset;
 		uint32								layerId;
 	};
 
@@ -47,7 +48,8 @@ namespace tiki
 		const State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			const Matrix32& worldTransform = m_pTransformComponent->getWorldTransform( pState->pTransform );
+			Matrix32 worldTransform = m_pTransformComponent->getWorldTransform( pState->pTransform );
+			vector::add( worldTransform.pos, pState->offset );
 			
 			renderer.queueSprite( pState->pTexture->getTextureData(), worldTransform, pState->layerId );
 		}
@@ -73,6 +75,7 @@ namespace tiki
 		pState->pTransform	= (const Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		pState->pTexture	= pInitData->texture.getData();
 		pState->layerId		= pInitData->layerId;
+		vector::set( pState->offset, pInitData->offset );
 
 		return (pState->pTransform != nullptr && pState->pTexture != nullptr);
 	}

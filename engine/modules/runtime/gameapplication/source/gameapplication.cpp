@@ -79,7 +79,7 @@ namespace tiki
 
 		if( m_pGameData != nullptr )
 		{
-			TIKI_MEMORY_DELETE_OBJECT( m_pGameData );
+			TIKI_DELETE( m_pGameData );
 			m_pGameData = nullptr;
 		}
 	}

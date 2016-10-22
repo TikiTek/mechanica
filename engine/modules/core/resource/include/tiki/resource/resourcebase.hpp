@@ -72,7 +72,7 @@ namespace tiki
 
 		static void factoryContextGenericDisposeResourceFunction( Resource* pResource )
 		{
-			TIKI_MEMORY_DELETE_OBJECT( static_cast< T* >( pResource ) );
+			TIKI_DELETE( static_cast< T* >( pResource ) );
 		}
 
 	};

@@ -49,9 +49,9 @@
 
 #endif
 
-#define TIKI_MEMORY_FREE( pData )				::tiki::memory::freeAligned( pData )
-#define TIKI_MEMORY_DELETE_OBJECT( ptr )		::tiki::memory::deleteObjectAligned( ptr )
-#define TIKI_MEMORY_DELETE_ARRAY( ptr, count )	::tiki::memory::deleteArrayAligned( ptr, count )
+#define TIKI_FREE( ptr )												::tiki::memory::freeAligned( ptr )
+#define TIKI_DELETE( ptr )												::tiki::memory::deleteObjectAligned( ptr )
+#define TIKI_DELETE_ARRAY( ptr, count )									::tiki::memory::deleteArrayAligned( ptr, count )
 
 namespace tiki
 {

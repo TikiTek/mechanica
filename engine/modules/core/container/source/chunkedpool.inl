@@ -51,7 +51,7 @@ namespace tiki
 			m_chunks.removeSortedByValue( m_chunks.getFirst() );
 
 			pChunk->~PoolChunk();
-			TIKI_MEMORY_FREE( pChunk );
+			TIKI_FREE( pChunk );
 		}		
 
 		m_pFirstFree	= nullptr;

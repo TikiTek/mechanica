@@ -137,7 +137,7 @@ namespace tiki
 		shutdownFramework();
 		shutdownPlatform();
 
-		TIKI_MEMORY_DELETE_OBJECT( m_pBaseData );
+		TIKI_DELETE( m_pBaseData );
 		m_pBaseData = nullptr;
 
 		m_isInitialized = false;

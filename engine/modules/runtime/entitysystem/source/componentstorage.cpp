@@ -84,7 +84,7 @@ namespace tiki
 	{
 		if ( m_pMemory != nullptr )
 		{
-			TIKI_MEMORY_FREE( m_pMemory );
+			TIKI_FREE( m_pMemory );
 			m_pMemory = nullptr;
 		}
 
