@@ -548,14 +548,14 @@ namespace tiki
 	{
 		for (uint i = 0u; i < sectionData.sectorCount; ++i)
 		{
-			TIKI_MEMORY_FREE( sectionData.ppSectorPointers[ i ] );
+			TIKI_FREE( sectionData.ppSectorPointers[ i ] );
 		}
 		sectionData.ppSectorPointers = nullptr;
 		sectionData.sectorCount = 0u;
 
 		if ( sectionData.stringCount != 0u )
 		{
-			TIKI_MEMORY_FREE( sectionData.ppStringPointers[ 0u ] );
+			TIKI_FREE( sectionData.ppStringPointers[ 0u ] );
 			sectionData.ppStringPointers = nullptr;
 			sectionData.stringCount = 0u;
 		}
@@ -569,7 +569,7 @@ namespace tiki
 			}
 		} 
 
-		TIKI_MEMORY_FREE( sectionData.ppLinkedResources );
+		TIKI_FREE( sectionData.ppLinkedResources );
 		sectionData.ppLinkedResources = nullptr;
 		sectionData.linkCount = 0u;
 	}

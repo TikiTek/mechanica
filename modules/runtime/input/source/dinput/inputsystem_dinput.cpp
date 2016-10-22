@@ -471,7 +471,7 @@ namespace tiki
 	{
 		if ( m_platformData.pStates[ 0u ] != nullptr )
 		{
-			TIKI_MEMORY_FREE( m_platformData.pStates[ 0u ] );
+			TIKI_FREE( m_platformData.pStates[ 0u ] );
 			m_platformData.pStates[ 0u ] = nullptr;
 			m_platformData.pStates[ 1u ] = nullptr;
 		}

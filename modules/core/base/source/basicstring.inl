@@ -618,7 +618,7 @@ namespace tiki
 		memory::copy( m_pData, pOldData, m_stringSize );
 		m_pData[ m_stringSize ] = '\0';
 
-		TIKI_MEMORY_FREE( pOldData );
+		TIKI_FREE( pOldData );
 	}
 
 	TIKI_FORCE_INLINE void BasicString::allocateDataForString( const char* pString, sint length /* = -1 */ )
@@ -636,16 +636,16 @@ namespace tiki
 			const uint dataSize = (length == -1 ? stringSize : (uint)length);
 
 			allocateData( dataSize );
-			memory::copy( m_pData, pString, stringSize );
-			m_pData[ stringSize ] = '\0';
+			memory::copy( m_pData, pString, dataSize );
+			m_pData[ dataSize ] = '\0';
 
-			m_stringSize = stringSize;
+			m_stringSize = dataSize;
 		}
 	}
 
 	TIKI_FORCE_INLINE void BasicString::freeData()
 	{
-		TIKI_MEMORY_FREE( m_pData );
+		TIKI_FREE( m_pData );
 		m_pData			= nullptr;
 		m_dataSize		= 0u;
 		m_stringSize	= 0u;
@@ -653,7 +653,9 @@ namespace tiki
 
 	TIKI_FORCE_INLINE uint BasicString::calculateLength( uint neededLength ) const
 	{
-		return getNextPowerOfTwo( neededLength + 1u );
+		const uint nextSize = getNextPowerOfTwo( neededLength + 1u );
+		TIKI_ASSERT( nextSize > neededLength );
+		return nextSize;
 	}
 }
 

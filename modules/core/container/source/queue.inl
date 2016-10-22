@@ -43,7 +43,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+			TIKI_DELETE_ARRAY( m_pData, m_capacity );
 			m_pData = nullptr;
 		}
 

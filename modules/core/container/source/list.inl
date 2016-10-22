@@ -57,7 +57,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+			TIKI_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_pData		= nullptr;
@@ -269,7 +269,7 @@ namespace tiki
 	{
 		if ( m_pData != nullptr )
 		{
-			TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+			TIKI_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
 		m_isReadOnly	= copy.m_isReadOnly;
@@ -313,7 +313,7 @@ namespace tiki
 
 			if ( m_pData != nullptr )
 			{
-				TIKI_MEMORY_DELETE_ARRAY( m_pData, m_capacity );
+				TIKI_DELETE_ARRAY( m_pData, m_capacity );
 			}
 
 			m_pData		= pNewData;

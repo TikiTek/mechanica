@@ -39,7 +39,7 @@ namespace tiki
 		if ( m_pObject != nullptr )
 		{
 			m_pObject->dispose();
-			TIKI_MEMORY_DELETE_OBJECT( m_pObject );
+			TIKI_DELETE( m_pObject );
 			m_pObject = nullptr;
 		}
 	}

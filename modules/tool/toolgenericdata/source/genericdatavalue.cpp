@@ -54,13 +54,13 @@ namespace tiki
 		if ( m_valueType == GenericDataValueType_Object && m_value.pObject != nullptr)
 		{
 			m_value.pObject->dispose();
-			TIKI_MEMORY_DELETE_OBJECT( m_value.pObject );
+			TIKI_DELETE( m_value.pObject );
 			m_value.pObject = nullptr;
 		}
 		else if ( m_valueType == GenericDataValueType_Array && m_value.pArray != nullptr )
 		{
 			m_value.pArray->dispose();
-			TIKI_MEMORY_DELETE_OBJECT( m_value.pArray );
+			TIKI_DELETE( m_value.pArray );
 			m_value.pArray = nullptr;
 		}
 	}

@@ -92,13 +92,13 @@ namespace tiki
 				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( m_collection );
 				if ( !pObject->create( pTypedChildType ) )
 				{
-					TIKI_MEMORY_DELETE_OBJECT( pObject );
+					TIKI_DELETE( pObject );
 					return false;
 				}
 
 				if ( !pObject->importFromXml( reader, pChildElement ) )
 				{
-					TIKI_MEMORY_DELETE_OBJECT( pObject );
+					TIKI_DELETE( pObject );
 					return false;
 				}
 
@@ -117,13 +117,13 @@ namespace tiki
 				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( m_collection );
 				if ( !pArray->create( pTypedChildType ) )
 				{
-					TIKI_MEMORY_DELETE_OBJECT( pArray );
+					TIKI_DELETE( pArray );
 					return false;
 				}
 
 				if ( !pArray->importFromXml( reader, pChildElement ) )
 				{
-					TIKI_MEMORY_DELETE_OBJECT( pArray );
+					TIKI_DELETE( pArray );
 					return false;
 				}
 
