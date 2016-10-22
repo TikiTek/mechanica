@@ -60,7 +60,7 @@ namespace tiki
 		while ( pState = componentStates.getNext() )
 		{
 			m_pTranformComponent->setPosition( pState->pTransform, pState->body.getPosition() );
-			m_pTranformComponent->setRotation( pState->pTransform, pState->body.getRotation() );
+			m_pTranformComponent->setRotation( pState->pTransform, -pState->body.getRotation() );
 		}
 	}
 
