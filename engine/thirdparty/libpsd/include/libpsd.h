@@ -251,7 +251,7 @@ typedef enum {
 } psd_layer_effects_type;
 #define psd_layer_effects_type_count		(psd_layer_effects_type_bevel_emboss + 1)
 
-typedef enum {
+enum {
 	psd_layer_effects_bevel_emboss_outer_shadow = psd_layer_effects_type_bevel_emboss,
 	psd_layer_effects_bevel_emboss_outer_light,
 	psd_layer_effects_bevel_emboss_inner_shadow,
