@@ -12,7 +12,7 @@ struct BloomCutoffPixelConstantData
 
 #ifndef __cplusplus
 
-float3 getCutoffThresold( BloomBlurPixelConstantData data )
+float3 getCutoffThresold( BloomCutoffPixelConstantData data )
 {
 	return data.param0.xyz;
 }

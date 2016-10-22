@@ -920,7 +920,7 @@ namespace tiki
 
 		{
 			const string hasErrorString = (hasGlobalError ? "1" : "0");
-			if ( !m_dataBase.executeCommand( "INSERT INTO builds (buildtime, has_error) VALUES (date('now'), " + hasErrorString + ");" ) )
+			if ( !m_dataBase.executeCommand( "INSERT INTO builds (buildtime, has_error) VALUES (datetime('now'), " + hasErrorString + ");" ) )
 			{
 				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 				hasGlobalError = true;
