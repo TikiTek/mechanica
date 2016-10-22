@@ -481,9 +481,9 @@ function toolchain(_buildDir, _libDir)
 		end
 	end
 
-	if not _OPTIONS["with-dynamic-runtime"] then
-		flags { "StaticRuntime" }
-	end
+	--if not _OPTIONS["with-dynamic-runtime"] then
+	--	flags { "StaticRuntime" }
+	--end
 
 	if _OPTIONS["with-avx"] then
 		flags { "EnableAVX" }
@@ -494,10 +494,10 @@ function toolchain(_buildDir, _libDir)
 		"NativeWChar",
 		"NoRTTI",
 		"NoExceptions",
-		"NoEditAndContinue",
 		"NoFramePointer",
 		"Symbols",
 	}
+	--"NoEditAndContinue",
 
 	defines {
 		"__STDC_LIMIT_MACROS",
