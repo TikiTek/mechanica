@@ -50,9 +50,10 @@ namespace tiki
 				}
 				else
 				{
-					GenericDataValue value;
+					GenericDataValue value = GenericDataValue( pElementType );
 					if ( !pElementType->loadValueFromXml( value, reader, pElement, getParentType() ) )
 					{
+						value.dispose();
 						result = false;
 					}
 					else
@@ -274,7 +275,7 @@ namespace tiki
 
 		case GenericDataValueType_Object:
 			{
-				GenericDataObject* pObject = nullptr;
+				const GenericDataObject* pObject = nullptr;
 				if ( value.getObject( pObject ) )
 				{
 					if( pObject == nullptr )
@@ -284,14 +285,7 @@ namespace tiki
 							return false;
 						}
 						const GenericDataTypeStruct* pStructType = (const GenericDataTypeStruct*)pType;
-
-						GenericDataObject defaultObject( m_collection );
-						if( !defaultObject.create( pStructType ) )
-						{
-							return false;
-						}
-
-						return defaultObject.writeToResource( nullptr, writer );
+						pObject = pStructType->getDefaultObject();
 					}
 
 					if ( pObject != nullptr && pObject->writeToResource( nullptr, writer ) )
@@ -308,7 +302,7 @@ namespace tiki
 
 		case GenericDataValueType_Array:
 			{
-				GenericDataArray* pArray = nullptr;
+				const GenericDataArray* pArray = nullptr;
 				if ( value.getArray( pArray ) )
 				{
 					ReferenceKey key;

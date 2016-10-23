@@ -15,14 +15,15 @@ namespace tiki
 	GenericDataObject::GenericDataObject( GenericDataTypeCollection& collection )
 		: GenericDataContainer( collection )
 	{
-		m_pType = nullptr;
+		m_pType			= nullptr;
+		m_pParentObject	= nullptr;
 	}
 
 	GenericDataObject::~GenericDataObject()
 	{
 	}
 
-	bool GenericDataObject::create( const GenericDataTypeStruct* pType )
+	bool GenericDataObject::create( const GenericDataTypeStruct* pType, const GenericDataObject* pParentObject )
 	{
 		if ( pType == nullptr )
 		{
@@ -36,13 +37,23 @@ namespace tiki
 			return false;
 		}
 
-		m_pType = pType;
+		m_pType			= pType;
+		m_pParentObject = pParentObject;
+		if( m_pParentObject == nullptr )
+		{
+			m_pParentObject = pType->getDefaultObject();
+		}
 
 		const List< GenericDataStructField >& fields = pType->getFields();
 		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
-			const GenericDataStructField& field = fields[ i ];
-			m_fields.set( field.name, field.defaultValue );
+			const GenericDataStructField& structField = fields[ i ];
+
+			ObjectField field;
+			field.pType = structField.pType;
+			field.value = InvalidGenericDataValue;
+
+			m_fields.set( structField.name, field );
 		}
 
 		return true;
@@ -52,8 +63,8 @@ namespace tiki
 	{
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
-			Map< string, GenericDataValue >::Pair& kvp = m_fields.getPairAt( i );
-			kvp.value.dispose();
+			ObjectField& field = m_fields.getValueAt( i );
+			field.value.dispose();
 		}
 	}
 
@@ -67,14 +78,22 @@ namespace tiki
 		return m_fields.hasKey( name );
 	}
 
-	GenericDataValue& GenericDataObject::getFieldValue( const string& name )
+	GenericDataValue GenericDataObject::getFieldValue( const string& name ) const
 	{
-		return m_fields[ name ];
-	}
+		const ObjectField& field = m_fields[ name ];
+		if( !field.value.isValid() )
+		{
+			if( m_pParentObject != nullptr )
+			{
+				return m_pParentObject->getFieldValue( name );
+			}
+			else
+			{
+				return GenericDataValue( field.pType );
+			}
+		}
 
-	const GenericDataValue& GenericDataObject::getFieldValue( const string& name ) const
-	{
-		return m_fields[ name ];
+		return field.value;
 	}
 
 	bool GenericDataObject::setFieldValue( const string& name, const GenericDataValue& value )
@@ -85,8 +104,8 @@ namespace tiki
 			return false;
 		}
 
-		GenericDataValue& currentValue = m_fields[ name ];
-		if( !currentValue.setValue( value ) )
+		ObjectField& field = m_fields[ name ];
+		if( !field.value.setValue( value ) )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value to field '%s'!\n", name.cStr() );
 			return false;
@@ -109,19 +128,32 @@ namespace tiki
 		const List< GenericDataStructField >& fields = m_pType->getFields();
 		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
-			const GenericDataStructField& field = fields[ i ];
+			const GenericDataStructField& structField = fields[ i ];
 						
+			ObjectField field;
 			GenericDataValue value;
-			if ( !m_fields.findValue( &value, field.name ) )
+			if ( !m_fields.findValue( &field, structField.name ) || !field.value.isValid() )
 			{
-				value = field.defaultValue;
+				if( m_pParentObject != nullptr )
+				{
+					value = m_pParentObject->getFieldValue( structField.name );
+				}
+				else
+				{
+					value = GenericDataValue( field.pType );
+				}
+			}
+			else
+			{
+				value = field.value;
 			}
 
 			if ( value.getValueType() != GenericDataValueType_Invalid )
 			{
+				TIKI_ASSERT( value.getType() == structField.pType );
 				if ( !writeValueToResource( writer, value ) )
 				{
-					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", field.name.cStr() );
+					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", structField.name.cStr() );
 					ok = false;
 				}
 			}
@@ -162,5 +194,14 @@ namespace tiki
 		}
 
 		return setFieldValue( pNameAtt->content, value );
+	}
+
+	void GenericDataObject::addField( const string& name, const GenericDataType* pType, const GenericDataValue& defaultValue )
+	{
+		ObjectField field;
+		field.pType = pType;
+		field.value = defaultValue;
+
+		m_fields.set( name, field );
 	}
 }

@@ -131,6 +131,7 @@ namespace tiki
 				ok = false;
 			}
 
+			document.dispose();
 			reader.dispose();
 		}
 

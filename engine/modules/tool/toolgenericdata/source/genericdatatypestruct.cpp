@@ -1,9 +1,9 @@
-
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/xmlreader.hpp"
+#include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 namespace tiki
@@ -12,7 +12,7 @@ namespace tiki
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
-		m_alignment	= 0u;
+		m_alignment	= 1u;
 		m_size		= 0u;
 
 		if ( m_pBaseType != nullptr )
@@ -25,14 +25,16 @@ namespace tiki
 				field.isInherited	= true;
 
 				m_alignment	= TIKI_MAX( m_alignment, field.pType->getAlignment() );
-				m_size			= alignValue( m_size, field.pType->getAlignment() );
-				m_size			= m_size + field.pType->getSize();				
+				m_size		= alignValue( m_size, field.pType->getAlignment() );
+				m_size		= m_size + field.pType->getSize();				
 			}
 		}
 	}
 
 	GenericDataTypeStruct::~GenericDataTypeStruct()
 	{
+		m_pDefaultObject->dispose();
+		TIKI_DELETE( m_pDefaultObject );
 	}
 
 	bool GenericDataTypeStruct::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
@@ -47,6 +49,10 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'struct') \n", getName().cStr(), pTypeRoot->name );
 			return false;
 		}
+
+		m_pDefaultObject = TIKI_NEW( GenericDataObject )( m_collection );
+		m_pDefaultObject->create( this, nullptr );
+		m_pDefaultObject->m_pParentObject = nullptr;
 
 		const XmlElement* pChildElement = pTypeRoot->elements;
 		while ( pChildElement != nullptr )
@@ -92,13 +98,12 @@ namespace tiki
 					{
 						field.name			= fieldName;
 						field.pType			= pType;
-						field.defaultValue	= GenericDataValue( pType );
 						field.mode			= GenericDataTypeMode_ToolAndRuntime;
 						field.isInherited	= false;
 
-						m_alignment	= TIKI_MAX( m_alignment, field.pType->getAlignment() );
-						m_size			= alignValue( m_size, field.pType->getAlignment() );
-						m_size			= m_size + field.pType->getSize();
+						m_alignment			= TIKI_MAX( m_alignment, field.pType->getAlignment() );
+						m_size				= alignValue( m_size, field.pType->getAlignment() );
+						m_size				= m_size + field.pType->getSize();
 					}
 					
 					if ( isValue && field.pType != pType )
@@ -128,11 +133,13 @@ namespace tiki
 						}
 					}
 
+					GenericDataValue defaultValue;
 					const XmlAttribute* pValueAtt = reader.findAttributeByName("value", pChildElement);
 					if ( pValueAtt != nullptr )
 					{
-						if ( !m_collection.parseValue( field.defaultValue, pValueAtt->content, pType, this ) )
+						if ( !m_collection.parseValue( defaultValue, pValueAtt->content, pType, this ) )
 						{
+							defaultValue.dispose();
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
 						}
 					}
@@ -141,12 +148,15 @@ namespace tiki
 						const XmlElement* pValueElement = reader.findFirstChild( "value", pChildElement );
 						if (pValueElement != nullptr)
 						{
-							if (!pType->loadValueFromXml( field.defaultValue, reader, pValueElement, this ))
+							if (!pType->loadValueFromXml( defaultValue, reader, pValueElement, this ))
 							{
+								defaultValue.dispose();
 								TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value node can't be parsed.\n", getName().cStr() );
 							}
 						}
 					}
+
+					m_pDefaultObject->addField( fieldName, pType, defaultValue );
 				}
 				else
 				{
@@ -251,9 +261,10 @@ namespace tiki
 		GenericDataStructField& field = m_fields.add();
 		field.name			= name;
 		field.pType			= pType;
-		field.defaultValue	= GenericDataValue( pType );
 		field.mode			= mode;
 		field.isInherited	= false;
+
+		m_pDefaultObject->addField( name, pType, GenericDataValue( pType ) );
 	}
 
 	void GenericDataTypeStruct::removeField( const string& name )

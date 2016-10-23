@@ -58,6 +58,8 @@ namespace tiki
 		const GenericDataType*	getType() const;
 		GenericDataValueType	getValueType() const;
 
+		bool					isValid() const;
+
 		bool					getBoolean( bool& value ) const;
 		bool					setBoolean( bool value, const GenericDataType* pType );
 
@@ -71,9 +73,9 @@ namespace tiki
 		bool					getString( string& value ) const;
 		bool					setString( const string& value, const GenericDataType* pType );
 
-		bool					getObject( GenericDataObject*& pValue ) const;
+		bool					getObject( const GenericDataObject*& pValue ) const;
 		bool					setObject( GenericDataObject* pValue );
-		bool					getArray( GenericDataArray*& pValue ) const;
+		bool					getArray( const GenericDataArray*& pValue ) const;
 		bool					setArray( GenericDataArray* pValue );
 
 		bool					getEnum( string& enumName, sint64& enumValue ) const;
@@ -120,6 +122,8 @@ namespace tiki
 		bool					setType( const GenericDataType* pType, GenericDataTypeType expectedType );
 
 	};
+
+	static const GenericDataValue InvalidGenericDataValue;
 }
 
 #endif // TIKI_GENERICDATAVALUE_HPP_INCLUDED__
