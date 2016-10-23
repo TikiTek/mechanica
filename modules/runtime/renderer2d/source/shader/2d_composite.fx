@@ -59,8 +59,9 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
 
 	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( TIKI_TEXCOORD0 );
-
+	
 	float4 color = TIKI_TEX2D( t_color, s_samplerLinear, texCoord );
+	color.rgb = pow( color.rgb, 2.2 );
 
 	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, color );
 	TIKI_PIXEL_OUTPUT_END( PixelOutput );
