@@ -9,6 +9,7 @@
 namespace tiki
 {
 	class Camera;
+	class Physics2dCollisionObject;
 	class Physics2dWorld;
 	class Transform2dComponent;
 	struct InputEvent;
@@ -42,7 +43,10 @@ namespace tiki
 
 		Physics2dWorld*				m_pPhysicsWorld;
 
-		void						updateMovement( PlayerComponentState* pState );
+		void						updateDistance( PlayerComponentState* pState ) const;
+		void						updateMovement( PlayerComponentState* pState ) const;
+
+		static bool					distanceRayCastCallback( const Physics2dCollisionObject* pObject, const Vector2& point, void* pUserData );
 	};
 }
 
