@@ -64,6 +64,8 @@ namespace tiki
 
 		Array< float >	m_data;
 
+		bool			loadPsdFile( const char* pFilename );
+		bool			loadPngFile( const char* pFilename );
 	};
 }
 

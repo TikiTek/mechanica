@@ -1,14 +1,17 @@
-
 #include "tiki/textureexport/hdrimage.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/float32.hpp"
 #include "tiki/container/sizedarray.hpp"
 #include "tiki/graphics/color.hpp"
-
-#include "libpsd.h"
+#include "tiki/io/path.hpp"
 
 #include "base.hpp"
+
+#include <libpsd.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace tiki
 {
@@ -35,38 +38,18 @@ namespace tiki
 
 	bool HdrImage::createFromFile( const char* pFileName )
 	{
-		psd_context* pContext	= nullptr;
-		psd_status status		= psd_image_load( &pContext, (psd_char*)pFileName );
+		const string ext = path::getExtension( pFileName ).toLower();
 
-		if ( status != psd_status_done )
+		if( ext == ".psd" )
 		{
-			TIKI_TRACE_ERROR( "input file can't parse: %s\n", pFileName );
-			return false;
+			return loadPsdFile( pFileName );
+		}
+		else if( ext == ".png" )
+		{
+			return loadPngFile( pFileName );
 		}
 
-		status = psd_image_blend( pContext, 0, 0, pContext->width, pContext->height );
-
-		if ( status != psd_status_done )
-		{
-			TIKI_TRACE_ERROR( "psd blending failed\n" );
-			return false;
-		}
-
-		m_gammaType = ( pContext->color_mode == psd_color_mode_rgb ? GammaType_SRGB : GammaType_Linear );
-		m_width		= pContext->width;
-		m_height	= pContext->height;
-
-		m_data.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
-
-		const uint8* pPixelData = (const uint8*)pContext->blending_image_data;
-		for (size_t i = 0u; i < m_data.getCount(); ++i)
-		{
-			m_data[ i ] = (float)pPixelData[ i ] / 255.0f;
-		}
-
-		psd_image_free( pContext );
-
-		return true;
+		return false;
 	}
 
 	void HdrImage::dispose()
@@ -421,5 +404,77 @@ namespace tiki
 			TIKI_BREAK( "[textureconverter] Unknown PixelFormat.\n" );
 			break;
 		}
+	}
+
+	bool HdrImage::loadPsdFile( const char* pFilename )
+	{
+		psd_context* pContext = nullptr;
+		psd_status status = psd_image_load( &pContext, (psd_char*)pFilename );
+
+		if( status != psd_status_done )
+		{
+			TIKI_TRACE_ERROR( "input file can't parse: %s\n", pFilename );
+			return false;
+		}
+
+		status = psd_image_blend( pContext, 0, 0, pContext->width, pContext->height );
+		if( status != psd_status_done )
+		{
+			TIKI_TRACE_ERROR( "psd blending failed for %s\n", pFilename );
+			psd_image_free( pContext );
+			return false;
+		}
+
+		m_gammaType = (pContext->color_mode == psd_color_mode_rgb ? GammaType_SRGB : GammaType_Linear);
+		m_width = pContext->width;
+		m_height = pContext->height;
+
+		if( !m_data.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false ) )
+		{
+			TIKI_TRACE_ERROR( "out of memory. can't store '%s' in memory!\n", pFilename );
+			psd_image_free( pContext );
+			return false;
+		}
+
+		const uint8* pPixelData = (const uint8*)pContext->blending_image_data;
+		for( size_t i = 0u; i < m_data.getCount(); ++i )
+		{
+			m_data[ i ] = (float)pPixelData[ i ] / 255.0f;
+		}
+
+		psd_image_free( pContext );
+		return true;
+	}
+
+	bool HdrImage::loadPngFile( const char* pFilename )
+	{
+		int width;
+		int height;
+		int bpp;
+		uint8* pPixelData = stbi_load( pFilename, &width, &height, &bpp, STBI_rgb_alpha );
+		if( pPixelData == nullptr )
+		{
+			TIKI_TRACE_ERROR( "input file can't parse: %s\n", pFilename );
+			return false;
+		}
+
+		m_gammaType = GammaType_SRGB;
+		m_width = width;
+		m_height = height;
+
+		if( !m_data.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false ) )
+		{
+			TIKI_TRACE_ERROR( "out of memory. can't store '%s' in memory!\n", pFilename );
+			stbi_image_free( pPixelData );
+			return false;
+		}
+
+		for( size_t i = 0u; i < m_data.getCount(); ++i )
+		{
+			m_data[ i ] = (float)pPixelData[ i ] / 255.0f;
+		}
+
+		stbi_image_free( pPixelData );
+		return true;
 	}
 }
