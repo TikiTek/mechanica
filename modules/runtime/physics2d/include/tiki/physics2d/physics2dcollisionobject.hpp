@@ -17,7 +17,14 @@ namespace tiki
 						Physics2dCollisionObject()	{}
 		virtual			~Physics2dCollisionObject()	{}
 
+		uint			getMaterialId() const { return m_materialId; }
+		void			setMaterialId( uint materialId ) { m_materialId = materialId; }
+
 		virtual b2Body*	getNativeObject() const TIKI_PURE;
+
+	protected:
+
+		uint			m_materialId;
 	};
 }
 

@@ -19,9 +19,11 @@ namespace tiki
 		TIKI_ASSERT( m_pFixture == nullptr );
 	}
 
-	bool Physics2dCollider::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position )
+	bool Physics2dCollider::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, uint32 materialId /*= 0u*/ )
 	{
 		TIKI_ASSERT( m_pBody == nullptr );
+
+		m_materialId = materialId;
 
 		b2BodyDef bodyDef;
 		bodyDef.type			= b2_staticBody;

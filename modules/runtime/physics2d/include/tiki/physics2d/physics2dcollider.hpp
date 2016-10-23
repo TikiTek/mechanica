@@ -21,7 +21,7 @@ namespace tiki
 						Physics2dCollider();
 		virtual			~Physics2dCollider();
 
-		bool			create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position );
+		bool			create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, uint32 materialId = 0u );
 		void			dispose( Physics2dWorld& world );
 
 		virtual b2Body*	getNativeObject() const TIKI_OVERRIDE_FINAL;

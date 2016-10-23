@@ -94,7 +94,7 @@ namespace tiki
 			return false;
 		}
 				
-		return pState->body.create( *m_pPhysicsWorld, *pShape, vector::create( pInitData->position ), pInitData->density, pInitData->friction, pInitData->freeRotation );
+		return pState->body.create( *m_pPhysicsWorld, *pShape, vector::create( pInitData->position ), pInitData->density, pInitData->friction, pInitData->freeRotation, pInitData->materialId );
 	}
 
 	void Physics2dBodyComponent::internalDisposeState( Physics2dBodyComponentState* pState )
