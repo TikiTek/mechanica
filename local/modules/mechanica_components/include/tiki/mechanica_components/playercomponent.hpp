@@ -31,19 +31,18 @@ namespace tiki
 		
 		bool				processInputEvent( const InputEvent& inputEvent );
 
-		virtual crc32		getTypeCrc() const;
-		virtual uint32		getStateSize() const;
-		virtual const char*	getTypeName() const;
-
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, PlayerComponentState* pComponentState, const PlayerComponentInitData* pComponentInitData );
-		virtual void		internalDisposeState( PlayerComponentState* pComponentState );
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, PlayerComponentState* pComponentState, const PlayerComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void		internalDisposeState( PlayerComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		const Transform2dComponent*	m_pTransformComponent;
-		const Physics2dWorld*		m_pPhysicsWorld;
+
+		Physics2dWorld*				m_pPhysicsWorld;
+
+		void						updateMovement( PlayerComponentState* pState );
 	};
 }
 

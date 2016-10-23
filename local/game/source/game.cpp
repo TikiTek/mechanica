@@ -83,7 +83,7 @@ namespace tiki
 		GameStateDefinition gameDefinition[] =
 		{
 			{ nullptr,								0u,	0u,										"Root" },
-				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },	// F5
+				{ &m_pStates->applicationState,		0u,	ApplicationStateTransitionSteps_Count,	"ApplicationState" },
 					{ &m_pStates->introState,		1u,	IntroStateTransitionSteps_Count,		"IntroState" },			// F6
 					{ &m_pStates->menuState,		1u,	MenuStateTransitionSteps_Count,			"MenuState" },			// F7
 					{ &m_pStates->playState,		1u,	PlayStateTransitionSteps_Count,			"PlayState" },			// F8
@@ -196,17 +196,17 @@ namespace tiki
 			return true;
 		}
 
-		if ( !m_gameFlow.isInTransition() )
-		{
-			for (int i = 0; i < (int)m_gameFlow.getStateCount() - 1; ++i)
-			{
-				if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == (KeyboardKey)( KeyboardKey_F5 + i ) )
-				{
-					m_gameFlow.startTransition( i + 1 );
-					return true;
-				}
-			}
-		}
+		//if ( !m_gameFlow.isInTransition() )
+		//{
+		//	for (int i = 0; i < (int)m_gameFlow.getStateCount() - 2; ++i)
+		//	{
+		//		if ( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == (KeyboardKey)( KeyboardKey_F6 + i ) )
+		//		{
+		//			m_gameFlow.startTransition( i + 2 );
+		//			return true;
+		//		}
+		//	}
+		//}
 
 		return m_gameFlow.processInputEvent( inputEvent );
 	}

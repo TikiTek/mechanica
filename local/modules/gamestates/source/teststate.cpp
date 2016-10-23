@@ -113,8 +113,8 @@ namespace tiki
 			{
 				TIKI_VERIFY( m_gameClient.create( m_pGame->getGraphicsSystem() ) );
 
-				m_boxesEntityId		= m_gameClient.createPlayerEntity( Vector2::zero );
-				m_planeEntityId		= m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
+				m_boxesEntityId = m_gameClient.createPlayerEntity( vector::create( 0.0, -2.0f ) );
+				m_planeEntityId = m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
 
 				return TransitionState_Finish;
 			}

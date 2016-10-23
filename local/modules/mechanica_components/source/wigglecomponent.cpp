@@ -19,8 +19,10 @@ namespace tiki
 		FixedArray< Physics2dCollider, 4u >	colliders;
 		FixedArray< Physics2dJoint, 4u >	joints;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( WiggleComponentState );
 
 	WiggleComponent::WiggleComponent()
+		: Component( MechanicaComponentType_Wiggle, "WiggleComponent", sizeof( WiggleComponentState ), true )
 	{
 		m_pPhysicsBodyComponent	= nullptr;
 		m_pPhysicsWorld			= nullptr;
@@ -48,21 +50,6 @@ namespace tiki
 		m_pTransformComponent	= nullptr;
 
 		m_pPhysicsWorld			= nullptr;
-	}
-
-	crc32 WiggleComponent::getTypeCrc() const
-	{
-		return MechanicaComponentType_Wiggle;
-	}
-
-	uint32 WiggleComponent::getStateSize() const
-	{
-		return sizeof( WiggleComponentState );
-	}
-
-	const char* WiggleComponent::getTypeName() const
-	{
-		return "WiggleComponent";
 	}
 
 	bool WiggleComponent::internalInitializeState( ComponentEntityIterator& componentIterator, WiggleComponentState* pState, const WiggleComponentInitData* pInitData )

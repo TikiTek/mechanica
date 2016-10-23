@@ -114,7 +114,13 @@ namespace tiki
 		createFloat2( transformInitData.scale, 1.0f, 1.0f );
 
 		PlayerComponentInitData playerInitData;
-		playerInitData.speed = 0.1f;
+		playerInitData.mass = 20.0f;
+		playerInitData.maxSpeed = 10.0f;
+		playerInitData.runSpeed = 15.555f;
+		playerInitData.sideWalkSpeed = 4.5f;
+		playerInitData.jumpImpulse = -18.0f;
+		playerInitData.friction = 10.0f;
+		playerInitData.maxMotorTorque = 2000.0f;
 
 		EntityComponent entityComponents[] =
 		{
