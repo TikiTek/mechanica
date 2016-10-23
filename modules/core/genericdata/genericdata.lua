@@ -4,7 +4,7 @@ local module = Module:new( "genericdata" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
-module:add_files( path.join( global_configuration.root_path, "content/genericdata/types/*.*" ) );
+module:add_files( path.join( global_configuration.root_path, "content/core/genericdata/types/*.*" ) );
 module:add_files( "genericdata.lua" );
 module:add_include_dir( "include" );
 
