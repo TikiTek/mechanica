@@ -16,3 +16,6 @@
 [submodule "content"]
 	path = content
 	url = git@github.com:TikiTek/mechanica_content.git
+[submodule "library"]
+	path = library
+	url = git@github.com:TikiTek/mechanica_library.git
