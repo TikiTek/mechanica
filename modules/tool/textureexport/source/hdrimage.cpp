@@ -469,9 +469,12 @@ namespace tiki
 			return false;
 		}
 
-		for( size_t i = 0u; i < m_data.getCount(); ++i )
+		for( size_t i = 0u; i < m_data.getCount(); i += 4u )
 		{
-			m_data[ i ] = (float)pPixelData[ i ] / 255.0f;
+			m_data[ i + 0u ] = (float)pPixelData[ i + 2u ] / 255.0f;
+			m_data[ i + 1u ] = (float)pPixelData[ i + 1u ] / 255.0f;
+			m_data[ i + 2u ] = (float)pPixelData[ i + 0u ] / 255.0f;
+			m_data[ i + 3u ] = (float)pPixelData[ i + 3u ] / 255.0f;
 		}
 
 		stbi_image_free( pPixelData );

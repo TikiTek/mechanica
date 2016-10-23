@@ -19,7 +19,7 @@ namespace tiki
 
 	uint32 TextureConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 5u;
+		return 7u;
 	}
 
 	bool TextureConverter::canConvertType( crc32 typeCrc ) const
