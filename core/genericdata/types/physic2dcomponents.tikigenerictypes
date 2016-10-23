@@ -1,0 +1,63 @@
+<tikigenerictypes base="components">
+	<enum name="Physics2dComponentType">
+		<value name="Body" value="{crc Physics2dBodyComponent}" />
+		<value name="Collider" value="{crc Physics2dColliderComponent}" />
+		<value name="Joint" value="{crc Physics2dJointComponent}" />
+	</enum>
+	<enum name="Physics2dShapeType">
+		<value name="Box" />
+		<value name="Circle" />
+		<value name="Polygon" />
+	</enum>
+	<enum name="Physics2dJointType">
+		<value name="Rope" />
+		<value name="Revolute" />
+	</enum>
+	<struct name="Physics2dComponentShapeInitData">
+		<field type="Physics2dShapeType" name="type" />
+		<field type="float2" name="boxSize">
+			<filter fieldName="type" value="{enum Physics2dShapeType.Box}" />
+		</field>
+		<field type="float" name="circleRadius">
+			<filter fieldName="type" value="{enum Physics2dShapeType.Circle}" />
+		</field>
+		<field type="{array float2}" name="vertices">
+			<filter fieldName="type" value="{enum Physics2dShapeType.Polygon}" />
+		</field>
+	</struct>
+	<struct name="Physics2dBodyComponentInitData" base="ComponentInitData">
+		<field type="float2" name="position" />
+		<field type="float" name="density" />
+		<field type="float" name="friction" />
+		<field type="bool" name="freeRotation" />
+		<field type="uint32" name="materialId" />
+		<field type="Physics2dComponentShapeInitData" name="shape" />
+	</struct>
+	<struct name="Physics2dColliderComponentInitData" base="ComponentInitData">
+		<field type="float2" name="position" />
+		<field type="float" name="density" />
+		<field type="float" name="friction" />
+		<field type="uint32" name="materialId" />
+		<field type="Physics2dComponentShapeInitData" name="shape" />
+	</struct>
+	<struct name="Physics2dJointComponentInitData" base="ComponentInitData">
+		<field type="Physics2dJointType" name="type" />
+		<field type="uint32" name="object1Index">
+			<picker type="ComponentIndexPicker" />
+		</field>
+		<field type="uint32" name="object2Index">
+			<picker type="ComponentIndexPicker" />
+		</field>
+		<field type="float2" name="localAnchor1" />
+		<field type="float2" name="localAnchor2" />
+		<field type="float" name="maxLength">
+			<filter fieldName="type" value="{enum Physics2dJointType.Rope}" />
+		</field>
+		<field type="float" name="enableMotor">
+			<filter fieldName="type" value="{enum Physics2dJointType.Revolute}" />
+		</field>
+		<field type="float" name="maxMotorTorque">
+			<filter fieldName="type" value="{enum Physics2dJointType.Revolute}" />
+		</field>
+	</struct>
+</tikigenerictypes> 

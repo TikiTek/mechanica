@@ -1,0 +1,107 @@
+<tikigenericobjects>
+  <resource type="EntityTemplate">
+    <object type="EntityTemplateData">
+      <field type="{array EntityComponent}" name="components">
+        <array type="EntityComponent">
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Components2dType.Transform}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="Transform2dComponentInitData" />
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Components2dType.Texture}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="TextureComponentInitData">
+                  <field type="{reference Texture}" name="texture" value="TEXR:metal_platform.texture" />
+                  <field type="float2" name="offset">
+                    <object type="float2">
+                      <field type="float" name="x" value="-0.4592731" />
+                      <field type="float" name="y" value="0.04375183" />
+                    </object>
+                  </field>
+                  <field type="uint32" name="layerId" value="5" />
+                </object>
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Physics2dComponentType.Body}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="Physics2dBodyComponentInitData">
+                  <field type="float" name="density" value="10.0" />
+                  <field type="float" name="friction" value="1.0" />
+                  <field type="bool" name="freeRotation" value="true" />
+                  <field type="uint32" name="materialId" value="{enum MechanicaMaterialId.Island}" />
+                  <field type="Physics2dComponentShapeInitData" name="shape">
+                    <object type="Physics2dComponentShapeInitData">
+                      <field type="Physics2dShapeType" name="type" value="{enum Physics2dShapeType.Polygon}" />
+                      <field type="{array float2}" name="vertices">
+                        <array type="float2">
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-8.675727" />
+                              <field type="float" name="y" value="-1.693752" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="8.674273" />
+                              <field type="float" name="y" value="-1.693752" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="8.684273" />
+                              <field type="float" name="y" value="0.006248169" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="8.684273" />
+                              <field type="float" name="y" value="1.686248" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="0.004273071" />
+                              <field type="float" name="y" value="1.696248" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-8.665727" />
+                              <field type="float" name="y" value="1.696248" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-8.675727" />
+                              <field type="float" name="y" value="-0.003751831" />
+                            </object>
+                          </element>
+                        </array>
+                      </field>
+                    </object>
+                  </field>
+                </object>
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum MechanicaComponentType.Wiggle}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="WiggleComponentInitData" />
+              </field>
+            </object>
+          </element>
+        </array>
+      </field>
+    </object>
+  </resource>
+</tikigenericobjects>

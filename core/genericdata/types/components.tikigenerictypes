@@ -1,0 +1,10 @@
+<tikigenerictypes base="base">
+	<struct name="ComponentInitData">
+	</struct>
+	<enum name="ComponentsType">
+		<value name="LifeTime" value="{crc LifeTimeComponent}" />
+	</enum>
+	<struct name="LifeTimeComponentInitData" base="ComponentInitData">
+		<field type="timems" name="lifeTimeInMs" />
+	</struct>
+</tikigenerictypes> 

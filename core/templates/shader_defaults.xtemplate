@@ -1,0 +1,3 @@
+<xtemplate name="shader_defaults">
+	<param key="compile_debug" value="true" />  
+</xtemplate>

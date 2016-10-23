@@ -1,0 +1,5 @@
+<xtemplate name="texture_normal">
+	<param key="width" value="/1" />
+	<param key="height" value="/1" />
+	<param key="gamma_mode" value="linear" />
+</xtemplate>
