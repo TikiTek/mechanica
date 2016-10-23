@@ -307,7 +307,7 @@ namespace tiki
 		{
 			if( SUCCEEDED( platformData.pKeyboard->SetDataFormat( &c_dfDIKeyboard ) ) )
 			{
-				result = platformData.pKeyboard->SetCooperativeLevel( (HWND)parameters.windowHandle, DISCL_FOREGROUND | DISCL_EXCLUSIVE );
+				result = platformData.pKeyboard->SetCooperativeLevel( (HWND)parameters.windowHandle, DISCL_FOREGROUND /*| DISCL_EXCLUSIVE*/ );
 				if( SUCCEEDED( result ) )
 				{
 					return true;
