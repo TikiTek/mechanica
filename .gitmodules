@@ -4,21 +4,12 @@
 [submodule "blobs/freetype"]
 	path = blobs/freetype
 	url = git://git.sv.nongnu.org/freetype/freetype2.git
-[submodule "blobs/bullet"]
-	path = blobs/bullet
-	url = git@github.com:bulletphysics/bullet3.git
 [submodule "blobs/trex"]
 	path = blobs/trex
 	url = git@github.com:kimperator/T-Rex.git
-[submodule "blobs/mongoose"]
-	path = blobs/mongoose
-	url = git@github.com:cesanta/mongoose.git
 [submodule "blobs/sdl"]
 	path = blobs/sdl
 	url = git@github.com:zielmicha/SDL2.git
-[submodule "blobs/curl"]
-	path = blobs/curl
-	url = https://github.com/curl/curl.git
 [submodule "blobs/box2d"]
 	path = blobs/box2d
 	url = https://github.com/erincatto/Box2D.git
