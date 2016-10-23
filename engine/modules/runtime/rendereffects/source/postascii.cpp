@@ -40,7 +40,7 @@ namespace tiki
 		description.height	= uint16( parameters.resultDataHeight );
 		description.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
 		description.type	= TextureType_2d;
-		description.format	= PixelFormat_Color;
+		description.format	= PixelFormat_R8G8B8A8;
 		success &= m_finalResultData.create( graphicsSystem, description );
 
 		description.width	= uint16( parameters.maxCharsWidth );
