@@ -28,10 +28,20 @@ namespace tiki
 		bool					create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation = false );
 		void					dispose( Physics2dWorld& world );
 
-		void					applyForce( const Vector2& force, const Vector2& point = Vector2::zero );
+		void					applyForce( const Vector2& force, const Vector2& worldPoint );
+		void					applyLocalForce( const Vector2& force, const Vector2& localPoint = Vector2::zero );
+
+		void					applyLinearImpluse( const Vector2& impulse, const Vector2& worldPoint );
+		void					applyLocalLinearImpluse( const Vector2& impulse, const Vector2& localPoint = Vector2::zero );
 
 		Vector2					getPosition() const;
 		float					getRotation() const;
+
+		Vector2					getLinearVelocity() const;
+		void					setLinearVelocity( const Vector2& value ) const;
+
+		float					getAngularVelocity() const;
+		void					setAngularVelocity( float value ) const;
 
 		AxisAlignedRectangle	getShapeBounds() const;
 		AxisAlignedRectangle	getBodyBounds() const;

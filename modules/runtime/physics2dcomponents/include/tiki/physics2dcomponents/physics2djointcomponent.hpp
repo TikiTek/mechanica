@@ -22,14 +22,10 @@ namespace tiki
 		bool							create( Physics2dWorld& physicsWorld );
 		void							dispose();
 
-		virtual crc32					getTypeCrc() const;
-		virtual uint32					getStateSize() const;
-		virtual const char*				getTypeName() const;
-
 	protected:
 
-		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dJointComponentState* pComponentState, const Physics2dJointComponentInitData* pComponentInitData );
-		virtual void					internalDisposeState( Physics2dJointComponentState* pComponentState );
+		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dJointComponentState* pComponentState, const Physics2dJointComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void					internalDisposeState( Physics2dJointComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

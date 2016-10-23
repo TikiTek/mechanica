@@ -74,7 +74,6 @@ namespace tiki
 		{
 			TIKI_DELETE( static_cast< T* >( pResource ) );
 		}
-
 	};
 }
 

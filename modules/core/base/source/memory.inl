@@ -5,58 +5,6 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE void memory::set8( void* pTargetData, uint count, uint8 value )
-	{
-		register uint remainingCount = count;
-		register uint8* pData = static_cast< uint8* >( pTargetData );
-		while ( remainingCount-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	TIKI_FORCE_INLINE void memory::set16( void* pTargetData, uint count, uint16 value )
-	{
-		register uint remainingCount = count;
-		register uint16* pData = static_cast< uint16* >( pTargetData );
-		while ( remainingCount-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	TIKI_FORCE_INLINE void memory::set32( void* pTargetData, uint count, uint32 value )
-	{
-		register uint remainingCount = count;
-		register uint32* pData = static_cast< uint32* >( pTargetData );
-		while ( remainingCount-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	TIKI_FORCE_INLINE void memory::set64( void* pTargetData, uint count, uint64 value )
-	{
-		register uint remainingCount = count;
-		register uint64* pData = static_cast< uint64* >( pTargetData );
-		while ( remainingCount-- > 0u )
-		{
-			*pData++ = value;
-		}
-	}
-
-	TIKI_FORCE_INLINE void memory::zero( void* pTargetData, uint sizeInBytes )
-	{
-		uint8* pData = static_cast< uint8* >( pTargetData );
-
-		const uint uint64Count	= sizeInBytes / 8u;
-		const uint uint8Count	= sizeInBytes % 8u;
-		const uint offset		= uint64Count * 8u;
-
-		set64( pData, uint64Count, 0ull );
-		set8( pData + offset, uint8Count, 0u );
-	}
-
 	template<typename T>
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 	TIKI_FORCE_INLINE T* memory::allocateAlignedObject( const char* pFileName, int lineNumber, uint alignment, bool zeroMemory )
@@ -101,8 +49,7 @@ namespace tiki
 		{
 			for( uint i = 0u; i < count; ++i )
 			{
-				T* pItem = new(&pArray[ i ]) T;
-				TIKI_ASSERT( pItem == &pArray[ i ] );
+				callDefaultConstructor( pArray + i );
 			}
 		}
 
@@ -110,25 +57,95 @@ namespace tiki
 	}
 
 	template<typename T>
-	void memory::deleteObjectAligned( T* pPtr )
+	TIKI_FORCE_INLINE void memory::deleteObjectAligned( T* pPtr )
 	{
-		TIKI_ASSERT( pPtr != nullptr );
-
-		pPtr->~T();
+		callDestructor( pPtr );
 		memory::freeAligned( pPtr );
 	}
 
 	template<typename T>
-	void memory::deleteArrayAligned( T* pArray, uint count )
+	TIKI_FORCE_INLINE void memory::deleteArrayAligned( T* pArray, uint count )
 	{
 		TIKI_ASSERT( pArray != nullptr );
 
 		for (uint i = 0u; i < count; ++i)
 		{
-			pArray[ i ].~T();
+			callDestructor( pArray + i );
 		}
 
 		memory::freeAligned( pArray );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void memory::callDefaultConstructor( T* pObject )
+	{
+		TIKI_ASSERT( pObject != nullptr );
+
+#if TIKI_ENABLED( TIKI_USE_ASSERT )
+		T* pNewObject = new(pObject) T;
+		TIKI_ASSERT( pNewObject == pObject );
+#else
+		new(pObject) T;
+#endif
+	}
+
+	template<typename T>
+	void memory::callDestructor( T* pObject )
+	{
+		TIKI_ASSERT( pObject != nullptr );
+		pObject->~T();
+	}
+
+	TIKI_FORCE_INLINE void memory::set8( void* pTargetData, uint count, uint8 value )
+	{
+		register uint remainingCount = count;
+		register uint8* pData = static_cast<uint8*>(pTargetData);
+		while (remainingCount-- > 0u)
+		{
+			*pData++ = value;
+		}
+	}
+
+	TIKI_FORCE_INLINE void memory::set16( void* pTargetData, uint count, uint16 value )
+	{
+		register uint remainingCount = count;
+		register uint16* pData = static_cast<uint16*>(pTargetData);
+		while (remainingCount-- > 0u)
+		{
+			*pData++ = value;
+		}
+	}
+
+	TIKI_FORCE_INLINE void memory::set32( void* pTargetData, uint count, uint32 value )
+	{
+		register uint remainingCount = count;
+		register uint32* pData = static_cast<uint32*>(pTargetData);
+		while (remainingCount-- > 0u)
+		{
+			*pData++ = value;
+		}
+	}
+
+	TIKI_FORCE_INLINE void memory::set64( void* pTargetData, uint count, uint64 value )
+	{
+		register uint remainingCount = count;
+		register uint64* pData = static_cast<uint64*>(pTargetData);
+		while (remainingCount-- > 0u)
+		{
+			*pData++ = value;
+		}
+	}
+
+	TIKI_FORCE_INLINE void memory::zero( void* pTargetData, uint sizeInBytes )
+	{
+		uint8* pData = static_cast<uint8*>(pTargetData);
+
+		const uint uint64Count = sizeInBytes / 8u;
+		const uint uint8Count = sizeInBytes % 8u;
+		const uint offset = uint64Count * 8u;
+
+		set64( pData, uint64Count, 0ull );
+		set8( pData + offset, uint8Count, 0u );
 	}
 
 	template<typename T>

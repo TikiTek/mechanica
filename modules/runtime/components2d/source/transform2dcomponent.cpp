@@ -19,6 +19,7 @@ namespace tiki
 		bool		needUpdate;
 		Matrix32	worldTransform;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( Transform2dComponentState );
 
 	static void checkAndUpdateWorldTransform( Transform2dComponentState* pState )
 	{
@@ -34,6 +35,7 @@ namespace tiki
 	}
 
 	Transform2dComponent::Transform2dComponent()
+		: Component( Components2dType_Transform, "Transform2dComponent", sizeof( Transform2dComponentState ), false )
 	{
 	}
 
@@ -91,21 +93,6 @@ namespace tiki
 		TIKI_ASSERT( pState != nullptr );
 		pState->rotation	= rotation;
 		pState->needUpdate	= true;
-	}
-
-	crc32 Transform2dComponent::getTypeCrc() const
-	{
-		return Components2dType_Transform;
-	}
-
-	uint32 Transform2dComponent::getStateSize() const
-	{
-		return sizeof( Transform2dComponentState );
-	}
-
-	const char* Transform2dComponent::getTypeName() const
-	{
-		return "Transform2dComponent";
 	}
 
 	bool Transform2dComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Transform2dComponentState* pState, const Transform2dComponentInitData* pInitData )

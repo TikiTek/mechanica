@@ -32,14 +32,10 @@ namespace tiki
 
 		const Physics2dBody&			getPhysicsObject( const Physics2dBodyComponentState* pState ) const;
 
-		virtual crc32					getTypeCrc() const;
-		virtual uint32					getStateSize() const;
-		virtual const char*				getTypeName() const;
-
 	protected:
 
-		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pComponentState, const Physics2dBodyComponentInitData* pComponentInitData );
-		virtual void					internalDisposeState( Physics2dBodyComponentState* pComponentState );
+		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pComponentState, const Physics2dBodyComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void					internalDisposeState( Physics2dBodyComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

@@ -16,8 +16,10 @@ namespace tiki
 	{
 		Physics2dJoint	joint;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( Physics2dJointComponentState );
 
 	Physics2dJointComponent::Physics2dJointComponent()
+		: Component( Physics2dComponentType_Joint, "Physics2dJointComponent", sizeof( Physics2dJointComponentState ), true )
 	{
 		m_pPhysicsWorld				= nullptr;
 	}
@@ -39,26 +41,9 @@ namespace tiki
 		m_pPhysicsWorld = nullptr;
 	}
 
-	crc32 Physics2dJointComponent::getTypeCrc() const
-	{
-		return Physics2dComponentType_Joint;
-	}
-
-	uint32 Physics2dJointComponent::getStateSize() const
-	{
-		return sizeof( Physics2dJointComponentState );
-	}
-
-	const char* Physics2dJointComponent::getTypeName() const
-	{
-		return "Physics2dJointComponent";
-	}
-
 	bool Physics2dJointComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dJointComponentState* pState, const Physics2dJointComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
-
-		pState = new( pState ) Physics2dJointComponentState;
 
 		TIKI_NOT_IMPLEMENTED;
 
@@ -70,7 +55,5 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
 		TIKI_NOT_IMPLEMENTED;
-
-		pState->~Physics2dJointComponentState();
 	}
 }

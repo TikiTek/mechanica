@@ -25,14 +25,10 @@ namespace tiki
 
 		const Physics2dCollisionObject&	getPhysicsObject( const Physics2dColliderComponentState* pState ) const;
 
-		virtual crc32					getTypeCrc() const;
-		virtual uint32					getStateSize() const;
-		virtual const char*				getTypeName() const;
-
 	protected:
 
-		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pComponentState, const Physics2dColliderComponentInitData* pComponentInitData );
-		virtual void					internalDisposeState( Physics2dColliderComponentState* pComponentState );
+		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pComponentState, const Physics2dColliderComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void					internalDisposeState( Physics2dColliderComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

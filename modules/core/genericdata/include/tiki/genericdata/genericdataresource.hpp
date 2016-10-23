@@ -32,7 +32,6 @@ namespace tiki
 		virtual			~GenericDataResource();
 
 		const TData*	m_pData;
-
 	};
 }
 

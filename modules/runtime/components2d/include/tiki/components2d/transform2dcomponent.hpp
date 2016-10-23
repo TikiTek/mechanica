@@ -32,14 +32,10 @@ namespace tiki
 		void				setPosition( Transform2dComponentState* pState, const Vector2& position ) const;
 		void				setRotation( Transform2dComponentState* pState, float rotation ) const;
 
-		virtual crc32		getTypeCrc() const;
-		virtual uint32		getStateSize() const;
-		virtual const char*	getTypeName() const;
-
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, Transform2dComponentState* pComponentState, const Transform2dComponentInitData* pComponentInitData );
-		virtual void		internalDisposeState( Transform2dComponentState* pComponentState );
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, Transform2dComponentState* pComponentState, const Transform2dComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void		internalDisposeState( Transform2dComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	};
 }

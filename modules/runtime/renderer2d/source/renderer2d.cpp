@@ -175,7 +175,7 @@ namespace tiki
 		command.pTexture = &texture;
 
 		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
-			worldTransform.pos,
+			Vector2::zero,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
 
@@ -187,6 +187,33 @@ namespace tiki
 			RenderVertex& vertex = command.vertices[ i ];
 
 			matrix::transform( rectangleVertices[ i ], worldTransform );
+			vector::toFloat( vertex.position, rectangleVertices[ i ] );
+			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+		}
+	}
+
+	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId )
+	{
+		RenderLayer& layer = m_layers[ layerId ];
+
+		RenderCommand& command = allocateCommand( layer );
+		command.pTexture = &texture;
+
+		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+			Vector2::zero,
+			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
+		);
+
+		Vector2 rectangleVertices[ RectanglePoint_Count ];
+		destinationRectangle.getVertices( rectangleVertices );
+
+		for (uint i = 0u; i < command.vertices.getCount(); ++i)
+		{
+			RenderVertex& vertex = command.vertices[ i ];
+
+			vector::sub( rectangleVertices[ i ], originOffset );
+			matrix::transform( rectangleVertices[ i ], worldTransform );
+
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
 		}
