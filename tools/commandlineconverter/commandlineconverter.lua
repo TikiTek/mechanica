@@ -7,7 +7,7 @@ module:add_files( "commandlineconverter.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "toollibraries" );
-module:add_dependency( "renderershader" );
+module:add_dependency( "renderer2dshader" );
 
 module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
 

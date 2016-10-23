@@ -18,6 +18,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( pComponentState != nullptr );
 
+		if( pComponentInitData == nullptr )
+		{
+			return false;
+		}
+
 		TState* pTypedComponentState = (TState*)pComponentState;
 		if( m_constuctState )
 		{
