@@ -3,6 +3,7 @@
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/game/game.hpp"
+#include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
@@ -87,9 +88,6 @@ namespace tiki
 				{
 					TIKI_ASSERT( isInital );
 
-					//m_renderer.unregisterRenderEffect( m_sceneRenderEffect, resourceRequestPool );
-					//m_renderer.unregisterRenderEffect( m_fallbackRenderEffect, resourceRequestPool );
-
 					m_renderer.dispose( resourceRequestPool );
 				}
 
@@ -110,6 +108,7 @@ namespace tiki
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
 		Renderer2dRenderParameters parameters;
+		parameters.backgroundColor = TIKI_COLOR_XKCD_BLUEBERRY;
 		
 		m_renderer.render( graphicsContext, parameters );
 	}

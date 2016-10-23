@@ -113,7 +113,7 @@ namespace tiki
 		//	break;
 		//}
 
-		return TransitionState_Error;
+		return TransitionState_Finish;
 	}
 
 	void PlayState::update()

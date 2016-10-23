@@ -15,8 +15,10 @@ namespace tiki
 
 		Physics2dCollider		collider;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( Physics2dColliderComponentState );
 
 	Physics2dColliderComponent::Physics2dColliderComponent()
+		: Component( Physics2dComponentType_Collider, "Physics2dColliderComponent", sizeof( Physics2dColliderComponentState ), true )
 	{
 		m_pPhysicsWorld = nullptr;
 	}
@@ -45,26 +47,9 @@ namespace tiki
 		return pState->collider;
 	}
 
-	crc32 Physics2dColliderComponent::getTypeCrc() const
-	{
-		return Physics2dComponentType_Collider;
-	}
-
-	uint32 Physics2dColliderComponent::getStateSize() const
-	{
-		return sizeof( Physics2dColliderComponentState );
-	}
-
-	const char* Physics2dColliderComponent::getTypeName() const
-	{
-		return "Physics2dColliderComponent";
-	}
-
 	bool Physics2dColliderComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pState, const Physics2dColliderComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
-
-		pState = new( pState ) Physics2dColliderComponentState;
 
 		Physics2dShape* pShape = createPhysics2dComponentShape( pState->shape, pInitData->shape );
 		if ( pShape == nullptr )
@@ -82,7 +67,5 @@ namespace tiki
 		pState->collider.dispose( *m_pPhysicsWorld );
 
 		disposePhysics2dComponentShape( pState->shape );
-
-		pState->~Physics2dColliderComponentState();
 	}
 }

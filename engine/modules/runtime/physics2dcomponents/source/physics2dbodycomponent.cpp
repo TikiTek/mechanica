@@ -22,8 +22,10 @@ namespace tiki
 
 		Physics2dBody				body;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( Physics2dBodyComponentState );
 
 	Physics2dBodyComponent::Physics2dBodyComponent()
+		: Component( Physics2dComponentType_Body, "Physics2dBodyComponent", sizeof( Physics2dBodyComponentState ), true )
 	{
 		m_pPhysicsWorld			= nullptr;
 
@@ -76,26 +78,9 @@ namespace tiki
 		return pState->body;
 	}
 
-	crc32 Physics2dBodyComponent::getTypeCrc() const
-	{
-		return Physics2dComponentType_Body;
-	}
-
-	uint32 Physics2dBodyComponent::getStateSize() const
-	{
-		return sizeof( Physics2dBodyComponentState );
-	}
-
-	const char* Physics2dBodyComponent::getTypeName() const
-	{
-		return "Physics2dBodyComponent";
-	}
-
 	bool Physics2dBodyComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pState, const Physics2dBodyComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
-
-		pState = new( pState ) Physics2dBodyComponentState;
 
 		pState->pTransform = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTranformComponent->getTypeId() );
 		if ( pState->pTransform == nullptr )
@@ -121,7 +106,5 @@ namespace tiki
 		pState->body.dispose( *m_pPhysicsWorld );
 
 		disposePhysics2dComponentShape( pState->shape );
-
-		pState->~Physics2dBodyComponentState();
 	}
 }

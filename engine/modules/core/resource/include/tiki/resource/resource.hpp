@@ -16,7 +16,7 @@
 	static const fourcc s_resourceType = cc;											\
 	friend class ResourceLoader;														\
 	friend struct FactoryContextGenericBase< class_name >;								\
-	friend void memory::deleteObjectAligned< class_name >( class_name * ptr )
+	friend void memory::callDestructor< class_name >( class_name* pObject )
 
 namespace tiki
 {

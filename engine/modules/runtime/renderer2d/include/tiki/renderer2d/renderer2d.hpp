@@ -70,6 +70,7 @@ namespace tiki
 		bool				resize( uint16 width, uint16 height );
 
 		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId );
+		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId );
 		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId );
 		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId );
 		void				queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId );

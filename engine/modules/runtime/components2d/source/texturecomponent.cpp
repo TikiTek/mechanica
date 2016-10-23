@@ -18,8 +18,10 @@ namespace tiki
 		Vector2								offset;
 		uint32								layerId;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( TextureComponentState );
 
 	TextureComponent::TextureComponent()
+		: Component( Components2dType_Texture, "TextureComponent", sizeof( TextureComponentState ), false )
 	{
 		m_pTransformComponent = nullptr;
 	}
@@ -48,26 +50,9 @@ namespace tiki
 		const State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
-			Matrix32 worldTransform = m_pTransformComponent->getWorldTransform( pState->pTransform );
-			vector::add( worldTransform.pos, pState->offset );
-			
-			renderer.queueSprite( pState->pTexture->getTextureData(), worldTransform, pState->layerId );
+			const Matrix32& worldTransform = m_pTransformComponent->getWorldTransform( pState->pTransform );		
+			renderer.queueSprite( pState->pTexture->getTextureData(), worldTransform, pState->offset, pState->layerId );
 		}
-	}
-
-	crc32 TextureComponent::getTypeCrc() const
-	{
-		return Components2dType_Texture;
-	}
-
-	uint32 TextureComponent::getStateSize() const
-	{
-		return sizeof( TextureComponentState );
-	}
-
-	const char* TextureComponent::getTypeName() const
-	{
-		return "TextureComponent";
 	}
 
 	bool TextureComponent::internalInitializeState( ComponentEntityIterator& componentIterator, TextureComponentState* pState, const TextureComponentInitData* pInitData )

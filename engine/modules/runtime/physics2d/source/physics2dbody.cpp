@@ -71,9 +71,30 @@ namespace tiki
 		}
 	}
 
-	void Physics2dBody::applyForce( const Vector2& force, const Vector2& point /* = Vector2::zero */ )
+	void Physics2dBody::applyForce( const Vector2& force, const Vector2& worldPoint )
 	{
-		m_pBody->ApplyForce( toPhysicsVector( force ), toPhysicsVector( point ), true );
+		m_pBody->ApplyForce( toPhysicsVector( force ), toPhysicsVector( worldPoint ), true );
+	}
+
+	void Physics2dBody::applyLocalForce( const Vector2& force, const Vector2& localPoint /*= Vector2::zero */ )
+	{
+		Vector2 worldPoint;
+		vector::add( worldPoint, getPosition(), localPoint );
+
+		applyForce( force, worldPoint );
+	}
+
+	void Physics2dBody::applyLinearImpluse( const Vector2& impulse, const Vector2& worldPoint )
+	{
+		m_pBody->ApplyLinearImpulse( toPhysicsVector( impulse ), toPhysicsVector( worldPoint ), true );
+	}
+
+	void Physics2dBody::applyLocalLinearImpluse( const Vector2& impulse, const Vector2& localPoint /*= Vector2::zero */ )
+	{
+		Vector2 worldPoint;
+		vector::add( worldPoint, getPosition(), localPoint );
+
+		applyLinearImpluse( impulse, worldPoint );
 	}
 
 	Vector2 Physics2dBody::getPosition() const
@@ -84,6 +105,26 @@ namespace tiki
 	float Physics2dBody::getRotation() const
 	{
 		return m_pBody->GetAngle();
+	}
+
+	Vector2 Physics2dBody::getLinearVelocity() const
+	{
+		return toEngineVector( m_pBody->GetLinearVelocity() );
+	}
+
+	void Physics2dBody::setLinearVelocity( const Vector2& value ) const
+	{
+		m_pBody->SetLinearVelocity( toPhysicsVector( value ) );
+	}
+
+	float Physics2dBody::getAngularVelocity() const
+	{
+		return m_pBody->GetAngularVelocity();
+	}
+
+	void Physics2dBody::setAngularVelocity( float value ) const
+	{
+		m_pBody->SetAngularVelocity( value );
 	}
 
 	AxisAlignedRectangle Physics2dBody::getShapeBounds() const

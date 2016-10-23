@@ -24,15 +24,10 @@ namespace tiki
 
 		void				update( EntitySystem& entitySystem, timems timeMs );
 
-		virtual crc32		getTypeCrc() const;
-		virtual uint32		getStateSize() const;
-		virtual const char*	getTypeName() const;
-
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pComponentState, const LifeTimeComponentInitData* pComponentInitData );
-		virtual void		internalDisposeState( LifeTimeComponentState* pComponentState );
-
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pComponentState, const LifeTimeComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void		internalDisposeState( LifeTimeComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 	};
 }
 

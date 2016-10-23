@@ -26,14 +26,10 @@ namespace tiki
 
 		void				render( Renderer2d& renderer ) const;
 
-		virtual crc32		getTypeCrc() const TIKI_OVERRIDE_FINAL;
-		virtual uint32		getStateSize() const TIKI_OVERRIDE_FINAL;
-		virtual const char*	getTypeName() const TIKI_OVERRIDE_FINAL;
-
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, TextureComponentState* pComponentState, const TextureComponentInitData* pComponentInitData ) TIKI_OVERRIDE;
-		virtual void		internalDisposeState( TextureComponentState* pComponentState ) TIKI_OVERRIDE;
+		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, TextureComponentState* pComponentState, const TextureComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void		internalDisposeState( TextureComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
 

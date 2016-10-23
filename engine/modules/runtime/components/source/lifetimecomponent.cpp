@@ -13,8 +13,10 @@ namespace tiki
 	{
 		timems	timeToLifeInMs;
 	};
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( LifeTimeComponentState );
 
 	LifeTimeComponent::LifeTimeComponent()
+		: Component( ComponentsType_LifeTime, "LifeTimeComponent", sizeof( LifeTimeComponentState ), false )
 	{
 	}
 
@@ -45,21 +47,6 @@ namespace tiki
 				entitySystem.disposeEntity( pState->entityId );
 			}
 		}
-	}
-
-	crc32 LifeTimeComponent::getTypeCrc() const
-	{
-		return crcString( "LifeTimeComponent" );
-	}
-
-	uint32 LifeTimeComponent::getStateSize() const
-	{
-		return sizeof( LifeTimeComponentState );
-	}
-
-	const char* LifeTimeComponent::getTypeName() const
-	{
-		return "LifeTimeComponent";
 	}
 
 	bool LifeTimeComponent::internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pState, const LifeTimeComponentInitData* pInitData )

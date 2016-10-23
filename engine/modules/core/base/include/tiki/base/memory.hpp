@@ -78,12 +78,18 @@ namespace tiki
 		void					freeAligned( void* pPtr );
 
 		template<typename T>
-		void					deleteObjectAligned( T* pPtr );
+		TIKI_FORCE_INLINE void	deleteObjectAligned( T* pPtr );
 
 		template<typename T>
-		void					deleteArrayAligned( T* pArray, uint count );
+		TIKI_FORCE_INLINE void	deleteArrayAligned( T* pArray, uint count );
 
-		int						compare ( const void* pData1, const void* pData2, uint sizeInBytes );
+		template<typename T>
+		TIKI_FORCE_INLINE void	callDefaultConstructor( T* pObject );
+
+		template<typename T>
+		void					callDestructor( T* pObject );
+
+		int						compare( const void* pData1, const void* pData2, uint sizeInBytes );
 		void					copy( void* pTargetData, const void* pSourceData, uint sizeInBytes );
 		
 		TIKI_FORCE_INLINE void	set8( void* pTargetData, uint count, uint8 value );
