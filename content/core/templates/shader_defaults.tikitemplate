@@ -1,0 +1,3 @@
+<tikitemplate name="shader_defaults" base="shader">
+	<param key="compile_debug" value="true" />  
+</tikitemplate>

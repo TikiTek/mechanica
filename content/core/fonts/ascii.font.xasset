@@ -1,6 +1,0 @@
-<tikiasset>
-  <input file="debug.ttf" type="font" />
-  <param key="font_size" value="12" />
-  <param key="3d_mode">true</param>
-  <param key="chars"><![CDATA[#@$%&|!;:'`. ]]></param>
-</tikiasset>
