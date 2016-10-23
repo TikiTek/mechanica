@@ -19,3 +19,6 @@
 [submodule "library"]
 	path = library
 	url = git@github.com:TikiTek/mechanica_library.git
+[submodule "blobs/stb"]
+	path = blobs/stb
+	url = https://github.com/nothings/stb.git
