@@ -29,7 +29,7 @@ namespace tiki
 		m_pType		= pResourceType;
 		m_pObject	= TIKI_NEW( GenericDataObject )( m_collection );
 		
-		return m_pObject->create( pObjectType );
+		return m_pObject->create( pObjectType, nullptr );
 	}
 
 	void GenericDataDocument::dispose()

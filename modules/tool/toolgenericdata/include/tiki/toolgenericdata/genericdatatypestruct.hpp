@@ -13,7 +13,6 @@ namespace tiki
 	{
 		string					name;
 		const GenericDataType*	pType;
-		GenericDataValue		defaultValue;
 		GenericDataTypeMode		mode;
 		bool					isInherited;
 	};
@@ -44,9 +43,13 @@ namespace tiki
 		const List< GenericDataStructField >&	getFields() const;
 		const GenericDataType*					getFieldTypeByName( const string& name ) const;
 
+		const GenericDataObject*				getDefaultObject() const { return m_pDefaultObject; }
+
 	private:
 
 		const GenericDataTypeStruct*			m_pBaseType;
+
+		GenericDataObject*						m_pDefaultObject;
 
 		uint									m_alignment;
 		uint									m_size;

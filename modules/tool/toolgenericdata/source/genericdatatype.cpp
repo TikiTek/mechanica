@@ -39,7 +39,7 @@ namespace tiki
 		return m_mode;
 	}
 
-		bool GenericDataType::loadValueFromXml( GenericDataValue& outValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const
+	bool GenericDataType::loadValueFromXml( GenericDataValue& outValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const
 	{
 		const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pElement );
 		if ( pValueAtt != nullptr )
@@ -90,7 +90,7 @@ namespace tiki
 
 				const GenericDataTypeStruct* pTypedChildType = (const GenericDataTypeStruct*)pChildType;
 				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( m_collection );
-				if ( !pObject->create( pTypedChildType ) )
+				if ( !pObject->create( pTypedChildType, nullptr ) )
 				{
 					TIKI_DELETE( pObject );
 					return false;

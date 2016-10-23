@@ -28,7 +28,7 @@ namespace tiki
 	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint64	== (int)GenericDataTypeValueTypeType_FloatingPoint64 );
 
 	TIKI_COMPILETIME_ASSERT( GenericDataValueType_String				== (int)GenericDataTypeValueTypeType_String );
-		
+
 	GenericDataValue::GenericDataValue()
 	{
 		m_pType		= nullptr;
@@ -51,7 +51,7 @@ namespace tiki
 
 	void GenericDataValue::dispose()
 	{
-		if ( m_valueType == GenericDataValueType_Object && m_value.pObject != nullptr)
+		if ( (m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer) && m_value.pObject != nullptr)
 		{
 			m_value.pObject->dispose();
 			TIKI_DELETE( m_value.pObject );
@@ -63,6 +63,10 @@ namespace tiki
 			TIKI_DELETE( m_value.pArray );
 			m_value.pArray = nullptr;
 		}
+
+		m_pType		= nullptr;
+		m_valueType = GenericDataValueType_Invalid;
+		m_text		= nullptr;
 	}
 
 	const GenericDataType* GenericDataValue::getType() const
@@ -73,6 +77,11 @@ namespace tiki
 	GenericDataValueType GenericDataValue::getValueType() const
 	{
 		return m_valueType;
+	}
+
+	bool GenericDataValue::isValid() const
+	{
+		return m_valueType != GenericDataValueType_Invalid;
 	}
 
 	bool GenericDataValue::getBoolean( bool& value ) const
@@ -304,7 +313,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getObject( GenericDataObject*& pValue ) const
+	bool GenericDataValue::getObject( const GenericDataObject*& pValue ) const
 	{
 		if ( m_valueType == GenericDataValueType_Object )
 		{
@@ -327,7 +336,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getArray( GenericDataArray*& pValue ) const
+	bool GenericDataValue::getArray( const GenericDataArray*& pValue ) const
 	{
 		if ( m_valueType == GenericDataValueType_Array )
 		{
@@ -430,7 +439,7 @@ namespace tiki
 
 	bool GenericDataValue::setValue( const GenericDataValue& value )
 	{
-		if( !m_pType->isTypeCompatible( value.getType() ) )
+		if( m_valueType != GenericDataValueType_Invalid && !m_pType->isTypeCompatible( value.getType() ) )
 		{
 			const char* pCurrentType = (m_pType != nullptr ? m_pType->getName().cStr() : "null");
 			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
@@ -438,8 +447,11 @@ namespace tiki
 			return false;
 		}
 
-		m_value = value.m_value;
-		m_text = value.m_text;
+		TIKI_ASSERT( m_pType == nullptr || m_pType == value.getType() );
+		m_pType		= value.m_pType;
+		m_valueType	= value.m_valueType;
+		m_value		= value.m_value;
+		m_text		= value.m_text;
 		return true;
 	}
 
@@ -510,5 +522,4 @@ namespace tiki
 
 		return false;
 	}
-
 }

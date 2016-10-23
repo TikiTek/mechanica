@@ -7,6 +7,7 @@
 #include "tiki/base/basicstring.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/map.hpp"
+#include "tiki/toolgenericdata/genericdatavalue.hpp"
 
 struct _XmlElement;
 
@@ -14,7 +15,6 @@ namespace tiki
 {
 	class GenericDataTypeCollection;
 	class GenericDataTypeStruct;
-	class GenericDataValue;
 	class ResourceWriter;
 	class XmlReader;
 	struct ReferenceKey;
@@ -22,21 +22,21 @@ namespace tiki
 	class GenericDataObject : public GenericDataContainer
 	{
 		TIKI_NONCOPYABLE_CLASS( GenericDataObject );
+		friend class GenericDataTypeStruct;
 
 	public:
 
 										GenericDataObject( GenericDataTypeCollection& collection );
 										~GenericDataObject();
 
-		bool							create( const GenericDataTypeStruct* pType );
+		bool							create( const GenericDataTypeStruct* pType, const GenericDataObject* pParentObject );
 		void							dispose();
 
 		const GenericDataTypeStruct*	getType() const;
 
 		bool							hasField( const string& name ) const;
 
-		GenericDataValue&				getFieldValue( const string& name );
-		const GenericDataValue&			getFieldValue( const string& name ) const;
+		GenericDataValue				getFieldValue( const string& name ) const;
 		bool							setFieldValue( const string& name, const GenericDataValue& value );
 
 		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;
@@ -48,11 +48,22 @@ namespace tiki
 
 		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
 
+	private: // friend
+
+		void							addField( const string& name, const GenericDataType* pType, const GenericDataValue& defaultValue );
+
 	private:
 
-		const GenericDataTypeStruct*	m_pType;
+		struct ObjectField
+		{
+			const GenericDataType*	pType;
+			GenericDataValue		value;
+		};
 
-		Map< string, GenericDataValue >	m_fields;
+		const GenericDataTypeStruct*	m_pType;
+		const GenericDataObject*		m_pParentObject;
+
+		Map< string, ObjectField >		m_fields;
 
 	};
 }
