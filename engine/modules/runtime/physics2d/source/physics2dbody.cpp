@@ -24,9 +24,11 @@ namespace tiki
 		TIKI_ASSERT( m_pFixture	== nullptr );
 	}
 
-	bool Physics2dBody::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation /* = false */ )
+	bool Physics2dBody::create( Physics2dWorld& world, const Physics2dShape& shape, const Vector2& position, float density, float friction, bool fixedRotation /* = false */, uint32 materialId /*= 0u*/ )
 	{
 		TIKI_ASSERT( m_pBody == nullptr );
+
+		m_materialId = materialId;
 
 		b2BodyDef bodyDef;
 		bodyDef.type			= b2_dynamicBody;
@@ -105,6 +107,16 @@ namespace tiki
 	float Physics2dBody::getRotation() const
 	{
 		return m_pBody->GetAngle();
+	}
+
+	float Physics2dBody::getFriction() const
+	{
+		return m_pFixture->GetFriction();
+	}
+
+	void Physics2dBody::setFriction( float value )
+	{
+		m_pFixture->SetFriction( value );
 	}
 
 	Vector2 Physics2dBody::getLinearVelocity() const

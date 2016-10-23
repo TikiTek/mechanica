@@ -9,12 +9,27 @@
 #include "tiki/physics2d/physics2dboxshape.hpp"
 #include "tiki/physics2d/physics2dcircleshape.hpp"
 #include "tiki/physics2d/physics2djoint.hpp"
+#include "tiki/physics2d/physics2dworld.hpp"
 
 #include "mechanica_components.hpp"
 
 namespace tiki
 {
 	TIKI_DEBUGPROP_FLOAT( s_playerBorder, "GameComponents/PlayerBorder", 0.0f, 0.0f, 300.0f );
+
+	static const float s_playerSizeX = 0.9f;
+	static const float s_playerSizeY = 2.4f;
+	static const float s_playerRaySecureDistance = 0.2f;
+	static const float s_playerSlideFriction = 0.1f;
+
+	static const MechanicaMaterialId s_aGroundMaterials[] =
+	{
+		MechanicaMaterialId_Island,
+		MechanicaMaterialId_Block,
+		MechanicaMaterialId_Metal,
+		MechanicaMaterialId_Slide,
+		MechanicaMaterialId_Wood
+	};
 
 	struct PlayerInputState
 	{
@@ -93,6 +108,7 @@ namespace tiki
 		State* pState = nullptr;
 		while ( pState = componentStates.getNext() )
 		{
+			updateDistance( pState );
 			updateMovement( pState );
 		}
 	}
@@ -145,6 +161,10 @@ namespace tiki
 	{
 		pState->pTransform = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 
+		pState->jumping			= false;
+		pState->sliding			= false;
+		pState->onGround		= false;
+
 		pState->maxSpeed		= pInitData->maxSpeed;
 		pState->runSpeed		= pInitData->runSpeed;
 		pState->sideWalkSpeed	= pInitData->sideWalkSpeed;
@@ -154,11 +174,10 @@ namespace tiki
 		pState->inputState.clear();
 
 		Physics2dBoxShape boxShape;
-		boxShape.create( vector::create( 20.0f, 0.2f ) );
+		boxShape.create( vector::create( s_playerSizeX, s_playerSizeY ) );
 
 		Physics2dCircleShape circleShape;
-		circleShape.create( 0.45f );
-		boxShape.create( vector::create( 0.9f, 2.4f ) );
+		circleShape.create( s_playerSizeX / 2.0f );
 
 		const Vector2& boxPosition = m_pTransformComponent->getPosition( pState->pTransform );
 
@@ -167,7 +186,7 @@ namespace tiki
 
 		if( !pState->physicsBox.create( *m_pPhysicsWorld, boxShape, boxPosition, pInitData->mass / 2.0f, 0.0f, true ) ||
 			!pState->physicsCircle.create( *m_pPhysicsWorld, circleShape, circlePosition, pInitData->mass / 2.0f, pInitData->friction ) ||
-			!pState->physicsJoint.createAsRevolute( *m_pPhysicsWorld, pState->physicsBox, vector::create( 0.0f, 1.2f ), pState->physicsCircle, Vector2::zero, true, pInitData->maxMotorTorque ) )
+			!pState->physicsJoint.createAsRevolute( *m_pPhysicsWorld, pState->physicsBox, vector::create( 0.0f, s_playerSizeY / 2.0f ), pState->physicsCircle, Vector2::zero, true, pInitData->maxMotorTorque ) )
 		{
 			return false;
 		}
@@ -182,7 +201,35 @@ namespace tiki
 		pState->physicsBox.dispose( *m_pPhysicsWorld );
 	}
 
-	void PlayerComponent::updateMovement( PlayerComponentState* pState )
+	void PlayerComponent::updateDistance( PlayerComponentState* pState ) const
+	{
+		pState->onGround = false;
+
+		const float circleRadius = s_playerSizeX / 2.0f;
+		Vector2 start1	= pState->physicsCircle.getPosition();
+		Vector2 end1	= start1;
+		end1.y += circleRadius + s_playerRaySecureDistance;
+
+		if( !m_pPhysicsWorld->rayCast( start1, end1, &PlayerComponent::distanceRayCastCallback, pState ) )
+		{
+			Vector2 start2 = start1;
+			start2.x += circleRadius;
+			Vector2 end2 = end1;
+			end2.x += circleRadius;
+
+			if( !m_pPhysicsWorld->rayCast( start2, end2, &PlayerComponent::distanceRayCastCallback, pState ) )
+			{
+				Vector2 start3 = start1;
+				start3.x -= circleRadius;
+				Vector2 end3 = end1;
+				end3.x -= circleRadius;
+
+				m_pPhysicsWorld->rayCast( start3, end3, &PlayerComponent::distanceRayCastCallback, pState );
+			}
+		}
+	}
+
+	void PlayerComponent::updateMovement( PlayerComponentState* pState ) const
 	{
 		// fall
 		if (!pState->jumping && !pState->onGround)
@@ -236,5 +283,32 @@ namespace tiki
 		{
 			pState->physicsJoint.setRevoluteMotorSteed( 0.0f );
 		}
+	}
+
+	bool PlayerComponent::distanceRayCastCallback( const Physics2dCollisionObject* pObject, const Vector2& point, void* pUserData )
+	{
+		PlayerComponentState* pState = (PlayerComponentState*)pUserData;
+
+		// TODO UpdateMaterialSound()
+
+		const MechanicaMaterialId material = (MechanicaMaterialId)pObject->getMaterialId();
+		for( uint i = 0u; i < TIKI_COUNT( s_aGroundMaterials ); ++i )
+		{
+			if( s_aGroundMaterials[ i ] == material )
+			{
+				if( material == MechanicaMaterialId_Slide )
+				{
+					pState->physicsCircle.setFriction( s_playerSlideFriction );
+				}
+				else
+				{
+					pState->physicsCircle.setFriction( pState->friction );
+				}
+					
+				pState->onGround = true;
+			}
+		}
+
+		return false;
 	}
 }

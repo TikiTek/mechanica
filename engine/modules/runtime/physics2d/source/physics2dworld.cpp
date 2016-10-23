@@ -67,6 +67,17 @@ namespace tiki
 	//	PhysicsCollisionCallback callback;
 	//	m_pPhysicWorld->contactPairTest( pCollisionObject1, pCollisionObject2, callback );
 
+	bool Physics2dWorld::rayCast( const Vector2& startPoint, Vector2& endPoint, PhysicsRayCastCallback pCallback, void* pUserData )
+	{		
+		m_pRayCastCallback	= pCallback;
+		m_pRayCastUserData	= pUserData;
+		m_rayCastResult		= false;
+
+		m_world.RayCast( this, toPhysicsVector( startPoint ), toPhysicsVector( endPoint ) );
+
+		return m_rayCastResult;
+	}
+
 	//	return callback.getCollides();
 	//}
 
@@ -84,4 +95,14 @@ namespace tiki
 		}
 	}
 #endif
+
+	float32 Physics2dWorld::ReportFixture( b2Fixture* pFixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction )
+	{
+		m_rayCastResult = true;
+
+		Physics2dCollisionObject* pObject = (Physics2dCollisionObject*)pFixture->GetBody()->GetUserData();
+
+		const bool continue2 = m_pRayCastCallback( pObject, toEngineVector( point ), m_pRayCastUserData );
+		return continue2 ? -1.0f : 0.0f;
+	}
 }

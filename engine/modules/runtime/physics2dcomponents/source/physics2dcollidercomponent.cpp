@@ -57,7 +57,7 @@ namespace tiki
 			return false;
 		}
 
-		return pState->collider.create( *m_pPhysicsWorld, *pShape, vector::create( pInitData->position ) );
+		return pState->collider.create( *m_pPhysicsWorld, *pShape, vector::create( pInitData->position ), pInitData->materialId );
 	}
 
 	void Physics2dColliderComponent::internalDisposeState( Physics2dColliderComponentState* pState )
