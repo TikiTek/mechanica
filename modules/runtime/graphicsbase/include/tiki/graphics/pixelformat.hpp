@@ -16,13 +16,10 @@ namespace tiki
 		PixelFormat_R32_Float,
 		PixelFormat_R32G32B32_Float,
 		PixelFormat_R32G32B32A32_Float,
+
 		PixelFormat_Depth24Stencil8,
 
 		PixelFormat_Count,
-
-		PixelFormat_Color	= PixelFormat_R8G8B8A8,
-		PixelFormat_Depth	= PixelFormat_Depth24Stencil8,
-
 		PixelFormat_Invalid	= 0xffu
 	};
 

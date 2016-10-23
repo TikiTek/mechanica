@@ -29,7 +29,7 @@ namespace tiki
 				PostProcessBlur();
 				~PostProcessBlur();
 
-		bool	create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, uint maxWidth, uint maxHeight, PixelFormat format = PixelFormat_Color );
+		bool	create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, uint maxWidth, uint maxHeight, PixelFormat format );
 		bool	createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		void	dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		

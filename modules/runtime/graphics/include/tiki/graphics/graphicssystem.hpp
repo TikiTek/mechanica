@@ -48,6 +48,7 @@ namespace tiki
 		{
 			backBufferWidth		= 900;
 			backBufferHeight	= 600;
+			backbufferFormat	= PixelFormat_R8G8B8A8;
 			fullScreen			= false;
 			rendererMode		= GraphicsRendererMode_Hardware;
 
@@ -56,6 +57,7 @@ namespace tiki
 
 		uint					backBufferWidth;
 		uint					backBufferHeight;
+		PixelFormat				backbufferFormat;
 		bool					fullScreen;
 		GraphicsRendererMode	rendererMode;
 
