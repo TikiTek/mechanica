@@ -128,7 +128,8 @@ namespace tiki
 		const ShaderSet*				m_pSpriteShader;
 		const ShaderSet*				m_pCompositeShader;
 
-		const BlendState*				m_pBlendState;
+		const BlendState*				m_pBlendStateSolid;
+		const BlendState*				m_pBlendStateAlpha;
 		const DepthStencilState*		m_pDepthState;
 		const RasterizerState*			m_pRasterizerState;
 		const SamplerState*				m_pSamplerState;

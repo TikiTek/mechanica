@@ -20,7 +20,8 @@ namespace tiki
 		m_pSpriteShader				= nullptr;
 		m_pCompositeShader			= nullptr;
 
-		m_pBlendState				= nullptr;
+		m_pBlendStateSolid			= nullptr;
+		m_pBlendStateAlpha			= nullptr;
 		m_pDepthState				= nullptr;
 		m_pRasterizerState			= nullptr;
 		m_pSamplerState				= nullptr;
@@ -52,11 +53,12 @@ namespace tiki
 			return false;
 		}
 
-		m_pBlendState		= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add, ColorWriteMask_All );
+		m_pBlendStateSolid	= graphicsSystem.createBlendState( false );
+		m_pBlendStateAlpha	= graphicsSystem.createBlendState( true, Blend_SourceAlpha, Blend_InverseSourceAlpha, BlendOperation_Add );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );
 		m_pRasterizerState	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_None, WindingOrder_Clockwise );
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
-		if( m_pBlendState == nullptr || m_pDepthState == nullptr || m_pRasterizerState == nullptr || m_pSamplerState == nullptr )
+		if( m_pBlendStateSolid == nullptr || m_pBlendStateAlpha == nullptr || m_pDepthState == nullptr || m_pRasterizerState == nullptr || m_pSamplerState == nullptr )
 		{
 			dispose( resourcePool );
 			return false;
@@ -130,7 +132,8 @@ namespace tiki
 		m_pGraphicsSystem->disposeSamplerState( m_pSamplerState );
 		m_pGraphicsSystem->disposeRasterizerState( m_pRasterizerState );
 		m_pGraphicsSystem->disposeDepthStencilState( m_pDepthState );
-		m_pGraphicsSystem->disposeBlendState( m_pBlendState );
+		m_pGraphicsSystem->disposeBlendState( m_pBlendStateAlpha );
+		m_pGraphicsSystem->disposeBlendState( m_pBlendStateSolid );
 
 		resourcePool.unloadResource( m_pSpriteShader );
 		resourcePool.unloadResource( m_pCompositeShader );
@@ -358,7 +361,7 @@ namespace tiki
 		graphicsContext.setVertexShader( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pSpriteShader->getShader( ShaderType_PixelShader, 0u ) );
 
-		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setBlendState( m_pBlendStateAlpha );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setVertexInputBinding( m_pSpriteInputBinding );
@@ -410,7 +413,7 @@ namespace tiki
 		graphicsContext.setVertexShader( m_pCompositeShader->getShader( ShaderType_VertexShader, 0u ) );
 		graphicsContext.setPixelShader( m_pCompositeShader->getShader( ShaderType_PixelShader, 0u ) );
 
-		graphicsContext.setBlendState( m_pBlendState );
+		graphicsContext.setBlendState( m_pBlendStateSolid );
 		graphicsContext.setDepthStencilState( m_pDepthState );
 		graphicsContext.setRasterizerState( m_pRasterizerState );
 		graphicsContext.setVertexInputBinding( m_pCompositeInputBinding );
