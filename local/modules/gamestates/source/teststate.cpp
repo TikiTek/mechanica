@@ -38,7 +38,6 @@ namespace tiki
 		m_pApplicationState	= pApplicationState;
 
 		m_pFont				= nullptr;
-		m_pFontBig			= nullptr;
 	}
 
 	void TestState::dispose()
@@ -74,7 +73,6 @@ namespace tiki
 				if ( isInital )
 				{
 					resourceRequestPool.beginLoadResource< Font >( &m_pFont,									"debug.font" );
-					resourceRequestPool.beginLoadResource< Font >( &m_pFontBig,									"big.font" );
 					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland1,	"island1.entity" );
 					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland2,	"island2.entity" );
 					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland3,	"island4.entity" );
@@ -101,7 +99,6 @@ namespace tiki
 				resourceManager.unloadResource( m_pIsland1 );
 				resourceManager.unloadResource( m_pIsland2 );
 				resourceManager.unloadResource( m_pIsland3 );
-				resourceManager.unloadResource( m_pFontBig );
 				resourceManager.unloadResource( m_pFont );
 				
 				return TransitionState_Finish;

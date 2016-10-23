@@ -59,7 +59,6 @@ namespace tiki
 		Renderer2d*									m_pRenderer;
 
 		const Font*									m_pFont;
-		const Font*									m_pFontBig;
 		const EntityTemplateGenericDataResource*	m_pIsland1;
 		const EntityTemplateGenericDataResource*	m_pIsland2;
 		const EntityTemplateGenericDataResource*	m_pIsland3;
