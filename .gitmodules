@@ -13,3 +13,6 @@
 [submodule "blobs/box2d"]
 	path = blobs/box2d
 	url = https://github.com/erincatto/Box2D.git
+[submodule "content"]
+	path = content
+	url = git@github.com:TikiTek/mechanica_content.git
