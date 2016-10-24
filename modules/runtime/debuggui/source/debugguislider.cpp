@@ -10,22 +10,26 @@ namespace tiki
 {
 	void DebugGuiSlider::create( float minValue, float maxValue, float defaultValue )
 	{
-		m_minValue	= minValue;
-		m_maxValue	= maxValue;
-		m_value		= defaultValue;
+		m_minValue		= minValue;
+		m_maxValue		= maxValue;
+		m_value			= defaultValue;
 
-		m_mouseOver = false;
-		m_mouseDown = false;
+		m_minimumWidth	= 0.0f;
+
+		m_mouseOver		= false;
+		m_mouseDown		= false;
 	}
 
 	void DebugGuiSlider::dispose()
 	{
-		m_minValue	= 0.0f;
-		m_maxValue	= 0.0f;
-		m_value		= 0.0f;
+		m_minValue		= 0.0f;
+		m_maxValue		= 0.0f;
+		m_value			= 0.0f;
 
-		m_mouseOver = false;
-		m_mouseDown = false;
+		m_minimumWidth	= 0.0f;
+
+		m_mouseOver		= false;
+		m_mouseDown		= false;
 	}
 
 	float DebugGuiSlider::getValue() const
@@ -41,7 +45,12 @@ namespace tiki
 
 	Vector2 DebugGuiSlider::getMinimumSize()
 	{
-		return vector::create( 25.0f, 25.0f );
+		return vector::create( TIKI_MAX( 25.0f, m_minimumWidth ), 25.0f );
+	}
+
+	void DebugGuiSlider::setMinimumWidth( float minWidth )
+	{
+		m_minimumWidth = minWidth;
 	}
 
 	void DebugGuiSlider::update( double elapsedTime )

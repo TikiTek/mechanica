@@ -1,4 +1,4 @@
-// vs-features= ps-features=TIKI_CUTOFF[3]
+// vs-features= ps-features=TIKI_CUTOFF[3],TIKI_ACCUMULATION
 
 #include "shader/platform.fxh"
 
@@ -74,7 +74,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	sourceColor *= (sourceColor >= getCutoffThresold( c_pixelData ));
 	//float colorValue = dot( diffuseColor, float3( 0.2126f, 0.7152f, 0.0722f ) );
 
-	float4 color = float4(sourceColor, sourceColor.r * sourceColor.g * sourceColor.b );
+	float4 color = float4(sourceColor, 1.0f ); //sourceColor.r * sourceColor.g * sourceColor.b );
 #else
 	float4 color = TIKI_TEX2D( t_pass, s_samplerLinear, texCoord );
 	color = TIKI_SATURATE( color );

@@ -10,6 +10,7 @@
 #include "tiki/debuggui/debugguihorizontallayout.hpp"
 #include "tiki/debuggui/debugguilabel.hpp"
 #include "tiki/debuggui/debugguiminimumlayout.hpp"
+#include "tiki/debuggui/debugguislider.hpp"
 #include "tiki/debuggui/debugguispacer.hpp"
 #include "tiki/debuggui/debugguiverticallayout.hpp"
 
@@ -81,6 +82,7 @@ namespace tiki
 		{
 			DebugGuiAlignment			valueAlignment;
 			DebugGuiLabel				valueLabel;
+			DebugGuiSlider				valueSlider;
 
 			DebugProp*					pProperty;
 		};

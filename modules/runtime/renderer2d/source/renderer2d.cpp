@@ -1,5 +1,6 @@
 #include "tiki/renderer2d/renderer2d.hpp"
 
+#include "tiki/base/debugprop.hpp"
 #include "tiki/base/numbers.hpp"
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
@@ -410,8 +411,12 @@ namespace tiki
 
 		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
 
+		uint32 pixelShaderIndex = 0u;
+		pixelShaderIndex |= (parameters.enableBloom ? 1u : 0u);
+		pixelShaderIndex |= (parameters.enableColorGrading ? 2u : 0u);
+
 		graphicsContext.setVertexShader( m_pCompositeShader->getShader( ShaderType_VertexShader, 0u ) );
-		graphicsContext.setPixelShader( m_pCompositeShader->getShader( ShaderType_PixelShader, 0u ) );
+		graphicsContext.setPixelShader( m_pCompositeShader->getShader( ShaderType_PixelShader, pixelShaderIndex ) );
 
 		graphicsContext.setBlendState( m_pBlendStateSolid );
 		graphicsContext.setDepthStencilState( m_pDepthState );

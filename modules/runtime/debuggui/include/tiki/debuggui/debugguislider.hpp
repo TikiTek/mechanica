@@ -20,6 +20,8 @@ namespace tiki
 
 		virtual Vector2	getMinimumSize() TIKI_OVERRIDE_FINAL;
 
+		void			setMinimumWidth( float minWidth );
+
 		virtual void	update( double elapsedTime ) TIKI_OVERRIDE_FINAL;
 		virtual void	render( ImmediateRenderer& renderer ) TIKI_OVERRIDE_FINAL;
 
@@ -38,6 +40,7 @@ namespace tiki
 		bool					m_mouseOver;
 		bool					m_mouseDown;
 
+		float					m_minimumWidth;
 		AxisAlignedRectangle	m_line;
 		AxisAlignedRectangle	m_slider;
 
