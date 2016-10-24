@@ -12,7 +12,7 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", true );
+	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", false );
 
 	GameClient::GameClient()
 	{

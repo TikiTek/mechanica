@@ -1,4 +1,3 @@
-
 #include "tiki/debugguiwindows/debugguiwindow_debugprop.hpp"
 
 #include "tiki/base/crc32.hpp"
@@ -11,20 +10,8 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/input/inputevent.hpp"
 
-// TODO: delete:
-#include "tiki/base/timer.hpp"
-
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_test1, "test/bbb", false );
-	TIKI_DEBUGPROP_BOOL( s_test2, "test/ccc", false );
-	TIKI_DEBUGPROP_BOOL( s_test3, "test2/bbb", false );
-	TIKI_DEBUGPROP_BOOL( s_test4, "test3/bbb", false );
-	TIKI_DEBUGPROP_INT( s_test5, "test2/ccc", 1, 0, 10 );
-	TIKI_DEBUGPROP_INT( s_test6, "test3/ccc", 5, 4, 50 );
-	TIKI_DEBUGPROP_FLOAT( s_test7, "test2/ddd", 1.0f, 0.0f, 10.0f );
-	TIKI_DEBUGPROP_FLOAT( s_test8, "test3/ddd", 5.0f, 4.0f, 50.0f );
-
 	void DebugGuiWindowDebugProp::create( DebugGui& debugGui )
 	{
 		m_inputAction	= InputAction_Invalid;
@@ -141,11 +128,20 @@ namespace tiki
 			setLayoutParameters( node.nodeLayout );
 
 			node.nameLabel.create( prop.getName() );
-			node.valueAlignment.create( DebugGuiAlignment::OrientationFlags_X, vector::create( 400.0f, 0.0f ) );
+			node.valueAlignment.create( DebugGuiAlignment::OrientationFlags_X, vector::create( 300.0f, 0.0f ) );
 			setDebugPropText( node.valueLabel, prop );
 
 			node.nodeLayout.addChildControl( &node.nameLabel );
 			node.nodeLayout.addChildControl( &node.valueAlignment );
+			if( node.pProperty->getType() == DebugProp::Type_Float )
+			{
+				DebugPropFloat* pFloatProp = (DebugPropFloat*)node.pProperty;
+
+				node.valueSlider.create( pFloatProp->getMinValue(), pFloatProp->getMaxValue(), pFloatProp->getValue() );
+				node.valueSlider.setMinimumWidth( 100.0f );
+				node.nodeLayout.addChildControl( &node.valueSlider );
+			}
+
 			node.nodeLayout.addChildControl( &node.valueLabel );
 
 			string pathName;
@@ -197,6 +193,7 @@ namespace tiki
 
 			node.nameLabel.dispose();
 			node.valueLabel.dispose();
+			node.valueSlider.dispose();
 
 			node.nodeLayout.dispose();
 		}
@@ -368,6 +365,21 @@ namespace tiki
 				}
 			}
 		}
+		else if( guiEvent.eventType == DebugGuiEventType_ValueChanged )
+		{
+			for( uint i = 0u; i < m_propNodes.getCount(); ++i )
+			{
+				TreePropNode& node = m_propNodes[ i ];
+
+				if( guiEvent.pControl == &node.valueSlider )
+				{
+					DebugPropFloat* pFloatProp = (DebugPropFloat*)node.pProperty;
+					pFloatProp->setValue( node.valueSlider.getValue() );
+
+					setDebugPropText( node.valueLabel, *node.pProperty );
+				}
+			}
+		}
 
 		return DebugGuiWindow::processGuiEvent( guiEvent );
 	}
@@ -465,6 +477,7 @@ namespace tiki
 				value = TIKI_MAX( value, pFloatProperty->getMinValue() );
 
 				pFloatProperty->setValue( value );
+				node.valueSlider.setValue( value );
 			}
 			break;
 

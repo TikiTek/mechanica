@@ -186,6 +186,16 @@ namespace tiki
 			target.a = getFloatChannelA( c );
 		}
 
+		TIKI_FORCE_INLINE void toFloat3( float3& target, const HdrColor& c )
+		{
+			createFloat3( target, c.r, c.g, c.b );
+		}
+
+		TIKI_FORCE_INLINE void toFloat4( float4& target, const HdrColor& c )
+		{
+			createFloat4( target, c.r, c.g, c.b, c.a );
+		}
+
 		TIKI_FORCE_INLINE void toVector3( Vector3& target, const HdrColor& c )
 		{
 			vector::set( target, c.r, c.g, c.b );

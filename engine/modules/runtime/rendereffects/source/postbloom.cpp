@@ -42,6 +42,7 @@ namespace tiki
 		m_pSamplerState		= graphicsSystem.createSamplerState( AddressMode_Clamp, AddressMode_Clamp, AddressMode_Clamp, FilterMode_Linear, FilterMode_Linear );
 		bool success = ( m_pBlendStateCutoff != nullptr ) && ( m_pBlendStateAdd != nullptr ) && ( m_pDepthState != nullptr ) && ( m_pRasterizerState != nullptr ) && ( m_pSamplerState != nullptr );
 
+		success &= m_cutoffPixelConstants.create( graphicsSystem, sizeof( BloomCutoffPixelConstantData ), "BloomPixelConstants" );
 		success &= m_blur.create( graphicsSystem, resourcePool, m_width, m_height, PixelFormat_R16G16B16A16_Float );
 		success &= createRenderTargets( graphicsSystem );
 
@@ -84,6 +85,7 @@ namespace tiki
 	{
 		disposeRenderTargets( graphicsSystem );
 		m_blur.dispose( graphicsSystem, resourcePool );
+		m_cutoffPixelConstants.dispose( graphicsSystem );
 
 		graphicsSystem.disposeSamplerState( m_pSamplerState );
 		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
@@ -121,9 +123,16 @@ namespace tiki
 
 	void PostProcessBloom::render( GraphicsContext& graphicsContext, const PostProcessBloomRenderParameters& parameters ) const
 	{
+		{
+			BloomCutoffPixelConstantData* pPixelConstants = graphicsContext.mapBuffer<BloomCutoffPixelConstantData>( m_cutoffPixelConstants );
+			vector::toFloat( pPixelConstants->param0, parameters.cutoffThreshold, 0.0f );
+			graphicsContext.unmapBuffer( m_cutoffPixelConstants );
+		}
+
 		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
+			graphicsContext.clear( m_renderTargets[ passIndex ], TIKI_COLOR_TRANSPARENT );
 
 			const uint32 pixelShaderIndex = ( passIndex == 0u ? (parameters.pSelfIlluminationData != nullptr ? 2u : 1u) : 0u );
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
@@ -137,6 +146,7 @@ namespace tiki
 			if ( passIndex == 0u )
 			{
 				graphicsContext.setBlendState( m_pBlendStateCutoff );
+				graphicsContext.setPixelShaderConstant( 0u, m_cutoffPixelConstants );
 				graphicsContext.setPixelShaderTexture( 0u, parameters.pSourceData );
 				graphicsContext.setPixelShaderTexture( 1u, parameters.pSelfIlluminationData );
 			}

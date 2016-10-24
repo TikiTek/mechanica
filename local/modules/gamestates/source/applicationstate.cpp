@@ -1,5 +1,6 @@
 #include "tiki/gamestates/applicationstate.hpp"
 
+#include "tiki/base/debugprop.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/framework/mainwindow.hpp"
 #include "tiki/game/game.hpp"
@@ -9,6 +10,11 @@
 
 namespace tiki
 {
+	TIKI_DEBUGPROP_BOOL( s_gameBloomEnable, "Bloom/Enable", true );
+	TIKI_DEBUGPROP_FLOAT( s_gameBloomThresholdR, "Bloom/ThresholdRed", 0.9f, 0.0f, 3.0f );
+	TIKI_DEBUGPROP_FLOAT( s_gameBloomThresholdG, "Bloom/ThresholdGreen", 0.8f, 0.0f, 3.0f );
+	TIKI_DEBUGPROP_FLOAT( s_gameBloomThresholdB, "Bloom/ThresholdBlue", 0.87f, 0.0f, 3.0f );
+
 	ApplicationState::ApplicationState()
 	{
 		m_pGame = nullptr;
@@ -58,12 +64,6 @@ namespace tiki
 							TIKI_TRACE_ERROR( "[applicationstate] Could not create Renderer.\n" );
 							return TransitionState_Error;
 						}
-
-						//if( !m_renderer.registerRenderEffect( m_fallbackRenderEffect, resourceRequestPool ) ||
-						//	!m_renderer.registerRenderEffect( m_sceneRenderEffect, resourceRequestPool ) )
-						//{
-						//	return TransitionState_Error;
-						//}
 					}
 
 					if ( resourceRequestPool.isFinish() )
@@ -108,8 +108,12 @@ namespace tiki
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
 		Renderer2dRenderParameters parameters;
-		parameters.backgroundColor = TIKI_COLOR_XKCD_BLUEBERRY;
-		
+		parameters.backgroundColor			= TIKI_COLOR_XKCD_BLUEBERRY;
+		parameters.enableBloom				= s_gameBloomEnable;
+		parameters.bloomCutoffThreshold.r	= s_gameBloomThresholdR;
+		parameters.bloomCutoffThreshold.g	= s_gameBloomThresholdG;
+		parameters.bloomCutoffThreshold.b	= s_gameBloomThresholdB;
+
 		m_renderer.render( graphicsContext, parameters );
 	}
 
