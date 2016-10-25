@@ -45,6 +45,9 @@ namespace tiki
 		InstanceHandle							getInstanceHandle();
 		const StaticArray< const char* >&		getArguments();
 		bool									hasArgument( const char* name );
+
+		char**									getArgumentPointer();
+		int&									getArgumentCount();
 #endif
 	}
 
