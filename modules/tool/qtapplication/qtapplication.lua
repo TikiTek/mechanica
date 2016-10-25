@@ -10,3 +10,10 @@ module:add_files( "source/*.*" );
 module:add_dependency( "base" );
 module:add_dependency( "qt" );
 module:add_dependency( "framework" );
+
+module.import_func = function(project)
+	module:add_moc_file( "include/tiki/qtapplication/qtmainwindow.hpp" );
+	module:add_moc_file( "include/tiki/qtapplication/qtribbontab.hpp" );
+	module:add_moc_file( "include/tiki/qtapplication/qtribbonbutton.hpp" );
+	module:add_moc_file( "include/tiki/qtapplication/qtribbongroup.hpp" );
+end

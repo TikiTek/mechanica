@@ -2,21 +2,36 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+	class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+namespace tiki
 {
-    Q_OBJECT
+	class MainWindow : public QMainWindow
+	{
+		Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	public:
 
-private:
-    Ui::MainWindow *ui;
-};
+		explicit		MainWindow( QWidget* pParent = nullptr );
+		~MainWindow();
+
+	private:
+
+		Ui::MainWindow*	m_pUi;
+
+		QWidget			m_pMainWidget;
+		QVBoxLayout*	m_pMainLayout;
+
+		QTabWidget*		m_pRibbonTabs;
+
+		QTabWidget*		m_pMainTabs;
+	};
+}
 
 #endif // MAINWINDOW_H
