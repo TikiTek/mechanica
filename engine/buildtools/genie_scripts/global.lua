@@ -1,6 +1,7 @@
 newoption { trigger = "outpath", description = "Location for generated project files" }
 newoption { trigger = "unity_dir", description = "" }
 newoption { trigger = "genericdata_dir", description = "" }
+newoption { trigger = "qt_dir", description = "" }
 
 if not _OPTIONS["outpath"] then
 	error("No outpath specified.")
@@ -267,6 +268,11 @@ function finalize( output_name, projects )
 		_OPTIONS[ "genericdata_dir" ] = path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name )
 		if not os.isdir( _OPTIONS[ "genericdata_dir" ] ) then
 			os.mkdir( _OPTIONS[ "genericdata_dir" ] )
+		end
+
+		_OPTIONS[ "qt_dir" ] = path.join( _OPTIONS[ "outpath" ], "qt_files", project.name )
+		if not os.isdir( _OPTIONS[ "qt_dir" ] ) then
+			os.mkdir( _OPTIONS[ "qt_dir" ] )
 		end
 		
 		project:finalize();

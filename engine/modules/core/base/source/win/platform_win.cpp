@@ -12,13 +12,18 @@
 tiki::InstanceHandle				s_instanceHandle;
 tiki::StaticArray< const char* >	s_arguments;
 
+char**								s_ppArguments;
+int									s_argumentCount;
+
 #if TIKI_ENABLED( TIKI_SDL )
 #	include "SDL_main.h"
 #endif
 
 int main( int argc, char** argv )
 {
-	s_instanceHandle = (tiki::InstanceHandle)GetModuleHandle( nullptr );
+	s_instanceHandle	= (tiki::InstanceHandle)GetModuleHandle( nullptr );
+	s_ppArguments		= argv;
+	s_argumentCount		= argc;
 
 	s_arguments.create( (const char**)argv, (tiki::uint)argc );
 
@@ -63,6 +68,16 @@ namespace tiki
 		}
 
 		return false;
+	}
+
+	char** platform::getArgumentPointer()
+	{
+		return s_ppArguments;
+	}
+
+	int& platform::getArgumentCount()
+	{
+		return s_argumentCount;
 	}
 #endif
 

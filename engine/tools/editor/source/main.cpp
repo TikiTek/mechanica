@@ -1,11 +1,18 @@
 #include "tiki/base/platform.hpp"
-#include "tiki/toolapplication/toolapplication.hpp"
 
-#include "tiki/base/debug.hpp"
+#include "mainwindow.h"
 
-int tiki::mainEntryPoint()
+#include <QApplication>
+
+namespace tiki
 {
-	//debug::breakOnAlloc( 239 );
+	int mainEntryPoint()
+	{
+		QApplication application( platform::getArgumentCount(), platform::getArgumentPointer() );
 
-	return framework::getTool().run();
+		MainWindow window;
+		window.show();
+
+		return application.exec();
+	}
 }

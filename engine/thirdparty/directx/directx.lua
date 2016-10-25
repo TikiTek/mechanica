@@ -2,7 +2,7 @@
 
 local module = Module:new( "directx" );
 
-module:add_files( "directx.lua" );
+module:add_files( "*.lua" );
 
 module:add_include_dir( "$(DXSDK_DIR)/Include" );
 

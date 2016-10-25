@@ -102,15 +102,17 @@ end
 function Project:finalize_binary( binary_dirs, binary_files )
 	local dirs = table.join_array( {}, binary_dirs );
 	local files = table.join_array( {}, binary_files );
-
+	
 	for i,file in pairs( files ) do
-		--print( "File: " .. file );
+		--print( "Binary File: " .. file );
 
 		for j,dir in pairs( dirs ) do
 			local fullpath = path.join( dir, file );
+			--print( "Binary Dir: " .. dir );
+			--print( "Binary Full: " .. fullpath );
 
 			if os.isfile( fullpath ) then
-				--print( "Binary: " .. fullpath  );
+				print( "Binary: " .. fullpath  );
 
 				fullpath = string.gsub( fullpath, "/", "\\" );
 				postbuildcommands{ "copy \"" .. fullpath .. "\" \"$(TargetDir)" .. file .. "\"" };
