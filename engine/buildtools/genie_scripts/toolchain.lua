@@ -493,10 +493,10 @@ function toolchain(_buildDir, _libDir)
 		"NoPCH",
 		"NativeWChar",
 		"NoRTTI",
-		"NoExceptions",
 		"NoFramePointer",
 		"Symbols",
 	}
+	--"NoExceptions",
 	--"NoEditAndContinue",
 
 	defines {

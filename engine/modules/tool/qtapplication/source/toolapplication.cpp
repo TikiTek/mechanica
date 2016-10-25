@@ -1,4 +1,4 @@
-#include "tiki/toolapplication/toolapplication.hpp"
+#include "tiki/qtapplication/toolapplication.hpp"
 
 namespace tiki
 {

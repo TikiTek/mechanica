@@ -119,5 +119,5 @@ module:set_define( "TIKI_BUILD_CLANG", iff( use_clang, "TIKI_ON", "TIKI_OFF" ) )
 
 --module:set_flag( "FatalWarnings" );
 module:set_flag( "NoRTTI" );
-module:set_flag( "NoExceptions" );
+--module:set_flag( "NoExceptions" );
 module:set_flag( "NoPCH" );
