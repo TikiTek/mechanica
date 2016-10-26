@@ -15,6 +15,6 @@ else
 	throw "Platform not supported";
 end
 
-module:add_dependency( "base" );
-module:add_dependency( "threading" );
-module:add_dependency( "dbalsterxml" );
+module:add_dependency( "core/base" );
+module:add_dependency( "core/threading" );
+module:add_dependency( "thirdparty/dbalsterxml" );

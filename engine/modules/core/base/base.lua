@@ -17,4 +17,4 @@ else
 	throw("Platform not supported.");
 end
 
-module:add_dependency( "io" );
+module:add_dependency( "core/io" );

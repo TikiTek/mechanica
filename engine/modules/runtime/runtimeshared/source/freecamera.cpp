@@ -1,4 +1,3 @@
-
 #include "tiki/runtimeshared/freecamera.hpp"
 
 #include "tiki/input/inputevent.hpp"

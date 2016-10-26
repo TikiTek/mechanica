@@ -1,6 +1,6 @@
 #include "tiki/base/platform.hpp"
 
-#include "mainwindow.h"
+#include "editorwindow.hpp"
 
 #include <QApplication>
 
@@ -10,7 +10,7 @@ namespace tiki
 	{
 		QApplication application( platform::getArgumentCount(), platform::getArgumentPointer() );
 
-		MainWindow window;
+		EditorWindow window;
 		window.show();
 
 		return application.exec();

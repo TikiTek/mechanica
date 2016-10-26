@@ -1,5 +1,10 @@
 -- library/modules/runtime/graphics
 
+local module = Module:new( "graphicsshader" );
+
+module:add_files( "include/tiki/graphics/shader/*.hpp" );
+module:add_shader_dir( "include" );
+
 local module = Module:new( "graphics" );
 
 module:add_files( "source/global/*.*" );
@@ -8,9 +13,10 @@ module:add_files( "include/tiki/graphics/*.*" );
 module:add_files( "graphics.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "math" );
-module:add_dependency( "graphicsbase" );
-module:add_dependency( "animation" );
+module:add_dependency( "core/math" );
+module:add_dependency( "runtime/graphicsbase" );
+module:add_dependency( "runtime/animation" );
+
 module:add_dependency( "graphicsshader" );
 
 if use_d3d11 then
@@ -34,8 +40,3 @@ elseif use_vulkan then
 else
 	throw( "Graphics API not implemented" );
 end
-
-local module = Module:new( "graphicsshader" );
-
-module:add_files( "include/tiki/graphics/shader/*.hpp" );
-module:add_shader_dir( "include" );

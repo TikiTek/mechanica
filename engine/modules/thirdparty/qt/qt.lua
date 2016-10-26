@@ -31,13 +31,6 @@ module:add_binary_file( "Qt5Gui.dll" );
 module.ui_files = {}
 module.moc_files = {}
 
-function Module:add_ui_file( file_name )
-	table.insert( module.ui_files, path.join( self.config.base_path, file_name ) );
-end
-
-function Module:add_moc_file( file_name )
-	table.insert( module.moc_files, path.join( self.config.base_path, file_name ) );
-end
 
 module.import_func = function(project)
 	local output_path = path.getabsolute( _OPTIONS[ "qt_dir" ] )

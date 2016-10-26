@@ -2,12 +2,14 @@
 Configuration = class{
 	defines = {},
 	flags = {},
-	shader_dirs = {},
 	binary_dirs = {},
+	binary_files = {},
 	include_dirs = {},
 	library_dirs = {},
-	binary_files = {},
-	library_files = {}
+	library_files = {},
+	shader_dirs = {},
+	pre_build_steps = {},
+	post_build_steps = {}
 };
 
 function Configuration:new()
@@ -61,7 +63,15 @@ function Configuration:add_library_file( library_filename )
 	table.insert( self.library_files, library_filename );
 end
 
-function Configuration:apply( shader_dirs, binary_dirs, binary_files )
+function Configuration:add_pre_build_step( step_script, step_data )
+	table.insert( self.pre_build_steps, { script = step_script, data = step_data } );
+end
+
+function Configuration:add_post_build_step( step_script, step_data )
+	table.insert( self.post_build_steps, { script = step_script, data = step_data } );
+end
+
+function Configuration:apply_configuration( shader_dirs, binary_dirs, binary_files )
 	if ( binary_dirs == nil or  binary_files == nil ) then
 		throw "[Configuration:apply] too few arguments.";
 	end
@@ -234,5 +244,21 @@ function PlatformConfiguration:add_library_file( library_filename, configuration
 		self:get_config( configuration, platform ):add_library_file( library_filename );
 	else
 		throw "[add_library_file] Invalid args.";
+	end
+end
+
+function PlatformConfiguration:add_pre_build_step( step_script, step_data, configuration, platform )
+	if type( step_script ) == "string" and type( step_data ) == "table" then
+		self:get_config( configuration, platform ):add_pre_build_step( step_script, step_data );
+	else
+		throw "[add_pre_build_step] Invalid args.";
+	end
+end
+
+function PlatformConfiguration:add_post_build_step( step_script, step_data, configuration, platform )
+	if type( step_script ) == "string" and type( step_data ) == "table" then
+		self:get_config( configuration, platform ):add_ppst_build_step( step_script, step_data );
+	else
+		throw "[add_post_build_step] Invalid args.";
 	end
 end

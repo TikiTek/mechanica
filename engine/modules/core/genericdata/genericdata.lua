@@ -8,9 +8,9 @@ module:add_files( path.join( global_configuration.root_path, "content/core/gener
 module:add_files( "genericdata.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "base" );
-module:add_dependency( "container" );
-module:add_dependency( "resource" );
+module:add_dependency( "core/base" );
+module:add_dependency( "core/container" );
+module:add_dependency( "core/resource" );
 
 module.import_func = function(project)
 	local output_path = path.getabsolute( _OPTIONS[ "genericdata_dir" ] );
@@ -26,7 +26,6 @@ module.import_func = function(project)
 
 	prebuildcommands { command_line };
 	
-	print( "Using GenericData" );
 	os.execute( command_line );
 end
 
