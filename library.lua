@@ -1,6 +1,3 @@
 -- library
 
-import( "modules" );
-import( "thirdparty" );
-import( "tools" );
-import( "tests" );
+add_module_include_path( "modules" );

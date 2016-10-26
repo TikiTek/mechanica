@@ -10,6 +10,7 @@ Module = class{
 	stack_trace = ""
 };
 
+global_module_include_pathes = {}
 global_module_storage = {};
 
 ModuleTypes = {
@@ -18,14 +19,58 @@ ModuleTypes = {
 	FilesModule		= 2
 };
 
-function find_module( module_name )
+function add_module_include_path( include_path )
+	if path.isabsolute( include_path ) then
+		table.insert( global_module_include_pathes, include_path );
+	else
+		table.insert( global_module_include_pathes, path.join( os.getcwd(), include_path ) );
+	end
+end
+
+function find_module( module_name, importer_name )
+	local import_name = module_name;
+	local import_base = "."
+	local import_name_slash = module_name:find( "/" );
+	if import_name_slash ~= nil then
+		import_name = module_name:sub( import_name_slash + 1 );
+		import_base = module_name:sub( 0, import_name_slash - 1 );
+	end
+
 	for i,module in pairs( global_module_storage ) do
-		if ( module.name == module_name ) then
+		if ( module.name == import_name ) then
 			return module;
 		end
 	end
-
-	throw( "[find_module] Module with name '"..module_name.."' not found." );
+	
+	--print( "Search for: " .. module_name );
+	for i,include_path in pairs( global_module_include_pathes ) do
+		local import_path = path.join( include_path, import_base );
+		local module_path = path.join( import_path, import_name );
+	
+		--print( "Try include: " .. module_path );
+		if os.isdir( module_path ) then
+			import( import_name, import_path );
+			break;
+		end
+	end
+	
+	if ( #global_module_storage > 0 ) then
+		local last_module = global_module_storage[ #global_module_storage ];
+		if ( last_module.name == import_name ) then
+			return last_module;
+		end
+	end
+	
+	print( "Model include directories:" );
+	for i,include_path in pairs( global_module_include_pathes ) do
+		print( include_path );
+	end
+	
+	local error_text = "[find_module] Module with name '" .. module_name .. "' not found.";
+	if ( importer_name ) then
+		error_text = error_text .. " Imported by " .. importer_name .. "!";
+	end
+	throw( error_text );
 	return nil;
 end
 
@@ -101,6 +146,14 @@ function Module:add_library_file( library_filename, configuration, platform )
 	self.config:add_library_file( library_filename, configuration, platform );
 end
 
+function Module:add_pre_build_step( step_script, step_data, configuration, platform )
+	self.config:add_pre_build_step( step_script, step_data, configuration, platform );
+end
+
+function Module:add_post_build_step( step_script, step_data, configuration, platform )
+	self.config:add_post_build_step( step_script, step_data, configuration, platform );
+end
+
 function Module:add_dependency( module_name )
 	if not type( module_name ) == "string" then
 		throw( "[Module:add_dependency] module_name is not a valid string." );		
@@ -110,10 +163,10 @@ function Module:add_dependency( module_name )
 end
 
 function Module:resolve_dependency( target_list )
-	print( "Module: "..self.name );
+	--print( "Module: "..self.name );
 
 	for i,module_name in pairs( self.module_dependencies ) do
-		local module = find_module( module_name )
+		local module = find_module( module_name, self.name )
 
 		if not table.contains( target_list, module ) then
 			table.insert( target_list, module );
@@ -122,7 +175,7 @@ function Module:resolve_dependency( target_list )
 	end
 end
 
-function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
+function Module:finalize_module( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
 	if ( configuration_obj == nil and platform == nil ) then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
 			self.import_func(project);
@@ -176,8 +229,6 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 			c[#c+1] = "";
 			for i,file_name in pairs( all_files ) do
 				if path.iscppfile( file_name ) then
-					file_action( path.getrelative( _OPTIONS[ "outpath" ], file_name ), "Header" );
-					
 					local relative_file_name = path.getrelative( _OPTIONS[ "unity_dir" ], file_name );
 					c[#c+1] = string.format( "#include \"%s\"", relative_file_name );
 				end
@@ -214,5 +265,5 @@ function Module:finalize( shader_dirs, binary_dirs, binary_files, configuration_
 		end
 	end
 
-	self.config:get_config( configuration_obj, platform ):apply( shader_dirs, binary_dirs, binary_files );
+	self.config:get_config( configuration_obj, platform ):apply_configuration( shader_dirs, binary_dirs, binary_files );
 end

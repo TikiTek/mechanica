@@ -1,18 +1,3 @@
-newoption { trigger = "outpath", description = "Location for generated project files" }
-newoption { trigger = "unity_dir", description = "" }
-newoption { trigger = "genericdata_dir", description = "" }
-newoption { trigger = "qt_dir", description = "" }
-
-if not _OPTIONS["outpath"] then
-	error("No outpath specified.")
-end
-
-file_actions = {};
-global_configuration = {
-	enable_unity_builds = false,
-	root_path = path.getabsolute( path.getdirectory( _SCRIPT ) .. "/../../../" ),
-	output_path = path.getrelative( _OPTIONS["outpath"], "." )
-};
 
 function throw( text )
 	print( "Exception: " .. text );
@@ -26,6 +11,21 @@ function iff( expr, when_true, when_false )
 	else
 		return when_false
 	end
+end
+
+function class( init )
+	local cls = init;
+	cls.__index = cls;
+
+	return cls;
+end
+
+function class_instance( class )
+	local new_instance = {};
+	copy_instance( new_instance, class );
+	setmetatable( new_instance, class );
+
+	return new_instance;
 end
 
 function vardump(value, depth, key)
@@ -134,7 +134,7 @@ function table.index_of( table, object )
 	return result;	
 end
 
-function table.containsValue( table2, value )
+function table.contains_value( table2, value )
 	if type( table2 ) ~= "table" then
 		throw( "not a table" );
 	end
@@ -149,7 +149,7 @@ function table.containsValue( table2, value )
 	return false
 end
 
-function table.removeValue( table2, value )
+function table.remove_value( table2, value )
 	if type( table2 ) ~= "table" then
 		throw( "not a table" );
 	end
@@ -174,42 +174,18 @@ function copy_instance( target, source )
 	end
 end
 
-function class( init )
-	local cls = init;
-	cls.__index = cls;
-
-	return cls;
-end
-
-function class_instance( class )
-	local new_instance = {};
-	copy_instance( new_instance, class );
-	setmetatable( new_instance, class );
-
-	return new_instance;
-end
-
-function import( fname )
-	local fileName = path.join( os.getcwd(), fname, fname .. ".lua" );
-	if not os.isfile( fileName ) then
-		fileName = path.join( os.getcwd(), fname, "modules.lua" );
+function import( fname, base_dir )
+	if not base_dir then
+		base_dir = os.getcwd()
 	end
+
+	local fileName = path.join( base_dir, fname, fname .. ".lua" );
 	if not os.isfile( fileName ) then
-		fileName = path.join( os.getcwd(), fname, "premake4.lua" );
-	end
-	
-	if not os.isfile( fileName ) then
-		throw( "Can not import " .. fname .. " from " .. os.getcwd() );
+		throw( "Can not import " .. fname .. " from " .. base_dir );
 	end
 
 	--print( "Import: " .. fileName );
 	dofile( fileName );
-end
-
-function import_sub_directories()
-	for i,dir in pairs( os.matchdirs("*") ) do		
-		import( dir );
-	end
 end
 
 function get_config_dir( platform, configuration )
@@ -220,67 +196,7 @@ function get_config_dir( platform, configuration )
 	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
 end
 
-function file_action( file_name, action )
-	file_actions[ file_name ] = action;
-end
-
-function finalize( output_name, projects )
-	if type( output_name ) ~= "string" then
-		throw "finalize: output_name is not a string.";
-	end
-
-	if type( projects ) ~= "table" then
-		throw "finalize: projects argument are invalid.";
-	end
-
-	local var_platforms = {};
-	local var_configurations = {};
-
-	for i,project in pairs( projects ) do
-		for i,platform in pairs( project.platforms ) do
-			if not table.contains( var_platforms, platform ) then 
-				table.insert( var_platforms, platform );
-			end
-		end
-		for j,configuration in pairs( project.configurations ) do
-			if not table.contains( var_configurations, configuration ) then 
-				table.insert( var_configurations, configuration );
-			end
-		end
-	end
-	table.insert( var_configurations, 'Project' );
-	
-	solution( output_name );
-	configurations( var_configurations );
-	platforms( var_platforms );
-	location( _OPTIONS[ "outpath" ] )
-
-	toolchain( _OPTIONS[ "outpath" ], "" );
-
-	for i,project in pairs( projects ) do
-		print( "Project: " .. project.name );
-
-		_OPTIONS[ "unity_dir" ] = path.join( _OPTIONS[ "outpath" ], "unity_files", project.name )
-		if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
-			os.mkdir( _OPTIONS[ "unity_dir" ] )
-		end
-
-		_OPTIONS[ "genericdata_dir" ] = path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name )
-		if not os.isdir( _OPTIONS[ "genericdata_dir" ] ) then
-			os.mkdir( _OPTIONS[ "genericdata_dir" ] )
-		end
-
-		_OPTIONS[ "qt_dir" ] = path.join( _OPTIONS[ "outpath" ], "qt_files", project.name )
-		if not os.isdir( _OPTIONS[ "qt_dir" ] ) then
-			os.mkdir( _OPTIONS[ "qt_dir" ] )
-		end
-		
-		project:finalize();
-	end
-	
-	premake_path = global_configuration.root_path .. '\\library\\buildtools\\premake\\premake5.exe'
-	
-	--filter( 'Project' );
-	--kind( 'Makefile' );
-	--buildcommands( { 'cd ..\\project', premake_path .. ' /outpath=../build ' .. _ACTION } );
+function add_extension( name )
+	local script_path = path.join( global_configuration.scripts_path, "extensions/extension." .. name .. ".lua" );
+	dofile( script_path );
 end

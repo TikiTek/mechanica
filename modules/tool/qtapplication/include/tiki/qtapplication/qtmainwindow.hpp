@@ -35,7 +35,7 @@ namespace tiki
 
 		QTabWidget*		m_pRibbonTabs;
 
-		QTabWidget*		m_pMainTabs;
+		QTabWidget*		m_pFileTabs;
 	};
 }
 
