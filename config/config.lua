@@ -16,6 +16,6 @@ module.import_func = function()
 	end
 end
 
-module:add_dependency( "libraryconfig" );
+module:add_dependency( "config/libraryconfig" );
 
 module:set_flag( "EnableMinimalRebuild" );

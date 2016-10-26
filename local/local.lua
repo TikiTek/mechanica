@@ -1,4 +1,3 @@
 -- local
 
-import( "game" );
-import( "modules" );
+add_module_include_path( "modules" );
