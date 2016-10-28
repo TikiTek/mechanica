@@ -15,7 +15,7 @@ module:add_dependency( "core/resource" );
 module.import_func = function( project )
 	local output_path = path.getabsolute( _OPTIONS[ "genericdata_dir" ] );
 	
-	includedirs( { output_path } );
+	module:add_include_dir( output_path );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
 	
 	local exe_name = iff(is_windows, "genericdatacodegenerator.exe", "genericdatacodegenerator");

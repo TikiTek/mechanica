@@ -209,5 +209,3 @@ function get_config_dir( platform, configuration )
 
 	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
 end
-
-
