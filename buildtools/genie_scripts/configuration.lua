@@ -13,16 +13,15 @@ Configuration = class{
 };
 
 function Configuration:new()
-	local configuration_new = class_instance( self );
-
-	return configuration_new;
+	return class_instance( self );
 end
 
 function Configuration:set_define( name, value )
 	if value == nil then
-		value = {};
+		table.insert( self.defines, name );
+	else
+		table.insert( self.defines, name .. "=" .. value );
 	end
-	self.defines[ name ] = value;
 end
 
 function Configuration:checkBasePath( basePath )
@@ -71,62 +70,21 @@ function Configuration:add_post_build_step( step_script, step_data )
 	table.insert( self.post_build_steps, { script = step_script, data = step_data } );
 end
 
-function Configuration:apply_configuration( shader_dirs, binary_dirs, binary_files )
-	if ( binary_dirs == nil or  binary_files == nil ) then
-		throw "[Configuration:apply] too few arguments.";
+function Configuration:apply_configuration( target )
+	if type( target ) ~= "table" then
+		throw "[Configuration:apply_configuration] wrong target arguments.";
 	end
-	
-	for k, v in pairs( self.defines ) do
-		if type( v ) == "table" then
-			defines( { k } );
-			--print( k );
-		else
-			defines( { k.."="..v } );
-			--print( k.."="..v );
-		end
-	end
-	
-	--for i, v in pairs( self.flags ) do
-	--	print( v );
-	--end
-	
-	--if table.containsValue(self.flags, 'NoRTTI') then
-	--	rtti 'Off'
-	--	table.removeValue(self.flags, 'NoRTTI')
-	--end
-
-	--if table.containsValue(self.flags, 'NoExceptions') then
-	--	exceptionhandling 'Off'
-	--	table.removeValue(self.flags, 'NoExceptions')
-	--end
-	
-	flags( self.flags );
-
-	includedirs( self.include_dirs );
-	libdirs( self.library_dirs );		
-	links( self.library_files );
-
-	if shader_dirs ~= nil then
-		for i,dir in pairs( self.shader_dirs ) do
-			table.insert( shader_dirs, dir );
-		end
-	end
-
-	for i,dir in pairs( self.binary_dirs ) do
-		table.insert( binary_dirs, dir );
-	end
-
-	for i,file in pairs( self.binary_files ) do
-		table.insert( binary_files, file );
-	end
-
-	--[[for i,dir in pairs( self.library_dirs ) do
-		print( "libdir: " .. dir );
-	end
-
-	for i,file in pairs( self.library_files ) do
-		print( "libfile: " .. file );
-	end]]--
+		
+	target.defines = table.join( target.defines, self.defines );	
+	target.flags = table.join( target.flags, self.flags );
+	target.include_dirs = table.join( target.include_dirs, self.include_dirs );
+	target.library_dirs = table.join( target.library_dirs, self.library_dirs );
+	target.library_files = table.join( target.include_dirs, self.library_files );
+	target.binary_dirs = table.join( target.binary_dirs, self.binary_dirs );
+	target.binary_files = table.join( target.binary_files, self.binary_files );
+	target.shader_dirs = table.join( target.shader_dirs, self.shader_dirs );
+	target.pre_build_steps = table.join( target.pre_build_steps, self.pre_build_steps );
+	target.post_build_steps = table.join( target.post_build_steps, self.post_build_steps );
 end
 
 PlatformConfiguration = class{

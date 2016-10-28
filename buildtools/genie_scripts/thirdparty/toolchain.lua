@@ -146,9 +146,9 @@ function toolchain(_buildDir, _libDir)
 			os.exit(1)
 		end
 
-		flags {
-			"ExtraWarnings",
-		}
+		--flags {
+		--	"ExtraWarnings",
+		--}
 
 		if "android-arm" == _OPTIONS["gcc"] then
 
@@ -485,70 +485,70 @@ function toolchain(_buildDir, _libDir)
 	--	flags { "StaticRuntime" }
 	--end
 
-	if _OPTIONS["with-avx"] then
-		flags { "EnableAVX" }
-	end
+	--if _OPTIONS["with-avx"] then
+	--	flags { "EnableAVX" }
+	--end
 
-	flags {
-		"NoPCH",
-		"NativeWChar",
-		"NoRTTI",
-		"NoFramePointer",
-		"Symbols",
-	}
+	--flags {
+	--	"NoPCH",
+	--	"NativeWChar",
+	--	"NoRTTI",
+	--	"NoFramePointer",
+	--	"Symbols",
+	--}
 	--"NoExceptions",
 	--"NoEditAndContinue",
 
-	defines {
-		"__STDC_LIMIT_MACROS",
-		"__STDC_FORMAT_MACROS",
-		"__STDC_CONSTANT_MACROS",
-	}
+	--defines {
+	--	"__STDC_LIMIT_MACROS",
+	--	"__STDC_FORMAT_MACROS",
+	--	"__STDC_CONSTANT_MACROS",
+	--}
 
 	configuration { "qbs" }
-		flags {
-			"ExtraWarnings",
-		}
+		--flags {
+		--	"ExtraWarnings",
+		--}
 
 	configuration { "Debug" }
-		targetsuffix "Debug"
+		--/targetsuffix "Debug"
 
 	configuration { "Release" }
-		flags {
-			"NoBufferSecurityCheck",
-			"OptimizeSpeed",
-		}
-		targetsuffix "Release"
+		--flags {
+		--	"NoBufferSecurityCheck",
+		--	"OptimizeSpeed",
+		--}
+		--targetsuffix "Release"
 
 	configuration { "vs*", "x32" }
-		flags {
-			"EnableSSE2",
-		}
+		--flags {
+		--	"EnableSSE2",
+		--}
 
 	configuration { "vs*", "not orbis" }
-		includedirs { path.join(bxDir, "include/compat/msvc") }
-		defines {
-			"WIN32",
-			"_WIN32",
-			"_HAS_EXCEPTIONS=0",
-			"_HAS_ITERATOR_DEBUGGING=0",
-			"_SCL_SECURE=0",
-			"_SECURE_SCL=0",
-			"_SCL_SECURE_NO_WARNINGS",
-			"_CRT_SECURE_NO_WARNINGS",
-			"_CRT_SECURE_NO_DEPRECATE",
-		}
-		buildoptions {
-			"/wd4201", -- warning C4201: nonstandard extension used: nameless struct/union
-			"/wd4324", -- warning C4324: '': structure was padded due to alignment specifier
-			"/Ob2",    -- The Inline Function Expansion
-		}
-		linkoptions {
-			"/ignore:4221", -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
-		}
+		--includedirs { path.join(bxDir, "include/compat/msvc") }
+		--defines {
+		--	"WIN32",
+		--	"_WIN32",
+		--	"_HAS_EXCEPTIONS=0",
+		--	"_HAS_ITERATOR_DEBUGGING=0",
+		--	"_SCL_SECURE=0",
+		--	"_SECURE_SCL=0",
+		--	"_SCL_SECURE_NO_WARNINGS",
+		--	"_CRT_SECURE_NO_WARNINGS",
+		--	"_CRT_SECURE_NO_DEPRECATE",
+		--}
+		--buildoptions {
+		--	"/wd4201", -- warning C4201: nonstandard extension used: nameless struct/union
+		--	"/wd4324", -- warning C4324: '': structure was padded due to alignment specifier
+		--	"/Ob2",    -- The Inline Function Expansion
+		--}
+		--linkoptions {
+		--	"/ignore:4221", -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+		--}
 
 	configuration { "vs2008" }
-		includedirs { path.join(bxDir, "include/compat/msvc/pre1600") }
+		--includedirs { path.join(bxDir, "include/compat/msvc/pre1600") }
 
 	configuration { "x32", "vs*" }
 		targetdir (path.join(_buildDir, "win32_" .. _ACTION, "bin"))
@@ -558,7 +558,7 @@ function toolchain(_buildDir, _libDir)
 		}
 
 	configuration { "x64", "vs*" }
-		defines { "_WIN64" }
+		--defines { "_WIN64" }
 		targetdir (path.join(_buildDir, "win64_" .. _ACTION, "bin"))
 		objdir (path.join(_buildDir, "win64_" .. _ACTION, "obj"))
 		libdirs {
@@ -583,10 +583,10 @@ function toolchain(_buildDir, _libDir)
 		objdir (path.join(_buildDir, "win64_" .. _ACTION .. "-clang/obj"))
 
 	configuration { "winphone8* or winstore8*" }
-		removeflags {
-			"StaticRuntime",
-			"NoExceptions",
-		}
+		--removeflags {
+		--	"StaticRuntime",
+		--	"NoExceptions",
+		--}
 
 	configuration { "*-gcc* or osx" }
 		buildoptions {
@@ -594,8 +594,8 @@ function toolchain(_buildDir, _libDir)
 		}
 
 	configuration { "mingw-*" }
-		defines { "WIN32" }
-		includedirs { path.join(bxDir, "include/compat/mingw") }
+		--defines { "WIN32" }
+		--includedirs { path.join(bxDir, "include/compat/mingw") }
 		buildoptions {
 			"-Wunused-value",
 			"-fdata-sections",
@@ -769,13 +769,13 @@ function toolchain(_buildDir, _libDir)
 
 	configuration { "android-*" }
 		targetprefix ("lib")
-		flags {
-			"NoImportLib",
-		}
-		includedirs {
-			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/include",
-			"$(ANDROID_NDK_ROOT)/sources/android/native_app_glue",
-		}
+		--flags {
+		--	"NoImportLib",
+		--}
+		--includedirs {
+		--	"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/include",
+		--	"$(ANDROID_NDK_ROOT)/sources/android/native_app_glue",
+		--}
 		linkoptions {
 			"-nostdlib",
 			"-static-libgcc",
@@ -814,10 +814,10 @@ function toolchain(_buildDir, _libDir)
 		targetdir (path.join(_buildDir, "steamlink/bin"))
 		objdir (path.join(_buildDir, "steamlink/obj"))
 		libdirs { path.join(_libDir, "lib/steamlink") }
-		includedirs { path.join(bxDir, "include/compat/linux") }
-		defines {
-			"__STEAMLINK__=1", -- There is no special prefedined compiler symbol to detect SteamLink, faking it.
-		}
+		--includedirs { path.join(bxDir, "include/compat/linux") }
+		--defines {
+		--	"__STEAMLINK__=1", -- There is no special prefedined compiler symbol to detect SteamLink, faking it.
+		--}
 		buildoptions {
 			"-std=c++0x",
 			"-Wfatal-errors",
@@ -841,10 +841,10 @@ function toolchain(_buildDir, _libDir)
 			path.join(_libDir, "lib/android-arm"),
 			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a",
 		}
-		includedirs {
-			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include",
-			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/include",
-		}
+		--includedirs {
+		--	"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include",
+		--	"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/include",
+		--}
 		buildoptions {
 			"--sysroot=" .. path.join("$(ANDROID_NDK_ROOT)/platforms", androidPlatform, "arch-arm"),
 			"-mthumb",
@@ -869,9 +869,9 @@ function toolchain(_buildDir, _libDir)
 			path.join(_libDir, "lib/android-mips"),
 			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips",
 		}
-		includedirs {
-			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include",
-		}
+		--includedirs {
+		--	"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include",
+		--}
 		buildoptions {
 			"--sysroot=" .. path.join("$(ANDROID_NDK_ROOT)/platforms", androidPlatform, "arch-mips"),
 			"-Wunused-value",
@@ -890,9 +890,9 @@ function toolchain(_buildDir, _libDir)
 			path.join(_libDir, "lib/android-x86"),
 			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86",
 		}
-		includedirs {
-			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include",
-		}
+		--includedirs {
+		--	"$(ANDROID_NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include",
+		--}
 		buildoptions {
 			"--sysroot=" .. path.join("$(ANDROID_NDK_ROOT)/platforms", androidPlatform, "arch-x86"),
 			"-march=i686",
@@ -924,9 +924,9 @@ function toolchain(_buildDir, _libDir)
 		targetdir (path.join(_buildDir, "freebsd/bin"))
 		objdir (path.join(_buildDir, "freebsd/obj"))
 		libdirs { path.join(_libDir, "lib/freebsd") }
-		includedirs {
-			path.join(bxDir, "include/compat/freebsd"),
-		}
+		--includedirs {
+		--	path.join(bxDir, "include/compat/freebsd"),
+		--}
 
 	configuration { "nacl or nacl-arm or pnacl" }
 		buildoptions {
@@ -941,10 +941,10 @@ function toolchain(_buildDir, _libDir)
 		buildoptions_cpp {
 			"-std=c++0x",
 		}
-		includedirs {
-			"$(NACL_SDK_ROOT)/include",
-			path.join(bxDir, "include/compat/nacl"),
-		}
+		--includedirs {
+		--	"$(NACL_SDK_ROOT)/include",
+		--	path.join(bxDir, "include/compat/nacl"),
+		--}
 
 	configuration { "nacl" }
 		buildoptions {
@@ -1008,29 +1008,29 @@ function toolchain(_buildDir, _libDir)
 	configuration { "xbox360" }
 		targetdir (path.join(_buildDir, "xbox360/bin"))
 		objdir (path.join(_buildDir, "xbox360/obj"))
-		includedirs { path.join(bxDir, "include/compat/msvc") }
+		--includedirs { path.join(bxDir, "include/compat/msvc") }
 		libdirs { path.join(_libDir, "lib/xbox360") }
-		defines {
-			"NOMINMAX",
-		}
+		--defines {
+		--	"NOMINMAX",
+		--}
 
 	configuration { "durango" }
 		targetdir (path.join(_buildDir, "durango/bin"))
 		objdir (path.join(_buildDir, "durango/obj"))
-		includedirs { path.join(bxDir, "include/compat/msvc") }
+		--includedirs { path.join(bxDir, "include/compat/msvc") }
 		libdirs { path.join(_libDir, "lib/durango") }
 		removeflags { "StaticRuntime" }
-		defines {
-			"NOMINMAX",
-		}
+		--defines {
+		--	"NOMINMAX",
+		--}
 
 	configuration { "netbsd" }
 		targetdir (path.join(_buildDir, "netbsd/bin"))
 		objdir (path.join(_buildDir, "netbsd/obj"))
 		libdirs { path.join(_libDir, "lib/netbsd") }
-		includedirs {
-			path.join(bxDir, "include/compat/freebsd"),
-		}
+		--includedirs {
+		--	path.join(bxDir, "include/compat/freebsd"),
+		--}
 
 	configuration { "osx", "x32" }
 		targetdir (path.join(_buildDir, "osx32_clang/bin"))
@@ -1059,7 +1059,7 @@ function toolchain(_buildDir, _libDir)
 			"-Wunused-value",
 			"-Wundef",
 		}
-		includedirs { path.join(bxDir, "include/compat/osx") }
+		--includedirs { path.join(bxDir, "include/compat/osx") }
 
 	configuration { "ios*" }
 		linkoptions {
@@ -1070,7 +1070,7 @@ function toolchain(_buildDir, _libDir)
 			"-Wunused-value",
 			"-Wundef",
 		}
-		includedirs { path.join(bxDir, "include/compat/ios") }
+		--includedirs { path.join(bxDir, "include/compat/ios") }
 
 	configuration { "xcode4", "ios*" }
 		targetdir (path.join(_buildDir, "ios-arm/bin"))
@@ -1138,7 +1138,7 @@ function toolchain(_buildDir, _libDir)
 			"-Wunused-value",
 			"-Wundef",
 		}
-		includedirs { path.join(bxDir, "include/compat/ios") }
+		--includedirs { path.join(bxDir, "include/compat/ios") }
 
 	configuration { "xcode4", "tvos*" }
 		targetdir (path.join(_buildDir, "tvos-arm64/bin"))
@@ -1184,11 +1184,11 @@ function toolchain(_buildDir, _libDir)
 		targetdir (path.join(_buildDir, "orbis/bin"))
 		objdir (path.join(_buildDir, "orbis/obj"))
 		libdirs { path.join(_libDir, "lib/orbis") }
-		includedirs {
-			path.join(bxDir, "include/compat/freebsd"),
-			"$(SCE_ORBIS_SDK_DIR)/target/include",
-			"$(SCE_ORBIS_SDK_DIR)/target/include_common",
-		}
+		--includedirs {
+		--	path.join(bxDir, "include/compat/freebsd"),
+		--	"$(SCE_ORBIS_SDK_DIR)/target/include",
+		--	"$(SCE_ORBIS_SDK_DIR)/target/include_common",
+		--}
 		buildoptions {
 		}
 		buildoptions_cpp {
@@ -1218,10 +1218,10 @@ function toolchain(_buildDir, _libDir)
 			path.join(_libDir, "lib/rpi"),
 			"/opt/vc/lib",
 		}
-		defines {
-			"__VCCOREVER__=0x04000000", -- There is no special prefedined compiler symbol to detect RaspberryPi, faking it.
-			"__STDC_VERSION__=199901L",
-		}
+		--defines {
+		--	"__VCCOREVER__=0x04000000", -- There is no special prefedined compiler symbol to detect RaspberryPi, faking it.
+		--	"__STDC_VERSION__=199901L",
+		--}
 		buildoptions {
 			"-Wunused-value",
 			"-Wundef",
@@ -1229,11 +1229,11 @@ function toolchain(_buildDir, _libDir)
 		buildoptions_cpp {
 			"-std=c++0x",
 		}
-		includedirs {
-			"/opt/vc/include",
-			"/opt/vc/include/interface/vcos/pthreads",
-			"/opt/vc/include/interface/vmcs_host/linux",
-		}
+		--includedirs {
+		--	"/opt/vc/include",
+		--	"/opt/vc/include/interface/vcos/pthreads",
+		--	"/opt/vc/include/interface/vmcs_host/linux",
+		--}
 		links {
 			"rt",
 		}
@@ -1244,9 +1244,9 @@ function toolchain(_buildDir, _libDir)
 	configuration { "riscv" }
 		targetdir (path.join(_buildDir, "riscv/bin"))
 		objdir (path.join(_buildDir, "riscv/obj"))
-		includedirs {
-			"$(RISCV_DIR)/sysroot/usr/include",
-		}
+		--includedirs {
+		--	"$(RISCV_DIR)/sysroot/usr/include",
+		--}
 		buildoptions {
 			"-Wunused-value",
 			"-Wundef",
