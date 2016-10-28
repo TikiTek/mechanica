@@ -8,11 +8,11 @@ end
 
 global_configuration = {
 	scripts_path = path.getdirectory( _SCRIPT ),
-	root_path = path.getabsolute( path.getdirectory( _SCRIPT ) .. "/../../../" ),
-	output_path = path.getrelative( _OPTIONS["outpath"], "." )
-}
+	root_path = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "../../../" ) ),
+	genie_path = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), '../genie/genie.exe' ) )
+};
 
-dofile( "thirdparty/toolchain.lua" )
+--dofile( "thirdparty/toolchain.lua" )
 dofile( "thirdparty/datadumper.lua" )
 
 dofile( "global.lua" )

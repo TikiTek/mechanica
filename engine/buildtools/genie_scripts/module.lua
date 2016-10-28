@@ -7,6 +7,7 @@ Module = class{
 	module_dependencies = {},
 	source_files = {},
 	exclude_files = {},
+	optional_files = {},
 	stack_trace = ""
 };
 
@@ -75,7 +76,7 @@ function find_module( module_name, importer_name )
 end
 
 function Module:new( name, initFunc )
-	for i,module in pairs( global_module_storage ) do
+	for _,module in pairs( global_module_storage ) do
 		if ( module.name == name ) then
 			throw( "Module name already used: " .. name .. "\n" .. module.stack_trace );
 		end
@@ -102,10 +103,11 @@ end
 
 function Module:add_files( file_name, flags )
 	local target_list = self.source_files;
-
 	if type( flags ) == "table" then
 		if flags.exclude then
 			target_list = self.exclude_files;
+		elseif flags.optional then
+			target_list = self.optional_files;
 		end
 	end
 
@@ -178,7 +180,7 @@ function Module:finalize_module( config, configuration, platform, project )
 		end
 		
 		local all_files = {};
-		for i,pattern in pairs( self.source_files ) do
+		for _,pattern in pairs( self.source_files ) do
 			local matches = os.matchfiles( pattern )
 			
 			if #matches == 0 then
@@ -196,7 +198,22 @@ function Module:finalize_module( config, configuration, platform, project )
 			end
 		end
 		
-		for i,pattern in pairs( self.exclude_files ) do
+		for _,pattern in pairs( self.optional_files ) do
+			local matches = "";
+			if path.isabsolute( pattern ) then
+				matches = { pattern };
+			else
+				matches = os.matchfiles( pattern );
+			end
+		
+			for _,file_name in pairs( matches ) do
+				if not table.contains( all_files, file_name ) then
+					all_files[#all_files+1] = file_name;
+				end					
+			end
+		end
+		
+		for _,pattern in pairs( self.exclude_files ) do
 			local matches = os.matchfiles( pattern )
 			
 			for j,file_name in pairs( matches ) do
