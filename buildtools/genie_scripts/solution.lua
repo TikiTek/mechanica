@@ -55,31 +55,31 @@ function Solution:finalize()
 	platforms( var_platforms );
 	location( _OPTIONS[ "outpath" ] )
 
-	toolchain( _OPTIONS[ "outpath" ], "" );
+	--toolchain( _OPTIONS[ "outpath" ], "" );
 
 	for i,project in pairs( self.projects ) do
 		print( "Project: " .. project.name );
 
-		_OPTIONS[ "unity_dir" ] = path.join( _OPTIONS[ "outpath" ], "unity_files", project.name )
+		_OPTIONS[ "unity_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "unity_files", project.name ) );
 		if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
 			os.mkdir( _OPTIONS[ "unity_dir" ] )
 		end
 
-		_OPTIONS[ "genericdata_dir" ] = path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name )
+		_OPTIONS[ "genericdata_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name ) );
 		if not os.isdir( _OPTIONS[ "genericdata_dir" ] ) then
 			os.mkdir( _OPTIONS[ "genericdata_dir" ] )
 		end
 
-		_OPTIONS[ "qt_dir" ] = path.join( _OPTIONS[ "outpath" ], "qt_files", project.name )
+		_OPTIONS[ "qt_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "qt_files", project.name ) );
 		if not os.isdir( _OPTIONS[ "qt_dir" ] ) then
 			os.mkdir( _OPTIONS[ "qt_dir" ] )
 		end
-		
-		project:finalize_project();
+
+		project:finalize_project( _OPTIONS[ "outpath" ] );
 	end
 	
-	--local premake_path = global_configuration.root_path .. '\\library\\buildtools\\premake\\premake5.exe'	;
+	--local genie_exe = global_configuration.genie_path
 	--filter( 'Project' );
 	--kind( 'Makefile' );
-	--buildcommands( { 'cd ..\\project', premake_path .. ' /outpath=../build ' .. _ACTION } );
+	--buildcommands{ 'cd ..\\project', genie_exe .. ' /outpath=../build ' .. _ACTION };
 end

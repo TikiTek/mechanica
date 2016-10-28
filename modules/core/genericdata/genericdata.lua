@@ -12,7 +12,7 @@ module:add_dependency( "core/base" );
 module:add_dependency( "core/container" );
 module:add_dependency( "core/resource" );
 
-module.import_func = function(project)
+module.import_func = function( project )
 	local output_path = path.getabsolute( _OPTIONS[ "genericdata_dir" ] );
 	
 	includedirs( { output_path } );

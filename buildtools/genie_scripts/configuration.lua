@@ -79,7 +79,7 @@ function Configuration:apply_configuration( target )
 	target.flags = table.join( target.flags, self.flags );
 	target.include_dirs = table.join( target.include_dirs, self.include_dirs );
 	target.library_dirs = table.join( target.library_dirs, self.library_dirs );
-	target.library_files = table.join( target.include_dirs, self.library_files );
+	target.library_files = table.join( target.library_files, self.library_files );
 	target.binary_dirs = table.join( target.binary_dirs, self.binary_dirs );
 	target.binary_files = table.join( target.binary_files, self.binary_files );
 	target.shader_dirs = table.join( target.shader_dirs, self.shader_dirs );

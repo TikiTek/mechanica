@@ -99,7 +99,37 @@ function Project:add_library_file( library_filename, configuration, platform )
 	self.config:add_library_file( library_filename, configuration, platform );
 end
 
-function Project:finalize_binary( config, target_path )
+function Project:finalize_create_directories( project_pathes, configuration, platform )
+	project_pathes.root_dir = _OPTIONS[ "outpath" ];
+	if not os.isdir( project_pathes.root_dir ) then
+		os.mkdir( project_pathes.root_dir );
+	end
+
+	project_pathes.build_dir = get_config_dir( platform, configuration );
+	if not os.isdir( project_pathes.build_dir ) then
+		os.mkdir( project_pathes.build_dir );
+	end
+	
+	project_pathes.unity_dir = path.join( project_pathes.root_dir, "unity_files", self.name );
+	if not os.isdir( project_pathes.unity_dir ) then
+		print( "Create:" .. project_pathes.unity_dir );
+		os.mkdir( project_pathes.unity_dir );
+	end
+
+	project_pathes.genericdata_dir = path.join( project_pathes.root_dir, "genericdata_files", self.name );
+	if not os.isdir( project_pathes.genericdata_dir ) then
+		print( "Create:" .. project_pathes.genericdata_dir );
+		os.mkdir( project_pathes.genericdata_dir );
+	end
+
+	project_pathes.qt_dir = path.join( project_pathes.root_dir, "qt_files", self.name );
+	if not os.isdir( project_pathes.qt_dir ) then
+		print( "Create:" .. project_pathes.qt_dir );
+		os.mkdir( project_pathes.qt_dir );
+	end
+end
+
+function Project:finalize_binary( config )
 	for i,file in pairs( config.binary_files ) do
 		for j,dir in pairs( config.binary_dirs ) do
 			local fullpath = path.join( dir, file );
@@ -108,7 +138,7 @@ function Project:finalize_binary( config, target_path )
 				local step_script = path.join( global_configuration.scripts_path, "actions/copy_binary.lua" );
 				local step_data = {
 					source = fullpath,
-					target = path.join( target_path, file )
+					target = file
 				};
 				
 				config:add_post_build_step( step_script, step_data );
@@ -119,11 +149,11 @@ function Project:finalize_binary( config, target_path )
 end
 
 function Project:finalize_config( config )
-	local array_defines = table.sort( table.uniq( config.defines ) );
-	local array_flags = table.sort( table.uniq( config.flags ) );
-	local array_include_dirs = table.sort( table.uniq( config.include_dirs ) );
-	local array_library_dirs = table.sort( table.uniq( config.library_dirs ) );
-	local array_library_files = table.sort( table.uniq( config.include_dirs ) );
+	local array_defines = table.uniq( config.defines );
+	local array_flags = table.uniq( config.flags );
+	local array_include_dirs = table.uniq( config.include_dirs );
+	local array_library_dirs = table.uniq( config.library_dirs );
+	local array_library_files = table.uniq( config.library_files );
 
 	if array_defines then
 		defines( array_defines );
@@ -146,11 +176,52 @@ function Project:finalize_config( config )
 	end
 end
 
-function Project:finalize_build_steps( configuration, target_path, configuration, platform )
+function Project:finalize_build_steps( config, project_pathes )
+	local genie_exe = global_configuration.genie_path:gsub( "/", "\\" );
+	local relative_build_dir = path.getrelative( project_pathes.root_dir, project_pathes.build_dir )
+	
+	local global_filename = path.join( project_pathes.root_dir, "genie.lua" );
+	local global_file = io.open( global_filename, "w" );
+	if global_file ~= nil then
+		local script_path = path.getrelative( project_pathes.root_dir, path.join( global_configuration.scripts_path, "buildsteps.lua" ) );
+		global_file:write( "dofile( \"" .. script_path .. "\" );" );
+		global_file:close();
+	end
 
+	local pre_build_steps_filename = path.join( project_pathes.build_dir, "pre_build_steps.lua" );
+	local pre_build_steps_file = io.open( pre_build_steps_filename, "w" );
+	if pre_build_steps_file ~= nil then		
+		pre_build_steps_file:write( DataDumper( config.pre_build_steps ) );
+		pre_build_steps_file:close();
+	end	
+	
+	local command_line = {
+		genie_exe,
+		"/project=" .. self.name,
+		"/outpath=" .. relative_build_dir,
+		"/script=" .. path.join( relative_build_dir, "pre_build_steps.lua" ),
+		"buildsteps"
+	};
+	prebuildcommands{ table.concat( command_line, " " ) };
+
+	local post_build_steps_filename = path.join( project_pathes.build_dir, "post_build_steps.lua" );
+	local post_build_steps_file = io.open( post_build_steps_filename, "w" );
+	if post_build_steps_file ~= nil then		
+		post_build_steps_file:write( DataDumper( config.post_build_steps ) );
+		post_build_steps_file:close();
+	end
+
+	command_line = {
+		genie_exe,
+		"/project=" .. self.name,
+		"/outpath=" .. relative_build_dir,
+		"/script=" .. path.join( relative_build_dir, "post_build_steps.lua" ),
+		"buildsteps"
+	};
+	postbuildcommands{ table.concat( command_line, " " ) };
 end
 
-function Project:finalize_project()
+function Project:finalize_project( target_path )
 	project( self.name )
 	uuid( self.uuid );
 	kind( self.type );
@@ -220,11 +291,13 @@ function Project:finalize_project()
 			--print( "Configuration: " .. build_platform .. "/" .. build_config );
 			configuration{ build_config, platform };
 
-			local target_path = get_config_dir( build_platform, build_config );
-			targetdir( target_path );
-			debugdir( target_path );
-			objdir( path.join( target_path, "obj" ) );
-			
+			project_pathes = {};
+			self:finalize_create_directories( project_pathes, build_config, build_platform );
+
+			targetdir( project_pathes.build_dir );
+			debugdir( project_pathes.build_dir );
+			objdir( path.join( project_pathes.build_dir, "obj" ) );
+		
 			local config = Configuration:new();
 
 			self.module:finalize_module( config, build_config, build_platform, self );
@@ -241,9 +314,9 @@ function Project:finalize_project()
 			config_platform[ build_platform ]:apply_configuration( config );
 			config_configuration[ build_config ]:apply_configuration( config );
 			
-			self:finalize_binary( config, target_path );
+			self:finalize_binary( config, project_pathes.build_dir );
 			self:finalize_config( config );
-			self:finalize_build_steps( config, target_path, build_config, build_platform );
+			self:finalize_build_steps( config, project_pathes );
 		end
 	end
 
