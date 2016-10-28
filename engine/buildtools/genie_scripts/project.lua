@@ -99,26 +99,55 @@ function Project:add_library_file( library_filename, configuration, platform )
 	self.config:add_library_file( library_filename, configuration, platform );
 end
 
-function Project:finalize_binary( binary_dirs, binary_files )
-	local dirs = table.join_array( {}, binary_dirs );
-	local files = table.join_array( {}, binary_files );
-	
-	for i,file in pairs( files ) do
-		--print( "Binary File: " .. file );
-
-		for j,dir in pairs( dirs ) do
+function Project:finalize_binary( config, target_path )
+	for i,file in pairs( config.binary_files ) do
+		for j,dir in pairs( config.binary_dirs ) do
 			local fullpath = path.join( dir, file );
-			--print( "Binary Dir: " .. dir );
-			--print( "Binary Full: " .. fullpath );
 
 			if os.isfile( fullpath ) then
-				print( "Binary: " .. fullpath  );
-
-				fullpath = string.gsub( fullpath, "/", "\\" );
-				postbuildcommands{ "copy \"" .. fullpath .. "\" \"$(TargetDir)" .. file .. "\"" };
+				local step_script = path.join( global_configuration.scripts_path, "actions/copy_binary.lua" );
+				local step_data = {
+					source = fullpath,
+					target = path.join( target_path, file )
+				};
+				
+				config:add_post_build_step( step_script, step_data );
+				break;
 			end
 		end
 	end
+end
+
+function Project:finalize_config( config )
+	local array_defines = table.sort( table.uniq( config.defines ) );
+	local array_flags = table.sort( table.uniq( config.flags ) );
+	local array_include_dirs = table.sort( table.uniq( config.include_dirs ) );
+	local array_library_dirs = table.sort( table.uniq( config.library_dirs ) );
+	local array_library_files = table.sort( table.uniq( config.include_dirs ) );
+
+	if array_defines then
+		defines( array_defines );
+	end
+	
+	if array_flags then
+		flags( array_flags );
+	end
+	
+	if array_include_dirs then
+		includedirs( array_include_dirs );
+	end
+	
+	if array_library_dirs then
+		libdirs( array_library_dirs );
+	end
+	
+	if array_library_files then
+		links( array_library_files );
+	end
+end
+
+function Project:finalize_build_steps( configuration, target_path, configuration, platform )
+
 end
 
 function Project:finalize_project()
@@ -131,106 +160,90 @@ function Project:finalize_project()
 		buildoptions( self.buildoptions );
 	end
 	
+	local config_global = Configuration:new();
 	if self.lang == ProjectLanguages.cpp then
-		defines( { "TIKI_PROJECT_NAME=" .. self.name } );
+		config_global:set_define( "TIKI_PROJECT_NAME", self.name );
 
 		if self.type == ProjectTypes.sharedLibrary or self.type == ProjectTypes.staticLibrary then
-			defines( { "TIKI_BUILD_LIBRARY=TIKI_ON" } );
+			config_global:set_define( "TIKI_BUILD_LIBRARY", "TIKI_ON" );
 		else
-			defines( { "TIKI_BUILD_LIBRARY=TIKI_OFF" } );
+			config_global:set_define( "TIKI_BUILD_LIBRARY", "TIKI_OFF" );
 		end
 	end
 
 	local modules = {};
-	local shader_global_dirs = {};
-	local binary_global_dirs = {};
-	local binary_global_files = {};
 	self.module:resolve_dependency( modules );
 
-	self.module:finalize_module( shader_global_dirs, binary_global_dirs, binary_global_files, nil, nil, self );
-	for i,cur_module in pairs( modules ) do
-		--print( "Module: "..cur_module.name );
-		cur_module:finalize_module( shader_global_dirs, binary_global_dirs, binary_global_files, nil, nil, self );
+	self.module:finalize_module( config_global, nil, nil, self );
+	for _,cur_module in pairs( modules ) do
+		cur_module:finalize_module( config_global, nil, nil, self );
 	end
-	self:finalize_binary( { binary_global_dirs }, { binary_global_files } );
 
-	local binary_platform_dirs = {};
-	local binary_platform_files = {};
-	for i,var_platform in pairs( self.platforms ) do
-		configuration{ var_platform };
-		--print( "Platform: " .. var_platform );
+	local config_platform = {};
+	for _,build_platform in pairs( self.platforms ) do
+		--print( "Platform: " .. build_platform );
+		configuration{ build_platform };
 
-		binary_platform_dirs[ var_platform ] = {};
-		binary_platform_files[ var_platform ] = {};
+		config_platform[ build_platform ] = Configuration:new()
 
-		self.module:finalize_module( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform, self );
-
+		self.module:finalize_module( config_platform[ build_platform ], nil, build_platform, self );
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize_module( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ], nil, var_platform, self );
+			cur_module:finalize_module( config_platform[ build_platform ], nil, build_platform, self );
 		end
 
-		local project_config = self.config:get_config( nil, var_platform );
+		local project_config = self.config:get_config( nil, build_platform );
 		if project_config then
-			project_config:apply_configuration( nil, binary_platform_dirs[ var_platform ], binary_platform_files[ var_platform ] );
+			project_config:apply_configuration( config_platform[ build_platform ] );
 		end
-
-		self:finalize_binary( { binary_global_dirs, binary_platform_dirs[ var_platform ] }, { binary_platform_files[ var_platform ] } );
 	end
 
-	local binary_configuration_dirs = {};
-	local binary_configuration_files = {};
-	for i,var_configuration in pairs( self.configurations ) do
-		configuration{ var_configuration };
-		--print( "Configuration: " .. var_configuration );
+	local config_configuration = {};
+	for _,build_config in pairs( self.configurations ) do
+		--print( "Configuration: " .. build_config );
+		configuration{ build_config };
 
-		binary_configuration_dirs[ var_configuration ] = {};
-		binary_configuration_files[ var_configuration ] = {};
+		config_configuration[ build_config ] = Configuration:new();
 
-		self.module:finalize_module( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration, nil, self );
-
+		self.module:finalize_module( config_configuration[ build_config ], build_config, nil, self );
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize_module( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ], var_configuration, nil, self );
+			cur_module:finalize_module( config_configuration[ build_config ], build_config, nil, self );
 		end
 
-		local project_config = self.config:get_config( var_configuration );
+		local project_config = self.config:get_config( build_config, nil );
 		if project_config then
-			project_config:apply_configuration( nil, binary_configuration_dirs[ var_configuration ], binary_configuration_files[ var_configuration ] );
+			project_config:apply_configuration( config_configuration[ build_config ] );
 		end
-
-		self:finalize_binary( { binary_global_dirs, binary_configuration_dirs[ var_configuration ] }, { binary_configuration_files[ var_configuration ] } );
 	end
 
-	local binary_pc_dirs = {};
-	local binary_pc_files = {};
-	for i,var_platform in pairs( self.platforms ) do
-		binary_pc_dirs[ var_platform ] = {};
-		binary_pc_files[ var_platform ] = {};
+	for _,build_platform in pairs( self.platforms ) do
+		for j,build_config in pairs( self.configurations ) do
+			--print( "Configuration: " .. build_platform .. "/" .. build_config );
+			configuration{ build_config, platform };
 
-		for j,var_configuration in pairs( self.configurations ) do
-			configuration{ var_configuration, var_platform };
-
-			local path = get_config_dir( var_platform, var_configuration );
-			targetdir( path );
-			debugdir( path );
-			objdir( path .. "/obj" );
-
-			--print( "Configuration: " .. var_platform .. "/" .. var_configuration );
-
-			binary_pc_dirs[ var_platform ][ var_configuration ] = {};
-			binary_pc_files[ var_platform ][ var_configuration ] = {};
+			local target_path = get_config_dir( build_platform, build_config );
+			targetdir( target_path );
+			debugdir( target_path );
+			objdir( path.join( target_path, "obj" ) );
 			
-			self.module:finalize_module( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform, self );
+			local config = Configuration:new();
 
+			self.module:finalize_module( config, build_config, build_platform, self );
 			for k,cur_module in pairs( modules ) do
-				cur_module:finalize_module( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ], var_configuration, var_platform, self );
+				cur_module:finalize_module( config, build_config, build_platform, self );
 			end	
 			
-			local project_config = self.config:get_config( var_configuration, var_platform );
+			local project_config = self.config:get_config( build_config, build_platform );
 			if project_config then
-				project_config:apply_configuration( nil, binary_pc_dirs[ var_platform ][ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ] );
+				project_config:apply_configuration( config );
 			end	
 			
-			self:finalize_binary( { binary_global_dirs, binary_platform_dirs[ var_platform ], binary_configuration_dirs[ var_configuration ], binary_pc_dirs[ var_platform ][ var_configuration ] }, { binary_platform_files[ var_platform ], binary_configuration_files[ var_configuration ], binary_pc_files[ var_platform ][ var_configuration ] } );
+			config_global:apply_configuration( config );
+			config_platform[ build_platform ]:apply_configuration( config );
+			config_configuration[ build_config ]:apply_configuration( config );
+			
+			self:finalize_binary( config, target_path );
+			self:finalize_config( config );
+			self:finalize_build_steps( config, target_path, build_config, build_platform );
 		end
 	end
 
@@ -241,7 +254,7 @@ function Project:finalize_project()
 			shader_lines[ #shader_lines + 1 ] = line
 		end	
 	end
-	for i,dir in pairs( shader_global_dirs ) do
+	for _,dir in pairs( config_global.shader_dirs ) do
 		if table.index_of( shader_lines, dir ) == -1 then
 			table.insert( shader_lines, dir );
 		end

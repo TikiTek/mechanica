@@ -93,8 +93,6 @@ function Module:new( name, initFunc )
 		initFunc( module_new );
 	end
 
-	--print( "Module: "..module_new.name );
-	
 	return module_new;
 end
 
@@ -163,8 +161,6 @@ function Module:add_dependency( module_name )
 end
 
 function Module:resolve_dependency( target_list )
-	--print( "Module: "..self.name );
-
 	for i,module_name in pairs( self.module_dependencies ) do
 		local module = find_module( module_name, self.name )
 
@@ -175,14 +171,13 @@ function Module:resolve_dependency( target_list )
 	end
 end
 
-function Module:finalize_module( shader_dirs, binary_dirs, binary_files, configuration_obj, platform, project )
-	if ( configuration_obj == nil and platform == nil ) then
+function Module:finalize_module( config, configuration, platform, project )
+	if configuration == nil and platform == nil then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
 			self.import_func(project);
 		end
 		
 		local all_files = {};
-	
 		for i,pattern in pairs( self.source_files ) do
 			local matches = os.matchfiles( pattern )
 			
@@ -265,5 +260,5 @@ function Module:finalize_module( shader_dirs, binary_dirs, binary_files, configu
 		end
 	end
 
-	self.config:get_config( configuration_obj, platform ):apply_configuration( shader_dirs, binary_dirs, binary_files );
+	self.config:get_config( configuration, platform ):apply_configuration( config );
 end

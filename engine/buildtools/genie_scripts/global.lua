@@ -1,7 +1,7 @@
 
 function throw( text )
 	print( "Exception: " .. text );
-	print( debug.traceback() );
+	--print( debug.traceback() );
 	error();
 end
 
@@ -78,42 +78,56 @@ function io.exists( file_name )
 	return false;
 end
 
-function table.join( table, src1, src2, src3 )
-	if ( table == nil or src1 == nil ) then
+function table.join( src1, src2, src3 )
+	if type( src1 ) ~= "table" or type( src2 ) ~= "table" then
 		throw( "table.join: null argument exception" );
 	end
 
+	target = {}
 	for i,val in pairs( src1 ) do
-		table[ i ] = val;
+		target[ #target + 1 ] = val;
 	end
 
-	if src2 ~= nil then
-		for i,val in pairs( src2 ) do
-			table[ i ] = val;
-		end
+	for i,val in pairs( src2 ) do
+		target[ #target + 1 ] = val;
 	end
 
 	if src3 ~= nil then
 		for i,val in pairs( src3 ) do
-			table[ i ] = val;
+			target[ #target + 1 ] = val;
 		end
 	end
 
-	return table;
+	return target;
 end
 
-function table.join_array( table, array )
-	if ( table == nil or array == nil ) then
-		throw( "table.join_array: null argument exception" );
+function table.flatten( array_array )
+	if type( array_array ) ~= "table" then
+		throw( "table.flatten: invalid argument" );
 	end
 
-	for i,arr in pairs( array ) do
-		for j,val in pairs( arr ) do
-			table[ j ] = val;
+	local target = {}
+	for i,array in pairs( array_array ) do
+		for j,val in pairs( array ) do
+			target[ #target + 1 ] = val;
 		end
 	end
 
-	return table;
+	return target;
+end
+
+function table.uniq( array )
+	local hash = {};
+	
+	local target = {};
+	for _,val in ipairs( array ) do
+	   if not hash[ val ] then
+		   hash[ val ] = true;
+		   target[ #target + 1 ] = val;
+	   end
+	end
+	
+	return target;
 end
 
 function table.index_of( table, object )
@@ -196,7 +210,4 @@ function get_config_dir( platform, configuration )
 	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
 end
 
-function add_extension( name )
-	local script_path = path.join( global_configuration.scripts_path, "extensions/extension." .. name .. ".lua" );
-	dofile( script_path );
-end
+
