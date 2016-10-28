@@ -288,8 +288,8 @@ function Project:finalize_project( target_path )
 
 	for _,build_platform in pairs( self.platforms ) do
 		for j,build_config in pairs( self.configurations ) do
-			--print( "Configuration: " .. build_platform .. "/" .. build_config );
-			configuration{ build_config, platform };
+			print( "Configuration: " .. build_platform .. "/" .. build_config );
+			configuration{ build_platform, build_config };
 
 			project_pathes = {};
 			self:finalize_create_directories( project_pathes, build_config, build_platform );
