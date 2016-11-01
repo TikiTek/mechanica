@@ -173,10 +173,10 @@ function Module:resolve_dependency( target_list )
 	end
 end
 
-function Module:finalize_module( config, configuration, platform, project )
+function Module:finalize_module( config, configuration, platform, project, solution )
 	if configuration == nil and platform == nil then
 		if self.import_func ~= nil and type( self.import_func ) == "function" then
-			self.import_func(project);
+			self.import_func( project, solution );
 		end
 		
 		local all_files = {};

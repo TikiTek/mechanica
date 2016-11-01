@@ -7,7 +7,7 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "fontconverter.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "converterbase" );
-module:add_dependency( "graphicsbase" );
-module:add_dependency( "freetype" );
-module:add_dependency( "textureexport" );
+module:add_dependency( "runtime/graphicsbase" );
+module:add_dependency( "tool/converterbase" );
+module:add_dependency( "tool/textureexport" );
+module:add_dependency( "thirdparty/freetype" );

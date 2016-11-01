@@ -14,54 +14,54 @@ namespace tiki
 	}
 
 	template< typename TState, typename TInitData >
-	bool Component<TState, TInitData>::initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData )
+	bool Component<TState, TInitData>::initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData )
 	{
-		TIKI_ASSERT( pComponentState != nullptr );
+		TIKI_ASSERT( pState != nullptr );
 
-		if( pComponentInitData == nullptr )
+		if( pInitData == nullptr )
 		{
 			return false;
 		}
 
-		TState* pTypedComponentState = (TState*)pComponentState;
+		TState* pTypedState = (TState*)pState;
 		if( m_constuctState )
 		{
-			constructComponentState( pTypedComponentState );
+			constructComponentState( pTypedState );
 		}
 
-		if (!internalInitializeState( componentIterator, pTypedComponentState, (TInitData*)pComponentInitData ))
+		if( !internalInitializeState( iterator, pTypedState, (const TInitData*)pInitData ) )
 		{
 			if( m_constuctState )
 			{
-				destructComponentState( pTypedComponentState );
+				destructComponentState( pTypedState );
 			}
 			return false;
 		}
 
-		if ( m_pFirstComponentState == nullptr )
+		if ( m_pFirstState == nullptr )
 		{
-			m_pFirstComponentState	= pComponentState;
+			m_pFirstState = pState;
 		}
 				
 		return true;
 	}
 		
 	template< typename TState, typename TInitData >
-	void Component<TState, TInitData>::disposeState( ComponentState* pComponentState )
+	void Component<TState, TInitData>::disposeState( ComponentState* pState )
 	{
-		TIKI_ASSERT( pComponentState != nullptr );
+		TIKI_ASSERT( pState != nullptr );
 
-		if ( pComponentState == m_pFirstComponentState )
+		if ( pState == m_pFirstState )
 		{
-			m_pFirstComponentState = m_pFirstComponentState->pNextComponentOfSameType;
+			m_pFirstState = m_pFirstState->pNextComponentOfSameType;
 		}
 
-		TState* pTypedComponentState = (TState*)pComponentState;
-		internalDisposeState( pTypedComponentState );
+		TState* pTypedState = (TState*)pState;
+		internalDisposeState( pTypedState );
 
 		if( m_constuctState )
 		{
-			destructComponentState( pTypedComponentState );
+			destructComponentState( pTypedState );
 		}
 	}
 
@@ -91,7 +91,7 @@ namespace tiki
 	template< typename TState, typename TInitData >
 	bool Component<TState, TInitData>::checkIntegrity() const
 	{
-		ComponentTypeIterator< const ComponentState > iterator = ComponentTypeIterator< const ComponentState >( (const ComponentState*)m_pFirstComponentState );
+		ComponentTypeIterator< const ComponentState > iterator = ComponentTypeIterator< const ComponentState >( (const ComponentState*)m_pFirstState );
 
 		const ComponentState* pState = nullptr;
 		while ( pState = iterator.getNext() )
@@ -129,13 +129,13 @@ namespace tiki
 	template< typename TState, typename TInitData >
 	ComponentTypeIterator< TState > Component<TState, TInitData>::getIterator() const
 	{
-		return Iterator( static_cast< State* >( m_pFirstComponentState ) );
+		return Iterator( static_cast< State* >( m_pFirstState ) );
 	}
 
 	template< typename TState, typename TInitData >
 	ComponentTypeIterator< const TState > Component<TState, TInitData>::getConstIterator() const
 	{
-		return ConstIterator( static_cast< const State* >( m_pFirstComponentState ) );
+		return ConstIterator( static_cast< const State* >( m_pFirstState ) );
 	}
 }
 

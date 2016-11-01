@@ -5,15 +5,15 @@ local module = Module:new( "converterlibrary" );
 module:add_files( "source/*.*" );
 module:add_files( "converterlibrary.lua" );
 
-module:add_dependency( "config" );
-module:add_dependency( "threading" );
-module:add_dependency( "toollibraries" );
-module:add_dependency( "fontconverter" );
-module:add_dependency( "shaderconverter" );
-module:add_dependency( "textureconverter" );
-module:add_dependency( "modelconverter" );
-module:add_dependency( "animationconverter" );
-module:add_dependency( "genericdataconverter" );
+module:add_dependency( "core/config" );
+module:add_dependency( "core/threading" );
+module:add_dependency( "libraries/converter" );
+module:add_dependency( "converters/fontconverter" );
+module:add_dependency( "converters/shaderconverter" );
+module:add_dependency( "converters/textureconverter" );
+module:add_dependency( "converters/modelconverter" );
+module:add_dependency( "converters/animationconverter" );
+module:add_dependency( "converters/genericdataconverter" );
 
 local project = Project:new(
 	"converterlibrary",

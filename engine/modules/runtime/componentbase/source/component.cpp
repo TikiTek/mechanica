@@ -5,7 +5,7 @@
 namespace tiki
 {
 	ComponentBase::ComponentBase( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState )
-		: m_pFirstComponentState( nullptr )
+		: m_pFirstState( nullptr )
 		, m_typeCrc( typeCrc )
 		, m_pTypeName( pTypeName )
 		, m_stateSize( stateSize )

@@ -221,7 +221,7 @@ function Project:finalize_build_steps( config, project_pathes )
 	postbuildcommands{ table.concat( command_line, " " ) };
 end
 
-function Project:finalize_project( target_path )
+function Project:finalize_project( target_path, solution )
 	project( self.name )
 	uuid( self.uuid );
 	kind( self.type );
@@ -245,9 +245,14 @@ function Project:finalize_project( target_path )
 	local modules = {};
 	self.module:resolve_dependency( modules );
 
-	self.module:finalize_module( config_global, nil, nil, self );
+	self.module:finalize_module( config_global, nil, nil, self, solution );
 	for _,cur_module in pairs( modules ) do
-		cur_module:finalize_module( config_global, nil, nil, self );
+		cur_module:finalize_module( config_global, nil, nil, self, solution );
+	end
+
+	local project_config = self.config:get_config( nil, nil );
+	if project_config then
+		project_config:apply_configuration( config_global );
 	end
 
 	local config_platform = {};
@@ -257,9 +262,9 @@ function Project:finalize_project( target_path )
 
 		config_platform[ build_platform ] = Configuration:new()
 
-		self.module:finalize_module( config_platform[ build_platform ], nil, build_platform, self );
+		self.module:finalize_module( config_platform[ build_platform ], nil, build_platform, self, solution );
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize_module( config_platform[ build_platform ], nil, build_platform, self );
+			cur_module:finalize_module( config_platform[ build_platform ], nil, build_platform, self, solution );
 		end
 
 		local project_config = self.config:get_config( nil, build_platform );
@@ -275,9 +280,9 @@ function Project:finalize_project( target_path )
 
 		config_configuration[ build_config ] = Configuration:new();
 
-		self.module:finalize_module( config_configuration[ build_config ], build_config, nil, self );
+		self.module:finalize_module( config_configuration[ build_config ], build_config, nil, self, solution );
 		for j,cur_module in pairs( modules ) do
-			cur_module:finalize_module( config_configuration[ build_config ], build_config, nil, self );
+			cur_module:finalize_module( config_configuration[ build_config ], build_config, nil, self, solution );
 		end
 
 		local project_config = self.config:get_config( build_config, nil );
@@ -300,9 +305,9 @@ function Project:finalize_project( target_path )
 		
 			local config = Configuration:new();
 
-			self.module:finalize_module( config, build_config, build_platform, self );
+			self.module:finalize_module( config, build_config, build_platform, self, solution );
 			for k,cur_module in pairs( modules ) do
-				cur_module:finalize_module( config, build_config, build_platform, self );
+				cur_module:finalize_module( config, build_config, build_platform, self, solution );
 			end	
 			
 			local project_config = self.config:get_config( build_config, build_platform );

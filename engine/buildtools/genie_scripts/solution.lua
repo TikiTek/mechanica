@@ -29,6 +29,10 @@ function Solution:add_project( project )
 		throw "[Solution:add_project] project argument is invalid.";
 	end
 
+	if table.contains( self.projects, project ) then 
+		return;
+	end
+	
 	table.insert( self.projects, project );
 end
 
@@ -57,7 +61,8 @@ function Solution:finalize()
 
 	--toolchain( _OPTIONS[ "outpath" ], "" );
 
-	for i,project in pairs( self.projects ) do
+	while #self.projects > 0 do
+		local project = self.projects[ next( self.projects ) ];
 		print( "Project: " .. project.name );
 
 		_OPTIONS[ "unity_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "unity_files", project.name ) );
@@ -75,7 +80,8 @@ function Solution:finalize()
 			os.mkdir( _OPTIONS[ "qt_dir" ] )
 		end
 
-		project:finalize_project( _OPTIONS[ "outpath" ] );
+		project:finalize_project( _OPTIONS[ "outpath" ], self );
+		table.remove_value( self.projects, project );
 	end
 	
 	--local genie_exe = global_configuration.genie_path

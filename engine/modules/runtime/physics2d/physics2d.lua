@@ -8,4 +8,5 @@ module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "box2d" );
+module:add_dependency( "core/math" );
+module:add_dependency( "thirdparty/box2d" );

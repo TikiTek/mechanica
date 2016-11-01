@@ -7,4 +7,4 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "modelexport.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "math" );
+module:add_dependency( "core/math" );

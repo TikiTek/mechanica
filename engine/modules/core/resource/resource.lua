@@ -9,4 +9,5 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "core/container" );
 module:add_dependency( "core/io" );
-module:add_dependency( "tool/toollibraries" );
+
+module:add_dependency( "libraries/converter" );

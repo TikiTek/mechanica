@@ -7,6 +7,6 @@ module:add_files( "source/*.*" );
 module:add_files( "script.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "base" );
-module:add_dependency( "math" );
-module:add_dependency( "lua" );
+module:add_dependency( "core/base" );
+module:add_dependency( "core/math" );
+module:add_dependency( "thirdparty/lua" );

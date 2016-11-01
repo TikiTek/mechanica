@@ -1,4 +1,3 @@
-
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "tiki/base/debugprop.hpp"
@@ -8,7 +7,7 @@
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
 #include "tiki/resource/resourcerequest.hpp"
-#include "tiki/toollibraries/iassetconverter.hpp"
+#include "tiki/converter/iassetconverter.hpp"
 
 namespace tiki
 {
