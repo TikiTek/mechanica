@@ -7,5 +7,5 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "gamecomponents.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "componentbase" );
-module:add_dependency( "physics3d" );
+module:add_dependency( "runtime/componentbase" );
+module:add_dependency( "runtime/physics3d" );

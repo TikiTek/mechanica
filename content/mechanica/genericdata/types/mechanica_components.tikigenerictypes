@@ -10,9 +10,19 @@
 		<value name="Wood" />
 	</enum>
 	<enum name="MechanicaComponentType">
+		<value name="Breakable" value="{crc BreakableComponent}" />
 		<value name="Player" value="{crc PlayerComponent}" />
 		<value name="Wiggle" value="{crc WiggleComponent}" />
 	</enum>
+	<struct name="BreakableFragment">
+		<field type="{array float2}" name="points" />
+	</struct>
+	<struct name="BreakableComponentInitData" base="ComponentInitData">
+		<field type="{array BreakableFragment}" name="fragments" />
+		<field type="float" name="destructionForce" value="10.0" />
+		<field type="float" name="breakAfterSeconds" value="0.0" />
+		<field type="bool" name="enableBreakTimer" value="false" />
+	</struct>
 	<struct name="PlayerComponentInitData" base="ComponentInitData">
 		<field type="float" name="mass" value="20.0" />
 		<field type="float" name="maxSpeed" value="10.0" />

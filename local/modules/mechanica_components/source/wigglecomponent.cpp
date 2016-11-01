@@ -54,8 +54,6 @@ namespace tiki
 
 	bool WiggleComponent::internalInitializeState( ComponentEntityIterator& componentIterator, WiggleComponentState* pState, const WiggleComponentInitData* pInitData )
 	{
-		pState = new(pState) WiggleComponentState;
-
 		pState->pTransformState = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		pState->pBodyState		= (Physics2dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
 
@@ -103,7 +101,5 @@ namespace tiki
 			pState->joints[ i ].dispose( *m_pPhysicsWorld );
 			pState->colliders[ i ].dispose( *m_pPhysicsWorld );
 		}
-
-		pState->~WiggleComponentState();
 	}
 }
