@@ -7,8 +7,9 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
-module:add_dependency( "entitysystem" );
-module:add_dependency( "components" );
+module:add_dependency( "runtime/entitysystem" );
+module:add_dependency( "runtime/components" );
+module:add_dependency( "runtime/physics2dcomponents" );
+module:add_dependency( "runtime/debugrenderer" );
+
 module:add_dependency( "mechanica_components" );
-module:add_dependency( "physics2dcomponents" );
-module:add_dependency( "debugrenderer" );
