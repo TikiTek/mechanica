@@ -14,5 +14,5 @@ else
 	throw "Platform not supported";
 end
 
-module:add_dependency( "base" );
-module:add_dependency( "container" );
+module:add_dependency( "core/base" );
+module:add_dependency( "core/container" );

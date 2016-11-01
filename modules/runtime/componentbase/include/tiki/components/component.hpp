@@ -7,6 +7,8 @@
 
 namespace tiki
 {
+	struct ComponentInitData;
+
 	class ComponentBase
 	{
 		TIKI_NONCOPYABLE_CLASS( ComponentBase );
@@ -18,8 +20,8 @@ namespace tiki
 		void					registerComponent( ComponentTypeId typeId );
 		void					unregisterComponent();
 
-		virtual bool			initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData ) TIKI_PURE;
-		virtual void			disposeState( ComponentState* pComponentState ) TIKI_PURE;
+		virtual bool			initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_PURE;
+		virtual void			disposeState( ComponentState* pState ) TIKI_PURE;
 
 		crc32					getTypeCrc() const { return m_typeCrc; }
 		const char*				getTypeName() const { return m_pTypeName; }
@@ -33,9 +35,9 @@ namespace tiki
 		
 	protected:
 
-								ComponentBase(crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
+								ComponentBase( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
 
-		ComponentState*			m_pFirstComponentState;
+		ComponentState*			m_pFirstState;
 
 		crc32					m_typeCrc;
 		const char*				m_pTypeName;
@@ -61,8 +63,8 @@ namespace tiki
 
 		virtual			~Component() {}
 
-		virtual bool	initializeState( ComponentEntityIterator& componentIterator, ComponentState* pComponentState, const void* pComponentInitData ) TIKI_OVERRIDE_FINAL;
-		virtual void	disposeState( ComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
+		virtual bool	initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_OVERRIDE_FINAL;
+		virtual void	disposeState( ComponentState* pState ) TIKI_OVERRIDE_FINAL;
 		
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		virtual bool	checkIntegrity() const TIKI_OVERRIDE_FINAL;
@@ -75,8 +77,8 @@ namespace tiki
 
 						Component( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
 
-		virtual bool	internalInitializeState( ComponentEntityIterator& componentIterator, TState* pComponentState, const TInitData* pComponentInitData ) TIKI_PURE;
-		virtual void	internalDisposeState( TState* pComponentState ) TIKI_PURE;
+		virtual bool	internalInitializeState( ComponentEntityIterator& iterator, TState* pState, const TInitData* pInitData ) TIKI_PURE;
+		virtual void	internalDisposeState( TState* pState ) TIKI_PURE;
 
 	};
 }

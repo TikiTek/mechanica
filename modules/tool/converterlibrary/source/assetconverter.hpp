@@ -2,7 +2,7 @@
 #ifndef TIKI_ASSETCONVERTER_HPP
 #define TIKI_ASSETCONVERTER_HPP
 
-#include "tiki/toollibraries/iassetconverter.hpp"
+#include "tiki/converter/iassetconverter.hpp"
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"

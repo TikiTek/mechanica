@@ -5,7 +5,10 @@
 #include "tiki/debugguiwindows/debugguiwindows.hpp"
 #include "tiki/input/inputevent.hpp"
 #include "tiki/runtimeshared/windowevent.hpp"
-#include "tiki/toollibraries/iwebinterrface.hpp"
+
+#if TIKI_ENABLED( TIKI_WEB_INTERFACE )
+#	include "tiki/toollibraries/iwebinterrface.hpp"
+#endif
 
 namespace tiki
 {

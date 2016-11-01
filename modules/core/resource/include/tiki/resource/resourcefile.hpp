@@ -199,7 +199,7 @@ namespace tiki
 #else
 		TIKI_ALIGN_PREFIX( 8 )	struct
 		{
-			const T*	m_pRef;
+			const T*	m_pData;
 			size_t		m_pad0;
 			size_t		m_size;
 			size_t		m_pad1;

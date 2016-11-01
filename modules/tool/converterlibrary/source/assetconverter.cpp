@@ -1,4 +1,3 @@
-
 #include "assetconverter.hpp"
 
 #include "tiki/io/path.hpp"
@@ -6,12 +5,12 @@
 
 namespace tiki
 {
-	IAssetConverter* createAssetConverter()
+	TIKI_LIBRARY_METHOD IAssetConverter* createAssetConverter()
 	{
 		return TIKI_NEW( AssetConverter );
 	}
 
-	void disposeAssetConverter( IAssetConverter* pObject )
+	TIKI_LIBRARY_METHOD void disposeAssetConverter( IAssetConverter* pObject )
 	{
 		TIKI_DELETE( pObject );
 		Thread::shutdownSystem();

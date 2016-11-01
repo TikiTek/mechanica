@@ -20,13 +20,13 @@ module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Debug" );
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Release" );
 module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Master" );
 
-module:add_dependency( "graphics" );
-module:add_dependency( "resource" );
-module:add_dependency( "input" );
-module:add_dependency( "debuggui" );
-module:add_dependency( "debugguiwindows" );
---module:add_dependency( "webserverpages" );
-module:add_dependency( "toollibraries" );
-module:add_dependency( "runtimeshared" );
-module:add_dependency( "ui" );
-module:add_dependency( "debugrenderer" );
+module:add_dependency( "runtime/graphics" );
+module:add_dependency( "core/resource" );
+module:add_dependency( "runtime/input" );
+module:add_dependency( "runtime/debuggui" );
+module:add_dependency( "runtime/debugguiwindows" );
+module:add_dependency( "runtime/runtimeshared" );
+module:add_dependency( "runtime/ui" );
+module:add_dependency( "runtime/debugrenderer" );
+
+--module:add_dependency( "libraries/web" );
