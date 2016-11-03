@@ -15,10 +15,5 @@ local project = Project:new(
 
 local solution = Solution:new( "game" );
 solution:add_project( project );
---solution:add_project( find_project( "converterlibrary" ) );
-
---if use_msvc then
---	solution:add_project( find_project( "webinterfacelibrary" ) );
---end
 
 solution:finalize();

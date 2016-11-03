@@ -15,12 +15,14 @@ namespace tiki
 {
 	struct BreakableComponentState : public ComponentState
 	{
-		Transform2dComponentState*		pTransformState;
-		Physics2dBodyComponentState*	pBodyState;
+		Transform2dComponentState*				pTransformState;
+		Physics2dBodyComponentState*			pBodyState;
 
-		float							destructionForce;
-		float							breakAfterSeconds;
-		bool							enableBreakTimer;
+		const ResArray< BreakableFragment >*	pFragments;
+
+		float									destructionForce;
+		float									breakAfterSeconds;
+		bool									enableBreakTimer;
 	};
 	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( BreakableComponentState );
 
@@ -37,8 +39,10 @@ namespace tiki
 		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
 	}
 
-	bool BreakableComponent::create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent )
+	bool BreakableComponent::create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent )
 	{
+		m_pEntitySystem			= &entitySystem;
+
 		m_pPhysicsWorld			= &physicsWorld;
 
 		m_pTransformComponent	= &transformComponent;
@@ -55,18 +59,63 @@ namespace tiki
 		m_pPhysicsWorld			= nullptr;
 	}
 
+	void BreakableComponent::update( float deltaTime )
+	{
+		Iterator componentStates = getIterator();
+
+		State* pState = nullptr;
+		while( pState = componentStates.getNext() )
+		{
+			if( !pState->enableBreakTimer )
+			{
+				continue;
+			}
+
+			pState->breakAfterSeconds -= deltaTime;
+
+			if( pState->breakAfterSeconds <= 0.0f )
+			{
+				breakBody( pState );
+			}
+		}
+	}
+
+	void BreakableComponent::breakBody( BreakableComponentState* pState )
+	{
+		if( pState->pFragments != nullptr )
+		{
+			createFragmentEntities( *pState->pFragments );
+		}
+		else
+		{
+
+		}
+	}
+
 	bool BreakableComponent::internalInitializeState( ComponentEntityIterator& componentIterator, BreakableComponentState* pState, const BreakableComponentInitData* pInitData )
 	{
+		pState->pTransformState		= (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		pState->pBodyState			= (Physics2dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
 
-		pState->pTransformState = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
-		pState->pBodyState		= (Physics2dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
+		if( pInitData->fragments.getCount() > 0u )
+		{
+			pState->pFragments		= &pInitData->fragments;
+		}
+
+		pState->destructionForce	= pInitData->destructionForce;
+		pState->breakAfterSeconds	= pInitData->breakAfterSeconds;
+		pState->enableBreakTimer	= pInitData->enableBreakTimer;
 
 		return true;
 	}
 
 	void BreakableComponent::internalDisposeState( BreakableComponentState* pState )
 	{
+	}
 
+	void BreakableComponent::createFragmentEntities( const ResArray< BreakableFragment >& fragments )
+	{
 
 	}
+
 }
