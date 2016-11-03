@@ -6,6 +6,7 @@
 
 namespace tiki
 {
+	class EntitySystem;
 	class Physics2dBodyComponent;
 	class Physics2dWorld;
 	class Transform2dComponent;
@@ -21,7 +22,7 @@ namespace tiki
 		explicit			BreakableComponent();
 		virtual				~BreakableComponent();
 
-		bool				create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent );
+		bool				create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent );
 		void				dispose();
 
 		void				update( float deltaTime );
@@ -35,10 +36,14 @@ namespace tiki
 
 	private:
 
+		EntitySystem*					m_pEntitySystem;
+
 		Physics2dWorld*					m_pPhysicsWorld;
 
 		const Transform2dComponent*		m_pTransformComponent;
 		const Physics2dBodyComponent*	m_pPhysicsBodyComponent;
+
+		void							createFacgmentEntities( const ResArray< BreakableFragment >& fragments );
 	};
 }
 
