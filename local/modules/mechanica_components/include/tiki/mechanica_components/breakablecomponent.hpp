@@ -4,6 +4,8 @@
 
 #include "tiki/components/component.hpp"
 
+#include "tiki/resource/resourcefile.hpp"
+
 namespace tiki
 {
 	class EntitySystem;
@@ -12,6 +14,7 @@ namespace tiki
 	class Transform2dComponent;
 	struct BreakableComponentInitData;
 	struct BreakableComponentState;
+	struct BreakableFragment;
 
 	class BreakableComponent : public Component< BreakableComponentState, BreakableComponentInitData >
 	{
@@ -43,7 +46,7 @@ namespace tiki
 		const Transform2dComponent*		m_pTransformComponent;
 		const Physics2dBodyComponent*	m_pPhysicsBodyComponent;
 
-		void							createFacgmentEntities( const ResArray< BreakableFragment >& fragments );
+		void							createFragmentEntities( const ResArray< BreakableFragment >& fragments );
 	};
 }
 
