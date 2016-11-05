@@ -16,13 +16,6 @@
               <field type="crc32" name="componentType" value="{enum Components2dType.Texture}" />
               <field type="{pointer ComponentInitData}" name="initData">
                 <object type="TextureComponentInitData">
-                  <field type="{reference Texture}" name="texture" value="TEXR:island1.texture" />
-                  <field type="float2" name="offset">
-                    <object type="float2">
-                      <field type="float" name="x" value="-0.648797" />
-                      <field type="float" name="y" value="-0.7490338" />
-                    </object>
-                  </field>
                   <field type="uint32" name="layerId" value="5" />
                 </object>
               </field>
@@ -44,44 +37,20 @@
                         <array type="float2">
                           <element type="float2">
                             <object type="float2">
-                              <field type="float" name="x" value="-8.141203" />
-                              <field type="float" name="y" value="-2.035966" />
+                              <field type="float" name="x" value="-0.26" />
+                              <field type="float" name="y" value="1.92" />
                             </object>
                           </element>
                           <element type="float2">
                             <object type="float2">
-                              <field type="float" name="x" value="8.988797" />
-                              <field type="float" name="y" value="-2.035966" />
+                              <field type="float" name="x" value="0.29" />
+                              <field type="float" name="y" value="0.46" />
                             </object>
                           </element>
                           <element type="float2">
                             <object type="float2">
-                              <field type="float" name="x" value="5.788797" />
-                              <field type="float" name="y" value="0.6340338" />
-                            </object>
-                          </element>
-                          <element type="float2">
-                            <object type="float2">
-                              <field type="float" name="x" value="1.458797" />
-                              <field type="float" name="y" value="2.904034" />
-                            </object>
-                          </element>
-                          <element type="float2">
-                            <object type="float2">
-                              <field type="float" name="x" value="-0.351203" />
-                              <field type="float" name="y" value="3.844034" />
-                            </object>
-                          </element>
-                          <element type="float2">
-                            <object type="float2">
-                              <field type="float" name="x" value="-2.931203" />
-                              <field type="float" name="y" value="1.614034" />
-                            </object>
-                          </element>
-                          <element type="float2">
-                            <object type="float2">
-                              <field type="float" name="x" value="-7.091203" />
-                              <field type="float" name="y" value="0.1340338" />
+                              <field type="float" name="x" value="-1.38" />
+                              <field type="float" name="y" value="-0.11" />
                             </object>
                           </element>
                         </array>
