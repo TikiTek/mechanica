@@ -73,7 +73,7 @@ namespace tiki
 				if ( isInital )
 				{
 					resourceRequestPool.beginLoadResource< Font >( &m_pFont,									"debug.font" );
-					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland1,	"island1.entity" );
+					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland1,	"island8_p.entity" );
 					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland2,	"island2.entity" );
 					resourceRequestPool.beginLoadResource< EntityTemplateGenericDataResource >( &m_pIsland3,	"island4.entity" );
 				}
