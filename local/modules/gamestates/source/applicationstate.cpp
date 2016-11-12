@@ -8,6 +8,8 @@
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/resource/resourcerequestpool.hpp"
 
+#include "mechanica_base.hpp"
+
 namespace tiki
 {
 	TIKI_DEBUGPROP_BOOL( s_gameBloomEnable, "Bloom/Enable", true );
@@ -56,7 +58,7 @@ namespace tiki
 						Renderer2dCreationParameters parameters;
 						parameters.width				= (uint16)graphicsSystem.getBackBuffer().getWidth();
 						parameters.height				= (uint16)graphicsSystem.getBackBuffer().getHeight();
-						parameters.layerCount			= 6u;
+						parameters.layerCount			= MechanicaRenderLayer_Count;
 						parameters.drawToWorldFactor	= 0.01f;
 
 						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, parameters ) )

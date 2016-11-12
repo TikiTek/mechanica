@@ -1,14 +1,18 @@
 #include "tiki/mechanica_components/breakablecomponent.hpp"
 
 #include "tiki/components/componentstate.hpp"
+#include "tiki/components2d/polygoncomponent.hpp"
+#include "tiki/components2d/spritecomponent.hpp"
 #include "tiki/components2d/transform2dcomponent.hpp"
 #include "tiki/container/fixedarray.hpp"
+#include "tiki/entitysystem/entitysystem.hpp"
 #include "tiki/physics2d/physics2dbody.hpp"
 #include "tiki/physics2d/physics2djoint.hpp"
 #include "tiki/physics2d/physics2dnoneshape.hpp"
 #include "tiki/physics2dcomponents/physics2dbodycomponent.hpp"
 #include "tiki/physics2dcomponents/physics2dbodycomponent.hpp"
 
+#include "components2d.hpp"
 #include "mechanica_components.hpp"
 
 namespace tiki
@@ -16,7 +20,6 @@ namespace tiki
 	struct BreakableComponentState : public ComponentState
 	{
 		Transform2dComponentState*				pTransformState;
-		Physics2dBodyComponentState*			pBodyState;
 
 		const ResArray< BreakableFragment >*	pFragments;
 
@@ -29,37 +32,43 @@ namespace tiki
 	BreakableComponent::BreakableComponent()
 		: Component( MechanicaComponentType_Breakable, "BreakableComponent", sizeof( BreakableComponentState ), true )
 	{
-		m_pPhysicsBodyComponent	= nullptr;
+		m_pEntitySystem			= nullptr;
 		m_pPhysicsWorld			= nullptr;
+		m_pTransformComponent	= nullptr;
+		m_pSpriteComponent		= nullptr;
+		m_pPolgonComponent		= nullptr;
 	}
 
 	BreakableComponent::~BreakableComponent()
 	{
-		TIKI_ASSERT( m_pPhysicsBodyComponent	== nullptr );
-		TIKI_ASSERT( m_pPhysicsWorld			== nullptr );
+		TIKI_ASSERT( m_pEntitySystem		== nullptr );
+		TIKI_ASSERT( m_pPhysicsWorld		== nullptr );
+		TIKI_ASSERT( m_pTransformComponent	== nullptr );
+		TIKI_ASSERT( m_pSpriteComponent		== nullptr );
+		TIKI_ASSERT( m_pPolgonComponent		== nullptr );
 	}
 
-	bool BreakableComponent::create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& physicsBodyComponent )
+	bool BreakableComponent::create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const SpriteComponent& spriteComponent, const PolygonComponent& polygonComponent )
 	{
 		m_pEntitySystem			= &entitySystem;
-
 		m_pPhysicsWorld			= &physicsWorld;
-
 		m_pTransformComponent	= &transformComponent;
-		m_pPhysicsBodyComponent	= &physicsBodyComponent;
+		m_pSpriteComponent		= &spriteComponent;
+		m_pPolgonComponent		= &polygonComponent;
 
 		return true;
 	}
 
 	void BreakableComponent::dispose()
 	{
-		m_pPhysicsBodyComponent	= nullptr;
-		m_pTransformComponent	= nullptr;
-
+		m_pEntitySystem			= nullptr;
 		m_pPhysicsWorld			= nullptr;
+		m_pTransformComponent	= nullptr;
+		m_pSpriteComponent		= nullptr;
+		m_pPolgonComponent		= nullptr;
 	}
 
-	void BreakableComponent::update( float deltaTime )
+	void BreakableComponent::update( float deltaTime ) const
 	{
 		Iterator componentStates = getIterator();
 
@@ -80,23 +89,22 @@ namespace tiki
 		}
 	}
 
-	void BreakableComponent::breakBody( BreakableComponentState* pState )
+	void BreakableComponent::breakBody( BreakableComponentState* pState ) const
 	{
+		ComponentEntityIterator entityComponentIterator( m_pEntitySystem->getFirstComponentOfEntity( pState->entityId ) );
+
 		if( pState->pFragments != nullptr )
 		{
-			createFragmentEntities( *pState->pFragments );
+			breakToCuttedFragmentEntities( entityComponentIterator, pState );
 		}
 		else
 		{
-
+			breakToCuttedFragmentEntities( entityComponentIterator, pState );
 		}
 	}
 
-	bool BreakableComponent::internalInitializeState( ComponentEntityIterator& componentIterator, BreakableComponentState* pState, const BreakableComponentInitData* pInitData )
+	bool BreakableComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, BreakableComponentState* pState, const BreakableComponentInitData* pInitData )
 	{
-		pState->pTransformState		= (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
-		pState->pBodyState			= (Physics2dBodyComponentState*)componentIterator.getFirstOfType( m_pPhysicsBodyComponent->getTypeId() );
-
 		if( pInitData->fragments.getCount() > 0u )
 		{
 			pState->pFragments		= &pInitData->fragments;
@@ -113,9 +121,27 @@ namespace tiki
 	{
 	}
 
-	void BreakableComponent::createFragmentEntities( const ResArray< BreakableFragment >& fragments )
+	void BreakableComponent::breakToStaticFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
+	{
+		const Transform2dComponentState* pTransformState	= (const Transform2dComponentState*)parentEntityComponentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
+		const SpriteComponentState* pSpriteState			= (const SpriteComponentState*)parentEntityComponentIterator.getFirstOfType( m_pSpriteComponent->getTypeId() );
+
+		for( uint i = 0u; i < pParentState->pFragments->getCount(); ++i )
+		{
+			const BreakableFragment& fragment = pParentState->pFragments->getAt( i );
+
+			Transform2dComponentInitData transformInitData;
+			createFloat2( transformInitData.position, 0.0f, 0.0f );
+			createFloat2( transformInitData.scale, 1.0f, 1.0f );
+			transformInitData.rotation	= 0.0f;
+
+			PolygonComponentInitData polygonInitData;
+
+		}
+	}
+
+	void BreakableComponent::breakToCuttedFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
 	{
 
 	}
-
 }

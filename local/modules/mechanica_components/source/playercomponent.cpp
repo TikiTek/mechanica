@@ -11,6 +11,7 @@
 #include "tiki/physics2d/physics2djoint.hpp"
 #include "tiki/physics2d/physics2dworld.hpp"
 
+#include "mechanica_base.hpp"
 #include "mechanica_components.hpp"
 
 namespace tiki
@@ -157,7 +158,7 @@ namespace tiki
 		return false;
 	}
 
-	bool PlayerComponent::internalInitializeState( ComponentEntityIterator& componentIterator, PlayerComponentState* pState, const PlayerComponentInitData* pInitData )
+	bool PlayerComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, PlayerComponentState* pState, const PlayerComponentInitData* pInitData )
 	{
 		pState->pTransform = (Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 
