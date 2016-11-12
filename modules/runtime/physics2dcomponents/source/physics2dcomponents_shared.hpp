@@ -7,7 +7,7 @@
 #include "tiki/physics2d/physics2dcircleshape.hpp"
 #include "tiki/physics2d/physics2dpolygonshape.hpp"
 
-#include "physic2dcomponents.hpp"
+#include "physics2dcomponents.hpp"
 
 namespace tiki
 {

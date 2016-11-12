@@ -49,7 +49,7 @@ namespace tiki
 		}
 	}
 
-	bool LifeTimeComponent::internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pState, const LifeTimeComponentInitData* pInitData )
+	bool LifeTimeComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, LifeTimeComponentState* pState, const LifeTimeComponentInitData* pInitData )
 	{
 		pState->timeToLifeInMs = pInitData->lifeTimeInMs;
 

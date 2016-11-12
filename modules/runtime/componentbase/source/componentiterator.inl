@@ -42,28 +42,14 @@ namespace tiki
 	TIKI_FORCE_INLINE ComponentEntityIterator::ComponentEntityIterator( ComponentState* pFirstState )
 	{
 		m_pFirst = pFirstState;
-		reset();
 	}
 
 	TIKI_FORCE_INLINE ComponentEntityIterator::~ComponentEntityIterator()
 	{
 		m_pFirst	= nullptr;
-		m_pCurrent	= nullptr;
 	}
 
-	TIKI_FORCE_INLINE ComponentState* ComponentEntityIterator::getNext()
-	{
-		ComponentState* pState = m_pCurrent;
-
-		if ( m_pCurrent != nullptr )
-		{
-			m_pCurrent = m_pCurrent->pNextComponentOfSameEntity;
-		}
-
-		return pState;
-	}
-
-	TIKI_FORCE_INLINE ComponentState* ComponentEntityIterator::getFirstOfType( ComponentTypeId typeId )
+	TIKI_FORCE_INLINE ComponentState* ComponentEntityIterator::getFirstOfType( ComponentTypeId typeId ) const
 	{
 		ComponentState* pState = m_pFirst;
 		while ( pState != nullptr )
@@ -77,11 +63,6 @@ namespace tiki
 		}
 
 		return nullptr;
-	}
-
-	TIKI_FORCE_INLINE void ComponentEntityIterator::reset()
-	{
-		m_pCurrent = m_pFirst;
 	}
 }
 

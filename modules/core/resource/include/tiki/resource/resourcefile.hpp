@@ -185,10 +185,15 @@ namespace tiki
 			return m_pData;
 		}
 
-		TIKI_FORCE_INLINE const T& operator[]( size_t index ) const
+		TIKI_FORCE_INLINE const T& getAt( size_t index ) const
 		{
 			TIKI_ASSERT( index < m_size );
 			return m_pData[ index ];
+		}
+
+		TIKI_FORCE_INLINE const T& operator[]( size_t index ) const
+		{
+			return getAt( index );
 		}
 
 	private:

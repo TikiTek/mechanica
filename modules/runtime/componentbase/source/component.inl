@@ -14,7 +14,7 @@ namespace tiki
 	}
 
 	template< typename TState, typename TInitData >
-	bool Component<TState, TInitData>::initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData )
+	bool Component<TState, TInitData>::initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( pState != nullptr );
 

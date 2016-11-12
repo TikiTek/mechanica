@@ -101,7 +101,6 @@ namespace tiki
 		const EntityData*			getEntityDataInPool( const EntityPoolInfo* pEntityPool, EntityId entityId ) const;
 
 		void						disposeEntityFinally( EntityId entityId );
-
 	};
 }
 

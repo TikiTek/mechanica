@@ -26,7 +26,7 @@ namespace tiki
 
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, LifeTimeComponentState* pComponentState, const LifeTimeComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual bool		internalInitializeState( const ComponentEntityIterator& componentIterator, LifeTimeComponentState* pComponentState, const LifeTimeComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void		internalDisposeState( LifeTimeComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 	};
 }

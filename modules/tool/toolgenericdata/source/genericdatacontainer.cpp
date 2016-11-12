@@ -392,7 +392,12 @@ namespace tiki
 				}
 
 				ReferenceKey dataKey;
-				const bool ok = pObject->writeToResource( &dataKey, writer );
+				bool ok = false;
+				if( pObject != nullptr )
+				{
+					ok = pObject->writeToResource( &dataKey, writer );
+				}
+				 
 				writer.writeReference( ok ? &dataKey : nullptr );
 				return ok;
 			}

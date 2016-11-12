@@ -43,7 +43,6 @@ namespace tiki
 		};
 
 		Array< RegisterType >	m_types;
-
 	};
 }
 

@@ -1,4 +1,4 @@
-#include "tiki/components2d/texturecomponent.hpp"
+#include "tiki/components2d/spritecomponent.hpp"
 
 #include "tiki/components/componentstate.hpp"
 #include "tiki/components2d/transform2dcomponent.hpp"
@@ -11,39 +11,39 @@ namespace tiki
 {
 	struct Transform3dComponentState;
 
-	struct TextureComponentState : public ComponentState
+	struct SpriteComponentState : public ComponentState
 	{
 		const Transform2dComponentState*	pTransform;
 		const Texture*						pTexture;
 		Vector2								offset;
 		uint32								layerId;
 	};
-	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( TextureComponentState );
+	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( SpriteComponentState );
 
-	TextureComponent::TextureComponent()
-		: Component( Components2dType_Texture, "TextureComponent", sizeof( TextureComponentState ), false )
+	SpriteComponent::SpriteComponent()
+		: Component( Components2dType_Sprite, "SpriteComponent", sizeof( SpriteComponentState ), false )
 	{
 		m_pTransformComponent = nullptr;
 	}
 
-	TextureComponent::~TextureComponent()
+	SpriteComponent::~SpriteComponent()
 	{
 		TIKI_ASSERT( m_pTransformComponent == nullptr );
 	}
 
-	bool TextureComponent::create( Transform2dComponent& transformComponent )
+	bool SpriteComponent::create( Transform2dComponent& transformComponent )
 	{
 		m_pTransformComponent = &transformComponent;
 
 		return true;
 	}
 
-	void TextureComponent::dispose()
+	void SpriteComponent::dispose()
 	{
 		m_pTransformComponent = nullptr;
 	}
 
-	void TextureComponent::render( Renderer2d& renderer ) const
+	void SpriteComponent::render( Renderer2d& renderer ) const
 	{
 		ConstIterator componentStates = getConstIterator();
 
@@ -55,7 +55,7 @@ namespace tiki
 		}
 	}
 
-	bool TextureComponent::internalInitializeState( ComponentEntityIterator& componentIterator, TextureComponentState* pState, const TextureComponentInitData* pInitData )
+	bool SpriteComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, SpriteComponentState* pState, const SpriteComponentInitData* pInitData )
 	{
 		pState->pTransform	= (const Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );
 		pState->pTexture	= pInitData->texture.getData();
@@ -65,7 +65,7 @@ namespace tiki
 		return (pState->pTransform != nullptr && pState->pTexture != nullptr);
 	}
 
-	void TextureComponent::internalDisposeState( TextureComponentState* pState )
+	void SpriteComponent::internalDisposeState( SpriteComponentState* pState )
 	{
 		pState->pTransform	= nullptr;
 		pState->pTexture	= nullptr;
