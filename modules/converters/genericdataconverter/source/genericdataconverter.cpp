@@ -68,7 +68,7 @@ namespace tiki
 				continue;
 			}
 
-			const crc32 typeCrc = crcString( pResourceType->getPostFix() );
+			const crc32 typeCrc = crcString( pResourceType->getPostFix().toLower() );
 			m_resourceTypeMap.set( typeCrc, pResourceType );
 		}
 

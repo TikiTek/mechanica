@@ -244,7 +244,7 @@ namespace tiki
 		for (size_t i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
-			typeString += formatString( "%s%08x", field.name, field.pType->getTypeCrc() );
+			typeString += formatString( "%s%08x", field.name.cStr(), field.pType->getTypeCrc() );
 		}
 
 		return crcString( typeString );
