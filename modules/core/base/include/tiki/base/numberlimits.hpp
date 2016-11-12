@@ -143,12 +143,12 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T min()
 		{
-			return (T)0x8000000000000000;
+			return 0x8000000000000000ll;
 		}
 
 		TIKI_FORCE_INLINE static T max()
 		{
-			return (T)0x7fffffffffffffff;
+			return 0x7fffffffffffffffll;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
@@ -158,7 +158,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE static T epsilon()
 		{
-			return (T)0;
+			return 0ll;
 		}
 	};
 

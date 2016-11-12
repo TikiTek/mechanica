@@ -137,6 +137,18 @@ namespace tiki
 	{
 		return ConstIterator( static_cast< const State* >( m_pFirstState ) );
 	}
+
+	template< typename TState, typename TInitData >
+	TState* tiki::Component<TState, TInitData>::getFirstStateOfEntity( const ComponentEntityIterator& entityComponentIterator )
+	{
+		return (TState*)entityComponentIterator.getFirstOfType( m_registedTypeId );
+	}
+
+	template< typename TState, typename TInitData >
+	const TState* tiki::Component<TState, TInitData>::getFirstStateOfEntity( const ComponentEntityIterator& entityComponentIterator ) const
+	{
+		return (const TState*)entityComponentIterator.getFirstOfType( m_registedTypeId );
+	}
 }
 
 #endif // TIKI_COMPONENT_INL_INCLUDED

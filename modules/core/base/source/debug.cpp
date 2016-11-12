@@ -34,7 +34,16 @@ namespace tiki
 			"[WARNING] ",
 			"[ERROR] "
 		};
-		const uint prefixStringLength = strlen( s_aTracePrefix[ level ] ) - (level > 0 && pFormat[ 0u ] == '[' ? 1u : 0u);
+
+		const uint formatStringLength = getStringSize( pFormat );
+
+		const char* pPrefix = s_aTracePrefix[ level ];
+		if( pFormat[ 0u ] != '[' && pFormat[ formatStringLength - 1u ] != '\n' )
+		{
+			pPrefix = "";
+		}
+
+		const uint prefixStringLength = strlen( pPrefix ) - (level > 0 && pFormat[ 0u ] == '[' ? 1u : 0u);
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	pragma warning(push)
@@ -47,7 +56,7 @@ namespace tiki
 #endif
 
 		string message( prefixStringLength + formattedStringLength );
-		copyString( (char*)message.cStr(), prefixStringLength + 1u, s_aTracePrefix[ level ] );
+		copyString( (char*)message.cStr(), prefixStringLength + 1u, pPrefix );
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_vsprintf_s_l(

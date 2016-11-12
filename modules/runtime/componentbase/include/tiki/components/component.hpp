@@ -72,6 +72,9 @@ namespace tiki
 		Iterator		getIterator() const;
 		ConstIterator	getConstIterator() const;
 
+		TState*			getFirstStateOfEntity( const ComponentEntityIterator& entityComponentIterator );
+		const TState*	getFirstStateOfEntity( const ComponentEntityIterator& entityComponentIterator ) const;
+
 	protected:
 
 						Component( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
