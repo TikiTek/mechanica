@@ -57,6 +57,8 @@ namespace tiki
 		EntityId				createEntityFromTemplate( uint targetPoolIndex, const EntityTemplateData& entityTemplate );
 		void					disposeEntity( EntityId entityId );
 
+		uint16					getPoolIndexForId( EntityId entityId ) const;
+
 		ComponentState*			getFirstComponentOfEntity( EntityId entityId );
 		const ComponentState*	getFirstComponentOfEntity( EntityId entityId ) const;
 		ComponentState*			getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId );

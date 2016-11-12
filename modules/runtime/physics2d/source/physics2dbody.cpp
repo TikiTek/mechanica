@@ -109,6 +109,16 @@ namespace tiki
 		return m_pBody->GetAngle();
 	}
 
+	float Physics2dBody::getDensity() const
+	{
+		return m_pFixture->GetDensity();
+	}
+
+	void Physics2dBody::setDensity( float value )
+	{
+		m_pFixture->SetDensity( value );
+	}
+
 	float Physics2dBody::getFriction() const
 	{
 		return m_pFixture->GetFriction();

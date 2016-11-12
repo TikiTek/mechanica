@@ -240,6 +240,25 @@ namespace tiki
 		}
 	}
 
+	uint16 EntitySystem::getPoolIndexForId( EntityId entityId ) const
+	{
+		if( entityId == InvalidEntityId )
+		{
+			return EntitySystemLimits_MaxEntityPoolCount;
+		}
+				
+		for( uint16 i = 0u; i < m_pools.getCount(); ++i )
+		{
+			const EntityPoolInfo& pool = m_pools[ i ];
+			if( entityId >= pool.firstId && entityId < pool.firstId + pool.poolSize )
+			{
+				return i;
+			}
+		}
+
+		return EntitySystemLimits_MaxEntityPoolCount;
+	}
+
 	void EntitySystem::disposeEntityFinally( EntityId entityId )
 	{
 		EntityPoolInfo* pEntityPool = findEntityPool( entityId );
@@ -306,34 +325,14 @@ namespace tiki
 
 	ComponentState* EntitySystem::getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId )
 	{
-		ComponentState* pComponentState = getFirstComponentOfEntity( entityId );
-		while ( pComponentState != nullptr )
-		{
-			if ( pComponentState->typeId == typeId )
-			{
-				return pComponentState;
-			}
-
-			pComponentState = pComponentState->pNextComponentOfSameEntity;
-		}
-
-		return nullptr;
+		const ComponentEntityIterator iterator( getFirstComponentOfEntity( entityId ) );
+		return iterator.getFirstOfType( typeId );
 	}
 
 	const ComponentState* EntitySystem::getFirstComponentOfEntityAndType( EntityId entityId, ComponentTypeId typeId ) const
 	{
-		const ComponentState* pComponentState = getFirstComponentOfEntity( entityId );
-		while ( pComponentState != nullptr )
-		{
-			if ( pComponentState->typeId == typeId )
-			{
-				return pComponentState;
-			}
-
-			pComponentState = pComponentState->pNextComponentOfSameEntity;
-		}
-
-		return nullptr;
+		const ComponentEntityIterator iterator( (ComponentState*)getFirstComponentOfEntity( entityId ) );
+		return iterator.getFirstOfType( typeId );
 	}
 
 	EntitySystem::EntityPoolInfo* EntitySystem::findEntityPool( EntityId entityId )

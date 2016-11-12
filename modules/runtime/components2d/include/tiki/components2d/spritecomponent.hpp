@@ -7,6 +7,7 @@
 namespace tiki
 {
 	class Renderer2d;
+	class Texture;
 	class Transform2dComponent;
 	struct SpriteComponentInitData;
 	struct SpriteComponentState;
@@ -25,6 +26,10 @@ namespace tiki
 		void				dispose();
 
 		void				render( Renderer2d& renderer ) const;
+
+		const Texture*		getTexture( const SpriteComponentState* pState ) const;
+		const Vector2&		getOffset( const SpriteComponentState* pState ) const;
+		uint32				getLayerId( const SpriteComponentState* pState ) const;
 
 	protected:
 
