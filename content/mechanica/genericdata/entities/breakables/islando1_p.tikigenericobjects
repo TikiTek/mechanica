@@ -17,6 +17,7 @@
               <field type="{pointer ComponentInitData}" name="initData">
                 <object type="SpriteComponentInitData">
                   <field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
+                  <field type="{reference Texture}" name="texture" value="TEXR:islandO1.texture" />
                 </object>
               </field>
             </object>
