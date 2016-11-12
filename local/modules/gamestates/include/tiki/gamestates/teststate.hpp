@@ -67,8 +67,8 @@ namespace tiki
 
 		GameClient									m_gameClient;
 
-		EntityId									m_boxesEntityId;
-		EntityId									m_planeEntityId;
+		EntityId									m_playerEntityId;
+		EntityId									m_islandEntityId;
 	};
 }
 
