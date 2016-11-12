@@ -8,8 +8,10 @@
 #include "tiki/runtimeshared/freecamera.hpp"
 
 #include "tiki/components/lifetimecomponent.hpp"
-#include "tiki/components2d/texturecomponent.hpp"
+#include "tiki/components2d/polygoncomponent.hpp"
+#include "tiki/components2d/spritecomponent.hpp"
 #include "tiki/components2d/transform2dcomponent.hpp"
+#include "tiki/mechanica_components/breakablecomponent.hpp"
 #include "tiki/mechanica_components/playercomponent.hpp"
 #include "tiki/mechanica_components/wigglecomponent.hpp"
 #include "tiki/physics2dcomponents/physics2dbodycomponent.hpp"
@@ -67,21 +69,25 @@ namespace tiki
 			ChunkSize		= 4096u
 		};
 
-		EntitySystem							m_entitySystem;
+		EntitySystem					m_entitySystem;
 
-		GraphicsSystem*							m_pGraphicsSystem;
+		GraphicsSystem*					m_pGraphicsSystem;
 
-		Physics2dWorld							m_physicsWorld;
+		Physics2dWorld					m_physicsWorld;
+		
+		LifeTimeComponent				m_lifeTimeComponent;
 
+		Transform2dComponent			m_transformComponent;
+		SpriteComponent					m_spriteComponent;
+		PolygonComponent				m_polygonComponent;
 
-		LifeTimeComponent						m_lifeTimeComponent;
-		Physics2dBodyComponent					m_physicsBodyComponent;
-		Physics2dColliderComponent				m_physicsColliderComponent;
-		Physics2dJointComponent					m_physicsJointComponent;
-		PlayerComponent							m_playerComponent;
-		TextureComponent						m_textureComponent;
-		Transform2dComponent					m_transformComponent;
-		WiggleComponent							m_wiggleComponent;
+		Physics2dBodyComponent			m_physicsBodyComponent;
+		Physics2dColliderComponent		m_physicsColliderComponent;
+		Physics2dJointComponent			m_physicsJointComponent;
+
+		BreakableComponent				m_breakableComponent;
+		PlayerComponent					m_playerComponent;
+		WiggleComponent					m_wiggleComponent;
 	};
 }
 

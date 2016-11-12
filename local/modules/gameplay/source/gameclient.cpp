@@ -50,29 +50,34 @@ namespace tiki
 
 		m_physicsWorld.create( vector::create( 0.0f, 9.81f ), 1.0f );
 
-		TIKI_VERIFY( m_transformComponent.create() );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_transformComponent ) );
+		if( !m_transformComponent.create() || 
+			!m_spriteComponent.create( m_transformComponent )   ||
+			!m_polygonComponent.create( m_transformComponent ) ||
+			!m_physicsBodyComponent.create( m_physicsWorld, m_transformComponent ) ||
+			!m_physicsColliderComponent.create( m_physicsWorld ) ||
+			!m_physicsJointComponent.create( m_physicsWorld ) ||
+			!m_playerComponent.create( m_physicsWorld, m_transformComponent ) ||
+			!m_lifeTimeComponent.create() ||
+			!m_wiggleComponent.create( m_physicsWorld, m_transformComponent, m_physicsBodyComponent ) ||
+			!m_breakableComponent.create( m_entitySystem, m_physicsWorld, m_transformComponent, m_spriteComponent, m_polygonComponent ) )
+		{
+			dispose();
+			return false;
+		}
 
-		TIKI_VERIFY( m_textureComponent.create( m_transformComponent ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_textureComponent ) );
+		m_entitySystem.registerComponentType( &m_transformComponent );
+		m_entitySystem.registerComponentType( &m_spriteComponent );
+		m_entitySystem.registerComponentType( &m_polygonComponent );
 
-		TIKI_VERIFY( m_physicsBodyComponent.create( m_physicsWorld, m_transformComponent ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsBodyComponent ) );
+		m_entitySystem.registerComponentType( &m_physicsBodyComponent );
+		m_entitySystem.registerComponentType( &m_physicsColliderComponent );
+		m_entitySystem.registerComponentType( &m_physicsJointComponent );
 
-		TIKI_VERIFY( m_physicsColliderComponent.create( m_physicsWorld ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsColliderComponent ) );
+		m_entitySystem.registerComponentType( &m_breakableComponent );
+		m_entitySystem.registerComponentType( &m_playerComponent );
+		m_entitySystem.registerComponentType( &m_wiggleComponent );
 
-		TIKI_VERIFY( m_physicsJointComponent.create( m_physicsWorld ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_physicsJointComponent ) );
-
-		TIKI_VERIFY( m_playerComponent.create( m_physicsWorld, m_transformComponent ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_playerComponent ) );
-
-		TIKI_VERIFY( m_lifeTimeComponent.create() );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_lifeTimeComponent ) );
-
-		TIKI_VERIFY( m_wiggleComponent.create( m_physicsWorld, m_transformComponent, m_physicsBodyComponent ) );
-		TIKI_VERIFY( m_entitySystem.registerComponentType( &m_wiggleComponent ) );
+		m_entitySystem.registerComponentType( &m_lifeTimeComponent );
 
 		return true;
 	}
@@ -82,25 +87,34 @@ namespace tiki
 		m_entitySystem.update(); // to dispose all entities
 
 		m_entitySystem.unregisterComponentType( &m_wiggleComponent );
-		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
-		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
+		m_entitySystem.unregisterComponentType( &m_playerComponent );
+		m_entitySystem.unregisterComponentType( &m_breakableComponent );
+
 		m_entitySystem.unregisterComponentType( &m_physicsJointComponent );
 		m_entitySystem.unregisterComponentType( &m_physicsColliderComponent );
-		m_entitySystem.unregisterComponentType( &m_playerComponent );
-		m_entitySystem.unregisterComponentType( &m_textureComponent );
+		m_entitySystem.unregisterComponentType( &m_physicsBodyComponent );
+
+		m_entitySystem.unregisterComponentType( &m_polygonComponent );
+		m_entitySystem.unregisterComponentType( &m_spriteComponent );
 		m_entitySystem.unregisterComponentType( &m_transformComponent );
 
+		m_entitySystem.unregisterComponentType( &m_lifeTimeComponent );
+
 		m_wiggleComponent.dispose();
-		m_lifeTimeComponent.dispose();
 		m_playerComponent.dispose();
+		m_breakableComponent.dispose();
+
 		m_physicsJointComponent.dispose();
 		m_physicsColliderComponent.dispose();
 		m_physicsBodyComponent.dispose();
-		m_textureComponent.dispose();
+
+		m_polygonComponent.dispose();
+		m_spriteComponent.dispose();
 		m_transformComponent.dispose();
 
-		m_physicsWorld.dispose();
+		m_lifeTimeComponent.dispose();
 
+		m_physicsWorld.dispose();
 		m_entitySystem.dispose();
 
 		m_pGraphicsSystem = nullptr;
@@ -290,7 +304,8 @@ namespace tiki
 
 	void GameClient::render( Renderer2d& renderer )
 	{
-		m_textureComponent.render( renderer );
+		m_spriteComponent.render( renderer );
+		m_polygonComponent.render( renderer );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		if( s_drawPhysicsDebug )

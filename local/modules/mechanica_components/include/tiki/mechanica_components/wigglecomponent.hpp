@@ -30,7 +30,7 @@ namespace tiki
 
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, WiggleComponentState* pComponentState, const WiggleComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual bool		internalInitializeState( const ComponentEntityIterator& componentIterator, WiggleComponentState* pComponentState, const WiggleComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void		internalDisposeState( WiggleComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:
