@@ -57,8 +57,19 @@ namespace tiki
 
 		bool											processInputEvent( const InputEvent& inputEvent );
 
-		EntitySystem&									getEntitySystem()	{ return m_entitySystem; }
-		Physics2dWorld&									getPhysicsWorld()	{ return m_physicsWorld; }
+		EntitySystem&									getEntitySystem()					{ return m_entitySystem; }
+		Physics2dWorld&									getPhysicsWorld()					{ return m_physicsWorld; }
+
+		const LifeTimeComponent&						getLifeTimeComponent() const		{ return m_lifeTimeComponent; }
+		const Transform2dComponent&						getTransformComponent() const		{ return m_transformComponent; }
+		const SpriteComponent&							getSpriteComponent() const			{ return m_spriteComponent; }
+		const PolygonComponent&							getPolygonComponent() const			{ return m_polygonComponent; }
+		const Physics2dBodyComponent&					getPhysicsBodyComponent() const		{ return m_physicsBodyComponent; }
+		const Physics2dColliderComponent&				getPhysicsColliderComponent() const	{ return m_physicsColliderComponent; }
+		const Physics2dJointComponent&					getPhysicsJointComponent() const	{ return m_physicsJointComponent; }
+		const BreakableComponent&						getBreakableComponent() const		{ return m_breakableComponent; }
+		const PlayerComponent&							getPlayerComponent() const			{ return m_playerComponent; }
+		const WiggleComponent&							getWiggleComponent() const			{ return m_wiggleComponent; }
 
 	private:
 

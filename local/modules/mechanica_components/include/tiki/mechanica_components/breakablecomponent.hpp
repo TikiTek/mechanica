@@ -27,7 +27,7 @@ namespace tiki
 		explicit			BreakableComponent();
 		virtual				~BreakableComponent();
 
-		bool				create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const SpriteComponent& spriteComponent, const PolygonComponent& polygonComponent );
+		bool				create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& bodyComponent, const SpriteComponent& spriteComponent, const PolygonComponent& polygonComponent );
 		void				dispose();
 
 		void				update( float deltaTime ) const;
@@ -45,6 +45,7 @@ namespace tiki
 		Physics2dWorld*						m_pPhysicsWorld;
 
 		const Transform2dComponent*			m_pTransformComponent;
+		const Physics2dBodyComponent*		m_pBodyComponent;
 		const SpriteComponent*				m_pSpriteComponent;
 		const PolygonComponent*				m_pPolgonComponent;
 

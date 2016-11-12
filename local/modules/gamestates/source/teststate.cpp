@@ -110,15 +110,15 @@ namespace tiki
 			{
 				TIKI_VERIFY( m_gameClient.create( m_pGame->getGraphicsSystem() ) );
 
-				m_boxesEntityId = m_gameClient.createPlayerEntity( vector::create( 0.0, -2.0f ) );
-				m_planeEntityId = m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
+				m_playerEntityId = m_gameClient.createPlayerEntity( vector::create( 0.0, -2.0f ) );
+				m_islandEntityId = m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
 
 				return TransitionState_Finish;
 			}
 			else
 			{
-				m_gameClient.disposeEntity( m_boxesEntityId );
-				m_gameClient.disposeEntity( m_planeEntityId );
+				m_gameClient.disposeEntity( m_playerEntityId );
+				m_gameClient.disposeEntity( m_islandEntityId );
 
 				m_gameClient.dispose();
 
@@ -220,15 +220,24 @@ namespace tiki
 			const float targetZoom = m_pRenderer->getTargetZoom() + wheelDelta;
 			m_pRenderer->setTargetZoom( targetZoom );
 		}
-		//if ( inputEvent.eventType == InputEventType_Keyboard_Down )
-		//{
-		//	switch ( inputEvent.data.keybaordKey.key )
-		//	{
-		//	default:
-		//		break;
-		//	}
-		//}
-		//else if ( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
+		if( inputEvent.eventType == InputEventType_Keyboard_Down )
+		{
+			switch( inputEvent.data.keybaordKey.key )
+			{
+			case KeyboardKey_X:
+				{
+					const BreakableComponent& breakableComponent = m_gameClient.getBreakableComponent();
+
+					BreakableComponentState* pBreakableState = (BreakableComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_islandEntityId, breakableComponent.getTypeId() );
+					breakableComponent.breakBody( pBreakableState );
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+		//else if( inputEvent.eventType == InputEventType_Mouse_ButtonDown && inputEvent.data.mouseButton.button == MouseButton_Right )
 		//{
 		//	m_freeCamera.setMouseControl( !m_freeCamera.getMouseControl() );
 		//}

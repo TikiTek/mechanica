@@ -12,8 +12,6 @@
 
 namespace tiki
 {
-	TIKI_DEBUGPROP_BOOL( s_drawPhysicsDebug, "GameClient/DrawPhysicsDebug", true );
-
 	GameClient::GameClient()
 	{
 	}
@@ -59,7 +57,7 @@ namespace tiki
 			!m_playerComponent.create( m_physicsWorld, m_transformComponent ) ||
 			!m_lifeTimeComponent.create() ||
 			!m_wiggleComponent.create( m_physicsWorld, m_transformComponent, m_physicsBodyComponent ) ||
-			!m_breakableComponent.create( m_entitySystem, m_physicsWorld, m_transformComponent, m_spriteComponent, m_polygonComponent ) )
+			!m_breakableComponent.create( m_entitySystem, m_physicsWorld, m_transformComponent, m_physicsBodyComponent, m_spriteComponent, m_polygonComponent ) )
 		{
 			dispose();
 			return false;
@@ -294,8 +292,9 @@ namespace tiki
 
 		m_entitySystem.update();
 		m_physicsWorld.update( updateContext.timeDelta );
-
+		
 		m_physicsBodyComponent.update();
+		m_breakableComponent.update( updateContext.timeDelta );
 		m_playerComponent.update( updateContext.timeDelta );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 
@@ -308,10 +307,7 @@ namespace tiki
 		m_polygonComponent.render( renderer );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		if( s_drawPhysicsDebug )
-		{
-			m_physicsWorld.renderDebug();
-		}
+		m_physicsWorld.renderDebug();
 #endif
 	}
 	
