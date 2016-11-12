@@ -34,7 +34,7 @@ namespace tiki
 
 	protected:
 
-		virtual bool		internalInitializeState( ComponentEntityIterator& componentIterator, Transform2dComponentState* pComponentState, const Transform2dComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual bool		internalInitializeState( const ComponentEntityIterator& componentIterator, Transform2dComponentState* pComponentState, const Transform2dComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void		internalDisposeState( Transform2dComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	};

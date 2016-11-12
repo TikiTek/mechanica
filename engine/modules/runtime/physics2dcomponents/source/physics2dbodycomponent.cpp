@@ -10,8 +10,6 @@
 
 #include "physics2dcomponents_shared.hpp"
 
-#include "physic2dcomponents.hpp"
-
 namespace tiki
 {
 	struct Physics2dBodyComponentState : public ComponentState
@@ -78,7 +76,7 @@ namespace tiki
 		return pState->body;
 	}
 
-	bool Physics2dBodyComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pState, const Physics2dBodyComponentInitData* pInitData )
+	bool Physics2dBodyComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pState, const Physics2dBodyComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 

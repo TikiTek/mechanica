@@ -47,7 +47,7 @@ namespace tiki
 		return pState->collider;
 	}
 
-	bool Physics2dColliderComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pState, const Physics2dColliderComponentInitData* pInitData )
+	bool Physics2dColliderComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pState, const Physics2dColliderComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 

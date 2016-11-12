@@ -27,7 +27,7 @@ namespace tiki
 
 	protected:
 
-		virtual bool					internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pComponentState, const Physics2dColliderComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
+		virtual bool					internalInitializeState( const ComponentEntityIterator& componentIterator, Physics2dColliderComponentState* pComponentState, const Physics2dColliderComponentInitData* pComponentInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void					internalDisposeState( Physics2dColliderComponentState* pComponentState ) TIKI_OVERRIDE_FINAL;
 
 	private:

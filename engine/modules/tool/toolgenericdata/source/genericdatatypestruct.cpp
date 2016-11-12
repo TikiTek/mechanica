@@ -12,8 +12,9 @@ namespace tiki
 		: GenericDataType( collection, name, mode )
 		, m_pBaseType( pBaseType )
 	{
-		m_alignment	= 1u;
-		m_size		= 0u;
+		m_pDefaultObject	= nullptr;
+		m_alignment			= 1u;
+		m_size				= 0u;
 
 		if ( m_pBaseType != nullptr )
 		{

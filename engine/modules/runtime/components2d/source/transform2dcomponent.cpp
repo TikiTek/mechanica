@@ -95,7 +95,7 @@ namespace tiki
 		pState->needUpdate	= true;
 	}
 
-	bool Transform2dComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Transform2dComponentState* pState, const Transform2dComponentInitData* pInitData )
+	bool Transform2dComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, Transform2dComponentState* pState, const Transform2dComponentInitData* pInitData )
 	{
 		vector::set( pState->position, pInitData->position );
 		pState->rotation = pInitData->rotation;

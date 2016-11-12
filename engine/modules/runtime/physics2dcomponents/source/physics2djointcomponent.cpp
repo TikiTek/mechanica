@@ -8,7 +8,7 @@
 #include "tiki/physics2d/physics2dworld.hpp"
 #include "tiki/physics2dcomponents/physics2dbodycomponent.hpp"
 
-#include "physic2dcomponents.hpp"
+#include "physics2dcomponents.hpp"
 
 namespace tiki
 {
@@ -41,7 +41,7 @@ namespace tiki
 		m_pPhysicsWorld = nullptr;
 	}
 
-	bool Physics2dJointComponent::internalInitializeState( ComponentEntityIterator& componentIterator, Physics2dJointComponentState* pState, const Physics2dJointComponentInitData* pInitData )
+	bool Physics2dJointComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, Physics2dJointComponentState* pState, const Physics2dJointComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 

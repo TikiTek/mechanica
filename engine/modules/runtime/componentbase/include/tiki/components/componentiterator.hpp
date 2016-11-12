@@ -23,7 +23,6 @@ namespace tiki
 
 		TState*		m_pFirst;
 		TState*		m_pCurrent;
-
 	};
 		
 	class ComponentEntityIterator
@@ -33,16 +32,11 @@ namespace tiki
 		TIKI_FORCE_INLINE					ComponentEntityIterator( ComponentState* pFirstState );
 		TIKI_FORCE_INLINE					~ComponentEntityIterator();
 
-		TIKI_FORCE_INLINE ComponentState*	getNext();
-		TIKI_FORCE_INLINE ComponentState*	getFirstOfType( ComponentTypeId typeId );
-
-		TIKI_FORCE_INLINE void				reset();
+		TIKI_FORCE_INLINE ComponentState*	getFirstOfType( ComponentTypeId typeId ) const;
 
 	private:
 
 		ComponentState*		m_pFirst;
-		ComponentState*		m_pCurrent;
-
 	};
 }
 

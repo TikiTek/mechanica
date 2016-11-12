@@ -20,7 +20,7 @@ namespace tiki
 		void					registerComponent( ComponentTypeId typeId );
 		void					unregisterComponent();
 
-		virtual bool			initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_PURE;
+		virtual bool			initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_PURE;
 		virtual void			disposeState( ComponentState* pState ) TIKI_PURE;
 
 		crc32					getTypeCrc() const { return m_typeCrc; }
@@ -45,7 +45,6 @@ namespace tiki
 		bool					m_constuctState;
 
 		ComponentTypeId			m_registedTypeId;
-
 	};
 
 	template< typename TState, typename TInitData >
@@ -63,7 +62,7 @@ namespace tiki
 
 		virtual			~Component() {}
 
-		virtual bool	initializeState( ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_OVERRIDE_FINAL;
+		virtual bool	initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void	disposeState( ComponentState* pState ) TIKI_OVERRIDE_FINAL;
 		
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
@@ -77,9 +76,8 @@ namespace tiki
 
 						Component( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
 
-		virtual bool	internalInitializeState( ComponentEntityIterator& iterator, TState* pState, const TInitData* pInitData ) TIKI_PURE;
+		virtual bool	internalInitializeState( const ComponentEntityIterator& iterator, TState* pState, const TInitData* pInitData ) TIKI_PURE;
 		virtual void	internalDisposeState( TState* pState ) TIKI_PURE;
-
 	};
 }
 

@@ -46,7 +46,6 @@ namespace tiki
 		Array< ComponentChunk >			m_chunks;
 		Array< ComponentChunk* >		m_firstChunk;
 		Array< ComponentState* >		m_lastState;
-
 	};
 }
 
