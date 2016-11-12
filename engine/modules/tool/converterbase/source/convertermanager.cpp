@@ -255,7 +255,7 @@ namespace tiki
 
 				FileDescription file;
 				file.fullFileName	= absoluteFileName;
-				file.fileType		= crcString( path::getExtension( fileTypeString ).subString( 1u ) );
+				file.fileType		= crcString( path::getExtension( fileTypeString ).subString( 1u ).toLower() );
 
 				filesToBuild.add( file );
 			}
