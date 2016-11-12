@@ -55,6 +55,21 @@ namespace tiki
 		}
 	}
 
+	const tiki::Texture* SpriteComponent::getTexture( const SpriteComponentState* pState ) const
+	{
+		return pState->pTexture;
+	}
+
+	const tiki::Vector2& SpriteComponent::getOffset( const SpriteComponentState* pState ) const
+	{
+		return pState->offset;
+	}
+
+	uint32 SpriteComponent::getLayerId( const SpriteComponentState* pState ) const
+	{
+		return pState->layerId;
+	}
+
 	bool SpriteComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, SpriteComponentState* pState, const SpriteComponentInitData* pInitData )
 	{
 		pState->pTransform	= (const Transform2dComponentState*)componentIterator.getFirstOfType( m_pTransformComponent->getTypeId() );

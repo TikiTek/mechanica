@@ -37,6 +37,9 @@ namespace tiki
 		Vector2					getPosition() const;
 		float					getRotation() const;
 
+		float					getDensity() const;
+		void					setDensity( float value );
+
 		float					getFriction() const;
 		void					setFriction( float value );
 
