@@ -1,14 +1,4 @@
 <tikigenerictypes base="components">
-	<enum name="MechanicaMaterialId">
-		<value name="Charakter" />
-		<value name="Chain" />
-		<value name="Gear" />
-		<value name="Island" />
-		<value name="Metal" />
-		<value name="Block" />
-		<value name="Slide" />
-		<value name="Wood" />
-	</enum>
 	<enum name="MechanicaComponentType">
 		<value name="Breakable" value="{crc BreakableComponent}" />
 		<value name="Player" value="{crc PlayerComponent}" />
@@ -20,8 +10,9 @@
 	<struct name="BreakableComponentInitData" base="ComponentInitData">
 		<field type="{array BreakableFragment}" name="fragments" />
 		<field type="float" name="destructionForce" value="10.0" />
-		<field type="float" name="breakAfterSeconds" value="0.0" />
-		<field type="bool" name="enableBreakTimer" value="false" />
+		<field type="float" name="breakAfterSeconds" />
+		<field type="bool" name="enableBreakTimer" />
+		<field type="uint32" name="fragmentMaterialId" />
 	</struct>
 	<struct name="PlayerComponentInitData" base="ComponentInitData">
 		<field type="float" name="mass" value="20.0" />

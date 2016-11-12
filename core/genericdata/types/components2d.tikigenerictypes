@@ -1,7 +1,8 @@
 <tikigenerictypes base="components">
 	<enum name="Components2dType">
 		<value name="Transform" value="{crc Transform2dComponent}" />
-		<value name="Texture" value="{crc TextureComponent}" />
+		<value name="Sprite" value="{crc SpriteComponent}" />
+		<value name="Polygon" value="{crc PolygonComponent}" />
 	</enum>
 	<struct name="Transform2dComponentInitData" base="ComponentInitData">
 		<field type="float2" name="position" />
@@ -15,9 +16,15 @@
 			</value>
 		</field>
 	</struct>
-	<struct name="TextureComponentInitData" base="ComponentInitData">
+	<struct name="SpriteComponentInitData" base="ComponentInitData">
 		<field type="{reference Texture}" name="texture" />
 		<field type="float2" name="offset" />
+		<field type="uint32" name="layerId" />
+	</struct>
+	<struct name="PolygonComponentInitData" base="ComponentInitData">
+		<field type="{reference Texture}" name="texture" />
+		<field type="{array float2}" name="points" />
+		<field type="{array float2}" name="uvs" />
 		<field type="uint32" name="layerId" />
 	</struct>
 </tikigenerictypes> 

@@ -13,17 +13,10 @@
           </element>
           <element type="EntityComponent">
             <object type="EntityComponent">
-              <field type="crc32" name="componentType" value="{enum Components2dType.Texture}" />
+              <field type="crc32" name="componentType" value="{enum Components2dType.Sprite}" />
               <field type="{pointer ComponentInitData}" name="initData">
-                <object type="TextureComponentInitData">
-                  <field type="{reference Texture}" name="texture" value="TEXR:islandm1b.texture" />
-                  <field type="float2" name="offset">
-                    <object type="float2">
-                      <field type="float" name="x" value="0.1278177" />
-                      <field type="float" name="y" value="-0.4948781" />
-                    </object>
-                  </field>
-                  <field type="uint32" name="layerId" value="5" />
+                <object type="SpriteComponentInitData">
+                  <field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
                 </object>
               </field>
             </object>
