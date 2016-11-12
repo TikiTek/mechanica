@@ -59,6 +59,7 @@ namespace tiki
 						parameters.width				= (uint16)graphicsSystem.getBackBuffer().getWidth();
 						parameters.height				= (uint16)graphicsSystem.getBackBuffer().getHeight();
 						parameters.layerCount			= MechanicaRenderLayer_Count;
+						parameters.emissivLayerId		= MechanicaRenderLayer_Emissive;
 						parameters.drawToWorldFactor	= 0.01f;
 
 						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, parameters ) )

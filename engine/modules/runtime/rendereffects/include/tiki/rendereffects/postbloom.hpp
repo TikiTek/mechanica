@@ -28,7 +28,7 @@ namespace tiki
 	struct PostProcessBloomRenderParameters
 	{
 		const TextureData*	pSourceData;
-		const TextureData*	pSelfIlluminationData;
+		const TextureData*	pEmissivData;
 		Vector3				cutoffThreshold;
 	};
 

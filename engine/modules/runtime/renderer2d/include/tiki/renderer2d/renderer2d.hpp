@@ -28,7 +28,10 @@ namespace tiki
 	{
 		uint16	width;
 		uint16	height;
+
 		uint32	layerCount;
+		uint32	emissivLayerId;
+
 		float	drawToWorldFactor;
 	};
 
@@ -139,14 +142,20 @@ namespace tiki
 
 		ConstantBuffer					m_vertexConstants;
 		TextureData						m_offscreenColorData;
-		RenderTarget					m_offscreenTarget;
+		TextureData						m_offscreenEmissivData;
+		RenderTarget					m_offscreenColorTarget;
+		RenderTarget					m_offscreenEmissivTarget;
 
 		ChunkedPool< RenderChunk >		m_chunks;
 		Array< RenderLayer >			m_layers;
+		uint32							m_emissivLayer;
 
 		PostProcessBloom				m_bloom;
 
 		RenderCommand&					allocateCommand( RenderLayer& layer );
+
+		void							applyRenderStates( GraphicsContext& graphicsContext );
+		void							renderLayer( GraphicsContext& graphicsContext, RenderLayer& layer );
 	};
 }
 

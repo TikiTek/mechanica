@@ -124,7 +124,9 @@ namespace tiki
 		m_layers.dispose();
 		m_chunks.dispose();
 
-		m_offscreenTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenEmissivTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenColorTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenEmissivData.dispose( *m_pGraphicsSystem );
 		m_offscreenColorData.dispose( *m_pGraphicsSystem );
 
 		m_pGraphicsSystem->disposeVertexInputBinding( m_pCompositeInputBinding );
@@ -144,7 +146,9 @@ namespace tiki
 
 	bool Renderer2d::resize( uint16 width, uint16 height )
 	{
-		m_offscreenTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenEmissivTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenColorTarget.dispose( *m_pGraphicsSystem );
+		m_offscreenEmissivData.dispose( *m_pGraphicsSystem );
 		m_offscreenColorData.dispose( *m_pGraphicsSystem );
 
 		Projection projection;
@@ -156,14 +160,16 @@ namespace tiki
 		textureDescription.type		= TextureType_2d;
 		textureDescription.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
 		textureDescription.format	= PixelFormat_R8G8B8A8_Gamma;		
-		if( !m_offscreenColorData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenColorData" ) )
+		if( !m_offscreenColorData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenColorData" ) ||
+			!m_offscreenEmissivData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenEmissivData" ) )
 		{
 			return false;
 		}
 
-		RenderTargetBuffer renderTargetBuffer;
-		renderTargetBuffer.pDataBuffer	= &m_offscreenColorData;		
-		if( !m_offscreenTarget.create( *m_pGraphicsSystem, width, height, &renderTargetBuffer, 1u, nullptr ) )
+		RenderTargetBuffer colorTargetBuffer( m_offscreenColorData );
+		RenderTargetBuffer emissivTargetBuffer( m_offscreenEmissivData );
+		if( !m_offscreenColorTarget.create( *m_pGraphicsSystem, width, height, &colorTargetBuffer, 1u, nullptr ) ||
+			!m_offscreenEmissivTarget.create( *m_pGraphicsSystem, width, height, &emissivTargetBuffer, 1u, nullptr ))
 		{
 			return false;
 		}
@@ -355,56 +361,33 @@ namespace tiki
 		createGraphicsMatrix44( pVertexData->projection, m_camera.getViewProjectionMatrix() );
 		graphicsContext.unmapBuffer( m_vertexConstants );
 
-		graphicsContext.clear( m_offscreenTarget, parameters.backgroundColor );
-		graphicsContext.beginRenderPass( m_offscreenTarget );
-
-		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
-		graphicsContext.setVertexShader( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ) );
-		graphicsContext.setPixelShader( m_pSpriteShader->getShader( ShaderType_PixelShader, 0u ) );
-
-		graphicsContext.setBlendState( m_pBlendStateAlpha );
-		graphicsContext.setDepthStencilState( m_pDepthState );
-		graphicsContext.setRasterizerState( m_pRasterizerState );
-		graphicsContext.setVertexInputBinding( m_pSpriteInputBinding );
-		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
-
-		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstants );
-
+		// color
+		graphicsContext.clear( m_offscreenColorTarget, parameters.backgroundColor );
+		graphicsContext.beginRenderPass( m_offscreenColorTarget );
+		applyRenderStates( graphicsContext );
 		for( uint layerIndex = 0u; layerIndex < m_layers.getCount(); ++layerIndex )
 		{
-			RenderLayer& layer = m_layers[ layerIndex ];
-
-			while( !layer.chunks.isEmpty() )
+			if( layerIndex == m_emissivLayer )
 			{
-				RenderChunk& chunk = layer.chunks.getFirst();
-
-				for( uint commandIndex = 0u; commandIndex < chunk.commands.getCount(); ++commandIndex )
-				{
-					RenderCommand& command = chunk.commands[ commandIndex ];
-
-					graphicsContext.setPixelShaderTexture( 0u, command.pTexture );
-
-					StaticArray< RenderVertex > vertices;
-					graphicsContext.beginImmediateGeometry( vertices, 4u );
-					vertices[ 0u ] = command.vertices[ 0u ];
-					vertices[ 1u ] = command.vertices[ 1u ];
-					vertices[ 2u ] = command.vertices[ 2u ];
-					vertices[ 3u ] = command.vertices[ 3u ];
-					graphicsContext.endImmediateGeometry( vertices );
-				}
-
-				layer.chunks.removeSortedByValue( chunk );
-				m_chunks.removeUnsortedByValue( chunk );
+				continue;
 			}
-		}
 
+			renderLayer( graphicsContext, m_layers[ layerIndex ] );
+		}
+		graphicsContext.endRenderPass();
+
+		// emissiv
+		graphicsContext.clear( m_offscreenEmissivTarget, TIKI_COLOR_TRANSPARENT );
+		graphicsContext.beginRenderPass( m_offscreenEmissivTarget );
+		applyRenderStates( graphicsContext );
+		renderLayer( graphicsContext, m_layers[ m_emissivLayer ] );
 		graphicsContext.endRenderPass();
 
 		if( parameters.enableBloom )
 		{
 			PostProcessBloomRenderParameters bloomParameters;
-			bloomParameters.pSourceData				= &m_offscreenColorData;
-			bloomParameters.pSelfIlluminationData	= nullptr;
+			bloomParameters.pSourceData		= &m_offscreenColorData;
+			bloomParameters.pEmissivData	= &m_offscreenEmissivData;
 			color::toVector3( bloomParameters.cutoffThreshold, parameters.bloomCutoffThreshold );
 			m_bloom.render( graphicsContext, bloomParameters );
 		}
@@ -468,5 +451,46 @@ namespace tiki
 		}
 
 		return pChunk->commands.push();
+	}
+
+	void Renderer2d::applyRenderStates( GraphicsContext& graphicsContext )
+	{
+		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
+		graphicsContext.setVertexShader( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ) );
+		graphicsContext.setPixelShader( m_pSpriteShader->getShader( ShaderType_PixelShader, 0u ) );
+
+		graphicsContext.setBlendState( m_pBlendStateAlpha );
+		graphicsContext.setDepthStencilState( m_pDepthState );
+		graphicsContext.setRasterizerState( m_pRasterizerState );
+		graphicsContext.setVertexInputBinding( m_pSpriteInputBinding );
+		graphicsContext.setPixelShaderSamplerState( 0u, m_pSamplerState );
+
+		graphicsContext.setVertexShaderConstant( 0u, m_vertexConstants );
+	}
+
+	void Renderer2d::renderLayer( GraphicsContext& graphicsContext, RenderLayer& layer )
+	{
+		while( !layer.chunks.isEmpty() )
+		{
+			RenderChunk& chunk = layer.chunks.getFirst();
+
+			for( uint commandIndex = 0u; commandIndex < chunk.commands.getCount(); ++commandIndex )
+			{
+				RenderCommand& command = chunk.commands[ commandIndex ];
+
+				graphicsContext.setPixelShaderTexture( 0u, command.pTexture );
+
+				StaticArray< RenderVertex > vertices;
+				graphicsContext.beginImmediateGeometry( vertices, 4u );
+				vertices[ 0u ] = command.vertices[ 0u ];
+				vertices[ 1u ] = command.vertices[ 1u ];
+				vertices[ 2u ] = command.vertices[ 2u ];
+				vertices[ 3u ] = command.vertices[ 3u ];
+				graphicsContext.endImmediateGeometry( vertices );
+			}
+
+			layer.chunks.removeSortedByValue( chunk );
+			m_chunks.removeUnsortedByValue( chunk );
+		}
 	}
 }

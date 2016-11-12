@@ -134,7 +134,7 @@ namespace tiki
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
 			graphicsContext.clear( m_renderTargets[ passIndex ], TIKI_COLOR_TRANSPARENT );
 
-			const uint32 pixelShaderIndex = ( passIndex == 0u ? (parameters.pSelfIlluminationData != nullptr ? 2u : 1u) : 0u );
+			const uint32 pixelShaderIndex = ( passIndex == 0u ? (parameters.pEmissivData != nullptr ? 2u : 1u) : 0u );
 			graphicsContext.setVertexShader( m_pShader->getShader( ShaderType_VertexShader, 0u ) );
 			graphicsContext.setPixelShader( m_pShader->getShader( ShaderType_PixelShader, pixelShaderIndex ) );
 
@@ -148,7 +148,7 @@ namespace tiki
 				graphicsContext.setBlendState( m_pBlendStateCutoff );
 				graphicsContext.setPixelShaderConstant( 0u, m_cutoffPixelConstants );
 				graphicsContext.setPixelShaderTexture( 0u, parameters.pSourceData );
-				graphicsContext.setPixelShaderTexture( 1u, parameters.pSelfIlluminationData );
+				graphicsContext.setPixelShaderTexture( 1u, parameters.pEmissivData );
 			}
 			else
 			{
