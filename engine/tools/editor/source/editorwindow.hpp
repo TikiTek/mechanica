@@ -2,7 +2,12 @@
 #ifndef TIKI_EDITORWINDOW_HPP_INCLUDED
 #define TIKI_EDITORWINDOW_HPP_INCLUDED
 
+#include "tiki/genericdataeditor/genericdataeditor.hpp"
+#include "tiki/packageeditor/packageeditor.hpp"
 #include "tiki/qtapplication/qtmainwindow.hpp"
+
+#include <QList>
+#include <QVector>
 
 namespace tiki
 {
@@ -14,8 +19,8 @@ namespace tiki
 
 	public:
 
-		EditorWindow();
-		~EditorWindow();
+						EditorWindow();
+		virtual			~EditorWindow();
 
 	private:
 

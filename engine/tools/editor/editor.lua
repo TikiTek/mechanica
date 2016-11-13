@@ -8,8 +8,13 @@ module:add_files( "*.lua" );
 module:add_dependency( "config" );
 module:add_dependency( "core/resource" );
 module:add_dependency( "core/genericdata" );
+
 module:add_dependency( "tool/toolbase" );
 module:add_dependency( "tool/qtapplication" );
+
+module:add_dependency( "editor/editorinterface" );
+module:add_dependency( "editor/packageeditor" );
+module:add_dependency( "editor/genericdataeditor" );
 
 --module:add_dependency( "toollibraries" );
 
