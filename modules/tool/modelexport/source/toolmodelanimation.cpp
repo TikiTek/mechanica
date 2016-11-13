@@ -162,7 +162,7 @@ namespace tiki
 
 			if ( pHierachyJoint != nullptr )
 			{
-				index = hierarchy.getJointData().getIndexOf( pHierachyJoint );
+				index = hierarchy.getJointData().getIndexOfIterator( pHierachyJoint );
 				ToolModelAnimationJoint& joint = m_joints[ index ];
 
 				uint count = times.data.getCount();

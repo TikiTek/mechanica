@@ -2,8 +2,8 @@
 #define TIKI_COLOR_HPP__
 
 #include "tiki/base/assert.hpp"
+#include "tiki/base/basetypes.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
 
 #include "base.hpp"

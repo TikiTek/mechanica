@@ -5,6 +5,7 @@
 #include "tiki/physics2d/physics2dcollisionobject.hpp"
 
 #include "tiki/base/types.hpp"
+#include "tiki/container/slice.hpp"
 #include "tiki/math/axisalignedrectangle.hpp"
 #include "tiki/math/vector.hpp"
 
@@ -14,7 +15,7 @@ namespace tiki
 {
 	class Physics2dWorld;
 	class Physics2dShape;
-	
+
 	class Physics2dBody : public Physics2dCollisionObject
 	{
 		TIKI_NONCOPYABLE_CLASS( Physics2dBody );
@@ -48,6 +49,8 @@ namespace tiki
 
 		float					getAngularVelocity() const;
 		void					setAngularVelocity( float value ) const;
+
+		uint					getVertices( Slice<Vector2>& targetVertices ) const;
 
 		AxisAlignedRectangle	getShapeBounds() const;
 		AxisAlignedRectangle	getBodyBounds() const;

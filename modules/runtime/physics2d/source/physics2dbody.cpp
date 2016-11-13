@@ -6,6 +6,7 @@
 
 #include "physics2dinternal.hpp"
 
+#include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2Fixture.h>
 #include <Box2D/Dynamics/b2World.h>
@@ -54,7 +55,7 @@ namespace tiki
 			dispose( world );
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -147,6 +148,25 @@ namespace tiki
 	void Physics2dBody::setAngularVelocity( float value ) const
 	{
 		m_pBody->SetAngularVelocity( value );
+	}
+
+	uint Physics2dBody::getVertices( Slice<Vector2>& targetVertices ) const
+	{
+		const b2Shape* pShape = m_pFixture->GetShape();
+		if( pShape->GetType() != b2Shape::e_polygon )
+		{
+			return 0u;
+		}
+		const b2PolygonShape* pPolygonShape = (const b2PolygonShape*)pShape;
+		const int minCount = TIKI_MIN( (int)targetVertices.getCapacity(), pPolygonShape->GetVertexCount() );
+
+		targetVertices.clear();
+		for( int i = 0u; i < minCount; ++i )
+		{
+			targetVertices.push( toEngineVector( pPolygonShape->GetVertex( i ) ) );
+		}
+
+		return (uint)pPolygonShape->GetVertexCount();
 	}
 
 	AxisAlignedRectangle Physics2dBody::getShapeBounds() const

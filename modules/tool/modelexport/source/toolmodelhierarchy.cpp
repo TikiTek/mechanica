@@ -123,14 +123,14 @@ namespace tiki
 
 	void ToolModelHierarchy::markJointAsUsed( const ToolModelJoint& constJoint )
 	{
-		const uint index		= m_joints.getIndexOf( &constJoint );
+		const uint index		= m_joints.getIndexOfIterator( &constJoint );
 		ToolModelJoint& joint	= m_joints[ index ];
 		joint.used = true;
 	}
 
 	void ToolModelHierarchy::setBindMatrix( const ToolModelJoint& constJoint, const Matrix44& matrix )
 	{
-		const uint index		= m_joints.getIndexOf( &constJoint );
+		const uint index		= m_joints.getIndexOfIterator( &constJoint );
 		ToolModelJoint& joint	= m_joints[ index ];
 		joint.skinToBone = matrix;
 	}

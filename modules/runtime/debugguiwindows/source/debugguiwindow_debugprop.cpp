@@ -48,7 +48,7 @@ namespace tiki
 				}
 
 				const string folderName = pathName.subString( 0, nextIndex );
-				if ( folderNames.getIndexOf( folderName ) == TIKI_SIZE_T_MAX )
+				if ( folderNames.getIndexOfValue( folderName ) == TIKI_SIZE_T_MAX )
 				{
 					folderNames.push( folderName );
 				}
@@ -303,7 +303,7 @@ namespace tiki
 			}
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
-		{			
+		{
 			m_inputTimer = 0.0;
 
 			switch ( inputEvent.data.keybaordKey.key )
@@ -361,7 +361,7 @@ namespace tiki
 					else
 					{
 						collapseFolderNode( parentNode );
-					}					
+					}
 				}
 			}
 		}
@@ -547,7 +547,7 @@ namespace tiki
 		{
 			TreeNode& node = m_propNodes[ i ];
 			if ( &node != pExcludeNode && isNodeNearest( node, nearestAbsDistance, position.y, up ) )
-			{			
+			{
 				pNearestNode = &node;
 			}
 		}

@@ -12,26 +12,34 @@ namespace tiki
 	class ImmediateRenderer;
 	class RenderTarget;
 	class ResourceManager;
+	struct AxisAlignedBox;
 	struct Box;
+	struct Circle;
+	struct Line2;
+	struct Line3;
 	struct Matrix43;
-	struct Ray;
+	struct Ray3;
 	struct Vector2;
 	struct Vector3;
-	struct AxisAlignedBox;
-	
+
 	namespace debugrenderer
 	{
 		void	initialize( ResourceManager& resourceManager );
 		void	shutdown( ResourceManager& resourceManager );
 
+		void	drawLine( const Line2& line, Color color = TIKI_COLOR_WHITE );
+		void	drawLine( const Vector2& start, const Vector2& end, Color color = TIKI_COLOR_WHITE );
+		void	drawLine( const Line3& line, Color color = TIKI_COLOR_WHITE );
 		void	drawLine( const Vector3& start, const Vector3& end, Color color = TIKI_COLOR_WHITE );
 		void	drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );
 
-		void	drawLineRay( const Ray& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE );
+		void	drawLineRay( const Ray3& ray, float length = 100.0f, Color color = TIKI_COLOR_WHITE );
 		void	drawLineBox( const Box& box, Color color = TIKI_COLOR_WHITE );
 		void	drawLineAxisAlignedBox( const AxisAlignedBox& axisAlignedBox, Color color = TIKI_COLOR_WHITE );
 		void	drawLineAxes( float lineLength, float lineOffset, const Matrix43& worldMatrix );
 		void	drawLineGrid( float gridSpacing = 5.0f, float gridSize = 10.0f, Color color = TIKI_COLOR_WHITE );
+		void	drawLineCircle( const Circle& circle, Color color = TIKI_COLOR_WHITE );
+		void	drawLineCircle( const Vector2& center, float radius, Color color = TIKI_COLOR_WHITE );
 		void	drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color = TIKI_COLOR_WHITE );
 		void	drawLineSphere( const Vector3& center, float radius, Color color = TIKI_COLOR_WHITE );
 		void	drawLineFrustum( const Frustum& frustum, Color color = TIKI_COLOR_WHITE );
