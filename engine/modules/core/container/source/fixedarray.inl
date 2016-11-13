@@ -23,9 +23,9 @@ namespace tiki
 			m_aData[ i ] = pInitData[ i ];
 		}
 	}
-	
+
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint tiki::CopyableFixedArray< T, TCapacity >::getIndexOf( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uint tiki::CopyableFixedArray< T, TCapacity >::getIndexOfIterator( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_aData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -34,7 +34,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint CopyableFixedArray< T, TCapacity >::getIndexOf( ConstReference value ) const
+	TIKI_FORCE_INLINE uint CopyableFixedArray< T, TCapacity >::getIndexOfValue( ConstReference value ) const
 	{
 		for (uint i = 0u; i < TCapacity; ++i)
 		{

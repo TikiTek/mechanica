@@ -1,6 +1,8 @@
 #pragma once
-#ifndef __TIKI_FIXEDSIZEDARRAY_INL_INCLUDED__
-#define __TIKI_FIXEDSIZEDARRAY_INL_INCLUDED__
+#ifndef TIKI_FIXEDSIZEDARRAY_INL_INCLUDED
+#define TIKI_FIXEDSIZEDARRAY_INL_INCLUDED
+
+#include "tiki/base/assert.hpp"
 
 namespace tiki
 {
@@ -122,7 +124,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint FixedSizedArray< T, TCapacity >::getIndexOf( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uint FixedSizedArray< T, TCapacity >::getIndexOfIterator( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_aData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -131,7 +133,7 @@ namespace tiki
 	}
 
 	template< typename T, uint TCapacity >
-	TIKI_FORCE_INLINE uint FixedSizedArray< T, TCapacity >::getIndexOf( ConstReference value ) const
+	TIKI_FORCE_INLINE uint FixedSizedArray< T, TCapacity >::getIndexOfValue( ConstReference value ) const
 	{
 		for (uint i = 0u; i < m_count; ++i)
 		{
@@ -157,6 +159,18 @@ namespace tiki
 		TIKI_ASSERT( index < m_count );
 		return m_aData[ index ];
 	}
+
+	template< typename T, uint TCapacity >
+	TIKI_FORCE_INLINE Slice< T > FixedSizedArray< T, TCapacity >::toSlice()
+	{
+		return Slice< T >( m_aData, &m_count, TCapacity );
+	}
+
+	template< typename T, uint TCapacity >
+	TIKI_FORCE_INLINE ArrayView< T > FixedSizedArray< T, TCapacity >::toArrayView() const
+	{
+		return ArrayView< T >( m_aData, m_count );
+	}
 }
 
-#endif // __TIKI_FIXEDSIZEDARRAY_INL_INCLUDED__
+#endif // TIKI_FIXEDSIZEDARRAY_INL_INCLUDED

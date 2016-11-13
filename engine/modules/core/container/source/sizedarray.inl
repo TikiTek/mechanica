@@ -1,3 +1,6 @@
+#pragma once
+#ifndef TIKI_SIZEDARRAY_INL_INCLUDED
+#define TIKI_SIZEDARRAY_INL_INCLUDED
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
@@ -30,7 +33,7 @@ namespace tiki
 		if ( m_pData == nullptr )
 		{
 			dispose();
-			return false;				 
+			return false;
 		}
 
 		return true;
@@ -65,10 +68,10 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T& SizedArray< T >::push( const T& value )
+	TIKI_FORCE_INLINE T& SizedArray< T >::push( ConstReference value )
 	{
 		TIKI_ASSERT( m_count < m_capacity );
-		return m_pData[ m_count++ ] = value;		
+		return m_pData[ m_count++ ] = value;
 	}
 
 	template< typename T >
@@ -84,7 +87,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T* SizedArray< T >::pushRange( const T* pData, uint count )
+	TIKI_FORCE_INLINE T* SizedArray< T >::pushRange( ConstIterator pData, uint count )
 	{
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( m_count + count <= m_capacity );
@@ -99,7 +102,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool SizedArray< T >::pop( T& value )
+	TIKI_FORCE_INLINE bool SizedArray< T >::pop( Reference value )
 	{
 		if ( isEmpty() )
 		{
@@ -118,7 +121,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE bool SizedArray< T >::removeUnsortedByValue( const T& value )
+	TIKI_FORCE_INLINE bool SizedArray< T >::removeUnsortedByValue( ConstReference value )
 	{
 		for (uint i = 0u; i < m_count; ++i)
 		{
@@ -133,7 +136,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint SizedArray< T >::getIndexOf( const T* pValue ) const
+	TIKI_FORCE_INLINE uint SizedArray< T >::getIndexOfIterator( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_pData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -142,7 +145,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint SizedArray< T >::getIndexOf( const T& value ) const
+	TIKI_FORCE_INLINE uint SizedArray< T >::getIndexOfValue( ConstReference value ) const
 	{
 		for (uint i = 0u; i < m_count; ++i)
 		{
@@ -168,4 +171,18 @@ namespace tiki
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE Slice< T > SizedArray<T>::toSlice()
+	{
+		return Slice< T >( m_pData, &m_count, m_capacity );
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE ArrayView< T > SizedArray<T>::toArrayView() const
+	{
+		return ArrayView< T >( m_pData, m_count );
+	}
 }
+
+#endif // TIKI_SIZEDARRAY_INL_INCLUDED
