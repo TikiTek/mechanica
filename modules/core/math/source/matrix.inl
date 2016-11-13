@@ -177,7 +177,7 @@ namespace tiki
 
 	//////////////////////////////////////////////////////////////////////////
 	// createScale
-	
+
 	TIKI_FORCE_INLINE Matrix22& matrix::createScale( Matrix22& mtx, const Vector2& scale )
 	{
 		matrix::clear( mtx );
@@ -185,7 +185,7 @@ namespace tiki
 		mtx.y.y = scale.y;
 		return mtx;
 	}
-	
+
 	TIKI_FORCE_INLINE Matrix33& matrix::createScale( Matrix33& mtx, const Vector3& scale )
 	{
 		matrix::clear( mtx );
@@ -207,7 +207,7 @@ namespace tiki
 
 	//////////////////////////////////////////////////////////////////////////
 	// createRotationX
-	
+
 	TIKI_FORCE_INLINE Matrix33& matrix::createRotationX( Matrix33& mtx, float angle )
 	{
 		const float s = sinf( angle );
@@ -461,7 +461,7 @@ namespace tiki
 		matrix::transform( mtx.rot.x, rhsTransposed );
 		matrix::transform( mtx.rot.y, rhsTransposed );
 		matrix::transform( mtx.rot.z, rhsTransposed );
-		
+
 		matrix::transform( mtx.pos, rhsTransposed );
 		vector::add( mtx.pos, rhs.pos );
 
@@ -481,7 +481,7 @@ namespace tiki
 
 		return mtx;
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	// scale
 

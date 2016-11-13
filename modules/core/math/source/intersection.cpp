@@ -4,8 +4,10 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/math/axisalignedbox.hpp"
 #include "tiki/math/box.hpp"
+#include "tiki/math/line2.hpp"
 #include "tiki/math/plane.hpp"
-#include "tiki/math/ray.hpp"
+#include "tiki/math/polygon2.hpp"
+#include "tiki/math/ray2.hpp"
 #include "tiki/math/sphere.hpp"
 
 namespace tiki
@@ -16,7 +18,27 @@ namespace tiki
 		bool    clip( float denom, float numer, float& t0, float& t1 );
 	}
 
-	bool intersection::intersectRaySphere( const Ray& ray, const Sphere& sphere, Vector3& intersectionPoint )
+	// 2d
+	bool intersection::checkLineLineIntersection( const Line2& line1, const Line2& line2, Vector2& intersectionPoint )
+	{
+		const Vector2 s1 = line1.getDistance();
+		const Vector2 s2 = line2.getDistance();
+
+		const float s = (-s1.y * (line1.start.x - line2.start.x) + s1.x * (line1.start.y - line2.start.y)) / (-s2.x * s1.y + s1.x * s2.y);
+		const float t = (s2.x * (line1.start.y - line2.start.y) - s2.y * (line1.start.x - line2.start.x)) / (-s2.x * s1.y + s1.x * s2.y);
+
+		if( s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f )
+		{
+			intersectionPoint.x = line1.start.x + (t * s1.x);
+			intersectionPoint.y = line1.start.y + (t * s1.y);
+			return true;
+		}
+
+		return false;
+	}
+
+	// 3d
+	bool intersection::intersectRaySphere( const Ray3& ray, const Sphere& sphere, Vector3& intersectionPoint )
 	{
 		float rayParameters[ 2 ];
 
@@ -85,7 +107,7 @@ namespace tiki
 		}
 	}
 
-	bool intersection::intersectRayPlane( const Ray& ray, const Plane& plane, Vector3& intersectionPoint )
+	bool intersection::intersectRayPlane( const Ray3& ray, const Plane& plane, Vector3& intersectionPoint )
 	{
 		// intersection = origin + t*direction, with t >= 0.
 		Vector3 normal;
@@ -113,7 +135,7 @@ namespace tiki
 		// The Line and plane are parallel.  Determine if they are numerically close enough to be coincident.
 		if( f32::abs( signedDistance <= f32::zeroTolerance ) )
 		{
-			// The line is coincident with the plane, so choose t = 0 for the parameter (initial value). 
+			// The line is coincident with the plane, so choose t = 0 for the parameter (initial value).
 			intersectionPoint = ray.origin;
 			return true;
 		}
@@ -121,7 +143,7 @@ namespace tiki
 		return false;
 	}
 
-	bool intersection::intersectRayAxisAlignedBox( const Ray& ray, const AxisAlignedBox& box, Vector3& intersectionPoint )
+	bool intersection::intersectRayAxisAlignedBox( const Ray3& ray, const AxisAlignedBox& box, Vector3& intersectionPoint )
 	{
 		float tmin = (box.min.x - ray.origin.x) / ray.direction.x;
 		float tmax = (box.max.x - ray.origin.x) / ray.direction.x;
@@ -163,7 +185,7 @@ namespace tiki
 		return true;
 	}
 
-	bool intersection::intersectRayBox( const Ray& ray, const Box& box, Vector3& intersectionPoint )
+	bool intersection::intersectRayBox( const Ray3& ray, const Box& box, Vector3& intersectionPoint )
 	{
 		float WdU[ 3 ];
 		float AWdU[ 3 ];
@@ -234,7 +256,7 @@ namespace tiki
 
 	IntersectionTypes intersection::intersectSphereAxisAlignedBox( const Sphere& sphere, const AxisAlignedBox& box )
 	{
-		const Vector3 nearestBoxPoint = 
+		const Vector3 nearestBoxPoint =
 		{
 			(sphere.center.x < box.min.x ? box.min.x - sphere.center.x : (sphere.center.x > box.max.x ? sphere.center.x - box.max.x : 0.0f)),
 			(sphere.center.y < box.min.y ? box.min.y - sphere.center.y : (sphere.center.y > box.max.y ? sphere.center.y - box.max.y : 0.0f)),

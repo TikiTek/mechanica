@@ -3,7 +3,7 @@
 #define __TIKI_VECTOR_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
-#include "tiki/math/basetypes.hpp"
+#include "tiki/base/basetypes.hpp"
 
 namespace tiki
 {
@@ -36,7 +36,7 @@ namespace tiki
 	{
 		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon ) && f32::isZero( vec.z, epsilon ) && f32::isZero( vec.w, epsilon );
 	}
-	
+
 	TIKI_FORCE_INLINE bool vector::isNormalized( const Vector2& vec, float epsilon /*= f32::epsilon */ )
 	{
 		return f32::isEquals( vector::length( vec ), 1.0f, epsilon );
@@ -58,9 +58,21 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector3 vector::create( const Vector2& source, float z )
+	{
+		const Vector3 vec ={ source.x, source.y, z };
+		return vec;
+	}
+
 	TIKI_FORCE_INLINE Vector3 vector::create( float x, float y, float z )
 	{
 		const Vector3 vec = { x, y, z };
+		return vec;
+	}
+
+	TIKI_FORCE_INLINE Vector4 vector::create( const Vector3& source, float w )
+	{
+		const Vector4 vec = { source.x, source.y, source.z, w };
 		return vec;
 	}
 
@@ -606,8 +618,16 @@ namespace tiki
 		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z + lhs.w * rhs.w;
 	}
 
+	TIKI_FORCE_INLINE float vector::cross( Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		return (lhs.x * rhs.y) - (lhs.y * rhs.x);
+	}
+
 	TIKI_FORCE_INLINE Vector3& vector::cross( Vector3& vec, const Vector3& lhs, const Vector3& rhs )
 	{
+		TIKI_ASSERT( &vec != &lhs );
+		TIKI_ASSERT( &vec != &rhs );
+
 		vec.x = ( lhs.y * rhs.z ) - ( lhs.z * rhs.y );
 		vec.y = ( lhs.z * rhs.x ) - ( lhs.x * rhs.z );
 		vec.z = ( lhs.x * rhs.y ) - ( lhs.y * rhs.x );
