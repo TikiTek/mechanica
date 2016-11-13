@@ -1,10 +1,10 @@
 #include "tiki/gameplay/gameclient.hpp"
 
+#include "tiki/base/basetypes.hpp"
 #include "tiki/base/debugprop.hpp"
 #include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/graphics/graphicscontext.hpp"
 #include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/math/basetypes.hpp"
 #include "tiki/math/vector.hpp"
 
 #include "components2d.hpp"
@@ -48,7 +48,7 @@ namespace tiki
 
 		m_physicsWorld.create( vector::create( 0.0f, 9.81f ), 1.0f );
 
-		if( !m_transformComponent.create() || 
+		if( !m_transformComponent.create() ||
 			!m_spriteComponent.create( m_transformComponent )   ||
 			!m_polygonComponent.create( m_transformComponent ) ||
 			!m_physicsBodyComponent.create( m_physicsWorld, m_transformComponent ) ||
@@ -117,7 +117,7 @@ namespace tiki
 
 		m_pGraphicsSystem = nullptr;
 	}
-	
+
 	EntityId GameClient::createPlayerEntity( const Vector2& position )
 	{
 		Transform2dComponentInitData transformInitData;
@@ -292,7 +292,7 @@ namespace tiki
 
 		m_entitySystem.update();
 		m_physicsWorld.update( updateContext.timeDelta );
-		
+
 		m_physicsBodyComponent.update();
 		m_breakableComponent.update( updateContext.timeDelta );
 		m_playerComponent.update( updateContext.timeDelta );
@@ -310,7 +310,7 @@ namespace tiki
 		m_physicsWorld.renderDebug();
 #endif
 	}
-	
+
 	bool GameClient::processInputEvent( const InputEvent& inputEvent )
 	{
 		if ( m_playerComponent.processInputEvent( inputEvent ) )
