@@ -68,6 +68,9 @@
               <field type="{pointer ComponentInitData}" name="initData">
                 <object type="BreakableComponentInitData">
                   <field type="float" name="destructionForce" value="10.0" />
+                  <field type="uint32" name="fragmentMaxDepth" value="5" />
+                  <field type="float" name="fragmentMinBreakAfterSeconds" value="0.1" />
+                  <field type="float" name="fragmentMaxBreakAfterSeconds" value="0.8" />
                   <field type="uint32" name="fragmentMaterialId" value="{enum MechanicaMaterialId.Island}" />
                   <field type="{array BreakableFragment}" name="fragments">
                     <array type="BreakableFragment">

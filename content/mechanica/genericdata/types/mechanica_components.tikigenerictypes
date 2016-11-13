@@ -10,8 +10,9 @@
 	<struct name="BreakableComponentInitData" base="ComponentInitData">
 		<field type="{array BreakableFragment}" name="fragments" />
 		<field type="float" name="destructionForce" value="10.0" />
-		<field type="float" name="breakAfterSeconds" />
-		<field type="bool" name="enableBreakTimer" />
+		<field type="uint32" name="fragmentMaxDepth" />
+		<field type="float" name="fragmentMinBreakAfterSeconds" />
+		<field type="float" name="fragmentMaxBreakAfterSeconds" />
 		<field type="uint32" name="fragmentMaterialId" />
 	</struct>
 	<struct name="PlayerComponentInitData" base="ComponentInitData">
