@@ -9,3 +9,7 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "editor/editorinterface" );
 module:add_dependency( "thirdparty/qt" );
+
+module.import_func = function(project)
+	module:add_moc_file( "include/tiki/packageeditor/packageeditorwidget.hpp" )
+end

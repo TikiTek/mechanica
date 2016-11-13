@@ -6,6 +6,7 @@
 
 namespace tiki
 {
+	class IEditorInterface;
 	class QtRibbonButton;
 
 	class PackageEditor : public IFileEditor
@@ -14,17 +15,20 @@ namespace tiki
 
 	public:
 
-									PackageEditor();
-		virtual						~PackageEditor();
+												PackageEditor( IEditorInterface* pInterface );
+		virtual									~PackageEditor();
 
-		QWidget*					openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		void						closeFile( QWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual QWidget*						openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void							saveFile( QWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void							closeFile( QWidget* pWidget ) TIKI_OVERRIDE_FINAL;
 
-		QString						getFileType() const TIKI_OVERRIDE_FINAL;
-		ArrayView< QtRibbonTab* >	getEditorRibbons() const TIKI_OVERRIDE_FINAL;
-		ArrayView< QDockWidget* >	getDockWidgets() const TIKI_OVERRIDE_FINAL;
+		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
+		virtual const QVector< QtRibbonTab* >&	getRibbonTabs() const TIKI_OVERRIDE_FINAL;
+		virtual const QVector< QDockWidget* >&	getDockWidgets() const TIKI_OVERRIDE_FINAL;
 
 	private:
+
+		IEditorInterface*			m_pInterface;
 
 		QtRibbonTab*				m_pRibbon;
 		QtRibbonButton*				m_pNewPackageButton;
@@ -32,6 +36,8 @@ namespace tiki
 		QtRibbonButton*				m_pSavePackageButton;
 		QtRibbonButton*				m_pClosePackageButton;
 
+		QVector< QtRibbonTab* >		m_tabs;
+		QVector< QDockWidget* >		m_docks;
 	};
 }
 

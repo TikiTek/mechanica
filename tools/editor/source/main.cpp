@@ -1,6 +1,9 @@
 #include "tiki/base/platform.hpp"
 
-#include "editorwindow.hpp"
+#include "tiki/genericdataeditor/genericdataeditor.hpp"
+#include "tiki/packageeditor/packageeditor.hpp"
+
+#include "editor.hpp"
 
 #include <QApplication>
 
@@ -12,6 +15,12 @@ namespace tiki
 
 		EditorWindow window;
 		window.show();
+
+		Editor editor( &window );
+
+		PackageEditor packageEditor( &editor );
+
+		editor.registerFileEditor( &packageEditor );
 
 		return application.exec();
 	}

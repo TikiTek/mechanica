@@ -6,8 +6,7 @@
 #include "tiki/packageeditor/packageeditor.hpp"
 #include "tiki/qtapplication/qtmainwindow.hpp"
 
-#include <QList>
-#include <QVector>
+
 
 namespace tiki
 {
@@ -22,12 +21,20 @@ namespace tiki
 						EditorWindow();
 		virtual			~EditorWindow();
 
+		void			openFileTab( const QString& title, QWidget* pWidget );
+		void			closeFileTab( QWidget* pWidget );
+
+	signals:
+
+		void			fileCloseRequest( QWidget* pWidget );
+
+	private slots:
+
+		void			fileCloseRequested( int index );
+
 	private:
 
-		QtRibbonTab*	m_pFileRibbon;
-
-		QtRibbonButton*	m_pFileNewButton;
-
+		QTabWidget*		m_pFileTabs;
 	};
 }
 

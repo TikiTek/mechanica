@@ -19,14 +19,15 @@ namespace tiki
 	{
 	public:
 
-		virtual							~IFileEditor() { }
+		virtual									~IFileEditor() { }
 
-		QWidget*						openFile( const QString& fileName ) TIKI_PURE;
-		void							closeFile( QWidget* pWidget ) TIKI_PURE;
+		virtual QWidget*						openFile( const QString& fileName ) TIKI_PURE;
+		virtual void							saveFile( QWidget* pWidget ) TIKI_PURE;
+		virtual void							closeFile( QWidget* pWidget ) TIKI_PURE;
 
-		QString							getFileExtension() const TIKI_PURE;
-		const QVector< QtRibbonTab* >&	getRibbonTabs() const TIKI_PURE;
-		const QVector< QDockWidget* >&	getDockWidgets() const TIKI_PURE;
+		virtual QString							getFileExtension() const TIKI_PURE;
+		virtual const QVector< QtRibbonTab* >&	getRibbonTabs() const TIKI_PURE;
+		virtual const QVector< QDockWidget* >&	getDockWidgets() const TIKI_PURE;
 	};
 }
 

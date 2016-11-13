@@ -22,11 +22,8 @@ namespace tiki
 		void			addRibbonTab( QtRibbonTab* pRibbonTab );
 		void			removeRibbonTab( QtRibbonTab* pRibbonTab );
 
-		void			openFileTab( const QString& title, QWidget* pWidget );
-
-	signals:
-
-		void			fileClosed( QWidget* pWidget );
+		void			addWidget( QWidget* pWidget );
+		void			removeWidget( QWidget* pWidget );
 
 	private:
 
@@ -34,8 +31,6 @@ namespace tiki
 		QVBoxLayout*	m_pMainLayout;
 
 		QTabWidget*		m_pRibbonTabs;
-
-		QTabWidget*		m_pFileTabs;
 	};
 }
 
