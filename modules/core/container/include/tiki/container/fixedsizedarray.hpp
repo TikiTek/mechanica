@@ -2,8 +2,9 @@
 #ifndef __TIKI_FIXEDSIZEDARRAY_HPP_INCLUDED__
 #define __TIKI_FIXEDSIZEDARRAY_HPP_INCLUDED__
 
-#include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/arrayview.hpp"
+#include "tiki/container/slice.hpp"
 
 namespace tiki
 {
@@ -57,12 +58,15 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Reference			getLast()			{ return m_aData[ m_count - 1u ]; }
 		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_aData[ m_count - 1u ]; }
-		
-		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
-		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;
+
+		TIKI_FORCE_INLINE uint				getIndexOfIterator( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uint				getIndexOfValue( ConstReference value ) const;
 
 		TIKI_FORCE_INLINE Reference			operator[]( uint index );
 		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
+
+		TIKI_FORCE_INLINE Slice< T >		toSlice();
+		TIKI_FORCE_INLINE ArrayView< T >	toArrayView() const;
 
 		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
 		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }

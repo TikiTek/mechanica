@@ -46,8 +46,8 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			getLast()			{ return m_pData[ m_capacity - 1u ]; }
 		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_pData[ m_capacity - 1u ]; }
 
-		TIKI_FORCE_INLINE uint				getIndexOf( ConstIterator pValue ) const;
-		TIKI_FORCE_INLINE uint				getIndexOf( ConstReference value ) const;
+		TIKI_FORCE_INLINE uint				getIndexOfIterator( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uint				getIndexOfValue( ConstReference value ) const;
 
 		TIKI_FORCE_INLINE Reference			operator[]( uint index );
 		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;

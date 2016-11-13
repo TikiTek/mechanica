@@ -69,7 +69,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint Array<T>::getIndexOf( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uint Array<T>::getIndexOfIterator( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_pData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -78,7 +78,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE size_t Array< T >::getIndexOf( ConstReference value ) const
+	TIKI_FORCE_INLINE size_t Array< T >::getIndexOfValue( ConstReference value ) const
 	{
 		for (uint i = 0u; i < m_capacity; ++i)
 		{
