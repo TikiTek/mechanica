@@ -3,7 +3,7 @@
 
 #include "tiki/base/numbers.hpp"
 #include "tiki/math/quaternion.hpp"
-#include "tiki/math/ray.hpp"
+#include "tiki/math/ray3.hpp"
 
 namespace tiki
 {
@@ -65,7 +65,7 @@ namespace tiki
 		return m_frustum;
 	}
 
-	void Camera::getCameraRay( Ray& ray, const Vector2& screenPosition ) const
+	void Camera::getCameraRay( Ray3& ray, const Vector2& screenPosition ) const
 	{
 		const Vector2 clipPosition = m_projection.getClipPosition( screenPosition );
 

@@ -10,7 +10,7 @@
 namespace tiki
 {
 	struct Quaternion;
-	struct Ray;
+	struct Ray3;
 
 	class Camera
 	{
@@ -37,7 +37,7 @@ namespace tiki
 		const Matrix44&		getViewProjectionMatrix() const	{ return m_viewProjection; }
 
 		const Frustum&		getFrustum() const;
-		void				getCameraRay( Ray& ray, const Vector2& screenPosition ) const;
+		void				getCameraRay( Ray3& ray, const Vector2& screenPosition ) const;
 
 	private:
 
