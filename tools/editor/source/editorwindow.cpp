@@ -6,12 +6,15 @@ namespace tiki
 {
 	EditorWindow::EditorWindow()
 	{
-		m_pFileRibbon = new QtRibbonTab( "File" );
-		
+		m_pFileRibbon = new QtRibbonTab( "Package" );
+
+		m_pFileNewButton = m_pFileRibbon->addButton( "New Package" );
+		m_pFileNewButton = m_pFileRibbon->addButton( "Open Package" );
+		m_pFileNewButton = m_pFileRibbon->addButton( "Save Package" );
 		m_pFileNewButton = m_pFileRibbon->addButton( "New Package" );
 
 		addRibbonTab( m_pFileRibbon );
-		
+
 		//saveGeometry();
 		//saveState();
 	}

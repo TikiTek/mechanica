@@ -1,0 +1,10 @@
+#pragma once
+#ifndef TIKI_IEDITORRENDERER_HPP_INCLUDED
+#define TIKI_IEDITORRENDERER_HPP_INCLUDED
+
+namespace tiki
+{
+
+}
+
+#endif // TIKI_IEDITORRENDERER_HPP_INCLUDED
