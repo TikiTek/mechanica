@@ -1,10 +1,9 @@
 -- library/tools/editor/project
 
-include "../../../buildtools/genie_scripts"
-
+include( "../../../buildtools/genie_scripts" );
 add_extension( "qt" );
 
-add_module_include_path( "../.." )
+dofile( "../editor.lua" );
 
 local project = Project:new(
 	"editor",
