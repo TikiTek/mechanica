@@ -252,7 +252,7 @@ namespace tiki
 			const EntityPoolInfo& pool = m_pools[ i ];
 			if( entityId >= pool.firstId && entityId < pool.firstId + pool.poolSize )
 			{
-				return i;
+				return i - 1u;
 			}
 		}
 

@@ -7,7 +7,7 @@
 #include "tiki/math/box.hpp"
 #include "tiki/math/frustum.hpp"
 #include "tiki/math/matrix.hpp"
-#include "tiki/math/ray.hpp"
+#include "tiki/math/ray3.hpp"
 
 namespace tiki
 {
@@ -55,7 +55,7 @@ namespace tiki
 	{
 		static const DebugRenderCommandType CommandType = DebugRenderCommandType_DrawLineRay;
 
-		Ray						ray;
+		Ray3					ray;
 		float					length;
 		Color					color;
 	};

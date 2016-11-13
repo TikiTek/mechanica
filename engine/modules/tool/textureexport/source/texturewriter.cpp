@@ -1,9 +1,8 @@
-
 #include "tiki/textureexport/texturewriter.hpp"
 
+#include "tiki/base/basetypes.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphics/texturedescription.hpp"
-#include "tiki/math/basetypes.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 
 #include "base.hpp"

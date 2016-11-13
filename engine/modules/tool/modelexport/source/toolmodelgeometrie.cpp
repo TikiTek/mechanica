@@ -1,9 +1,8 @@
-
 #include "tiki/modelexport/toolmodelgeometrie.hpp"
 
+#include "tiki/base/basetypes.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/stringparse.hpp"
-#include "tiki/math/basetypes.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
 #include "tiki/toolbase/tokenizer.hpp"

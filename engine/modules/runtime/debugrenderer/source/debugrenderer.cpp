@@ -7,6 +7,9 @@
 #include "tiki/graphics/immediaterenderer.hpp"
 #include "tiki/graphics/immediatevertex.hpp"
 #include "tiki/math/camera.hpp"
+#include "tiki/math/circle.hpp"
+#include "tiki/math/line2.hpp"
+#include "tiki/math/line3.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 #include "debugrenderer_types.hpp"
@@ -84,7 +87,7 @@ namespace tiki
 		void					flushDrawText3D( const ImmediateRenderer& renderer, const DebugRenderText3DCommand& command, const Camera& camera );
 
 		void					flushSetOption( const ImmediateRenderer& renderer, const DebugRenderSetOptionCommand& command );
-		
+
 	};
 
 	static DebugRenderer s_debugRenderer;
@@ -108,7 +111,7 @@ namespace tiki
 
 		m_pFont = resourceManager.loadResource< Font >( "debug.font" );
 	}
-	
+
 	void DebugRenderer::dispose( ResourceManager& resourceManager )
 	{
 		resourceManager.unloadResource( m_pFont );
@@ -177,7 +180,7 @@ namespace tiki
 
 		return pCommand;
 	}
-	
+
 	void DebugRenderer::flushList( const CommandList& list, const ImmediateRenderer& renderer, const Camera& camera )
 	{
 		DebugRenderCommand* pCommand = list.pFirstCommand;
@@ -387,7 +390,7 @@ namespace tiki
 
 		createFloat3( vertices[ 14 ].position, points[ 7 ].x, points[ 7 ].y, points[ 7 ].z );
 		createFloat3( vertices[ 15 ].position, points[ 4 ].x, points[ 4 ].y, points[ 4 ].z );
-		
+
 		// draw vertical lines
 		createFloat3( vertices[ 16 ].position, points[ 0 ].x, points[ 0 ].y, points[ 0 ].z );
 		createFloat3( vertices[ 17 ].position, points[ 4 ].x, points[ 4 ].y, points[ 4 ].z );
@@ -458,7 +461,7 @@ namespace tiki
 
 		vector::toFloat( vertices[ 14 ].position, points[ AxisAlignedBoxVertices_XMinYMaxZMax ] );
 		vector::toFloat( vertices[ 15 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMax ] );
-		
+
 		// draw vertical lines
 		vector::toFloat( vertices[ 16 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMin ] );
 		vector::toFloat( vertices[ 17 ].position, points[ AxisAlignedBoxVertices_XMinYMinZMax ] );
@@ -593,7 +596,7 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[debugrenderer] Could not draw frustum.\n" );
 		}
 
-		Vector3	nearPoints[] = { 
+		Vector3	nearPoints[] = {
 			cornerPoints[ FrustumCorner_NearRightBottom ],
 			cornerPoints[ FrustumCorner_NearRightTop ],
 			cornerPoints[ FrustumCorner_NearLeftTop ],
@@ -639,7 +642,7 @@ namespace tiki
 
 		uint idx = 0;
 
-		// -- X Axis -- 
+		// -- X Axis --
 		createFloat3( vertices[ idx++ ].position, halfLineOffset, 0, 0 );
 		createFloat3( vertices[ idx++ ].position, lineLength, 0, 0 );
 		createFloat3( vertices[ idx++ ].position, lineOffset, 0, 0 );
@@ -668,7 +671,7 @@ namespace tiki
 
 		uint lastIdx = idx;
 
-		// -- Y Axis -- 
+		// -- Y Axis --
 		createFloat3( vertices[ idx++ ].position, 0, halfLineOffset, 0 );
 		createFloat3( vertices[ idx++ ].position, 0, lineLength, 0 );
 		createFloat3( vertices[ idx++ ].position, 0, lineOffset, 0 );
@@ -724,7 +727,7 @@ namespace tiki
 			ImmediateVertex& current = vertices[ i ];
 			current.color = TIKI_COLOR_BLUE;
 		}
-		
+
 		// todo: set immediate renderer world matrix?
 		for( uint i = 0; i < vertices.getCount(); ++i )
 		{
@@ -829,7 +832,7 @@ namespace tiki
 		renderer.setShaderMode( ImmediateShaderMode_Color );
 
 		static const Vector3 s_rectanglePoints[] =
-		{ 
+		{
 			{ -0.5f,  0.5f, 0.0f },
 			{ -0.5f, -0.5f, 0.0f },
 			{  0.5f, -0.5f, 0.0f },
@@ -846,7 +849,7 @@ namespace tiki
 
 		Vector3 scaleAxe2 = command.tangent;
 		vector::scale( scaleAxe2, command.extends.y );
-		
+
 		for( uint i = 0u; i < TIKI_COUNT( s_rectanglePoints ); ++i )
 		{
 			ImmediateVertex& vertex = vertices[ i ];
@@ -905,7 +908,22 @@ namespace tiki
 	{
 
 	}
-	
+
+	void debugrenderer::drawLine( const Line2& line, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		debugrenderer::drawLine( line.start, line.end, color );
+	}
+
+	void debugrenderer::drawLine( const Vector2& start, const Vector2& end, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		debugrenderer::drawLine( vector::create( start, 0.0f ), vector::create( end, 0.0f ), color );
+	}
+
+	void debugrenderer::drawLine( const Line3& line, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		debugrenderer::drawLine( line.start, line.end, color );
+	}
+
 	void debugrenderer::drawLine( const Vector3& start, const Vector3& end, Color color /*= TIKI_COLOR_WHITE */ )
 	{
 		const Vector3 aPoints[] = { start, end };
@@ -925,7 +943,7 @@ namespace tiki
 		}
 	}
 
-	void debugrenderer::drawLineRay( const Ray& ray, float length /*= 100.0f*/, Color color /*= TIKI_COLOR_WHITE */ )
+	void debugrenderer::drawLineRay( const Ray3& ray, float length /*= 100.0f*/, Color color /*= TIKI_COLOR_WHITE */ )
 	{
 		DebugRenderLineRayCommand* pCommand = s_debugRenderer.allocateCommand3D< DebugRenderLineRayCommand >();
 		if( pCommand != nullptr )
@@ -981,6 +999,16 @@ namespace tiki
 			pCommand->gridSize		= gridSize;
 			pCommand->color			= color;
 		}
+	}
+
+	void debugrenderer::drawLineCircle( const Circle& circle, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		debugrenderer::drawLineCircle( circle.center, circle.radius, color );
+	}
+
+	void debugrenderer::drawLineCircle( const Vector2& center, float radius, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		debugrenderer::drawLineCircle( vector::create( center, 0.0f ), radius, Vector3::unitZ, Vector3::unitX, color );
 	}
 
 	void debugrenderer::drawLineCircle( const Vector3& center, float radius, const Vector3& normal, const Vector3& tangent, Color color /*= TIKI_COLOR_WHITE */ )

@@ -76,18 +76,6 @@ namespace tiki
 		return pState->body;
 	}
 
-	float Physics2dBodyComponent::getDensity( const Physics2dBodyComponentState* pState ) const
-	{
-		TIKI_ASSERT( pState != nullptr );
-		return pState->body.getDensity();
-	}
-
-	float Physics2dBodyComponent::getFriction( const Physics2dBodyComponentState* pState ) const
-	{
-		TIKI_ASSERT( pState != nullptr );
-		return pState->body.getFriction();
-	}
-
 	bool Physics2dBodyComponent::internalInitializeState( const ComponentEntityIterator& componentIterator, Physics2dBodyComponentState* pState, const Physics2dBodyComponentInitData* pInitData )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );

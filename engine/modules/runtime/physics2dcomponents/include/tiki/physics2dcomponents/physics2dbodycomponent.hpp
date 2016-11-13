@@ -31,8 +31,6 @@ namespace tiki
 		void							applyForce( Physics2dBodyComponentState* pState, const Vector2& force, const Vector2& localPoint = Vector2::zero ) const;
 
 		const Physics2dBody&			getPhysicsObject( const Physics2dBodyComponentState* pState ) const;
-		float							getDensity( const Physics2dBodyComponentState* pState ) const;
-		float							getFriction( const Physics2dBodyComponentState* pState ) const;
 
 	protected:
 
