@@ -176,7 +176,7 @@ function Project:finalize_config( config )
 	end
 end
 
-function Project:finalize_build_steps( config, project_pathes )
+function Project:finalize_build_steps( config, project_pathes, project_name )
 	local genie_exe = global_configuration.genie_path:gsub( "/", "\\" );
 	local relative_build_dir = path.getrelative( project_pathes.root_dir, project_pathes.build_dir )
 	
@@ -187,10 +187,11 @@ function Project:finalize_build_steps( config, project_pathes )
 		global_file:write( "dofile( \"" .. script_path .. "\" );" );
 		global_file:close();
 	end
-
-	local pre_build_steps_filename = path.join( project_pathes.build_dir, "pre_build_steps.lua" );
-	local pre_build_steps_file = io.open( pre_build_steps_filename, "w" );
-	if pre_build_steps_file ~= nil then		
+	
+	local pre_build_steps_filename = "pre_build_steps_" .. project_name .. ".lua"
+	local pre_build_steps_path = path.join( project_pathes.build_dir, pre_build_steps_filename );
+	local pre_build_steps_file = io.open( pre_build_steps_path, "w" );
+	if pre_build_steps_file ~= nil then
 		pre_build_steps_file:write( DataDumper( config.pre_build_steps ) );
 		pre_build_steps_file:close();
 	end	
@@ -199,13 +200,14 @@ function Project:finalize_build_steps( config, project_pathes )
 		genie_exe,
 		"/project=" .. self.name,
 		"/outpath=" .. relative_build_dir,
-		"/script=" .. path.join( relative_build_dir, "pre_build_steps.lua" ),
+		"/script=" .. path.join( relative_build_dir, pre_build_steps_filename ),
 		"buildsteps"
 	};
 	prebuildcommands{ table.concat( command_line, " " ) };
 
-	local post_build_steps_filename = path.join( project_pathes.build_dir, "post_build_steps.lua" );
-	local post_build_steps_file = io.open( post_build_steps_filename, "w" );
+	local post_build_steps_filename = "post_build_steps_" .. project_name .. ".lua"
+	local post_build_steps_path = path.join( project_pathes.build_dir, post_build_steps_filename );
+	local post_build_steps_file = io.open( post_build_steps_path, "w" );
 	if post_build_steps_file ~= nil then		
 		post_build_steps_file:write( DataDumper( config.post_build_steps ) );
 		post_build_steps_file:close();
@@ -215,7 +217,7 @@ function Project:finalize_build_steps( config, project_pathes )
 		genie_exe,
 		"/project=" .. self.name,
 		"/outpath=" .. relative_build_dir,
-		"/script=" .. path.join( relative_build_dir, "post_build_steps.lua" ),
+		"/script=" .. path.join( relative_build_dir, post_build_steps_filename ),
 		"buildsteps"
 	};
 	postbuildcommands{ table.concat( command_line, " " ) };
@@ -321,7 +323,7 @@ function Project:finalize_project( target_path, solution )
 			
 			self:finalize_binary( config, project_pathes.build_dir );
 			self:finalize_config( config );
-			self:finalize_build_steps( config, project_pathes );
+			self:finalize_build_steps( config, project_pathes, self.name );
 		end
 	end
 

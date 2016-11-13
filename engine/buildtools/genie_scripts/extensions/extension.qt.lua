@@ -26,7 +26,7 @@ function Module:add_moc_file( filename )
 		output_filename = output_filename,
 		qt_dir = qt_dir
 	}
-
+	
 	self:add_pre_build_step( moc_script, step_data );
 	self:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
 end
