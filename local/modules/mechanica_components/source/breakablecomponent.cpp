@@ -6,6 +6,9 @@
 #include "tiki/components2d/transform2dcomponent.hpp"
 #include "tiki/container/fixedarray.hpp"
 #include "tiki/entitysystem/entitysystem.hpp"
+#include "tiki/math/circle.hpp"
+#include "tiki/math/line2.hpp"
+#include "tiki/math/polygon2.hpp"
 #include "tiki/physics2d/physics2dbody.hpp"
 #include "tiki/physics2d/physics2djoint.hpp"
 #include "tiki/physics2d/physics2dnoneshape.hpp"
@@ -16,15 +19,20 @@
 #include "physics2dcomponents.hpp"
 #include "mechanica_components.hpp"
 
+#include "tiki/debugrenderer/debugrenderer.hpp"
+
 namespace tiki
 {
 	struct BreakableComponentState : public ComponentState
 	{
 		const ResArray< BreakableFragment >*	pFragments;
 
-		float									destructionForce;
 		float									breakAfterSeconds;
-		bool									enableBreakTimer;
+
+		float									destructionForce;
+		uint32									fragmentMaxDepth;
+		float									fragmentMinBreakAfterSeconds;
+		float									fragmentMaxBreakAfterSeconds;
 		uint32									fragmentMaterialId;
 	};
 	TIKI_COMPONENT_STATE_CONSTRUCT_FUNCTIONS( BreakableComponentState );
@@ -74,31 +82,33 @@ namespace tiki
 		State* pState = nullptr;
 		while( pState = componentStates.getNext() )
 		{
-			if( !pState->enableBreakTimer )
+			if( pState->pFragments != nullptr )
 			{
 				continue;
 			}
 
 			pState->breakAfterSeconds -= deltaTime;
-
 			if( pState->breakAfterSeconds <= 0.0f )
 			{
-				//breakBody( pState );
+				breakBody( pState );
 			}
 		}
 	}
 
 	void BreakableComponent::breakBody( BreakableComponentState* pState ) const
 	{
-		ComponentEntityIterator entityComponentIterator( m_pEntitySystem->getFirstComponentOfEntity( pState->entityId ) );
+		if( pState->fragmentMaxDepth )
+		{
+			ComponentEntityIterator entityComponentIterator( m_pEntitySystem->getFirstComponentOfEntity( pState->entityId ) );
 
-		if( pState->pFragments != nullptr )
-		{
-			breakToStaticFragmentEntities( entityComponentIterator, pState );
-		}
-		else
-		{
-			breakToCuttedFragmentEntities( entityComponentIterator, pState );
+			if( pState->pFragments != nullptr )
+			{
+				breakToStaticFragmentEntities( entityComponentIterator, pState );
+			}
+			else
+			{
+				breakToCuttedFragmentEntities( entityComponentIterator, pState );
+			}
 		}
 
 		m_pEntitySystem->disposeEntity( pState->entityId );
@@ -112,13 +122,15 @@ namespace tiki
 		}
 		else
 		{
-			pState->pFragments = nullptr;
+			pState->pFragments			= nullptr;
+			pState->breakAfterSeconds	= f32::random( pInitData->fragmentMinBreakAfterSeconds, pInitData->fragmentMaxBreakAfterSeconds );
 		}
 
-		pState->destructionForce	= pInitData->destructionForce;
-		pState->breakAfterSeconds	= pInitData->breakAfterSeconds;
-		pState->enableBreakTimer	= pInitData->enableBreakTimer;
-		pState->fragmentMaterialId	= pInitData->fragmentMaterialId;
+		pState->destructionForce				= pInitData->destructionForce;
+		pState->fragmentMaxDepth				= pInitData->fragmentMaxDepth;
+		pState->fragmentMinBreakAfterSeconds	= pInitData->fragmentMinBreakAfterSeconds;
+		pState->fragmentMaxBreakAfterSeconds	= pInitData->fragmentMaxBreakAfterSeconds;
+		pState->fragmentMaterialId				= pInitData->fragmentMaterialId;
 
 		return true;
 	}
@@ -129,55 +141,128 @@ namespace tiki
 
 	void BreakableComponent::breakToStaticFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
 	{
-		const Transform2dComponentState* pTransformState	= m_pTransformComponent->getFirstStateOfEntity( parentEntityComponentIterator );
-		const Physics2dBodyComponentState* pBodyState		= m_pBodyComponent->getFirstStateOfEntity( parentEntityComponentIterator );
 		const SpriteComponentState* pSpriteState			= m_pSpriteComponent->getFirstStateOfEntity( parentEntityComponentIterator );
 
 		for( uint i = 0u; i < pParentState->pFragments->getCount(); ++i )
 		{
 			const BreakableFragment& fragment = pParentState->pFragments->getAt( i );
-
-			Transform2dComponentInitData transformInitData;
-			createFloat2( transformInitData.position, 0.0f, 0.0f );
-			createFloat2( transformInitData.scale, 1.0f, 1.0f );
-			transformInitData.rotation	= 0.0f;
-
-			PolygonComponentInitData polygonInitData;
-			polygonInitData.layerId	= m_pSpriteComponent->getLayerId( pSpriteState );
-			polygonInitData.points	= fragment.points;
-
-			Physics2dBodyComponentInitData bodyInitData;
-			bodyInitData.density		= m_pBodyComponent->getDensity( pBodyState );
-			bodyInitData.friction		= m_pBodyComponent->getFriction( pBodyState );
-			bodyInitData.materialId		= pParentState->fragmentMaterialId;
-			bodyInitData.freeRotation	= true;
-			memory::zero( bodyInitData.position );
-			bodyInitData.shape.type		= Physics2dShapeType_Polygon;
-			bodyInitData.shape.vertices	= fragment.points;
-
-			BreakableComponentInitData breakableInitData;
-			breakableInitData.destructionForce		= pParentState->destructionForce;
-			breakableInitData.breakAfterSeconds		= 5.0f;
-			breakableInitData.enableBreakTimer		= true;
-			breakableInitData.fragmentMaterialId	= pParentState->fragmentMaterialId;
-
-			EntityComponent components[] =
-			{
-				{ Components2dType_Transform, &transformInitData },
-				{ Components2dType_Polygon, &polygonInitData },
-				{ Physics2dComponentType_Body, &bodyInitData },
-				{ MechanicaComponentType_Breakable, &breakableInitData },
-			};
-
-			EntityTemplateData templateData;
-			templateData.components = ResArray<EntityComponent>( components, TIKI_COUNT( components ) );
-
-			m_pEntitySystem->createEntityFromTemplate( m_pEntitySystem->getPoolIndexForId( pParentState->entityId ), templateData );
+			createChildBreakable( m_pSpriteComponent->getLayerId( pSpriteState ), ArrayView< float2 >( fragment.points.getData(), fragment.points.getCount() ), parentEntityComponentIterator, pParentState );
 		}
 	}
 
 	void BreakableComponent::breakToCuttedFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
 	{
+		const Transform2dComponentState* pTransformState	= m_pTransformComponent->getFirstStateOfEntity( parentEntityComponentIterator );
+		const Physics2dBodyComponentState* pBodyState		= m_pBodyComponent->getFirstStateOfEntity( parentEntityComponentIterator );
+		const SpriteComponentState* pSpriteState			= m_pSpriteComponent->getFirstStateOfEntity( parentEntityComponentIterator );
 
+		FixedSizedArray< Vector2, 8u > vertices;
+		m_pBodyComponent->getPhysicsObject( pBodyState ).getVertices( vertices.toSlice() );
+
+		Circle boundingCircle;
+		boundingCircle.center	= Vector2::zero;
+		boundingCircle.radius	= 0.0f;
+		for( uint i = 0u; i < vertices.getCount(); ++i )
+		{
+			vector::add( boundingCircle.center, vertices[ i ] );
+		}
+		vector::scale( boundingCircle.center, 1.0f / vertices.getCount() );
+
+		for( uint i = 0u; i < vertices.getCount(); ++i )
+		{
+			vector::sub( vertices[ i ], boundingCircle.center );
+			boundingCircle.radius = TIKI_MAX( boundingCircle.radius, vector::lengthSquared( vertices[ i ] ) );
+		}
+		boundingCircle.radius = f32::sqrt( boundingCircle.radius );
+
+		const float angle1 = f32::random( 0.0f, f32::twoPi );
+		const float angle2 = angle1 + f32::pi;
+
+		Line2 cutLine;
+		cutLine.start	= boundingCircle.getPointWithoutCenter( angle1 );
+		cutLine.end		= boundingCircle.getPointWithoutCenter( angle2 );
+
+		debugrenderer::drawLineCircle( boundingCircle, TIKI_COLOR_GREEN );
+		debugrenderer::drawLine( cutLine, TIKI_COLOR_GRAY );
+
+		Polygon2 sourcePolygon;
+		sourcePolygon.createPolygon( vertices.getBegin(), vertices.getCount(), vertices.getCount() );
+
+		FixedSizePolygon2< 8u > polygon1;
+		FixedSizePolygon2< 8u > polygon2;
+		if( !polygon::splitPolygon( polygon1, polygon2, sourcePolygon, cutLine ) )
+		{
+			return;
+		}
+
+		for( uint i = 0u; i < polygon1.getPointCount(); ++i )
+		{
+			Vector2 point = polygon1.getPoint( i );
+			vector::add( point, boundingCircle.center );
+
+			polygon1.setPoint( i, point );
+		}
+
+		for( uint i = 0u; i < polygon2.getPointCount(); ++i )
+		{
+			Vector2 point = polygon2.getPoint( i );
+			vector::add( point, boundingCircle.center );
+
+			polygon2.setPoint( i, point );
+		}
+
+		if( polygon1.getPointCount() >= 3u )
+		{
+			createChildBreakable( 5u, ArrayView< float2 >( (const float2*)polygon1.getPoints(), polygon1.getPointCount() ), parentEntityComponentIterator, pParentState );
+		}
+
+		if( polygon2.getPointCount() >= 3u )
+		{
+			createChildBreakable( 5u, ArrayView< float2 >( (const float2*)polygon2.getPoints(), polygon2.getPointCount() ), parentEntityComponentIterator, pParentState );
+		}
+	}
+
+	void BreakableComponent::createChildBreakable( uint32 layerId, const ArrayView< float2 >& polygonPoints, const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
+	{
+		const Transform2dComponentState* pTransformState	= m_pTransformComponent->getFirstStateOfEntity( parentEntityComponentIterator );
+		const Physics2dBodyComponentState* pBodyState		= m_pBodyComponent->getFirstStateOfEntity( parentEntityComponentIterator );
+
+		Transform2dComponentInitData transformInitData;
+		createFloat2( transformInitData.position, 0.0f, 0.0f );
+		createFloat2( transformInitData.scale, 1.0f, 1.0f );
+		transformInitData.rotation	= 0.0f;
+
+		PolygonComponentInitData polygonInitData;
+		polygonInitData.layerId	= layerId;
+		polygonInitData.points	= ResArray< float2 >( (const float2*)polygonPoints.getBegin(), polygonPoints.getCount() );
+
+		Physics2dBodyComponentInitData bodyInitData;
+		bodyInitData.density		= m_pBodyComponent->getPhysicsObject( pBodyState ).getDensity();
+		bodyInitData.friction		= m_pBodyComponent->getPhysicsObject( pBodyState ).getFriction();
+		bodyInitData.materialId		= pParentState->fragmentMaterialId;
+		bodyInitData.freeRotation	= true;
+		memory::zero( bodyInitData.position );
+		bodyInitData.shape.type		= Physics2dShapeType_Polygon;
+		bodyInitData.shape.vertices	= ResArray< float2 >( polygonPoints.getBegin(), polygonPoints.getCount() );
+
+		BreakableComponentInitData breakableInitData;
+		breakableInitData.destructionForce				= pParentState->destructionForce;
+		breakableInitData.fragmentMaxDepth				= pParentState->fragmentMaxDepth - 1u;
+		breakableInitData.fragmentMinBreakAfterSeconds	= pParentState->fragmentMinBreakAfterSeconds;
+		breakableInitData.fragmentMaxBreakAfterSeconds	= pParentState->fragmentMaxBreakAfterSeconds;
+		breakableInitData.fragmentMaterialId			= pParentState->fragmentMaterialId;
+
+		EntityComponent components[] =
+		{
+			{ (crc32)Components2dType_Transform, &transformInitData },
+			{ (crc32)Components2dType_Polygon, &polygonInitData },
+			{ (crc32)Physics2dComponentType_Body, &bodyInitData },
+			{ (crc32)MechanicaComponentType_Breakable, &breakableInitData }
+		};
+
+		EntityTemplateData templateData;
+		templateData.components = ResArray<EntityComponent>( components, TIKI_COUNT( components ) );
+
+		m_pEntitySystem->createEntityFromTemplate( m_pEntitySystem->getPoolIndexForId( pParentState->entityId ), templateData );
 	}
 }

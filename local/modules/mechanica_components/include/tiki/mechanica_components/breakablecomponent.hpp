@@ -4,6 +4,8 @@
 
 #include "tiki/components/component.hpp"
 
+#include "tiki/container/arrayview.hpp"
+#include "tiki/math/vector.hpp"
 #include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
@@ -51,6 +53,8 @@ namespace tiki
 
 		void								breakToStaticFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const;
 		void								breakToCuttedFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const;
+
+		void								createChildBreakable( uint32 layerId, const ArrayView< float2 >& polygonPoints, const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const;
 	};
 }
 
