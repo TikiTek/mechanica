@@ -20,7 +20,7 @@ namespace tiki
 
 		const QString&	getTitle() const { return m_title; }
 
-		QtRibbonButton*	addButton( const QString& text );
+		QtRibbonButton*	addButton( const QString& text, QIcon* pIcon = nullptr );
 		void			removeButton( QtRibbonButton* pButton );
 
 	private:

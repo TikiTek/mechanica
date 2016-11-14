@@ -11,16 +11,7 @@ namespace tiki
 
 		connect( m_pFileTabs, &QTabWidget::tabCloseRequested, this, &EditorWindow::fileCloseRequested );
 
-		addWidget( m_pFileTabs );
-
-		//m_pFileRibbon = new QtRibbonTab( "Package" );
-
-		//m_pFileNewButton = m_pFileRibbon->addButton( "New Package" );
-		//m_pFileNewButton = m_pFileRibbon->addButton( "Open Package" );
-		//m_pFileNewButton = m_pFileRibbon->addButton( "Save Package" );
-		//m_pFileNewButton = m_pFileRibbon->addButton( "New Package" );
-
-		//addRibbonTab( m_pFileRibbon );
+		setCentralWidget( m_pFileTabs );
 
 		//saveGeometry();
 		//saveState();
@@ -31,9 +22,27 @@ namespace tiki
 		delete m_pFileTabs;
 	}
 
-	void EditorWindow::openFileTab( const QString& title, QWidget* pWidget )
+	void EditorWindow::openFileTab( QWidget* pWidget, const QString& title )
 	{
 		m_pFileTabs->addTab( pWidget, title );
+	}
+
+	void EditorWindow::changeFileTab( QWidget* pWidget, const QString& title )
+	{
+		int index = -1;
+		for( int i = 0u; i < m_pFileTabs->count(); ++i )
+		{
+			if( m_pFileTabs->widget( i ) == pWidget )
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if( index >= 0 )
+		{
+			m_pFileTabs->setTabText( index, title );
+		}
 	}
 
 	void EditorWindow::closeFileTab( QWidget* pWidget )
@@ -41,7 +50,7 @@ namespace tiki
 		int index = -1;
 		for( int i = 0u; i < m_pFileTabs->count(); ++i )
 		{
-			if( m_pFileTabs->widget( i ) )
+			if( m_pFileTabs->widget( i )  == pWidget )
 			{
 				index = i;
 				break;

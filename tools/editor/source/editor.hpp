@@ -4,13 +4,15 @@
 
 #include "tiki/editorinterface/ieditorinterface.hpp"
 
-#include <QVector>
+#include <QSet>
 
 class QWidget;
 
 namespace tiki
 {
+	class EditorFile;
 	class EditorWindow;
+	class IEditorFile;
 
 	class Editor : public IEditorInterface
 	{
@@ -18,45 +20,52 @@ namespace tiki
 
 	public:
 
-						Editor( EditorWindow* pWindow );
-		virtual			~Editor();
+								Editor( EditorWindow* pWindow );
+		virtual					~Editor();
 
-		virtual void	openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void	closeFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void	closeAllFiles() TIKI_OVERRIDE_FINAL;
+		virtual IEditorFile*	openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void			saveFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeAllFiles() TIKI_OVERRIDE_FINAL;
 
-		virtual void	registerFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual void	unregisterFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual void			unregisterFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
 
-		virtual void	addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
-		virtual void	removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
 
-		virtual void	addGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
-		virtual void	removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void			addGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+
+		virtual QString			getProjectPath() const TIKI_OVERRIDE_FINAL;
+		virtual QString			getContentPath() const TIKI_OVERRIDE_FINAL;
+		virtual QString			getPackagePath() const TIKI_OVERRIDE_FINAL;
+
+		virtual QWidget*		getDialogParent() const TIKI_OVERRIDE_FINAL;
+		virtual QString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
+
+		void					markFileAsDirty( EditorFile* pFile );
 
 	private:
 
-		struct EditorFile
-		{
-			QString			fileName;
-			IFileEditor*	pEditor;
-			QWidget*		pEditWidget;
-		};
-
 		EditorWindow*			m_pWindow;
 
-		QVector< IFileEditor* >	m_pEditors;
-		QVector< QDockWidget* >	m_pDocks;
+		QString					m_projectPath;
+		QString					m_contentPath;
+		QString					m_packagePath;
 
-		QVector< EditorFile >	m_pFiles;
+		QSet< IFileEditor* >	m_editors;
+		QSet< QDockWidget* >	m_docks;
 
+		QSet< EditorFile* >		m_files;
 		EditorFile*				m_pCurrentFile;
-		IFileEditor*			m_pCurrentEditor;
-		QVector< QtRibbonTab* >	m_currentEditorTabs;
-		QVector< QDockWidget* >	m_currentEditorDocks;
 
-		void					beginEditing( EditorFile& pFile );
-		void					endEditing( EditorFile& file );
+		void					findProjectPathes();
+
+		IFileEditor*			findEditorForFile( const QString& fileName ) const;
+
+		void					beginEditing( EditorFile* pFile );
+		bool					endEditing( EditorFile* pNextFile );
 	};
 }
 

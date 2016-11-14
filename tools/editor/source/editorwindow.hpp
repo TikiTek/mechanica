@@ -21,7 +21,8 @@ namespace tiki
 						EditorWindow();
 		virtual			~EditorWindow();
 
-		void			openFileTab( const QString& title, QWidget* pWidget );
+		void			openFileTab( QWidget* pWidget, const QString& title );
+		void			changeFileTab( QWidget* pWidget, const QString& title );
 		void			closeFileTab( QWidget* pWidget );
 
 	signals:
