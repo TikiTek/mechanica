@@ -22,14 +22,9 @@ namespace tiki
 		void			addRibbonTab( QtRibbonTab* pRibbonTab );
 		void			removeRibbonTab( QtRibbonTab* pRibbonTab );
 
-		void			addWidget( QWidget* pWidget );
-		void			removeWidget( QWidget* pWidget );
-
 	private:
 
-		QWidget*		m_pMainWidget;
-		QVBoxLayout*	m_pMainLayout;
-
+		QToolBar*		m_pToolBar;
 		QTabWidget*		m_pRibbonTabs;
 	};
 }

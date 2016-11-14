@@ -4,6 +4,8 @@
 
 #include <QDockWidget>
 
+class QTreeView;
+
 namespace tiki
 {
 	class PackageFileBrowser : public QDockWidget
@@ -12,10 +14,17 @@ namespace tiki
 
 	public:
 
+		explicit		PackageFileBrowser();
+		virtual			~PackageFileBrowser();
 
+		void			openPackage( IEditorFile* pFile );
+		void			closePakage();
 
 	private:
 
+		QTreeView*		m_pTreeView;
+
+		IEditorFile*	m_pPackage;
 	};
 }
 

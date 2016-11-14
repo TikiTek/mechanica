@@ -1,0 +1,11 @@
+<tikiproject>
+	<name>Mechanica</name>
+	<description>TBD</description>
+	<version>0.1.0</version>
+	<platforms>
+		<platform>windows</platform>
+		<!--platform>uwp</platform>
+		<platform>linux</platform>
+		<platform>android</platform-->
+	</platforms>
+</tikiproject>

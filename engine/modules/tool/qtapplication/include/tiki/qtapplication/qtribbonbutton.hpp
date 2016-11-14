@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-		QtRibbonButton( const QString& text );
+		QtRibbonButton( const QString& text, QIcon* pIcon );
 		~QtRibbonButton();
 	};
 }

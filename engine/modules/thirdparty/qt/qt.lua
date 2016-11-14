@@ -17,15 +17,21 @@ module:add_include_dir( "include/QtWidgets" );
 
 module:add_library_dir( "lib" );
 
-module:add_library_file( "Qt5Core" );
-module:add_library_file( "Qt5Gui" );
-module:add_library_file( "Qt5Widgets" );
+module:add_library_file( "Qt5Cored", "Debug" );
+module:add_library_file( "Qt5Guid", "Debug" );
+module:add_library_file( "Qt5Widgetsd", "Debug" );
+module:add_library_file( "Qt5Core", "Release" );
+module:add_library_file( "Qt5Gui", "Release" );
+module:add_library_file( "Qt5Widgets", "Release" );
 
 module:add_binary_dir( "bin" );
 
-module:add_binary_file( "Qt5Core.dll" );
-module:add_binary_file( "Qt5Widgets.dll" );
-module:add_binary_file( "Qt5Gui.dll" );
+module:add_binary_file( "Qt5Cored.dll", "Debug" );
+module:add_binary_file( "Qt5Widgetsd.dll", "Debug" );
+module:add_binary_file( "Qt5Guid.dll", "Debug" );
+module:add_binary_file( "Qt5Core.dll", "Release" );
+module:add_binary_file( "Qt5Widgets.dll", "Release" );
+module:add_binary_file( "Qt5Gui.dll", "Release" );
 
 module.import_func = function(project)
 	--local output_path = path.getabsolute( _OPTIONS[ "qt_dir" ] )

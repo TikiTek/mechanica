@@ -13,6 +13,7 @@ class QWidget;
 
 namespace tiki
 {
+	class IEditorFile;
 	class QtRibbonTab;
 
 	class IFileEditor
@@ -21,9 +22,9 @@ namespace tiki
 
 		virtual									~IFileEditor() { }
 
-		virtual QWidget*						openFile( const QString& fileName ) TIKI_PURE;
-		virtual void							saveFile( QWidget* pWidget ) TIKI_PURE;
-		virtual void							closeFile( QWidget* pWidget ) TIKI_PURE;
+		virtual QWidget*						openFile( IEditorFile* pFile ) TIKI_PURE;
+		virtual bool							saveFile( IEditorFile* pFile ) TIKI_PURE;
+		virtual void							closeFile( IEditorFile* pFile ) TIKI_PURE;
 
 		virtual QString							getFileExtension() const TIKI_PURE;
 		virtual const QVector< QtRibbonTab* >&	getRibbonTabs() const TIKI_PURE;

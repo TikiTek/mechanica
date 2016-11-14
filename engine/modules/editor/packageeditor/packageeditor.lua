@@ -11,5 +11,7 @@ module:add_dependency( "editor/editorinterface" );
 module:add_dependency( "thirdparty/qt" );
 
 module.import_func = function(project)
+	module:add_moc_file( "include/tiki/packageeditor/packageeditor.hpp" )
 	module:add_moc_file( "include/tiki/packageeditor/packageeditorwidget.hpp" )
+	module:add_moc_file( "include/tiki/packageeditor/packagefilebrowser.hpp" )
 end

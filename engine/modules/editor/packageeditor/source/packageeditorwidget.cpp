@@ -3,6 +3,7 @@
 namespace tiki
 {
 	PackageEditorWidget::PackageEditorWidget()
+		: m_pFile( nullptr )
 	{
 	}
 
@@ -10,8 +11,10 @@ namespace tiki
 	{
 	}
 
-	bool PackageEditorWidget::openPackage( const QString& fileName )
+	bool PackageEditorWidget::openPackage( IEditorFile* pFile )
 	{
+		m_pFile = pFile;
+
 		return true;
 	}
 

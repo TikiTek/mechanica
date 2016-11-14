@@ -12,15 +12,15 @@ namespace tiki
 
 	public:
 
-					PackageEditorWidget();
-					~PackageEditorWidget();
+		explicit		PackageEditorWidget();
+		virtual			~PackageEditorWidget();
 
-		bool		openPackage( const QString& fileName );
-		void		savePackage();
+		bool			openPackage( IEditorFile* pFile );
+		void			savePackage();
 
 	private:
 
-		QString		m_fileName;
+		IEditorFile*	m_pFile;
 	};
 }
 
