@@ -6,5 +6,7 @@ return function( data, config )
 	print( "UI: " .. path.getname( data.source_filename ) );
 
 	local command_line = uic_exe .. " -o \"" .. data.output_filename .. "\" \"" .. data.source_filename .. "\""
-	os.execute( command_line );
+	if not os.execute( command_line ) then
+		throw( "uic return an error" );
+	end
 end

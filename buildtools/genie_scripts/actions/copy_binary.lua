@@ -5,20 +5,8 @@ return function( data, config )
 	end
 	
 	local target_path = path.join( config.output_path, data.target );
-	
-	local copy = false;
-	if os.isfile( target_path ) then
-		if os.stat( data.source ).mtime > os.stat( target_path ).mtime then
-			copy = true;
-		end
-	else
-		copy = true;
-	end
-	
-	if copy then
+	if is_build_required( data.source, target_path ) then
 		print( "Copy " .. data.source .. " to output directory" );
-		
-		
 		os.copyfile( data.source, target_path );
 	end
 end

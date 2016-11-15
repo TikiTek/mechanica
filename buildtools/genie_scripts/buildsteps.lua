@@ -19,7 +19,19 @@ global_configuration = {
 dofile( path.join( global_configuration.scripts_path, "thirdparty/datadumper.lua" ) );
 dofile( path.join( global_configuration.scripts_path, "global.lua" ) );
 
-function executeBuildSteps()
+function is_build_required( source_file, target_file )
+	if os.isfile( target_file ) then
+		if os.stat( source_file ).mtime > os.stat( target_file ).mtime then
+			return true;
+		end
+	else
+		return true;
+	end
+	
+	return false;
+end
+
+function execute_build_steps()
 	local config = {
 		project_name = _OPTIONS[ "project" ],
 		build_path = path.getabsolute( "." ),
@@ -49,5 +61,5 @@ end
 newaction {
    trigger     = "buildsteps",
    description = "Execute Build Steps",
-   execute     = executeBuildSteps
+   execute     = execute_build_steps
 }
