@@ -2,29 +2,41 @@
 #ifndef TIKI_PACKAGEFILEBROWSER_HPP_INCLUDED
 #define TIKI_PACKAGEFILEBROWSER_HPP_INCLUDED
 
+#include <QDir>
 #include <QDockWidget>
 
+class QStandardItem;
+class QStandardItemModel;
 class QTreeView;
 
 namespace tiki
 {
+	class IEditorInterface;
+
 	class PackageFileBrowser : public QDockWidget
 	{
 		Q_OBJECT
 
 	public:
 
-		explicit		PackageFileBrowser();
+		explicit		PackageFileBrowser( IEditorInterface* pInterface );
 		virtual			~PackageFileBrowser();
 
-		void			openPackage( IEditorFile* pFile );
+		void			openPackage( const QString& packageName );
 		void			closePakage();
 
 	private:
 
-		QTreeView*		m_pTreeView;
+		IEditorInterface*	m_pInterface;
+		QString				m_packageName;
 
-		IEditorFile*	m_pPackage;
+		QTreeView*			m_pTreeView;
+		QStandardItemModel*	m_pTreeModel;
+
+		QIcon				m_folderIcon;
+		QIcon				m_unknownIcon;
+
+		void				addFiles( QStandardItem* pParentItem, QDir dir );
 	};
 }
 

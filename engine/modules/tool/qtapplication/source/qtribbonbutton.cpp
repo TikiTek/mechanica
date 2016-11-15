@@ -2,16 +2,20 @@
 
 namespace tiki
 {
-	QtRibbonButton::QtRibbonButton( const QString& text, QIcon* pIcon )
-		: QPushButton( text )
+	QtRibbonButton::QtRibbonButton( const QString& text, const QIcon* pIcon )
+		: QToolButton()
 	{
 		setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
+		setMinimumWidth( 75 );
 
 		if( pIcon != nullptr )
 		{
+			setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 			setIcon( *pIcon );
-			setIconSize( QSize( 24, 24 ) );
+			setIconSize( QSize( 32, 32 ) );
 		}
+
+		setText( text );
 	}
 
 	QtRibbonButton::~QtRibbonButton()

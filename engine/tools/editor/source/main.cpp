@@ -1,7 +1,6 @@
 #include "tiki/base/platform.hpp"
 
 #include "tiki/genericdataeditor/genericdataeditor.hpp"
-#include "tiki/packageeditor/packageeditor.hpp"
 
 #include "editor.hpp"
 
@@ -12,15 +11,19 @@ namespace tiki
 	int mainEntryPoint()
 	{
 		QApplication application( platform::getArgumentCount(), platform::getArgumentPointer() );
+		QApplication::setApplicationName( "editor" );
+		QApplication::setApplicationVersion( "0.1.0" );
 
 		EditorWindow window;
 		window.show();
 
 		Editor editor( &window );
 
-		PackageEditor packageEditor( &editor );
-
-		editor.registerFileEditor( &packageEditor );
+		const StaticArray< const char* >& arguments = platform::getArguments();
+		for( uint i = 1u; i < arguments.getCount(); ++i )
+		{
+			editor.openFile( arguments[ i ] );
+		}
 
 		return application.exec();
 	}

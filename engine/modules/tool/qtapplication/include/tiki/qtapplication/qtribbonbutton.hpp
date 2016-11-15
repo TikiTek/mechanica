@@ -2,17 +2,17 @@
 #ifndef TIKI_QTRIBBONBUTTON_HPP_INCLUDED
 #define TIKI_QTRIBBONBUTTON_HPP_INCLUDED
 
-#include <QPushButton>
+#include <QToolButton>
 
 namespace tiki
 {
-	class QtRibbonButton : public QPushButton
+	class QtRibbonButton : public QToolButton
 	{
 		Q_OBJECT
 
 	public:
 
-		QtRibbonButton( const QString& text, QIcon* pIcon );
+		QtRibbonButton( const QString& text, const QIcon* pIcon );
 		~QtRibbonButton();
 	};
 }

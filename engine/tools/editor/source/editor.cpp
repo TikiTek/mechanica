@@ -7,6 +7,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -15,12 +16,25 @@ namespace tiki
 	Editor::Editor( EditorWindow* pWindow )
 		: m_pWindow( pWindow )
 		, m_pCurrentFile( nullptr )
+		, m_openShortcut( QKeySequence( QKeySequence::Open ), m_pWindow )
+		, m_saveShortcut( QKeySequence( QKeySequence::Save ), m_pWindow )
+		, m_closeShortcut( QKeySequence( Qt::CTRL + Qt::Key_W ), m_pWindow )
 	{
-		findProjectPathes();
+		setProjectPathes();
+
+		m_pPackageEditor = new PackageEditor( this );
+		registerFileEditor( m_pPackageEditor );
+
+		connect( m_pWindow, &EditorWindow::fileCloseRequest, this, &Editor::fileCloseRequest );
+		connect( &m_openShortcut, &QShortcut::activated, this, &Editor::fileOpenShortcut );
+		connect( &m_saveShortcut, &QShortcut::activated, this, &Editor::fileSaveShortcut );
+		connect( &m_closeShortcut, &QShortcut::activated, this, &Editor::fileCloseShortcut );
 	}
 
 	Editor::~Editor()
 	{
+		unregisterFileEditor( m_pPackageEditor );
+		delete m_pPackageEditor;
 	}
 
 	IEditorFile* Editor::openFile( const QString& fileName )
@@ -28,6 +42,14 @@ namespace tiki
 		if( fileName.isEmpty() )
 		{
 			return nullptr;
+		}
+
+		foreach( EditorFile* pFile, m_files )
+		{
+			if( pFile->getFileName() == fileName )
+			{
+				return pFile;
+			}
 		}
 
 		if( !QFile::exists( fileName ) )
@@ -54,6 +76,11 @@ namespace tiki
 
 		pFile->setEditWidget( pEditWidget );
 		m_files.insert( pFile );
+
+		if( pEditor == m_pPackageEditor )
+		{
+			setPackagePath();
+		}
 
 		m_pWindow->openFileTab( pEditWidget, pFile->getTabTitle() );
 		beginEditing( pFile );
@@ -104,6 +131,11 @@ namespace tiki
 			}
 		}
 
+		if( pEditorFile == m_pCurrentFile )
+		{
+			endEditing( nullptr );
+		}
+
 		m_pWindow->closeFileTab( pEditorFile->getEditWidget() );
 		pEditorFile->getFileEditor()->closeFile( pEditorFile );
 		m_files.remove( pEditorFile );
@@ -112,7 +144,10 @@ namespace tiki
 
 	void Editor::closeAllFiles()
 	{
-
+		foreach( EditorFile* pfile, m_files )
+		{
+			closeFile( pfile );
+		}
 	}
 
 	void Editor::registerFileEditor( IFileEditor* pEditor )
@@ -145,17 +180,17 @@ namespace tiki
 		m_pWindow->removeDockWidget( pWidget );
 	}
 
-	QString Editor::getProjectPath() const
+	QDir Editor::getProjectPath() const
 	{
 		return m_projectPath;
 	}
 
-	QString Editor::getContentPath() const
+	QDir Editor::getContentPath() const
 	{
 		return m_contentPath;
 	}
 
-	QString Editor::getPackagePath() const
+	QDir Editor::getPackagePath() const
 	{
 		return m_packagePath;
 	}
@@ -175,7 +210,61 @@ namespace tiki
 		m_pWindow->changeFileTab( pFile->getEditWidget(), pFile->getTabTitle() );
 	}
 
-	void Editor::findProjectPathes()
+	void Editor::fileOpenShortcut()
+	{
+		QString allFilter = "All supported files (";
+		QString filter;
+		foreach( IFileEditor* pEditor, m_editors )
+		{
+			if( !filter.isEmpty() )
+			{
+				allFilter += " ";
+				filter += ";;";
+			}
+			allFilter += QString( "*.%1" ).arg( pEditor->getFileExtension() );
+			filter += QString( "%1 (*.%2)" ).arg( pEditor->getFileTypeName(), pEditor->getFileExtension() );
+		}
+		filter = allFilter + ");;" + filter + ";;All files (*.*)";
+
+		const QString fileName = QFileDialog::getOpenFileName(
+			getDialogParent(),
+			getDialogTitle(),
+			getPackagePath().absolutePath(),
+			filter
+		);
+
+		openFile( fileName );
+	}
+
+	void Editor::fileSaveShortcut()
+	{
+		if( m_pCurrentFile != nullptr )
+		{
+			saveFile( m_pCurrentFile );
+		}
+	}
+
+	void Editor::fileCloseShortcut()
+	{
+		if( m_pCurrentFile != nullptr )
+		{
+			closeFile( m_pCurrentFile );
+		}
+	}
+
+	void Editor::fileCloseRequest( QWidget* pWidget )
+	{
+		foreach( EditorFile* pFile, m_files )
+		{
+			if( pFile->getEditWidget() == pWidget )
+			{
+				closeFile( pFile );
+				return;
+			}
+		}
+	}
+
+	void Editor::setProjectPathes()
 	{
 		QDir currentDir( QApplication::applicationDirPath() );
 		do
@@ -199,6 +288,20 @@ namespace tiki
 
 		QMessageBox::critical( getDialogParent(), getDialogTitle(), "Unable to find Project directory. Please place tikiproject.xml in the project root." );
 		QApplication::exit( 1 );
+	}
+
+	void Editor::setPackagePath()
+	{
+		QString packageName = m_pPackageEditor->getPackageName();
+
+		QDir contentDir( m_contentPath );
+		if( !contentDir.exists( packageName ) )
+		{
+			contentDir.mkdir( packageName );
+		}
+		contentDir.cd( packageName );
+
+		m_packagePath = contentDir.absolutePath();
 	}
 
 	IFileEditor* Editor::findEditorForFile( const QString& fileName ) const

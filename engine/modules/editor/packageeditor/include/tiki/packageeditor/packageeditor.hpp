@@ -26,19 +26,21 @@ namespace tiki
 		virtual bool							saveFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
 		virtual void							closeFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
 
-		bool									openPackage( IEditorFile* pPackageFile );
-		void									closePackage();
-
+		virtual QString							getFileTypeName() const TIKI_OVERRIDE_FINAL;
 		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
+		virtual QIcon							getFileIcon() const TIKI_OVERRIDE_FINAL;
+
 		virtual const QVector< QtRibbonTab* >&	getRibbonTabs() const TIKI_OVERRIDE_FINAL;
 		virtual const QVector< QDockWidget* >&	getDockWidgets() const TIKI_OVERRIDE_FINAL;
+
+		QString									getPackageName() const;
 
 	private	slots:
 
 		void									newClicked();
 		void									openClicked();
-		void									saveClicked();
 		void									closeClicked();
+		void									editClicked();
 
 	private:
 
@@ -47,15 +49,17 @@ namespace tiki
 		QtRibbonTab*				m_pRibbon;
 		QtRibbonButton*				m_pNewPackageButton;
 		QtRibbonButton*				m_pOpenPackageButton;
-		QtRibbonButton*				m_pSavePackageButton;
 		QtRibbonButton*				m_pClosePackageButton;
+		QtRibbonButton*				m_pEditPackageButton;
 
 		PackageFileBrowser*			m_pFileBrowser;
-
-		IEditorFile*				m_pCurrentPackageFile;
+		QString						m_currentPackageName;
 
 		QVector< QtRibbonTab* >		m_tabs;
 		QVector< QDockWidget* >		m_docks;
+
+		void						openPackage( IEditorFile* pPackageFile );
+		void						closePackage();
 	};
 }
 

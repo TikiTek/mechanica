@@ -3,6 +3,9 @@
 #define TIKI_PACKAGEEDITORWIDGET_HPP_INCLUDED
 
 #include <QWidget>
+#include <tinyxml2.h>
+
+class QTextEdit;
 
 namespace tiki
 {
@@ -20,7 +23,11 @@ namespace tiki
 
 	private:
 
-		IEditorFile*	m_pFile;
+		IEditorFile*			m_pFile;
+
+		tinyxml2::XMLDocument	m_document;
+
+		QTextEdit*				m_pDescriptionText;
 	};
 }
 
