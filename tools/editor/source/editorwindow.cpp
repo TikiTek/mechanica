@@ -2,10 +2,14 @@
 
 #include "tiki/qtapplication/qtribbontab.hpp"
 
+#include <QSettings>
+
 namespace tiki
 {
 	EditorWindow::EditorWindow()
 	{
+		setMinimumSize( 300, 200 );
+
 		m_pFileTabs = new QTabWidget();
 		m_pFileTabs->setTabsClosable( true );
 
@@ -13,12 +17,17 @@ namespace tiki
 
 		setCentralWidget( m_pFileTabs );
 
-		//saveGeometry();
-		//saveState();
+		QSettings settings( "TikiTek", "editor" );
+		restoreGeometry( settings.value( "window/geometry" ).toByteArray() );
+		restoreState( settings.value( "window/windowState" ).toByteArray() );
 	}
 
 	EditorWindow::~EditorWindow()
 	{
+		QSettings settings( "TikiTek", "editor" );
+		settings.setValue( "window/geometry", saveGeometry() );
+		settings.setValue( "window/windowState", saveState() );
+
 		delete m_pFileTabs;
 	}
 

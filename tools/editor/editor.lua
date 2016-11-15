@@ -24,5 +24,6 @@ module:add_dependency( "editor/genericdataeditor" );
 --module:add_library_file( "converterlibrary" );
 
 module.import_func = function(project)
+	module:add_moc_file( "source/editor.hpp" )
 	module:add_moc_file( "source/editorwindow.hpp" )
 end

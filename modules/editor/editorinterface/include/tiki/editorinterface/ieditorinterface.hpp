@@ -4,6 +4,7 @@
 
 #include "tiki/base/types.hpp"
 
+#include <QDir>
 #include <QString>
 
 class QWidget;
@@ -28,6 +29,7 @@ namespace tiki
 
 		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_PURE;
 		virtual void			unregisterFileEditor( IFileEditor* pEditor ) TIKI_PURE;
+		virtual IFileEditor*	findEditorForFile( const QString& fileName ) const TIKI_PURE;
 
 		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_PURE;
 		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_PURE;
@@ -35,9 +37,9 @@ namespace tiki
 		virtual void			addGlobalDockWidget( QDockWidget* pWidget ) TIKI_PURE;
 		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_PURE;
 
-		virtual QString			getProjectPath() const TIKI_PURE;
-		virtual QString			getContentPath() const TIKI_PURE;
-		virtual QString			getPackagePath() const TIKI_PURE;
+		virtual QDir			getProjectPath() const TIKI_PURE;
+		virtual QDir			getContentPath() const TIKI_PURE;
+		virtual QDir			getPackagePath() const TIKI_PURE;
 
 		virtual QWidget*		getDialogParent() const TIKI_PURE;
 		virtual QString			getDialogTitle() const TIKI_PURE;

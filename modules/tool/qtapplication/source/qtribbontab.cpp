@@ -15,7 +15,12 @@ namespace tiki
 	{
 	}
 
-	QtRibbonButton* QtRibbonTab::addButton( const QString& text, QIcon* pIcon /* = nullptr */ )
+	QtRibbonButton* QtRibbonTab::addButton( const QString& text, const QIcon& icon )
+	{
+		return addButton( text, &icon );
+	}
+
+	QtRibbonButton* QtRibbonTab::addButton( const QString& text, const QIcon* pIcon /* = nullptr */ )
 	{
 		QtRibbonButton* pButton = new QtRibbonButton( text, pIcon );
 		m_pLayout->addWidget( pButton );
