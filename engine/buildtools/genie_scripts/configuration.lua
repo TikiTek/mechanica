@@ -215,7 +215,7 @@ end
 
 function PlatformConfiguration:add_post_build_step( step_script, step_data, configuration, platform )
 	if type( step_script ) == "string" and type( step_data ) == "table" then
-		self:get_config( configuration, platform ):add_ppst_build_step( step_script, step_data );
+		self:get_config( configuration, platform ):add_post_build_step( step_script, step_data );
 	else
 		throw "[add_post_build_step] Invalid args.";
 	end
