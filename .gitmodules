@@ -22,3 +22,6 @@
 [submodule "blobs/stb"]
 	path = blobs/stb
 	url = https://github.com/nothings/stb.git
+[submodule "blobs/tinyxml2"]
+	path = blobs/tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git
