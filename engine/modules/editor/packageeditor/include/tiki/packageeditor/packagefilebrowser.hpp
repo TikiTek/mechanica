@@ -19,11 +19,15 @@ namespace tiki
 
 	public:
 
-		explicit		PackageFileBrowser( IEditorInterface* pInterface );
-		virtual			~PackageFileBrowser();
+		explicit			PackageFileBrowser( IEditorInterface* pInterface );
+		virtual				~PackageFileBrowser();
 
-		void			openPackage( const QString& packageName );
-		void			closePakage();
+		void				openPackage( const QString& packageName );
+		void				closePakage();
+
+	private slots:
+
+		void 				doubleClicked( const QModelIndex &index );
 
 	private:
 

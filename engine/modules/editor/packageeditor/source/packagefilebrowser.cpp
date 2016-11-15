@@ -17,6 +17,8 @@ namespace tiki
 		m_pTreeView = new QTreeView();
 		m_pTreeView->setModel( m_pTreeModel );
 
+		connect( m_pTreeView, &QAbstractItemView::doubleClicked, this, &PackageFileBrowser::doubleClicked );
+
 		setWidget( m_pTreeView );
 	}
 
@@ -33,6 +35,7 @@ namespace tiki
 		m_pTreeModel->setHorizontalHeaderLabels( { "Filename" } );
 
 		QStandardItem* pPacketItem = new QStandardItem( QIcon( ":/package-editor/browser-package.png" ), packageName );
+		pPacketItem->setEditable( false );
 
 		QDir contentDir( m_pInterface->getContentPath() );
 		contentDir.cd( m_packageName );
@@ -50,6 +53,15 @@ namespace tiki
 		}
 
 		m_pTreeModel->clear();
+	}
+
+	void PackageFileBrowser::doubleClicked( const QModelIndex &index )
+	{
+		QStandardItem* pItem = m_pTreeModel->itemFromIndex( index );
+		if( pItem != nullptr )
+		{
+			m_pInterface->openFile( pItem->data().toString() );
+		}
 	}
 
 	void PackageFileBrowser::addFiles( QStandardItem* pParentItem, QDir dir )
@@ -75,6 +87,9 @@ namespace tiki
 			}
 
 			QStandardItem* pItem = new QStandardItem( icon, entry );
+			pItem->setData( filePath );
+			pItem->setEditable( false );
+
 			pParentItem->appendRow( pItem );
 
 			if( isDir )
