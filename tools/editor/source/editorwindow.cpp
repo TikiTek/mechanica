@@ -33,7 +33,7 @@ namespace tiki
 
 	void EditorWindow::openFileTab( QWidget* pWidget, const QString& title )
 	{
-		m_pFileTabs->addTab( pWidget, title );
+		m_pFileTabs->setCurrentIndex( m_pFileTabs->addTab( pWidget, title ) );
 	}
 
 	void EditorWindow::changeFileTab( QWidget* pWidget, const QString& title )

@@ -1,6 +1,8 @@
 #include "editor.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/genericdataeditor/genericdataeditor.hpp"
+#include "tiki/packageeditor/packageeditor.hpp"
 
 #include "editorwindow.hpp"
 #include "editorfile.hpp"
@@ -23,7 +25,10 @@ namespace tiki
 		setProjectPathes();
 
 		m_pPackageEditor = new PackageEditor( this );
+		m_pGenericDataEditor = new GenericDataEditor( this );
+
 		registerFileEditor( m_pPackageEditor );
+		registerFileEditor( m_pGenericDataEditor );
 
 		connect( m_pWindow, &EditorWindow::fileCloseRequest, this, &Editor::fileCloseRequest );
 		connect( &m_openShortcut, &QShortcut::activated, this, &Editor::fileOpenShortcut );
@@ -37,7 +42,7 @@ namespace tiki
 		delete m_pPackageEditor;
 	}
 
-	IEditorFile* Editor::openFile( const QString& fileName )
+	IFile* Editor::openFile( const QString& fileName )
 	{
 		if( fileName.isEmpty() )
 		{
@@ -87,7 +92,7 @@ namespace tiki
 		return pFile;
 	}
 
-	void Editor::saveFile( IEditorFile* pFile )
+	void Editor::saveFile( IFile* pFile )
 	{
 		TIKI_ASSERT( pFile != nullptr );
 
@@ -106,7 +111,7 @@ namespace tiki
 		m_pWindow->changeFileTab( pFile->getEditWidget(), pEditorFile->getTabTitle() );
 	}
 
-	void Editor::closeFile( IEditorFile* pFile )
+	void Editor::closeFile( IFile* pFile )
 	{
 		TIKI_ASSERT( pFile != nullptr );
 

@@ -2,13 +2,13 @@
 #ifndef TIKI_EDITORFILE_HPP_INCLUDED
 #define TIKI_EDITORFILE_HPP_INCLUDED
 
-#include "tiki/editorinterface/ieditorfile.hpp"
+#include "tiki/editorinterface/ifile.hpp"
 
 #include <QString>
 
 namespace tiki
 {
-	class EditorFile : public IEditorFile
+	class EditorFile : public IFile
 	{
 		TIKI_NONCOPYABLE_CLASS( EditorFile );
 

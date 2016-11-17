@@ -3,7 +3,6 @@
 #define TIKI_EDITOR_HPP_INCLUDED
 
 #include "tiki/editorinterface/ieditorinterface.hpp"
-#include "tiki/packageeditor/packageeditor.hpp"
 
 #include <QSet>
 #include <QShortcut>
@@ -15,7 +14,9 @@ namespace tiki
 {
 	class EditorFile;
 	class EditorWindow;
-	class IEditorFile;
+	class GenericDataEditor;
+	class IFile;
+	class PackageEditor;
 
 	class Editor : public QObject, public IEditorInterface
 	{
@@ -27,9 +28,9 @@ namespace tiki
 								Editor( EditorWindow* pWindow );
 		virtual					~Editor();
 
-		virtual IEditorFile*	openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void			saveFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void			closeFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual IFile*			openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void			saveFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
 		virtual void			closeAllFiles() TIKI_OVERRIDE_FINAL;
 
 		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
@@ -68,6 +69,7 @@ namespace tiki
 
 		QSet< IFileEditor* >	m_editors;
 		PackageEditor*			m_pPackageEditor;
+		GenericDataEditor*		m_pGenericDataEditor;
 
 		QSet< QDockWidget* >	m_docks;
 

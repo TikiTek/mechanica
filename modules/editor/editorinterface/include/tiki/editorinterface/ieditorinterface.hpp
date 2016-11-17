@@ -12,7 +12,7 @@ class QDockWidget;
 
 namespace tiki
 {
-	class IEditorFile;
+	class IFile;
 	class IFileEditor;
 	class QtRibbonTab;
 
@@ -22,9 +22,9 @@ namespace tiki
 
 		virtual					~IEditorInterface() { }
 
-		virtual IEditorFile*	openFile( const QString& fileName ) TIKI_PURE;
-		virtual void			saveFile( IEditorFile* pFile ) TIKI_PURE;
-		virtual void			closeFile( IEditorFile* pFile ) TIKI_PURE;
+		virtual IFile*			openFile( const QString& fileName ) TIKI_PURE;
+		virtual void			saveFile( IFile* pFile ) TIKI_PURE;
+		virtual void			closeFile( IFile* pFile ) TIKI_PURE;
 		virtual void			closeAllFiles() TIKI_PURE;
 
 		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_PURE;

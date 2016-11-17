@@ -22,7 +22,7 @@ namespace tiki
 		explicit		PackageEditorWidget();
 		virtual			~PackageEditorWidget();
 
-		bool			openPackage( IEditorFile* pFile );
+		bool			openPackage( IFile* pFile );
 		void			savePackage();
 
 	private slots:
@@ -31,7 +31,7 @@ namespace tiki
 
 	private:
 
-		IEditorFile*			m_pFile;
+		IFile*					m_pFile;
 
 		bool					m_isLoading;
 		tinyxml2::XMLDocument	m_document;

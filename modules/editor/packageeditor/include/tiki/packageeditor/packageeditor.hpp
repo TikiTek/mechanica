@@ -22,9 +22,9 @@ namespace tiki
 												PackageEditor( IEditorInterface* pInterface );
 		virtual									~PackageEditor();
 
-		virtual QWidget*						openFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual bool							saveFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void							closeFile( IEditorFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual QWidget*						openFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual bool							saveFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual void							closeFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
 
 		virtual QString							getFileTypeName() const TIKI_OVERRIDE_FINAL;
 		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
@@ -58,7 +58,7 @@ namespace tiki
 		QVector< QtRibbonTab* >		m_tabs;
 		QVector< QDockWidget* >		m_docks;
 
-		void						openPackage( IEditorFile* pPackageFile );
+		void						openPackage( IFile* pPackageFile );
 		void						closePackage();
 	};
 }
