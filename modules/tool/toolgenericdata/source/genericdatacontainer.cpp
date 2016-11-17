@@ -276,7 +276,7 @@ namespace tiki
 		case GenericDataValueType_Object:
 			{
 				const GenericDataObject* pObject = nullptr;
-				if ( value.getObject( pObject ) )
+				if ( value.getObject( (GenericDataObject*&)pObject ) )
 				{
 					if( pObject == nullptr )
 					{
@@ -302,7 +302,7 @@ namespace tiki
 
 		case GenericDataValueType_Array:
 			{
-				const GenericDataArray* pArray = nullptr;
+				GenericDataArray* pArray = nullptr;
 				if ( value.getArray( pArray ) )
 				{
 					ReferenceKey key;

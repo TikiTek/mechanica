@@ -88,15 +88,8 @@ namespace tiki
 		{
 			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
 
-			XmlReader reader;
-			if ( !reader.create( file.fileName.cStr() ) )
-			{
-				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to parse '%s'.\n", file.fileName.cStr() );
-				continue;
-			}
-
 			GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
-			if ( document.importFromXml( reader ) )
+			if ( document.importFromFile( file.fileName.cStr() ) )
 			{
 				const string& extension = document.getType()->getPostFix();
 
@@ -132,7 +125,6 @@ namespace tiki
 			}
 
 			document.dispose();
-			reader.dispose();
 		}
 
 		return ok;

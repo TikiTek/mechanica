@@ -4,6 +4,8 @@
 
 #include <QWidget>
 
+#include "tiki/toolgenericdata/genericdatadocument.hpp"
+
 class QHBoxLayout;
 class QStandardItem;
 class QStandardItemModel;
@@ -11,13 +13,15 @@ class QTreeView;
 
 namespace tiki
 {
+	class GenericDataArray;
+
 	class GenericDataEditorWidget : public QWidget
 	{
 		Q_OBJECT
 
 	public:
 
-		explicit			GenericDataEditorWidget();
+		explicit			GenericDataEditorWidget( GenericDataTypeCollection& typeCollection );
 		virtual				~GenericDataEditorWidget();
 
 		bool				openFile( IFile* pFile );
@@ -26,10 +30,21 @@ namespace tiki
 
 	private:
 
-		QHBoxLayout*		m_pLayout;
-		QTreeView*			m_pTreeView;
-		QStandardItemModel*	m_pTreeModel;
-		QStandardItem*		m_pTreeRootItem;
+		GenericDataTypeCollection&	m_typeCollection;
+
+		IFile*						m_pFile;
+		GenericDataDocument			m_document;
+
+		QHBoxLayout*				m_pLayout;
+		QTreeView*					m_pTreeView;
+		QStandardItemModel*			m_pTreeModel;
+		QStandardItem*				m_pTreeRootKeyItem;
+		QStandardItem*				m_pTreeRootValueItem;
+		QStandardItem*				m_pTreeRootTypeItem;
+
+		void						generateItemsForValue( const GenericDataValue& value, QStandardItem* pParentItem );
+		void						generateItemsForObject( GenericDataObject* pObject, QStandardItem* pParentItem );
+		void						generateItemsForArray( GenericDataArray* pArray, QStandardItem* pParentItem );
 	};
 }
 
