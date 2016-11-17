@@ -1,7 +1,7 @@
 #include "tiki/packageeditor/packageeditor.hpp"
 
-#include "tiki/editorinterface/ieditorfile.hpp"
 #include "tiki/editorinterface/ieditorinterface.hpp"
+#include "tiki/editorinterface/ifile.hpp"
 #include "tiki/packageeditor/packageeditorwidget.hpp"
 #include "tiki/packageeditor/packagefilebrowser.hpp"
 #include "tiki/qtapplication/qtribbonbutton.hpp"
@@ -38,7 +38,7 @@ namespace tiki
 		m_pInterface->removeGlobalRibbonTab( m_pRibbon );
 	}
 
-	QWidget* PackageEditor::openFile( IEditorFile* pFile )
+	QWidget* PackageEditor::openFile( IFile* pFile )
 	{
 		openPackage( pFile );
 
@@ -52,7 +52,7 @@ namespace tiki
 		return pEditorWidget;
 	}
 
-	bool PackageEditor::saveFile( IEditorFile* pFile )
+	bool PackageEditor::saveFile( IFile* pFile )
 	{
 		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pFile->getEditWidget();
 		pEditorWidget->savePackage();
@@ -60,7 +60,7 @@ namespace tiki
 		return true;
 	}
 
-	void PackageEditor::closeFile( IEditorFile* pFile )
+	void PackageEditor::closeFile( IFile* pFile )
 	{
 		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pFile->getEditWidget();
 		delete pEditorWidget;
@@ -130,7 +130,7 @@ namespace tiki
 		m_pInterface->openFile( m_pInterface->getContentPath().absoluteFilePath( m_currentPackageName + ".tikipackage" ) );
 	}
 
-	void PackageEditor::openPackage( IEditorFile* pPackageFile )
+	void PackageEditor::openPackage( IFile* pPackageFile )
 	{
 		QFileInfo fileInfo( pPackageFile->getFileName() );
 		if( m_currentPackageName == fileInfo.baseName() )

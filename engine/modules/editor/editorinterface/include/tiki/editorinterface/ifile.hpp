@@ -1,16 +1,16 @@
 #pragma once
-#ifndef TIKI_IEDITORFILE_HPP_INCLUDED
-#define TIKI_IEDITORFILE_HPP_INCLUDED
+#ifndef TIKI_IFILE_HPP_INCLUDED
+#define TIKI_IFILE_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	class IEditorFile
+	class IFile
 	{
 	public:
 
-		virtual						~IEditorFile() { }
+		virtual						~IFile() { }
 
 		virtual const QString&		getFileName() const TIKI_PURE;
 		virtual const IFileEditor*	getFileEditor() const TIKI_PURE;
@@ -21,4 +21,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_EDITORFILE_HPP_INCLUDED
+#endif // TIKI_IFILE_HPP_INCLUDED

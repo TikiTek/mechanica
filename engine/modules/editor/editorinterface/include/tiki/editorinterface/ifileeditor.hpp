@@ -14,7 +14,7 @@ class QWidget;
 
 namespace tiki
 {
-	class IEditorFile;
+	class IFile;
 	class QtRibbonTab;
 
 	class IFileEditor
@@ -23,9 +23,9 @@ namespace tiki
 
 		virtual									~IFileEditor() { }
 
-		virtual QWidget*						openFile( IEditorFile* pFile ) TIKI_PURE;
-		virtual bool							saveFile( IEditorFile* pFile ) TIKI_PURE;
-		virtual void							closeFile( IEditorFile* pFile ) TIKI_PURE;
+		virtual QWidget*						openFile( IFile* pFile ) TIKI_PURE;
+		virtual bool							saveFile( IFile* pFile ) TIKI_PURE;
+		virtual void							closeFile( IFile* pFile ) TIKI_PURE;
 
 		virtual QString							getFileTypeName() const TIKI_PURE;
 		virtual QString							getFileExtension() const TIKI_PURE;

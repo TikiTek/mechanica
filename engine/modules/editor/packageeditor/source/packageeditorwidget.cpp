@@ -52,7 +52,7 @@ namespace tiki
 	{
 	}
 
-	bool PackageEditorWidget::openPackage( IEditorFile* pFile )
+	bool PackageEditorWidget::openPackage( IFile* pFile )
 	{
 		m_pFile = pFile;
 

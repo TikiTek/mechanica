@@ -33,7 +33,7 @@ function Module:add_moc_file( filename )
 end
 
 function Module:add_qrc_file( filename )
-	local output_filename = path.getbasename( filename ) .. ".rcc";
+	local output_filename = "rcc_" .. path.getbasename( filename ) .. ".cpp";
 
 	local step_data = {
 		source_filename = path.join( self.config.base_path, filename ),
@@ -41,5 +41,6 @@ function Module:add_qrc_file( filename )
 		qt_dir = qt_dir
 	}
 	
-	self:add_post_build_step( qrc_script, step_data );
+	self:add_pre_build_step( qrc_script, step_data );
+	self:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
 end

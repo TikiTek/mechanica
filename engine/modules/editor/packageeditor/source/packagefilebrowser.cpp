@@ -34,15 +34,15 @@ namespace tiki
 
 		m_pTreeModel->setHorizontalHeaderLabels( { "Filename" } );
 
-		QStandardItem* pPacketItem = new QStandardItem( QIcon( ":/package-editor/browser-package.png" ), packageName );
-		pPacketItem->setEditable( false );
+		QStandardItem* pPackageItem = new QStandardItem( QIcon( ":/package-editor/browser-package.png" ), packageName );
+		pPackageItem->setEditable( false );
 
 		QDir contentDir( m_pInterface->getContentPath() );
 		contentDir.cd( m_packageName );
-		addFiles( pPacketItem, contentDir );
+		addFiles( pPackageItem, contentDir );
 
-		m_pTreeModel->appendRow( pPacketItem );
-		m_pTreeView->expand( m_pTreeModel->indexFromItem( pPacketItem ) );
+		m_pTreeModel->appendRow( pPackageItem );
+		m_pTreeView->expand( m_pTreeModel->indexFromItem( pPackageItem ) );
 	}
 
 	void PackageFileBrowser::closePakage()
@@ -97,6 +97,8 @@ namespace tiki
 				QDir subDir( dir );
 				subDir.cd( entry );
 				addFiles( pItem, subDir );
+
+				m_pTreeView->expand( m_pTreeModel->indexFromItem( pItem ) );
 			}
 		}
 	}
