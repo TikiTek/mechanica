@@ -78,6 +78,16 @@ namespace tiki
 		return m_fields.hasKey( name );
 	}
 
+	const string& GenericDataObject::getFieldName( uint index ) const
+	{
+		return m_fields.getPairAt( index ).key;
+	}
+
+	const GenericDataType* GenericDataObject::getFieldType( uint index ) const
+	{
+		return m_fields.getValueAt( index ).pType;
+	}
+
 	GenericDataValue GenericDataObject::getFieldValue( const string& name ) const
 	{
 		const ObjectField& field = m_fields[ name ];
@@ -94,6 +104,11 @@ namespace tiki
 		}
 
 		return field.value;
+	}
+
+	GenericDataValue GenericDataObject::getFieldValue( uint index ) const
+	{
+		return m_fields.getValueAt( index ).value;
 	}
 
 	bool GenericDataObject::setFieldValue( const string& name, const GenericDataValue& value )
@@ -129,7 +144,7 @@ namespace tiki
 		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
 			const GenericDataStructField& structField = fields[ i ];
-						
+
 			ObjectField field;
 			GenericDataValue value;
 			if ( !m_fields.findValue( &field, structField.name ) || !field.value.isValid() )

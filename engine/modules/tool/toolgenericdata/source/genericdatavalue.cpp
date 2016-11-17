@@ -313,7 +313,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getObject( const GenericDataObject*& pValue ) const
+	bool GenericDataValue::getObject( GenericDataObject*& pValue ) const
 	{
 		if ( m_valueType == GenericDataValueType_Object )
 		{
@@ -336,7 +336,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getArray( const GenericDataArray*& pValue ) const
+	bool GenericDataValue::getArray( GenericDataArray*& pValue ) const
 	{
 		if ( m_valueType == GenericDataValueType_Array )
 		{

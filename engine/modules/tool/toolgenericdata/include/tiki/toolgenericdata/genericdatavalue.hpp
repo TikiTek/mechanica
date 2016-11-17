@@ -73,9 +73,9 @@ namespace tiki
 		bool					getString( string& value ) const;
 		bool					setString( const string& value, const GenericDataType* pType );
 
-		bool					getObject( const GenericDataObject*& pValue ) const;
+		bool					getObject( GenericDataObject*& pValue ) const;
 		bool					setObject( GenericDataObject* pValue );
-		bool					getArray( const GenericDataArray*& pValue ) const;
+		bool					getArray( GenericDataArray*& pValue ) const;
 		bool					setArray( GenericDataArray* pValue );
 
 		bool					getEnum( string& enumName, sint64& enumValue ) const;

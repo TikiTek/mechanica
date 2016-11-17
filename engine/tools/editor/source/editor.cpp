@@ -38,7 +38,10 @@ namespace tiki
 
 	Editor::~Editor()
 	{
+		unregisterFileEditor( m_pGenericDataEditor );
 		unregisterFileEditor( m_pPackageEditor );
+
+		delete m_pGenericDataEditor;
 		delete m_pPackageEditor;
 	}
 

@@ -28,7 +28,7 @@ namespace tiki
 
 		m_pType		= pResourceType;
 		m_pObject	= TIKI_NEW( GenericDataObject )( m_collection );
-		
+
 		return m_pObject->create( pObjectType, nullptr );
 	}
 
@@ -59,10 +59,58 @@ namespace tiki
 		return m_pObject;
 	}
 
+	bool GenericDataDocument::importFromFile( const char* pFilename )
+	{
+		const tinyxml2::XMLError error = m_document.LoadFile( pFilename );
+		if( error != tinyxml2::XML_SUCCESS )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromFile] XML parser returned an error. %s\n", m_document.GetErrorStr1() );
+			return false;
+		}
+
+		XmlReader oldReader;
+		if( !oldReader.create( pFilename ) )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromFile] Unable to parse '%s'.\n", pFilename );
+			return false;
+		}
+
+		if( !importFromXml( oldReader ) )
+		{
+			return false;
+		}
+
+		oldReader.dispose();
+
+		return true;
+	}
+
+	bool GenericDataDocument::exportToFile( const char* pFilename )
+	{
+		if( !exportToXml() )
+		{
+			return false;
+		}
+
+		const tinyxml2::XMLError error = m_document.SaveFile( pFilename );
+		if( error != tinyxml2::XML_SUCCESS )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataDocument::exportToFile] XML writer returned an error. %s\n", m_document.GetErrorStr1() );
+			return false;
+		}
+
+		return true;
+	}
+
+	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
+	{
+		return m_pObject->writeToResource( &dataKey, writer );
+	}
+
 	bool GenericDataDocument::importFromXml( XmlReader& reader )
 	{
 		const XmlElement* pRootNode = reader.findNodeByName( "tikigenericobjects" );
-		if ( !pRootNode )
+		if( !pRootNode )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromXml] Unable to find root node.\n" );
 			return false;
@@ -70,22 +118,22 @@ namespace tiki
 
 		const XmlElement* pResourceNode = reader.findFirstChild( "resource", pRootNode );
 		const GenericDataType* pResourceType = findTypeForNode( reader, pResourceNode, GenericDataTypeType_Resource );
-		if ( pResourceType == nullptr )
+		if( pResourceType == nullptr )
 		{
 			return false;
 		}
 
 		const XmlElement* pObjectNode = reader.findFirstChild( "object", pResourceNode );
 		const GenericDataType* pObjectType = findTypeForNode( reader, pObjectNode, GenericDataTypeType_Struct );
-		if ( pObjectType == nullptr )
+		if( pObjectType == nullptr )
 		{
 			return false;
 		}
 
 		const GenericDataTypeResource* pTypedResourceType	= (const GenericDataTypeResource*)pResourceType;
 		const GenericDataTypeStruct* pTypedObjectType		= (const GenericDataTypeStruct*)pObjectType;
-		
-		if ( !create( pTypedResourceType, pTypedObjectType ) )
+
+		if( !create( pTypedResourceType, pTypedObjectType ) )
 		{
 			return false;
 		}
@@ -93,9 +141,9 @@ namespace tiki
 		return m_pObject->importFromXml( reader, pObjectNode );
 	}
 
-	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
+	bool GenericDataDocument::exportToXml()
 	{
-		return m_pObject->writeToResource( &dataKey, writer );
+		return true;
 	}
 
 	const GenericDataType* GenericDataDocument::findTypeForNode( XmlReader& reader, const _XmlElement* pElement, GenericDataTypeType type ) const

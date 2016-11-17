@@ -35,8 +35,12 @@ namespace tiki
 		const GenericDataTypeStruct*	getType() const;
 
 		bool							hasField( const string& name ) const;
+		uint							getFieldCount() const { return m_fields.getCount(); }
 
+		const string&					getFieldName( uint index ) const;
+		const GenericDataType*			getFieldType( uint index ) const;
 		GenericDataValue				getFieldValue( const string& name ) const;
+		GenericDataValue				getFieldValue( uint index ) const;
 		bool							setFieldValue( const string& name, const GenericDataValue& value );
 
 		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;

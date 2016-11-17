@@ -20,7 +20,7 @@ namespace tiki
 
 	QWidget* GenericDataEditor::openFile( IFile* pFile )
 	{
-		GenericDataEditorWidget* pWidget = new GenericDataEditorWidget();
+		GenericDataEditorWidget* pWidget = new GenericDataEditorWidget( m_typeCollection );
 		if( !pWidget->openFile( pFile ) )
 		{
 			delete pWidget;
