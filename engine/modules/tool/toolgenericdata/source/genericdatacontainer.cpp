@@ -50,15 +50,14 @@ namespace tiki
 				}
 				else
 				{
-					GenericDataValue value = GenericDataValue( pElementType );
-					if ( !pElementType->loadValueFromXml( value, reader, pElement, getParentType() ) )
+					GenericDataValue* pValue = addElementValue( reader, pElement );
+					if( pValue == nullptr )
 					{
-						value.dispose();
-						result = false;
+						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else
+					else if ( !pElementType->loadValueFromXml( pValue, reader, pElement, getParentType() ) )
 					{
-						applyElementValue( reader, pElement, value );
+						result = false;
 					}
 				}
 			}
@@ -66,7 +65,7 @@ namespace tiki
 			pElement = reader.findNext( pElementName, pElement );
 		}
 
-		return true; 
+		return true;
 	}
 
 	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const
@@ -269,7 +268,7 @@ namespace tiki
 					writer.writeReference( &key );
 					return true;
 				}
-				
+
 			}
 			break;
 
@@ -338,13 +337,13 @@ namespace tiki
 					const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)value.getType();
 					const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pEnumType->getBaseType();
 
-					GenericDataValue writeValue;
+					GenericDataValue writeValue( pValueType );
 					if ( pValueType->isSignedInteger() )
 					{
 						if ( writeValue.setSignedValue( enumValue, pValueType ) )
 						{
 							return writeValueToResource( writer, writeValue );
-						}						
+						}
 					}
 					else if ( pValueType->isUnsignedInteger() )
 					{
@@ -397,7 +396,7 @@ namespace tiki
 				{
 					ok = pObject->writeToResource( &dataKey, writer );
 				}
-				 
+
 				writer.writeReference( ok ? &dataKey : nullptr );
 				return ok;
 			}

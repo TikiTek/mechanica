@@ -39,12 +39,12 @@ namespace tiki
 		return m_mode;
 	}
 
-	bool GenericDataType::loadValueFromXml( GenericDataValue& outValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const
+	bool GenericDataType::loadValueFromXml( GenericDataValue* pTargetValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const
 	{
 		const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pElement );
 		if ( pValueAtt != nullptr )
 		{
-			return m_collection.parseValue( outValue, pValueAtt->content, this, pParentType );
+			return m_collection.parseValue( pTargetValue, pValueAtt->content, this, pParentType );
 		}
 		else
 		{
@@ -102,7 +102,7 @@ namespace tiki
 					return false;
 				}
 
-				outValue.setObject( pObject );
+				pTargetValue->setObject( pObject );
 			}
 			else if ( childName == "array" )
 			{
@@ -127,9 +127,9 @@ namespace tiki
 					return false;
 				}
 
-				outValue.setArray( pArray );
+				pTargetValue->setArray( pArray );
 			}
-			else 
+			else
 			{
 				TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] child node has a invalid name(%s).\n", pChildElement->name );
 				return false;

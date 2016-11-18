@@ -48,7 +48,7 @@ namespace tiki
 		friend class GenericDataTypeCollection;
 
 	public:
-		
+
 									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
@@ -69,7 +69,7 @@ namespace tiki
 		const string&				getModule() const;
 		void						setModule( const string& value );
 
-		bool						loadValueFromXml( GenericDataValue& outValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const;
+		bool						loadValueFromXml( GenericDataValue* pTargetValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const;
 
 	protected:
 

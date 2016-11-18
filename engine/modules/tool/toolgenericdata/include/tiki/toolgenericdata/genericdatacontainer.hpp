@@ -34,7 +34,7 @@ namespace tiki
 		virtual const char*				getElementName() const TIKI_PURE;
 		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_PURE;
+		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_PURE;
 
 		bool							writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const;
 	};

@@ -44,18 +44,6 @@ namespace tiki
 			m_pParentObject = pType->getDefaultObject();
 		}
 
-		const List< GenericDataStructField >& fields = pType->getFields();
-		for (uint i = 0u; i < fields.getCount(); ++i)
-		{
-			const GenericDataStructField& structField = fields[ i ];
-
-			ObjectField field;
-			field.pType = structField.pType;
-			field.value = InvalidGenericDataValue;
-
-			m_fields.set( structField.name, field );
-		}
-
 		return true;
 	}
 
@@ -64,8 +52,9 @@ namespace tiki
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
 			ObjectField& field = m_fields.getValueAt( i );
-			field.value.dispose();
+			TIKI_DELETE( field.pValue );
 		}
+		m_fields.clear();
 	}
 
 	const GenericDataTypeStruct* GenericDataObject::getType() const
@@ -88,44 +77,63 @@ namespace tiki
 		return m_fields.getValueAt( index ).pType;
 	}
 
-	GenericDataValue GenericDataObject::getFieldValue( const string& name ) const
+	GenericDataValue* GenericDataObject::getFieldValue( const string& name, bool createMissing )
+	{
+		if( m_fields.hasKey( name ) )
+		{
+			return m_fields[ name ].pValue;
+		}
+		else if( createMissing )
+		{
+			const GenericDataType* pFieldType = m_pType->getFieldTypeByName( name );
+			if( pFieldType == nullptr )
+			{
+				return nullptr;
+			}
+
+			ObjectField field;
+			field.pType		= pFieldType;
+			field.pValue	= TIKI_NEW( GenericDataValue )( pFieldType );
+			m_fields.set( name, field );
+
+			return field.pValue;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	const GenericDataValue* GenericDataObject::getFieldValue( const string& name ) const
 	{
 		const ObjectField& field = m_fields[ name ];
-		if( !field.value.isValid() )
+		if( field.pValue == nullptr && m_pParentObject != nullptr )
 		{
-			if( m_pParentObject != nullptr )
-			{
-				return m_pParentObject->getFieldValue( name );
-			}
-			else
-			{
-				return GenericDataValue( field.pType );
-			}
+			return m_pParentObject->getFieldValue( name );
 		}
 
-		return field.value;
+		return field.pValue;
 	}
 
-	GenericDataValue GenericDataObject::getFieldValue( uint index ) const
+	GenericDataValue* GenericDataObject::getFieldValue( uint index ) const
 	{
-		return m_fields.getValueAt( index ).value;
+		return m_fields.getValueAt( index ).pValue;
 	}
 
-	bool GenericDataObject::setFieldValue( const string& name, const GenericDataValue& value )
+	bool GenericDataObject::removeField( const string& name )
 	{
-		if ( !hasField( name ) )
+		if( !m_fields.hasKey( name ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Struct of Type '%s' has no field named '%s'.\n", m_pType->getName().cStr(), name.cStr() );
 			return false;
 		}
 
 		ObjectField& field = m_fields[ name ];
-		if( !field.value.setValue( value ) )
+		if( field.pValue != nullptr )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value to field '%s'!\n", name.cStr() );
-			return false;
+			TIKI_DELETE( field.pValue );
 		}
 
+		m_fields.remove( name );
 		return true;
 	}
 
@@ -146,27 +154,24 @@ namespace tiki
 			const GenericDataStructField& structField = fields[ i ];
 
 			ObjectField field;
-			GenericDataValue value;
-			if ( !m_fields.findValue( &field, structField.name ) || !field.value.isValid() )
+			const GenericDataValue* pValue = nullptr;
+			if ( !m_fields.findValue( &field, structField.name ) )
 			{
 				if( m_pParentObject != nullptr )
 				{
-					value = m_pParentObject->getFieldValue( structField.name );
-				}
-				else
-				{
-					value = GenericDataValue( field.pType );
+					pValue = m_pParentObject->getFieldValue( structField.name );
 				}
 			}
 			else
 			{
-				value = field.value;
+				TIKI_ASSERT( field.pValue != nullptr );
+				pValue = field.pValue;
 			}
 
-			if ( value.getValueType() != GenericDataValueType_Invalid )
+			if ( pValue != nullptr )
 			{
-				TIKI_ASSERT( value.getType() == structField.pType );
-				if ( !writeValueToResource( writer, value ) )
+				TIKI_ASSERT( pValue->getType() == structField.pType );
+				if ( !writeValueToResource( writer, *pValue ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", structField.name.cStr() );
 					ok = false;
@@ -199,7 +204,7 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataObject::applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
+	GenericDataValue* GenericDataObject::addElementValue( const XmlReader& reader, const _XmlElement* pElement )
 	{
 		const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pElement );
 		if ( pNameAtt == nullptr )
@@ -208,15 +213,6 @@ namespace tiki
 			return false;
 		}
 
-		return setFieldValue( pNameAtt->content, value );
-	}
-
-	void GenericDataObject::addField( const string& name, const GenericDataType* pType, const GenericDataValue& defaultValue )
-	{
-		ObjectField field;
-		field.pType = pType;
-		field.value = defaultValue;
-
-		m_fields.set( name, field );
+		return getFieldValue( pNameAtt->content, true );
 	}
 }

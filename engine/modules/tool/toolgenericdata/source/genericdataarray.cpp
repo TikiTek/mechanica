@@ -22,6 +22,7 @@ namespace tiki
 
 	GenericDataArray::~GenericDataArray()
 	{
+		TIKI_ASSERT( m_array.isEmpty() );
 	}
 
 	bool GenericDataArray::create( const GenericDataTypeArray* pType )
@@ -37,7 +38,6 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[GenericDataArray::create] Dublicate create is not allowed.\n" );
 			return false;
 		}
-	
 
 		m_pType	= pType;
 
@@ -48,55 +48,37 @@ namespace tiki
 	{
 		for (uint i = 0u; i < m_array.getCount(); ++i)
 		{
-			GenericDataValue& element = m_array[ i ];
-			element.dispose();
+			TIKI_DELETE( m_array[ i ] );
 		}
+		m_array.clear();
 	}
 
 	const GenericDataTypeArray* GenericDataArray::getType() const
 	{
 		return m_pType;
 	}
-	
+
 	uint GenericDataArray::getCount() const
 	{
 		return m_array.getCount();
 	}
 
-	GenericDataValue& GenericDataArray::getElement( uint index )
+	GenericDataValue* GenericDataArray::addElement()
+	{
+		GenericDataValue* pValue = TIKI_NEW( GenericDataValue )( m_pType->getBaseType() );
+		m_array.add( pValue );
+
+		return pValue;
+	}
+
+	GenericDataValue* GenericDataArray::getElement( uint index )
 	{
 		return m_array[ index ];
 	}
 
-	const GenericDataValue& GenericDataArray::getElement( uint index ) const
+	const GenericDataValue* GenericDataArray::getElement( uint index ) const
 	{
 		return m_array[ index ];
-	}
-
-	bool GenericDataArray::addElement( const GenericDataValue& value )
-	{
-		m_array.add();
-
-		return setElement( m_array.getCount() - 1u, value );
-	}
-
-	bool GenericDataArray::setElement( uint index, const GenericDataValue& value )
-	{
-		if ( index >= m_array.getCount() )
-		{
-			TIKI_TRACE_ERROR( "[GenericDataArray::setElement] Index is greater as the size(%i > %i).\n", index, m_array.getCount() );
-			return false;
-		}
-
-		if ( value.getType() != m_pType->getBaseType() )
-		{
-			TIKI_TRACE_ERROR( "[GenericDataArray::setElement] Can't assign value with different type('%s' != '%s')!\n", value.getType()->getName().cStr(), m_pType->getBaseType()->getName().cStr() );
-			return false;
-		}
-
-		m_array[ index ] = value;
-
-		return true;
 	}
 
 	bool GenericDataArray::removeElement( uint index )
@@ -107,9 +89,10 @@ namespace tiki
 			return false;
 		}
 
-		m_array[ index ].dispose();
-		m_array.removeSortedAtIndex( index );
+		GenericDataValue* pValue = m_array[ index ];
+		TIKI_DELETE( pValue );
 
+		m_array.removeSortedAtIndex( index );
 		return true;
 	}
 
@@ -122,8 +105,8 @@ namespace tiki
 		bool ok = true;
 		for (uint i = 0u; i < m_array.getCount(); ++i)
 		{
-			const GenericDataValue& value = m_array[ i ];
-			ok &= writeValueToResource( writer, value );
+			const GenericDataValue* pValue = m_array[ i ];
+			ok &= writeValueToResource( writer, *pValue );
 		}
 
 		writer.closeDataSection();
@@ -144,8 +127,8 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataArray::applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value )
+	GenericDataValue* GenericDataArray::addElementValue( const XmlReader& reader, const _XmlElement* pElement )
 	{
-		return addElement( value );
+		return addElement();
 	}
 }

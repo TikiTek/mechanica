@@ -49,7 +49,7 @@ namespace tiki
 		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
 
 		const GenericDataType*			parseType( const string& typeString );
-		bool							parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
+		bool							parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
@@ -75,7 +75,7 @@ namespace tiki
 		const GenericDataTypeValueType*	m_pEnumDefaultType;
 
 		ModuleMap						m_modules;
-		
+
 		bool							registerDefaultValueTypes();
 		bool							registerDefaultResourceTypes();
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;

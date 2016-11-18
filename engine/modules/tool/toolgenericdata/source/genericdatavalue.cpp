@@ -11,62 +11,47 @@
 
 namespace tiki
 {
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_Boolean				== (int)GenericDataTypeValueTypeType_Boolean );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_Boolean == (int)GenericDataTypeValueTypeType_Boolean );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger8		== (int)GenericDataTypeValueTypeType_SingedInteger8 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger16	== (int)GenericDataTypeValueTypeType_SingedInteger16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger32	== (int)GenericDataTypeValueTypeType_SingedInteger32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger64	== (int)GenericDataTypeValueTypeType_SingedInteger64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger8 == (int)GenericDataTypeValueTypeType_SingedInteger8 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger16 == (int)GenericDataTypeValueTypeType_SingedInteger16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger32 == (int)GenericDataTypeValueTypeType_SingedInteger32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_SingedInteger64 == (int)GenericDataTypeValueTypeType_SingedInteger64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger8	== (int)GenericDataTypeValueTypeType_UnsingedInteger8 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger16	== (int)GenericDataTypeValueTypeType_UnsingedInteger16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger32	== (int)GenericDataTypeValueTypeType_UnsingedInteger32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger64	== (int)GenericDataTypeValueTypeType_UnsingedInteger64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger8 == (int)GenericDataTypeValueTypeType_UnsingedInteger8 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger16 == (int)GenericDataTypeValueTypeType_UnsingedInteger16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger32 == (int)GenericDataTypeValueTypeType_UnsingedInteger32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_UnsingedInteger64 == (int)GenericDataTypeValueTypeType_UnsingedInteger64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint16	== (int)GenericDataTypeValueTypeType_FloatingPoint16 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint32	== (int)GenericDataTypeValueTypeType_FloatingPoint32 );
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint64	== (int)GenericDataTypeValueTypeType_FloatingPoint64 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint16 == (int)GenericDataTypeValueTypeType_FloatingPoint16 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint32 == (int)GenericDataTypeValueTypeType_FloatingPoint32 );
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_FloatingPoint64 == (int)GenericDataTypeValueTypeType_FloatingPoint64 );
 
-	TIKI_COMPILETIME_ASSERT( GenericDataValueType_String				== (int)GenericDataTypeValueTypeType_String );
-
-	GenericDataValue::GenericDataValue()
-	{
-		m_pType		= nullptr;
-		m_valueType	= GenericDataValueType_Invalid;
-		m_value.u64	= 0;
-	}
+	TIKI_COMPILETIME_ASSERT( GenericDataValueType_String == (int)GenericDataTypeValueTypeType_String );
 
 	GenericDataValue::GenericDataValue( const GenericDataType* pType )
 	{
-		m_pType		= nullptr;
-		m_valueType	= GenericDataValueType_Invalid;
-		m_value.u64	= 0;
+		TIKI_ASSERT( pType != nullptr );
 
-		setType( pType, GenericDataTypeType_Invalid );
+		m_pType		= pType;
+		m_valueType	= getValueType( pType );
+		memory::zero( m_value );
 	}
 
 	GenericDataValue::~GenericDataValue()
 	{
-	}
-
-	void GenericDataValue::dispose()
-	{
-		if ( (m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer) && m_value.pObject != nullptr)
+		if( (m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer) && m_value.pObject != nullptr )
 		{
 			m_value.pObject->dispose();
 			TIKI_DELETE( m_value.pObject );
 			m_value.pObject = nullptr;
 		}
-		else if ( m_valueType == GenericDataValueType_Array && m_value.pArray != nullptr )
+		else if( m_valueType == GenericDataValueType_Array && m_value.pArray != nullptr )
 		{
 			m_value.pArray->dispose();
 			TIKI_DELETE( m_value.pArray );
 			m_value.pArray = nullptr;
 		}
-
-		m_pType		= nullptr;
-		m_valueType = GenericDataValueType_Invalid;
-		m_text		= nullptr;
 	}
 
 	const GenericDataType* GenericDataValue::getType() const
@@ -86,7 +71,7 @@ namespace tiki
 
 	bool GenericDataValue::getBoolean( bool& value ) const
 	{
-		if ( m_valueType == GenericDataValueType_Boolean )
+		if( m_valueType == GenericDataValueType_Boolean )
 		{
 			value = m_value.b;
 			return true;
@@ -97,7 +82,7 @@ namespace tiki
 
 	bool GenericDataValue::setBoolean( bool value, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
@@ -109,7 +94,7 @@ namespace tiki
 
 	bool GenericDataValue::getSignedValue( sint64& value ) const
 	{
-		switch ( m_valueType )
+		switch( m_valueType )
 		{
 		case GenericDataValueType_SingedInteger8:
 			value = m_value.s8;
@@ -148,12 +133,12 @@ namespace tiki
 
 	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
 
-		switch ( pType->getSize() )
+		switch( pType->getSize() )
 		{
 		case 1:
 			return rangeCheckCast( m_value.s8, value );
@@ -176,7 +161,7 @@ namespace tiki
 
 	bool GenericDataValue::getUnsignedValue( uint64& value ) const
 	{
-		switch ( m_valueType )
+		switch( m_valueType )
 		{
 		case GenericDataValueType_UnsingedInteger8:
 			value = m_value.u8;
@@ -215,12 +200,12 @@ namespace tiki
 
 	bool GenericDataValue::setUnsignedValue( uint64 value, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
 
-		switch ( pType->getSize() )
+		switch( pType->getSize() )
 		{
 		case 1:
 			return rangeCheckCast( m_value.u8, value );
@@ -243,7 +228,7 @@ namespace tiki
 
 	bool GenericDataValue::getFloatingPoint( float64& value ) const
 	{
-		switch ( m_valueType )
+		switch( m_valueType )
 		{
 		case GenericDataValueType_FloatingPoint16:
 			value = m_value.f16;
@@ -266,12 +251,12 @@ namespace tiki
 
 	bool GenericDataValue::setFloatingPoint( float64 value, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
 
-		switch ( pType->getSize() )
+		switch( pType->getSize() )
 		{
 
 		case 2:
@@ -292,7 +277,7 @@ namespace tiki
 
 	bool GenericDataValue::getString( string& value ) const
 	{
-		if ( m_valueType == GenericDataValueType_String )
+		if( m_valueType == GenericDataValueType_String )
 		{
 			value = m_text;
 			return true;
@@ -303,7 +288,7 @@ namespace tiki
 
 	bool GenericDataValue::setString( const string& value, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_ValueType ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
@@ -315,7 +300,7 @@ namespace tiki
 
 	bool GenericDataValue::getObject( GenericDataObject*& pValue ) const
 	{
-		if ( m_valueType == GenericDataValueType_Object )
+		if( m_valueType == GenericDataValueType_Object )
 		{
 			pValue = m_value.pObject;
 			return true;
@@ -326,7 +311,7 @@ namespace tiki
 
 	bool GenericDataValue::setObject( GenericDataObject* pValue )
 	{
-		if ( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Struct ) )
+		if( pValue == nullptr || !checkType( pValue->getType() ) )
 		{
 			return false;
 		}
@@ -338,7 +323,7 @@ namespace tiki
 
 	bool GenericDataValue::getArray( GenericDataArray*& pValue ) const
 	{
-		if ( m_valueType == GenericDataValueType_Array )
+		if( m_valueType == GenericDataValueType_Array )
 		{
 			pValue = m_value.pArray;
 			return true;
@@ -349,7 +334,7 @@ namespace tiki
 
 	bool GenericDataValue::setArray( GenericDataArray* pValue )
 	{
-		if ( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Array ) )
+		if( pValue == nullptr || !checkType( pValue->getType() ) )
 		{
 			return false;
 		}
@@ -361,7 +346,7 @@ namespace tiki
 
 	bool GenericDataValue::getEnum( string& enumName, sint64& enumValue ) const
 	{
-		if ( m_valueType == GenericDataValueType_Enum )
+		if( m_valueType == GenericDataValueType_Enum )
 		{
 			enumName	= m_text;
 			enumValue	= m_value.s64;
@@ -373,28 +358,28 @@ namespace tiki
 
 	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_Enum ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
 
 		const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pType;
-		const sint64* pValue = pTypedEnumType->getValueByName( valueName );
-		if ( pValue == nullptr )
+		const GenericDataValue* pValue = pTypedEnumType->getValueByName( valueName );
+		if( pValue == nullptr )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataValue::setEnum] enum value with name '%s' not found.\n", valueName.cStr() );
 			return false;
 		}
 
-		m_text		= valueName;
-		m_value.s64	= *pValue;
+		m_text	= valueName;
+		m_value	= pValue->m_value;
 
 		return true;
 	}
 
-	bool GenericDataValue::getReference(string& refText) const
+	bool GenericDataValue::getReference( string& refText ) const
 	{
-		if ( m_valueType == GenericDataValueType_Reference )
+		if( m_valueType == GenericDataValueType_Reference )
 		{
 			refText	= m_text;
 			return true;
@@ -403,9 +388,9 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setReference(const string& refText, const GenericDataType* pType)
+	bool GenericDataValue::setReference( const string& refText, const GenericDataType* pType )
 	{
-		if ( !setType( pType, GenericDataTypeType_Reference ) )
+		if( !checkType( pType ) )
 		{
 			return false;
 		}
@@ -428,7 +413,7 @@ namespace tiki
 
 	bool GenericDataValue::setPointer( GenericDataObject* pValue )
 	{
-		if( pValue == nullptr || !setType( pValue->getType(), GenericDataTypeType_Struct ) )
+		if( pValue == nullptr || !checkType( pValue->getType() ) )
 		{
 			return false;
 		}
@@ -455,71 +440,49 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::setType( const GenericDataType* pType, GenericDataTypeType expectedType )
+	GenericDataValueType GenericDataValue::getValueType( const GenericDataType* pType )
 	{
-		if ( pType == nullptr )
+		TIKI_ASSERT( pType != nullptr );
+
+		GenericDataValueType valueType = GenericDataValueType_Invalid;
+
+		const GenericDataTypeType typeType = pType->getType();
+		if( typeType == GenericDataTypeType_ValueType )
 		{
-			return false;
+			const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pType;
+			valueType	= (GenericDataValueType)pValueType->getValueType();
+		}
+		else if( typeType == GenericDataTypeType_Struct )
+		{
+			valueType	= GenericDataValueType_Object;
+		}
+		else if( typeType == GenericDataTypeType_Array )
+		{
+			valueType	= GenericDataValueType_Array;
+		}
+		else if( typeType == GenericDataTypeType_Enum )
+		{
+			valueType	= GenericDataValueType_Enum;
+		}
+		else if( typeType == GenericDataTypeType_Reference )
+		{
+			valueType	= GenericDataValueType_Reference;
+		}
+		else if( typeType == GenericDataTypeType_Pointer )
+		{
+			valueType	= GenericDataValueType_Pointer;
 		}
 
-		if ( m_valueType == GenericDataValueType_Invalid )
-		{
-			const GenericDataTypeType typeType = pType->getType();
-			if ( typeType != expectedType && expectedType != GenericDataTypeType_Invalid )
-			{
-				return false;
-			}
+		return valueType;
+	}
 
-			if ( typeType == GenericDataTypeType_ValueType )
-			{
-				const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pType;
-				
-				m_pType		= pType;
-				m_valueType	= (GenericDataValueType)pValueType->getValueType();
-
-				return true;
-			}
-			else if ( typeType == GenericDataTypeType_Struct )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Object;
-
-				return true;
-			}
-			else if ( typeType == GenericDataTypeType_Array )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Array;
-
-				return true;
-			}
-			else if ( typeType == GenericDataTypeType_Enum )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Enum;
-
-				return true;
-			}
-			else if ( typeType == GenericDataTypeType_Reference )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Reference;
-
-				return true;
-			}
-			else if( typeType == GenericDataTypeType_Pointer )
-			{
-				m_pType		= pType;
-				m_valueType	= GenericDataValueType_Pointer;
-
-				return true;
-			}
-		}
-		else if ( m_pType->isTypeCompatible( pType ) )
+	bool GenericDataValue::checkType( const GenericDataType* pType )
+	{
+		if( m_pType->getType() == pType->getType() )
 		{
 			return true;
 		}
 
-		return false;
+		return m_pType->isTypeCompatible( pType );
 	}
 }
