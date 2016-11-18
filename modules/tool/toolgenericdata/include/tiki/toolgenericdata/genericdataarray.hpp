@@ -35,11 +35,9 @@ namespace tiki
 
 		uint							getCount() const;
 
-		GenericDataValue&				getElement( uint index );
-		const GenericDataValue&			getElement( uint index ) const;
-
-		bool							addElement( const GenericDataValue& value );
-		bool							setElement( uint index, const GenericDataValue& value );
+		GenericDataValue*				addElement();
+		GenericDataValue*				getElement( uint index );
+		const GenericDataValue*			getElement( uint index ) const;
 		bool							removeElement( uint index );
 
 		// TODO: bool					exportToXml( XmlWriter& writer ) const;
@@ -47,16 +45,16 @@ namespace tiki
 
 	protected:
 
-		virtual const char*				getElementName() const TIKI_OVERRIDE;
-		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE;
+		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
+		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
-		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
+		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		const GenericDataTypeArray*		m_pType;
 
-		List< GenericDataValue >		m_array;
+		List< GenericDataValue* >		m_array;
 
 	};
 }

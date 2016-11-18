@@ -133,7 +133,7 @@ namespace tiki
 				{
 					continue;
 				}
-					
+
 				if ( !parseFile( data.reader, data.pRootNode, data.fileName, data.data.name ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", data.fileName.cStr() );
@@ -144,11 +144,11 @@ namespace tiki
 				data.pRootNode = nullptr;
 				data.isLoaded = true;
 				data.reader.dispose();
-				
+
 				loadedModules++;
 			}
 		}
-		
+
 		modules.dispose();
 
 		if ( !ok )
@@ -184,7 +184,7 @@ namespace tiki
 		{
 			TIKI_TRACE_ERROR( "[GenericDataTypeCollection::addType] dublicate type name: '%s'\n", type.getName().cStr() );
 			return false;
-		}		
+		}
 	}
 
 	bool GenericDataTypeCollection::removeType( GenericDataType& type )
@@ -228,10 +228,12 @@ namespace tiki
 
 	GenericDataTypeMode GenericDataTypeCollection::findModeByName( const string& name ) const
 	{
-		const sint64* pValue = m_pModeEnum->getValueByName( name );
-		if ( pValue != nullptr )
+		const GenericDataValue* pValue = m_pModeEnum->getValueByName( name );
+
+		sint64 intValue = 0;
+		if ( pValue != nullptr && pValue->getSignedValue( intValue ) )
 		{
-			return (GenericDataTypeMode)*pValue;
+			return (GenericDataTypeMode)intValue;
 		}
 
 		return GenericDataTypeMode_Invalid;
@@ -380,7 +382,7 @@ namespace tiki
 		return pType;
 	}
 
-	bool GenericDataTypeCollection::parseValue( GenericDataValue& outValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
+	bool GenericDataTypeCollection::parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
 	{
 		if ( pType == nullptr )
 		{
@@ -397,11 +399,11 @@ namespace tiki
 
 			content = desc.content;
 		}
-		
+
 		string enumValueName;
 		if ( modifiers.isEmpty() )
 		{
-			content = valueString;			
+			content = valueString;
 		}
 		else
 		{
@@ -434,14 +436,21 @@ namespace tiki
 					enumValueName = content.subString( dotIndex + 1 );
 
 					const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
-					const sint64* pValue = pTypedEnumType->getValueByName( enumValueName );
+					const GenericDataValue* pValue = pTypedEnumType->getValueByName( enumValueName );
+
+					sint64 intValue = 0;
 					if ( pValue == nullptr )
 					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s' not found.\n", enumValueName.cStr() );
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), enumValueName.cStr() );
+						return false;
+					}
+					else if( !pValue->getSignedValue( intValue ) )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), enumValueName.cStr() );
 						return false;
 					}
 
-					content = StringConvert::ToString( *pValue );
+					content = StringConvert::ToString( intValue );
 				}
 				else if ( modifier.modifier == "reference" )
 				{
@@ -476,7 +485,7 @@ namespace tiki
 								break;
 							}
 
-							offset += field.pType->getSize();							
+							offset += field.pType->getSize();
 						}
 
 						if ( !found )
@@ -510,40 +519,40 @@ namespace tiki
 			if ( pTypedType->isBoolean() )
 			{
 				const bool value = ParseString::parseInt64( content.cStr() ) != 0;
-				return outValue.setBoolean( value, pType );
+				return pTargetValue->setBoolean( value, pType );
 			}
 			else if ( pTypedType->isSignedInteger() )
 			{
 				const sint64 value = ParseString::parseInt64( content.cStr() );
-				return outValue.setSignedValue( value, pType );
+				return pTargetValue->setSignedValue( value, pType );
 			}
 			else if ( pTypedType->isUnsignedInteger() )
 			{
 				const uint64 value = ParseString::parseUInt64( content.cStr() );
-				return outValue.setUnsignedValue( value, pType );
+				return pTargetValue->setUnsignedValue( value, pType );
 			}
 			else if ( pTypedType->isFloatingPoint() )
 			{
 				const double value = ParseString::parseDouble( content.cStr() );
-				return outValue.setFloatingPoint( value, pType );
+				return pTargetValue->setFloatingPoint( value, pType );
 			}
 			else if ( pTypedType->isString() )
 			{
-				return outValue.setString( content, pType );
+				return pTargetValue->setString( content, pType );
 			}
 		}
 		else if ( pType->getType() == GenericDataTypeType_Enum )
 		{
-			return outValue.setEnum( enumValueName, pType );
+			return pTargetValue->setEnum( enumValueName, pType );
 		}
 		else if ( pType->getType() == GenericDataTypeType_Reference )
 		{
-			return outValue.setReference( content, pType );
+			return pTargetValue->setReference( content, pType );
 		}
 		else if( pType->getType() == GenericDataTypeType_Pointer )
 		{
 			TIKI_NOT_IMPLEMENTED;
-			//return outValue.setReference( content, pType );
+			//return pTargetValue->setReference( content, pType );
 		}
 
 		return false;
@@ -575,7 +584,7 @@ namespace tiki
 			{
 				continue;
 			}
-			
+
 			GenericDataExportData& moduleData = moduleCode[ moduleName ];
 
 			if ( isBitSet( type.getMode(), mode ) )
@@ -647,7 +656,7 @@ namespace tiki
 			if ( !moduleData.dependencies.isEmpty() )
 			{
 				dependenciesIncludeCode += "\n";
-			}			
+			}
 
 			string finalCode = formatString(
 				s_pBaseFormat,
@@ -741,11 +750,11 @@ namespace tiki
 		GenericDataTypeValueType* pUInt32	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
 		GenericDataTypeValueType* pUInt64	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger64 );
 
-		GenericDataTypeValueType* pHalf		= TIKI_NEW( GenericDataTypeValueType )( *this, "half",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );		
+		GenericDataTypeValueType* pHalf		= TIKI_NEW( GenericDataTypeValueType )( *this, "half",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
 		GenericDataTypeValueType* pFloat	= TIKI_NEW( GenericDataTypeValueType )( *this, "float",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
 		GenericDataTypeValueType* pDouble	= TIKI_NEW( GenericDataTypeValueType )( *this, "double",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
 
-		GenericDataTypeValueType* pFloat16	= TIKI_NEW( GenericDataTypeValueType )( *this, "float16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );		
+		GenericDataTypeValueType* pFloat16	= TIKI_NEW( GenericDataTypeValueType )( *this, "float16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
 		GenericDataTypeValueType* pFloat32	= TIKI_NEW( GenericDataTypeValueType )( *this, "float32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
 		GenericDataTypeValueType* pFloat64	= TIKI_NEW( GenericDataTypeValueType )( *this, "float64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
 
@@ -821,7 +830,7 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[genericdata] Unable to find files in '%s'", path.cStr() );
 			return;
 		}
-		
+
 		for (size_t i = 0u; i < dirFiles.getCount(); ++i)
 		{
 			if ( path::getExtension( dirFiles[ i ] ) != ext )
@@ -830,7 +839,7 @@ namespace tiki
 			}
 
 			files.add( path::combine( path, dirFiles[ i ] ) );
-		}		
+		}
 
 		List< string > dirDirectories;
 		if( !directory::getDirectories( path, dirDirectories ) )
@@ -838,11 +847,11 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[genericdata] Unable to find directories in '%s'", path.cStr() );
 			return;
 		}
-		
+
 		for (size_t i = 0u; i < dirDirectories.getCount(); ++i)
 		{
 			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );
-		}		
+		}
 	}
 
 	bool GenericDataTypeCollection::parseFile( XmlReader& reader, const _XmlElement* pRootNode, const string& fileName, const string& moduleName )

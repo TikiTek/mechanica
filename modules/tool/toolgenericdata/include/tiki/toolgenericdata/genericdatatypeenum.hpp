@@ -9,12 +9,12 @@
 namespace tiki
 {
 	class GenericDataTypeValueType;
-	
+
 	struct GenericDataEnumValue
 	{
 		string				name;
 		bool				hasValue;
-		sint64				value;
+		GenericDataValue*	pValue;
 		GenericDataTypeMode	mode;
 	};
 
@@ -41,7 +41,8 @@ namespace tiki
 		void								addValue( const string& name, sint64 value, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
 		void								removeValue( const string& name );
 
-		const sint64*						getValueByName( const string& name ) const;
+		GenericDataValue*					getValueByName( const string& name );
+		const GenericDataValue*				getValueByName( const string& name ) const;
 		const List< GenericDataEnumValue >&	getValues() const;
 
 	private:

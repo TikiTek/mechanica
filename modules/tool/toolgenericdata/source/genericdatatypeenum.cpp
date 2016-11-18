@@ -20,6 +20,10 @@ namespace tiki
 
 	GenericDataTypeEnum::~GenericDataTypeEnum()
 	{
+		for( uint i = 0u; i < m_values.getCount(); ++i )
+		{
+			TIKI_DELETE( m_values[ i ].pValue );
+		}
 	}
 
 	bool GenericDataTypeEnum::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
@@ -52,7 +56,7 @@ namespace tiki
 					field.name		= pNameAtt->content;
 					field.mode		= GenericDataTypeMode_ToolAndRuntime;
 					field.hasValue	= false;
-					field.value		= currentValue++;
+					field.pValue	= TIKI_NEW( GenericDataValue )( m_pBaseType );
 
 					if ( pModeAtt != nullptr )
 					{
@@ -69,28 +73,33 @@ namespace tiki
 
 					if ( pValueAtt != nullptr )
 					{
-						GenericDataValue value;
-						if( !m_collection.parseValue( value, pValueAtt->content, m_pBaseType, this ) )
+						if( !m_collection.parseValue( field.pValue, pValueAtt->content, m_pBaseType, this ) )
 						{
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to parse value for enum value.\n", getName().cStr() );
 							return false;
 						}
+						field.hasValue = true;
 
-						field.hasValue	= true;
-						if( !value.getSignedValue( field.value ) )
+						if( !field.pValue->getSignedValue( currentValue ) )
 						{
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value is not an integer value.\n", getName().cStr() );
 							return false;
 						}
-
-						currentValue = field.value + 1;
+						currentValue++;
+					}
+					else
+					{
+						if( !field.pValue->setSignedValue( currentValue, m_pBaseType ) )
+						{
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to set default enum value.\n", getName().cStr() );
+						}
 					}
 				}
 				else
 				{
 					TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value requires an name attribute.\n", getName().cStr() );
 					return false;
-				}				
+				}
 			}
 
 			pChildElement = pChildElement->next;
@@ -120,19 +129,22 @@ namespace tiki
 
 			if ( value.hasValue )
 			{
-				valuesCode += formatString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), value.value );
+				sint64 intValue = 0u;
+				TIKI_VERIFY( value.pValue->getSignedValue( intValue ) );
+
+				valuesCode += formatString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), intValue );
 			}
 			else
 			{
 				valuesCode += formatString( s_pValueFormat, getName().cStr(), value.name.cStr() );
 			}
 		}
-		
+
 		string invalidValue = "-1";
 		if( m_pBaseType->isUnsignedInteger() )
 		{
 			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
-			
+
 			string format = formatString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
 			invalidValue = formatString( format.cStr(), maxValue );
 		}
@@ -142,7 +154,7 @@ namespace tiki
 		{
 			baseString = ": " + m_pBaseType->getExportName();
 		}
-		
+
 		targetData.code += formatString(
 			s_pBaseFormat,
 			getExportName().cStr(),
@@ -207,7 +219,7 @@ namespace tiki
 		GenericDataEnumValue& field = m_values.add();
 		field.name		= name;
 		field.hasValue	= true;
-		field.value		= value;
+		field.pValue	= TIKI_NEW( GenericDataValue )( m_pBaseType );
 		field.mode		= mode;
 	}
 
@@ -223,17 +235,22 @@ namespace tiki
 		}
 	}
 
-	const sint64* GenericDataTypeEnum::getValueByName( const string& name ) const
+	GenericDataValue* GenericDataTypeEnum::getValueByName( const string& name )
 	{
-		for (uint i = 0u; i < m_values.getCount(); ++i)
+		for( uint i = 0u; i < m_values.getCount(); ++i )
 		{
-			if ( m_values[ i ].name == name )
+			if( m_values[ i ].name == name )
 			{
-				return &m_values[ i ].value;
+				return m_values[ i ].pValue;
 			}
 		}
 
 		return nullptr;
+	}
+
+	const GenericDataValue* GenericDataTypeEnum::getValueByName( const string& name ) const
+	{
+		return const_cast<GenericDataTypeEnum*>(this)->getValueByName( name );
 	}
 
 	const List< GenericDataEnumValue >& GenericDataTypeEnum::getValues() const

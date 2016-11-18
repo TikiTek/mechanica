@@ -2,6 +2,7 @@
 
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 
 #include <QComboBox>
@@ -23,8 +24,8 @@ namespace tiki
 		m_pTreeView = new QTreeView();
 		m_pTreeView->setModel( m_pTreeModel );
 		m_pTreeView->header()->setStretchLastSection( false );
-		m_pTreeView->header()->setSectionResizeMode( 0, QHeaderView::Interactive );
-		m_pTreeView->header()->setSectionResizeMode( 1, QHeaderView::Interactive );
+		m_pTreeView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+		m_pTreeView->header()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pTreeView );
@@ -72,31 +73,50 @@ namespace tiki
 
 	void GenericDataEditorWidget::closeFile()
 	{
+		m_pTreeModel->clear();
 
+		delete m_pTreeRootKeyItem;
+		delete m_pTreeRootValueItem;
+		delete m_pTreeRootTypeItem;
+		m_pTreeRootKeyItem		= nullptr;
+		m_pTreeRootValueItem	= nullptr;
+		m_pTreeRootTypeItem		= nullptr;
+
+		m_document.dispose();
+		m_pFile = nullptr;
 	}
 
-	void GenericDataEditorWidget::generateItemsForValue( const GenericDataValue& value, QStandardItem* pParentItem )
+	void GenericDataEditorWidget::generateItemsForValue( GenericDataValue* pValue, QStandardItem* pParentItem )
 	{
-		if( value.getValueType() == GenericDataValueType_Object )
+		if( pValue->getValueType() == GenericDataValueType_Object )
 		{
 			GenericDataObject* pChildObject = nullptr;
-			TIKI_VERIFY( value.getObject( pChildObject ) );
+			TIKI_VERIFY( pValue->getObject( pChildObject ) );
 
-			generateItemsForObject( pChildObject, pParentItem );
+			if( pChildObject != nullptr )
+			{
+				generateItemsForObject( pChildObject, pParentItem );
+			}
 		}
-		else if( value.getValueType() == GenericDataValueType_Array )
+		else if( pValue->getValueType() == GenericDataValueType_Array )
 		{
 			GenericDataArray* pChildArray = nullptr;
-			TIKI_VERIFY( value.getArray( pChildArray ) );
+			TIKI_VERIFY( pValue->getArray( pChildArray ) );
 
-			generateItemsForArray( pChildArray, pParentItem );
+			if( pChildArray != nullptr )
+			{
+				generateItemsForArray( pChildArray, pParentItem );
+			}
 		}
-		else if( value.getValueType() == GenericDataValueType_Pointer )
+		else if( pValue->getValueType() == GenericDataValueType_Pointer )
 		{
 			GenericDataObject* pChildObject = nullptr;
-			TIKI_VERIFY( value.getPointer( pChildObject ) );
+			TIKI_VERIFY( pValue->getPointer( pChildObject ) );
 
-			generateItemsForObject( pChildObject, pParentItem );
+			if( pChildObject != nullptr )
+			{
+				generateItemsForObject( pChildObject, pParentItem );
+			}
 		}
 	}
 
@@ -106,13 +126,13 @@ namespace tiki
 		{
 			const string& key = pObject->getFieldName( i );
 			const GenericDataType* pType = pObject->getFieldType( i );
-			GenericDataValue value = pObject->getFieldValue( i );
+			GenericDataValue* pValue = pObject->getFieldValue( i );
 
 			QStandardItem* pKeyItem = new QStandardItem( key.cStr() );
 			QStandardItem* pValueItem = new QStandardItem( "Test" );
 			QStandardItem* pTypeItem = new QStandardItem( pType->getName().cStr() );
 
-			generateItemsForValue( value, pKeyItem );
+			generateItemsForValue( pValue, pKeyItem );
 
 			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
 		}
@@ -122,15 +142,54 @@ namespace tiki
 	{
 		for( uint i = 0u; i < pArray->getCount(); ++i )
 		{
-			GenericDataValue value = pArray->getElement( i );
+			GenericDataValue* pValue = pArray->getElement( i );
 
 			QStandardItem* pKeyItem = new QStandardItem( QString( "%0" ).arg( i ) );
 			QStandardItem* pValueItem = new QStandardItem( "Test" );
-			QStandardItem* pTypeItem = new QStandardItem( value.getType()->getName().cStr() );
+			QStandardItem* pTypeItem = new QStandardItem( pArray->getType()->getBaseType()->getName().cStr() );
 
-			generateItemsForValue( value, pKeyItem );
+			generateItemsForValue( pValue, pKeyItem );
 
 			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
+		}
+	}
+
+	QWidget* GenericDataEditorWidget::createWidgetForValueType( const GenericDataType* pType, GenericDataValue* pValue )
+	{
+		TIKI_ASSERT( pValue->getValueType() != GenericDataValueType_Invalid );
+
+		switch( pValue->getValueType() )
+		{
+		case GenericDataValueType_Boolean:
+			break;
+
+		case GenericDataValueType_SingedInteger8:
+		case GenericDataValueType_SingedInteger16:
+		case GenericDataValueType_SingedInteger32:
+		case GenericDataValueType_SingedInteger64:
+		case GenericDataValueType_UnsingedInteger8:
+		case GenericDataValueType_UnsingedInteger16:
+		case GenericDataValueType_UnsingedInteger32:
+		case GenericDataValueType_UnsingedInteger64:
+		case GenericDataValueType_FloatingPoint16:
+		case GenericDataValueType_FloatingPoint32:
+		case GenericDataValueType_FloatingPoint64:
+			break;
+
+		case GenericDataValueType_String:
+			break;
+
+		case GenericDataValueType_Enum:
+			break;
+
+		case GenericDataValueType_Reference:
+			break;
+
+		case GenericDataValueType_Pointer:
+		case GenericDataValueType_Object:
+		case GenericDataValueType_Array:
+		case GenericDataValueType_Invalid:
+			return nullptr;
 		}
 	}
 }

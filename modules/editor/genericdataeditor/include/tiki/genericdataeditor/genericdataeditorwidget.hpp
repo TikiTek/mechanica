@@ -42,9 +42,11 @@ namespace tiki
 		QStandardItem*				m_pTreeRootValueItem;
 		QStandardItem*				m_pTreeRootTypeItem;
 
-		void						generateItemsForValue( const GenericDataValue& value, QStandardItem* pParentItem );
+		void						generateItemsForValue( GenericDataValue* pValue, QStandardItem* pParentItem );
 		void						generateItemsForObject( GenericDataObject* pObject, QStandardItem* pParentItem );
 		void						generateItemsForArray( GenericDataArray* pArray, QStandardItem* pParentItem );
+
+		QWidget*					createWidgetForValueType( const GenericDataType* pType, GenericDataValue* pValue );
 	};
 }
 

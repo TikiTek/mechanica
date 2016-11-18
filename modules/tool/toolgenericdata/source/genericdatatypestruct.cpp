@@ -27,7 +27,7 @@ namespace tiki
 
 				m_alignment	= TIKI_MAX( m_alignment, field.pType->getAlignment() );
 				m_size		= alignValue( m_size, field.pType->getAlignment() );
-				m_size		= m_size + field.pType->getSize();				
+				m_size		= m_size + field.pType->getSize();
 			}
 		}
 	}
@@ -51,9 +51,11 @@ namespace tiki
 			return false;
 		}
 
-		m_pDefaultObject = TIKI_NEW( GenericDataObject )( m_collection );
-		m_pDefaultObject->create( this, nullptr );
-		m_pDefaultObject->m_pParentObject = nullptr;
+		{
+			GenericDataObject* pDefaultObject = TIKI_NEW( GenericDataObject )(m_collection);
+			pDefaultObject->create( this, nullptr );
+			m_pDefaultObject = pDefaultObject;
+		}
 
 		const XmlElement* pChildElement = pTypeRoot->elements;
 		while ( pChildElement != nullptr )
@@ -76,7 +78,7 @@ namespace tiki
 					GenericDataStructField* pValueField = nullptr;
 					const string fieldName = pNameAtt->content;
 					if ( isValue )
-					{						
+					{
 						for (uint i = 0u; i < m_fields.getCount(); ++i)
 						{
 							GenericDataStructField& field = m_fields[ i ];
@@ -106,7 +108,7 @@ namespace tiki
 						m_size				= alignValue( m_size, field.pType->getAlignment() );
 						m_size				= m_size + field.pType->getSize();
 					}
-					
+
 					if ( isValue && field.pType != pType )
 					{
 						TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' must have the same type like in base class.\n", getName().cStr(), pNameAtt->content );
@@ -134,30 +136,39 @@ namespace tiki
 						}
 					}
 
-					GenericDataValue defaultValue;
-					const XmlAttribute* pValueAtt = reader.findAttributeByName("value", pChildElement);
+					GenericDataValue* pDefaultValue = m_pDefaultObject->getFieldValue( fieldName, true );
+
+					bool ok = true;
+					const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
 					if ( pValueAtt != nullptr )
 					{
-						if ( !m_collection.parseValue( defaultValue, pValueAtt->content, pType, this ) )
+						if ( !m_collection.parseValue( pDefaultValue, pValueAtt->content, pType, this ) )
 						{
-							defaultValue.dispose();
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
+							ok = false;
 						}
 					}
 					else
 					{
 						const XmlElement* pValueElement = reader.findFirstChild( "value", pChildElement );
-						if (pValueElement != nullptr)
+						if( pValueElement != nullptr )
 						{
-							if (!pType->loadValueFromXml( defaultValue, reader, pValueElement, this ))
+							if (!pType->loadValueFromXml( pDefaultValue, reader, pValueElement, this ))
 							{
-								defaultValue.dispose();
 								TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value node can't be parsed.\n", getName().cStr() );
+								ok = false;
 							}
+						}
+						else
+						{
+							ok = false;
 						}
 					}
 
-					m_pDefaultObject->addField( fieldName, pType, defaultValue );
+					if( !ok )
+					{
+						m_pDefaultObject->removeField( fieldName );
+					}
 				}
 				else
 				{
@@ -194,14 +205,14 @@ namespace tiki
 
 			targetData.containsArray	|= (field.pType->getType() == GenericDataTypeType_Array);
 			targetData.containsString	|= (field.pType->getName() == "string");
-			
+
 			if (field.pType->getType() == GenericDataTypeType_Reference)
 			{
 				const GenericDataTypeReference* pRefType = (const GenericDataTypeReference*)field.pType;
 				if ( !targetData.references.contains( pRefType ) )
 				{
 					targetData.references.add( pRefType );
-				}				
+				}
 			}
 
 			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
@@ -264,8 +275,6 @@ namespace tiki
 		field.pType			= pType;
 		field.mode			= mode;
 		field.isInherited	= false;
-
-		m_pDefaultObject->addField( name, pType, GenericDataValue( pType ) );
 	}
 
 	void GenericDataTypeStruct::removeField( const string& name )
@@ -288,13 +297,14 @@ namespace tiki
 	const GenericDataType* GenericDataTypeStruct::getFieldTypeByName( const string& name ) const
 	{
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
-		{			
+		{
 			if ( m_fields[ i ].name == name )
-			{				
+			{
 				return m_fields[ i ].pType;
 			}
 		}
 
+		TIKI_TRACE_ERROR( "[GenericDataTypeStruct::getFieldTypeByName] Try to get Type for not existing field. Name: %s.\n", name.cStr() );
 		return nullptr;
 	}
 }

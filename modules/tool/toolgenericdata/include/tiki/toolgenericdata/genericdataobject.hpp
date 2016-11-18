@@ -22,7 +22,6 @@ namespace tiki
 	class GenericDataObject : public GenericDataContainer
 	{
 		TIKI_NONCOPYABLE_CLASS( GenericDataObject );
-		friend class GenericDataTypeStruct;
 
 	public:
 
@@ -39,29 +38,27 @@ namespace tiki
 
 		const string&					getFieldName( uint index ) const;
 		const GenericDataType*			getFieldType( uint index ) const;
-		GenericDataValue				getFieldValue( const string& name ) const;
-		GenericDataValue				getFieldValue( uint index ) const;
-		bool							setFieldValue( const string& name, const GenericDataValue& value );
+		GenericDataValue*				getFieldValue( const string& name, bool createMissing );
+		const GenericDataValue*			getFieldValue( const string& name ) const;
+		GenericDataValue*				getFieldValue( uint index ) const;
+
+		bool							removeField( const string& name );
 
 		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;
 
 	protected:
 
-		virtual const char*				getElementName() const TIKI_OVERRIDE;
-		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE;
+		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
+		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
-		virtual bool					applyElementValue( const XmlReader& reader, const _XmlElement* pElement, const GenericDataValue& value ) TIKI_OVERRIDE;
-
-	private: // friend
-
-		void							addField( const string& name, const GenericDataType* pType, const GenericDataValue& defaultValue );
+		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		struct ObjectField
 		{
 			const GenericDataType*	pType;
-			GenericDataValue		value;
+			GenericDataValue*		pValue;
 		};
 
 		const GenericDataTypeStruct*	m_pType;

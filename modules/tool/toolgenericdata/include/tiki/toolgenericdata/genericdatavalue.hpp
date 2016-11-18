@@ -47,13 +47,12 @@ namespace tiki
 
 	class GenericDataValue
 	{
+		TIKI_NONCOPYABLE_CLASS( GenericDataValue );
+
 	public:
 
-								GenericDataValue();
-								GenericDataValue( const GenericDataType* pType );
+		explicit				GenericDataValue( const GenericDataType* pType );
 								~GenericDataValue();
-
-		void					dispose();
 
 		const GenericDataType*	getType() const;
 		GenericDataValueType	getValueType() const;
@@ -118,12 +117,10 @@ namespace tiki
 
 		Values					m_value;
 		string					m_text;
-
-		bool					setType( const GenericDataType* pType, GenericDataTypeType expectedType );
-
+		
+		GenericDataValueType	getValueType( const GenericDataType* pType );
+		bool					checkType( const GenericDataType* pType);
 	};
-
-	static const GenericDataValue InvalidGenericDataValue;
 }
 
 #endif // TIKI_GENERICDATAVALUE_HPP_INCLUDED__
