@@ -1,9 +1,11 @@
-#include "tiki/genericdataeditor/genericdataeditorwidget.hpp"
+#include "genericdataeditorwidget.hpp"
 
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
+
+#include "genericdataboolvaluewidget.hpp"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -131,10 +133,9 @@ namespace tiki
 			QStandardItem* pKeyItem = new QStandardItem( key.cStr() );
 			QStandardItem* pValueItem = new QStandardItem( "Test" );
 			QStandardItem* pTypeItem = new QStandardItem( pType->getName().cStr() );
+			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
 
 			generateItemsForValue( pValue, pKeyItem );
-
-			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
 		}
 	}
 
@@ -145,12 +146,17 @@ namespace tiki
 			GenericDataValue* pValue = pArray->getElement( i );
 
 			QStandardItem* pKeyItem = new QStandardItem( QString( "%0" ).arg( i ) );
-			QStandardItem* pValueItem = new QStandardItem( "Test" );
+			QStandardItem* pValueItem = new QStandardItem();
 			QStandardItem* pTypeItem = new QStandardItem( pArray->getType()->getBaseType()->getName().cStr() );
+			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
+
+			QWidget* pWidget = createWidgetForValueType( pValue );
+			if( pWidget != nullptr )
+			{
+				m_pTreeView->setIndexWidget( m_pTreeModel->indexFromItem( pValueItem ), pWidget );
+			}
 
 			generateItemsForValue( pValue, pKeyItem );
-
-			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
 		}
 	}
 
@@ -161,6 +167,7 @@ namespace tiki
 		switch( pValue->getValueType() )
 		{
 		case GenericDataValueType_Boolean:
+			return new GenericDataBoolValueWidget( pValue );
 			break;
 
 		case GenericDataValueType_SingedInteger8:
