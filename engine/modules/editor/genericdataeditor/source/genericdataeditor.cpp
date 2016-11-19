@@ -2,7 +2,8 @@
 
 #include "tiki/editorinterface/ieditorinterface.hpp"
 #include "tiki/editorinterface/ifile.hpp"
-#include "tiki/genericdataeditor/genericdataeditorwidget.hpp"
+
+#include "genericdataeditorwidget.hpp"
 
 namespace tiki
 {

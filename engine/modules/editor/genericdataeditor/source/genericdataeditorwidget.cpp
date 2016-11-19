@@ -4,6 +4,7 @@
 #include "tiki/toolgenericdata/genericdataobject.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
+#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
 #include "genericdataboolvaluewidget.hpp"
 
@@ -88,7 +89,7 @@ namespace tiki
 		m_pFile = nullptr;
 	}
 
-	void GenericDataEditorWidget::generateItemsForValue( GenericDataValue* pValue, QStandardItem* pParentItem )
+	void GenericDataEditorWidget::generateItemsForValue( const GenericDataValue* pValue, QStandardItem* pParentItem )
 	{
 		if( pValue->getValueType() == GenericDataValueType_Object )
 		{
@@ -124,18 +125,22 @@ namespace tiki
 
 	void GenericDataEditorWidget::generateItemsForObject( GenericDataObject* pObject, QStandardItem* pParentItem )
 	{
-		for( uint i = 0u; i < pObject->getFieldCount(); ++i )
+		const GenericDataTypeStruct* pObjectType = pObject->getType();
+		const List< GenericDataStructField >& fields = pObjectType->getFields();
+		for( uint i = 0u; i < fields.getCount(); ++i )
 		{
-			const string& key = pObject->getFieldName( i );
-			const GenericDataType* pType = pObject->getFieldType( i );
-			GenericDataValue* pValue = pObject->getFieldValue( i );
+			const GenericDataStructField& field = fields[ i ];
 
-			QStandardItem* pKeyItem = new QStandardItem( key.cStr() );
-			QStandardItem* pValueItem = new QStandardItem( "Test" );
-			QStandardItem* pTypeItem = new QStandardItem( pType->getName().cStr() );
-			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
+			GenericDataValue* pValue = pObject->getFieldValue( field.name, false );
+			const GenericDataValue* pDefaultValue = pValue;
+			if( pDefaultValue == nullptr )
+			{
+				pDefaultValue = pObject->getFieldOrDefaultValue( field.name );
+			}
+			TIKI_ASSERT( pDefaultValue != nullptr );
 
-			generateItemsForValue( pValue, pKeyItem );
+			QStandardItem* pItem = createItemForValueType( field.name.cStr(), field.pType, pValue, pDefaultValue, pParentItem );
+			generateItemsForValue( pDefaultValue, pItem );
 		}
 	}
 
@@ -145,30 +150,39 @@ namespace tiki
 		{
 			GenericDataValue* pValue = pArray->getElement( i );
 
-			QStandardItem* pKeyItem = new QStandardItem( QString( "%0" ).arg( i ) );
-			QStandardItem* pValueItem = new QStandardItem();
-			QStandardItem* pTypeItem = new QStandardItem( pArray->getType()->getBaseType()->getName().cStr() );
-			pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
-
-			QWidget* pWidget = createWidgetForValueType( pValue );
-			if( pWidget != nullptr )
-			{
-				m_pTreeView->setIndexWidget( m_pTreeModel->indexFromItem( pValueItem ), pWidget );
-			}
-
-			generateItemsForValue( pValue, pKeyItem );
+			QStandardItem* pItem = createItemForValueType( QString( "%0" ).arg( i ), pValue->getType(), pValue, nullptr, pParentItem );
+			generateItemsForValue( pValue, pItem );
 		}
 	}
 
-	QWidget* GenericDataEditorWidget::createWidgetForValueType( const GenericDataType* pType, GenericDataValue* pValue )
+	QStandardItem* GenericDataEditorWidget::createItemForValueType( const QString& key, const GenericDataType* pType, GenericDataValue* pValue, const GenericDataValue* pDefaultValue, QStandardItem* pParentItem )
 	{
-		TIKI_ASSERT( pValue->getValueType() != GenericDataValueType_Invalid );
+		QStandardItem* pKeyItem = new QStandardItem( key );
+		QStandardItem* pValueItem = new QStandardItem();
+		QStandardItem* pTypeItem = new QStandardItem( pType->getName().cStr() );
+		pParentItem->appendRow( { pKeyItem, pValueItem, pTypeItem } );
 
+		QWidget* pWidget = createWidgetForValueType( pType, pValue, pDefaultValue );
+		if( pWidget != nullptr )
+		{
+			m_pTreeView->setIndexWidget( m_pTreeModel->indexFromItem( pValueItem ), pWidget );
+		}
+
+		return pKeyItem;
+	}
+
+	QWidget* GenericDataEditorWidget::createWidgetForValueType( const GenericDataType* pType, GenericDataValue* pValue, const GenericDataValue* pDefaultValue )
+	{
+		if( pValue == nullptr )
+		{
+			return nullptr;
+		}
+
+		TIKI_ASSERT( pValue->getValueType() != GenericDataValueType_Invalid );
 		switch( pValue->getValueType() )
 		{
 		case GenericDataValueType_Boolean:
 			return new GenericDataBoolValueWidget( pValue );
-			break;
 
 		case GenericDataValueType_SingedInteger8:
 		case GenericDataValueType_SingedInteger16:
@@ -181,16 +195,16 @@ namespace tiki
 		case GenericDataValueType_FloatingPoint16:
 		case GenericDataValueType_FloatingPoint32:
 		case GenericDataValueType_FloatingPoint64:
-			break;
+			return nullptr;
 
 		case GenericDataValueType_String:
-			break;
+			return nullptr;
 
 		case GenericDataValueType_Enum:
-			break;
+			return nullptr;
 
 		case GenericDataValueType_Reference:
-			break;
+			return nullptr;
 
 		case GenericDataValueType_Pointer:
 		case GenericDataValueType_Object:
