@@ -20,6 +20,18 @@ dofile( path.join( global_configuration.scripts_path, "thirdparty/datadumper.lua
 dofile( path.join( global_configuration.scripts_path, "global.lua" ) );
 
 function is_build_required( source_file, target_file )
+	if not source_file then
+		throw( "is_build_required: no source_file specified." );
+	end
+
+	if not target_file then
+		throw( "is_build_required: no target_file specified." );
+	end
+	
+	if not os.isfile( source_file ) then
+		throw( "is_build_required: " .. source_file .. " doesn't esists." );
+	end
+	
 	if os.isfile( target_file ) then
 		if os.stat( source_file ).mtime > os.stat( target_file ).mtime then
 			return true;

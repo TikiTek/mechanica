@@ -13,7 +13,11 @@ module:add_dependency( "thirdparty/qt" );
 
 module.import_func = function(project)
 	module:add_moc_file( "include/tiki/genericdataeditor/genericdataeditor.hpp" )
-	module:add_moc_file( "include/tiki/genericdataeditor/genericdataeditorwidget.hpp" )
+	module:add_moc_file( "source/genericdataeditorwidget.hpp" )
+	module:add_moc_file( "source/genericdataboolvaluewidget.hpp" )
+	module:add_moc_file( "source/genericdatavaluewidget.hpp" )
+	module:add_moc_file( "source/genericdatastringvaluewidget.hpp" )
+	module:add_moc_file( "source/genericdatareferencevaluewidget.hpp" )
 
 	module:add_qrc_file( "source/genericdataeditor.qrc" )
 end
