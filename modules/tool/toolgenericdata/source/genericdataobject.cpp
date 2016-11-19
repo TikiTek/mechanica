@@ -104,12 +104,14 @@ namespace tiki
 		}
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldValue( const string& name ) const
+	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const string& name ) const
 	{
-		const ObjectField& field = m_fields[ name ];
-		if( field.pValue == nullptr && m_pParentObject != nullptr )
+		ObjectField field;
+		field.pValue = nullptr;
+
+		if( (!m_fields.findValue( &field, name ) || field.pValue == nullptr) && m_pParentObject != nullptr )
 		{
-			return m_pParentObject->getFieldValue( name );
+			return m_pParentObject->getFieldOrDefaultValue( name );
 		}
 
 		return field.pValue;
@@ -159,7 +161,7 @@ namespace tiki
 			{
 				if( m_pParentObject != nullptr )
 				{
-					pValue = m_pParentObject->getFieldValue( structField.name );
+					pValue = m_pParentObject->getFieldOrDefaultValue( structField.name );
 				}
 			}
 			else
