@@ -3,8 +3,8 @@
 #define TIKI_GENERICDATATYPE_HPP_INCLUDED__
 
 #include "tiki/base/basicstring.hpp"
-#include "tiki/container/linkedlist.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/linkedlist.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"
 
@@ -66,6 +66,8 @@ namespace tiki
 
 		virtual bool				isTypeCompatible( const GenericDataType* pType ) const;
 
+		const GenericDataValue*		getDefaultValue() const;
+
 		const string&				getModule() const;
 		void						setModule( const string& value );
 
@@ -75,12 +77,13 @@ namespace tiki
 
 		GenericDataTypeCollection&	m_collection;
 
+		GenericDataValue*			m_pDefaultValue;
+
 	private:
 
 		string						m_name;
 		string						m_module;
 		GenericDataTypeMode			m_mode;
-
 	};
 }
 
