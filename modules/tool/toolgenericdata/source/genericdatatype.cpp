@@ -8,15 +8,22 @@ namespace tiki
 		, m_name( name )
 		, m_mode( mode )
 	{
+		m_pDefaultValue = TIKI_NEW( GenericDataValue )( this );
 	}
 
 	GenericDataType::~GenericDataType()
 	{
+		TIKI_DELETE( m_pDefaultValue );
 	}
 
 	const string& GenericDataType::getName() const
 	{
 		return m_name;
+	}
+
+	const GenericDataValue* GenericDataType::getDefaultValue() const
+	{
+		return m_pDefaultValue;
 	}
 
 	bool GenericDataType::isTypeCompatible( const GenericDataType* pType ) const

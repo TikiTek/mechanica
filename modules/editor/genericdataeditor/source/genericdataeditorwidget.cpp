@@ -137,7 +137,11 @@ namespace tiki
 			{
 				pDefaultValue = pObject->getFieldOrDefaultValue( field.name );
 			}
-			TIKI_ASSERT( pDefaultValue != nullptr );
+
+			if( pDefaultValue == nullptr )
+			{
+				pDefaultValue = field.pType->getDefaultValue();
+			}
 
 			QStandardItem* pItem = createItemForValueType( field.name.cStr(), field.pType, pValue, pDefaultValue, pParentItem );
 			generateItemsForValue( pDefaultValue, pItem );
