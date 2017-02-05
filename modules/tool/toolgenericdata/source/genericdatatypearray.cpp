@@ -4,7 +4,7 @@
 namespace tiki
 {
 	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Array, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
@@ -21,11 +21,6 @@ namespace tiki
 	bool GenericDataTypeArray::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		return false;
-	}
-
-	GenericDataTypeType GenericDataTypeArray::getType() const
-	{
-		return GenericDataTypeType_Array;
 	}
 
 	uint GenericDataTypeArray::getAlignment() const

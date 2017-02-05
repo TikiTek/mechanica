@@ -43,7 +43,6 @@ namespace tiki
 		virtual bool					loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE_FINAL;
 		virtual bool					exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE_FINAL;
 
-		virtual GenericDataTypeType		getType() const TIKI_OVERRIDE_FINAL;
 		virtual uint					getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint					getSize() const TIKI_OVERRIDE_FINAL;
 		virtual string					getExportName() const TIKI_OVERRIDE_FINAL;

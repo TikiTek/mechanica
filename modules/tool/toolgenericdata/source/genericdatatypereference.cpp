@@ -6,7 +6,7 @@
 namespace tiki
 {
 	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Reference, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
@@ -23,11 +23,6 @@ namespace tiki
 	bool GenericDataTypeReference::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		return false;
-	}
-
-	GenericDataTypeType GenericDataTypeReference::getType() const
-	{
-		return GenericDataTypeType_Reference;
 	}
 
 	uint GenericDataTypeReference::getAlignment() const

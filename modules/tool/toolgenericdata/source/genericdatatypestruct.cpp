@@ -9,7 +9,7 @@
 namespace tiki
 {
 	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Struct, mode )
 		, m_pBaseType( pBaseType )
 	{
 		m_pDefaultObject	= nullptr;
@@ -227,11 +227,6 @@ namespace tiki
 		targetData.code += formatString( s_pBaseFormat, getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
 
 		return true;
-	}
-
-	GenericDataTypeType GenericDataTypeStruct::getType() const
-	{
-		return GenericDataTypeType_Struct;
 	}
 
 	uint GenericDataTypeStruct::getAlignment() const

@@ -117,7 +117,7 @@ namespace tiki
 
 		Values					m_value;
 		string					m_text;
-		
+
 		GenericDataValueType	getValueType( const GenericDataType* pType );
 		bool					checkType( const GenericDataType* pType);
 	};

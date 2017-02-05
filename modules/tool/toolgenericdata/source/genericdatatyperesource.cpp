@@ -8,13 +8,13 @@
 namespace tiki
 {
 	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Resource, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
 
 	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Resource, mode )
 	{
 		m_pBaseType = nullptr;
 		m_postFix	= postFix;
@@ -75,11 +75,6 @@ namespace tiki
 		);
 
 		return true;
-	}
-
-	GenericDataTypeType GenericDataTypeResource::getType() const
-	{
-		return GenericDataTypeType_Resource;
 	}
 
 	uint GenericDataTypeResource::getAlignment() const

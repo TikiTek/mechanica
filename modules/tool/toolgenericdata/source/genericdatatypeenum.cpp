@@ -9,7 +9,7 @@
 namespace tiki
 {
 	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Enum, mode )
 		, m_pBaseType( pBaseType )
 	{
 		if( m_pBaseType == nullptr )
@@ -166,11 +166,6 @@ namespace tiki
 		);
 
 		return true;
-	}
-
-	GenericDataTypeType GenericDataTypeEnum::getType() const
-	{
-		return GenericDataTypeType_Enum;
 	}
 
 	uint GenericDataTypeEnum::getAlignment() const
