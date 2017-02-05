@@ -49,7 +49,7 @@ namespace tiki
 
 	public:
 
-									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode );
+									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeType type, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_PURE;
@@ -57,8 +57,10 @@ namespace tiki
 
 		const string&				getName() const;
 		GenericDataTypeMode			getMode() const;
+		GenericDataTypeType			getType() const;
+		const string&				getModule() const;
+		void						setModule( const string& value );
 
-		virtual GenericDataTypeType	getType() const TIKI_PURE;
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
 		virtual string				getExportName() const TIKI_PURE;
@@ -67,9 +69,6 @@ namespace tiki
 		virtual bool				isTypeCompatible( const GenericDataType* pType ) const;
 
 		const GenericDataValue*		getDefaultValue() const;
-
-		const string&				getModule() const;
-		void						setModule( const string& value );
 
 		bool						loadValueFromXml( GenericDataValue* pTargetValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const;
 
@@ -83,6 +82,7 @@ namespace tiki
 
 		string						m_name;
 		string						m_module;
+		GenericDataTypeType			m_type;
 		GenericDataTypeMode			m_mode;
 	};
 }

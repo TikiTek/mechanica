@@ -5,7 +5,7 @@
 namespace tiki
 {
 	GenericDataTypePointer::GenericDataTypePointer( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_Pointer, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
@@ -22,11 +22,6 @@ namespace tiki
 	bool GenericDataTypePointer::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		return false;
-	}
-
-	GenericDataTypeType GenericDataTypePointer::getType() const
-	{
-		return GenericDataTypeType_Pointer;
 	}
 
 	uint GenericDataTypePointer::getAlignment() const

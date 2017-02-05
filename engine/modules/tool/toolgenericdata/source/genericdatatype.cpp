@@ -3,10 +3,11 @@
 
 namespace tiki
 {
-	GenericDataType::GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode )
+	GenericDataType::GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeType type, GenericDataTypeMode mode )
 		: m_collection( collection )
 		, m_name( name )
 		, m_mode( mode )
+		, m_type( type )
 	{
 		m_pDefaultValue = TIKI_NEW( GenericDataValue )( this );
 	}
@@ -21,14 +22,14 @@ namespace tiki
 		return m_name;
 	}
 
-	const GenericDataValue* GenericDataType::getDefaultValue() const
+	GenericDataTypeMode GenericDataType::getMode() const
 	{
-		return m_pDefaultValue;
+		return m_mode;
 	}
 
-	bool GenericDataType::isTypeCompatible( const GenericDataType* pType ) const
+	GenericDataTypeType GenericDataType::getType() const
 	{
-		return this == pType;
+		return m_type;
 	}
 
 	const string& GenericDataType::getModule() const
@@ -41,10 +42,17 @@ namespace tiki
 		m_module = value;
 	}
 
-	GenericDataTypeMode GenericDataType::getMode() const
+	const GenericDataValue* GenericDataType::getDefaultValue() const
 	{
-		return m_mode;
+		return m_pDefaultValue;
 	}
+
+	bool GenericDataType::isTypeCompatible( const GenericDataType* pType ) const
+	{
+		return this == pType;
+	}
+
+
 
 	bool GenericDataType::loadValueFromXml( GenericDataValue* pTargetValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const
 	{

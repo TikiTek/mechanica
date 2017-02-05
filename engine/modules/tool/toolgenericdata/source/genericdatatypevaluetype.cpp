@@ -6,7 +6,7 @@
 namespace tiki
 {
 	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
-		: GenericDataType( collection, name, mode )
+		: GenericDataType( collection, name, GenericDataTypeType_ValueType, mode )
 		, m_type( type )
 	{
 	}
@@ -23,11 +23,6 @@ namespace tiki
 	bool GenericDataTypeValueType::exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const
 	{
 		return false;
-	}
-
-	GenericDataTypeType GenericDataTypeValueType::getType() const
-	{
-		return GenericDataTypeType_ValueType;
 	}
 
 	uint GenericDataTypeValueType::getAlignment() const
