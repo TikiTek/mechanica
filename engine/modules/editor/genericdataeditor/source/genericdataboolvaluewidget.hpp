@@ -29,6 +29,8 @@ namespace tiki
 
 		QHBoxLayout*		m_pLayout;
 		QCheckBox*			m_pCheckBox;
+
+		void				applyValue();
 	};
 }
 

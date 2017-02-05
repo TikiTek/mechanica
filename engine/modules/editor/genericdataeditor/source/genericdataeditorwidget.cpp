@@ -214,7 +214,10 @@ namespace tiki
 		case GenericDataValueType_Object:
 		case GenericDataValueType_Array:
 		case GenericDataValueType_Invalid:
+		case GenericDataValueType_Count:
 			return nullptr;
 		}
+
+		return nullptr;
 	}
 }
