@@ -64,6 +64,21 @@ namespace tiki
 		return m_valueType;
 	}
 
+	const GenericDataValueTag* GenericDataValue::getValueTag() const
+	{
+		return m_pValueTag;
+	}
+
+	GenericDataValueTag* GenericDataValue::getValueTag()
+	{
+		return m_pValueTag;
+	}
+
+	void GenericDataValue::setValueTag( GenericDataValueTag* pValueTag )
+	{
+		m_pValueTag = pValueTag;
+	}
+
 	bool GenericDataValue::isValid() const
 	{
 		return m_valueType != GenericDataValueType_Invalid;
@@ -422,23 +437,23 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::setValue( const GenericDataValue& value )
-	{
-		if( m_valueType != GenericDataValueType_Invalid && !m_pType->isTypeCompatible( value.getType() ) )
-		{
-			const char* pCurrentType = (m_pType != nullptr ? m_pType->getName().cStr() : "null");
-			const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
-			TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s')!\n", pNewType, pCurrentType );
-			return false;
-		}
-
-		TIKI_ASSERT( m_pType == nullptr || m_pType == value.getType() );
-		m_pType		= value.m_pType;
-		m_valueType	= value.m_valueType;
-		m_value		= value.m_value;
-		m_text		= value.m_text;
-		return true;
-	}
+	//bool GenericDataValue::setValue( const GenericDataValue& value )
+	//{
+	//	if( m_valueType != GenericDataValueType_Invalid && !m_pType->isTypeCompatible( value.getType() ) )
+	//	{
+	//		const char* pCurrentType = (m_pType != nullptr ? m_pType->getName().cStr() : "null");
+	//		const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
+	//		TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s')!\n", pNewType, pCurrentType );
+	//		return false;
+	//	}
+	//
+	//	TIKI_ASSERT( m_pType == nullptr || m_pType == value.getType() );
+	//	m_pType		= value.m_pType;
+	//	m_valueType	= value.m_valueType;
+	//	m_value		= value.m_value;
+	//	m_text		= value.m_text;
+	//	return true;
+	//}
 
 	GenericDataValueType GenericDataValue::getValueType( const GenericDataType* pType )
 	{
