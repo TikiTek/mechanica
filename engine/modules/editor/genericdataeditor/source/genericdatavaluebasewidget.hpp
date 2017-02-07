@@ -5,8 +5,8 @@
 #include <QWidget>
 
 class QHBoxLayout;
+class QLineEdit;
 class QPushButton;
-class QTextBox;
 
 namespace tiki
 {
@@ -24,13 +24,15 @@ namespace tiki
 		GenericDataValue*	m_pValue;
 
 		virtual QString		getValueText() const TIKI_PURE;
-		virtual bool		getValueText( const QString& valueText ) TIKI_PURE;
+		virtual bool		setValueText( const QString& valueText ) TIKI_PURE;
 
 	private:
 
 		QHBoxLayout*		m_pLayout;
-		QTextLine*			m_pTextBox;
+		QLineEdit*			m_pTextBox;
 		QPushButton*		m_pTagEditButton;
+
+		void				applyValue();
 	};
 }
 

@@ -11,6 +11,7 @@ namespace tiki
 	class GenericDataArray;
 	class GenericDataObject;
 	class GenericDataType;
+	class GenericDataValueTag;
 
 	enum GenericDataValueType
 	{
@@ -51,42 +52,46 @@ namespace tiki
 
 	public:
 
-		explicit				GenericDataValue( const GenericDataType* pType );
-								~GenericDataValue();
+		explicit					GenericDataValue( const GenericDataType* pType );
+		~GenericDataValue();
 
-		const GenericDataType*	getType() const;
-		GenericDataValueType	getValueType() const;
+		const GenericDataType*		getType() const;
+		GenericDataValueType		getValueType() const;
 
-		bool					isValid() const;
+		const GenericDataValueTag*	getValueTag() const;
+		GenericDataValueTag*		getValueTag();
+		void						setValueTag( GenericDataValueTag* pValueTag );
 
-		bool					getBoolean( bool& value ) const;
-		bool					setBoolean( bool value, const GenericDataType* pType );
+		bool						isValid() const;
 
-		bool					getSignedValue( sint64& value ) const;
-		bool					setSignedValue( sint64 value, const GenericDataType* pType );
-		bool					getUnsignedValue( uint64& value ) const;
-		bool					setUnsignedValue( uint64 value, const GenericDataType* pType );
-		bool					getFloatingPoint( float64& value ) const;
-		bool					setFloatingPoint( float64 value, const GenericDataType* pType );
+		bool						getBoolean( bool& value ) const;
+		bool						setBoolean( bool value, const GenericDataType* pType );
 
-		bool					getString( string& value ) const;
-		bool					setString( const string& value, const GenericDataType* pType );
+		bool						getSignedValue( sint64& value ) const;
+		bool						setSignedValue( sint64 value, const GenericDataType* pType );
+		bool						getUnsignedValue( uint64& value ) const;
+		bool						setUnsignedValue( uint64 value, const GenericDataType* pType );
+		bool						getFloatingPoint( float64& value ) const;
+		bool						setFloatingPoint( float64 value, const GenericDataType* pType );
 
-		bool					getObject( GenericDataObject*& pValue ) const;
-		bool					setObject( GenericDataObject* pValue );
-		bool					getArray( GenericDataArray*& pValue ) const;
-		bool					setArray( GenericDataArray* pValue );
+		bool						getString( string& value ) const;
+		bool						setString( const string& value, const GenericDataType* pType );
 
-		bool					getEnum( string& enumName, sint64& enumValue ) const;
-		bool					setEnum( const string& valueName, const GenericDataType* pType );
+		bool						getObject( GenericDataObject*& pValue ) const;
+		bool						setObject( GenericDataObject* pValue );
+		bool						getArray( GenericDataArray*& pValue ) const;
+		bool						setArray( GenericDataArray* pValue );
 
-		bool					getReference( string& refText ) const;
-		bool					setReference( const string& refText, const GenericDataType* pType );
+		bool						getEnum( string& enumName, sint64& enumValue ) const;
+		bool						setEnum( const string& valueName, const GenericDataType* pType );
 
-		bool					getPointer( GenericDataObject*& pValue ) const;
-		bool					setPointer( GenericDataObject* pValue );
+		bool						getReference( string& refText ) const;
+		bool						setReference( const string& refText, const GenericDataType* pType );
 
-		bool					setValue( const GenericDataValue& value );
+		bool						getPointer( GenericDataObject*& pValue ) const;
+		bool						setPointer( GenericDataObject* pValue );
+
+		//bool						setValue( const GenericDataValue& value );
 
 	private:
 
@@ -117,6 +122,8 @@ namespace tiki
 
 		Values					m_value;
 		string					m_text;
+
+		GenericDataValueTag*	m_pValueTag;
 
 		GenericDataValueType	getValueType( const GenericDataType* pType );
 		bool					checkType( const GenericDataType* pType);
