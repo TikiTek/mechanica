@@ -50,7 +50,7 @@ namespace tiki
 	{
 		for (uint i = 0u; i < typeCount; ++i)
 		{
-			const string search = formatString( "%s-features=", pShaderTypes[ i ] );
+			const string search = formatDynamicString( "%s-features=", pShaderTypes[ i ] );
 
 			const int index = featuresLine.indexOf( search );
 			pShaderEnabled[ i ] = ( index >= 0 );
@@ -154,7 +154,7 @@ namespace tiki
 			const ShaderFeature& feature = features[ i ];
 			const uint value = getBitValue( bitMask, feature.startBit, feature.bitCount );
 
-			defineString += formatString( "#define %s %u\n", feature.name.cStr(), value );
+			defineString += formatDynamicString( "#define %s %u\n", feature.name.cStr(), value );
 		}
 
 		return defineString;

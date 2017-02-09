@@ -1,4 +1,3 @@
-
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 #include "tiki/base/crc32.hpp"
@@ -13,6 +12,7 @@
 #include "tiki/io/path.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
+#include "tiki/toolgenericdata/generic_data_tag.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatypepointer.hpp"
@@ -289,97 +289,217 @@ namespace tiki
 		return pPointerType;
 	}
 
-	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
+	const GenericDataType* GenericDataTypeCollection::resolveTypeTag( const GenericDataTag* pTag )
 	{
-		List< ModifierDescription > modifiers;
-
-		ModifierDescription desc;
-		string content = typeString;
-		while ( parseToken( desc, content ) )
+		if( pTag->getChildTag() != nullptr )
 		{
-			modifiers.add( desc );
-
-			content = desc.content;
-		}
-
-		if ( modifiers.isEmpty() )
-		{
-			return findTypeByName( typeString );
+			TIKI_TRACE_ERROR( "[resolveTypeTag] type tags doesn't support recursion.\n" );
 		}
 
 		const GenericDataType* pType = nullptr;
-		for (uint i = modifiers.getCount() - 1u; i < modifiers.getCount(); --i)
+		if( pTag->getTag() == "array" )
 		{
-			const ModifierDescription& modifier = modifiers[ i ];
-
-			if ( modifier.modifier == "array" )
+			if( pType == nullptr )
 			{
-				if ( pType == nullptr )
-				{
-					pType = findTypeByName( modifier.content );
-					if ( pType == nullptr )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
-						return nullptr;
-					}
-				}
-
-				pType = makeArrayType( pType );
-			}
-			else if ( modifier.modifier == "reference" )
-			{
-				const GenericDataTypeResource* pTypedType = nullptr;
-				if ( pType == nullptr )
-				{
-					pType = findTypeByName( modifier.content );
-					if ( pType == nullptr )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
-						return nullptr;
-					}
-
-					if ( pType->getType() != GenericDataTypeType_Resource )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Reference needs a Resource type as base. '%s' is not a resource.\n", modifier.content.cStr() );
-						return nullptr;
-					}
-
-					pTypedType = (const GenericDataTypeResource*)pType;
-				}
-
-				pType = makeReferenceType( pTypedType );
-			}
-			else if( modifier.modifier == "pointer" )
-			{
-				const GenericDataTypeStruct* pTypedType = nullptr;
+				pType = findTypeByName( pTag->getContent() );
 				if( pType == nullptr )
 				{
-					pType = findTypeByName( modifier.content );
-					if( pType == nullptr )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Unable to find Type with name '%s'.\n", modifier.content.cStr() );
-						return nullptr;
-					}
+					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+					return nullptr;
+				}
+			}
 
-					if( pType->getType() != GenericDataTypeType_Struct )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Pointer needs a Struct type as base. '%s' is not a resource.\n", modifier.content.cStr() );
-						return nullptr;
-					}
-
-					pTypedType = (const GenericDataTypeStruct*)pType;
+			pType = makeArrayType( pType );
+		}
+		else if( pTag->getTag() == "reference" )
+		{
+			const GenericDataTypeResource* pTypedType = nullptr;
+			if( pType == nullptr )
+			{
+				pType = findTypeByName( pTag->getContent() );
+				if( pType == nullptr )
+				{
+					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+					return nullptr;
 				}
 
-				pType = makePointerType( pTypedType );
+				if( pType->getType() != GenericDataTypeType_Resource )
+				{
+					TIKI_TRACE_ERROR( "[resolveTypeTag] Reference needs a Resource type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
+					return nullptr;
+				}
+
+				pTypedType = (const GenericDataTypeResource*)pType;
 			}
-			else
+
+			pType = makeReferenceType( pTypedType );
+		}
+		else if( pTag->getTag() == "pointer" )
+		{
+			const GenericDataTypeStruct* pTypedType = nullptr;
+			if( pType == nullptr )
 			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseType] Modifier(%s) not supported.\n", modifier.modifier.cStr() );
-				return nullptr;
+				pType = findTypeByName( pTag->getContent() );
+				if( pType == nullptr )
+				{
+					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+					return nullptr;
+				}
+
+				if( pType->getType() != GenericDataTypeType_Struct )
+				{
+					TIKI_TRACE_ERROR( "[resolveTypeTag] Pointer needs a Struct type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
+					return nullptr;
+				}
+
+				pTypedType = (const GenericDataTypeStruct*)pType;
 			}
+
+			pType = makePointerType( pTypedType );
+		}
+		else
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Modifier(%s) not supported.\n", pTag->getTag().cStr() );
+			return nullptr;
 		}
 
 		return pType;
+	}
+
+	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
+	{
+		if( GenericDataTag::isTagString( typeString ) )
+		{
+			GenericDataTag* pTag = TIKI_NEW( GenericDataTag );
+			if( !pTag->parseTagString( typeString ) )
+			{
+				TIKI_DELETE( pTag );
+				return false;
+			}
+
+			const GenericDataType* pType = resolveTypeTag( pTag );
+			TIKI_DELETE( pTag );
+
+			return pType;
+		}
+		else
+		{
+			return findTypeByName( typeString );
+		}
+	}
+
+	bool GenericDataTypeCollection::resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const
+	{
+		List< const GenericDataTag* > tagTree;
+		tagTree.add( pTag );
+
+		const GenericDataTag* pDepestTag = pTag;
+		while( pTag->getChildTag() != nullptr )
+		{
+			pTag = pTag->getChildTag();
+			tagTree.add( pTag );
+		}
+
+		string content = pDepestTag->getContent();
+		for( uint i = tagTree.getCount() - 1u; i < tagTree.getCount(); --i )
+		{
+			const GenericDataTag* pCurrentTag = tagTree[ i ];
+
+			if( pCurrentTag->getTag() == "enum" )
+			{
+				const int dotIndex = content.indexOf( '.' );
+				if( dotIndex == -1 )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please {enum TypeName.ValueName} for enum modfiers.\n" );
+					return false;
+				}
+
+				const string enumTypeName = content.subString( 0u, dotIndex );
+				const GenericDataType* pEnumType = findTypeByName( enumTypeName );
+				if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] '%s' not found or not an enum.\n", enumTypeName.cStr() );
+					return false;
+				}
+
+				content = content.subString( dotIndex + 1 );
+
+				const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
+				const GenericDataValue* pValue = pTypedEnumType->getValueByName( content );
+
+				sint64 intValue = 0;
+				if( pValue == nullptr )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), content.cStr() );
+					return false;
+				}
+				else if( !pValue->getSignedValue( intValue ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), content.cStr() );
+					return false;
+				}
+			}
+			else if( pCurrentTag->getTag() == "reference" )
+			{
+				TIKI_NOT_IMPLEMENTED;
+			}
+			else if( pCurrentTag->getTag() == "bit" )
+			{
+				const sint64 shift = ParseString::parseInt64( content.cStr() );
+				const sint64 value = 1ll << shift;
+
+				content = StringConvert::ToString( value );
+			}
+			else if( pCurrentTag->getTag() == "offset" )
+			{
+				if( pParentType != nullptr && pParentType->getType() == GenericDataTypeType_Struct )
+				{
+					const GenericDataTypeStruct* pTypedParent = (const GenericDataTypeStruct*)pParentType;
+					const List< GenericDataStructField >& fields = pTypedParent->getFields();
+
+					bool found = false;
+					sint64 offset = 0;
+					for( uint i = 0u; i < fields.getCount(); ++i )
+					{
+						const GenericDataStructField& field = fields[ i ];
+
+						offset = alignValue( offset, (sint64)field.pType->getAlignment() );
+
+						if( field.name == content )
+						{
+							content = StringConvert::ToString( offset );
+							found = true;
+							break;
+						}
+
+						offset += field.pType->getSize();
+					}
+
+					if( !found )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] field with name '%s' for modifier '%s' not found.\n", content.cStr(), pCurrentTag->getTag().cStr() );
+						return false;
+					}
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' must have a struct type. '%s' is not a struct.\n", pCurrentTag->getTag().cStr(), pParentType->getName().cStr() );
+					return false;
+				}
+			}
+			else if( pCurrentTag->getTag() == "crc" )
+			{
+				content = StringConvert::ToString( crcString( content ) );
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' not supported.\n", pCurrentTag->getTag().cStr() );
+				return false;
+			}
+		}
+
+		targetContent = content;
+		return true;
 	}
 
 	bool GenericDataTypeCollection::parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
@@ -389,127 +509,27 @@ namespace tiki
 			return false;
 		}
 
-		List< ModifierDescription > modifiers;
-
-		ModifierDescription desc;
 		string content = valueString;
-		while ( parseToken( desc, content ) )
+		if( GenericDataTag::isTagString( valueString ) )
 		{
-			modifiers.add( desc );
+			GenericDataTag* pTag = TIKI_NEW( GenericDataTag );
+			if( !pTag->parseTagString( valueString ) )
+			{
+				TIKI_DELETE( pTag );
+				return false;
+			}
 
-			content = desc.content;
-		}
+			if( !resolveValueTag( content, pTag, pParentType ) )
+			{
+				TIKI_DELETE( pTag );
+				return false;
+			}
 
-		string enumValueName;
-		if ( modifiers.isEmpty() )
-		{
-			content = valueString;
+			pTargetValue->setValueTag( pTag );
 		}
 		else
 		{
-			for (uint i = modifiers.getCount() - 1u; i < modifiers.getCount(); --i)
-			{
-				const ModifierDescription& modifier = modifiers[ i ];
-
-				if ( i == 0 )
-				{
-					content = modifier.content;
-				}
-
-				if ( modifier.modifier == "enum" )
-				{
-					const int dotIndex = content.indexOf( '.' );
-					if ( dotIndex == -1 )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please {enum TypeName.ValueName} for enum modfiers.\n" );
-						return false;
-					}
-
-					const string enumTypeName = content.subString( 0u, dotIndex );
-					const GenericDataType* pEnumType = findTypeByName( enumTypeName );
-					if ( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] '%s' not found or not an enum.\n", enumTypeName.cStr() );
-						return false;
-					}
-
-					enumValueName = content.subString( dotIndex + 1 );
-
-					const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
-					const GenericDataValue* pValue = pTypedEnumType->getValueByName( enumValueName );
-
-					sint64 intValue = 0;
-					if ( pValue == nullptr )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), enumValueName.cStr() );
-						return false;
-					}
-					else if( !pValue->getSignedValue( intValue ) )
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), enumValueName.cStr() );
-						return false;
-					}
-
-					content = StringConvert::ToString( intValue );
-				}
-				else if ( modifier.modifier == "reference" )
-				{
-					TIKI_NOT_IMPLEMENTED;
-				}
-				else if ( modifier.modifier == "bit" )
-				{
-					const sint64 shift = ParseString::parseInt64( content.cStr() );
-					const sint64 value = 1ll << shift;
-
-					content = StringConvert::ToString( value );
-				}
-				else if ( modifier.modifier == "offset" )
-				{
-					if ( pParentType != nullptr && pParentType->getType() == GenericDataTypeType_Struct )
-					{
-						const GenericDataTypeStruct* pTypedParent = (const GenericDataTypeStruct*)pParentType;
-						const List< GenericDataStructField >& fields = pTypedParent->getFields();
-
-						bool found = false;
-						sint64 offset = 0;
-						for (uint i = 0u; i < fields.getCount(); ++i)
-						{
-							const GenericDataStructField& field = fields[ i ];
-
-							offset = alignValue( offset, (sint64)field.pType->getAlignment() );
-
-							if ( field.name == content )
-							{
-								content = StringConvert::ToString( offset );
-								found = true;
-								break;
-							}
-
-							offset += field.pType->getSize();
-						}
-
-						if ( !found )
-						{
-							TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] field with name '%s' for modifier '%s' not found.\n", content.cStr(), modifier.modifier.cStr() );
-							return false;
-						}
-					}
-					else
-					{
-						TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' must have a struct type. '%s' is not a struct.\n", modifier.modifier.cStr(), pParentType->getName().cStr() );
-						return false;
-					}
-				}
-				else if( modifier.modifier == "crc" )
-				{
-					content = StringConvert::ToString( crcString( content ) );
-				}
-				else
-				{
-					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] modifier '%s' not supported.\n", modifier.modifier.cStr() );
-					return false;
-				}
-			}
+			content = valueString;
 		}
 
 		if ( pType->getType() == GenericDataTypeType_ValueType )
@@ -543,7 +563,7 @@ namespace tiki
 		}
 		else if ( pType->getType() == GenericDataTypeType_Enum )
 		{
-			return pTargetValue->setEnum( enumValueName, pType );
+			return pTargetValue->setEnum( content, pType );
 		}
 		else if ( pType->getType() == GenericDataTypeType_Reference )
 		{
@@ -594,8 +614,8 @@ namespace tiki
 
 			if ( type.getType() == GenericDataTypeType_Resource )
 			{
-				factoriesCreateCode += formatString( s_pFactoriesCreateFormat, type.getName().cStr() );
-				factoriesDisposeCode += formatString( s_pFactoriesDisposeFormat, type.getName().cStr() );
+				factoriesCreateCode += formatDynamicString( s_pFactoriesCreateFormat, type.getName().cStr() );
+				factoriesDisposeCode += formatDynamicString( s_pFactoriesDisposeFormat, type.getName().cStr() );
 			}
 		}
 
@@ -639,26 +659,26 @@ namespace tiki
 
 			if ( kvp.value.containsResource )
 			{
-				factoriesIncludeCode += formatString( s_pFactoriesIncludeFormat, fileName.cStr() );
+				factoriesIncludeCode += formatDynamicString( s_pFactoriesIncludeFormat, fileName.cStr() );
 			}
 
 			string referencesCode = "";
 			for (uint refIndex = 0u; refIndex < kvp.value.references.getCount(); ++refIndex)
 			{
-				referencesCode += formatString( s_pReference, kvp.value.references[ refIndex ]->getBaseType()->getName().cStr() );
+				referencesCode += formatDynamicString( s_pReference, kvp.value.references[ refIndex ]->getBaseType()->getName().cStr() );
 			}
 
 			string dependenciesIncludeCode = "";
 			for (uint depIndex = 0u; depIndex < moduleData.dependencies.getCount(); ++depIndex)
 			{
-				dependenciesIncludeCode += formatString( s_pDependencyInclude, moduleData.dependencies[ depIndex ].cStr() );
+				dependenciesIncludeCode += formatDynamicString( s_pDependencyInclude, moduleData.dependencies[ depIndex ].cStr() );
 			}
 			if ( !moduleData.dependencies.isEmpty() )
 			{
 				dependenciesIncludeCode += "\n";
 			}
 
-			string finalCode = formatString(
+			string finalCode = formatDynamicString(
 				s_pBaseFormat,
 				fileNameDefine.cStr(),
 				fileNameDefine.cStr(),
@@ -723,8 +743,8 @@ namespace tiki
 		const string headerFullPath		= path::combine( targetDir, headerFileName );
 		const string sourceFullPath		= path::combine( targetDir, sourceFileName );
 
-		const string headerFinalCode	= formatString( s_pFactoriesHeaderFormat );
-		const string sourceFinalCode	= formatString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
+		const string headerFinalCode	= formatDynamicString( s_pFactoriesHeaderFormat );
+		const string sourceFinalCode	= formatDynamicString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
 		writeToFileIfNotEquals( headerFullPath, headerFinalCode );
 		writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
@@ -989,25 +1009,6 @@ namespace tiki
 		}
 
 		return ok;
-	}
-
-	bool GenericDataTypeCollection::parseToken( ModifierDescription& outModifier, const string& text )
-	{
-		if ( text.isEmpty() || text[ 0u ] != '{' || text[ text.getLength() - 1 ] != '}' )
-		{
-			return false;
-		}
-
-		const int contentBeginIndex = text.indexOf( ' ' );
-		if ( contentBeginIndex < 1 )
-		{
-			return false;
-		}
-
-		outModifier.modifier	= text.subString( 1u, contentBeginIndex - 1u );
-		outModifier.content		= text.subString( contentBeginIndex + 1, text.getLength() - contentBeginIndex - 2 );
-
-		return true;
 	}
 
 	void GenericDataTypeCollection::writeToFileIfNotEquals( const string& fileName, const string& content )

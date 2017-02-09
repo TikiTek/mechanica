@@ -281,7 +281,7 @@ namespace tiki
 			}
 
 			{
-				const string sql = formatString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_File, whereFileName.cStr() );
+				const string sql = formatDynamicString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_File, whereFileName.cStr() );
 
 				AutoDispose< SqliteQuery > query;
 				if ( !query->create( m_dataBase, sql ) )
@@ -545,7 +545,7 @@ namespace tiki
 					{
 						whereAssetId += " OR ";
 					}
-					whereAssetId += formatString( "asset_id = '%u'", pTask->parameters.assetId );
+					whereAssetId += formatDynamicString( "asset_id = '%u'", pTask->parameters.assetId );
 				}
 			}
 
@@ -558,7 +558,7 @@ namespace tiki
 					const string filePath = path::getDirectoryName( task.parameters.sourceFile );
 					const string fileName = path::getFilename( task.parameters.sourceFile );
 
-					const string sql = formatString(
+					const string sql = formatDynamicString(
 						"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%u', '1');",
 						fileName.cStr(),
 						filePath.cStr(),
@@ -603,7 +603,7 @@ namespace tiki
 					insertInputFiles += ", ";
 				}
 
-				insertInputFiles += formatString(
+				insertInputFiles += formatDynamicString(
 					"('%u','%s','%u')",
 					task.parameters.assetId,
 					inputFileName.cStr(),
@@ -645,7 +645,7 @@ namespace tiki
 			{
 				whereAssetId += " OR ";
 			}
-			whereAssetId += formatString( "asset_id = '%u'", task.parameters.assetId );
+			whereAssetId += formatDynamicString( "asset_id = '%u'", task.parameters.assetId );
 		}
 
 		if( !whereAssetId.isEmpty() )
@@ -772,7 +772,7 @@ namespace tiki
 						dependencyValues += ", ";
 					}
 
-					dependencyValues += formatString(
+					dependencyValues += formatDynamicString(
 						"('%u','%u','%s','%u')",
 						task.parameters.assetId,
 						dependency.type,
@@ -795,7 +795,7 @@ namespace tiki
 						traceValues += ", ";
 					}
 
-					traceValues += formatString(
+					traceValues += formatDynamicString(
 						"('%u','%u','%s')",
 						task.parameters.assetId,
 						traceInfo.level,
@@ -827,7 +827,7 @@ namespace tiki
 						outputFileValues += ", ";
 					}
 
-					outputFileValues += formatString(
+					outputFileValues += formatDynamicString(
 						"('%u','%s')",
 						task.parameters.assetId,
 						outputFile.cStr()
@@ -844,14 +844,14 @@ namespace tiki
 			{
 				whereAssetId += " OR ";
 			}
-			whereAssetId += formatString( "asset_id = '%u'", task.parameters.assetId );
+			whereAssetId += formatDynamicString( "asset_id = '%u'", task.parameters.assetId );
 
 			string& whereAssetIdFiltered = (hasError ? whereAssetIdFailed : whereAssetIdSucceeded);
 			if( !whereAssetIdFiltered.isEmpty() )
 			{
 				whereAssetIdFiltered += " OR ";
 			}
-			whereAssetIdFiltered += formatString( "id = '%u'", task.parameters.assetId );
+			whereAssetIdFiltered += formatDynamicString( "id = '%u'", task.parameters.assetId );
 		}
 
 		// delete old stuff

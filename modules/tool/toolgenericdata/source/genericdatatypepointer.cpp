@@ -36,7 +36,7 @@ namespace tiki
 
 	string GenericDataTypePointer::getExportName() const
 	{
-		return formatString( "ResRef< %s >", m_pBaseType->getExportName().cStr() );
+		return formatDynamicString( "ResRef< %s >", m_pBaseType->getExportName().cStr() );
 	}
 
 	crc32 GenericDataTypePointer::getTypeCrc() const

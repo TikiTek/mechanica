@@ -2,7 +2,7 @@
 #ifndef TIKI_GENERICDATACONTAINER_HPP_INCLUDED__
 #define TIKI_GENERICDATACONTAINER_HPP_INCLUDED__
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 

@@ -2,7 +2,7 @@
 #ifndef TIKI_TOOLMODELHIERARCHY_HPP
 #define TIKI_TOOLMODELHIERARCHY_HPP
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/math/matrix.hpp"

@@ -67,7 +67,7 @@ namespace tiki
 
 		targetData.containsResource = true;
 
-		targetData.code += formatString(
+		targetData.code += formatDynamicString(
 			s_pBaseFormat,
 			m_pBaseType->getExportName().cStr(),
 			m_fourCC[ 0u ], m_fourCC[ 1u ], m_fourCC[ 2u ], m_fourCC[ 3u ],
@@ -89,7 +89,7 @@ namespace tiki
 
 	string GenericDataTypeResource::getExportName() const
 	{
-		return formatString( "ResRef< %s >", getName().cStr() );
+		return formatDynamicString( "ResRef< %s >", getName().cStr() );
 	}
 
 	crc32 GenericDataTypeResource::getTypeCrc() const

@@ -2,20 +2,21 @@
 #ifndef TIKI_BASICSTRING_INL_INCLUDED__
 #define TIKI_BASICSTRING_INL_INCLUDED__
 
+#include "tiki/base/character.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/container/sizedarray.hpp"
 #include "tiki/base/string.hpp"
+#include "tiki/container/sizedarray.hpp"
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE BasicString::BasicString()
+	TIKI_FORCE_INLINE DynamicString::DynamicString()
 	{
 		m_pData			= nullptr;
 		m_dataSize		= 0u;
 		m_stringSize	= 0u;
 	}
 
-	TIKI_FORCE_INLINE BasicString::BasicString( uint length )
+	TIKI_FORCE_INLINE DynamicString::DynamicString( uint length )
 	{
 		m_pData = nullptr;
 
@@ -23,14 +24,14 @@ namespace tiki
 		m_stringSize = length;
 	}
 
-	TIKI_FORCE_INLINE BasicString::BasicString( const char* pString )
+	TIKI_FORCE_INLINE DynamicString::DynamicString( const char* pString )
 	{
 		m_pData = nullptr;
 
 		allocateDataForString( pString );
 	}
 
-	TIKI_FORCE_INLINE BasicString::BasicString( const char* pString, sint length )
+	TIKI_FORCE_INLINE DynamicString::DynamicString( const char* pString, sint length )
 	{
 		m_pData = nullptr;
 
@@ -38,43 +39,49 @@ namespace tiki
 		m_stringSize = length;
 	}
 
-	TIKI_FORCE_INLINE BasicString::BasicString( const BasicString& copy )
+	TIKI_FORCE_INLINE DynamicString::DynamicString( const DynamicString& copy )
 	{
 		m_pData = nullptr;
-		
+
 		allocateDataForString( copy.m_pData );
 	}
 
-	TIKI_FORCE_INLINE BasicString::~BasicString()
+	TIKI_FORCE_INLINE DynamicString::~DynamicString()
 	{
 		freeData();
 	}
 
-	TIKI_FORCE_INLINE uint BasicString::getLength() const
-	{
-		return m_stringSize;
-	}
-
-	TIKI_FORCE_INLINE bool BasicString::isEmpty() const
+	TIKI_FORCE_INLINE bool DynamicString::isEmpty() const
 	{
 		return m_stringSize == 0;
 	}
 
-	TIKI_FORCE_INLINE char* BasicString::getBuffer()
+	TIKI_FORCE_INLINE uint DynamicString::getLength() const
+	{
+		return m_stringSize;
+	}
+
+	TIKI_FORCE_INLINE char* DynamicString::getBuffer()
 	{
 		return m_pData;
 	}
 
-	TIKI_FORCE_INLINE const char* BasicString::cStr() const
+	TIKI_FORCE_INLINE const char* DynamicString::cStr() const
 	{
 		return m_pData;
 	}
 
-	TIKI_FORCE_INLINE void BasicString::split( Array< BasicString >& output, const BasicString& seperator ) const
+	TIKI_FORCE_INLINE void DynamicString::clear()
+	{
+		m_pData[ 0u ] = '\0';
+		m_stringSize = 0u;
+	}
+
+	TIKI_FORCE_INLINE void DynamicString::split( Array< DynamicString >& output, const DynamicString& seperator ) const
 	{
 		const uint count = countSubstring( seperator );
 
-		SizedArray< BasicString > list;
+		SizedArray< DynamicString > list;
 		list.create( count + 1u );
 
 		uint i = 0;
@@ -102,9 +109,9 @@ namespace tiki
 		list.dispose();
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::replace( char oldValue, char newValue ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::replace( char oldValue, char newValue ) const
 	{
-		BasicString str = *this;
+		DynamicString str = *this;
 
 		uint i = 0;
 		while( i < m_stringSize )
@@ -120,7 +127,7 @@ namespace tiki
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::replace( const BasicString& oldValue, const BasicString& newValue ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::replace( const DynamicString& oldValue, const DynamicString& newValue ) const
 	{
 		const uint count = countSubstring( oldValue );
 		const uint length = m_stringSize - (count * oldValue.m_stringSize) + (count * newValue.m_stringSize);
@@ -130,7 +137,7 @@ namespace tiki
 			return *this;
 		}
 
-		BasicString str( length );
+		DynamicString str( length );
 
 		uint i = 0;
 		uint offsetOld = 0;
@@ -157,7 +164,7 @@ namespace tiki
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::subString( uint startIndex, sint length /*= -1*/ ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::subString( uint startIndex, sint length /*= -1*/ ) const
 	{
 		if( length == -1 || startIndex + length > m_stringSize )
 		{
@@ -166,69 +173,45 @@ namespace tiki
 
 		if( length <= 0 )
 		{
-			return BasicString();
+			return DynamicString();
 		}
 		TIKI_ASSERT( startIndex < m_stringSize );
 
 		if( length == m_stringSize && startIndex == 0u )
 		{
-			return BasicString( *this );
+			return DynamicString( *this );
 		}
 
-		return BasicString(
+		return DynamicString(
 			m_pData + startIndex,
 			length
 		);
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::trim() const
+	TIKI_FORCE_INLINE DynamicString DynamicString::trim() const
 	{
-		uint start = 0u;
-		uint length = m_stringSize;
-
-		if( length == 0u )
+		if( isEmpty() )
 		{
 			return *this;
 		}
 
-		bool isWhiteSpace = false;
-		do
+		uint start = 0u;
+		uint length = m_stringSize;
+		while( character::isWhitespace( m_pData[ start ] ) )
 		{
-			isWhiteSpace = false;
-
-			for( uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i )
-			{
-				if( m_pData[ start ] == whiteSpaces[ i ] )
-				{
-					isWhiteSpace = true;
-					start++;
-					length--;
-					break;
-				}
-			}
+			start++;
+			length--;
 		}
-		while( isWhiteSpace );
 
-		do
+		while( character::isWhitespace( m_pData[ start + length - 1u ] ) )
 		{
-			isWhiteSpace = false;
-
-			for( uint i = 0u; i < TIKI_COUNT( whiteSpaces ); ++i )
-			{
-				if( m_pData[ start + length - 1u ] == whiteSpaces[ i ] )
-				{
-					isWhiteSpace = true;
-					length--;
-					break;
-				}
-			}
+			length--;
 		}
-		while( isWhiteSpace );
 
 		return subString( start, length );
 	}
 
-	TIKI_FORCE_INLINE uint BasicString::countSubstring( const BasicString& str ) const
+	TIKI_FORCE_INLINE uint DynamicString::countSubstring( const DynamicString& str ) const
 	{
 		if( str.m_stringSize > m_stringSize )
 			return 0u;
@@ -263,9 +246,9 @@ namespace tiki
 		return c;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::insert( const BasicString& str, uint index ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::insert( const DynamicString& str, uint index ) const
 	{
-		BasicString oStr = BasicString( m_stringSize + str.m_stringSize );
+		DynamicString oStr = DynamicString( m_stringSize + str.m_stringSize );
 
 		memory::copy( oStr.m_pData, m_pData, sizeof( char ) * index );
 		memory::copy( oStr.m_pData + index, str.m_pData, sizeof( char ) * str.m_stringSize );
@@ -275,9 +258,9 @@ namespace tiki
 		return oStr;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::remove( uint startIndex, uint length ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::remove( uint startIndex, uint length ) const
 	{
-		BasicString str = BasicString( m_stringSize - length );
+		DynamicString str = DynamicString( m_stringSize - length );
 
 		memory::copy( str.m_pData, m_pData, sizeof( char ) * startIndex );
 		memory::copy( str.m_pData + startIndex, m_pData + startIndex + length, sizeof( char ) * (m_stringSize - startIndex - length) );
@@ -286,45 +269,44 @@ namespace tiki
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::toLower() const
+	TIKI_FORCE_INLINE DynamicString DynamicString::toLower() const
 	{
-		BasicString str = *this;
+		DynamicString str = *this;
 
-		uint i = 0;
-		while( i < m_stringSize )
+		for( uint i = 0u; i < m_stringSize; ++i )
 		{
-			if( str[ i ] >= 'A' && str[ i ] <= 'Z' )
-				str[ i ] -= 'Z' - 'z';
+			if( !character::isCapital( str[ i ] ) )
+			{
+				continue;
+			}
 
-			i++;
+			str[ i ] = character::toLowerCase( str[ i ] );
 		}
 
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::toUpper() const
+	TIKI_FORCE_INLINE DynamicString DynamicString::toUpper() const
 	{
-		BasicString str = *this;
+		DynamicString str = *this;
 
-		uint i = 0;
-		while( i < m_stringSize )
+		for( uint i = 0u; i < m_stringSize; ++i )
 		{
-			if( str[ i ] >= 'a' && str[ i ] <= 'z' )
-				str[ i ] -= 'z' - 'Z';
+			if( !character::isMinuscule( str[ i ] ) )
+			{
+				continue;
+			}
 
-			i++;
+			str[ i ] = character::toUpperCase( str[ i ] );
 		}
 
 		return str;
 	}
 
-	TIKI_FORCE_INLINE int BasicString::indexOf( char c ) const
+	TIKI_FORCE_INLINE int DynamicString::indexOf( char c, uint index /*= 0u*/ ) const
 	{
-		return indexOf( c, 0 );
-	}
+		TIKI_ASSERT( index < m_stringSize );
 
-	TIKI_FORCE_INLINE int BasicString::indexOf( char c, uint index ) const
-	{
 		uint i = index;
 		while( i < m_stringSize )
 		{
@@ -338,12 +320,7 @@ namespace tiki
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE int BasicString::indexOf( const BasicString& str ) const
-	{
-		return indexOf( str, 0 );
-	}
-
-	TIKI_FORCE_INLINE int BasicString::indexOf( const BasicString& str, uint index ) const
+	TIKI_FORCE_INLINE int DynamicString::indexOf( const DynamicString& str, uint index /*= 0u*/ ) const
 	{
 		if( str.m_stringSize > m_stringSize ) return -1;
 
@@ -376,12 +353,7 @@ namespace tiki
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE int BasicString::lastIndexOf( char c ) const
-	{
-		return lastIndexOf( c, m_stringSize - 1u );
-	}
-
-	TIKI_FORCE_INLINE int BasicString::lastIndexOf( char c, uint index ) const
+	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( char c, uint index /*= 0u*/ ) const
 	{
 		int i = int( index );
 		while( i >= 0 )
@@ -393,12 +365,7 @@ namespace tiki
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE int BasicString::lastIndexOf( const BasicString& str ) const
-	{
-		return lastIndexOf( str, m_stringSize - str.m_stringSize );
-	}
-
-	TIKI_FORCE_INLINE int BasicString::lastIndexOf( const BasicString& str, uint index ) const
+	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( const DynamicString& str, uint index /*= 0u*/ ) const
 	{
 		int i = (int)index;
 		while( i >= 0 )
@@ -426,24 +393,24 @@ namespace tiki
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::contains( char c ) const
+	TIKI_FORCE_INLINE bool DynamicString::contains( char c ) const
 	{
 		return indexOf( c ) != -1;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::contains( const BasicString& str ) const
+	TIKI_FORCE_INLINE bool DynamicString::contains( const DynamicString& str ) const
 	{
 		return indexOf( str ) != -1;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::startsWith( char c ) const
+	TIKI_FORCE_INLINE bool DynamicString::startsWith( char c ) const
 	{
 		if( m_stringSize < 1 ) return false;
 
 		return m_pData[ 0 ] == c;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::startsWith( const BasicString& str ) const
+	TIKI_FORCE_INLINE bool DynamicString::startsWith( const DynamicString& str ) const
 	{
 		if( m_stringSize < str.m_stringSize ) return false;
 
@@ -457,14 +424,14 @@ namespace tiki
 		return true;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::endsWith( char c ) const
+	TIKI_FORCE_INLINE bool DynamicString::endsWith( char c ) const
 	{
 		if( m_stringSize < 1 ) return false;
 
 		return m_pData[ m_stringSize - 1 ] == c;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::endsWith( const BasicString& str ) const
+	TIKI_FORCE_INLINE bool DynamicString::endsWith( const DynamicString& str ) const
 	{
 		if( m_stringSize < str.m_stringSize ) return false;
 
@@ -480,24 +447,24 @@ namespace tiki
 		return true;
 	}
 
-	TIKI_FORCE_INLINE const char* BasicString::operator*() const
+	TIKI_FORCE_INLINE const char* DynamicString::operator*() const
 	{
 		return m_pData;
 	}
 
-	TIKI_FORCE_INLINE char BasicString::operator[]( uint index ) const
+	TIKI_FORCE_INLINE char DynamicString::operator[]( uint index ) const
 	{
 		TIKI_ASSERT( index < m_stringSize );
 		return m_pData[ index ];
 	}
 
-	TIKI_FORCE_INLINE char& BasicString::operator[]( uint index )
+	TIKI_FORCE_INLINE char& DynamicString::operator[]( uint index )
 	{
 		TIKI_ASSERT( index < m_stringSize );
 		return m_pData[ index ];
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator==( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator==( const DynamicString& rhs ) const
 	{
 		if( m_stringSize != rhs.m_stringSize )
 		{
@@ -517,12 +484,12 @@ namespace tiki
 		return true;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator!=( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator!=( const DynamicString& rhs ) const
 	{
 		return !(*this == rhs);
 	}
 
-	TIKI_FORCE_INLINE BasicString& BasicString::operator=( const BasicString& rhs )
+	TIKI_FORCE_INLINE DynamicString& DynamicString::operator=( const DynamicString& rhs )
 	{
 		freeData();
 		allocateDataForString( rhs.m_pData );
@@ -530,10 +497,10 @@ namespace tiki
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE BasicString BasicString::operator+( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE DynamicString DynamicString::operator+( const DynamicString& rhs ) const
 	{
 		uint length = m_stringSize + rhs.m_stringSize;
-		BasicString str = BasicString( length );
+		DynamicString str = DynamicString( length );
 
 		memory::copy( str.m_pData, m_pData, m_stringSize );
 		memory::copy( str.m_pData + m_stringSize, rhs.m_pData, rhs.m_stringSize );
@@ -542,7 +509,7 @@ namespace tiki
 		return str;
 	}
 
-	TIKI_FORCE_INLINE BasicString& BasicString::operator+=( const BasicString& rhs )
+	TIKI_FORCE_INLINE DynamicString& DynamicString::operator+=( const DynamicString& rhs )
 	{
 		const uint sl = m_stringSize;
 		const uint length = m_stringSize + rhs.m_stringSize;
@@ -559,7 +526,7 @@ namespace tiki
 		return *this;
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator>( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator>( const DynamicString& rhs ) const
 	{
 		uint i = 0;
 		uint c = (m_stringSize < rhs.m_stringSize ? m_stringSize : rhs.m_stringSize);
@@ -571,12 +538,12 @@ namespace tiki
 		return m_pData[ i ] > rhs.m_pData[ i ];
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator>=( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator>=( const DynamicString& rhs ) const
 	{
 		return (*this == rhs) || (*this > rhs);
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator<( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator<( const DynamicString& rhs ) const
 	{
 		uint i = 0;
 		uint c = (m_stringSize < rhs.m_stringSize ? m_stringSize : rhs.m_stringSize);
@@ -588,7 +555,7 @@ namespace tiki
 		return m_pData[ i ] < rhs.m_pData[ i ];
 	}
 
-	TIKI_FORCE_INLINE bool BasicString::operator<=( const BasicString& rhs ) const
+	TIKI_FORCE_INLINE bool DynamicString::operator<=( const DynamicString& rhs ) const
 	{
 		return (*this == rhs) || (*this < rhs);
 	}
@@ -598,7 +565,7 @@ namespace tiki
 		return string( str1 ) + str2;
 	}
 
-	TIKI_FORCE_INLINE void BasicString::allocateData( sint length )
+	TIKI_FORCE_INLINE void DynamicString::allocateData( sint length )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -607,11 +574,11 @@ namespace tiki
 
 		m_pData			= (char*)TIKI_ALLOC( m_dataSize );
 	}
-	
-	TIKI_FORCE_INLINE void BasicString::reallocateData( sint length )
+
+	TIKI_FORCE_INLINE void DynamicString::reallocateData( sint length )
 	{
 		char* pOldData = m_pData;
-		
+
 		m_dataSize	= calculateLength( length );
 		m_pData		= (char*)TIKI_ALLOC( m_dataSize );
 
@@ -621,7 +588,7 @@ namespace tiki
 		TIKI_FREE( pOldData );
 	}
 
-	TIKI_FORCE_INLINE void BasicString::allocateDataForString( const char* pString, sint length /* = -1 */ )
+	TIKI_FORCE_INLINE void DynamicString::allocateDataForString( const char* pString, sint length /* = -1 */ )
 	{
 		if( pString == nullptr )
 		{
@@ -643,7 +610,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE void BasicString::freeData()
+	TIKI_FORCE_INLINE void DynamicString::freeData()
 	{
 		TIKI_FREE( m_pData );
 		m_pData			= nullptr;
@@ -651,7 +618,7 @@ namespace tiki
 		m_stringSize	= 0u;
 	}
 
-	TIKI_FORCE_INLINE uint BasicString::calculateLength( uint neededLength ) const
+	TIKI_FORCE_INLINE uint DynamicString::calculateLength( uint neededLength ) const
 	{
 		const uint nextSize = getNextPowerOfTwo( neededLength + 1u );
 		TIKI_ASSERT( nextSize > neededLength );

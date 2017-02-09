@@ -1,6 +1,6 @@
 #include "genericdatavaluebasewidget.hpp"
 
-#include "tiki/toolgenericdata/genericdatavaluetag.hpp"
+#include "tiki/toolgenericdata/generic_data_tag.hpp"
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -29,7 +29,7 @@ namespace tiki
 
 	void GenericDataValueBaseWidget::applyValue()
 	{
-		const GenericDataValueTag* pValueTag = m_pValue->getValueTag();
+		const GenericDataTag* pValueTag = m_pValue->getValueTag();
 		if( pValueTag != nullptr )
 		{
 			m_pTextBox->setEnabled( false );

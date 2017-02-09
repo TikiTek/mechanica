@@ -64,17 +64,17 @@ namespace tiki
 		return m_valueType;
 	}
 
-	const GenericDataValueTag* GenericDataValue::getValueTag() const
+	const GenericDataTag* GenericDataValue::getValueTag() const
 	{
 		return m_pValueTag;
 	}
 
-	GenericDataValueTag* GenericDataValue::getValueTag()
+	GenericDataTag* GenericDataValue::getValueTag()
 	{
 		return m_pValueTag;
 	}
 
-	void GenericDataValue::setValueTag( GenericDataValueTag* pValueTag )
+	void GenericDataValue::setValueTag( GenericDataTag* pValueTag )
 	{
 		m_pValueTag = pValueTag;
 	}

@@ -2,7 +2,7 @@
 #include "tiki/base/debug.hpp"
 
 #include "tiki/base/string.hpp"
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 
 #include <stdarg.h>
 #include <stdio.h>

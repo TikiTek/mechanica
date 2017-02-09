@@ -13,6 +13,7 @@
 
 namespace tiki
 {
+	class GenericDataTag;
 	class GenericDataTypeArray;
 	class GenericDataTypeEnum;
 	class GenericDataTypePointer;
@@ -48,18 +49,15 @@ namespace tiki
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
 
+		const GenericDataType*			resolveTypeTag( const GenericDataTag* pTag );
 		const GenericDataType*			parseType( const string& typeString );
+
+		bool							resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const;
 		bool							parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
 
 	private:
-
-		struct ModifierDescription
-		{
-			string	modifier;
-			string	content;
-		};
 
 		typedef Map< string, GenericDataModuleData > ModuleMap;
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
@@ -80,8 +78,6 @@ namespace tiki
 		bool							registerDefaultResourceTypes();
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
 		bool							parseFile( XmlReader& reader, const _XmlElement* pRootNode, const string& fileName, const string& moduleName );
-
-		bool							parseToken( ModifierDescription& outModifier, const string& text );
 
 		void							writeToFileIfNotEquals( const string& fileName, const string& content );
 

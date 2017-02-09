@@ -4,7 +4,7 @@
 
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/map.hpp"
 #include "tiki/toolgenericdata/genericdatavalue.hpp"
