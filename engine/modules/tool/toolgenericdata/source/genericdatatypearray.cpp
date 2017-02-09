@@ -35,7 +35,7 @@ namespace tiki
 
 	string GenericDataTypeArray::getExportName() const
 	{
-		return formatString( "ResArray< %s >", m_pBaseType->getExportName().cStr() );
+		return formatDynamicString( "ResArray< %s >", m_pBaseType->getExportName().cStr() );
 	}
 
 	crc32 GenericDataTypeArray::getTypeCrc() const

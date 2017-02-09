@@ -1,7 +1,7 @@
 
 #include "tiki/io/file.hpp"
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/crc32.hpp"
 
 #include <stdio.h>

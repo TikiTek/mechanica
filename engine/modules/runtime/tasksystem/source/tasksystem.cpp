@@ -1,7 +1,7 @@
 
 #include "tiki/tasksystem/tasksystem.hpp"
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
 
 namespace tiki
@@ -45,7 +45,7 @@ namespace tiki
 			context.pTaskSystem	= this;
 			context.workingEvent.create();
 
-			const string threadName = formatString( "TaskSystem_%u", i );
+			const string threadName = formatDynamicString( "TaskSystem_%u", i );
 			if ( !context.thread.create( staticThreadEntryPoint, &context, parameters.threadStackSize, threadName.cStr() ) )
 			{
 				dispose();

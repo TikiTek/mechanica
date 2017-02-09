@@ -132,11 +132,11 @@ namespace tiki
 				sint64 intValue = 0u;
 				TIKI_VERIFY( value.pValue->getSignedValue( intValue ) );
 
-				valuesCode += formatString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), intValue );
+				valuesCode += formatDynamicString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), intValue );
 			}
 			else
 			{
-				valuesCode += formatString( s_pValueFormat, getName().cStr(), value.name.cStr() );
+				valuesCode += formatDynamicString( s_pValueFormat, getName().cStr(), value.name.cStr() );
 			}
 		}
 
@@ -145,8 +145,8 @@ namespace tiki
 		{
 			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
 
-			string format = formatString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
-			invalidValue = formatString( format.cStr(), maxValue );
+			string format = formatDynamicString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
+			invalidValue = formatDynamicString( format.cStr(), maxValue );
 		}
 
 		string baseString = "";
@@ -155,7 +155,7 @@ namespace tiki
 			baseString = ": " + m_pBaseType->getExportName();
 		}
 
-		targetData.code += formatString(
+		targetData.code += formatDynamicString(
 			s_pBaseFormat,
 			getExportName().cStr(),
 			baseString.cStr(),

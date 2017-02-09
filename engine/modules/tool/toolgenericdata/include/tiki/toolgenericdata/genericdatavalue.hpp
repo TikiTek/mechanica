@@ -2,7 +2,7 @@
 #ifndef TIKI_GENERICDATAVALUE_HPP_INCLUDED__
 #define TIKI_GENERICDATAVALUE_HPP_INCLUDED__
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"
 
@@ -11,7 +11,7 @@ namespace tiki
 	class GenericDataArray;
 	class GenericDataObject;
 	class GenericDataType;
-	class GenericDataValueTag;
+	class GenericDataTag;
 
 	enum GenericDataValueType
 	{
@@ -58,9 +58,9 @@ namespace tiki
 		const GenericDataType*		getType() const;
 		GenericDataValueType		getValueType() const;
 
-		const GenericDataValueTag*	getValueTag() const;
-		GenericDataValueTag*		getValueTag();
-		void						setValueTag( GenericDataValueTag* pValueTag );
+		const GenericDataTag*	getValueTag() const;
+		GenericDataTag*		getValueTag();
+		void						setValueTag( GenericDataTag* pValueTag );
 
 		bool						isValid() const;
 
@@ -123,7 +123,7 @@ namespace tiki
 		Values					m_value;
 		string					m_text;
 
-		GenericDataValueTag*	m_pValueTag;
+		GenericDataTag*	m_pValueTag;
 
 		GenericDataValueType	getValueType( const GenericDataType* pType );
 		bool					checkType( const GenericDataType* pType);

@@ -1,5 +1,5 @@
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 
 #include <string.h>
 #include <stdarg.h>
@@ -7,13 +7,11 @@
 
 namespace tiki
 {
-	const char BasicString::whiteSpaces[ 4u ] = { ' ', '\t', '\r', '\n' };
-
-	string formatString( const char* pFormat, ... )
+	string formatDynamicString( const char* pFormat, ... )
 	{
 		va_list argptr;
 		va_start( argptr, pFormat );
-		const string result = formatStringArgs( pFormat, argptr );
+		const string result = formatDynamicStringArgs( pFormat, argptr );
 		va_end( argptr );
 
 		return result;
@@ -21,7 +19,7 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
-	string formatStringArgs( const char* pFormat, va_list argptr )
+	string formatDynamicStringArgs( const char* pFormat, va_list argptr )
 	{
 		va_list argptrCount = argptr;
 		va_list argptrFormat = argptr;
@@ -44,7 +42,7 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
-	string formatStringArgs( const char* pFormat, va_list argptr )
+	string formatDynamicStringArgs( const char* pFormat, va_list argptr )
 	{
 		va_list argptrCount = { argptr[ 0 ] };
 		va_list argptrFormat = { argptr[ 0 ] };
@@ -53,8 +51,6 @@ namespace tiki
 
 		string str( len );
 		vsnprintf( (char*)str.cStr(), len + 1u, pFormat, argptrFormat );
-
-		va_end( argptr );
 
 		return str;
 	}

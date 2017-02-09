@@ -425,7 +425,7 @@ namespace tiki
 
 						for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
 						{
-							args.defineCode	+= formatString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
+							args.defineCode	+= formatDynamicString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
 						}
 
 						Array< uint8 > variantData;
@@ -507,7 +507,7 @@ namespace tiki
 			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
-		const string sourceCode = args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_ON\n#define TIKI_OPENGL4 TIKI_OFF\n#include \"%s\"", args.fileName.cStr() );
+		const string sourceCode = args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_ON\n#define TIKI_OPENGL4 TIKI_OFF\n#include \"%s\"", args.fileName.cStr() );
 
 		HRESULT result = D3DCompile(
 			sourceCode.cStr(),
@@ -568,7 +568,7 @@ namespace tiki
 	{
 		m_openGlMutex.lock();
 
-		string sourceCode = "#version 440\n" + args.defineCode + formatString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
+		string sourceCode = "#version 440\n" + args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 		List< ShaderConstantInfo > constants;
 
 		// preprocessor
@@ -599,7 +599,7 @@ namespace tiki
 				const uint length2		= pSearchEnd - pSearchBegin;
 				sourceCode = sourceCode.remove( startIndex, length2 );
 
-				const string newCode = formatString( "layout(shared) uniform %s", name.cStr() );
+				const string newCode = formatDynamicString( "layout(shared) uniform %s", name.cStr() );
 				sourceCode = sourceCode.insert( newCode, startIndex );
 			}
 		}

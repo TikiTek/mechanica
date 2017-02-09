@@ -215,16 +215,16 @@ namespace tiki
 				}
 			}
 
-			fieldsCode += formatString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
+			fieldsCode += formatDynamicString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
 		}
 
 		string baseTypeCode = "";
 		if ( m_pBaseType != nullptr )
 		{
-			baseTypeCode = formatString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
+			baseTypeCode = formatDynamicString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
 		}
 
-		targetData.code += formatString( s_pBaseFormat, getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
+		targetData.code += formatDynamicString( s_pBaseFormat, getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
 
 		return true;
 	}
@@ -250,7 +250,7 @@ namespace tiki
 		for (size_t i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
-			typeString += formatString( "%s%08x", field.name.cStr(), field.pType->getTypeCrc() );
+			typeString += formatDynamicString( "%s%08x", field.name.cStr(), field.pType->getTypeCrc() );
 		}
 
 		return crcString( typeString );

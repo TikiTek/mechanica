@@ -2,7 +2,7 @@
 #ifndef TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
 #define TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/graphics/shadertype.hpp"
 
 namespace tiki

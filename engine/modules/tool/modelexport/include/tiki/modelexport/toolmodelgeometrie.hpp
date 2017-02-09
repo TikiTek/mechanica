@@ -1,7 +1,7 @@
 #ifndef TIKI_TOOLMODELGEOMETRIE_HPP__
 #define TIKI_TOOLMODELGEOMETRIE_HPP__
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/math/matrix.hpp"
