@@ -3,7 +3,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
@@ -75,7 +75,7 @@ namespace tiki
 					uint32* pRect = &rect.x;
 					for (size_t k = 0u; k < 4u; ++k)
 					{
-						pRect[ k ] = ParseString::parseUInt32( values[ k ].cStr() );
+						pRect[ k ] = string_tools::parseUInt32( values[ k ].cStr() );
 					}
 
 					image.cropImage( rect );
@@ -98,8 +98,8 @@ namespace tiki
 				scale.x = uint32( image.getWidth() );
 				scale.y = uint32( image.getHeight() );
 
-				const uint32 modX = ParseString::parseUInt32( scaleX.subString( 1u ).cStr() );
-				const uint32 modY = ParseString::parseUInt32( scaleY.subString( 1u ).cStr() );
+				const uint32 modX = string_tools::parseUInt32( scaleX.subString( 1u ).cStr() );
+				const uint32 modY = string_tools::parseUInt32( scaleY.subString( 1u ).cStr() );
 
 				if ( scaleX[ 0u ] == '/' )
 				{

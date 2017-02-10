@@ -18,7 +18,7 @@ module.import_func = function(project)
 	module:add_moc_file( "source/genericdatanumbervaluewidget.hpp" )
 	module:add_moc_file( "source/genericdatareferencevaluewidget.hpp" )
 	module:add_moc_file( "source/genericdatastringvaluewidget.hpp" )
-	module:add_moc_file( "source/genericdatavaluebasewidget.hpp" )
+	module:add_moc_file( "source/generic_data_value_widget.hpp" )
 	module:add_moc_file( "source/genericdatavaluetageditor.hpp" )
 
 	module:add_qrc_file( "source/genericdataeditor.qrc" )

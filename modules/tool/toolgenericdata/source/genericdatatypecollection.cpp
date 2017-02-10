@@ -3,8 +3,8 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/base/stringconvert.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/container/map.hpp"
 #include "tiki/io/directory.hpp"
@@ -445,10 +445,10 @@ namespace tiki
 			}
 			else if( pCurrentTag->getTag() == "bit" )
 			{
-				const sint64 shift = ParseString::parseInt64( content.cStr() );
+				const sint64 shift = string_tools::parseSInt64( content.cStr() );
 				const sint64 value = 1ll << shift;
 
-				content = StringConvert::ToString( value );
+				content = string_tools::toString( value );
 			}
 			else if( pCurrentTag->getTag() == "offset" )
 			{
@@ -467,7 +467,7 @@ namespace tiki
 
 						if( field.name == content )
 						{
-							content = StringConvert::ToString( offset );
+							content = string_tools::toString( offset );
 							found = true;
 							break;
 						}
@@ -489,7 +489,7 @@ namespace tiki
 			}
 			else if( pCurrentTag->getTag() == "crc" )
 			{
-				content = StringConvert::ToString( crcString( content ) );
+				content = string_tools::toString( crcString( content ) );
 			}
 			else
 			{
@@ -538,22 +538,22 @@ namespace tiki
 
 			if ( pTypedType->isBoolean() )
 			{
-				const bool value = ParseString::parseInt64( content.cStr() ) != 0;
+				const bool value = string_tools::parseSInt64( content.cStr() ) != 0;
 				return pTargetValue->setBoolean( value, pType );
 			}
 			else if ( pTypedType->isSignedInteger() )
 			{
-				const sint64 value = ParseString::parseInt64( content.cStr() );
+				const sint64 value = string_tools::parseSInt64( content.cStr() );
 				return pTargetValue->setSignedValue( value, pType );
 			}
 			else if ( pTypedType->isUnsignedInteger() )
 			{
-				const uint64 value = ParseString::parseUInt64( content.cStr() );
+				const uint64 value = string_tools::parseUInt64( content.cStr() );
 				return pTargetValue->setUnsignedValue( value, pType );
 			}
 			else if ( pTypedType->isFloatingPoint() )
 			{
-				const double value = ParseString::parseDouble( content.cStr() );
+				const double value = string_tools::parseFloat64( content.cStr() );
 				return pTargetValue->setFloatingPoint( value, pType );
 			}
 			else if ( pTypedType->isString() )

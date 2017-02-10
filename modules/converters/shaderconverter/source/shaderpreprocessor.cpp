@@ -4,7 +4,7 @@
 #include "tiki/base/bits.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/container/list.hpp"
 
 #include "TRexpp.h"
@@ -81,7 +81,7 @@ namespace tiki
 						}
 
 						const string maxValueString = name.subString( arrayIndex, arrayLength );
-						maxValue	= ParseString::parseUInt32( maxValueString.cStr() ) - 1u;
+						maxValue	= string_tools::parseUInt32( maxValueString.cStr() ) - 1u;
 						name		= name.subString( 0u, arrayIndex - 1 );
 					}
 

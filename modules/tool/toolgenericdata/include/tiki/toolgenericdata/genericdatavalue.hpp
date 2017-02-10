@@ -58,11 +58,13 @@ namespace tiki
 		const GenericDataType*		getType() const;
 		GenericDataValueType		getValueType() const;
 
-		const GenericDataTag*	getValueTag() const;
-		GenericDataTag*		getValueTag();
+		const GenericDataTag*		getValueTag() const;
+		GenericDataTag*				getValueTag();
 		void						setValueTag( GenericDataTag* pValueTag );
 
 		bool						isValid() const;
+
+		string						toString() const;
 
 		bool						getBoolean( bool& value ) const;
 		bool						setBoolean( bool value, const GenericDataType* pType );
@@ -90,8 +92,6 @@ namespace tiki
 
 		bool						getPointer( GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
-
-		//bool						setValue( const GenericDataValue& value );
 
 	private:
 

@@ -2,7 +2,7 @@
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 

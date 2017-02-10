@@ -4,7 +4,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/float16.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"

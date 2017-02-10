@@ -7,6 +7,7 @@
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
 #include "genericdataboolvaluewidget.hpp"
+#include "generic_data_value_widget.hpp"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -199,7 +200,7 @@ namespace tiki
 		case GenericDataValueType_FloatingPoint16:
 		case GenericDataValueType_FloatingPoint32:
 		case GenericDataValueType_FloatingPoint64:
-			return nullptr;
+			return new GenericDataValueWidget( pValue );
 
 		case GenericDataValueType_String:
 			return nullptr;

@@ -84,6 +84,72 @@ namespace tiki
 		return m_valueType != GenericDataValueType_Invalid;
 	}
 
+	string GenericDataValue::toString() const
+	{
+		switch( m_valueType )
+		{
+		case GenericDataValueType_Boolean:
+			return m_value.b ? "true" : "false";
+
+		case GenericDataValueType_SingedInteger8:
+			return string_tools::toString( m_value.s8 );
+
+		case GenericDataValueType_SingedInteger16:
+			return string_tools::toString( m_value.s16 );
+
+		case GenericDataValueType_SingedInteger32:
+			return string_tools::toString( m_value.s32 );
+
+		case GenericDataValueType_SingedInteger64:
+			return string_tools::toString( m_value.s64 );
+
+		case GenericDataValueType_UnsingedInteger8:
+			return string_tools::toString( m_value.u8 );
+
+		case GenericDataValueType_UnsingedInteger16:
+			return string_tools::toString( m_value.u16 );
+
+		case GenericDataValueType_UnsingedInteger32:
+			return string_tools::toString( m_value.u32 );
+
+		case GenericDataValueType_UnsingedInteger64:
+			return string_tools::toString( m_value.u64 );
+
+		case GenericDataValueType_FloatingPoint16:
+			return string_tools::toString( m_value.f16 );
+
+		case GenericDataValueType_FloatingPoint32:
+			return string_tools::toString( m_value.f32 );
+
+		case GenericDataValueType_FloatingPoint64:
+			return string_tools::toString( m_value.f64 );
+
+		case GenericDataValueType_String:
+			return m_text;
+
+		case GenericDataValueType_Object:
+			return m_value.pObject->getType()->getName();
+
+		case GenericDataValueType_Array:
+			return m_value.pArray->getType()->getName();
+
+		case GenericDataValueType_Enum:
+			return m_text;
+
+		case GenericDataValueType_Reference:
+			return "Reference";
+
+		case GenericDataValueType_Pointer:
+			return "Pointer";
+
+		case GenericDataValueType_Invalid:
+		case GenericDataValueType_Count:
+			break;
+		}
+
+		return "Invalid";
+	}
+
 	bool GenericDataValue::getBoolean( bool& value ) const
 	{
 		if( m_valueType == GenericDataValueType_Boolean )
@@ -436,24 +502,6 @@ namespace tiki
 		m_value.pObject = pValue;
 		return true;
 	}
-
-	//bool GenericDataValue::setValue( const GenericDataValue& value )
-	//{
-	//	if( m_valueType != GenericDataValueType_Invalid && !m_pType->isTypeCompatible( value.getType() ) )
-	//	{
-	//		const char* pCurrentType = (m_pType != nullptr ? m_pType->getName().cStr() : "null");
-	//		const char* pNewType = (value.getType() != nullptr ? value.getType()->getName().cStr() : "null");
-	//		TIKI_TRACE_ERROR( "[GenericDataObject::setFieldValue] Can't assign value with different type('%s' != '%s')!\n", pNewType, pCurrentType );
-	//		return false;
-	//	}
-	//
-	//	TIKI_ASSERT( m_pType == nullptr || m_pType == value.getType() );
-	//	m_pType		= value.m_pType;
-	//	m_valueType	= value.m_valueType;
-	//	m_value		= value.m_value;
-	//	m_text		= value.m_text;
-	//	return true;
-	//}
 
 	GenericDataValueType GenericDataValue::getValueType( const GenericDataType* pType )
 	{
