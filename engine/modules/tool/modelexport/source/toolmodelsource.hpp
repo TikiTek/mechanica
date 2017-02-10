@@ -4,7 +4,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/graphics/vertexsemantic.hpp"
@@ -14,7 +14,7 @@ namespace tiki
 {
 	static void stringSourceToFloat( float& target, const Array< string >& source )
 	{
-		target = ParseString::parseSingle( source[ 0u ].cStr() );
+		target = string_tools::parseFloat32( source[ 0u ].cStr() );
 	}
 
 	static void stringSourceToString( string& target, const Array< string >& source )
@@ -27,7 +27,7 @@ namespace tiki
 		float* pMatrix = &target.x.x;
 		for (size_t i = 0u; i < 16u; ++i)
 		{
-			pMatrix[ i ] = ParseString::parseSingle( source[ i ].cStr() );
+			pMatrix[ i ] = string_tools::parseFloat32( source[ i ].cStr() );
 		}
 		matrix::transpose( target );
 	}
@@ -103,12 +103,12 @@ namespace tiki
 				const XmlAttribute* pStrideAtt	= pXml->findAttributeByName( "stride", pAccessorNode );
 				const XmlAttribute* pSourceAtt	= pXml->findAttributeByName( "source", pAccessorNode );
 
-				count			= ParseString::parseUInt32( pCountAtt->content );
+				count			= string_tools::parseUInt32( pCountAtt->content );
 				techniqueSource	= string( pSourceAtt->content ).subString( 1u );
 
 				if ( pStrideAtt != nullptr )
 				{
-					stride	= ParseString::parseUInt32( pStrideAtt->content );
+					stride	= string_tools::parseUInt32( pStrideAtt->content );
 				}
 				else
 				{
@@ -166,7 +166,7 @@ namespace tiki
 					return false;
 				}
 
-				const size_t arrayCount = ParseString::parseUInt32( pCountAtt->content );
+				const size_t arrayCount = string_tools::parseUInt32( pCountAtt->content );
 				data.create( arrayCount );
 
 				Tokenizer tokenizer;
@@ -236,7 +236,7 @@ namespace tiki
 
 			if ( !value.isEmpty() )
 			{
-				const float fval = ParseString::parseSingle( value.cStr() );
+				const float fval = string_tools::parseFloat32( value.cStr() );
 
 				pValues[ j++ ] = fval;
 			}

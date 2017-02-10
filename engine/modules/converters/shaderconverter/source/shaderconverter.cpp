@@ -4,7 +4,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/convertermanager.hpp"
@@ -592,7 +592,7 @@ namespace tiki
 				const string name = string( pArgumentBegin, length );
 
 				ShaderConstantInfo& info = constants.add();
-				info.slotIndex	= ParseString::parseInt32( slotIndex.cStr() );
+				info.slotIndex	= string_tools::parseSInt32( slotIndex.cStr() );
 				info.name		= name;
 
 				const uint startIndex	= pSearchBegin - sourceCode.cStr();

@@ -2,7 +2,7 @@
 
 #include "tiki/base/basetypes.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/modelexport/toolmodelhierarchy.hpp"
 #include "tiki/toolbase/tokenizer.hpp"
@@ -16,7 +16,7 @@ namespace tiki
 		TIKI_ASSERT( id[ 0u ] == '#' );
 		const string sourceId = id.subString( 1u );
 		const string semanticName = semantic.toLower();
-		
+
 		string targetField;
 		VertexSementic vertexSemantic = VertexSementic_Invalid;
 
@@ -110,13 +110,13 @@ namespace tiki
 			TIKI_TRACE_ERROR( "ToolModelGeometrie: instance has a wrong id.\n" );
 			return;
 		}
-		
+
 		m_pMeshNode		= pXml->findFirstChild( "mesh", instance.pNode );
 		if ( m_pMeshNode == nullptr )
 		{
 			TIKI_TRACE_ERROR( "ToolModelGeometrie: mesh node not found.\n" );
 			return;
-		}		
+		}
 
 		// sources
 		XmlElementList sourcesNodes;
@@ -208,7 +208,7 @@ namespace tiki
 
 					if ( !value.isEmpty() )
 					{
-						uint i = ParseString::parseUInt32( value.cStr() );
+						uint i = string_tools::parseUInt32( value.cStr() );
 
 						if ( i != 3u )
 						{
@@ -218,8 +218,8 @@ namespace tiki
 					}
 				}
 			}
-			
-			//const XmlAttribute* pCountAtt = pXml->findAttributeByName( "count", pTriangles );			
+
+			//const XmlAttribute* pCountAtt = pXml->findAttributeByName( "count", pTriangles );
 			//if ( pCountAtt == nullptr )
 			//{
 			//	TIKI_TRACE_ERROR( "triangle node has no count attribute" );
@@ -227,7 +227,7 @@ namespace tiki
 			//}
 
 			//uint vertexCount = ParseString::parseUInt32( pCountAtt->content );
-			
+
 			const XmlElement* pInput = pXml->findFirstChild( "input", pTriangles );
 			while ( pInput )
 			{
@@ -249,7 +249,7 @@ namespace tiki
 				pInput = pXml->findNext( "input", pInput );
 			}
 
-			// read indices			
+			// read indices
 			List< uint > indicesData;
 			{
 				List< uint > indices;
@@ -262,10 +262,10 @@ namespace tiki
 				while ( index != -1 )
 				{
 					string value = token.findNext( &index ).trim();
-					
+
 					if ( !value.isEmpty() )
 					{
-						uint i = ParseString::parseUInt32( value.cStr() );
+						uint i = string_tools::parseUInt32( value.cStr() );
 
 						indices.add( i );
 					}
@@ -325,7 +325,7 @@ namespace tiki
 							indicesSkinningCrc[ j ] = 0u;
 						}
 					}
-					
+
 					indicesSkinningCount.add( count );
 				}
 
@@ -348,7 +348,7 @@ namespace tiki
 			}
 
 			// fill vertices
-			uint fullStride = 0u; 
+			uint fullStride = 0u;
 			for (uint j= 0u; j < sources.getCount(); ++j)
 			{
 				fullStride += sources[ j ].stride;
@@ -511,7 +511,7 @@ namespace tiki
 		{
 			const string& name				= boneNames.data[ i ];
 			const ToolModelJoint* pJoint	= hierarchy.getJointByName( name );
-			
+
 			if ( !pJoint )
 			{
 				TIKI_TRACE_ERROR( "Joint with name '%s' not found", name.cStr() );
@@ -526,7 +526,7 @@ namespace tiki
 			mtx.w.x *= m_desc.scale;
 			mtx.w.y *= m_desc.scale;
 			mtx.w.z *= m_desc.scale;
-			
+
 			hierarchy.markJointAsUsed( *pJoint );
 			hierarchy.setBindMatrix( *pJoint, mtx );
 		}
@@ -589,14 +589,14 @@ namespace tiki
 					if ( count != TIKI_SIZE_T_MAX ) i++;
 
 					const string countString	= tokenCount.findNext();
-					count						= ParseString::parseUInt32( countString.cStr() );
+					count						= string_tools::parseUInt32( countString.cStr() );
 					c = 0u;
 
 					TIKI_ASSERT( count < 5u );
 				}
 
 				const string part	= token.findNext( &index );
-				const uint value	= ParseString::parseUInt32( part.cStr() );
+				const uint value	= string_tools::parseUInt32( part.cStr() );
 
 				for (uint j = 0u; j < m_skinningIndicesCount[ i ]; ++j)
 				{
@@ -629,7 +629,7 @@ namespace tiki
 						pWeights[ c ] = weight;
 					}
 				}
-				
+
 				if ( ++sourceIndex == inputCount )
 				{
 					c++;
@@ -789,6 +789,6 @@ namespace tiki
 			matrix::transform( normal, normalMatrix );
 			createFloat3( vertex.position, position.x, position.y, position.z );
 			createFloat3( vertex.normal, normal.x, normal.y, normal.z );
-		} 
+		}
 	}
 }

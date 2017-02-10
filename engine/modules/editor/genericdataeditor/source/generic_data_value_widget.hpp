@@ -10,23 +10,18 @@ class QPushButton;
 
 namespace tiki
 {
-	class GenericDataValueBaseWidget : QWidget
+	class GenericDataValueWidget : public QWidget
 	{
 		Q_OBJECT
 
 	public:
 
-		GenericDataValueBaseWidget( GenericDataValue* pValue );
-		~GenericDataValueBaseWidget();
-
-	protected:
-
-		GenericDataValue*	m_pValue;
-
-		virtual QString		getValueText() const TIKI_PURE;
-		virtual bool		setValueText( const QString& valueText ) TIKI_PURE;
+		GenericDataValueWidget( GenericDataValue* pValue );
+		~GenericDataValueWidget();
 
 	private:
+
+		GenericDataValue*	m_pValue;
 
 		QHBoxLayout*		m_pLayout;
 		QLineEdit*			m_pTextBox;

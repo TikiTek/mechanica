@@ -1,4 +1,4 @@
-#include "genericdatavaluebasewidget.hpp"
+#include "generic_data_value_widget.hpp"
 
 #include "tiki/toolgenericdata/generic_data_tag.hpp"
 
@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	GenericDataValueBaseWidget::GenericDataValueBaseWidget( GenericDataValue* pValue )
+	GenericDataValueWidget::GenericDataValueWidget( GenericDataValue* pValue )
 		: m_pValue( pValue )
 	{
 		m_pTextBox = new QLineEdit();
@@ -22,12 +22,12 @@ namespace tiki
 		applyValue();
 	}
 
-	GenericDataValueBaseWidget::~GenericDataValueBaseWidget()
+	GenericDataValueWidget::~GenericDataValueWidget()
 	{
 
 	}
 
-	void GenericDataValueBaseWidget::applyValue()
+	void GenericDataValueWidget::applyValue()
 	{
 		const GenericDataTag* pValueTag = m_pValue->getValueTag();
 		if( pValueTag != nullptr )
@@ -37,7 +37,8 @@ namespace tiki
 		}
 		else
 		{
-			// ...
+			m_pTextBox->setEnabled( true );
+			m_pTextBox->setText( m_pValue->toString().cStr() );
 		}
 	}
 }

@@ -1,7 +1,7 @@
 
 #include "tiki/converterbase/conversionparameters.hpp"
 
-#include "tiki/base/stringparse.hpp"
+#include "tiki/base/string_tools.hpp"
 
 namespace tiki
 {
@@ -28,7 +28,7 @@ namespace tiki
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
 
-		return ParseString::parseSingle( value.cStr() );
+		return string_tools::parseFloat32( value.cStr() );
 	}
 
 	int ConversionArguments::getInt( const string& key ) const
@@ -36,7 +36,7 @@ namespace tiki
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
 
-		return ParseString::parseInt32( value.cStr() );
+		return string_tools::parseSInt32( value.cStr() );
 	}
 
 	string ConversionArguments::getOptionalString( const string& key, const string& defaultValue ) const
@@ -55,7 +55,7 @@ namespace tiki
 		string value;
 		if ( getArgument( value, key ) )
 		{
-			return ParseString::parseSingle( value.cStr() );
+			return string_tools::parseFloat32( value.cStr() );
 		}
 
 		return defaultValue;
@@ -66,7 +66,7 @@ namespace tiki
 		string value;
 		if ( getArgument( value, key ) )
 		{
-			return ParseString::parseInt32( value.cStr() );
+			return string_tools::parseSInt32( value.cStr() );
 		}
 
 		return defaultValue;

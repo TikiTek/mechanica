@@ -1,4 +1,3 @@
-
 #include "tiki/base/float16.hpp"
 
 namespace tiki
@@ -33,7 +32,7 @@ namespace tiki
 	static const sint32 maxD = infC - maxC - 1;
 	static const sint32 minD = minC - subC - 1;
 
-	float16 f16::convertFloat32to16( float value )
+	float16 f16::convertFloat32to16( float32 value )
 	{
 		Bits v, s;
 		v.f = value;
@@ -51,7 +50,7 @@ namespace tiki
 		return v.ui | sign;
 	}
 
-	float f16::convertFloat16to32( float16 value )
+	float32 f16::convertFloat16to32( float16 value )
 	{
 		Bits v;
 		v.ui = value;

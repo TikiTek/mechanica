@@ -77,6 +77,7 @@ namespace tiki
 
 		if( !importFromXml( oldReader ) )
 		{
+			oldReader.dispose();
 			return false;
 		}
 
