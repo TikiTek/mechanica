@@ -16,6 +16,7 @@ namespace tiki
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pTextBox );
 		m_pLayout->addWidget( m_pTagEditButton );
+		m_pLayout->setMargin( 0 );
 
 		setLayout( m_pLayout );
 

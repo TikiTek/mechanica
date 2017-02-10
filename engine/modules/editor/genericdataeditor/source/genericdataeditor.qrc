@@ -1,7 +1,6 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-	<qresource prefix="genericdata-editor">
-		<file alias="browser-file-genericdata.png">../resource/browser-file-genericdata.png</file>
-		<file alias="tag-editor.png">../resource/tag-editor.png</file>
-	</qresource>
+<RCC>
+    <qresource prefix="/genericdata-editor">
+        <file alias="browser-file-genericdata.png">../resource/browser-file-genericdata.png</file>
+        <file alias="tag-editor.png">../resource/tag-editor.png</file>
+    </qresource>
 </RCC>
