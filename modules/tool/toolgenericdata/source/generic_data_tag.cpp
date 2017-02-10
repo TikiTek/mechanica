@@ -9,8 +9,11 @@ namespace tiki
 
 	GenericDataTag::~GenericDataTag()
 	{
-		TIKI_DELETE( m_pChildTag );
-		m_pChildTag = nullptr;
+		if( m_pChildTag != nullptr )
+		{
+			TIKI_DELETE( m_pChildTag );
+			m_pChildTag = nullptr;
+		}
 	}
 
 	const string& GenericDataTag::getTag() const

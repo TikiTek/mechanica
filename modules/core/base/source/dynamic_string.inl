@@ -353,41 +353,46 @@ namespace tiki
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( char c, uint index /*= 0u*/ ) const
+	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( char c, uint index /*= 0xffffffffu*/ ) const
 	{
-		int i = int( index );
-		while( i >= 0 )
+		index = TIKI_MIN( index, m_stringSize - 1u );
+		while( index < m_stringSize )
 		{
-			if( m_pData[ i ] == c ) return i;
-			i--;
+			if( m_pData[ index ] == c )
+			{
+				return (int)index;
+			}
+
+			index--;
 		}
 
 		return -1;
 	}
 
-	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( const DynamicString& str, uint index /*= 0u*/ ) const
+	TIKI_FORCE_INLINE int DynamicString::lastIndexOf( const DynamicString& str, uint index /*= 0xffffffffu*/ ) const
 	{
-		int i = (int)index;
-		while( i >= 0 )
+		index = TIKI_MIN( index, m_stringSize - 1u );
+		while( index < m_stringSize )
 		{
-			int b = 0;
+			uint b = 0;
 			bool found = true;
-			while( b < (int)str.m_stringSize )
+			while( b < str.m_stringSize )
 			{
-				if( m_pData[ i + b ] != str.m_pData[ b ] )
+				if( m_pData[ index + b ] != str.m_pData[ b ] )
 				{
 					found = false;
 					break;
 				}
+
 				b++;
 			}
 
 			if( found )
 			{
-				return i;
+				return (int)index;
 			}
 
-			i--;
+			index--;
 		}
 
 		return -1;

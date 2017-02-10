@@ -123,7 +123,7 @@ namespace tiki
 		Values					m_value;
 		string					m_text;
 
-		GenericDataTag*	m_pValueTag;
+		GenericDataTag*			m_pValueTag;
 
 		GenericDataValueType	getValueType( const GenericDataType* pType );
 		bool					checkType( const GenericDataType* pType);

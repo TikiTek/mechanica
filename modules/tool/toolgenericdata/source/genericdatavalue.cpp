@@ -35,6 +35,7 @@ namespace tiki
 
 		m_pType		= pType;
 		m_valueType	= getValueType( pType );
+		m_pValueTag	= nullptr;
 		memory::zero( m_value );
 	}
 

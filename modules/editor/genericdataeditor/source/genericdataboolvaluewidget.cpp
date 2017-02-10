@@ -15,6 +15,7 @@ namespace tiki
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pCheckBox );
+		m_pLayout->setMargin( 0 );
 
 		applyValue();
 

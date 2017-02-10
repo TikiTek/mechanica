@@ -41,8 +41,8 @@ namespace tiki
 		TIKI_FORCE_INLINE uint				countSubstring( const DynamicString& str ) const;
 		TIKI_FORCE_INLINE int				indexOf( char c, uint index = 0u ) const;
 		TIKI_FORCE_INLINE int				indexOf( const DynamicString& str, uint index = 0u ) const;
-		TIKI_FORCE_INLINE int				lastIndexOf( char c, uint index = 0u ) const;
-		TIKI_FORCE_INLINE int				lastIndexOf( const DynamicString& str, uint index = 0u ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( char c, uint index = 0xffffffffu ) const;
+		TIKI_FORCE_INLINE int				lastIndexOf( const DynamicString& str, uint index = 0xffffffffu ) const;
 
 		TIKI_FORCE_INLINE bool				contains(char c) const;
 		TIKI_FORCE_INLINE bool				contains(const DynamicString& str) const;

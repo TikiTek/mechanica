@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QSettings>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -22,22 +23,32 @@ namespace tiki
 		: m_typeCollection( typeCollection )
 		, m_document( typeCollection )
 	{
+		m_pTreeRootKeyItem		= nullptr;
+		m_pTreeRootValueItem	= nullptr;
+		m_pTreeRootTypeItem		= nullptr;
+
 		m_pTreeModel = new QStandardItemModel();
 		m_pTreeModel->setHorizontalHeaderLabels( { "Key", "Value", "Type" } );
 
 		m_pTreeView = new QTreeView();
 		m_pTreeView->setModel( m_pTreeModel );
 		m_pTreeView->header()->setStretchLastSection( false );
-		m_pTreeView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-		m_pTreeView->header()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
+		//m_pTreeView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+		//m_pTreeView->header()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pTreeView );
 		setLayout( m_pLayout );
+
+		QSettings settings( "TikiTek", "editor" );		
+		m_pTreeView->header()->restoreState( settings.value( "generic_data/geometry" ).toByteArray() );
 	}
 
 	GenericDataEditorWidget::~GenericDataEditorWidget()
 	{
+		QSettings settings( "TikiTek", "editor" );
+		settings.setValue( "generic_data/geometry", m_pTreeView->header()->saveState() );
+
 		delete m_pTreeRootKeyItem;
 		delete m_pTreeRootValueItem;
 		delete m_pTreeRootTypeItem;

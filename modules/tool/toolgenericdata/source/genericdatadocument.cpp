@@ -77,6 +77,7 @@ namespace tiki
 
 		if( !importFromXml( oldReader ) )
 		{
+			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromFile] Unable to import '%s'.\n", pFilename );
 			oldReader.dispose();
 			return false;
 		}
