@@ -8,7 +8,7 @@
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
 #include "tiki/toolgenericdata/genericdatatypepointer.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
-#include "tiki/toolgenericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 #	include "tiki/converterbase/converterhelper.hpp"

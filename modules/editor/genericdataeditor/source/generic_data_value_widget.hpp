@@ -7,6 +7,7 @@
 class QHBoxLayout;
 class QLineEdit;
 class QPushButton;
+class QComboBox;
 
 namespace tiki
 {
@@ -16,18 +17,22 @@ namespace tiki
 
 	public:
 
-		GenericDataValueWidget( GenericDataValue* pValue );
-		~GenericDataValueWidget();
+							GenericDataValueWidget( GenericDataValue* pValue );
+							~GenericDataValueWidget();
+
+		void				loadFromValue();
+		void				saveToValue();
 
 	private:
 
-		GenericDataValue*	m_pValue;
+		GenericDataValue*		m_pValue;
 
-		QHBoxLayout*		m_pLayout;
-		QLineEdit*			m_pTextBox;
-		QPushButton*		m_pTagEditButton;
+		QHBoxLayout*			m_pLayout;
 
-		void				applyValue();
+		QComboBox*				m_pTag;
+		QComboBox*				m_pEnum;
+		QLineEdit*				m_pText;
+		QPushButton*			m_pTagEnableButton;
 	};
 }
 

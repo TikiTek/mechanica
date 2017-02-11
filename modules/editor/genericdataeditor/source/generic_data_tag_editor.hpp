@@ -4,6 +4,10 @@
 
 #include <QWindow>
 
+class QMenu;
+class QPushButton;
+class QTreeView;
+
 namespace tiki
 {
 	class GenericDataTag;
@@ -14,12 +18,25 @@ namespace tiki
 
 	public:
 
-		GenericDataTagEditor( QWindow* pParent, GenericDataTag* pTag );
+		GenericDataTagEditor( QWindow* pParent, GenericDataValue* pValue );
 		~GenericDataTagEditor();
 
 	private:
 
+		GenericDataValue*	m_pValue;
 		GenericDataTag*		m_pTag;
+		GenericDataTag*		m_pWorkingTag;
+
+		QPushButton*		m_pOkButton;
+		QPushButton*		m_pCancelButton;
+
+		QMenu*				m_pItemMenu;
+		QPushButton*		m_pAddButton;
+
+		QTreeView*			m_pTreeView;
+		QStandardItemModel*	m_pTreeModel;
+		QStandardItem*		m_pTreeRootTagItem;
+		QStandardItem*		m_pTreeRootValueItem;
 	};
 }
 

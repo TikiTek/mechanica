@@ -5,7 +5,7 @@
 #include "tiki/toolgenericdata/genericdatatype.hpp"
 
 #include "tiki/container/list.hpp"
-#include "tiki/toolgenericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/generic_data_value.hpp"
 
 namespace tiki
 {

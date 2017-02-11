@@ -20,7 +20,7 @@
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
-#include "tiki/toolgenericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/generic_data_value.hpp"
 
 namespace tiki
 {
@@ -410,7 +410,7 @@ namespace tiki
 				const int dotIndex = content.indexOf( '.' );
 				if( dotIndex == -1 )
 				{
-					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please {enum TypeName.ValueName} for enum modfiers.\n" );
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] Please use {enum TypeName.ValueName} for enum tags.\n" );
 					return false;
 				}
 

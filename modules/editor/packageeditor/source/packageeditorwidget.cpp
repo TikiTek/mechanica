@@ -1,6 +1,7 @@
 #include "tiki/packageeditor/packageeditorwidget.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/editorinterface/ifile.hpp"
 
 #include <QLabel>
 #include <QLineEdit>
