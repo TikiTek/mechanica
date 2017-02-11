@@ -7,7 +7,7 @@
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/map.hpp"
-#include "tiki/toolgenericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/generic_data_value.hpp"
 
 struct _XmlElement;
 

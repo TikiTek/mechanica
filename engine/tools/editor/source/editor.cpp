@@ -2,7 +2,7 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/genericdataeditor/genericdataeditor.hpp"
-#include "tiki/packageeditor/packageeditor.hpp"
+#include "tiki/packageeditor/package_editor.hpp"
 
 #include "editorwindow.hpp"
 #include "editorfile.hpp"

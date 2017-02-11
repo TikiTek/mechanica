@@ -1,7 +1,7 @@
 #include "genericdataboolvaluewidget.hpp"
 
 #include "tiki/base/assert.hpp"
-#include "tiki/toolgenericdata/genericdatavalue.hpp"
+#include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #include <QCheckBox>
 #include <QHBoxLayout>

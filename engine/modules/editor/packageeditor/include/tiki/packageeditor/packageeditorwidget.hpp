@@ -13,6 +13,8 @@ class QVBoxLayout;
 
 namespace tiki
 {
+	class IFile;
+
 	class PackageEditorWidget : public QWidget
 	{
 		Q_OBJECT

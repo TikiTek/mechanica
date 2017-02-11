@@ -3,7 +3,7 @@
 #define TIKI_EDITORWINDOW_HPP_INCLUDED
 
 #include "tiki/genericdataeditor/genericdataeditor.hpp"
-#include "tiki/packageeditor/packageeditor.hpp"
+#include "tiki/packageeditor/package_editor.hpp"
 #include "tiki/qtapplication/qtmainwindow.hpp"
 
 

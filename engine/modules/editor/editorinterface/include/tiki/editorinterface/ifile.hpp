@@ -6,6 +6,8 @@
 
 namespace tiki
 {
+	class IFileEditor;
+
 	class IFile
 	{
 	public:

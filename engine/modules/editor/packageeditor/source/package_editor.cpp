@@ -1,4 +1,4 @@
-#include "tiki/packageeditor/packageeditor.hpp"
+#include "tiki/packageeditor/package_editor.hpp"
 
 #include "tiki/editorinterface/ieditorinterface.hpp"
 #include "tiki/editorinterface/ifile.hpp"
