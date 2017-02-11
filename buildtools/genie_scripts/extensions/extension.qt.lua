@@ -6,41 +6,36 @@ local ui_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "ac
 local moc_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_moc.lua" ) );
 local qrc_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_qrc.lua" ) );
 
-function Module:add_ui_file( filename )
-	local output_filename = "ui_" .. path.getbasename( filename ) .. ".h"
+function add_build_actions( module, pattern, prefix, ext, script )
+	local full_pattern = path.join( module.config.base_path, pattern );
+	local matches = os.matchfiles( full_pattern );
 
-	local step_data = {
-		source_filename = path.join( self.config.base_path, filename ),
-		output_filename = output_filename,
-		qt_dir = qt_dir
-	}
-
-	self:add_pre_build_step( ui_script, step_data );
-	self:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
+	if #matches == 0 then
+		throw("[qt] '" .. pattern .. "' pattern matches no files.");
+	end
+	
+	for j, filename in pairs( matches ) do
+		local output_filename = prefix .. "_" .. path.getbasename( filename ) .. "." .. ext;
+	
+		local step_data = {
+			source_filename = path.join( module.config.base_path, filename ),
+			output_filename = output_filename,
+			qt_dir = qt_dir
+		}
+	
+		module:add_pre_build_step( script, step_data );
+		module:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
+	end
 end
 
-function Module:add_moc_file( filename )
-	local output_filename = "moc_" .. path.getbasename( filename ) .. ".cpp";
-
-	local step_data = {
-		source_filename = path.join( self.config.base_path, filename ),
-		output_filename = output_filename,
-		qt_dir = qt_dir
-	}
-	
-	self:add_pre_build_step( moc_script, step_data );
-	self:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
+function Module:add_ui_files( pattern )
+	add_build_actions( self, pattern, "ui", "h", ui_script );
 end
 
-function Module:add_qrc_file( filename )
-	local output_filename = "rcc_" .. path.getbasename( filename ) .. ".cpp";
+function Module:add_moc_files( pattern )
+	add_build_actions( self, pattern, "moc", "cpp", moc_script );
+end
 
-	local step_data = {
-		source_filename = path.join( self.config.base_path, filename ),
-		output_filename = output_filename,
-		qt_dir = qt_dir
-	}
-	
-	self:add_pre_build_step( qrc_script, step_data );
-	self:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
+function Module:add_qrc_files( pattern )
+	add_build_actions( self, pattern, "rcc", "cpp", qrc_script );
 end

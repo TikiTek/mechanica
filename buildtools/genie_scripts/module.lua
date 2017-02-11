@@ -187,7 +187,7 @@ function Module:finalize_module( config, configuration, platform, project, solut
 				throw("[finalize] '" .. pattern .. "' pattern in '" .. self.name .. "' matches no files.");
 			end
 			
-			for j,file_name in pairs( matches ) do
+			for j, file_name in pairs( matches ) do
 				if not io.exists( file_name ) then
 					throw("[finalize] '" .. file_name .. "'  in '" .. self.name .. "' don't exists.");
 				end

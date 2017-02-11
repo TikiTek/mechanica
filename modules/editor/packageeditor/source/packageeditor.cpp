@@ -3,7 +3,7 @@
 #include "tiki/editorinterface/ieditorinterface.hpp"
 #include "tiki/editorinterface/ifile.hpp"
 #include "tiki/packageeditor/packageeditorwidget.hpp"
-#include "tiki/packageeditor/packagefilebrowser.hpp"
+#include "tiki/packageeditor/package_file_browser_widget.hpp"
 #include "tiki/qtapplication/qtribbonbutton.hpp"
 #include "tiki/qtapplication/qtribbontab.hpp"
 
@@ -30,7 +30,7 @@ namespace tiki
 
 		pInterface->addGlobalRibbonTab( m_pRibbon );
 
-		m_pFileBrowser = new PackageFileBrowser( pInterface );
+		m_pFileBrowser = new PackageFileBrowserWidget( pInterface );
 	}
 
 	PackageEditor::~PackageEditor()
