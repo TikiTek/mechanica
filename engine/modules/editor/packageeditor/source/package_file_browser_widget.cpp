@@ -1,4 +1,4 @@
-#include "tiki/packageeditor/packagefilebrowser.hpp"
+#include "tiki/packageeditor/package_file_browser_widget.hpp"
 
 #include <QStandardItem>
 #include <QStandardItemModel>
@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	PackageFileBrowser::PackageFileBrowser( IEditorInterface* pInterface )
+	PackageFileBrowserWidget::PackageFileBrowserWidget( IEditorInterface* pInterface )
 		: QDockWidget( "Asset Browser" )
 		, m_pInterface( pInterface )
 		, m_folderIcon( ":/package-editor/browser-folder.png" )
@@ -17,17 +17,17 @@ namespace tiki
 		m_pTreeView = new QTreeView();
 		m_pTreeView->setModel( m_pTreeModel );
 
-		connect( m_pTreeView, &QAbstractItemView::doubleClicked, this, &PackageFileBrowser::doubleClicked );
+		connect( m_pTreeView, &QAbstractItemView::doubleClicked, this, &PackageFileBrowserWidget::doubleClicked );
 
 		setWidget( m_pTreeView );
 	}
 
-	PackageFileBrowser::~PackageFileBrowser()
+	PackageFileBrowserWidget::~PackageFileBrowserWidget()
 	{
 		delete m_pTreeView;
 	}
 
-	void PackageFileBrowser::openPackage( const QString& packageName )
+	void PackageFileBrowserWidget::openPackage( const QString& packageName )
 	{
 		closePakage();
 		m_packageName = packageName;
@@ -45,7 +45,7 @@ namespace tiki
 		m_pTreeView->expand( m_pTreeModel->indexFromItem( pPackageItem ) );
 	}
 
-	void PackageFileBrowser::closePakage()
+	void PackageFileBrowserWidget::closePakage()
 	{
 		if( m_packageName.isEmpty() )
 		{
@@ -55,7 +55,7 @@ namespace tiki
 		m_pTreeModel->clear();
 	}
 
-	void PackageFileBrowser::doubleClicked( const QModelIndex &index )
+	void PackageFileBrowserWidget::doubleClicked( const QModelIndex &index )
 	{
 		QStandardItem* pItem = m_pTreeModel->itemFromIndex( index );
 		if( pItem != nullptr )
@@ -64,7 +64,7 @@ namespace tiki
 		}
 	}
 
-	void PackageFileBrowser::addFiles( QStandardItem* pParentItem, QDir dir )
+	void PackageFileBrowserWidget::addFiles( QStandardItem* pParentItem, QDir dir )
 	{
 		foreach( QString entry, dir.entryList( QDir::NoFilter, QDir::DirsFirst ) )
 		{

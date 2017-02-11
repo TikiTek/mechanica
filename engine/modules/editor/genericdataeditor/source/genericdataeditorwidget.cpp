@@ -33,14 +33,12 @@ namespace tiki
 		m_pTreeView = new QTreeView();
 		m_pTreeView->setModel( m_pTreeModel );
 		m_pTreeView->header()->setStretchLastSection( false );
-		//m_pTreeView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-		//m_pTreeView->header()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pTreeView );
 		setLayout( m_pLayout );
 
-		QSettings settings( "TikiTek", "editor" );		
+		QSettings settings( "TikiTek", "editor" );
 		m_pTreeView->header()->restoreState( settings.value( "generic_data/geometry" ).toByteArray() );
 	}
 

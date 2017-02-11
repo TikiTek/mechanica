@@ -12,9 +12,8 @@ module:add_dependency( "thirdparty/qt" );
 module:add_dependency( "thirdparty/tinyxml2" );
 
 module.import_func = function(project)
-	module:add_moc_file( "include/tiki/packageeditor/packageeditor.hpp" )
-	module:add_moc_file( "include/tiki/packageeditor/packageeditorwidget.hpp" )
-	module:add_moc_file( "include/tiki/packageeditor/packagefilebrowser.hpp" )
+	module:add_moc_files( "include/tiki/packageeditor/*editor.hpp" )
+	module:add_moc_files( "include/tiki/packageeditor/*widget.hpp" )
 	
-	module:add_qrc_file( "source/packageeditor.qrc" )
+	module:add_qrc_files( "source/*.qrc" )
 end

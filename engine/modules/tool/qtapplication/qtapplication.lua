@@ -11,8 +11,8 @@ module:add_dependency( "core/base" );
 module:add_dependency( "thirdparty/qt" );
 
 module.import_func = function(project)
-	module:add_moc_file( "include/tiki/qtapplication/qtmainwindow.hpp" );
-	module:add_moc_file( "include/tiki/qtapplication/qtribbontab.hpp" );
-	module:add_moc_file( "include/tiki/qtapplication/qtribbonbutton.hpp" );
-	module:add_moc_file( "include/tiki/qtapplication/qtribbongroup.hpp" );
+	module:add_moc_files( "include/tiki/qtapplication/qtmainwindow.hpp" );
+	module:add_moc_files( "include/tiki/qtapplication/qtribbontab.hpp" );
+	module:add_moc_files( "include/tiki/qtapplication/qtribbonbutton.hpp" );
+	module:add_moc_files( "include/tiki/qtapplication/qtribbongroup.hpp" );
 end

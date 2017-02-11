@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_PACKAGEFILEBROWSER_HPP_INCLUDED
-#define TIKI_PACKAGEFILEBROWSER_HPP_INCLUDED
+#ifndef TIKI_PACKAGE_FILE_BROWSER_WIDGET_HPP_INCLUDED
+#define TIKI_PACKAGE_FILE_BROWSER_WIDGET_HPP_INCLUDED
 
 #include <QDir>
 #include <QDockWidget>
@@ -13,14 +13,14 @@ namespace tiki
 {
 	class IEditorInterface;
 
-	class PackageFileBrowser : public QDockWidget
+	class PackageFileBrowserWidget : public QDockWidget
 	{
 		Q_OBJECT
 
 	public:
 
-		explicit			PackageFileBrowser( IEditorInterface* pInterface );
-		virtual				~PackageFileBrowser();
+		explicit			PackageFileBrowserWidget( IEditorInterface* pInterface );
+		virtual				~PackageFileBrowserWidget();
 
 		void				openPackage( const QString& packageName );
 		void				closePakage();
@@ -44,4 +44,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_PACKAGEFILEBROWSER_HPP_INCLUDED
+#endif // TIKI_PACKAGE_FILE_BROWSER_WIDGET_HPP_INCLUDED

@@ -9,7 +9,7 @@
 namespace tiki
 {
 	class IEditorInterface;
-	class PackageFileBrowser;
+	class PackageFileBrowserWidget;
 	class QtRibbonButton;
 
 	class PackageEditor : public QObject, public IFileEditor
@@ -52,7 +52,7 @@ namespace tiki
 		QtRibbonButton*				m_pClosePackageButton;
 		QtRibbonButton*				m_pEditPackageButton;
 
-		PackageFileBrowser*			m_pFileBrowser;
+		PackageFileBrowserWidget*			m_pFileBrowser;
 		QString						m_currentPackageName;
 
 		QVector< QtRibbonTab* >		m_tabs;

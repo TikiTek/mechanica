@@ -16,14 +16,9 @@ module:add_dependency( "editor/editorinterface" );
 module:add_dependency( "editor/packageeditor" );
 module:add_dependency( "editor/genericdataeditor" );
 
---module:add_dependency( "toollibraries" );
-
---module:add_ui_file( "source/mainwindow.ui" )
-
-
---module:add_library_file( "converterlibrary" );
-
 module.import_func = function(project)
-	module:add_moc_file( "source/editor.hpp" )
-	module:add_moc_file( "source/editorwindow.hpp" )
+	--module:add_ui_files( "source/mainwindow.ui" )
+
+	module:add_moc_files( "source/editor.hpp" )
+	module:add_moc_files( "source/editorwindow.hpp" )
 end
