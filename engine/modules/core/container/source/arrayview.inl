@@ -37,7 +37,7 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE size_t ArrayView< T >::getIndexOfValue( ConstReference value ) const
 	{
-		for( uint i = 0u; i < m_capacity; ++i )
+		for( uint i = 0u; i < m_count; ++i )
 		{
 			if( m_pData[ i ] == value )
 			{
@@ -51,7 +51,7 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE const T& ArrayView< T >::operator[]( uint index ) const
 	{
-		TIKI_ASSERT( index < m_capacity );
+		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
 }
