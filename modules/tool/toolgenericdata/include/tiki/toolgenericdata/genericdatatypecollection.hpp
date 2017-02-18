@@ -2,11 +2,12 @@
 #ifndef TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 #define TIKI_GENERICDATATYPECOLLECTION_HPP_INCLUDED__
 
+#include "tiki/base/types.hpp"
 #include "tiki/container/fixedarray.hpp"
 #include "tiki/container/linkedlist.hpp"
-#include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/container/map.hpp"
+#include "tiki/toolgenericdata/generic_data_tag_handler.hpp"
 #include "tiki/toolgenericdata/genericdatatype.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
@@ -35,6 +36,8 @@ namespace tiki
 		bool							create( const string& contentFolder, bool recursive );
 		void							dispose();
 
+		GenericDataTagHandler&			getTagHandler();
+
 		bool							addType( GenericDataType& type );
 		bool							removeType( GenericDataType& type );
 
@@ -49,10 +52,7 @@ namespace tiki
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
 
-		const GenericDataType*			resolveTypeTag( const GenericDataTag* pTag );
 		const GenericDataType*			parseType( const string& typeString );
-
-		bool							resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const;
 		bool							parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
 		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
@@ -68,6 +68,8 @@ namespace tiki
 		TypeArrayMap					m_arrays;
 		TypeReferenceMap				m_references;
 		TypePointerMap					m_pointers;
+
+		GenericDataTagHandler			m_tagHandler;
 
 		const GenericDataTypeEnum*		m_pModeEnum;
 		const GenericDataTypeValueType*	m_pEnumDefaultType;
