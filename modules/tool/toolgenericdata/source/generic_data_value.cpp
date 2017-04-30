@@ -53,6 +53,12 @@ namespace tiki
 			TIKI_DELETE( m_value.pArray );
 			m_value.pArray = nullptr;
 		}
+
+		if( m_pValueTag != nullptr )
+		{
+			TIKI_DELETE( m_pValueTag );
+			m_pValueTag = nullptr;
+		}
 	}
 
 	const GenericDataType* GenericDataValue::getType() const

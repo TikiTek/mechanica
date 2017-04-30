@@ -22,11 +22,9 @@ namespace tiki
 		TIKI_FORCE_INLINE uint				getCount() const { return m_count; }
 
 		TIKI_FORCE_INLINE ConstIterator		getBegin() const { return m_pData; }
-
 		TIKI_FORCE_INLINE ConstIterator		getEnd() const { return m_pData + m_count; }
 
 		TIKI_FORCE_INLINE ConstReference	getFirst() const { return m_pData[ 0u ]; }
-
 		TIKI_FORCE_INLINE ConstReference	getLast() const { return m_pData[ m_count - 1u ]; }
 
 		TIKI_FORCE_INLINE uint				getIndexOfIterator( ConstIterator pValue ) const;
@@ -35,7 +33,6 @@ namespace tiki
 		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
 
 		TIKI_FORCE_INLINE ConstIterator		begin() const { return getBegin(); }
-
 		TIKI_FORCE_INLINE ConstIterator		end() const { return getEnd(); }
 
 	private:
