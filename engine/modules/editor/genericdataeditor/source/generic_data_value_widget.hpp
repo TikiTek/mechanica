@@ -23,6 +23,10 @@ namespace tiki
 		void				loadFromValue();
 		void				saveToValue();
 
+	signals:
+
+		void				onTagEnableChanged();
+
 	private:
 
 		GenericDataValue*		m_pValue;

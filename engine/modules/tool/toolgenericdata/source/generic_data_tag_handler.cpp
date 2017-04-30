@@ -5,10 +5,25 @@ namespace tiki
 	GenericDataTagHandler::GenericDataTagHandler( GenericDataTypeCollection& collection )
 		: m_collection( collection )
 	{
-		//m_typeTags =
-		//{
-		//	{ "array", &GenericDataTagHandler::resolveArrayTypeTag }
-		//};
+		static const TypeTag s_aTypeTags[] =
+		{
+			{ "array",		&GenericDataTagHandler::resolveArrayTypeTag },		// GenericDataTypeTag_Array
+			{ "reference",	&GenericDataTagHandler::resolveReferenceTypeTag },	// GenericDataTypeTag_Reference
+			{ "pointer",	&GenericDataTagHandler::resolvePointerTypeTag }		// GenericDataTypeTag_Pointer
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aTypeTags ) == GenericDataTypeTag_Count );
+		m_typeTags = TypeTagArray( s_aTypeTags, TIKI_COUNT( s_aTypeTags ) );
+
+		static const ValueTag s_aValueTags[] =
+		{
+			{ "enum",		&GenericDataTagHandler::resolveEnumValueTag },		// GenericDataValueTag_Enum
+			{ "reference",	&GenericDataTagHandler::resolveReferenceValueTag },	// GenericDataValueTag_Reference
+			{ "bit",		&GenericDataTagHandler::resolveBitValueTag },		// GenericDataValueTag_Bit
+			{ "offset",		&GenericDataTagHandler::resolveOffsetValueTag },	// GenericDataValueTag_Offset
+			{ "crc",		&GenericDataTagHandler::resolveCrcValueTag }		// GenericDataValueTag_Crc
+		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aValueTags ) == GenericDataValueTag_Count );
+		m_valueTags = ValueTagArray( s_aValueTags, TIKI_COUNT( s_aValueTags ) );
 	}
 
 	GenericDataTagHandler::~GenericDataTagHandler()
@@ -33,78 +48,28 @@ namespace tiki
 			TIKI_TRACE_ERROR( "[resolveTypeTag] type tags doesn't support recursion.\n" );
 		}
 
-		const GenericDataType* pType = nullptr;
-		if( pTag->getTag() == "array" )
+		for( const TypeTag& typeTag : m_typeTags )
 		{
-			if( pType == nullptr )
+			if( !isStringEquals( typeTag.pTag, pTag->getTag().cStr() ) )
 			{
-				pType = m_collection.findTypeByName( pTag->getContent() );
-				if( pType == nullptr )
-				{
-					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
-					return nullptr;
-				}
+				continue;
 			}
 
-			pType = m_collection.makeArrayType( pType );
-		}
-		else if( pTag->getTag() == "reference" )
-		{
-			const GenericDataTypeResource* pTypedType = nullptr;
-			if( pType == nullptr )
-			{
-				pType = m_collection.findTypeByName( pTag->getContent() );
-				if( pType == nullptr )
-				{
-					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
-					return nullptr;
-				}
-
-				if( pType->getType() != GenericDataTypeType_Resource )
-				{
-					TIKI_TRACE_ERROR( "[resolveTypeTag] Reference needs a Resource type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
-					return nullptr;
-				}
-
-				pTypedType = (const GenericDataTypeResource*)pType;
-			}
-
-			pType = m_collection.makeReferenceType( pTypedType );
-		}
-		else if( pTag->getTag() == "pointer" )
-		{
-			const GenericDataTypeStruct* pTypedType = nullptr;
-			if( pType == nullptr )
-			{
-				pType = m_collection.findTypeByName( pTag->getContent() );
-				if( pType == nullptr )
-				{
-					TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
-					return nullptr;
-				}
-
-				if( pType->getType() != GenericDataTypeType_Struct )
-				{
-					TIKI_TRACE_ERROR( "[resolveTypeTag] Pointer needs a Struct type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
-					return nullptr;
-				}
-
-				pTypedType = (const GenericDataTypeStruct*)pType;
-			}
-
-			pType = m_collection.makePointerType( pTypedType );
-		}
-		else
-		{
-			TIKI_TRACE_ERROR( "[resolveTypeTag] Modifier(%s) not supported.\n", pTag->getTag().cStr() );
-			return nullptr;
+			return (this->*typeTag.pResolveFunc)(pTag);
 		}
 
-		return pType;
+		TIKI_TRACE_ERROR( "[resolveTypeTag] Modifier(%s) not supported.\n", pTag->getTag().cStr() );
+		return nullptr;
 	}
 
 	bool GenericDataTagHandler::resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const
 	{
+		if( pTag == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] pTag is null.\n" );
+			return false;
+		}
+
 		List< const GenericDataTag* > tagTree;
 		tagTree.add( pTag );
 
@@ -214,6 +179,154 @@ namespace tiki
 		}
 
 		targetContent = content;
+		return true;
+	}
+
+	const GenericDataType* GenericDataTagHandler::resolveArrayTypeTag( const GenericDataTag* pTag )
+	{
+		const GenericDataType* pType = m_collection.findTypeByName( pTag->getContent() );
+		if( pType == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+			return nullptr;
+		}
+
+		return m_collection.makeArrayType( pType );
+	}
+
+	const GenericDataType* GenericDataTagHandler::resolveReferenceTypeTag( const GenericDataTag* pTag )
+	{
+		const GenericDataType* pType = m_collection.findTypeByName( pTag->getContent() );
+		if( pType == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+			return nullptr;
+		}
+
+		if( pType->getType() != GenericDataTypeType_Resource )
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Reference needs a Resource type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
+			return nullptr;
+		}
+
+		const GenericDataTypeResource* pTypedType = (const GenericDataTypeResource*)pType;
+		return m_collection.makeReferenceType( pTypedType );
+	}
+
+	const GenericDataType* GenericDataTagHandler::resolvePointerTypeTag( const GenericDataTag* pTag )
+	{
+		const GenericDataType* pType = m_collection.findTypeByName( pTag->getContent() );
+		if( pType == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Unable to find Type with name '%s'.\n", pTag->getContent().cStr() );
+			return nullptr;
+		}
+
+		if( pType->getType() != GenericDataTypeType_Struct )
+		{
+			TIKI_TRACE_ERROR( "[resolveTypeTag] Pointer needs a Struct type as base. '%s' is not a resource.\n", pTag->getContent().cStr() );
+			return nullptr;
+		}
+
+		const GenericDataTypeStruct* pTypedType = (const GenericDataTypeStruct*)pType;
+		return m_collection.makePointerType( pTypedType );
+	}
+
+	bool GenericDataTagHandler::resolveEnumValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	{
+		const int dotIndex = targetContent.indexOf( '.' );
+		if( dotIndex == -1 )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] Please use {enum TypeName.ValueName} for enum tags.\n" );
+			return false;
+		}
+
+		const string enumTypeName = targetContent.subString( 0u, dotIndex );
+		const GenericDataType* pEnumType = m_collection.findTypeByName( enumTypeName );
+		if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] '%s' not found or not an enum.\n", enumTypeName.cStr() );
+			return false;
+		}
+
+		targetContent = targetContent.subString( dotIndex + 1 );
+
+		const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
+		const GenericDataValue* pValue = pTypedEnumType->getValueByName( targetContent );
+
+		sint64 intValue = 0;
+		if( pValue == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), targetContent.cStr() );
+			return false;
+		}
+		else if( !pValue->getSignedValue( intValue ) )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), targetContent.cStr() );
+			return false;
+		}
+
+		return true;
+	}
+
+	bool GenericDataTagHandler::resolveReferenceValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	{
+		TIKI_NOT_IMPLEMENTED;
+		return false;
+	}
+
+	bool GenericDataTagHandler::resolveBitValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	{
+		const sint64 shift = string_tools::parseSInt64( targetContent.cStr() );
+		const sint64 value = 1ll << shift;
+
+		targetContent = string_tools::toString( value );
+		return true;
+	}
+
+	bool GenericDataTagHandler::resolveOffsetValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	{
+		if( pParentType != nullptr && pParentType->getType() == GenericDataTypeType_Struct )
+		{
+			const GenericDataTypeStruct* pTypedParent = (const GenericDataTypeStruct*)pParentType;
+			const List< GenericDataStructField >& fields = pTypedParent->getFields();
+
+			bool found = false;
+			sint64 offset = 0;
+			for( uint i = 0u; i < fields.getCount(); ++i )
+			{
+				const GenericDataStructField& field = fields[ i ];
+
+				offset = alignValue( offset, (sint64)field.pType->getAlignment() );
+
+				if( field.name == targetContent )
+				{
+					targetContent = string_tools::toString( offset );
+					found = true;
+					break;
+				}
+
+				offset += field.pType->getSize();
+			}
+
+			if( !found )
+			{
+				TIKI_TRACE_ERROR( "[resolveValueTag] field with name '%s' for modifier '%s' not found.\n", targetContent.cStr(), pTag->getTag().cStr() );
+				return false;
+			}
+		}
+		else
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] modifier '%s' must have a struct type. '%s' is not a struct.\n", pTag->getTag().cStr(), pParentType->getName().cStr() );
+			return false;
+		}
+
+		return true;
+	}
+
+	bool GenericDataTagHandler::resolveCrcValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	{
+		targetContent = string_tools::toString( crcString( targetContent ) );
 		return true;
 	}
 }

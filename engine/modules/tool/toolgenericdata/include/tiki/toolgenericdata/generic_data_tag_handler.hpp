@@ -46,20 +46,20 @@ namespace tiki
 
 	private:
 
-		typedef const GenericDataType* (*GenericDataTagHandler::TypeTagHandler)( const GenericDataTag* pTag );
-		typedef bool (*GenericDataTagHandler::ValueTagHandler)( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		typedef const GenericDataType* (GenericDataTagHandler::*TypeTagHandler)( const GenericDataTag* pTag );
+		typedef bool (GenericDataTagHandler::*ValueTagHandler)( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 
 		struct TypeTag
 		{
 			const char*				pTag;
-			TypeTagHandler*			pResolveFunc;
+			TypeTagHandler			pResolveFunc;
 		};
 		typedef ArrayView< TypeTag > TypeTagArray;
 
 		struct ValueTag
 		{
 			const char*				pTag;
-			ValueTagHandler*		pResolveFunc;
+			ValueTagHandler			pResolveFunc;
 		};
 		typedef ArrayView< ValueTag > ValueTagArray;
 
