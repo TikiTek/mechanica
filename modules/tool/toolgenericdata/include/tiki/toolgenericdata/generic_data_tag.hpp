@@ -13,29 +13,29 @@ namespace tiki
 
 	public:
 
-		explicit					GenericDataTag();
-									~GenericDataTag();
+		explicit				GenericDataTag();
+								~GenericDataTag();
 
-		const string&				getTag() const;
-		void						setTag( const string& tag );
+		const string&			getTag() const;
+		void					setTag( const string& tag );
 
-		const string&				getContent() const;
-		void						setContent( const string& content );
+		const string&			getContent() const;
+		void					setContent( const string& content );
 
-		GenericDataTag*		getChildTag() const;
+		GenericDataTag*			getChildTag() const;
 		const GenericDataTag*	getChildTag();
-		void						setChildTag( GenericDataTag* pChildTag );
+		void					setChildTag( GenericDataTag* pChildTag );
 
-		bool						parseTagString( const string& rawText );
-		string						writeTagString() const;
+		bool					parseTagString( const string& rawText );
+		string					writeTagString() const;
 
-		static bool					isTagString( const string& rawText );
+		static bool				isTagString( const string& rawText );
 
 	private:
 
-		string						m_tag;
-		string						m_content;
-		GenericDataTag*		m_pChildTag;
+		string					m_tag;
+		string					m_content;
+		GenericDataTag*			m_pChildTag;
 	};
 }
 

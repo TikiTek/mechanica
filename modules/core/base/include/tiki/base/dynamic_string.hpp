@@ -70,10 +70,10 @@ namespace tiki
 
 		TIKI_FORCE_INLINE bool				operator==(const DynamicString& rhs) const;
 		TIKI_FORCE_INLINE bool				operator!=(const DynamicString& rhs) const;
-		TIKI_FORCE_INLINE DynamicString&		operator=(const DynamicString& rhs);
+		TIKI_FORCE_INLINE DynamicString&	operator=(const DynamicString& rhs);
 
 		TIKI_FORCE_INLINE DynamicString		operator+(const DynamicString& rhs) const;
-		TIKI_FORCE_INLINE DynamicString&		operator+=(const DynamicString& rhs);
+		TIKI_FORCE_INLINE DynamicString&	operator+=(const DynamicString& rhs);
 
 		TIKI_FORCE_INLINE bool				operator>(const DynamicString& rhs) const;
 		TIKI_FORCE_INLINE bool				operator>=(const DynamicString& rhs) const;
@@ -102,13 +102,13 @@ namespace tiki
 
 	};
 
+	TIKI_FORCE_INLINE bool			operator==( const char* str1, const DynamicString& str2 );
+	TIKI_FORCE_INLINE DynamicString	operator+( const char* str1, const DynamicString& str2 );
+
+	DynamicString					formatDynamicString( const char* pFormat, ... );
+	DynamicString					formatDynamicStringArgs( const char* pFormat, va_list argptr );
+
 	typedef DynamicString string;
-
-	TIKI_FORCE_INLINE string		operator+( const char* str1, const string& str2 );
-
-	string							formatDynamicString( const char* pFormat, ... );
-	string							formatDynamicStringArgs( const char* pFormat, va_list argptr );
-
 }
 
 #include "../../../source/dynamic_string.inl"

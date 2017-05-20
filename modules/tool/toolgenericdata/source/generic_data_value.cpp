@@ -83,6 +83,11 @@ namespace tiki
 
 	void GenericDataValue::setValueTag( GenericDataTag* pValueTag )
 	{
+		if( m_pValueTag != nullptr )
+		{
+			TIKI_DELETE( m_pValueTag );
+		}
+
 		m_pValueTag = pValueTag;
 	}
 
