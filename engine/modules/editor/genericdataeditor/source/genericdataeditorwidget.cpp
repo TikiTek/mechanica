@@ -209,7 +209,7 @@ namespace tiki
 		case GenericDataValueType_FloatingPoint16:
 		case GenericDataValueType_FloatingPoint32:
 		case GenericDataValueType_FloatingPoint64:
-			return new GenericDataValueWidget( pValue );
+			return new GenericDataValueWidget( m_typeCollection, pValue );
 
 		case GenericDataValueType_String:
 			return nullptr;

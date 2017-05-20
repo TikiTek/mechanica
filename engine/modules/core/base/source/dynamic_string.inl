@@ -565,11 +565,6 @@ namespace tiki
 		return (*this == rhs) || (*this < rhs);
 	}
 
-	TIKI_FORCE_INLINE string operator+( const char* str1, const string& str2 )
-	{
-		return string( str1 ) + str2;
-	}
-
 	TIKI_FORCE_INLINE void DynamicString::allocateData( sint length )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
@@ -628,6 +623,16 @@ namespace tiki
 		const uint nextSize = getNextPowerOfTwo( neededLength + 1u );
 		TIKI_ASSERT( nextSize > neededLength );
 		return nextSize;
+	}
+
+	TIKI_FORCE_INLINE bool operator==( const char* str1, const DynamicString& str2 )
+	{
+		return isStringEquals( str1, str2.cStr() );
+	}
+
+	TIKI_FORCE_INLINE string operator+( const char* str1, const string& str2 )
+	{
+		return string( str1 ) + str2;
 	}
 }
 

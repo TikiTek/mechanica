@@ -17,26 +17,34 @@ namespace tiki
 
 	public:
 
-							GenericDataValueWidget( GenericDataValue* pValue );
+							GenericDataValueWidget( GenericDataTypeCollection& collection, GenericDataValue* pValue );
 							~GenericDataValueWidget();
 
 		void				loadFromValue();
 		void				saveToValue();
 
-	signals:
+	private slots:
 
-		void				onTagEnableChanged();
+		void				onTagChanged( int index );
+		void				onTagEnableChanged( bool checked );
 
 	private:
 
-		GenericDataValue*		m_pValue;
+		GenericDataTypeCollection&	m_collection;
+		GenericDataTagHandler&		m_tagHandler;
 
-		QHBoxLayout*			m_pLayout;
+		GenericDataValue*			m_pValue;
 
-		QComboBox*				m_pTag;
-		QComboBox*				m_pEnum;
-		QLineEdit*				m_pText;
-		QPushButton*			m_pTagEnableButton;
+		QHBoxLayout*				m_pLayout;
+
+		QPushButton*				m_pTagEnableButton;
+		bool						m_isInTagMode;
+
+		QComboBox*					m_pTag;
+		QComboBox*					m_pEnum;
+		QLineEdit*					m_pText;
+
+		void						selectTag();
 	};
 }
 

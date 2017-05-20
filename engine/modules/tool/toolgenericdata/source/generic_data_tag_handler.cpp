@@ -182,6 +182,28 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, string& enumValue, const string& content ) const
+	{
+		const int dotIndex = content.indexOf( '.' );
+		if( dotIndex == -1 )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] Please use {enum TypeName.ValueName} for enum tags.\n" );
+			return false;
+		}
+
+		const string enumTypeName = content.subString( 0u, dotIndex );
+		const GenericDataType* pEnumType = m_collection.findTypeByName( enumTypeName );
+		if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
+		{
+			TIKI_TRACE_ERROR( "[resolveValueTag] '%s' not found or not an enum.\n", enumTypeName.cStr() );
+			return false;
+		}
+
+		*ppEnumType	= (const GenericDataTypeEnum*)pEnumType;
+		enumValue	= content.subString( dotIndex + 1 );
+		return true;
+	}
+
 	const GenericDataType* GenericDataTagHandler::resolveArrayTypeTag( const GenericDataTag* pTag )
 	{
 		const GenericDataType* pType = m_collection.findTypeByName( pTag->getContent() );
@@ -234,33 +256,22 @@ namespace tiki
 
 	bool GenericDataTagHandler::resolveEnumValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
-		const int dotIndex = targetContent.indexOf( '.' );
-		if( dotIndex == -1 )
+		const GenericDataTypeEnum* pEnumType = nullptr;
+		if( !parseEnum( &pEnumType, targetContent, targetContent ) )
 		{
-			TIKI_TRACE_ERROR( "[resolveValueTag] Please use {enum TypeName.ValueName} for enum tags.\n" );
 			return false;
 		}
 
-		const string enumTypeName = targetContent.subString( 0u, dotIndex );
-		const GenericDataType* pEnumType = m_collection.findTypeByName( enumTypeName );
-		if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
-		{
-			TIKI_TRACE_ERROR( "[resolveValueTag] '%s' not found or not an enum.\n", enumTypeName.cStr() );
-			return false;
-		}
+		const GenericDataValue* pValue = pEnumType->getValueByName( targetContent );
 
-		targetContent = targetContent.subString( dotIndex + 1 );
-
-		const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
-		const GenericDataValue* pValue = pTypedEnumType->getValueByName( targetContent );
-
-		sint64 intValue = 0;
 		if( pValue == nullptr )
 		{
 			TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), targetContent.cStr() );
 			return false;
 		}
-		else if( !pValue->getSignedValue( intValue ) )
+
+		sint64 intValue = 0;
+		if( !pValue->getSignedValue( intValue ) )
 		{
 			TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), targetContent.cStr() );
 			return false;
