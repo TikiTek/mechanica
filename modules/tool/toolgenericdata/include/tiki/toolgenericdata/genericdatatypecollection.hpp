@@ -30,6 +30,8 @@ namespace tiki
 
 	public:
 
+		typedef LinkedList< GenericDataType > TypeList;
+
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
@@ -40,6 +42,8 @@ namespace tiki
 
 		bool							addType( GenericDataType& type );
 		bool							removeType( GenericDataType& type );
+
+		const TypeList&					getTypes() const;
 
 		const GenericDataType*			findTypeByName( const string& name ) const;
 		void							findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const;
@@ -64,7 +68,7 @@ namespace tiki
 		typedef Map< const GenericDataTypeResource*, const GenericDataTypeReference* > TypeReferenceMap;
 		typedef Map< const GenericDataTypeStruct*, const GenericDataTypePointer* > TypePointerMap;
 
-		LinkedList< GenericDataType >	m_types;
+		TypeList						m_types;
 		TypeArrayMap					m_arrays;
 		TypeReferenceMap				m_references;
 		TypePointerMap					m_pointers;
