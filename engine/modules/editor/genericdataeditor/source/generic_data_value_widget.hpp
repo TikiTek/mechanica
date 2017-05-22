@@ -26,6 +26,9 @@ namespace tiki
 	private slots:
 
 		void				onTagChanged( int index );
+		void				onEnumTypeChanged( int index );
+		void				onEnumNameChanged( int index );
+		void				onTextChanged( const QString& text );
 		void				onTagEnableChanged( bool checked );
 
 	private:
@@ -40,11 +43,13 @@ namespace tiki
 		QPushButton*				m_pTagEnableButton;
 		bool						m_isInTagMode;
 
-		QComboBox*					m_pTag;
-		QComboBox*					m_pEnum;
+		QComboBox*					m_pTags;
+		QComboBox*					m_pEnumType;
+		QComboBox*					m_pEnumName;
 		QLineEdit*					m_pText;
-
+		
 		void						selectTag();
+		void						refillEnumNames( const string& enumName );
 	};
 }
 

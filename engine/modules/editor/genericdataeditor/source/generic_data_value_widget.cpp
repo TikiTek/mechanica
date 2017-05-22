@@ -21,21 +21,59 @@ namespace tiki
 		// set to other state to initialize in correct mode
 		m_isInTagMode = !m_pTagEnableButton->isChecked();
 
-		m_pTag = new QComboBox();
+		const GenericDataTag* pValueTag = m_pValue->getValueTag();
+
+		const GenericDataTypeEnum* pEnumType = nullptr;
+		string enumName;
+		if( pValueTag != nullptr )
+		{
+			m_tagHandler.parseEnum( &pEnumType, enumName, pValueTag->getContent() );
+		}
+
+		m_pTags = new QComboBox();
+		m_pTags->setEditable( false );
 		for( uint i = 0u; i < GenericDataValueTag_Count; ++i )
 		{
 			const char* pName = m_tagHandler.getValueTag( (GenericDataValueTag)i );
-			m_pTag->addItem( pName, i );
+			m_pTags->addItem( pName, i );
 		}
-		connect( m_pTag, static_cast<void (QComboBox::*)(int index)>( &QComboBox::currentIndexChanged ), this, &GenericDataValueWidget::onTagChanged );
+		connect( m_pTags, static_cast<void (QComboBox::*)(int index)>( &QComboBox::currentIndexChanged ), this, &GenericDataValueWidget::onTagChanged );
 
-		m_pEnum = new QComboBox();
-		m_pEnum->setEditable( false );
+		m_pEnumType = new QComboBox();
+		m_pEnumType->setEditable( false );
+		for( const GenericDataType& type : m_collection.getTypes() )
+		{
+			if( type.getType() != GenericDataTypeType_Enum )
+			{
+				continue;
+			}
+
+			const GenericDataTypeEnum& enumType = (const GenericDataTypeEnum&)type;
+			m_pEnumType->addItem( enumType.getName().cStr(), qVariantFromValue( (void*)&enumType ) );
+
+			if( &enumType == pEnumType )
+			{
+				m_pEnumType->setCurrentIndex( m_pEnumType->count() - 1 );
+			}
+		}
+		connect( m_pEnumType, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &GenericDataValueWidget::onEnumTypeChanged );
+
+		m_pEnumName = new QComboBox();
+		m_pEnumName->setEditable( false );
+		refillEnumNames( enumName );
+		connect( m_pEnumName, static_cast<void (QComboBox::*)(int index)>( &QComboBox::currentIndexChanged ), this, &GenericDataValueWidget::onEnumNameChanged );
 
 		m_pText = new QLineEdit();
+		connect( m_pText, &QLineEdit::textChanged, this, &GenericDataValueWidget::onTextChanged );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->setMargin( 0 );
+
+		m_pLayout->addWidget( m_pTags );
+		m_pLayout->addWidget( m_pEnumType );
+		m_pLayout->addWidget( m_pEnumName );
+		m_pLayout->addWidget( m_pText );
+		m_pLayout->addWidget( m_pTagEnableButton );
 
 		setLayout( m_pLayout );
 
@@ -46,10 +84,10 @@ namespace tiki
 	{
 		delete m_pLayout;
 
+		delete m_pTags;
+		delete m_pEnumType;
+		delete m_pEnumName;
 		delete m_pText;
-		delete m_pEnum;
-		delete m_pTag;
-
 		delete m_pTagEnableButton;
 	}
 
@@ -62,26 +100,25 @@ namespace tiki
 		}
 		m_isInTagMode = willBeInTagMode;
 
-		m_pLayout->removeWidget( m_pTag );
-		m_pLayout->removeWidget( m_pEnum );
-		m_pLayout->removeWidget( m_pText );
-		m_pLayout->removeWidget( m_pTagEnableButton );
-
 		if( willBeInTagMode )
 		{
-			m_pLayout->addWidget( m_pTag );
-
+			m_pTags->show();
 			selectTag();
 		}
 		else
 		{
-			m_pLayout->addWidget( m_pText );
+			m_pTags->hide();
+			m_pEnumType->hide();
+			m_pEnumName->hide();
+			m_pText->show();
 		}
-
-		m_pLayout->addWidget( m_pTagEnableButton );
 
 		if( willBeInTagMode )
 		{
+			//const GenericDataTypeEnum* pEnumType = nullptr;
+			//string valueName;
+			//m_tagHandler.parseEnum( &pEnumType, valueName, pValueTag->getContent() );
+
 			const GenericDataTag* pValueTag = m_pValue->getValueTag();
 
 			if( pValueTag->getTag() == m_tagHandler.getValueTag( GenericDataValueTag_Enum ) )
@@ -95,11 +132,11 @@ namespace tiki
 					string enumName;
 					TIKI_VERIFY( m_pValue->getEnum( enumName, enumValue ) );
 
-					m_pEnum->setCurrentText( enumName.cStr() );
+					m_pEnumName->setCurrentText( enumName.cStr() );
 				}
 				else
 				{
-					m_pEnum->setCurrentText( pValueTag->getContent().cStr() );
+					//m_pEnum->setCurrentText( pValueTag->getContent().cStr() );
 				}
 				//QString qtEnumName = enumName.cStr();
 				//for( const GenericDataEnumValue& value :  )
@@ -148,6 +185,21 @@ namespace tiki
 		selectTag();
 	}
 
+	void GenericDataValueWidget::onEnumTypeChanged( int index )
+	{
+		refillEnumNames( m_pEnumName->currentText().toUtf8().constData() );
+	}
+
+	void GenericDataValueWidget::onEnumNameChanged( int index )
+	{
+		// ???
+	}
+
+	void GenericDataValueWidget::onTextChanged( const QString& text )
+	{
+		// ???
+	}
+
 	void GenericDataValueWidget::onTagEnableChanged( bool checked )
 	{
 		loadFromValue();
@@ -155,36 +207,51 @@ namespace tiki
 
 	void GenericDataValueWidget::selectTag()
 	{
-		m_pLayout->removeWidget( m_pEnum );
-		m_pLayout->removeWidget( m_pText );
+		m_pEnumType->hide();
+		m_pEnumName->hide();
+		m_pText->hide();
 
 		const GenericDataTag* pValueTag = m_pValue->getValueTag();
+		if( pValueTag == nullptr )
+		{
+			GenericDataTag* pNewTag = TIKI_NEW( GenericDataTag );
+			m_pValue->setValueTag( pNewTag );
 
-		m_pTag->setCurrentText( pValueTag->getTag().cStr() );
+			pValueTag = pNewTag;
+		}
+
+		m_pTags->setCurrentText( pValueTag->getTag().cStr() );
 
 		if( pValueTag->getTag() == m_tagHandler.getValueTag( GenericDataValueTag_Enum ) )
 		{
-			m_pEnum->clear();
+			refillEnumNames( m_pEnumName->currentText().toUtf8().constData() );
 
-			const GenericDataTypeEnum* pEnumType = nullptr;
-			string valueName;
-			m_tagHandler.parseEnum( &pEnumType, valueName, pValueTag->getContent() );
-
-			for( const GenericDataEnumValue& value : pEnumType->getValues() )
-			{
-				m_pEnum->addItem( value.name.cStr(), &value );
-
-				if( value.name == valueName )
-				{
-					m_pEnum->setCurrentIndex( m_pEnum->count() - 1 );
-				}
-			}
-
-			m_pLayout->insertWidget( m_isInTagMode ? 1 : 0, m_pEnum );
+			m_pEnumType->show();
+			m_pEnumName->show();
 		}
 		else
 		{
-			m_pLayout->insertWidget( m_isInTagMode ? 1 : 0, m_pText );
+			m_pText->show();
+		}
+	}
+
+	void GenericDataValueWidget::refillEnumNames( const string& enumName )
+	{
+		m_pEnumName->clear();
+
+		const int typeIndex = m_pEnumType->currentIndex();
+		const QVariant typeValue = m_pEnumType->itemData( typeIndex, Qt::UserRole );
+		const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)typeValue.value< void* >();
+		TIKI_ASSERT( pEnumType != nullptr );
+
+		for( const GenericDataEnumValue& value : pEnumType->getValues() )
+		{
+			m_pEnumName->addItem( value.name.cStr(), &value );
+
+			if( enumName == value.name )
+			{
+				m_pEnumName->setCurrentIndex( m_pEnumName->count() - 1 );
+			}
 		}
 	}
 }

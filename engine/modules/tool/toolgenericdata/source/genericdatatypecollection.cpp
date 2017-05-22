@@ -208,6 +208,11 @@ namespace tiki
 		}
 	}
 
+	const GenericDataTypeCollection::TypeList& GenericDataTypeCollection::getTypes() const
+	{
+		return m_types;
+	}
+
 	const GenericDataType* GenericDataTypeCollection::findTypeByName( const string& name ) const
 	{
 		for (const GenericDataType& type : m_types)
