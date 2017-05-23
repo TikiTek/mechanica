@@ -44,6 +44,8 @@ namespace tiki
 		const GenericDataValue*				getValueByName( const string& name ) const;
 		const List< GenericDataEnumValue >&	getValues() const;
 
+		bool								isValidValue( const GenericDataEnumValue& enumValue ) const;
+
 	private:
 
 		const GenericDataTypeValueType*		m_pBaseType;

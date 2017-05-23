@@ -11,6 +11,7 @@ namespace tiki
 	class GenericDataType;
 	class GenericDataTypeCollection;
 	class GenericDataTypeEnum;
+	struct GenericDataEnumValue;
 
 	enum GenericDataTypeTag
 	{
@@ -46,6 +47,7 @@ namespace tiki
 		bool						resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const;
 
 		bool						parseEnum( const GenericDataTypeEnum** ppEnumType, string& enumValue, const string& content ) const;
+		string						encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const;
 
 	private:
 

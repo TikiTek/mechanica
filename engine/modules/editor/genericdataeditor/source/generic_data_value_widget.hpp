@@ -47,9 +47,13 @@ namespace tiki
 		QComboBox*					m_pEnumType;
 		QComboBox*					m_pEnumName;
 		QLineEdit*					m_pText;
-		
+
+		GenericDataTag*				getTag();
+
 		void						selectTag();
 		void						refillEnumNames( const string& enumName );
+
+		void						storeEnumIntoTag();
 	};
 }
 

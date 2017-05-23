@@ -204,6 +204,12 @@ namespace tiki
 		return true;
 	}
 
+	string GenericDataTagHandler::encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const
+	{
+		TIKI_ASSERT( pEnumType->isValidValue( enumValue ) );
+		return formatDynamicString( "%s.%s", pEnumType->getName().cStr(), enumValue.name.cStr() );
+	}
+
 	const GenericDataType* GenericDataTagHandler::resolveArrayTypeTag( const GenericDataTag* pTag )
 	{
 		const GenericDataType* pType = m_collection.findTypeByName( pTag->getContent() );

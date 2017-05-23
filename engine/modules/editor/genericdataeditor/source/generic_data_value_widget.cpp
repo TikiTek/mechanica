@@ -104,6 +104,8 @@ namespace tiki
 		{
 			m_pTags->show();
 			selectTag();
+
+
 		}
 		else
 		{
@@ -188,16 +190,35 @@ namespace tiki
 	void GenericDataValueWidget::onEnumTypeChanged( int index )
 	{
 		refillEnumNames( m_pEnumName->currentText().toUtf8().constData() );
+		storeEnumIntoTag();
 	}
 
 	void GenericDataValueWidget::onEnumNameChanged( int index )
 	{
-		// ???
+		storeEnumIntoTag();
 	}
 
 	void GenericDataValueWidget::onTextChanged( const QString& text )
 	{
-		// ???
+		const string content = text.toUtf8().constData();
+		if( m_isInTagMode )
+		{
+			getTag()->setContent( content );
+		}
+		else
+		{
+			if( !m_collection.parseValue( m_pValue, content, m_pValue->getType(), nullptr ) )
+			{
+				QPalette textPalette;
+				textPalette.setColor( QPalette::Text, Qt::red );
+
+				m_pText->setPalette( textPalette );
+			}
+			else
+			{
+				m_pText->setPalette( QPalette() );
+			}
+		}
 	}
 
 	void GenericDataValueWidget::onTagEnableChanged( bool checked )
@@ -205,13 +226,9 @@ namespace tiki
 		loadFromValue();
 	}
 
-	void GenericDataValueWidget::selectTag()
+	GenericDataTag* GenericDataValueWidget::getTag()
 	{
-		m_pEnumType->hide();
-		m_pEnumName->hide();
-		m_pText->hide();
-
-		const GenericDataTag* pValueTag = m_pValue->getValueTag();
+		GenericDataTag* pValueTag = m_pValue->getValueTag();
 		if( pValueTag == nullptr )
 		{
 			GenericDataTag* pNewTag = TIKI_NEW( GenericDataTag );
@@ -220,9 +237,27 @@ namespace tiki
 			pValueTag = pNewTag;
 		}
 
-		m_pTags->setCurrentText( pValueTag->getTag().cStr() );
+		return pValueTag;
+	}
 
-		if( pValueTag->getTag() == m_tagHandler.getValueTag( GenericDataValueTag_Enum ) )
+	void GenericDataValueWidget::selectTag()
+	{
+		m_pEnumType->hide();
+		m_pEnumName->hide();
+		m_pText->hide();
+
+		const string& tag = getTag()->getTag();
+		const QString tagQt = tag.cStr();
+		for( int i = 0u; i < m_pTags->count(); ++i )
+		{
+			if( m_pTags->itemText( i ) == tagQt )
+			{
+				m_pTags->setCurrentIndex( i );
+				break;
+			}
+		}
+
+		if( tag == m_tagHandler.getValueTag( GenericDataValueTag_Enum ) )
 		{
 			refillEnumNames( m_pEnumName->currentText().toUtf8().constData() );
 
@@ -246,12 +281,40 @@ namespace tiki
 
 		for( const GenericDataEnumValue& value : pEnumType->getValues() )
 		{
-			m_pEnumName->addItem( value.name.cStr(), &value );
+			m_pEnumName->addItem( value.name.cStr(), qVariantFromValue( (void*)&value ) );
 
 			if( enumName == value.name )
 			{
 				m_pEnumName->setCurrentIndex( m_pEnumName->count() - 1 );
 			}
 		}
+	}
+
+	void GenericDataValueWidget::storeEnumIntoTag()
+	{
+		TIKI_ASSERT( m_isInTagMode );
+
+		const int typeIndex = m_pEnumType->currentIndex();
+		if( typeIndex < 0 )
+		{
+			return;
+		}
+
+		const QVariant typeValue = m_pEnumType->itemData( typeIndex );
+		const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)typeValue.value< void* >();
+		TIKI_ASSERT( pEnumType != nullptr );
+
+		const int nameIndex = m_pEnumName->currentIndex();
+		if( nameIndex < 0 )
+		{
+			return;
+		}
+
+		const QVariant nameValue = m_pEnumName->itemData( nameIndex );
+		const GenericDataEnumValue* pEnumValue = (const GenericDataEnumValue*)nameValue.value< void* >();
+		TIKI_ASSERT( pEnumValue != nullptr );
+
+		const string content = m_tagHandler.encodeEnum( pEnumType, *pEnumValue );
+		getTag()->setContent( content );
 	}
 }
