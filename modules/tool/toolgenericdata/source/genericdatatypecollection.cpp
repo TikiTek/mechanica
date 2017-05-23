@@ -358,22 +358,52 @@ namespace tiki
 
 			if ( pTypedType->isBoolean() )
 			{
-				const bool value = string_tools::parseSInt64( content.cStr() ) != 0;
-				return pTargetValue->setBoolean( value, pType );
+				sint64 value;
+				if( !string_tools::tryParseSInt64( value, content.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] unable to parse integer from '%s'.\n", content.cStr() );
+					return false;
+				}
+
+				if( value < 0 )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] %d is not a valid value for boolean.\n", value );
+					return false;
+				}
+
+				return pTargetValue->setBoolean( value != 0, pType );
 			}
 			else if ( pTypedType->isSignedInteger() )
 			{
-				const sint64 value = string_tools::parseSInt64( content.cStr() );
+				sint64 value;
+				if( !string_tools::tryParseSInt64( value, content.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] unable to parse signed integer from '%s'.\n", content.cStr() );
+					return false;
+				}
+
 				return pTargetValue->setSignedValue( value, pType );
 			}
 			else if ( pTypedType->isUnsignedInteger() )
 			{
-				const uint64 value = string_tools::parseUInt64( content.cStr() );
+				uint64 value;
+				if( !string_tools::tryParseUInt64( value, content.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] unable to parse unsigned integer from '%s'.\n", content.cStr() );
+					return false;
+				}
+
 				return pTargetValue->setUnsignedValue( value, pType );
 			}
 			else if ( pTypedType->isFloatingPoint() )
 			{
-				const double value = string_tools::parseFloat64( content.cStr() );
+				double value;
+				if( !string_tools::tryParseFloat64( value, content.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] unable to parse float from '%s'.\n", content.cStr() );
+					return false;
+				}
+
 				return pTargetValue->setFloatingPoint( value, pType );
 			}
 			else if ( pTypedType->isString() )

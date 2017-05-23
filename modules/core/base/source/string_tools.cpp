@@ -78,78 +78,261 @@ namespace tiki
 		return string( buffer );
 	}
 
-	sint8 string_tools::parseSInt8( const char* string )
+	sint8 string_tools::parseSInt8( const char* pString )
 	{
-		return (sint8)atoi( string );
+		return (sint8)atoi( pString );
 	}
 
-	sint16 string_tools::parseSInt16( const char* string )
+	sint16 string_tools::parseSInt16( const char* pString )
 	{
-		return (sint16)atoi( string );
+		return (sint16)atoi( pString );
 	}
 
-	sint32 string_tools::parseSInt32( const char* string )
+	sint32 string_tools::parseSInt32( const char* pString )
 	{
-		return (sint32)atoi( string );
+		return (sint32)atoi( pString );
 	}
 
-	sint64 string_tools::parseSInt64( const char* string )
+	sint64 string_tools::parseSInt64( const char* pString )
 	{
-		return (sint64)atoll( string );
+		return (sint64)atoll( pString );
 	}
 
-	uint8 string_tools::parseUInt8( const char* string )
+	uint8 string_tools::parseUInt8( const char* pString )
 	{
-		return (uint8)atoi( string );
+		return (uint8)atoi( pString );
 	}
 
-	uint16 string_tools::parseUInt16( const char* string )
+	uint16 string_tools::parseUInt16( const char* pString )
 	{
-		return (uint16)atoi( string );
+		return (uint16)atoi( pString );
 	}
 
-	uint32 string_tools::parseUInt32( const char* string )
+	uint32 string_tools::parseUInt32( const char* pString )
 	{
-		return (uint32)atoi( string );
+		return (uint32)atoi( pString );
 	}
 
-	uint64 string_tools::parseUInt64( const char* string )
+	uint64 string_tools::parseUInt64( const char* pString )
 	{
-		return (uint64)atoll( string );
+		return (uint64)atoll( pString );
 	}
 
-	uint8 string_tools::parseUInt8Hex( const char* string )
+	uint8 string_tools::parseUInt8Hex( const char* pString )
 	{
-		return (uint8)strtoll( string, nullptr, 16 );
+		return (uint8)strtoll( pString, nullptr, 16 );
 	}
 
-	uint16 string_tools::parseUInt16Hex( const char* string )
+	uint16 string_tools::parseUInt16Hex( const char* pString )
 	{
-		return (uint16)strtoll( string, nullptr, 16 );
+		return (uint16)strtoll( pString, nullptr, 16 );
 	}
 
-	uint32 string_tools::parseUInt32Hex( const char* string )
+	uint32 string_tools::parseUInt32Hex( const char* pString )
 	{
-		return (uint32)strtoll( string, nullptr, 16 );
+		return (uint32)strtoll( pString, nullptr, 16 );
 	}
 
-	uint64 string_tools::parseUInt64Hex( const char* string )
+	uint64 string_tools::parseUInt64Hex( const char* pString )
 	{
-		return (uint64)strtoll( string, nullptr, 16 );
+		return (uint64)strtoll( pString, nullptr, 16 );
 	}
 
-	float16 string_tools::parseFloat16( const char* string )
+	float16 string_tools::parseFloat16( const char* pString )
 	{
-		return f16::convertFloat32to16( (float32)atof( string ) );
+		return f16::convertFloat32to16( (float32)atof( pString ) );
 	}
 
-	float32 string_tools::parseFloat32( const char* string )
+	float32 string_tools::parseFloat32( const char* pString )
 	{
-		return (float32)atof( string );
+		return (float32)atof( pString );
 	}
 
-	float64 string_tools::parseFloat64( const char* string )
+	float64 string_tools::parseFloat64( const char* pString )
 	{
-		return (double)atof( string );
+		return atof( pString );
+	}
+
+	bool string_tools::tryParseSInt8( sint8& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const sint64 result = strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseSInt16( sint16& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const sint64 result = strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseSInt32( sint32& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const sint64 result = strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseSInt64( sint64& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const sint64 result = strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt8( uint8& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt16( uint16& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt32( uint32& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt64( uint64& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt8Hex( uint8& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt16Hex( uint16& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt32Hex( uint32& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseUInt64Hex( uint64& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
+		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool string_tools::tryParseFloat16( float16& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const float64 result = strtof( pString, &pEnd );
+		if( pEnd == nullptr || pEnd == pString )
+		{
+			return false;
+		}
+
+		target = f16::convertFloat32to16( (float32)result );
+		return true;
+	}
+
+	bool string_tools::tryParseFloat32( float32& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const float64 result = strtof( pString, &pEnd );
+		if( pEnd == nullptr || pEnd == pString )
+		{
+			return false;
+		}
+
+		target = (float32)result;
+		return true;
+	}
+
+	bool string_tools::tryParseFloat64( float64& target, const char* pString )
+	{
+		char* pEnd = nullptr;
+		const float64 result = strtof( pString, &pEnd );
+		if( pEnd == nullptr || pEnd == pString )
+		{
+			return false;
+		}
+
+		target = result;
+		return true;
 	}
 }

@@ -252,4 +252,18 @@ namespace tiki
 	{
 		return m_values;
 	}
+
+	bool GenericDataTypeEnum::isValidValue( const GenericDataEnumValue& enumValue ) const
+	{
+		for( const GenericDataEnumValue& value : m_values )
+		{
+			if( value.name == enumValue.name )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

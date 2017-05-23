@@ -34,8 +34,12 @@ namespace tiki
 	void GenericDataTag::setContent( const string& content )
 	{
 		m_content = content;
-		TIKI_DELETE( m_pChildTag );
-		m_pChildTag = nullptr;
+
+		if( m_pChildTag != nullptr )
+		{
+			TIKI_DELETE( m_pChildTag );
+			m_pChildTag = nullptr;
+		}
 	}
 
 	GenericDataTag* GenericDataTag::getChildTag() const
