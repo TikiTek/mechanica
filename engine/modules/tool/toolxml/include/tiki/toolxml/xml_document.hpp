@@ -2,6 +2,8 @@
 #ifndef TIKI_XML_DOCUMENT_HPP_INCLUDED
 #define TIKI_XML_DOCUMENT_HPP_INCLUDED
 
+#include "tiki/base/dynamic_string.hpp"
+
 #include <tinyxml2.h>
 
 namespace tiki

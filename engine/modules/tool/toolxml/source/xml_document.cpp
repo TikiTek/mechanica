@@ -1,36 +1,49 @@
-#pragma once
-#ifndef TIKI_XML_DOCUMENT_HPP_INCLUDED
-#define TIKI_XML_DOCUMENT_HPP_INCLUDED
-
-#include <tinyxml2.h>
+#include "tiki/toolxml/xml_document.hpp"
 
 namespace tiki
 {
-	class XmlNode;
-
-	class XmlDocument
+	bool XmlDocument::loadFromFile( const char* pFilename )
 	{
-	public:
+		const tinyxml2::XMLError error = m_document.LoadFile( pFilename );
+		if( error != tinyxml2::XML_SUCCESS )
+		{
+			TIKI_TRACE_ERROR( "[toolxml] Parse from file %s returned an error. %s\n", pFilename, m_document.GetErrorStr1() );
+			return false;
+		}
 
-		bool			loadFromFile( const char* pFilename );
-		bool			loadFromString( const char* pString );
+		return true;
+	}
 
-		bool			saveToString( string& target );
-		bool			saveToFile( const char* pFilename );
+	bool XmlDocument::loadFromString( const char* pString )
+	{
+		const tinyxml2::XMLError error = m_document.Parse( pString );
+		if( error != tinyxml2::XML_SUCCESS )
+		{
+			TIKI_TRACE_ERROR( "[toolxml] XML parser returned an error. %s\n", m_document.GetErrorStr1() );
+			return false;
+		}
 
-		XmlNode*		getRoot();
-		const XmlNode*	getRoot() const;
+		return true;
+	}
 
-		XmlNode*		createNode( const char* pName );
-		void			destroyNode( const XmlNode* pNode );
+	bool XmlDocument::saveToString( string& target )
+	{
+		tinyxml2::XMLPrinter printer;
+		m_document.Print( &printer );
 
-		void			appendNode( XmlNode* pNode );
-		void			removeNode( XmlNode* pNode );
+		target = printer.CStr();
+	}
 
-	private:
+	bool XmlDocument::saveToFile( const char* pFilename )
+	{
+		const tinyxml2::XMLError error = m_document.SaveFile( pFilename );
+		if( error != tinyxml2::XML_SUCCESS )
+		{
+			TIKI_TRACE_ERROR( "[toolxml] Save to %s failed with error: %s\n", pFilename, m_document.GetErrorStr1() );
+			return false;
+		}
 
-		tinyxml2::XMLDocument	m_document;
-	};
+		return true;
+	}
+
 }
-
-#endif // TIKI_XML_DOCUMENT_HPP_INCLUDED

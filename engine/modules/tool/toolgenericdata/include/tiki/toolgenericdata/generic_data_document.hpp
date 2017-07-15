@@ -6,8 +6,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/map.hpp"
 #include "tiki/toolgenericdata/genericdatatype.hpp"
-
-#include <tinyxml2.h>
+#include "tiki/toolxml/xml_document.hpp"
 
 namespace tiki
 {
@@ -44,15 +43,15 @@ namespace tiki
 
 		GenericDataTypeCollection&		m_collection;
 
-		tinyxml2::XMLDocument			m_document;
+		XmlDocument						m_document;
 
 		const GenericDataTypeResource*	m_pType;
 		GenericDataObject*				m_pObject;
 
-		bool							importFromXml( XmlReader& reader );
+		bool							importFromXml();
 		bool							exportToXml();
 
-		const GenericDataType*			findTypeForNode( XmlReader& reader, const _XmlElement* pElement, GenericDataTypeType type ) const;
+		const GenericDataType*			findTypeForNode( const XmlNode* pNode, GenericDataTypeType type ) const;
 	};
 }
 

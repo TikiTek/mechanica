@@ -19,6 +19,7 @@ namespace tiki
 {
 	GenericDataContainer::GenericDataContainer( GenericDataTypeCollection& collection )
 		: m_collection( collection )
+		, m_pObjectNode( nullptr )
 	{
 	}
 
@@ -26,15 +27,15 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataContainer::importFromXml( const XmlReader& reader, const _XmlElement* pObjectRootNode )
+	bool GenericDataContainer::importFromXml( XmlNode* pObjectNode )
 	{
 		bool result = true;
 
 		const char* pElementName = getElementName();
-		const XmlElement* pElement = reader.findFirstChild( pElementName, pObjectRootNode );
-		while ( pElement )
+		const XmlNode* pNode = pObjectNode->findFirstChild( pElementName );
+		while ( pNode != nullptr)
 		{
-			const XmlAttribute* pTypeAtt = reader.findAttributeByName( "type", pElement );
+			const XmlAttribute* pTypeAtt = pNode->findAttribute( "type" );
 
 			if ( pTypeAtt == nullptr )
 			{
@@ -43,28 +44,29 @@ namespace tiki
 			}
 			else
 			{
-				const GenericDataType* pElementType = m_collection.parseType( pTypeAtt->content );
+				const GenericDataType* pElementType = m_collection.parseType( pTypeAtt->getValue() );
 				if ( pElementType == nullptr )
 				{
 					result = false;
 				}
 				else
 				{
-					GenericDataValue* pValue = addElementValue( reader, pElement );
+					GenericDataValue* pValue = addElementValue( pNode );
 					if( pValue == nullptr )
 					{
 						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else if ( !pElementType->loadValueFromXml( pValue, reader, pElement, getParentType() ) )
+					else if ( !pElementType->loadValueFromXml( pValue, pNode, getParentType() ) )
 					{
 						result = false;
 					}
 				}
 			}
 
-			pElement = reader.findNext( pElementName, pElement );
+			pNode = pNode->findNextSibling( pElementName );
 		}
 
+		m_pObjectNode = pObjectNode;
 		return true;
 	}
 

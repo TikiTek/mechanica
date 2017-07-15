@@ -14,7 +14,7 @@ namespace tiki
 		bool	move( const char* pFrom, const char* pTo, bool overwrite = true );
 		bool	remove( const char* pFileName );
 
-		bool	readAllText( const char* pFileName, Array< char >& targetContent, size_t alignment = TIKI_DEFAULT_ALIGNMENT  );
+		bool	readAllText( const char* pFileName, Array< char >& targetContent  );
 		bool	readAllBytes( const char* pFileName, Array< uint8 >& buffer, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		bool	writeAllBytes( const char* pFileName, const uint8* pData, size_t dataLength );

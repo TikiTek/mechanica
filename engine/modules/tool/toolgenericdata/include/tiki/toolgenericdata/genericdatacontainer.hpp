@@ -14,7 +14,7 @@ namespace tiki
 	class GenericDataTypeCollection;
 	class GenericDataValue;
 	class ResourceWriter;
-	class XmlReader;
+	class XmlNode;
 
 	class GenericDataContainer
 	{
@@ -22,11 +22,14 @@ namespace tiki
 
 	public:
 
-		bool							importFromXml( const XmlReader& reader, const _XmlElement* pObjectRootNode );
+		bool							importFromXml( XmlNode* pObjectNode );
+		bool							exportToXml();
 
 	protected:
 
 		GenericDataTypeCollection&		m_collection;
+
+		XmlNode*						m_pObjectNode;
 
 										GenericDataContainer( GenericDataTypeCollection& collection );
 										~GenericDataContainer();
@@ -34,7 +37,7 @@ namespace tiki
 		virtual const char*				getElementName() const TIKI_PURE;
 		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_PURE;
+		virtual GenericDataValue*		addElementValue( XmlNode* pNode ) TIKI_PURE;
 
 		bool							writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const;
 	};
