@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_GENERICDATADOCUMENT_HPP_INCLUDED__
-#define TIKI_GENERICDATADOCUMENT_HPP_INCLUDED__
+#ifndef TIKI_GENERIC_DATA_DOCUMENT_HPP_INCLUDED
+#define TIKI_GENERIC_DATA_DOCUMENT_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
@@ -56,4 +56,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_GENERICDATADOCUMENT_HPP_INCLUDED__
+#endif // TIKI_GENERIC_DATA_DOCUMENT_HPP_INCLUDED

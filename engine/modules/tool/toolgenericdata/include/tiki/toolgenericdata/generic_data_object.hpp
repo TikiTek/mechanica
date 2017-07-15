@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_GENERICDATAOBJECT_HPP_INCLUDED__
-#define TIKI_GENERICDATAOBJECT_HPP_INCLUDED__
+#ifndef TIKI_GENERIC_DATA_OBJECT_HPP_INCLUDED
+#define TIKI_GENERIC_DATA_OBJECT_HPP_INCLUDED
 
 #include "tiki/toolgenericdata/genericdatacontainer.hpp"
 
@@ -69,4 +69,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_GENERICDATAOBJECT_HPP_INCLUDED__
+#endif // TIKI_GENERIC_DATA_OBJECT_HPP_INCLUDED

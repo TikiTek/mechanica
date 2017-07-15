@@ -160,11 +160,6 @@ namespace tiki
 		}
 	}
 
-	void GenericDataValueWidget::saveToValue()
-	{
-
-	}
-
 	void GenericDataValueWidget::onTagChanged( int index )
 	{
 		TIKI_ASSERT( m_isInTagMode );

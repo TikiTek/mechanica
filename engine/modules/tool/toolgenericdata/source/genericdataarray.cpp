@@ -2,7 +2,7 @@
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 
 #include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"

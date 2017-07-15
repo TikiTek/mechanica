@@ -20,9 +20,6 @@ namespace tiki
 							GenericDataValueWidget( GenericDataTypeCollection& collection, GenericDataValue* pValue );
 							~GenericDataValueWidget();
 
-		void				loadFromValue();
-		void				saveToValue();
-
 	private slots:
 
 		void				onTagChanged( int index );
@@ -49,6 +46,8 @@ namespace tiki
 		QLineEdit*					m_pText;
 
 		GenericDataTag*				getTag();
+
+		void						loadFromValue();
 
 		void						selectTag();
 		void						refillEnumNames( const string& enumName );
