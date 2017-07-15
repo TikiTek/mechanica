@@ -1,6 +1,5 @@
-#include "tiki/toolgenericdata/genericdatacontainer.hpp"
+#include "tiki/toolgenericdata/generic_data_container.hpp"
 
-#include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/genericdataarray.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
@@ -68,6 +67,11 @@ namespace tiki
 
 		m_pObjectNode = pObjectNode;
 		return true;
+	}
+
+	bool GenericDataContainer::exportToXml()
+	{
+
 	}
 
 	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const
