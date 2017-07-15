@@ -1,8 +1,8 @@
 
-#include "tiki/toolgenericdata/genericdatadocument.hpp"
+#include "tiki/toolgenericdata/generic_data_document.hpp"
 
 #include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 namespace tiki

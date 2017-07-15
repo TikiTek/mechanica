@@ -3,7 +3,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdataobject.hpp"
+#include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
 
 namespace tiki

@@ -4,7 +4,7 @@
 
 #include <QWidget>
 
-#include "tiki/toolgenericdata/genericdatadocument.hpp"
+#include "tiki/toolgenericdata/generic_data_document.hpp"
 
 class QHBoxLayout;
 class QStandardItem;

@@ -6,7 +6,7 @@
 #include "tiki/converterbase/convertermanager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdatadocument.hpp"
+#include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/genericdatatyperesource.hpp"
 
 namespace tiki
