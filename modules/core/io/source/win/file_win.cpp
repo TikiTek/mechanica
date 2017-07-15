@@ -48,7 +48,7 @@ namespace tiki
 		return DeleteFileA( getPlatformFilename( pFileName ).cStr() ) != 0;
 	}
 
-	bool file::readAllText( const char* pFileName, Array< char >& targetContent, size_t alignment /*= TIKI_DEFAULT_ALIGNMENT*/  )
+	bool file::readAllText( const char* pFileName, Array< char >& targetContent  )
 	{
 		FILE* pFile;
 		if ( fopen_s( &pFile, getPlatformFilename( pFileName ).cStr(), "rb" ) )
@@ -61,7 +61,7 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-		targetContent.create( (uint)len + 1u, alignment );
+		targetContent.create( (uint)len + 1u );
 		fpos_t bytesRead = fread_s(targetContent.getBegin(), (size_t)len, (size_t)len, 1u, pFile);
 		TIKI_ASSERT( bytesRead == 1u );
 		fclose( pFile );
@@ -149,7 +149,7 @@ namespace tiki
 		return false;
 	}
 
-	bool file::readAllText( const char* pFileName, Array< char >& targetContent, size_t alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
+	bool file::readAllText( const char* pFileName, Array< char >& targetContent )
 	{
 		FILE* pFile = fopen( getPlatformFilename( pFileName ).cStr(), "r" );
 		if ( pFile == nullptr )
@@ -162,7 +162,7 @@ namespace tiki
 		fgetpos( pFile, &len );
 		fseek( pFile, 0, SEEK_SET );
 
-		targetContent.create( len.__pos, alignment );
+		targetContent.create( len.__pos );
 		fread( const_cast< char* >( targetContent.getBegin() ), (size_t)len.__pos, 1u, pFile );
 		fclose( pFile );
 
