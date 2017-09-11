@@ -2,7 +2,7 @@
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #include "tiki/base/numberlimits.hpp"
-#include "tiki/toolgenericdata/genericdataarray.hpp"
+#include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypeenum.hpp"
@@ -33,9 +33,11 @@ namespace tiki
 	{
 		TIKI_ASSERT( pType != nullptr );
 
+		m_pNode		= nullptr;
 		m_pType		= pType;
 		m_valueType	= getValueType( pType );
 		m_pValueTag	= nullptr;
+
 		memory::zero( m_value );
 	}
 
@@ -513,6 +515,122 @@ namespace tiki
 
 		m_value.pObject = pValue;
 		return true;
+	}
+
+	bool GenericDataValue::importFromXml( XmlNode* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
+	{
+		const XmlAttribute* pValueAtt = pNode->findAttribute( "value" );
+		if( pValueAtt != nullptr )
+		{
+			return collection.parseValue( this, pValueAtt->getValue(), pType, pParent->getType() );
+		}
+		else
+		{
+			XmlNode* pChildNode = pNode->getFirstChild();
+			while( pChildNode->getNextSibling() != nullptr && pChildNode->getName() == nullptr )
+			{
+				pChildNode = pChildNode->getNextSibling();
+			}
+
+			if( pChildNode == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] '%s' node needs a 'value' attribute or a child node named 'object' or 'array'.\n", pNode->getName() );
+				return false;
+			}
+
+			const XmlAttribute* pChildTypeAtt = pChildNode->findAttribute( "type" );
+			if( pChildTypeAtt == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] child node needs a 'type' attribute.\n" );
+				return false;
+			}
+
+			const GenericDataType* pChildType = collection.parseType( pChildTypeAtt->getValue() );
+			if( pChildType == nullptr )
+			{
+				return false;
+			}
+
+			if( pType->isTypeCompatible( pChildType ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] Child type '%s' is not compatible with '%s'.\n", pChildType->getName().cStr(), pType->getName().cStr() );
+				return false;
+			}
+
+			if( isStringEquals( pChildNode->getName(), "object" ) )
+			{
+				if( pChildType->getType() != GenericDataTypeType_Struct )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] type of a object needs to be a struct. '%s' is not a struct.\n", pChildType->getName().cStr() );
+					return false;
+				}
+
+				const GenericDataTypeStruct* pTypedChildType = (const GenericDataTypeStruct*)pChildType;
+				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( collection );
+				if( !pObject->create( pTypedChildType, nullptr ) )
+				{
+					TIKI_DELETE( pObject );
+					return false;
+				}
+
+				if( !pObject->importFromXml( pChildNode ) )
+				{
+					TIKI_DELETE( pObject );
+					return false;
+				}
+
+				if( !setObject( pObject ) )
+				{
+					TIKI_DELETE( pObject );
+					return false;
+				}
+			}
+			else if( isStringEquals( pChildNode->getName(), "array" ) )
+			{
+				pChildType = collection.makeArrayType( pChildType );
+				if( pChildType->getType() != GenericDataTypeType_Array )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] type of a array needs to be a array. '%s' is not an array.\n", pChildType->getName().cStr() );
+					return false;
+				}
+
+				const GenericDataTypeArray* pTypedChildType = (const GenericDataTypeArray*)pChildType;
+				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( collection );
+				if( !pArray->create( pTypedChildType ) )
+				{
+					TIKI_DELETE( pArray );
+					return false;
+				}
+
+				if( !pArray->importFromXml( pChildNode ) )
+				{
+					TIKI_DELETE( pArray );
+					return false;
+				}
+
+				if( !setArray( pArray ) )
+				{
+					TIKI_DELETE( pArray );
+					return false;
+				}
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] child node has a invalid name: '%s'.\n", pChildNode->getName() );
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool GenericDataValue::exportToXml( XmlNode* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
+	{
+		if( m_pNode == nullptr )
+		{
+			m_pNode = pParentNode->getDocument()->createNode( pParent->getElementName() );
+			pParentNode->appendChild( m_pNode );
+		}
 	}
 
 	GenericDataValueType GenericDataValue::getValueType( const GenericDataType* pType )

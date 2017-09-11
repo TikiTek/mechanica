@@ -32,6 +32,7 @@ namespace tiki
 		void							dispose();
 
 		const GenericDataTypeStruct*	getType() const;
+		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
 		bool							hasField( const string& name ) const;
 		uint							getFieldCount() const { return m_fields.getCount(); }
@@ -48,10 +49,11 @@ namespace tiki
 
 	protected:
 
+		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
 		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
-		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
-		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		addElementValue( const XmlNode* pNode ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
@@ -65,7 +67,6 @@ namespace tiki
 		const GenericDataObject*		m_pParentObject;
 
 		Map< string, ObjectField >		m_fields;
-
 	};
 }
 

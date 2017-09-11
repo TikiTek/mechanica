@@ -8,7 +8,7 @@
 #include "tiki/container/list.hpp"
 #include "tiki/container/map.hpp"
 #include "tiki/toolgenericdata/generic_data_tag_handler.hpp"
-#include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/generic_data_type.hpp"
 #include "tiki/toolgenericdata/genericdatatypetype.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 

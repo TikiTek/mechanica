@@ -3,7 +3,7 @@
 #define TIKI_GENERICDATATYPEREFERENCE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/generic_data_type.hpp"
 
 namespace tiki
 {

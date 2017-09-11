@@ -5,7 +5,7 @@
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/map.hpp"
-#include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/generic_data_type.hpp"
 #include "tiki/toolxml/xml_document.hpp"
 
 namespace tiki

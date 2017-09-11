@@ -1,6 +1,6 @@
 #include "tiki/toolgenericdata/generic_data_container.hpp"
 
-#include "tiki/toolgenericdata/genericdataarray.hpp"
+#include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/genericdatatypearray.hpp"
 #include "tiki/toolgenericdata/genericdatatypecollection.hpp"
@@ -31,7 +31,7 @@ namespace tiki
 		bool result = true;
 
 		const char* pElementName = getElementName();
-		const XmlNode* pNode = pObjectNode->findFirstChild( pElementName );
+		XmlNode* pNode = pObjectNode->findFirstChild( pElementName );
 		while ( pNode != nullptr)
 		{
 			const XmlAttribute* pTypeAtt = pNode->findAttribute( "type" );
@@ -55,7 +55,7 @@ namespace tiki
 					{
 						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else if ( !pElementType->loadValueFromXml( pValue, pNode, getParentType() ) )
+					else if ( !pValue->importFromXml( pNode, pElementType, this, m_collection ) )
 					{
 						result = false;
 					}
@@ -69,9 +69,22 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataContainer::exportToXml()
+	bool GenericDataContainer::exportToXml( XmlNode* pParentNode )
 	{
+		if( m_pObjectNode == nullptr )
+		{
+			XmlDocument* pDocument = pParentNode->getDocument();
+			m_pObjectNode = pDocument->createNode( getNodeName() );
 
+			pParentNode->appendChild( m_pObjectNode );
+		}
+
+		uint index = 0u;
+		GenericDataValue* pCurrentValue = getElementValue( index );
+		for( ; pCurrentValue != nullptr; pCurrentValue = getElementValue( ++index ) )
+		{
+			pCurrentValue->exportToXml( m_pObjectNode, this, m_collection );
+		}
 	}
 
 	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const

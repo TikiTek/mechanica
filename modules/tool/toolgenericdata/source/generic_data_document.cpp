@@ -92,21 +92,21 @@ namespace tiki
 
 	bool GenericDataDocument::importFromXml()
 	{
-		const XmlNode* pRootNode = m_document.getRoot();
-		if( !pRootNode || !isStringEquals( pRootNode->getName(), "tikigenericobjects" ) )
+		XmlNode* pRootNode = m_document.getRoot();
+		if( pRootNode == nullptr || !isStringEquals( pRootNode->getName(), "tikigenericobjects" ) )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromXml] Unable to find root node.\n" );
 			return false;
 		}
 
-		const XmlNode* pResourceNode = pRootNode->findFirstChild( "resource" );
+		XmlNode* pResourceNode = pRootNode->findFirstChild( "resource" );
 		const GenericDataType* pResourceType = findTypeForNode( pResourceNode, GenericDataTypeType_Resource );
 		if( pResourceType == nullptr )
 		{
 			return false;
 		}
 
-		const XmlNode* pObjectNode = pResourceNode->findFirstChild( "object" );
+		XmlNode* pObjectNode = pResourceNode->findFirstChild( "object" );
 		const GenericDataType* pObjectType = findTypeForNode( pObjectNode, GenericDataTypeType_Struct );
 		if( pObjectType == nullptr )
 		{
@@ -126,7 +126,7 @@ namespace tiki
 
 	bool GenericDataDocument::exportToXml()
 	{
-		return true;
+		return m_pObject->exportToXml( m_document.getRoot() );
 	}
 
 	const GenericDataType* GenericDataDocument::findTypeForNode( const XmlNode* pNode, GenericDataTypeType type ) const

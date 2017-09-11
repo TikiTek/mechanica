@@ -70,8 +70,6 @@ namespace tiki
 
 		const GenericDataValue*		getDefaultValue() const;
 
-		bool						loadValueFromXml( GenericDataValue* pTargetValue, const XmlReader& reader, const _XmlElement* pElement, const GenericDataType* pParentType ) const;
-
 	protected:
 
 		GenericDataTypeCollection&	m_collection;
