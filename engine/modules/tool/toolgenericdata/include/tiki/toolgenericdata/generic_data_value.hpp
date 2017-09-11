@@ -53,7 +53,7 @@ namespace tiki
 	public:
 
 		explicit					GenericDataValue( const GenericDataType* pType );
-		~GenericDataValue();
+									~GenericDataValue();
 
 		const GenericDataType*		getType() const;
 		GenericDataValueType		getValueType() const;
@@ -93,6 +93,9 @@ namespace tiki
 		bool						getPointer( GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
 
+		bool						importFromXml( XmlNode* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+		bool						exportToXml( XmlNode* pParentNode, const const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+
 	private:
 
 		union Values
@@ -116,6 +119,8 @@ namespace tiki
 			GenericDataObject*	pObject;
 			GenericDataArray*	pArray;
 		};
+
+		XmlNode*				m_pNode;
 
 		const GenericDataType*	m_pType;
 		GenericDataValueType	m_valueType;

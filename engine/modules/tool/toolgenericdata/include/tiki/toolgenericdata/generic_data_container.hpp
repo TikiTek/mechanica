@@ -22,8 +22,11 @@ namespace tiki
 
 	public:
 
+		const GenericDataTypeArray*		getType() const;
+		virtual const GenericDataType*	getParentType() const TIKI_PURE;
+
 		bool							importFromXml( XmlNode* pObjectNode );
-		bool							exportToXml();
+		bool							exportToXml( XmlNode* pParentNode );
 
 	protected:
 
@@ -31,13 +34,16 @@ namespace tiki
 
 		XmlNode*						m_pObjectNode;
 
+		const GenericDataTypeArray*		m_pType;
+
 										GenericDataContainer( GenericDataTypeCollection& collection );
 										~GenericDataContainer();
 
+		virtual const char*				getNodeName() const TIKI_PURE;
 		virtual const char*				getElementName() const TIKI_PURE;
-		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		virtual GenericDataValue*		addElementValue( XmlNode* pNode ) TIKI_PURE;
+		virtual GenericDataValue*		addElementValue( const XmlNode* pNode ) TIKI_PURE;
+		virtual GenericDataValue*		getElementValue( uint index ) TIKI_PURE;
 
 		bool							writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const;
 	};

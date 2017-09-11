@@ -14,20 +14,20 @@ namespace tiki
 	{
 	public:
 
-		bool			loadFromFile( const char* pFilename );
-		bool			loadFromString( const char* pString );
+		bool					loadFromFile( const char* pFilename );
+		bool					loadFromString( const char* pString );
 
-		bool			saveToString( string& target );
-		bool			saveToFile( const char* pFilename );
+		bool					saveToString( string& target );
+		bool					saveToFile( const char* pFilename );
 
-		XmlNode*		getRoot();
-		const XmlNode*	getRoot() const;
+		XmlNode*				getRoot();
+		const XmlNode*			getRoot() const;
 
-		XmlNode*		createNode( const char* pName );
-		void			destroyNode( const XmlNode* pNode );
+		XmlNode*				createNode( const char* pName );
+		void					destroyNode( const XmlNode* pNode );
 
-		void			appendNode( XmlNode* pNode );
-		void			removeNode( XmlNode* pNode );
+		void					appendNode( XmlNode* pNode );
+		void					removeNode( XmlNode* pNode );
 
 	private:
 

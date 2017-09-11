@@ -46,4 +46,33 @@ namespace tiki
 		return true;
 	}
 
+	XmlNode* XmlDocument::getRoot()
+	{
+		return (XmlNode*)m_document.RootElement();
+	}
+
+	const XmlNode* XmlDocument::getRoot() const
+	{
+		return (const XmlNode*)m_document.RootElement();
+	}
+
+	XmlNode* XmlDocument::createNode( const char* pName )
+	{
+		return (XmlNode*)m_document.NewElement( pName );
+	}
+
+	void XmlDocument::destroyNode( const XmlNode* pNode )
+	{
+		m_document.DeleteNode( (tinyxml2::XMLNode*)pNode );
+	}
+
+	void XmlDocument::appendNode( XmlNode* pNode )
+	{
+		m_document.InsertEndChild( (tinyxml2::XMLNode*)pNode );
+	}
+
+	void XmlDocument::removeNode( XmlNode* pNode )
+	{
+		m_document.DeleteChild( (tinyxml2::XMLNode*)pNode );
+	}
 }

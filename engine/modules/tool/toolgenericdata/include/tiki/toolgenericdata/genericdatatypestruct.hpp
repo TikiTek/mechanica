@@ -2,7 +2,7 @@
 #ifndef TIKI_GENERICDATASTRUCT_HPP_INCLUDED__
 #define TIKI_GENERICDATASTRUCT_HPP_INCLUDED__
 
-#include "tiki/toolgenericdata/genericdatatype.hpp"
+#include "tiki/toolgenericdata/generic_data_type.hpp"
 
 #include "tiki/container/list.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"

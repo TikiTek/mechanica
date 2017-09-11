@@ -32,6 +32,7 @@ namespace tiki
 		void							dispose();
 
 		const GenericDataTypeArray*		getType() const;
+		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
 		uint							getCount() const;
 
@@ -45,17 +46,17 @@ namespace tiki
 
 	protected:
 
+		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
 		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
-		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
-		virtual GenericDataValue*		addElementValue( const XmlReader& reader, const _XmlElement* pElement ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		addElementValue( const XmlNode* pNode ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		const GenericDataTypeArray*		m_pType;
 
 		List< GenericDataValue* >		m_array;
-
 	};
 }
 

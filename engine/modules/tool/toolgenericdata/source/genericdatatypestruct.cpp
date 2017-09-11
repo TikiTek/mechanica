@@ -153,7 +153,7 @@ namespace tiki
 						const XmlElement* pValueElement = reader.findFirstChild( "value", pChildElement );
 						if( pValueElement != nullptr )
 						{
-							if (!pType->loadValueFromXml( pDefaultValue, reader, pValueElement, this ))
+							if (!pType->importValueFromXml( pDefaultValue, reader, pValueElement, this ))
 							{
 								TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value node can't be parsed.\n", getName().cStr() );
 								ok = false;

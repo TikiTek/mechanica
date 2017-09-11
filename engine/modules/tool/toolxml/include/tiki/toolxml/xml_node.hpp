@@ -15,6 +15,9 @@ namespace tiki
 	{
 	public:
 
+		XmlDocument*		getDocument();
+		const XmlDocument*	getDocument() const;
+
 		const char*			getName() const;
 		const char*			getValue() const;
 		void				setValue( const char* pValue );

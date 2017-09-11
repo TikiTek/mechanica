@@ -195,6 +195,11 @@ namespace tiki
 #endif
 	}
 
+	const char* GenericDataObject::getNodeName() const
+	{
+		return "object";
+	}
+
 	const char* GenericDataObject::getElementName() const
 	{
 		return "field";
@@ -205,15 +210,25 @@ namespace tiki
 		return m_pType;
 	}
 
-	GenericDataValue* GenericDataObject::addElementValue( const XmlReader& reader, const _XmlElement* pElement )
+	GenericDataValue* GenericDataObject::addElementValue( const XmlNode* pNode )
 	{
-		const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pElement );
+		const XmlAttribute* pNameAtt = pNode->findAttribute( "name" );
 		if ( pNameAtt == nullptr )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataObject::importFromXml] 'field' node needs a 'name' attribute.\n" );
 			return false;
 		}
 
-		return getFieldValue( pNameAtt->content, true );
+		return getFieldValue( pNameAtt->getValue(), true );
+	}
+
+	GenericDataValue* GenericDataObject::getElementValue( uint index )
+	{
+		if( index >= m_fields.getCount() )
+		{
+			return nullptr;
+		}
+
+		return getFieldValue( index );
 	}
 }
