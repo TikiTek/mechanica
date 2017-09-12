@@ -15,7 +15,7 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataTypeValueType::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
+	bool GenericDataTypeValueType::loadFromXml( XmlElement* pTypeNode )
 	{
 		return false;
 	}
@@ -53,7 +53,7 @@ namespace tiki
 		return s_aSizes[ m_type ];
 	}
 
-	string GenericDataTypeValueType::getExportName() const
+	string GenericDataTypeValueType::getCodeExportName() const
 	{
 		return getName();
 	}

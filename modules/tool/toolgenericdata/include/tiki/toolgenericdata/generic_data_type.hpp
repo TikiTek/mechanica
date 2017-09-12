@@ -12,10 +12,12 @@ struct _XmlElement;
 
 namespace tiki
 {
+	class GenericDataTag;
 	class GenericDataTypeCollection;
 	class GenericDataTypeReference;
 	class GenericDataValue;
-	class XmlReader;
+	class XmlDocument;
+	class XmlElement;
 
 	enum GenericDataTypeMode
 	{
@@ -52,7 +54,8 @@ namespace tiki
 									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeType type, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
-		virtual bool				loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_PURE;
+		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_PURE;
+		XmlElement*					createXmlElement( XmlDocument& document, const char* pName ) const;
 		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
 
 		const string&				getName() const;
@@ -63,7 +66,7 @@ namespace tiki
 
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
-		virtual string				getExportName() const TIKI_PURE;
+		virtual string				getCodeExportName() const TIKI_PURE;
 		virtual crc32				getTypeCrc() const TIKI_PURE;
 
 		virtual bool				isTypeCompatible( const GenericDataType* pType ) const;
@@ -74,6 +77,7 @@ namespace tiki
 
 		GenericDataTypeCollection&	m_collection;
 
+		GenericDataTag*				m_pTypeTag;
 		GenericDataValue*			m_pDefaultValue;
 
 	private:

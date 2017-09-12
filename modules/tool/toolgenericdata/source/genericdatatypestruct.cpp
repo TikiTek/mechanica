@@ -2,9 +2,10 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
+#include "tiki/toolxml/xml_attribute.hpp"
+#include "tiki/toolxml/xml_element.hpp"
 
 namespace tiki
 {
@@ -38,16 +39,16 @@ namespace tiki
 		TIKI_DELETE( m_pDefaultObject );
 	}
 
-	bool GenericDataTypeStruct::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
+	bool GenericDataTypeStruct::loadFromXml( XmlElement* pTypeNode )
 	{
-		if ( pTypeRoot == nullptr )
+		if ( pTypeNode == nullptr )
 		{
 			return false;
 		}
 
-		if ( !isStringEquals( pTypeRoot->name, "struct" ) )
+		if ( !pTypeNode->isName( "struct" ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'struct') \n", getName().cStr(), pTypeRoot->name );
+			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'struct') \n", getName().cStr(), pTypeNode->getName() );
 			return false;
 		}
 
@@ -57,26 +58,26 @@ namespace tiki
 			m_pDefaultObject = pDefaultObject;
 		}
 
-		const XmlElement* pChildElement = pTypeRoot->elements;
-		while ( pChildElement != nullptr )
+		XmlElement* pChildNode = pTypeNode->getFirstChild();
+		while ( pChildNode != nullptr )
 		{
-			const bool isField	= isStringEquals( pChildElement->name, "field" );
-			const bool isValue	= isStringEquals( pChildElement->name, "value" );
+			const bool isField	= pChildNode->isName( "field" );
+			const bool isValue	= pChildNode->isName( "value" );
 			if ( isField || isValue )
 			{
-				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildElement );
-				const XmlAttribute* pTypeAtt = reader.findAttributeByName( "type", pChildElement );
+				const XmlAttribute* pNameAtt = pChildNode->findAttribute( "name" );
+				const XmlAttribute* pTypeAtt = pChildNode->findAttribute( "type" );
 				if ( pNameAtt && pTypeAtt )
 				{
-					const GenericDataType* pType = m_collection.parseType( pTypeAtt->content );
+					const GenericDataType* pType = m_collection.parseType( pTypeAtt->getValue() );
 					if ( pType == nullptr )
 					{
-						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] Type(%s) for field with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->content, pNameAtt->content );
+						TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] Type(%s) for field with name '%s' can't be found.\n", getName().cStr(), pTypeAtt->getValue(), pNameAtt->getValue() );
 						return false;
 					}
 
 					GenericDataStructField* pValueField = nullptr;
-					const string fieldName = pNameAtt->content;
+					const string fieldName = pNameAtt->getValue();
 					if ( isValue )
 					{
 						for (uint i = 0u; i < m_fields.getCount(); ++i)
@@ -91,7 +92,7 @@ namespace tiki
 
 						if ( pValueField == nullptr )
 						{
-							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' can't found in base class.\n", getName().cStr(), pNameAtt->content );
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' can't found in base class.\n", getName().cStr(), pNameAtt->getValue() );
 							return false;
 						}
 					}
@@ -111,19 +112,19 @@ namespace tiki
 
 					if ( isValue && field.pType != pType )
 					{
-						TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' must have the same type like in base class.\n", getName().cStr(), pNameAtt->content );
+						TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] field with name '%s' must have the same type like in base class.\n", getName().cStr(), pNameAtt->getValue() );
 						return false;
 					}
 
-					const XmlAttribute* pModeAtt = reader.findAttributeByName("mode", pChildElement);
+					const XmlAttribute* pModeAtt = pChildNode->findAttribute( "mode" );
 					if ( pModeAtt != nullptr )
 					{
 						if ( !isValue )
 						{
-							GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
+							GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->getValue() );
 							if ( mode == GenericDataTypeMode_Invalid )
 							{
-								TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );
+								TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->getValue(), pModeAtt->getValue() );
 							}
 							else
 							{
@@ -132,28 +133,28 @@ namespace tiki
 						}
 						else
 						{
-							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] can't override mode in value(%s).\n", getName().cStr(), pNameAtt->content );
+							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] can't override mode in value(%s).\n", getName().cStr(), pNameAtt->getValue() );
 						}
 					}
 
 					GenericDataValue* pDefaultValue = m_pDefaultObject->getFieldValue( fieldName, true );
 
 					bool ok = true;
-					const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
+					const XmlAttribute* pValueAtt = pChildNode->findAttribute( "value" );
 					if ( pValueAtt != nullptr )
 					{
-						if ( !m_collection.parseValue( pDefaultValue, pValueAtt->content, pType, this ) )
+						if ( !m_collection.parseValue( pDefaultValue, pValueAtt->getValue(), pType, this ) )
 						{
-							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->content );
+							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value of '%s' can't be parsed.\n", getName().cStr(), pNameAtt->getValue() );
 							ok = false;
 						}
 					}
 					else
 					{
-						const XmlElement* pValueElement = reader.findFirstChild( "value", pChildElement );
-						if( pValueElement != nullptr )
+						XmlElement* pValueNode = pChildNode->findFirstChild( "value" );
+						if( pValueNode != nullptr )
 						{
-							if (!pType->importValueFromXml( pDefaultValue, reader, pValueElement, this ))
+							if( !pDefaultValue->importFromXml( pValueNode, pType, m_pDefaultObject, m_collection ) )
 							{
 								TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] default value node can't be parsed.\n", getName().cStr() );
 								ok = false;
@@ -177,7 +178,7 @@ namespace tiki
 				}
 			}
 
-			pChildElement = pChildElement->next;
+			pChildNode = pChildNode->getNextSibling();
 		}
 
 		return true;
@@ -215,16 +216,16 @@ namespace tiki
 				}
 			}
 
-			fieldsCode += formatDynamicString( s_pFieldFormat, field.pType->getExportName().cStr(), field.name.cStr() );
+			fieldsCode += formatDynamicString( s_pFieldFormat, field.pType->getCodeExportName().cStr(), field.name.cStr() );
 		}
 
 		string baseTypeCode = "";
 		if ( m_pBaseType != nullptr )
 		{
-			baseTypeCode = formatDynamicString( s_pBaseTypeFormat, m_pBaseType->getExportName().cStr() );
+			baseTypeCode = formatDynamicString( s_pBaseTypeFormat, m_pBaseType->getCodeExportName().cStr() );
 		}
 
-		targetData.code += formatDynamicString( s_pBaseFormat, getExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
+		targetData.code += formatDynamicString( s_pBaseFormat, getCodeExportName().cStr(), baseTypeCode.cStr(), fieldsCode.cStr() );
 
 		return true;
 	}
@@ -239,7 +240,7 @@ namespace tiki
 		return m_size;
 	}
 
-	string GenericDataTypeStruct::getExportName() const
+	string GenericDataTypeStruct::getCodeExportName() const
 	{
 		return getName();
 	}

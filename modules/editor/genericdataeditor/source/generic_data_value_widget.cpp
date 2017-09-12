@@ -1,16 +1,17 @@
 #include "generic_data_value_widget.hpp"
 
 #include "tiki/toolgenericdata/generic_data_tag.hpp"
-#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/generic_data_type_enum.hpp"
 
 #include <QLineEdit>
 #include <QPushButton>
 
 namespace tiki
 {
-	GenericDataValueWidget::GenericDataValueWidget( GenericDataTypeCollection& collection, GenericDataValue* pValue )
+	GenericDataValueWidget::GenericDataValueWidget( GenericDataTypeCollection& collection, IFile* pFile, GenericDataValue* pValue )
 		: m_collection( collection )
 		, m_tagHandler( collection.getTagHandler() )
+		, m_pFile( pFile )
 		, m_pValue( pValue )
 	{
 		m_pTagEnableButton = new QPushButton( QIcon( ":/genericdata-editor/tag-editor.png" ), "" );
@@ -104,8 +105,6 @@ namespace tiki
 		{
 			m_pTags->show();
 			selectTag();
-
-
 		}
 		else
 		{
@@ -199,6 +198,7 @@ namespace tiki
 		if( m_isInTagMode )
 		{
 			getTag()->setContent( content );
+			m_pFile->markAsDirty();
 		}
 		else
 		{
@@ -212,6 +212,7 @@ namespace tiki
 			else
 			{
 				m_pText->setPalette( QPalette() );
+				m_pFile->markAsDirty();
 			}
 		}
 	}

@@ -1,19 +1,23 @@
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
 
-#include "tiki/toolgenericdata/genericdatatypearray.hpp"
+#include "tiki/toolgenericdata/generic_data_tag.hpp"
 
 namespace tiki
 {
-	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const GenericDataType* pBaseType, GenericDataTypeMode mode )
+	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, GenericDataTypeType_Array, mode )
 		, m_pBaseType( pBaseType )
 	{
+		m_pTypeTag = TIKI_NEW( GenericDataTag );
+		m_pTypeTag->setTag( "array" );
+		m_pTypeTag->setContent( pBaseType->getName() );
 	}
 
 	GenericDataTypeArray::~GenericDataTypeArray()
 	{
 	}
 
-	bool GenericDataTypeArray::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
+	bool GenericDataTypeArray::loadFromXml( XmlElement* pTypeNode )
 	{
 		return false;
 	}
@@ -33,9 +37,9 @@ namespace tiki
 		return 16u;
 	}
 
-	string GenericDataTypeArray::getExportName() const
+	string GenericDataTypeArray::getCodeExportName() const
 	{
-		return formatDynamicString( "ResArray< %s >", m_pBaseType->getExportName().cStr() );
+		return formatDynamicString( "ResArray< %s >", m_pBaseType->getCodeExportName().cStr() );
 	}
 
 	crc32 GenericDataTypeArray::getTypeCrc() const

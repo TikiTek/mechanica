@@ -26,12 +26,12 @@ namespace tiki
 												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
 		virtual									~GenericDataTypeStruct();
 
-		virtual bool							loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE;
+		virtual bool							loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE;
 		virtual bool							exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;
 
 		virtual uint							getAlignment() const TIKI_OVERRIDE;
 		virtual uint							getSize() const TIKI_OVERRIDE;
-		virtual string							getExportName() const TIKI_OVERRIDE;
+		virtual string							getCodeExportName() const TIKI_OVERRIDE;
 		virtual crc32							getTypeCrc() const TIKI_OVERRIDE;
 
 		const GenericDataTypeStruct*			getBaseType() const;
@@ -54,7 +54,7 @@ namespace tiki
 		uint									m_size;
 
 		List< GenericDataStructField >			m_fields;
-		
+
 	};
 }
 

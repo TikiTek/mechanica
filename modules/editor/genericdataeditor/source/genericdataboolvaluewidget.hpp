@@ -11,6 +11,7 @@ class QCheckBox;
 
 namespace tiki
 {
+	class IFile;
 	class GenericDataValue;
 
 	class GenericDataBoolValueWidget : public QWidget
@@ -20,11 +21,17 @@ namespace tiki
 
 	public:
 
-		explicit	GenericDataBoolValueWidget( GenericDataValue* pValue );
+		explicit	GenericDataBoolValueWidget( IFile* pFile, GenericDataValue* pValue );
 		virtual		~GenericDataBoolValueWidget();
+
+	private slots:
+
+		void				onChanged( int state );
+
 
 	private:
 
+		IFile*				m_pFile;
 		GenericDataValue*	m_pValue;
 
 		QHBoxLayout*		m_pLayout;

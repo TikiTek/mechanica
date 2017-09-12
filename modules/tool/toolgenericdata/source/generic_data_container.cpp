@@ -2,12 +2,13 @@
 
 #include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/genericdatatypearray.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
-#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
-#include "tiki/toolgenericdata/genericdatatypepointer.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_enum.hpp"
+#include "tiki/toolgenericdata/generic_data_type_pointer.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
+#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolxml/xml_document.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 #	include "tiki/converterbase/converterhelper.hpp"
@@ -26,16 +27,16 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataContainer::importFromXml( XmlNode* pObjectNode )
+	bool GenericDataContainer::importFromXml( XmlElement* pObjectNode )
 	{
+		m_pObjectNode = pObjectNode;
+
 		bool result = true;
-
 		const char* pElementName = getElementName();
-		XmlNode* pNode = pObjectNode->findFirstChild( pElementName );
-		while ( pNode != nullptr)
+		XmlElement* pChildNode = pObjectNode->findFirstChild( pElementName );
+		while ( pChildNode != nullptr)
 		{
-			const XmlAttribute* pTypeAtt = pNode->findAttribute( "type" );
-
+			const XmlAttribute* pTypeAtt = pChildNode->findAttribute( "type" );
 			if ( pTypeAtt == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] '%s' node needs a 'type' attribute.\n", pElementName );
@@ -50,32 +51,29 @@ namespace tiki
 				}
 				else
 				{
-					GenericDataValue* pValue = addElementValue( pNode );
+					GenericDataValue* pValue = addElementValue( pChildNode );
 					if( pValue == nullptr )
 					{
 						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else if ( !pValue->importFromXml( pNode, pElementType, this, m_collection ) )
+					else if ( !pValue->importFromXml( pChildNode, pElementType, this, m_collection ) )
 					{
 						result = false;
 					}
 				}
 			}
 
-			pNode = pNode->findNextSibling( pElementName );
+			pChildNode = pChildNode->findNextSibling( pElementName );
 		}
 
-		m_pObjectNode = pObjectNode;
 		return true;
 	}
 
-	bool GenericDataContainer::exportToXml( XmlNode* pParentNode )
+	bool GenericDataContainer::exportToXml( XmlElement* pParentNode )
 	{
 		if( m_pObjectNode == nullptr )
 		{
-			XmlDocument* pDocument = pParentNode->getDocument();
-			m_pObjectNode = pDocument->createNode( getNodeName() );
-
+			m_pObjectNode = getParentType()->createXmlElement( pParentNode->getDocument(), getNodeName() );
 			pParentNode->appendChild( m_pObjectNode );
 		}
 
@@ -85,6 +83,8 @@ namespace tiki
 		{
 			pCurrentValue->exportToXml( m_pObjectNode, this, m_collection );
 		}
+
+		return true;
 	}
 
 	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const

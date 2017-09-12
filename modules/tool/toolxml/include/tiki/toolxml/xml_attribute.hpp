@@ -9,32 +9,21 @@ namespace tinyxml2
 
 namespace tiki
 {
-	class XmlNode;
+	class XmlElement;
 
 	class XmlAttribute
 	{
 	public:
 
-		const char*			getName() const;
-		void				setName( const char* pValue );
-		const char*			getValue() const;
-		void				setValue( const char* pValue );
-
-		XmlNode*			getParent();
-		const XmlNode*		getParent() const;
-
-		XmlAttribute*		getPreviousAttribute();
-		const XmlAttribute*	getPreviousAttribute() const;
-		XmlAttribute*		getNextAttribute();
-		const XmlAttribute*	getNextAttribute() const;
-
+		const char*						getName() const;
+		const char*						getValue() const;
 
 	private:
 
-								XmlAttribute();
-								~XmlAttribute();
+										XmlAttribute();
+										~XmlAttribute();
 
-		tinyxml2::XMLAttribute*	getNativeAttribute();
+		const tinyxml2::XMLAttribute*	getNativeAttribute() const;
 	};
 }
 

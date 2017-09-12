@@ -83,7 +83,7 @@ namespace tiki
 		bool							registerDefaultValueTypes();
 		bool							registerDefaultResourceTypes();
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
-		bool							parseFile( XmlReader& reader, const _XmlElement* pRootNode, const string& fileName, const string& moduleName );
+		bool							parseFile( XmlElement* pRootNode, const string& fileName, const string& moduleName );
 
 		void							writeToFileIfNotEquals( const string& fileName, const string& content );
 

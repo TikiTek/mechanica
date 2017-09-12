@@ -1,5 +1,5 @@
 
-#include "tiki/toolgenericdata/genericdatatyperesource.hpp"
+#include "tiki/toolgenericdata/generic_data_type_resource.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
@@ -30,10 +30,10 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataTypeResource::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
+	bool GenericDataTypeResource::loadFromXml( XmlElement* pTypeNode )
 	{
-		const XmlAttribute* pPostFixAtt = reader.findAttributeByName( "postfix", pTypeRoot );
-		const XmlAttribute* pFourCcAtt = reader.findAttributeByName( "fourcc", pTypeRoot );
+		const XmlAttribute* pPostFixAtt = pTypeNode->findAttribute( "postfix" );
+		const XmlAttribute* pFourCcAtt = pTypeNode->findAttribute( "fourcc" );
 
 		if ( pPostFixAtt == nullptr || pFourCcAtt == nullptr )
 		{
@@ -41,15 +41,14 @@ namespace tiki
 			return false;
 		}
 
-		m_postFix = pPostFixAtt->content;
-
-		const string fourccText = string( pFourCcAtt->content );
+		m_postFix = pPostFixAtt->getValue();
 
 		uint i = 0u;
-		const uint charCount = TIKI_MIN( 4u, fourccText.getLength() );
+		const char* pFourccText = pFourCcAtt->getValue();
+		const uint charCount = TIKI_MIN( 4u, getStringLength( pFourccText ) );
 		for (; i < charCount; ++i)
 		{
-			m_fourCC[ i ] = fourccText[ i ];
+			m_fourCC[ i ] = pFourccText[ i ];
 		}
 
 		for (; i < 4u; ++i)
@@ -69,7 +68,7 @@ namespace tiki
 
 		targetData.code += formatDynamicString(
 			s_pBaseFormat,
-			m_pBaseType->getExportName().cStr(),
+			m_pBaseType->getCodeExportName().cStr(),
 			m_fourCC[ 0u ], m_fourCC[ 1u ], m_fourCC[ 2u ], m_fourCC[ 3u ],
 			getName().cStr()
 		);
@@ -87,7 +86,7 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypeResource::getExportName() const
+	string GenericDataTypeResource::getCodeExportName() const
 	{
 		return formatDynamicString( "ResRef< %s >", getName().cStr() );
 	}
@@ -98,7 +97,7 @@ namespace tiki
 		{
 			return m_pBaseType->getTypeCrc();
 		}
-		else 
+		else
 		{
 			return crcString( getName() );
 		}

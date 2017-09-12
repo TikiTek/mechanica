@@ -1,6 +1,7 @@
 #include "genericdataboolvaluewidget.hpp"
 
 #include "tiki/base/assert.hpp"
+#include "tiki/editorinterface/ifile.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #include <QCheckBox>
@@ -8,10 +9,12 @@
 
 namespace tiki
 {
-	GenericDataBoolValueWidget::GenericDataBoolValueWidget( GenericDataValue* pValue )
-		: m_pValue( pValue )
+	GenericDataBoolValueWidget::GenericDataBoolValueWidget( IFile* pFile, GenericDataValue* pValue )
+		: m_pFile( pFile )
+		, m_pValue( pValue )
 	{
 		m_pCheckBox = new QCheckBox();
+		connect( m_pCheckBox, &QCheckBox::stateChanged, this, &GenericDataBoolValueWidget::onChanged );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pCheckBox );
@@ -26,6 +29,18 @@ namespace tiki
 	{
 		delete m_pLayout;
 		delete m_pCheckBox;
+	}
+
+	void GenericDataBoolValueWidget::onChanged( int state )
+	{
+		const bool checked = (state != 0u);
+
+		bool value = false;
+		if( m_pValue->getBoolean( value ) && value != checked )
+		{
+			m_pValue->setBoolean( checked );
+			m_pFile->markAsDirty();
+		}
 	}
 
 	void GenericDataBoolValueWidget::applyValue()

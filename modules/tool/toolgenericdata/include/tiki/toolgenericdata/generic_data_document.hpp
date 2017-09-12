@@ -51,7 +51,7 @@ namespace tiki
 		bool							importFromXml();
 		bool							exportToXml();
 
-		const GenericDataType*			findTypeForNode( const XmlNode* pNode, GenericDataTypeType type ) const;
+		const GenericDataType*			findTypeForNode( const XmlElement* pNode, GenericDataTypeType type ) const;
 	};
 }
 
