@@ -1,12 +1,12 @@
-#include "genericdataeditorwidget.hpp"
+#include "generic_data_editor_widget.hpp"
 
 #include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/generic_data_type_array.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 
-#include "genericdataboolvaluewidget.hpp"
+#include "generic_data_bool_value_widget.hpp"
 #include "generic_data_value_widget.hpp"
 
 #include <QComboBox>
@@ -88,9 +88,6 @@ namespace tiki
 	{
 		m_pTreeModel->clear();
 
-		delete m_pTreeRootKeyItem;
-		delete m_pTreeRootValueItem;
-		delete m_pTreeRootTypeItem;
 		m_pTreeRootKeyItem		= nullptr;
 		m_pTreeRootValueItem	= nullptr;
 		m_pTreeRootTypeItem		= nullptr;

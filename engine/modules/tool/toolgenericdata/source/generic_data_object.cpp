@@ -2,7 +2,7 @@
 
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_type_collection.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )

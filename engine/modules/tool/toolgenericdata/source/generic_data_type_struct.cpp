@@ -1,4 +1,4 @@
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"

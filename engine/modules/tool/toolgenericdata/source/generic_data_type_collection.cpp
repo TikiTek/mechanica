@@ -18,8 +18,8 @@
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 #include "tiki/toolgenericdata/generic_data_type_array.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
-#include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_value_type.hpp"
 #include "tiki/toolxml/xml_attribute.hpp"
 #include "tiki/toolxml/xml_document.hpp"
 
@@ -359,7 +359,15 @@ namespace tiki
 			if ( pTypedType->isBoolean() )
 			{
 				sint64 value;
-				if( !string_tools::tryParseSInt64( value, content.cStr() ) )
+				if( isStringEquals( content.cStr(), "true" ) )
+				{
+					value = 1u;
+				}
+				else if( isStringEquals( content.cStr(), "false" ) )
+				{
+					value = 0u;
+				}
+				else if( !string_tools::tryParseSInt64( value, content.cStr() ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] unable to parse integer from '%s'.\n", content.cStr() );
 					return false;

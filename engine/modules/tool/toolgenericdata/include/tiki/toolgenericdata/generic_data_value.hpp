@@ -4,7 +4,7 @@
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolgenericdata/genericdatatypetype.hpp"
+#include "tiki/toolgenericdata/generic_data_type_type.hpp"
 
 namespace tiki
 {
