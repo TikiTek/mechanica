@@ -1,4 +1,4 @@
-#include "genericdataboolvaluewidget.hpp"
+#include "generic_data_bool_value_widget.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/editorinterface/ifile.hpp"
@@ -14,7 +14,6 @@ namespace tiki
 		, m_pValue( pValue )
 	{
 		m_pCheckBox = new QCheckBox();
-		connect( m_pCheckBox, &QCheckBox::stateChanged, this, &GenericDataBoolValueWidget::onChanged );
 
 		m_pLayout = new QHBoxLayout();
 		m_pLayout->addWidget( m_pCheckBox );
@@ -23,6 +22,8 @@ namespace tiki
 		applyValue();
 
 		setLayout( m_pLayout );
+
+		connect( m_pCheckBox, &QCheckBox::stateChanged, this, &GenericDataBoolValueWidget::onChanged );
 	}
 
 	GenericDataBoolValueWidget::~GenericDataBoolValueWidget()

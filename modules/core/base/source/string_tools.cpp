@@ -68,6 +68,22 @@ namespace tiki
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%f", value );
+
+		uint index = getStringLength( buffer ) - 1u;
+		while( index > 0 )
+		{
+			if( buffer[ index - 1u ] == '.' || buffer[ index ] != '0' )
+			{
+				break;
+			}
+			else if( buffer[ index ] == '0' )
+			{
+				buffer[ index ] = '\0';
+			}
+
+			index--;
+		}
+
 		return string( buffer );
 	}
 
@@ -75,6 +91,22 @@ namespace tiki
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%f", value );
+
+		uint index = getStringLength( buffer ) - 1u;
+		while( index > 0 )
+		{
+			if( buffer[ index - 1u ] == '.' || buffer[ index ] != '0' )
+			{
+				break;
+			}
+			else if( buffer[ index ] == '0' )
+			{
+				buffer[ index ] = '\0';
+			}
+
+			index--;
+		}
+
 		return string( buffer );
 	}
 
@@ -157,7 +189,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const sint64 result = strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -169,7 +201,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const sint64 result = strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -181,7 +213,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const sint64 result = strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -193,7 +225,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const sint64 result = strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -205,7 +237,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -217,7 +249,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -229,7 +261,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -241,7 +273,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 10 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -253,7 +285,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -265,7 +297,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -277,7 +309,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -289,7 +321,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const uint64 result = (uint64)strtoll( pString, &pEnd, 16 );
-		if( pEnd == nullptr || !rangeCheckCast( target, result ) )
+		if( pEnd == pString || !rangeCheckCast( target, result ) )
 		{
 			return false;
 		}
@@ -301,7 +333,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const float64 result = strtof( pString, &pEnd );
-		if( pEnd == nullptr || pEnd == pString )
+		if( pEnd == pString || pEnd == pString )
 		{
 			return false;
 		}
@@ -314,7 +346,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const float64 result = strtof( pString, &pEnd );
-		if( pEnd == nullptr || pEnd == pString )
+		if( pEnd == pString || pEnd == pString )
 		{
 			return false;
 		}
@@ -327,7 +359,7 @@ namespace tiki
 	{
 		char* pEnd = nullptr;
 		const float64 result = strtof( pString, &pEnd );
-		if( pEnd == nullptr || pEnd == pString )
+		if( pEnd == pString || pEnd == pString )
 		{
 			return false;
 		}

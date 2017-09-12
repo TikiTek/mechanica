@@ -2,13 +2,15 @@
 
 #include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
 #include "tiki/toolgenericdata/generic_data_type_collection.hpp"
 #include "tiki/toolgenericdata/generic_data_type_enum.hpp"
 #include "tiki/toolgenericdata/generic_data_type_pointer.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
-#include "tiki/toolgenericdata/generic_data_type_array.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolxml/xml_attribute.hpp"
 #include "tiki/toolxml/xml_document.hpp"
+#include "tiki/toolxml/xml_element.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 #	include "tiki/converterbase/converterhelper.hpp"

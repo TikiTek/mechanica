@@ -6,8 +6,8 @@
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 #include "tiki/toolgenericdata/generic_data_type_array.hpp"
 #include "tiki/toolgenericdata/generic_data_type_enum.hpp"
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
-#include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_value_type.hpp"
 
 namespace tiki
 {
@@ -519,6 +519,8 @@ namespace tiki
 
 	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
 	{
+		m_pNode = pNode;
+
 		const XmlAttribute* pValueAtt = pNode->findAttribute( "value" );
 		if( pValueAtt != nullptr )
 		{
@@ -527,11 +529,6 @@ namespace tiki
 		else
 		{
 			XmlElement* pChildNode = pNode->getFirstChild();
-			while( pChildNode->getNextSibling() != nullptr && pChildNode->getName() == nullptr )
-			{
-				pChildNode = pChildNode->getNextSibling();
-			}
-
 			if( pChildNode == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] '%s' node needs a 'value' attribute or a child node named 'object' or 'array'.\n", pNode->getName() );
@@ -647,10 +644,22 @@ namespace tiki
 
 		if( m_valueType == GenericDataValueType_Array )
 		{
+			if( m_value.pArray == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataContainer::exportToXml] tried to export null array.\n" );
+				return false;
+			}
+
 			return m_value.pArray->exportToXml( m_pNode );
 		}
 		else if( m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer )
 		{
+			if( m_value.pObject == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataContainer::exportToXml] tried to export null object.\n" );
+				return false;
+			}
+
 			return m_value.pObject->exportToXml( m_pNode );
 		}
 		else if( m_pValueTag != nullptr )

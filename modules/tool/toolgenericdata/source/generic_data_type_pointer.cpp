@@ -1,6 +1,6 @@
 #include "tiki/toolgenericdata/generic_data_type_pointer.hpp"
 
-#include "tiki/toolgenericdata/genericdatatypestruct.hpp"
+#include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 
 namespace tiki
 {

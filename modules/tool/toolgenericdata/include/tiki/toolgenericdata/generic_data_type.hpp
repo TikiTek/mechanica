@@ -1,12 +1,12 @@
 #pragma once
-#ifndef TIKI_GENERICDATATYPE_HPP_INCLUDED__
-#define TIKI_GENERICDATATYPE_HPP_INCLUDED__
+#ifndef TIKI_GENERIC_DATA_TYPE_HPP_INCLUDED
+#define TIKI_GENERIC_DATA_TYPE_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/linkedlist.hpp"
 #include "tiki/container/list.hpp"
-#include "tiki/toolgenericdata/genericdatatypetype.hpp"
+#include "tiki/toolgenericdata/generic_data_type_type.hpp"
 
 struct _XmlElement;
 
@@ -89,5 +89,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_GENERICDATATYPE_HPP_INCLUDED__
-
+#endif // TIKI_GENERIC_DATA_TYPE_HPP_INCLUDED
