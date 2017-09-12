@@ -4,8 +4,8 @@
 #include "tiki/base/numberlimits.hpp"
 #include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/genericdatatypearray.hpp"
-#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
+#include "tiki/toolgenericdata/generic_data_type_enum.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/genericdatatypevaluetype.hpp"
 
@@ -151,10 +151,10 @@ namespace tiki
 			return m_text;
 
 		case GenericDataValueType_Reference:
-			return "Reference";
+			return m_text;
 
 		case GenericDataValueType_Pointer:
-			return "Pointer";
+			return m_value.pObject->getType()->getName();
 
 		case GenericDataValueType_Invalid:
 		case GenericDataValueType_Count:
@@ -175,7 +175,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setBoolean( bool value, const GenericDataType* pType )
+	bool GenericDataValue::setBoolean( bool value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -226,7 +226,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType )
+	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -293,7 +293,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setUnsignedValue( uint64 value, const GenericDataType* pType )
+	bool GenericDataValue::setUnsignedValue( uint64 value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -344,7 +344,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setFloatingPoint( float64 value, const GenericDataType* pType )
+	bool GenericDataValue::setFloatingPoint( float64 value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -381,7 +381,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setString( const string& value, const GenericDataType* pType )
+	bool GenericDataValue::setString( const string& value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -451,7 +451,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType )
+	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -483,7 +483,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setReference( const string& refText, const GenericDataType* pType )
+	bool GenericDataValue::setReference( const string& refText, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -517,16 +517,16 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::importFromXml( XmlNode* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
+	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
 	{
 		const XmlAttribute* pValueAtt = pNode->findAttribute( "value" );
 		if( pValueAtt != nullptr )
 		{
-			return collection.parseValue( this, pValueAtt->getValue(), pType, pParent->getType() );
+			return collection.parseValue( this, pValueAtt->getValue(), pType, pParent->getParentType() );
 		}
 		else
 		{
-			XmlNode* pChildNode = pNode->getFirstChild();
+			XmlElement* pChildNode = pNode->getFirstChild();
 			while( pChildNode->getNextSibling() != nullptr && pChildNode->getName() == nullptr )
 			{
 				pChildNode = pChildNode->getNextSibling();
@@ -551,13 +551,18 @@ namespace tiki
 				return false;
 			}
 
-			if( pType->isTypeCompatible( pChildType ) )
+			if( pChildNode->isName( "array" ) )
+			{
+				pChildType = collection.makeArrayType( pChildType );
+			}
+
+			if( !pType->isTypeCompatible( pChildType ) )
 			{
 				TIKI_TRACE_ERROR( "[GenericDataType::importFromXml] Child type '%s' is not compatible with '%s'.\n", pChildType->getName().cStr(), pType->getName().cStr() );
 				return false;
 			}
 
-			if( isStringEquals( pChildNode->getName(), "object" ) )
+			if( pChildNode->isName( "object" ) )
 			{
 				if( pChildType->getType() != GenericDataTypeType_Struct )
 				{
@@ -585,14 +590,9 @@ namespace tiki
 					return false;
 				}
 			}
-			else if( isStringEquals( pChildNode->getName(), "array" ) )
+			else if( pChildNode->isName( "array" ) )
 			{
-				pChildType = collection.makeArrayType( pChildType );
-				if( pChildType->getType() != GenericDataTypeType_Array )
-				{
-					TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] type of a array needs to be a array. '%s' is not an array.\n", pChildType->getName().cStr() );
-					return false;
-				}
+				TIKI_ASSERT( pChildType->getType() == GenericDataTypeType_Array );
 
 				const GenericDataTypeArray* pTypedChildType = (const GenericDataTypeArray*)pChildType;
 				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( collection );
@@ -624,13 +624,45 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::exportToXml( XmlNode* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
+	bool GenericDataValue::exportToXml( XmlElement* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
 	{
+		if( m_valueType == GenericDataValueType_Invalid || m_pType == nullptr )
+		{
+			return false;
+		}
+
 		if( m_pNode == nullptr )
 		{
-			m_pNode = pParentNode->getDocument()->createNode( pParent->getElementName() );
+			m_pNode = m_pType->createXmlElement( pParentNode->getDocument(), pParent->getElementName() );
+			if( !pParent->initializeXmlElementForValue( m_pNode, this ) )
+			{
+				pParentNode->getDocument().destroyElement( m_pNode );
+				m_pNode = nullptr;
+
+				return false;
+			}
+
 			pParentNode->appendChild( m_pNode );
 		}
+
+		if( m_valueType == GenericDataValueType_Array )
+		{
+			return m_value.pArray->exportToXml( m_pNode );
+		}
+		else if( m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer )
+		{
+			return m_value.pObject->exportToXml( m_pNode );
+		}
+		else if( m_pValueTag != nullptr )
+		{
+			m_pNode->setAttribute( "value", m_pValueTag->writeTagString().cStr() );
+		}
+		else
+		{
+			m_pNode->setAttribute( "value", toString().cStr() );
+		}
+
+		return true;
 	}
 
 	GenericDataValueType GenericDataValue::getValueType( const GenericDataType* pType )
@@ -671,7 +703,7 @@ namespace tiki
 
 	bool GenericDataValue::checkType( const GenericDataType* pType )
 	{
-		if( m_pType->getType() == pType->getType() )
+		if( pType == nullptr || m_pType->getType() == pType->getType() )
 		{
 			return true;
 		}

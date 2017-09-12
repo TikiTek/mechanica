@@ -40,12 +40,12 @@ namespace tiki
 										GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type );
 		virtual							~GenericDataTypeValueType();
 
-		virtual bool					loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot ) TIKI_OVERRIDE_FINAL;
+		virtual bool					loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
 		virtual bool					exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE_FINAL;
 
 		virtual uint					getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint					getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string					getExportName() const TIKI_OVERRIDE_FINAL;
+		virtual string					getCodeExportName() const TIKI_OVERRIDE_FINAL;
 		virtual crc32					getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
 		GenericDataValueTypeType		getValueType() const;

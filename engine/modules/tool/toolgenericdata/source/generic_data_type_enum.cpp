@@ -1,10 +1,8 @@
-
-#include "tiki/toolgenericdata/genericdatatypeenum.hpp"
+#include "tiki/toolgenericdata/generic_data_type_enum.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string_tools.hpp"
-#include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
 
 namespace tiki
 {
@@ -26,44 +24,44 @@ namespace tiki
 		}
 	}
 
-	bool GenericDataTypeEnum::loadFromXml( const XmlReader& reader, const XmlElement* pTypeRoot )
+	bool GenericDataTypeEnum::loadFromXml( XmlElement* pTypeNode )
 	{
-		if ( pTypeRoot == nullptr )
+		if ( pTypeNode == nullptr )
 		{
 			return false;
 		}
 
-		if ( !isStringEquals( pTypeRoot->name, "enum" ) )
+		if ( !pTypeNode->isName( "enum" ) )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'enum') \n", getName().cStr(), pTypeRoot->name );
+			TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] node has a wrong tag('%s' != 'enum') \n", getName().cStr(), pTypeNode->getName() );
 			return false;
 		}
 
-		const XmlElement* pChildElement = pTypeRoot->elements;
+		const XmlElement* pChildNode = pTypeNode->getFirstChild();
 		sint64 currentValue = 0;
-		while ( pChildElement != nullptr )
+		while ( pChildNode != nullptr )
 		{
-			const bool isValue = isStringEquals( pChildElement->name, "value" );
+			const bool isValue = pChildNode->isName( "value" );
 			if ( isValue )
 			{
-				const XmlAttribute* pNameAtt = reader.findAttributeByName( "name", pChildElement );
-				const XmlAttribute* pModeAtt = reader.findAttributeByName( "mode", pChildElement );
-				const XmlAttribute* pValueAtt = reader.findAttributeByName( "value", pChildElement );
+				const XmlAttribute* pNameAtt = pChildNode->findAttribute( "name" );
+				const XmlAttribute* pModeAtt = pChildNode->findAttribute( "mode" );
+				const XmlAttribute* pValueAtt = pChildNode->findAttribute( "value" );
 
 				if ( pNameAtt )
 				{
 					GenericDataEnumValue& field = m_values.add();
-					field.name		= pNameAtt->content;
+					field.name		= pNameAtt->getValue();
 					field.mode		= GenericDataTypeMode_ToolAndRuntime;
 					field.hasValue	= false;
 					field.pValue	= TIKI_NEW( GenericDataValue )( m_pBaseType );
 
 					if ( pModeAtt != nullptr )
 					{
-						GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->content );
+						GenericDataTypeMode mode = m_collection.findModeByName( pModeAtt->getValue() );
 						if ( mode == GenericDataTypeMode_Invalid )
 						{
-							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->content, pModeAtt->content );
+							TIKI_TRACE_WARNING( "[GenericDataStruct(%s)::readFromXml] field or array with name '%s' has a invalid mode attribute. '%s' is not a valid mode.\n", getName().cStr(), pNameAtt->getValue(), pModeAtt->getValue() );
 						}
 						else
 						{
@@ -73,7 +71,7 @@ namespace tiki
 
 					if ( pValueAtt != nullptr )
 					{
-						if( !m_collection.parseValue( field.pValue, pValueAtt->content, m_pBaseType, this ) )
+						if( !m_collection.parseValue( field.pValue, pValueAtt->getValue(), m_pBaseType, this ) )
 						{
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to parse value for enum value.\n", getName().cStr() );
 							return false;
@@ -102,7 +100,7 @@ namespace tiki
 				}
 			}
 
-			pChildElement = pChildElement->next;
+			pChildNode = pChildNode->getNextSibling();
 		}
 
 		return true;
@@ -152,16 +150,16 @@ namespace tiki
 		string baseString = "";
 		if( m_pBaseType != m_collection.getEnumDefaultBaseType() )
 		{
-			baseString = ": " + m_pBaseType->getExportName();
+			baseString = ": " + m_pBaseType->getCodeExportName();
 		}
 
 		targetData.code += formatDynamicString(
 			s_pBaseFormat,
-			getExportName().cStr(),
+			getCodeExportName().cStr(),
 			baseString.cStr(),
 			valuesCode.cStr(),
-			getExportName().cStr(),
-			getExportName().cStr(),
+			getCodeExportName().cStr(),
+			getCodeExportName().cStr(),
 			invalidValue.cStr()
 		);
 
@@ -188,7 +186,7 @@ namespace tiki
 		return m_pBaseType->getSize();
 	}
 
-	string GenericDataTypeEnum::getExportName() const
+	string GenericDataTypeEnum::getCodeExportName() const
 	{
 		return getName();
 	}

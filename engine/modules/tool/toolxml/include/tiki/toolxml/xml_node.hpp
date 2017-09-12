@@ -9,56 +9,46 @@ namespace tinyxml2
 
 namespace tiki
 {
-	class XmlAttribute;
+	class XmlDocument;
+	class XmlElement;
 
 	class XmlNode
 	{
 	public:
 
-		XmlDocument*		getDocument();
-		const XmlDocument*	getDocument() const;
+		XmlDocument&				getDocument();
+		const XmlDocument&			getDocument() const;
 
-		const char*			getName() const;
-		const char*			getValue() const;
-		void				setValue( const char* pValue );
+		const char*					getValue() const;
+		void						setValue( const char* pValue );
 
-		XmlAttribute*		getFirstAttribute();
-		const XmlAttribute*	getFirstAttribute() const;
-		XmlAttribute*		getLastAttribute();
-		const XmlAttribute*	getLastAttribute() const;
-		XmlAttribute*		findAttribute( const char* pName );
-		const XmlAttribute*	findAttribute( const char* pName ) const;
+		XmlNode*					getParent();
+		const XmlNode*				getParent() const;
 
-		void				appendAttribute( XmlAttribute* pAttribute );
-		void				removeAttribute( XmlAttribute* pAttribute );
-		void				setAttribute( const char* pName, const char* pValue );
+		XmlElement*					getPreviousSibling();
+		const XmlElement*			getPreviousSibling() const;
+		XmlElement*					getNextSibling();
+		const XmlElement*			getNextSibling() const;
+		XmlElement*					findNextSibling( const char* pName );
+		const XmlElement*			findNextSibling( const char* pName ) const;
 
-		XmlNode*			getParent();
-		const XmlNode*		getParent() const;
+		XmlElement*					getFirstChild();
+		const XmlElement*			getFirstChild() const;
+		XmlElement*					getLastChild();
+		const XmlElement*			getLastChild() const;
+		XmlElement*					findFirstChild( const char* pName );
+		const XmlElement*			findFirstChild( const char* pName ) const;
 
-		XmlNode*			getPreviousSibling();
-		const XmlNode*		getPreviousSibling() const;
-		XmlNode*			getNextSibling();
-		const XmlNode*		getNextSibling() const;
-		XmlNode*			findNextSibling( const char* pName );
-		const XmlNode*		findNextSibling( const char* pName ) const;
+		void						appendChild( XmlElement* pElement );
+		void						removeChild( XmlElement* pElement );
 
-		XmlNode*			getFirstChild();
-		const XmlNode*		getFirstChild() const;
-		XmlNode*			getLastChild();
-		const XmlNode*		getLastChild() const;
-		XmlNode*			findFirstChild( const char* pName );
-		const XmlNode*		findFirstChild( const char* pName ) const;
+	protected:
 
-		void				appendChild( XmlNode* pNode );
-		void				removeChild( XmlNode* pNode );
+									XmlNode();
+									~XmlNode();
 
-	private:
-
-							XmlNode();
-							~XmlNode();
-
-		tinyxml2::XMLNode*	getNativeNode();
+		tinyxml2::XMLNode*			getNativeNode();
+		const tinyxml2::XMLNode*	getNativeNode() const;
 	};
 }
 

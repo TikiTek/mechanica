@@ -9,9 +9,12 @@
 namespace tiki
 {
 	class GenericDataArray;
+	class GenericDataContainer;
 	class GenericDataObject;
-	class GenericDataType;
 	class GenericDataTag;
+	class GenericDataType;
+	class GenericDataTypeCollection;
+	class XmlElement;
 
 	enum GenericDataValueType
 	{
@@ -67,17 +70,17 @@ namespace tiki
 		string						toString() const;
 
 		bool						getBoolean( bool& value ) const;
-		bool						setBoolean( bool value, const GenericDataType* pType );
+		bool						setBoolean( bool value, const GenericDataType* pType = nullptr );
 
 		bool						getSignedValue( sint64& value ) const;
-		bool						setSignedValue( sint64 value, const GenericDataType* pType );
+		bool						setSignedValue( sint64 value, const GenericDataType* pType = nullptr);
 		bool						getUnsignedValue( uint64& value ) const;
-		bool						setUnsignedValue( uint64 value, const GenericDataType* pType );
+		bool						setUnsignedValue( uint64 value, const GenericDataType* pType = nullptr);
 		bool						getFloatingPoint( float64& value ) const;
-		bool						setFloatingPoint( float64 value, const GenericDataType* pType );
+		bool						setFloatingPoint( float64 value, const GenericDataType* pType = nullptr);
 
 		bool						getString( string& value ) const;
-		bool						setString( const string& value, const GenericDataType* pType );
+		bool						setString( const string& value, const GenericDataType* pType = nullptr);
 
 		bool						getObject( GenericDataObject*& pValue ) const;
 		bool						setObject( GenericDataObject* pValue );
@@ -85,16 +88,16 @@ namespace tiki
 		bool						setArray( GenericDataArray* pValue );
 
 		bool						getEnum( string& enumName, sint64& enumValue ) const;
-		bool						setEnum( const string& valueName, const GenericDataType* pType );
+		bool						setEnum( const string& valueName, const GenericDataType* pType = nullptr);
 
 		bool						getReference( string& refText ) const;
-		bool						setReference( const string& refText, const GenericDataType* pType );
+		bool						setReference( const string& refText, const GenericDataType* pType = nullptr);
 
 		bool						getPointer( GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
 
-		bool						importFromXml( XmlNode* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
-		bool						exportToXml( XmlNode* pParentNode, const const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+		bool						exportToXml( XmlElement* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
 
 	private:
 
@@ -120,7 +123,7 @@ namespace tiki
 			GenericDataArray*	pArray;
 		};
 
-		XmlNode*				m_pNode;
+		XmlElement*				m_pNode;
 
 		const GenericDataType*	m_pType;
 		GenericDataValueType	m_valueType;

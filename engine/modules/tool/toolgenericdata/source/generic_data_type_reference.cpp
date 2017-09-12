@@ -1,7 +1,7 @@
 
-#include "tiki/toolgenericdata/genericdatatypereference.hpp"
+#include "tiki/toolgenericdata/generic_data_type_reference.hpp"
 
-#include "tiki/toolgenericdata/genericdatatyperesource.hpp"
+#include "tiki/toolgenericdata/generic_data_type_resource.hpp"
 
 namespace tiki
 {
@@ -9,13 +9,16 @@ namespace tiki
 		: GenericDataType( collection, name, GenericDataTypeType_Reference, mode )
 		, m_pBaseType( pBaseType )
 	{
+		m_pTypeTag = TIKI_NEW( GenericDataTag );
+		m_pTypeTag->setTag( "reference" );
+		m_pTypeTag->setContent( pBaseType->getName() );
 	}
 
 	GenericDataTypeReference::~GenericDataTypeReference()
 	{
 	}
 
-	bool GenericDataTypeReference::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
+	bool GenericDataTypeReference::loadFromXml( XmlElement* pTypeNode )
 	{
 		return false;
 	}
@@ -35,9 +38,9 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypeReference::getExportName() const
+	string GenericDataTypeReference::getCodeExportName() const
 	{
-		return m_pBaseType->getExportName();
+		return m_pBaseType->getCodeExportName();
 	}
 
 	crc32 GenericDataTypeReference::getTypeCrc() const

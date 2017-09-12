@@ -4,7 +4,7 @@
 
 #include "tiki/converterbase/converterbase.hpp"
 
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
 
 namespace tiki
 {

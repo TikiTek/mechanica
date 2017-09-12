@@ -2,8 +2,8 @@
 
 #include "tiki/toolgenericdata/generic_data_array.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/genericdatatypearray.hpp"
-#include "tiki/toolgenericdata/genericdatatyperesource.hpp"
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
+#include "tiki/toolgenericdata/generic_data_type_resource.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
 #include "genericdataboolvaluewidget.hpp"
@@ -81,7 +81,7 @@ namespace tiki
 
 	bool GenericDataEditorWidget::saveFile()
 	{
-		return true;
+		return m_document.exportToFile( m_pFile->getFileName() .toUtf8().data() );
 	}
 
 	void GenericDataEditorWidget::closeFile()
@@ -196,7 +196,7 @@ namespace tiki
 		switch( pValue->getValueType() )
 		{
 		case GenericDataValueType_Boolean:
-			return new GenericDataBoolValueWidget( pValue );
+			return new GenericDataBoolValueWidget( m_pFile, pValue );
 
 		case GenericDataValueType_SingedInteger8:
 		case GenericDataValueType_SingedInteger16:
@@ -209,7 +209,7 @@ namespace tiki
 		case GenericDataValueType_FloatingPoint16:
 		case GenericDataValueType_FloatingPoint32:
 		case GenericDataValueType_FloatingPoint64:
-			return new GenericDataValueWidget( m_typeCollection, pValue );
+			return new GenericDataValueWidget( m_typeCollection, m_pFile, pValue );
 
 		case GenericDataValueType_String:
 			return nullptr;

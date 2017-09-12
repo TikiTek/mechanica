@@ -1,7 +1,7 @@
 #include "tiki/toolgenericdata/generic_data_object.hpp"
 
 #include "tiki/io/xmlreader.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
@@ -195,6 +195,24 @@ namespace tiki
 #endif
 	}
 
+	bool GenericDataObject::initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const
+	{
+		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		{
+			const FieldMap::Pair& kvp = m_fields.getPairAt( i );
+			if( kvp.value.pValue != pValue )
+			{
+				continue;
+			}
+
+			pElement->setAttribute( "name", kvp.key.cStr() );
+			return true;
+		}
+
+		TIKI_TRACE_ERROR( "[GenericDataObject::initializeXmlElementForValue] Field for value '%s' not found.\n", pValue->toString().cStr() );
+		return false;
+	}
+
 	const char* GenericDataObject::getNodeName() const
 	{
 		return "object";
@@ -210,7 +228,7 @@ namespace tiki
 		return m_pType;
 	}
 
-	GenericDataValue* GenericDataObject::addElementValue( const XmlNode* pNode )
+	GenericDataValue* GenericDataObject::addElementValue( const XmlElement* pNode )
 	{
 		const XmlAttribute* pNameAtt = pNode->findAttribute( "name" );
 		if ( pNameAtt == nullptr )

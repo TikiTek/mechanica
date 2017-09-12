@@ -8,12 +8,34 @@ namespace tiki
 		, m_mode( mode )
 		, m_type( type )
 	{
+		m_pTypeTag		= nullptr;
 		m_pDefaultValue = TIKI_NEW( GenericDataValue )( this );
 	}
 
 	GenericDataType::~GenericDataType()
 	{
+		if( m_pTypeTag != nullptr )
+		{
+			TIKI_DELETE( m_pTypeTag );
+		}
+
 		TIKI_DELETE( m_pDefaultValue );
+	}
+
+	XmlElement* GenericDataType::createXmlElement( XmlDocument& document, const char* pName ) const
+	{
+		XmlElement* pElement = document.createElement( pName );
+
+		if( m_pTypeTag != nullptr )
+		{
+			pElement->setAttribute( "type", m_pTypeTag->writeTagString().cStr() );
+		}
+		else
+		{
+			pElement->setAttribute( "type", m_name.cStr() );
+		}
+
+		return pElement;
 	}
 
 	const string& GenericDataType::getName() const

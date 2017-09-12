@@ -1,5 +1,8 @@
 #include "tiki/toolgenericdata/generic_data_tag_handler.hpp"
 
+#include "tiki/base/string_tools.hpp"
+#include "tiki/toolgenericdata/generic_data_type_reference.hpp"
+
 namespace tiki
 {
 	GenericDataTagHandler::GenericDataTagHandler( GenericDataTypeCollection& collection )

@@ -2,8 +2,8 @@
 
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/genericdatatypearray.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_array.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
@@ -116,6 +116,11 @@ namespace tiki
 #endif
 	}
 
+	bool GenericDataArray::initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const
+	{
+		return true;
+	}
+
 	const char* GenericDataArray::getNodeName() const
 	{
 		return "array";
@@ -131,7 +136,7 @@ namespace tiki
 		return m_pType;
 	}
 
-	GenericDataValue* GenericDataArray::addElementValue( const XmlNode* pNode )
+	GenericDataValue* GenericDataArray::addElementValue( const XmlElement* pNode )
 	{
 		return addElement();
 	}

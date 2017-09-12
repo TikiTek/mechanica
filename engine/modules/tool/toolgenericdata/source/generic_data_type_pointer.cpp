@@ -1,4 +1,4 @@
-#include "tiki/toolgenericdata/genericdatatypepointer.hpp"
+#include "tiki/toolgenericdata/generic_data_type_pointer.hpp"
 
 #include "tiki/toolgenericdata/genericdatatypestruct.hpp"
 
@@ -8,13 +8,16 @@ namespace tiki
 		: GenericDataType( collection, name, GenericDataTypeType_Pointer, mode )
 		, m_pBaseType( pBaseType )
 	{
+		m_pTypeTag = TIKI_NEW( GenericDataTag );
+		m_pTypeTag->setTag( "pointer" );
+		m_pTypeTag->setContent( pBaseType->getName() );
 	}
 
 	GenericDataTypePointer::~GenericDataTypePointer()
 	{
 	}
 
-	bool GenericDataTypePointer::loadFromXml( const XmlReader& reader, const _XmlElement* pTypeRoot )
+	bool GenericDataTypePointer::loadFromXml( XmlElement* pTypeNode )
 	{
 		return false;
 	}
@@ -34,9 +37,9 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypePointer::getExportName() const
+	string GenericDataTypePointer::getCodeExportName() const
 	{
-		return formatDynamicString( "ResRef< %s >", m_pBaseType->getExportName().cStr() );
+		return formatDynamicString( "ResRef< %s >", m_pBaseType->getCodeExportName().cStr() );
 	}
 
 	crc32 GenericDataTypePointer::getTypeCrc() const

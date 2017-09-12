@@ -47,12 +47,14 @@ namespace tiki
 
 		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;
 
+		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_OVERRIDE_FINAL;
+		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
+
 	protected:
 
 		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
-		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
 
-		virtual GenericDataValue*		addElementValue( const XmlNode* pNode ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
 
 	private:
@@ -63,10 +65,12 @@ namespace tiki
 			GenericDataValue*		pValue;
 		};
 
+		typedef Map< string, ObjectField > FieldMap;
+
 		const GenericDataTypeStruct*	m_pType;
 		const GenericDataObject*		m_pParentObject;
 
-		Map< string, ObjectField >		m_fields;
+		FieldMap						m_fields;
 	};
 }
 

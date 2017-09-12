@@ -41,15 +41,16 @@ namespace tiki
 		const GenericDataValue*			getElement( uint index ) const;
 		bool							removeElement( uint index );
 
-		// TODO: bool					exportToXml( XmlWriter& writer ) const;
 		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
+
+		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_OVERRIDE_FINAL;
+		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
 
 	protected:
 
 		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
-		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
 
-		virtual GenericDataValue*		addElementValue( const XmlNode* pNode ) TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
 
 	private:

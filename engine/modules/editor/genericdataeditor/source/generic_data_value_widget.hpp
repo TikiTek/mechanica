@@ -17,7 +17,7 @@ namespace tiki
 
 	public:
 
-							GenericDataValueWidget( GenericDataTypeCollection& collection, GenericDataValue* pValue );
+							GenericDataValueWidget( GenericDataTypeCollection& collection, IFile* pFile, GenericDataValue* pValue );
 							~GenericDataValueWidget();
 
 	private slots:
@@ -33,6 +33,7 @@ namespace tiki
 		GenericDataTypeCollection&	m_collection;
 		GenericDataTagHandler&		m_tagHandler;
 
+		IFile*						m_pFile;
 		GenericDataValue*			m_pValue;
 
 		QHBoxLayout*				m_pLayout;
