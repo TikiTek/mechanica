@@ -11,13 +11,6 @@
 #include "tiki/threading/thread.hpp"
 #include "tiki/container/list.hpp"
 
-#include "tiki/animationconverter/animationconverter.hpp"
-#include "tiki/fontconverter/fontconverter.hpp"
-#include "tiki/genericdataconverter/genericdataconverter.hpp"
-#include "tiki/modelconverter/modelconverter.hpp"
-#include "tiki/shaderconverter/shaderconverter.hpp"
-#include "tiki/textureconverter/textureconverter.hpp"
-//#include "tiki/navmeshconverter/navmeshconverter.hpp"
 
 namespace tiki
 {
@@ -42,29 +35,18 @@ namespace tiki
 
 	private:
 
-		string				m_sourcePath;
+		string					m_sourcePath;
 
-		ConverterManager	m_manager;
-		
-		Thread				m_watchThread;
-		FileWatcher			m_fileWatcher;
-		Mutex				m_converterMutex;
-		string				m_currentFileName;
-		List< string >		m_changedFiles;
+		ConverterManager		m_manager;
 
-		//NavMeshConverter		m_navmeshConverter;
-		AnimationConverter		m_animationConverter;
-		FontConverter			m_fontConverter;
-		GenericDataConverter	m_genericDataConverter;
-		ModelConverter			m_modelConverter;
-		ShaderConverter			m_shaderConverter;
-		TextureConverter		m_textureConverter;
+		Thread					m_watchThread;
+		FileWatcher				m_fileWatcher;
+		Mutex					m_converterMutex;
+		string					m_currentFileName;
+		List< string >			m_changedFiles;
 
-		void				findFiles( const string& path, List< string >& files, const string& ext ) const;
-
-		void				watchThreadEntryPoint( const Thread& thread );
-		static int			watchThreadStaticEntryPoint( const Thread& thread );
-
+		void					watchThreadEntryPoint( const Thread& thread );
+		static int				watchThreadStaticEntryPoint( const Thread& thread );
 	};
 }
 

@@ -166,7 +166,7 @@ namespace tiki
 
 	void Thread::sleepCurrentThread( timems time )
 	{
-		Sleep( DWORD( time / 1000 ) );
+		Sleep( DWORD( time ) );
 	}
 
 	void Thread::shutdownSystem()

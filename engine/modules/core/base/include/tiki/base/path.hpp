@@ -29,9 +29,9 @@ namespace tiki
 		const char*		getFilename() const { return m_filename; }
 		const char*		getExtension() const { return m_extension; }
 
-		const char*		getDirectoryWithPrefix();
-		const char*		getFilenameWithExtension();
-		const char*		getCompletePath();
+		const char*		getDirectoryWithPrefix() const;
+		const char*		getFilenameWithExtension() const;
+		const char*		getCompletePath() const;
 
 	private:
 
@@ -52,15 +52,15 @@ namespace tiki
 			BufferState_CompletePath
 		};
 
-		BufferState	m_bufferState;
-		char		m_buffer[ MaxPathLength ];
+		char				m_prefix[ MaxPathLength ];
+		char				m_directory[ MaxDirectoryLength ];
+		char				m_filename[ MaxFileNameLength ];
+		char				m_extension[ MaxExtensionLength ];
 
-		char		m_prefix[ MaxPathLength ];
-		char		m_directory[ MaxDirectoryLength ];
-		char		m_filename[ MaxFileNameLength ];
-		char		m_extension[ MaxExtensionLength ];
+		mutable BufferState	m_bufferState;
+		mutable char		m_buffer[ MaxPathLength ];
 
-		void		buildPath( BufferState targetState );
+		void				buildPath( BufferState targetState ) const;
 	};
 }
 

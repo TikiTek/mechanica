@@ -17,16 +17,16 @@ namespace tiki
 
 	protected:
 
-		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE;
-		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE;
+		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
+		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
 
-		virtual crc32				getOutputType() const TIKI_OVERRIDE;
-		virtual void				getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE;
+		virtual crc32				getOutputType() const TIKI_OVERRIDE_FINAL;
+		virtual void				getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE_FINAL;
 
-		virtual bool				initializeConverter() TIKI_OVERRIDE;
-		virtual void				disposeConverter() TIKI_OVERRIDE;
+		virtual bool				initializeConverter() TIKI_OVERRIDE_FINAL;
+		virtual void				disposeConverter() TIKI_OVERRIDE_FINAL;
 
-		virtual bool				startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_OVERRIDE;
+		virtual bool				startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_OVERRIDE_FINAL;
 
 	private:
 

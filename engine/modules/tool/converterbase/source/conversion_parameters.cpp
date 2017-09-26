@@ -1,21 +1,20 @@
-
-#include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/conversion_parameters.hpp"
 
 #include "tiki/base/string_tools.hpp"
 
 namespace tiki
 {
-	Map< string, string >& ConversionArguments::getMap()
+	Map< string, string >& ConversionParameters::getMap()
 	{
-		return m_arguments;
+		return m_parameters;
 	}
 
-	const Map< string, string >& ConversionArguments::getMap() const
+	const Map< string, string >& ConversionParameters::getMap() const
 	{
-		return m_arguments;
+		return m_parameters;
 	}
 
-	string ConversionArguments::getString( const string& key ) const
+	string ConversionParameters::getString( const string& key ) const
 	{
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
@@ -23,7 +22,7 @@ namespace tiki
 		return value;
 	}
 
-	float ConversionArguments::getFloat( const string& key ) const
+	float ConversionParameters::getFloat( const string& key ) const
 	{
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
@@ -31,7 +30,7 @@ namespace tiki
 		return string_tools::parseFloat32( value.cStr() );
 	}
 
-	int ConversionArguments::getInt( const string& key ) const
+	int ConversionParameters::getInt( const string& key ) const
 	{
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
@@ -39,7 +38,7 @@ namespace tiki
 		return string_tools::parseSInt32( value.cStr() );
 	}
 
-	string ConversionArguments::getOptionalString( const string& key, const string& defaultValue ) const
+	string ConversionParameters::getOptionalString( const string& key, const string& defaultValue ) const
 	{
 		string value;
 		if ( getArgument( value, key ) )
@@ -50,7 +49,7 @@ namespace tiki
 		return defaultValue;
 	}
 
-	float ConversionArguments::getOptionalFloat( const string& key, float defaultValue ) const
+	float ConversionParameters::getOptionalFloat( const string& key, float defaultValue ) const
 	{
 		string value;
 		if ( getArgument( value, key ) )
@@ -61,7 +60,7 @@ namespace tiki
 		return defaultValue;
 	}
 
-	int ConversionArguments::getOptionalInt( const string& key, int defaultValue ) const
+	int ConversionParameters::getOptionalInt( const string& key, int defaultValue ) const
 	{
 		string value;
 		if ( getArgument( value, key ) )
@@ -72,9 +71,9 @@ namespace tiki
 		return defaultValue;
 	}
 
-	bool ConversionArguments::getArgument( string& value, const string& key ) const
+	bool ConversionParameters::getArgument( string& value, const string& key ) const
 	{
-		if ( m_arguments.findValue( &value, key ) )
+		if ( m_parameters.findValue( &value, key ) )
 		{
 			return true;
 		}
@@ -86,7 +85,7 @@ namespace tiki
 		return false;
 	}
 
-	bool ConversionArguments::getBool( const string& key ) const
+	bool ConversionParameters::getBool( const string& key ) const
 	{
 		string value;
 		TIKI_VERIFY( getArgument( value, key ) );
@@ -94,7 +93,7 @@ namespace tiki
 		return value.toLower() == "true";
 	}
 
-	bool ConversionArguments::getOptionalBool( const string& key, bool defaultValue ) const
+	bool ConversionParameters::getOptionalBool( const string& key, bool defaultValue ) const
 	{
 		string value;
 		if ( getArgument( value, key ) )
@@ -104,5 +103,4 @@ namespace tiki
 
 		return defaultValue;
 	}
-
 }

@@ -19,7 +19,7 @@ namespace tiki
 	{
 	}
 
-	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const 
+	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const
 	{
 		const GenericDataType* pType = nullptr;
 		if ( m_resourceTypeMap.findValue( &pType, typeCrc ) )
@@ -51,7 +51,7 @@ namespace tiki
 
 	bool GenericDataConverter::initializeConverter()
 	{
-		if ( !m_collection.create( getManager()->getSourcePath(), true ) )
+		if ( !m_collection.create() )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataConverter::initializeConverter] Unable to initialize Type collection.\n" );
 			return false;

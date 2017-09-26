@@ -19,7 +19,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE					List();
 		TIKI_FORCE_INLINE					List( const List<T>& copy );
-		TIKI_FORCE_INLINE					List( const T* data, uint count, bool readOnly = false );
+		TIKI_FORCE_INLINE					List( const T* data, uint count );
 		TIKI_FORCE_INLINE					~List();
 
 		TIKI_FORCE_INLINE void				clear();
@@ -35,7 +35,7 @@ namespace tiki
 		TIKI_FORCE_INLINE bool				contains( const T& item ) const;
 
 		TIKI_FORCE_INLINE T&				add();
-		TIKI_FORCE_INLINE void				add( const T& item );
+		TIKI_FORCE_INLINE T&				add( const T& item );
 		TIKI_FORCE_INLINE void				addRange( const List<T>& list );
 		TIKI_FORCE_INLINE void				addRange( const T* src, uint length );
 		TIKI_FORCE_INLINE void				insert( uint index, const T& item );
@@ -71,8 +71,6 @@ namespace tiki
 		T*									m_pData;
 		uint								m_count;
 		uint								m_capacity;
-
-		bool								m_isReadOnly;
 
 		TIKI_FORCE_INLINE uint				getNextSize( uint targetSize );
 		TIKI_FORCE_INLINE void				checkArraySize( uint neddedSize );

@@ -48,7 +48,6 @@ namespace tiki
 
 		uint				m_count;
 		uint				m_capacity;
-
 	};
 }
 

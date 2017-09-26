@@ -5,12 +5,12 @@
 
 namespace tiki
 {
-	TIKI_LIBRARY_METHOD IAssetConverter* createAssetConverter()
+	TIKI_ASSET_CONVERTER_METHOD IAssetConverter* createAssetConverter()
 	{
 		return TIKI_NEW( AssetConverter );
 	}
 
-	TIKI_LIBRARY_METHOD void disposeAssetConverter( IAssetConverter* pObject )
+	TIKI_ASSET_CONVERTER_METHOD void disposeAssetConverter( IAssetConverter* pObject )
 	{
 		TIKI_DELETE( pObject );
 		Thread::shutdownSystem();
@@ -26,24 +26,24 @@ namespace tiki
 
 	bool AssetConverter::create( const AssetConverterParamter& parameters )
 	{
-		m_sourcePath	= parameters.sourcePath;
+		m_sourcePath = parameters.sourcePath;
 
 		ConverterManagerParameter managerParameters;
 		managerParameters.sourcePath		= parameters.sourcePath;
 		managerParameters.outputPath		= parameters.outputPath;
+		managerParameters.packageName		= parameters.packageName;
 		managerParameters.pChangedFilesList	= &m_changedFiles;
 		managerParameters.forceRebuild		= parameters.forceRebuild;
+
+		if( !m_manager.create( managerParameters ) )
+		{
+			return false;
+		}
+
 		m_converterMutex.create();
-		m_manager.create( managerParameters );
 
 		//m_navmeshConverter.create( &m_manager );
-		m_animationConverter.create( &m_manager );
-		m_fontConverter.create( &m_manager );
-		m_genericDataConverter.create( &m_manager );
-		m_modelConverter.create( &m_manager );
-		m_shaderConverter.create( &m_manager );
-		m_textureConverter.create( &m_manager );
-		
+
 		TIKI_TRACE_INFO( "AssetConverter: started\n" );
 
 		if ( (m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase) || parameters.waitForConversion )
@@ -61,14 +61,6 @@ namespace tiki
 
 	void AssetConverter::dispose()
 	{
-		//m_navmeshConverter.dispose();
-		m_animationConverter.dispose();
-		m_fontConverter.dispose();
-		m_genericDataConverter.dispose();
-		m_modelConverter.dispose();
-		m_shaderConverter.dispose();
-		m_textureConverter.dispose();
-
 		m_manager.dispose();
 		m_converterMutex.dispose();
 
@@ -78,19 +70,12 @@ namespace tiki
 	bool AssetConverter::convertAll()
 	{
 		List< string > assetFiles;
-		List< string > templateFiles;
 		findFiles( m_sourcePath, assetFiles, ".xasset" );
-		findFiles( m_sourcePath, templateFiles, ".xtemplate" );
-
-		for (size_t i = 0u; i < templateFiles.getCount(); ++i)
-		{
-			m_manager.addTemplate( templateFiles[ i ] );
-		}
 
 		for (size_t i = 0u; i < assetFiles.getCount(); ++i)
 		{
 			m_manager.queueFile( assetFiles[ i ] );
-		}		
+		}
 		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
 		const bool result = m_manager.startConversion( &m_converterMutex );
@@ -101,7 +86,7 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );		
+		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
 		m_watchThread.create( watchThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
 	}
 
@@ -167,27 +152,5 @@ namespace tiki
 		AssetConverter* pConverter = static_cast< AssetConverter* >( thread.getArgument() );
 		pConverter->watchThreadEntryPoint( thread );
 		return 0u;
-	}
-
-	void AssetConverter::findFiles( const string& path,  List< string >& files, const string& ext ) const
-	{
-		List< string > dirFiles;
-		directory::getFiles( path, dirFiles );
-		for (size_t i = 0u; i < dirFiles.getCount(); ++i)
-		{
-			if ( path::getExtension( dirFiles[ i ] ) != ext )
-			{
-				continue;
-			}
-
-			files.add( path::combine( path, dirFiles[ i ] ) );
-		}		
-
-		List< string > dirDirectories;
-		directory::getDirectories( path, dirDirectories );
-		for (size_t i = 0u; i < dirDirectories.getCount(); ++i)
-		{
-			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );
-		}		
 	}
 }

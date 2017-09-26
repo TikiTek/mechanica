@@ -5,17 +5,11 @@
 #include "tiki/base/types.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-#	if TIKI_ENABLED( TIKI_BUILD_LIBRARY )
-#		define TIKI_LIBRARY_METHOD	__declspec( dllexport )
-#	else
-#		define TIKI_LIBRARY_METHOD	extern __declspec( dllimport )
-#	endif
+#	define TIKI_LIBRARY_EXPORT_METHOD	__declspec( dllexport )
+#	define TIKI_LIBRARY_IMPORT_METHOD	extern __declspec( dllimport )
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-#	if TIKI_ENABLED( TIKI_BUILD_LIBRARY )
-#		define TIKI_LIBRARY_METHOD	extern
-#	else
-#		define TIKI_LIBRARY_METHOD	extern
-#	endif
+#	define TIKI_LIBRARY_EXPORT_METHOD	extern
+#	define TIKI_LIBRARY_IMPORT_METHOD	extern
 #else
 #	error "Platform not supported"
 #endif

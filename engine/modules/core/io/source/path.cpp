@@ -28,7 +28,7 @@ namespace tiki
 
 		return fileName;
 	}
-		
+
 	string path::getExtension( const string& fullPath )
 	{
 		const sint32 index = fullPath.lastIndexOf( '.' );
@@ -58,12 +58,12 @@ namespace tiki
 
 		return checkSlashes( left + "/" + right );
 	}
-				
+
 	string path::combine( const string& path1, const string& path2, const string& path3 )
 	{
 		return combine( path1, combine( path2, path3 ) );
 	}
-	
+
 	string path::getAbsolutePath( const string& path )
 	{
 		const string slashPath = checkSlashes( path );
@@ -80,7 +80,7 @@ namespace tiki
 		{
 			fullPath = path::combine( getCurrentDir(), slashPath );
 		}
-			
+
 		for (;;)
 		{
 			const int index = fullPath.indexOf( "/.." );
@@ -92,7 +92,7 @@ namespace tiki
 			const uint lastIndex = (uint)index + 3u;
 			const uint prevIndex = (uint)fullPath.lastIndexOf( '/', (uint)index - 1u );
 			TIKI_ASSERT( prevIndex < fullPath.getLength() );
-			
+
 			fullPath = fullPath.remove( prevIndex, lastIndex - prevIndex );
 		}
 
