@@ -10,11 +10,9 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE List< T >::List()
 	{
-		m_pData			= nullptr;
+		m_pData		= nullptr;
 		m_count		= 0u;
-		m_capacity		= 0u;
-
-		m_isReadOnly	= false;
+		m_capacity	= 0u;
 	}
 
 	template<typename T>
@@ -27,11 +25,10 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE List< T >::List( const T* pData, uint count, bool readOnly /*= false*/ )
+	TIKI_FORCE_INLINE List< T >::List( const T* pData, uint count )
 	{
 		m_capacity		= getNextSize( count );
 		m_count			= count;
-		m_isReadOnly	= readOnly;
 		m_pData			= TIKI_NEW_ARRAY( T, m_capacity, true );
 
 		for (uint i = 0u; i < m_count; ++i)
@@ -45,7 +42,7 @@ namespace tiki
 	{
 		dispose();
 	}
-	
+
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::clear()
 	{
@@ -70,7 +67,7 @@ namespace tiki
 	{
 		checkArraySize( count );
 	}
-	
+
 	template<typename T>
 	TIKI_FORCE_INLINE void List<T>::resize( uint count )
 	{
@@ -104,7 +101,7 @@ namespace tiki
 
 		return -1;
 	}
-	
+
 	template<typename T>
 	TIKI_FORCE_INLINE bool List< T >::contains( const T& item ) const
 	{
@@ -114,19 +111,15 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T& List< T >::add()
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
-
 		checkArraySize( m_count + 1u );
 		return m_pData[ m_count++ ];
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::add( const T& item)
+	TIKI_FORCE_INLINE T& List< T >::add( const T& item)
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
-
 		checkArraySize( m_count + 1u );
-		m_pData[ m_count++ ] = item;
+		return m_pData[ m_count++ ] = item;
 	}
 
 	template<typename T>
@@ -138,8 +131,6 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::addRange( const T* pData, uint length )
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
-
 		if(length == 0)	return;
 		checkArraySize( m_count + length );
 
@@ -152,8 +143,6 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::insert( uint index, const T& item)
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
-
 		uint i = m_count;
 
 		m_count++;
@@ -218,12 +207,10 @@ namespace tiki
 		TIKI_ASSERT( m_count > 0u );
 		return *(m_pData + (m_count - 1u));
 	}
-	
+
 	template<typename T>
 	TIKI_FORCE_INLINE bool List< T >::removeSortedByValue( const T& item )
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
-
 		const sint index = indexOf( item );
 		if ( index != -1 )
 		{
@@ -237,7 +224,6 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE void List< T >::removeSortedAtIndex( uint index )
 	{
-		TIKI_ASSERT( m_isReadOnly == false );
 		TIKI_ASSERT( index < m_count );
 
 		m_count--;
@@ -255,8 +241,8 @@ namespace tiki
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
-	} 
-	
+	}
+
 	template<typename T>
 	TIKI_FORCE_INLINE const T& List< T >::operator[]( uint index ) const
 	{
@@ -272,10 +258,9 @@ namespace tiki
 			TIKI_DELETE_ARRAY( m_pData, m_capacity );
 		}
 
-		m_isReadOnly	= copy.m_isReadOnly;
 		m_capacity		= copy.m_capacity;
 		m_count			= copy.m_count;
-		
+
 		if ( m_count > 0u )
 		{
 			m_pData = TIKI_NEW_ARRAY( T, m_capacity, true );

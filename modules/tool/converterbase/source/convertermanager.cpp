@@ -3,24 +3,25 @@
 
 #include "tiki/base/autodispose.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/io/directory.hpp"
-#include "tiki/io/file.hpp"
-#include "tiki/io/path.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
+#include "tiki/io/directory.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
+#include "tiki/toolxml/xml_document.hpp"
 
 #include "sqlite/sqlite3.h"
 
 namespace tiki
 {
-	static ConverterManager* s_pInstance = nullptr;
-
-	void globalTraceCallback( const char* message, TraceLevel level )
+	void globalTraceCallback( const char* message, TraceLevel level, UserData userData )
 	{
-		s_pInstance->traceCallback( message, level );
+		ConverterManager* pConverterManager = (ConverterManager*)userData.pContext;
+		pConverterManager->traceCallback( message, level );
 	}
 
 	static string escapeString( const string& text )
@@ -33,7 +34,7 @@ namespace tiki
 		TIKI_ASSERT( m_converters.getCount() == 0u );
 	}
 
-	void ConverterManager::create( const ConverterManagerParameter& parameters )
+	bool ConverterManager::create( const ConverterManagerParameter& parameters )
 	{
 		m_sourcePath		= parameters.sourcePath;
 		m_outputPath		= parameters.outputPath;
@@ -54,6 +55,7 @@ namespace tiki
 		if ( m_dataBase.create( databaseFileName.cStr() ) == false )
 		{
 			TIKI_TRACE_ERROR( "[convertermanager] database intialization failed.\n" );
+			return false;
 		}
 
 		if ( m_isNewDatabase )
@@ -76,7 +78,7 @@ namespace tiki
 				{
 					TIKI_TRACE_ERROR( "[convertermanager] Could not create Table. Error: %s\n", m_dataBase.getLastError().cStr() );
 					m_dataBase.dispose();
-					break;
+					return false;
 				}
 			}
 		}
@@ -91,21 +93,39 @@ namespace tiki
 			{
 				TIKI_TRACE_ERROR( "[convertermanager] Unable to read from builds table. Error: %s\n", m_dataBase.getLastError().cStr() );
 				m_dataBase.dispose();
+				return false;
 			}
 			query.dispose();
-		}		
+		}
+
 		m_loggingMutex.create();
 		m_loggingStream.create( "converter.log", DataAccessMode_WriteAppend );
 
-		s_pInstance = this;
-		debug::setTraceCallback( globalTraceCallback );
+		debug::setTraceCallback( globalTraceCallback, UserData( this ) );
+
+		m_animationConverter.create( this );
+		m_fontConverter.create( this );
+		m_genericDataConverter.create( this );
+		m_modelConverter.create( this );
+		m_shaderConverter.create( this );
+		m_textureConverter.create( this );
+
+		addPackage( parameters.packageName );
 
 		TIKI_TRACE_INFO( "ConverterManager: started\n" );
+		return true;
 	}
 
 	void ConverterManager::dispose()
 	{
 		TIKI_TRACE_INFO( "ConverterManager: shutdown\n" );
+
+		m_animationConverter.dispose();
+		m_fontConverter.dispose();
+		m_genericDataConverter.dispose();
+		m_modelConverter.dispose();
+		m_shaderConverter.dispose();
+		m_textureConverter.dispose();
 
 		debug::setTraceCallback( nullptr );
 
@@ -113,34 +133,9 @@ namespace tiki
 
 		m_loggingStream.dispose();
 		m_loggingMutex.dispose();
+		m_loggingThreadResults.dispose();
 
 		m_dataBase.dispose();
-	}
-
-	void ConverterManager::addTemplate( const string& fileName )
-	{
-		XmlReader xmlFile;
-		xmlFile.create( fileName.cStr() );
-
-		const XmlElement* pRoot = xmlFile.findNodeByName( "xtemplate" );
-
-		const XmlAttribute* pAttName = xmlFile.findAttributeByName( "name", pRoot );
-		if ( pAttName == nullptr )
-		{
-			TIKI_TRACE_ERROR( "[convertermanager] name argument not found. can't add template: %s\n", fileName.cStr() );
-			return;
-		}
-
-		TemplateDescription desc;
-		desc.fullFileName	= path::getAbsolutePath( fileName );
-		desc.name			= pAttName->content;
-
-		// parse arguments
-		parseParams( xmlFile, pRoot, desc.arguments );
-
-		m_templates.set( desc.name, desc );
-
-		xmlFile.dispose();
 	}
 
 	void ConverterManager::queueFile( const string& fileName )
@@ -186,7 +181,7 @@ namespace tiki
 		m_taskSystem.waitForTask( taskId );
 	}
 
-	void ConverterManager::traceCallback( const char* message, TraceLevel level ) const
+	void ConverterManager::traceCallback( const char* message, TraceLevel level )
 	{
 		string line = message;
 		if ( !line.endsWith('\n') )
@@ -209,23 +204,62 @@ namespace tiki
 		m_loggingMutex.unlock();
 	}
 
-	void ConverterManager::parseParams( const XmlReader& xmlFile, const _XmlElement* pRoot, Map< string, string >& arguments ) const
+	void ConverterManager::addPackage( const string& packageName )
 	{
+		Path definitionFilename;
+		definitionFilename.setCombinedPath( m_sourcePath.cStr(), packageName.cStr() );
+		definitionFilename.setExtension( ".package" );
+
+		XmlDocument document;
+		if( !document.loadFromFile( definitionFilename.getCompletePath() ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] failed to load package definition from '%s'.\n", definitionFilename.getCompletePath() );
+			return;
+		}
+
+		const XmlElement* pPackageNode = document.findFirstChild( "package" );
+		if( pPackageNode == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[converter] failed to find root node in package definition from '%s'.\n", definitionFilename.getCompletePath() );
+			return;
+		}
+
+
+	}
+
+	void ConverterManager::addTemplate( const string& fileName )
+	{
+		XmlReader xmlFile;
+		xmlFile.create( fileName.cStr() );
+
+		const XmlElement* pRoot = xmlFile.findNodeByName( "template" );
+
+		const XmlAttribute* pAttName = xmlFile.findAttributeByName( "name", pRoot );
+		if( pAttName == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[convertermanager] name argument not found. can't add template: %s\n", fileName.cStr() );
+			return;
+		}
+
+		TemplateDescription desc;
+		desc.fullFileName	= path::getAbsolutePath( fileName );
+		desc.name			= pAttName->content;
+
 		const XmlElement* pParam = xmlFile.findFirstChild( "param", pRoot );
-		while ( pParam )
+		while( pParam )
 		{
 			const XmlAttribute* pAttKey		= xmlFile.findAttributeByName( "key", pParam );
 			const XmlAttribute* pAttValue	= xmlFile.findAttributeByName( "value", pParam );
 
-			if ( pAttKey == nullptr )
+			if( pAttKey == nullptr )
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
-					( pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content ).cStr(),
-					( pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content ).cStr()
+					(pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content).cStr(),
+					(pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content).cStr()
 				);
 			}
-			else if ( pAttValue == nullptr )
+			else if( pAttValue == nullptr )
 			{
 				arguments.set( pAttKey->content, pParam->content );
 			}
@@ -236,6 +270,10 @@ namespace tiki
 
 			pParam = xmlFile.findNext( pParam );
 		}
+
+		m_templates.set( desc.name, desc );
+
+		xmlFile.dispose();
 	}
 
 	bool ConverterManager::prepareTasks()
@@ -925,7 +963,7 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
 				hasGlobalError = true;
 			}
-		}		
+		}
 
 		return !hasGlobalError;
 	}

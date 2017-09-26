@@ -10,12 +10,14 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE Pool<T>::Pool()
 	{
+		TIKI_COMPILETIME_ASSERT( sizeof( T ) >= sizeof( FreeElement ) );
+
 		m_pData			= nullptr;
 		m_pFirstFree	= nullptr;
 		m_pLastFree		= nullptr;
 		m_count			= 0u;
 		m_capacity		= 0u;
-	}	
+	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE Pool<T>::~Pool()
@@ -127,7 +129,7 @@ namespace tiki
 
 		FreeElement* pNewFree = (FreeElement*)&item;
 		pNewFree->pNextFree = nullptr;
-		
+
 
 		m_pLastFree->pNextFree = pNewFree;
 		m_pLastFree = pNewFree;

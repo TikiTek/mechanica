@@ -5,7 +5,6 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/container/list.hpp"
 
@@ -14,7 +13,7 @@ namespace tiki
 	class ConversionResult;
 	class ConverterManager;
 	class ResourceWriter;
-	struct ConversionParameters;
+	struct ConversionAsset;
 	struct ResourceDefinition;
 
 	class ConverterBase
@@ -29,9 +28,7 @@ namespace tiki
 		void						create( ConverterManager* pManager );
 		void						dispose();
 
-		void						convert( ConversionResult& result, const ConversionParameters& params ) const;
-
-		ConverterManager*			getManager() { return m_pManager; }
+		void						convert( ConversionResult& result, const ConversionAsset& asset ) const;
 
 	protected:
 
@@ -52,12 +49,11 @@ namespace tiki
 		virtual bool				initializeConverter() TIKI_PURE;
 		virtual void				disposeConverter() TIKI_PURE;
 
-		virtual bool				startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const TIKI_PURE;
+		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const TIKI_PURE;
 
 	private:
 
 		ConverterManager*			m_pManager;
-
 	};
 }
 

@@ -17,7 +17,8 @@
 
 namespace tiki
 {
-	debug::TraceCallback s_pGlobalTraceCallback = nullptr;
+	TraceCallback s_pGlobalTraceCallback = nullptr;
+	UserData s_globalTraceCallbackUserData;
 
 	namespace debug
 	{
@@ -80,7 +81,7 @@ namespace tiki
 
 		if ( s_pGlobalTraceCallback != nullptr )
 		{
-			s_pGlobalTraceCallback( message.cStr(), level );
+			s_pGlobalTraceCallback( message.cStr(), level, s_globalTraceCallbackUserData );
 		}
 	}
 
@@ -128,8 +129,9 @@ namespace tiki
 		va_end( argptr );
 	}
 
-	void debug::setTraceCallback( TraceCallback pCallback )
+	void debug::setTraceCallback( TraceCallback pCallback, UserData userData )
 	{
 		s_pGlobalTraceCallback = pCallback;
+		s_globalTraceCallbackUserData = userData;
 	}
 }

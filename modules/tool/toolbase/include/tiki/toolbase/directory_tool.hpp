@@ -8,10 +8,15 @@
 
 namespace tiki
 {
+	class Path;
+
 	namespace directory
 	{
-		bool	getFiles( const string& path, List< string >& targetList );
-		bool	getDirectories( const string& path, List< string >& targetList );
+		bool	getFiles( List< string >& targetList, const string& path );
+		bool	getDirectories( List< string >& targetList, const string& path );
+
+		void	findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive = true );
+		void	findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive = true );
 	}
 }
 

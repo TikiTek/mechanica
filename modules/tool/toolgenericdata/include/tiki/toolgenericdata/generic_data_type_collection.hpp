@@ -14,7 +14,6 @@
 
 namespace tiki
 {
-	class GenericDataTag;
 	class GenericDataTypeArray;
 	class GenericDataTypeEnum;
 	class GenericDataTypePointer;
@@ -22,6 +21,8 @@ namespace tiki
 	class GenericDataTypeResource;
 	class GenericDataTypeStruct;
 	class GenericDataValue;
+	class Package;
+	class Path;
 	struct GenericDataModuleData;
 
 	class GenericDataTypeCollection
@@ -35,16 +36,14 @@ namespace tiki
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
-		bool							create( const string& contentFolder, bool recursive );
+		bool							create();
 		void							dispose();
+
+		bool							addPackage( const Package* pPackage );
 
 		GenericDataTagHandler&			getTagHandler();
 
-		bool							addType( GenericDataType& type );
-		bool							removeType( GenericDataType& type );
-
 		const TypeList&					getTypes() const;
-
 		const GenericDataType*			findTypeByName( const string& name ) const;
 		void							findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const;
 
@@ -80,13 +79,17 @@ namespace tiki
 
 		ModuleMap						m_modules;
 
+		bool							addType( GenericDataType& type );
+		bool							removeType( GenericDataType& type );
+
 		bool							registerDefaultValueTypes();
 		bool							registerDefaultResourceTypes();
+
 		void							findFiles( const string& path, List< string >& files, const string& ext ) const;
-		bool							parseFile( XmlElement* pRootNode, const string& fileName, const string& moduleName );
+		bool							loadFiles( const List< Path >& typeFiles );
+		bool							parseFile( XmlElement* pRootNode, const string& moduleName );
 
 		void							writeToFileIfNotEquals( const string& fileName, const string& content );
-
 	};
 }
 

@@ -7,6 +7,12 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
 
+#if TIKI_ENABLED( TIKI_BUILD_LIBRARY )
+#	define TIKI_ASSET_CONVERTER_METHOD	TIKI_LIBRARY_EXPORT_METHOD
+#else
+#	define TIKI_ASSET_CONVERTER_METHOD	TIKI_LIBRARY_IMPORT_METHOD
+#endif
+
 namespace tiki
 {
 	struct AssetConverterParamter
@@ -20,6 +26,7 @@ namespace tiki
 
 		string	sourcePath;
 		string	outputPath;
+		string	packageName;
 
 		bool	waitForConversion;
 		bool	forceRebuild;
@@ -44,11 +51,10 @@ namespace tiki
 
 		virtual void	lockConversion() TIKI_PURE;
 		virtual void	unlockConversion() TIKI_PURE;
-		
 	};
 
-	TIKI_LIBRARY_METHOD IAssetConverter*	createAssetConverter();
-	TIKI_LIBRARY_METHOD void				disposeAssetConverter( IAssetConverter* pObject );
+	TIKI_ASSET_CONVERTER_METHOD IAssetConverter*	createAssetConverter();
+	TIKI_ASSET_CONVERTER_METHOD void				disposeAssetConverter( IAssetConverter* pObject );
 }
 
 #endif // TIKI_IASSETCONVERTER_HPP

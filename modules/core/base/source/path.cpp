@@ -78,7 +78,7 @@ namespace tiki
 	void Path::setCombinedPath( const char* pPath1, const char* pPath2 )
 	{
 		setCompletePath( pPath1 );
-		
+
 		Path path2;
 		path2.setCompletePath( pPath2 );
 		push( path2 );
@@ -186,25 +186,25 @@ namespace tiki
 		return true;
 	}
 
-	const char* Path::getDirectoryWithPrefix()
+	const char* Path::getDirectoryWithPrefix() const
 	{
 		buildPath( BufferState_DirectoryWithPrefix );
 		return m_buffer;
 	}
 
-	const char* Path::getFilenameWithExtension()
+	const char* Path::getFilenameWithExtension() const
 	{
 		buildPath( BufferState_FilenameWithExtension );
 		return m_buffer;
 	}
 
-	const char* Path::getCompletePath()
+	const char* Path::getCompletePath() const
 	{
 		buildPath( BufferState_CompletePath );
 		return m_buffer;
 	}
 
-	void Path::buildPath( BufferState targetState )
+	void Path::buildPath( BufferState targetState ) const
 	{
 		if( m_bufferState == targetState )
 		{
