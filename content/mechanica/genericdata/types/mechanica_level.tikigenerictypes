@@ -1,12 +1,12 @@
 <tikigenerictypes base="entities">
-	<struct name="LevelBackgroundData">
+	<struct name="LevelThemeData">
 		<field type="{reference Texture}" name="backgroundImage" />
-	</struct>
-	<resource name="LevelBackground" base="LevelBackgroundData" postfix="level_background" fourcc="MLVB" />
-	<struct name="LevelData">
 		<field type="{reference Texture}" name="colorGradingMap" />
-		<field type="{reference LevelBackground}" name="background" />
 		<field type="float3" name="bloomCutOffThreshold" />
+	</struct>
+	<resource name="LevelTheme" base="LevelThemeData" postfix="level_theme" fourcc="MLTH" />
+	<struct name="LevelData">
+		<field type="{reference LevelTheme}" name="theme" />
 		<field type="{array EntityTemplateData}" name="entities" />
 	</struct>
 	<resource name="Level" base="LevelData" postfix="level" fourcc="MLVL" />

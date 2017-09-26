@@ -1,9 +1,0 @@
-<tikipackage>
-    <description>Mechanica Assets</description>
-    <author>TikiTek</author>
-    <dependencies>
-        <package name="core"/>
-    </dependencies>
-    <genericdatatypes>genericdata/types</genericdatatypes>
-    <templates>template</templates>
-</tikipackage>

@@ -1,0 +1,3 @@
+<template base="font">
+	<parameter key="font_size" value="12" />
+</template>
