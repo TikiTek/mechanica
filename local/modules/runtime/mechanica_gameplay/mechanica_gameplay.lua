@@ -1,6 +1,6 @@
--- local/modules/gameplay
+-- local/modules/mechanica_gameplay
 
-local module = Module:new( "gameplay" );
+local module = Module:new( "mechanica_gameplay" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );

@@ -1,6 +1,6 @@
--- local/modules/gamestates
+-- local/modules/mechanica_gamestates
 
-local module = Module:new( "gamestates" );
+local module = Module:new( "mechanica_gamestates" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
@@ -13,4 +13,4 @@ module:add_dependency( "runtime/resource" );
 module:add_dependency( "runtime/renderer2d" );
 module:add_dependency( "runtime/gameflowsystem" );
 
-module:add_dependency( "gameplay" );
+module:add_dependency( "runtime/mechanica_gameplay" );
