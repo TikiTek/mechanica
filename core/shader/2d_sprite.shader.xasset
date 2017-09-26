@@ -1,3 +1,0 @@
-<tikiasset template="shader_defaults">
-  <input file="../../../library/modules/runtime/renderer2d/source/shader/2d_sprite.fx" type="shader" />
-<tikiasset>
