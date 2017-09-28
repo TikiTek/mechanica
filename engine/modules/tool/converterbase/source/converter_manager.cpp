@@ -1,20 +1,18 @@
-
-#include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/converterbase/converter_manager.hpp"
 
 #include "tiki/base/autodispose.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
 #include "tiki/converterbase/converterbase.hpp"
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
+#include "tiki/toolxml/xml_attribute.hpp"
 #include "tiki/toolxml/xml_document.hpp"
-
-#include "sqlite/sqlite3.h"
+#include "tiki/toolxml/xml_element.hpp"
 
 namespace tiki
 {
@@ -27,6 +25,10 @@ namespace tiki
 	static string escapeString( const string& text )
 	{
 		return text.replace( "'", "''" ).replace( "\"", "\"\"" );
+	}
+
+	ConverterManager::ConverterManager()
+	{
 	}
 
 	ConverterManager::~ConverterManager()
@@ -229,12 +231,20 @@ namespace tiki
 
 	void ConverterManager::addTemplate( const string& fileName )
 	{
-		XmlReader xmlFile;
-		xmlFile.create( fileName.cStr() );
+		XmlDocument document;
+		if( !document.loadFromFile( fileName.cStr() ) )
+		{
+			return;
+		}
 
-		const XmlElement* pRoot = xmlFile.findNodeByName( "template" );
+		const XmlElement* pRoot = document.findFirstChild( "template" );
+		if( pRoot == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[convertermanager] can't find 'template' root node in '%s'.\n", fileName.cStr() );
+			return;
+		}
 
-		const XmlAttribute* pAttName = xmlFile.findAttributeByName( "name", pRoot );
+		const XmlAttribute* pAttName = pRoot->findAttribute( "name" );
 		if( pAttName == nullptr )
 		{
 			TIKI_TRACE_ERROR( "[convertermanager] name argument not found. can't add template: %s\n", fileName.cStr() );
@@ -243,37 +253,35 @@ namespace tiki
 
 		TemplateDescription desc;
 		desc.fullFileName	= path::getAbsolutePath( fileName );
-		desc.name			= pAttName->content;
+		desc.name			= pAttName->getValue();
 
-		const XmlElement* pParam = xmlFile.findFirstChild( "param", pRoot );
-		while( pParam )
+		const XmlElement* pParameterNode = pRoot->findFirstChild( "parameter" );
+		while( pParameterNode )
 		{
-			const XmlAttribute* pAttKey		= xmlFile.findAttributeByName( "key", pParam );
-			const XmlAttribute* pAttValue	= xmlFile.findAttributeByName( "value", pParam );
+			const XmlAttribute* pAttKey		= pParameterNode->findAttribute( "key" );
+			const XmlAttribute* pAttValue	= pParameterNode->findAttribute( "value" );
 
 			if( pAttKey == nullptr )
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
-					(pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->content).cStr(),
-					(pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->content).cStr()
+					(pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->getValue()).cStr(),
+					(pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->getValue()).cStr()
 				);
 			}
 			else if( pAttValue == nullptr )
 			{
-				arguments.set( pAttKey->content, pParam->content );
+				desc.arguments.set( pAttKey->getValue(), pParameterNode->getValue() );
 			}
 			else
 			{
-				arguments.set( pAttKey->content, pAttValue->content );
+				desc.arguments.set( pAttKey->getValue(), pAttValue->getValue() );
 			}
 
-			pParam = xmlFile.findNext( pParam );
+			pParameterNode = pParameterNode->findNextSibling( "parameter" );
 		}
 
 		m_templates.set( desc.name, desc );
-
-		xmlFile.dispose();
 	}
 
 	bool ConverterManager::prepareTasks()

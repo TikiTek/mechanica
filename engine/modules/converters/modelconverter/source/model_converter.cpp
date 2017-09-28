@@ -1,11 +1,10 @@
-
-#include "tiki/modelconverter/modelconverter.hpp"
+#include "tiki/modelconverter/model_converter.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/float16.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
+#include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
@@ -27,7 +26,7 @@ namespace tiki
 		return 6u;
 	}
 
-	bool ModelConverter::canConvertType( crc32 typeCrc ) const 
+	bool ModelConverter::canConvertType( crc32 typeCrc ) const
 	{
 		return typeCrc == s_typeCrc;
 	}
@@ -51,77 +50,74 @@ namespace tiki
 	{
 	}
 
-	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
+	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
 	{
-		for( uint fileIndex = 0u; fileIndex < parameters.inputFiles.getCount(); ++fileIndex )
+		const string material	= asset.parameters.getOptionalString( "material", "" );
+		const float scale		= asset.parameters.getOptionalFloat( "scale", 1.0f );
+		const bool calcTangents	= asset.parameters.getOptionalBool( "calculate_tangents", true );
+
+		ToolModel model;
+		if( !model.create( asset.inputFilePath.getCompletePath(), scale ) ||
+			!model.parseGeometies( calcTangents ) )
 		{
-			const ConversionParameters::InputFile& file = parameters.inputFiles[ fileIndex ];
-
-			const string material	= parameters.arguments.getOptionalString( "material", "" );
-			const float scale		= parameters.arguments.getOptionalFloat( "scale", 1.0f );
-			const bool calcTangents	= parameters.arguments.getOptionalBool( "calculate_tangents", true );
-
-			ToolModel model;
-			model.create( file.fileName, scale );
-			model.parseGeometies( calcTangents );
-
-			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "model" );
-
-			for (const ResourceDefinition& definition : getResourceDefinitions())
-			{
-				writer.openResource( parameters.outputName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_typeCrc ) );
-
-				// write hierarchy
-				const ReferenceKey* pHierarchyKey = nullptr;
-				ReferenceKey hierarchyKey;
-				if ( model.getHierarchy().isCreated() )
-				{
-					hierarchyKey = writeHierarchy( writer, model.getHierarchy() );
-					pHierarchyKey = &hierarchyKey;
-				}
-
-				// write vertex data
-				List< ReferenceKey > geometryKeys;
-
-				bool wrongSkinned = false;
-				for (uint geometryIndex = 0u; geometryIndex < model.getGeometyCount(); ++geometryIndex )
-				{
-					const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( geometryIndex ) );
-					geometryKeys.add( key );
-
-					for (uint k = 0u; k < model.getGeometyCount(); ++k)
-					{
-						if ( model.getGeometryByIndex( geometryIndex ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
-						{
-							wrongSkinned = true;
-						}
-					}
-				}
-
-				if ( wrongSkinned )
-				{
-					TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
-				}
-
-				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-				writeResourceReference( writer, material );
-				writer.writeReference( pHierarchyKey );
-				writer.writeUInt32( uint32( model.getGeometyCount() ) );
-				for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
-				{
-					writer.writeReference( &geometryKeys[ geometryIndex ] );
-				}			
-				writer.closeDataSection();
-
-				writer.closeResource();
-			}
-			
-			closeResourceWriter( writer );
-
-			model.dispose();
+			return false;
 		}
 
+		ResourceWriter writer;
+		openResourceWriter( writer, result, asset.assetName, "model" );
+
+		for (const ResourceDefinition& definition : getResourceDefinitions())
+		{
+			writer.openResource( asset.assetName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_typeCrc ) );
+
+			// write hierarchy
+			const ReferenceKey* pHierarchyKey = nullptr;
+			ReferenceKey hierarchyKey;
+			if ( model.getHierarchy().isCreated() )
+			{
+				hierarchyKey = writeHierarchy( writer, model.getHierarchy() );
+				pHierarchyKey = &hierarchyKey;
+			}
+
+			// write vertex data
+			List< ReferenceKey > geometryKeys;
+
+			bool wrongSkinned = false;
+			for (uint geometryIndex = 0u; geometryIndex < model.getGeometyCount(); ++geometryIndex )
+			{
+				const ReferenceKey key = writeGeometry( writer, model.getGeometryByIndex( geometryIndex ) );
+				geometryKeys.add( key );
+
+				for (uint k = 0u; k < model.getGeometyCount(); ++k)
+				{
+					if ( model.getGeometryByIndex( geometryIndex ).getDesc().isSkinned != model.getGeometryByIndex( k ).getDesc().isSkinned )
+					{
+						wrongSkinned = true;
+					}
+				}
+			}
+
+			if ( wrongSkinned )
+			{
+				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
+			}
+
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			writeResourceReference( writer, material );
+			writer.writeReference( pHierarchyKey );
+			writer.writeUInt32( uint32( model.getGeometyCount() ) );
+			for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
+			{
+				writer.writeReference( &geometryKeys[ geometryIndex ] );
+			}
+			writer.closeDataSection();
+
+			writer.closeResource();
+		}
+
+		closeResourceWriter( writer );
+
+		model.dispose();
 		return true;
 	}
 
@@ -372,9 +368,9 @@ namespace tiki
 		writer.writeUInt8( 4u ); // index size
 		writer.writeUInt8( uint8( vertexFormat.getAttributeCount() ) );
 
-		writer.writeReference( &vertexAttributesKey );		
+		writer.writeReference( &vertexAttributesKey );
 
-		writer.writeReference( &vertexDataKey );			
+		writer.writeReference( &vertexDataKey );
 		writer.writeReference( &indexDataKey );
 
 		writer.closeDataSection();

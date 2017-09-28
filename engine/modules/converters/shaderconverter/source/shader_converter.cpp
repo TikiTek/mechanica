@@ -1,13 +1,11 @@
-
-#include "tiki/shaderconverter/shaderconverter.hpp"
+#include "tiki/shaderconverter/shader_converter.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
-#include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/io/file.hpp"
@@ -57,7 +55,7 @@ namespace tiki
 		{
 			m_mutex.dispose();
 		}
-		
+
 		void beginJob()
 		{
 			m_jobCount++;
@@ -94,7 +92,7 @@ namespace tiki
 			*ppFullName		= data.pFullName;
 			*ppData			= data.pData;
 			*pSizeInBytes	= getStringSize( data.pData );
-			
+
 			return true;
 		}
 
@@ -188,11 +186,11 @@ namespace tiki
 			const char* pFullName;
 			if ( m_storage.getFile( pFileName, &pFullName, ppData, pSizeInBytes ) )
 			{
-				m_result.addDependency( ConversionResult::DependencyType_File, pFullName, 0u );
+				m_result.addDependency( ConversionResult::DependencyType_InputFile, pFullName, "" );
 
 				return true;
 			}
-			
+
 			return false;
 		}
 
@@ -356,7 +354,7 @@ namespace tiki
 		m_includeDirs.dispose();
 	}
 
-	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
+	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
 	{
 		ShaderIncludeHandler includeHandler( result, *m_pFileStorage );
 
@@ -366,113 +364,107 @@ namespace tiki
 		string functionNames[ ShaderType_Count ];
 		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
-			functionNames[ i ] = parameters.arguments.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
+			functionNames[ i ] = asset.parameters.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
 
-		for( uint fileIndex = 0u; fileIndex < parameters.inputFiles.getCount(); ++fileIndex )
+		Array< char > charArray;
+		if ( !file::readAllText( asset.inputFilePath.getCompletePath(), charArray ) )
 		{
-			const ConversionParameters::InputFile& file = parameters.inputFiles[ fileIndex ];
-
-			Array< char > charArray;
-			if ( !file::readAllText( file.fileName.cStr(), charArray ) )
-			{
-				TIKI_TRACE_ERROR( "Can't open file.\n" );
-				continue;
-			}
-
-			const string sourceCode = charArray.getBegin();
-			charArray.dispose();
-
-			const bool debugMode = parameters.arguments.getOptionalBool( "compile_debug", false );
-
-			ShaderPreprocessor preprocessor;
-			preprocessor.create( sourceCode );
-
-			ResourceWriter writer;
-			openResourceWriter( writer, result, parameters.outputName, "shader" );
-
-			for (const ResourceDefinition& definition : getResourceDefinitions())
-			{
-				writer.openResource( parameters.outputName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
-
-				List< ShaderVariantData > shaderVariants;
-				for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
-				{
-					const ShaderType type = (ShaderType)typeIndex;
-
-					if ( preprocessor.isTypeEnabled( type ) == false )
-					{
-						continue;
-					}
-
-					const uint variantCount = preprocessor.getVariantCount( type );
-					for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
-					{
-						const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
-
-						ShaderArguments args;
-						args.type		= type;
-
-						args.fileName	= file.fileName;
-						args.outputName	= parameters.outputName;
-
-						args.entryPoint	= functionNames[ type ];
-						args.version	= shaderStart[ type ] + "_4_0";
-						args.debugMode	= debugMode;
-
-						args.defineCode = m_pBaseSourceCode;
-						args.defineCode += variant.defineCode;
-
-						for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
-						{
-							args.defineCode	+= formatDynamicString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
-						}
-
-						Array< uint8 > variantData;
-						if ( compilePlatformShader( variantData, args, includeHandler, definition.getGraphicsApi() ) )
-						{
-							uint32 keyData[] = { (uint32)type, variant.bitMask };
-
-							ShaderVariantData& variantVarName = shaderVariants.add();
-							variantVarName.type			= type;
-							variantVarName.codeLength	= uint32( variantData.getCount() );
-							variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
-
-							writer.openDataSection( 0u, AllocatorType_MainMemory );
-							variantVarName.key = writer.addDataPoint();
-							writer.writeData( variantData.getBegin(), variantData.getCount() );
-							writer.closeDataSection();
-
-							variantData.dispose();
-						}
-					}
-				}
-
-				writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-
-				writer.writeUInt32( uint32( shaderVariants.getCount() ) );
-				writer.writeAlignment( 8u );
-
-				for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
-				{
-					const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
-
-					writer.writeUInt32( shaderVarName.type );
-					writer.writeUInt32( shaderVarName.codeLength );
-					writer.writeUInt32( shaderVarName.variantKey );
-					writer.writeReference( &shaderVarName.key );
-				}
-
-				writer.closeDataSection();
-
-				writer.closeResource();
-			}
-
-			closeResourceWriter( writer );
-
-			preprocessor.dispose();
+			TIKI_TRACE_ERROR( "Can't read '%s'.\n", asset.inputFilePath.getCompletePath() );
+			return false;
 		}
 
+		const string sourceCode = charArray.getBegin();
+		charArray.dispose();
+
+		const bool debugMode = asset.parameters.getOptionalBool( "compile_debug", false );
+
+		ShaderPreprocessor preprocessor;
+		preprocessor.create( sourceCode );
+
+		ResourceWriter writer;
+		openResourceWriter( writer, result, asset.assetName, "shader" );
+
+		for (const ResourceDefinition& definition : getResourceDefinitions())
+		{
+			writer.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
+
+			List< ShaderVariantData > shaderVariants;
+			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
+			{
+				const ShaderType type = (ShaderType)typeIndex;
+
+				if ( preprocessor.isTypeEnabled( type ) == false )
+				{
+					continue;
+				}
+
+				const uint variantCount = preprocessor.getVariantCount( type );
+				for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
+				{
+					const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
+
+					ShaderArguments args;
+					args.type		= type;
+
+					args.fileName	= asset.inputFilePath.getCompletePath();
+					args.outputName	= asset.assetName;
+
+					args.entryPoint	= functionNames[ type ];
+					args.version	= shaderStart[ type ] + "_4_0";
+					args.debugMode	= debugMode;
+
+					args.defineCode = m_pBaseSourceCode;
+					args.defineCode += variant.defineCode;
+
+					for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
+					{
+						args.defineCode	+= formatDynamicString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
+					}
+
+					Array< uint8 > variantData;
+					if ( compilePlatformShader( variantData, args, includeHandler, definition.getGraphicsApi() ) )
+					{
+						uint32 keyData[] = { (uint32)type, variant.bitMask };
+
+						ShaderVariantData& variantVarName = shaderVariants.add();
+						variantVarName.type			= type;
+						variantVarName.codeLength	= uint32( variantData.getCount() );
+						variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
+
+						writer.openDataSection( 0u, AllocatorType_MainMemory );
+						variantVarName.key = writer.addDataPoint();
+						writer.writeData( variantData.getBegin(), variantData.getCount() );
+						writer.closeDataSection();
+
+						variantData.dispose();
+					}
+				}
+			}
+
+			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+
+			writer.writeUInt32( uint32( shaderVariants.getCount() ) );
+			writer.writeAlignment( 8u );
+
+			for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
+			{
+				const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
+
+				writer.writeUInt32( shaderVarName.type );
+				writer.writeUInt32( shaderVarName.codeLength );
+				writer.writeUInt32( shaderVarName.variantKey );
+				writer.writeReference( &shaderVarName.key );
+			}
+
+			writer.closeDataSection();
+
+			writer.closeResource();
+		}
+
+		closeResourceWriter( writer );
+
+		preprocessor.dispose();
 		return true;
 	}
 

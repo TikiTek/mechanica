@@ -49,15 +49,20 @@ namespace tiki
 		return true;
 	}
 
-	void directory::findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive /*= true */ )
+	bool directory::findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive /*= true */ )
 	{
-		findFiles( targetList, path.getCompletePath(), extension, recursive );
+		return findFiles( targetList, path.getCompletePath(), extension, recursive );
 	}
 
-	void directory::findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive /* = true */ )
+	bool directory::findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive /* = true */ )
 	{
 		List< string > dirFiles;
-		directory::getFiles( dirFiles, path );
+		if( !directory::getFiles( dirFiles, path ) )
+		{
+			TIKI_TRACE_ERROR( "[genericdata] Unable to find files in '%s'", path.cStr() );
+			return false;
+		}
+
 		for( size_t i = 0u; i < dirFiles.getCount(); ++i )
 		{
 			if( path::getExtension( dirFiles[ i ] ) != extension )
@@ -71,15 +76,25 @@ namespace tiki
 
 		if( !recursive )
 		{
-			return;
+			return true;
 		}
 
 		List< string > dirDirectories;
-		directory::getDirectories( dirDirectories, path );
+		if( !directory::getDirectories( dirDirectories, path ) )
+		{
+			TIKI_TRACE_ERROR( "[genericdata] Unable to find directories in '%s'", path.cStr() );
+			return false;
+		}
+
 		for( size_t i = 0u; i < dirDirectories.getCount(); ++i )
 		{
 			const string subDirectory = path::combine( path, dirDirectories[ i ] );
-			findFiles( targetList, subDirectory, extension, true );
+			if( !findFiles( targetList, subDirectory, extension, true ) )
+			{
+				return false;
+			}
 		}
+
+		return true;
 	}
 }

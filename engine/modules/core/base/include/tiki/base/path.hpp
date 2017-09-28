@@ -14,6 +14,7 @@ namespace tiki
 
 		void			setCompletePath( const char* pPath );
 		void			setCombinedPath( const char* pPath1, const char* pPath2 );
+		void			setCombinedPath( const Path& path1, const Path& path2 );
 		void			setFilenameWithExtension( const char* pFilename );
 		void			setPrefix( const char* pPrefix );
 		void			setDirectory( const char* pDirectory );

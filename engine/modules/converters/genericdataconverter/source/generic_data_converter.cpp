@@ -1,9 +1,8 @@
-#include "tiki/genericdataconverter/genericdataconverter.hpp"
+#include "tiki/genericdataconverter/generic_data_converter.hpp"
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
-#include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
@@ -81,52 +80,47 @@ namespace tiki
 		m_collection.dispose();
 	}
 
-	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionParameters& parameters ) const
+	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
 	{
 		bool ok = true;
-		for( size_t i = 0u; i < parameters.inputFiles.getCount(); ++i )
+
+		GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
+		if ( document.importFromFile( asset.inputFilePath.getCompletePath() ) )
 		{
-			const ConversionParameters::InputFile& file = parameters.inputFiles[ i ];
+			const string& extension = document.getType()->getPostFix();
 
-			GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
-			if ( document.importFromFile( file.fileName.cStr() ) )
+			ResourceWriter writer;
+			openResourceWriter( writer, result, asset.assetName, extension );
+
+			for (const ResourceDefinition& definition : getResourceDefinitions())
 			{
-				const string& extension = document.getType()->getPostFix();
+				writer.openResource( asset.assetName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
 
-				ResourceWriter writer;
-				openResourceWriter( writer, result, parameters.outputName, extension );
-
-				for (const ResourceDefinition& definition : getResourceDefinitions())
+				ReferenceKey dataKey;
+				if ( document.writeToResource( dataKey, writer ) )
 				{
-					writer.openResource( parameters.outputName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
-
-					ReferenceKey dataKey;
-					if ( document.writeToResource( dataKey, writer ) )
-					{
-						writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-						writer.writeReference( &dataKey );
-						writer.closeDataSection();
-					}
-					else
-					{
-						TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
-						ok = false;
-					}
-
-					writer.closeResource();
+					writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+					writer.writeReference( &dataKey );
+					writer.closeDataSection();
+				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
+					ok = false;
 				}
 
-				closeResourceWriter( writer );
-			}
-			else
-			{
-				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", file.fileName.cStr() );
-				ok = false;
+				writer.closeResource();
 			}
 
-			document.dispose();
+			closeResourceWriter( writer );
+		}
+		else
+		{
+			TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", asset.inputFilePath.getCompletePath() );
+			ok = false;
 		}
 
+		document.dispose();
 		return ok;
 	}
 }

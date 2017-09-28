@@ -623,38 +623,6 @@ namespace tiki
 		return ok;
 	}
 
-	void GenericDataTypeCollection::findFiles( const string& path, List< string >& files, const string& ext ) const
-	{
-		List< string > dirFiles;
-		if ( !directory::getFiles( path, dirFiles ) )
-		{
-			TIKI_TRACE_ERROR( "[genericdata] Unable to find files in '%s'", path.cStr() );
-			return;
-		}
-
-		for (size_t i = 0u; i < dirFiles.getCount(); ++i)
-		{
-			if ( path::getExtension( dirFiles[ i ] ) != ext )
-			{
-				continue;
-			}
-
-			files.add( path::combine( path, dirFiles[ i ] ) );
-		}
-
-		List< string > dirDirectories;
-		if( !directory::getDirectories( path, dirDirectories ) )
-		{
-			TIKI_TRACE_ERROR( "[genericdata] Unable to find directories in '%s'", path.cStr() );
-			return;
-		}
-
-		for (size_t i = 0u; i < dirDirectories.getCount(); ++i)
-		{
-			findFiles( path::combine( path, dirDirectories[ i ] ), files, ext );
-		}
-	}
-
 	bool GenericDataTypeCollection::loadFiles( const List< Path >& typeFiles )
 	{
 		Array< GenericDataModuleLoadingData > modules;

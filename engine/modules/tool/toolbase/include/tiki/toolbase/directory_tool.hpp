@@ -15,8 +15,8 @@ namespace tiki
 		bool	getFiles( List< string >& targetList, const string& path );
 		bool	getDirectories( List< string >& targetList, const string& path );
 
-		void	findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive = true );
-		void	findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive = true );
+		bool	findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive = true );
+		bool	findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive = true );
 	}
 }
 
