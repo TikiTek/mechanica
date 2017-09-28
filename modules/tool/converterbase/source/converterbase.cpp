@@ -1,10 +1,8 @@
-
 #include "tiki/converterbase/converterbase.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/converterbase/conversionparameters.hpp"
-#include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/converterbase/resourcewriter.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"

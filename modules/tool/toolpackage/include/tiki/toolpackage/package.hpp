@@ -31,9 +31,9 @@ namespace tiki
 		void					removeDependencies( Package* pPackage );
 
 		const Path&				getGenericDataTypesPath() const { return m_genericDataTypesPath; }
-		void					setGenericDataTypesPath( const string& value ) { m_genericDataTypesPath = value; }
+		void					setGenericDataTypesPath( const Path& value ) { m_genericDataTypesPath = value; }
 		const Path&				getAssetTemplatesPath() const { return m_assetTemplatesPath; }
-		void					setAssetTemplatesPath( const string& value ) { m_assetTemplatesPath = value; }
+		void					setAssetTemplatesPath( const Path& value ) { m_assetTemplatesPath = value; }
 
 		void					findGenericDataTypeFiles( List< Path >& targetList ) const;
 		void					findAssetTemplateFiles( List< Path >& targetList ) const;

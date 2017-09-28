@@ -4,20 +4,21 @@
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
+#include "tiki/converterbase/conversion_parameters.hpp"
 
 namespace tiki
 {
 	struct ConversionAsset
 	{
-		uint				assetId;
-		string				assetName;
+		uint					assetId;
+		string					assetName;
 
-		bool				isBuildRequired;
+		bool					isBuildRequired;
 
-		Path				inputFilePath;
-		crc32				typeCrc;
+		Path					inputFilePath;
+		crc32					typeCrc;
 
-		AssetParameters		parameters;
+		ConversionParameters	parameters;
 	};
 }
 

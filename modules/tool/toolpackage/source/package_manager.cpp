@@ -43,8 +43,13 @@ namespace tiki
 	{
 		for( Package& package : m_packages )
 		{
-			package.writeToFile();
+			if( !package.writeToFile() )
+			{
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	Package* PackageManager::addPackage( const string& packageName )

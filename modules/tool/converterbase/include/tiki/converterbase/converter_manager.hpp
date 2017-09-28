@@ -3,29 +3,29 @@
 #define TIKI_CONVERTERMANAGER_HPP
 
 #include "tiki/base/path.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/container/map.hpp"
 #include "tiki/container/staticarray.hpp"
+#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_result.hpp"
 #include "tiki/converterbase/sqlite.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/threading/mutex.hpp"
 
-#include "tiki/animationconverter/animationconverter.hpp"
-#include "tiki/fontconverter/fontconverter.hpp"
-#include "tiki/genericdataconverter/genericdataconverter.hpp"
-#include "tiki/modelconverter/modelconverter.hpp"
-#include "tiki/shaderconverter/shaderconverter.hpp"
-#include "tiki/textureconverter/textureconverter.hpp"
+#include "tiki/animationconverter/animation_converter.hpp"
+#include "tiki/fontconverter/font_converter.hpp"
+#include "tiki/genericdataconverter/generic_data_converter.hpp"
+#include "tiki/modelconverter/model_converter.hpp"
+#include "tiki/shaderconverter/shader_converter.hpp"
+#include "tiki/textureconverter/texture_converter.hpp"
 
 namespace tiki
 {
 	class ConversionResult;
 	class ConverterBase;
 	class XmlReader;
-	struct ConversionParameters;
 
 	struct ConverterManagerParameter
 	{
@@ -54,6 +54,7 @@ namespace tiki
 
 	public:
 
+		ConverterManager();
 		~ConverterManager();
 
 		bool					create( const ConverterManagerParameter& parameters );
@@ -65,7 +66,7 @@ namespace tiki
 
 		// misc
 		//const string&			getSourcePath() const { return m_sourcePath; }
-		//const string&			getOutputPath() const { return m_outputPath; }
+		const string&			getOutputPath() const { return m_outputPath; }
 		bool					isNewDatabase() const { return m_isNewDatabase; }
 
 	private: // friend
@@ -103,7 +104,7 @@ namespace tiki
 			ConverterManager*		pManager;
 			const ConverterBase*	pConverter;
 
-			ConversionParameters	parameters;
+			ConversionAsset			asset;
 			ConversionResult		result;
 
 			TaskId					taskId;

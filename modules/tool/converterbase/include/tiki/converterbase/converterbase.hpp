@@ -2,11 +2,11 @@
 #ifndef TIKI_CONVERTERBASE_HPP
 #define TIKI_CONVERTERBASE_HPP
 
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/tasksystem/tasksystem.hpp"
 #include "tiki/container/list.hpp"
+#include "tiki/tasksystem/tasksystem.hpp"
 
 namespace tiki
 {

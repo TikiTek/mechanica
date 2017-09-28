@@ -1,7 +1,9 @@
 #include "tiki/toolpackage/package.hpp"
 
 #include "tiki/base/path.hpp"
+#include "tiki/io/file.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
+#include "tiki/toolxml/xml_document.hpp"
 
 namespace tiki
 {
@@ -18,7 +20,7 @@ namespace tiki
 	void Package::findGenericDataTypeFiles( List< Path >& targetList ) const
 	{
 		Path genericDataPath;
-		genericDataPath.setCombinedPath( m_basepath.cStr(), m_genericDataTypesPath.cStr() );
+		genericDataPath.setCombinedPath( m_basepath, m_genericDataTypesPath );
 
 		directory::findFiles( targetList, genericDataPath, ".generictypes" );
 	}
@@ -26,7 +28,7 @@ namespace tiki
 	void Package::findAssetTemplateFiles( List< Path >& targetList ) const
 	{
 		Path templatePath;
-		templatePath.setCombinedPath( m_basepath.cStr(), m_assetTemplatesPath.cStr() );
+		templatePath.setCombinedPath( m_basepath, m_assetTemplatesPath );
 
 		directory::findFiles( targetList, templatePath, ".generictypes" );
 	}
@@ -34,6 +36,17 @@ namespace tiki
 	bool Package::create( const Path& filePath )
 	{
 		m_filename = filePath;
+
+		if( file::exists( m_filename.getCompletePath() ) )
+		{
+			XmlDocument document;
+			if( !document.loadFromFile( m_filename.getCompletePath() ) )
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	void Package::create( const Path& contentPath, const string& packageName )

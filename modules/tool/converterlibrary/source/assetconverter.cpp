@@ -67,22 +67,22 @@ namespace tiki
 		TIKI_TRACE_INFO( "AssetConverter: finish\n" );
 	}
 
-	bool AssetConverter::convertAll()
-	{
-		List< string > assetFiles;
-		findFiles( m_sourcePath, assetFiles, ".xasset" );
+	//bool AssetConverter::convertAll()
+	//{
+	//	List< string > assetFiles;
+	//	findFiles( m_sourcePath, assetFiles, ".xasset" );
 
-		for (size_t i = 0u; i < assetFiles.getCount(); ++i)
-		{
-			m_manager.queueFile( assetFiles[ i ] );
-		}
-		TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
+	//	for (size_t i = 0u; i < assetFiles.getCount(); ++i)
+	//	{
+	//		m_manager.queueFile( assetFiles[ i ] );
+	//	}
+	//	TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
 
-		const bool result = m_manager.startConversion( &m_converterMutex );
-		TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
+	//	const bool result = m_manager.startConversion( &m_converterMutex );
+	//	TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
 
-		return result;
-	}
+	//	return result;
+	//}
 
 	void AssetConverter::startWatch()
 	{

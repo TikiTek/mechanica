@@ -6,7 +6,7 @@
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/converterbase/convertermanager.hpp"
+#include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/io/filewatcher.hpp"
 #include "tiki/threading/thread.hpp"
 #include "tiki/container/list.hpp"
