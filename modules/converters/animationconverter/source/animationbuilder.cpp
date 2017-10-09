@@ -4,7 +4,7 @@
 #include "tiki/animationconverter/spline.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/base/float32.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 
 namespace tiki
 {

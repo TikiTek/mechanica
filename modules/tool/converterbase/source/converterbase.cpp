@@ -3,7 +3,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/converterbase/converter_manager.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"
 
@@ -53,9 +53,12 @@ namespace tiki
 		TIKI_ASSERT( m_pManager != nullptr );
 
 		const string realName = fileName + "." + extension;
-		const string fullPath = path::getAbsolutePath( path::combine( m_pManager->getOutputPath(), realName ) );
 
+		Path fullPath;
+		fullPath.setCompletePath( m_pManager->getOutputPath().cStr() );
+		fullPath.setFilenameWithExtension( realName.cStr() );
 		result.addOutputFile( fullPath );
+
 		writer.create( fullPath );
 	}
 

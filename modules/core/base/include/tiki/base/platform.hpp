@@ -14,9 +14,15 @@ namespace tiki
 	{
 		PlatformType_Invalid = -1,
 
-		PlatformType_Win,
+		PlatformType_Windows,
+		PlatformType_UWP,
 		PlatformType_Linux,
-		PlatformType_Apple,
+		PlatformType_Android,
+		PlatformType_OSX,
+		PlatformType_IOS,
+		PlatformType_XboxOne,
+		PlatformType_Playstation4,
+		PlatformType_Switch,
 
 		PlatformType_Count
 	};
@@ -27,7 +33,11 @@ namespace tiki
 
 		GraphicsApi_D3D11,
 		GraphicsApi_D3D12,
+		//GraphicsApi_OpenGL, // die OpenGL, die!
 		GraphicsApi_Vulkan,
+		GraphicsApi_Metal,
+		GraphicsApi_GNM,
+		GraphicsApi_NVN,
 
 		GraphicsApi_Count,
 	};

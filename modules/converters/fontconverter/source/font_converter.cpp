@@ -5,7 +5,7 @@
 #include "tiki/base/numbers.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/converterbase/conversion_asset.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"

@@ -286,29 +286,22 @@ namespace tiki
 
 	bool ConverterManager::prepareTasks()
 	{
-		List< FileDescription > filesToBuild;
-		List< string > filesFromDependencies;
+		List< ConversionAsset > assetsToBuild;
+		List< Path > filesFromDependencies;
 
 		for (uint i = 0u; i < m_files.getCount(); ++i)
 		{
-			const string& fileName = m_files[ i ];
+			const Path& file = m_files[ i ];
 
-			const string absoluteFileName	= path::getAbsolutePath( fileName );
-			const string extension			= path::getExtension( absoluteFileName );
-			if ( extension == ".xasset" )
+			ConversionAsset& asset = assetsToBuild.add();
+			if( !fillAssetFromFilePath( asset, file ) )
 			{
-				const string fileTypeString = path::getFilenameWithoutExtension( fileName );
-
-				FileDescription file;
-				file.fullFileName	= absoluteFileName;
-				file.fileType		= crcString( path::getExtension( fileTypeString ).subString( 1u ).toLower() );
-
-				filesToBuild.add( file );
+				assetsToBuild.
+				filesFromDependencies.add( file );
+				continue;
 			}
-			else
-			{
-				filesFromDependencies.add( absoluteFileName );
-			}
+
+			filesToBuild.add( file );
 		}
 
 		if ( filesFromDependencies.getCount() > 0u )
@@ -327,25 +320,25 @@ namespace tiki
 			}
 
 			{
-				const string sql = formatDynamicString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_File, whereFileName.cStr() );
+				const string sql = formatDynamicString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_InputFile, whereFileName.cStr() );
 
-				AutoDispose< SqliteQuery > query;
-				if ( !query->create( m_dataBase, sql ) )
+				SqliteQuery query;
+				if ( !query.create( m_dataBase, sql.cStr() ) )
 				{
-					TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", query->getLastError().cStr() );
+					TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", query.getLastError() );
 					return false;
 				}
 
-				while ( query->nextRow() )
+				while ( query.nextRow() )
 				{
 					FileDescription file;
-					file.fullFileName	= path::combine( query->getTextField( "path" ), query->getTextField( "filename" ) );
-					file.fileType		= (crc32)query->getIntegerField( "type" );
+					file.filePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
+					file.fileType		= (crc32)query.getIntegerField( "type" );
 
 					bool found = false;
 					for (uint i = 0u; i < filesToBuild.getCount(); ++i)
 					{
-						if ( filesToBuild[ i ].fullFileName == file.fullFileName )
+						if( isStringEquals( filesToBuild[ i ].filePath.getCompletePath(), file.filePath.getCompletePath() ) )
 						{
 							found = true;
 							break;
@@ -363,7 +356,7 @@ namespace tiki
 		m_files.clear();
 		m_tasks.clear();
 
-		return generateTaskFromFiles( filesToBuild );
+		return generateTaskFromFiles( assetsToBuild );
 	}
 
 	bool ConverterManager::generateTaskFromFiles( const List< FileDescription >& filesToBuild )
@@ -375,7 +368,7 @@ namespace tiki
 		{
 			const FileDescription& fileDesc = filesToBuild[ fileIndex ];
 
-			if ( !file::exists( fileDesc.fullFileName.cStr() ) )
+			if ( !file::exists( fileDesc.filePath.getCompletePath() ) )
 			{
 				result = false;
 				continue;
@@ -395,15 +388,15 @@ namespace tiki
 
 			if ( task.pConverter == nullptr )
 			{
-				TIKI_TRACE_ERROR( "No Converter found for file: '%s'.\n", fileDesc.fullFileName.cStr() );
+				TIKI_TRACE_ERROR( "No Converter found for file: '%s'.\n", fileDesc.filePath.getCompletePath() );
 				result = false;
 				continue;
 			}
 
-			task.parameters.assetId			= TIKI_SIZE_T_MAX;
-			task.parameters.isBuildRequired	= false;
-			task.parameters.sourceFile		= fileDesc.fullFileName;
-			task.parameters.typeCrc			= fileDesc.fileType;
+			task.asset.assetId			= TIKI_SIZE_T_MAX;
+			task.asset.isBuildRequired	= false;
+			task.asset.inputFilePath	= fileDesc.filePath;
+			task.asset.typeCrc			= fileDesc.fileType;
 
 			if ( !readDataFromXasset( task, fileDesc ) )
 			{
@@ -412,14 +405,8 @@ namespace tiki
 			}
 
 			task.pManager = this;
-			task.result.addDependency( ConversionResult::DependencyType_Converter, "", task.pConverter->getConverterRevision( fileDesc.fileType ) );
-			task.result.addDependency( ConversionResult::DependencyType_File, task.parameters.sourceFile, 0u );
-
-			for (uint inputIndex = 0u; inputIndex < task.parameters.inputFiles.getCount(); ++inputIndex )
-			{
-				const string& inputFileName = task.parameters.inputFiles[ inputIndex ].fileName;
-				task.result.addDependency( ConversionResult::DependencyType_File, inputFileName, 0u );
-			}
+			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( fileDesc.fileType ) ) );
+			task.result.addInputFile( task.asset.inputFilePath );
 
 			tasks.add( task );
 		}
@@ -438,7 +425,7 @@ namespace tiki
 		{
 			ConversionTask& task = tasks[ i ];
 
-			if ( task.parameters.isBuildRequired )
+			if ( task.asset.isBuildRequired )
 			{
 				m_tasks.add( task );
 			}

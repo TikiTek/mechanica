@@ -6,6 +6,19 @@ namespace tiki
 {
 	Path::Path()
 	{
+		clear();
+	}
+
+	bool Path::isEmpty()
+	{
+		return isStringEmpty( m_prefix ) &&
+			isStringEmpty( m_directory ) &&
+			isStringEmpty( m_filename ) &&
+			isStringEmpty( m_extension );
+	}
+
+	void Path::clear()
+	{
 		m_bufferState		= BufferState_Invalid;
 		m_buffer[ 0u ]		= '\0';
 		m_prefix[ 0u ]		= '\0';

@@ -24,7 +24,7 @@ namespace tiki
 
 		TIKI_FORCE_INLINE void				clear();
 		TIKI_FORCE_INLINE void				dispose();
-		
+
 		TIKI_FORCE_INLINE void				reserve( uint count );
 		TIKI_FORCE_INLINE void				resize( uint count );
 
@@ -39,6 +39,10 @@ namespace tiki
 		TIKI_FORCE_INLINE void				addRange( const List<T>& list );
 		TIKI_FORCE_INLINE void				addRange( const T* src, uint length );
 		TIKI_FORCE_INLINE void				insert( uint index, const T& item );
+
+		TIKI_FORCE_INLINE const T&			pushBack();
+		TIKI_FORCE_INLINE const T&			pushBack( const T& item );
+		TIKI_FORCE_INLINE const T&			popBack();
 
 		TIKI_FORCE_INLINE Iterator			getBegin();
 		TIKI_FORCE_INLINE ConstIterator		getBegin() const;

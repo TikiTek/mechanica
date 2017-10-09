@@ -12,11 +12,11 @@ namespace tiki
 	{
 	public:
 
-					MemoryStream();
-					MemoryStream( const MemoryStream& copy );
-		virtual		~MemoryStream();
+							MemoryStream();
+							MemoryStream( const MemoryStream& copy );
+		virtual				~MemoryStream();
 
-		void		operator=( const MemoryStream& copy );
+		void				operator=( const MemoryStream& copy );
 
 		void				create( FileSize capacity = 0u );
 		void				create( const void* pData, FileSize length );
@@ -46,7 +46,6 @@ namespace tiki
 		FileSize			m_capacity;
 
 		bool				increaseBuffer( FileSize requiredSize );
-
 	};
 }
 

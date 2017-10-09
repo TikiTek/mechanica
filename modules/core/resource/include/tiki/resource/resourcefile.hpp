@@ -33,7 +33,7 @@ namespace tiki
 		uint32	offsetInFile;
 
 		uint16	version;
-		
+
 		uint16	sectionCount;
 		uint16	stringCount;
 		uint16	linkCount;
@@ -42,23 +42,22 @@ namespace tiki
 		uint32	stringSizeInBytes;
 	};
 
-	enum AllocatorType
+	enum SectionType : uint8
 	{
-		AllocatorType_InitializaionMemory,
-		AllocatorType_TemporaryMemory,
-		AllocatorType_MainMemory,
-		AllocatorType_GraphicsMemory
+		SectionType_Initializaion,
+		SectionType_Temporary,
+		SectionType_Main
 	};
 
 	struct SectionHeader
 	{
-		uint8	allocatorType_allocatorId; // 2 bits - type / 6 bits - id // if type is AllocatorType_TemporaryMemory the id will be ignored
-		uint8	alignment;
+		SectionType	type;
+		uint8		alignment;
 
-		uint16	referenceCount;
+		uint16		referenceCount;
 
-		uint32	sizeInBytes;
-		uint32	offsetInResource;
+		uint32		sizeInBytes;
+		uint32		offsetInResource;
 	};
 
 	enum ReferenceType
@@ -215,9 +214,6 @@ namespace tiki
 	namespace resource
 	{
 		Endianness			getEndianness( const ResourceFileHeader& header );
-
-		const AllocatorType	getSectionAllocatorType( uint8 allocatorType_allocatorId );
-		const uint8			getSectionAllocatorId( uint8 allocatorType_allocatorId );
 
 		StringType			getStringType( const StringItem& item );
 		uint				getStringLengthModifier( const StringItem& item );

@@ -3,7 +3,7 @@
 
 #include "tiki/converterbase/converterbase.hpp"
 
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 
 namespace tiki
 {

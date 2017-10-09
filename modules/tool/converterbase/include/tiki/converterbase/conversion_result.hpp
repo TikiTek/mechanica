@@ -2,13 +2,8 @@
 #ifndef TIKI_CONVERSION_RESULT_HPP_INCLUDED
 #define TIKI_CONVERSION_RESULT_HPP_INCLUDED
 
-#include "tiki/base/platform.hpp"
-#include "tiki/base/string.hpp"
-#include "tiki/base/types.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/container/list.hpp"
-#include "tiki/container/map.hpp"
-#include "tiki/io/file.hpp"
-#include "tiki/io/path.hpp"
 
 namespace tiki
 {
@@ -41,17 +36,18 @@ namespace tiki
 		};
 
 		const List< TraceInfo >&	getTraceInfos() const;
-		const List< string >&		getOutputFiles() const;
+		const List< Path >&			getOutputFiles() const;
 		const List< Dependency >&	getDependencies() const;
 
-		void						addTraceInfo( TraceLevel level, const string& message );
-		void						addOutputFile( const string& fileName );
+		void						addInputFile( const Path& filePath );
+		void						addOutputFile( const Path& filePath );
 		void						addDependency( DependencyType type, string identifier, string value );
+		void						addTraceInfo( TraceLevel level, const string& message );
 
 	private:
 
 		List< TraceInfo >	m_traceInfos;
-		List< string >		m_outputFiles;
+		List< Path >		m_outputFiles;
 		List< Dependency >	m_dependencies;
 	};
 }

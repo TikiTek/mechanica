@@ -6,7 +6,7 @@ namespace tiki
 	PlatformType platform::getHostPlatform()
 	{
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
-		return PlatformType_Win;
+		return PlatformType_Windows;
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
         return PlatformType_Linux;
 #else

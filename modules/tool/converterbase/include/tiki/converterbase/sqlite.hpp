@@ -27,15 +27,15 @@ namespace tiki
 
 		bool			isCreated() const { return m_pDatabase != nullptr; }
 
-		bool			executeCommand( const string& sql );
+		bool			executeCommand( const char* pSql );
 
 		uint			getLastInsertId() const;
-		const string&	getLastError() const { return m_lastError; }
+		const char*		getLastError() const { return m_pLastError; }
 
 	private:
 
 		sqlite3*		m_pDatabase;
-		string			m_lastError;
+		const char*		m_pLastError;
 
 	};
 
@@ -48,7 +48,7 @@ namespace tiki
 		SqliteQuery();
 		~SqliteQuery();
 
-		bool			create( const SqliteDatabase& dataBase, const string& sql );
+		bool			create( const SqliteDatabase& dataBase, const char* pSql );
 		void			dispose();
 
 		bool			isCreated() const { return m_pQuery != nullptr; }
@@ -56,20 +56,20 @@ namespace tiki
 		bool			nextRow();
 
 		int				getIntegerField( uint fieldIndex ) const;
-		int				getIntegerField( const string& fieldName ) const;
-		string			getTextField( uint fieldIndex ) const;
-		string			getTextField( const string& fieldName ) const;
+		int				getIntegerField( const char* pFieldName ) const;
+		const char*		getTextField( uint fieldIndex ) const;
+		const char*		getTextField( const char* pFieldName ) const;
 
-		const string&	getLastError() const { return m_lastError; }
+		const char*		getLastError() const { return m_pLastError; }
 
 	private:
 
 		sqlite3_stmt*			m_pQuery;
-		string					m_lastError;
+		const char*				m_pLastError;
 
-		Array< string >			m_colunmNames;
+		Array< const char* >	m_colunmNames;
 
-		int						findColunmIndexByName( const string& fieldName ) const;
+		int						findColunmIndexByName( const char* pFieldName ) const;
 
 	};
 }

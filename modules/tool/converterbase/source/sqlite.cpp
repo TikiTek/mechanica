@@ -8,6 +8,7 @@ namespace tiki
 	SqliteDatabase::SqliteDatabase()
 	{
 		m_pDatabase = nullptr;
+		m_pLastError = nullptr;
 	}
 
 	SqliteDatabase::~SqliteDatabase()
@@ -34,18 +35,10 @@ namespace tiki
 		}
 	}
 
-	bool SqliteDatabase::executeCommand( const string& sql )
+	bool SqliteDatabase::executeCommand( const char* pSql )
 	{
 		TIKI_ASSERT( m_pDatabase != nullptr );
-
-		char* pErrorMessage = nullptr;
-		if ( sqlite3_exec( m_pDatabase, sql.cStr(), nullptr, nullptr, &pErrorMessage ) != SQLITE_OK )
-		{
-			m_lastError = pErrorMessage;
-			return false;
-		}
-
-		return true;
+		return sqlite3_exec( m_pDatabase, pSql, nullptr, nullptr, (char**)&m_pLastError ) != SQLITE_OK;
 	}
 
 	uint SqliteDatabase::getLastInsertId() const
@@ -57,21 +50,20 @@ namespace tiki
 	SqliteQuery::SqliteQuery()
 	{
 		m_pQuery = nullptr;
+		m_pLastError = nullptr;
 	}
 
 	SqliteQuery::~SqliteQuery()
 	{
-		TIKI_ASSERT( m_pQuery == nullptr );
+		dispose();
 	}
 
-	bool SqliteQuery::create( const SqliteDatabase& dataBase, const string& sql )
+	bool SqliteQuery::create( const SqliteDatabase& dataBase, const char* pSql )
 	{
 		TIKI_ASSERT( m_pQuery == nullptr );
 
-		const char* pErrorMessage = nullptr;
-		if ( sqlite3_prepare( dataBase.m_pDatabase, sql.cStr(), int( sql.getLength() ), &m_pQuery, &pErrorMessage ) != SQLITE_OK )
+		if ( sqlite3_prepare( dataBase.m_pDatabase, pSql, (int)getStringLength( pSql ), &m_pQuery, &m_pLastError ) != SQLITE_OK )
 		{
-			m_lastError = pErrorMessage;
 			return false;
 		}
 
@@ -80,8 +72,7 @@ namespace tiki
 
 		for (int i = 0u; i < fieldCount; ++i)
 		{
-			const string fieldName = sqlite3_column_name( m_pQuery, i );
-			m_colunmNames[ i ] = fieldName;
+			m_colunmNames[ i ] = sqlite3_column_name( m_pQuery, i );
 		}
 
 		return true;
@@ -110,29 +101,29 @@ namespace tiki
 		return sqlite3_column_int( m_pQuery, (int)fieldIndex );
 	}
 
-	int SqliteQuery::getIntegerField( const string& fieldName ) const
+	int SqliteQuery::getIntegerField( const char* pFieldName ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
-		return sqlite3_column_int( m_pQuery, findColunmIndexByName( fieldName ) );
+		return sqlite3_column_int( m_pQuery, findColunmIndexByName( pFieldName ) );
 	}
 
-	string SqliteQuery::getTextField( uint fieldIndex ) const
+	const char* SqliteQuery::getTextField( uint fieldIndex ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
 		return (const char*)sqlite3_column_text( m_pQuery, (int)fieldIndex );
 	}
 
-	string SqliteQuery::getTextField( const string& fieldName ) const
+	const char* SqliteQuery::getTextField( const char* pFieldName ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
-		return (const char*)sqlite3_column_text( m_pQuery, findColunmIndexByName( fieldName ) );
+		return (const char*)sqlite3_column_text( m_pQuery, findColunmIndexByName( pFieldName ) );
 	}
 
-	int SqliteQuery::findColunmIndexByName( const string& fieldName ) const
+	int SqliteQuery::findColunmIndexByName( const char* pFieldName ) const
 	{
 		for (uint i = 0u; i < m_colunmNames.getCount(); ++i)
 		{
-			if ( m_colunmNames[ i ] == fieldName )
+			if( isStringEquals( m_colunmNames[ i ], pFieldName ) )
 			{
 				return int( i );
 			}
@@ -141,5 +132,4 @@ namespace tiki
 		TIKI_ASSERT( false );
 		return -1;
 	}
-
 }

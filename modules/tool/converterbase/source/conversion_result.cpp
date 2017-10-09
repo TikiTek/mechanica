@@ -1,5 +1,8 @@
 #include "tiki/converterbase/conversion_result.hpp"
 
+#include "tiki/io/path.hpp"
+#include "tiki/io/file.hpp"
+
 namespace tiki
 {
 	const List< ConversionResult::TraceInfo >& ConversionResult::getTraceInfos() const
@@ -7,7 +10,7 @@ namespace tiki
 		return m_traceInfos;
 	}
 
-	const List< string >& ConversionResult::getOutputFiles() const
+	const List< Path >& ConversionResult::getOutputFiles() const
 	{
 		return m_outputFiles;
 	}
@@ -17,26 +20,23 @@ namespace tiki
 		return m_dependencies;
 	}
 
-	void ConversionResult::addTraceInfo( TraceLevel level, const string& message )
+	void ConversionResult::addInputFile( const Path& filePath )
 	{
-		TraceInfo& traceInfo = m_traceInfos.add();
-		traceInfo.level		= level;
-		traceInfo.message	= message;
+		addDependency( DependencyType_InputFile, filePath.getCompletePath(), nullptr );
 	}
 
-	void ConversionResult::addOutputFile( const string& fileName )
+	void ConversionResult::addOutputFile( const Path& filePath )
 	{
 		for( uint i = 0u; i < m_outputFiles.getCount(); ++i )
 		{
-			if( m_outputFiles[ i ] == fileName )
+			if( isStringEquals( m_outputFiles[ i ].getCompletePath(), filePath.getCompletePath() ) )
 			{
 				return;
 			}
 		}
 
-		m_outputFiles.add( fileName );
-
-		addDependency( DependencyType_OutputFile, fileName, nullptr );
+		m_outputFiles.add( filePath );
+		addDependency( DependencyType_OutputFile, filePath.getCompletePath(), nullptr );
 	}
 
 	void ConversionResult::addDependency( DependencyType type, string identifier, string value )
@@ -67,5 +67,12 @@ namespace tiki
 		}
 
 		pDependency->value = value;
+	}
+
+	void ConversionResult::addTraceInfo( TraceLevel level, const string& message )
+	{
+		TraceInfo& traceInfo = m_traceInfos.add();
+		traceInfo.level		= level;
+		traceInfo.message	= message;
 	}
 }

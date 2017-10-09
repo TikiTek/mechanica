@@ -3,7 +3,7 @@
 #define TIKI_TEXTUREWRITER_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/texturedescription.hpp"
 
 namespace tiki

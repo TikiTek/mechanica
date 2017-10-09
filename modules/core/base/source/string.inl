@@ -14,7 +14,7 @@ namespace tiki
 			return 0u;
 		}
 
-		uint length = (uint)-1;		
+		uint length = (uint)-1;
 		while ( pSource[ ++length ] != '\0' );
 
 		return length;
@@ -41,7 +41,7 @@ namespace tiki
 	TIKI_FORCE_INLINE uint copyString( char* pTargetBuffer, uint bufferSize, const char* pSourceBuffer )
 	{
 		TIKI_ASSERT( pTargetBuffer != nullptr );
-		
+
 		uint length = 0u;
 		if ( pSourceBuffer != nullptr )
 		{
@@ -91,7 +91,7 @@ namespace tiki
 	{
 		return pString == nullptr || pString[ 0u ] == '\0';
 	}
-	
+
 	TIKI_FORCE_INLINE bool isStringEquals( const char* pString1, const char* pString2 )
 	{
 		if ( pString1 == pString2 )
