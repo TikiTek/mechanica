@@ -11,7 +11,7 @@ namespace tiki
 		string	checkSlashes( const string& path );
 
 		string	getFilename( const string& fullPath );
-		string	getFilenameWithoutExtension( const string& fullPath );		
+		string	getFilenameWithoutExtension( const string& fullPath );
 		string	getExtension( const string& fullPath );
 		string	getDirectoryName( const string& fullPath );
 

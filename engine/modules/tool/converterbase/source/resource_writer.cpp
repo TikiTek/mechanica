@@ -1,5 +1,5 @@
 
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 
 #include "tiki/base/bits.hpp"
 #include "tiki/base/crc32.hpp"
@@ -10,14 +10,13 @@ namespace tiki
 {
 	ResourceWriter::~ResourceWriter()
 	{
-		TIKI_ASSERT( m_fileName.isEmpty() );
+		TIKI_ASSERT( m_filePath.isEmpty() );
 		TIKI_ASSERT( m_resources.isEmpty() );
 	}
 
-	void ResourceWriter::create( const string& fileName )
+	void ResourceWriter::create( const Path& filePath )
 	{
-		m_fileName	= fileName;
-
+		m_filePath			= filePath;
 		m_pCurrentResource	= nullptr;
 		m_pCurrentSection	= nullptr;
 	}
@@ -51,7 +50,7 @@ namespace tiki
 
 			header.stringOffsetInResource	= 0u;
 			header.stringSizeInBytes		= 0u;
-		} 
+		}
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		for (uint resourceIndex = 0u; resourceIndex < m_resources.getCount(); ++resourceIndex)
@@ -71,9 +70,9 @@ namespace tiki
 				sectionHeader.referenceCount			= uint16( sectionData.references.getCount() );
 				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getLength() );
 				sectionHeader.offsetInResource			= 0u;
-			} 
+			}
 			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
-			
+
 			List< StringItem > stringItems;
 			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
 			{
@@ -133,7 +132,7 @@ namespace tiki
 
 				const string& text = resource.strings[ stringIndex ].text;
 				stream.write( text.cStr(), text.getLength() + 1u );
-			} 
+			}
 
 			stream.setPosition( header.offsetInFile );
 			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
@@ -158,7 +157,7 @@ namespace tiki
 		stream.dispose();
 
 		m_resources.dispose();
-		m_fileName	= "";
+		m_fileName.clear();
 	}
 
 	void ResourceWriter::openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
@@ -199,7 +198,7 @@ namespace tiki
 		section.allocatorId		= allocatorId;
 		section.allocatorType	= allocatorType;
 
-		m_pCurrentSection = &section;		
+		m_pCurrentSection = &section;
 	}
 
 	void ResourceWriter::closeDataSection()
@@ -276,7 +275,7 @@ namespace tiki
 			m_pCurrentSection->binaryData.write( &null, 1u );
 		}
 	}
-	
+
 	void ResourceWriter::writeReference( const ReferenceKey* pKey )
 	{
 		TIKI_ASSERT( m_pCurrentSection != nullptr );

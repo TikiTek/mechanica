@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_STRAM_HPP_INCLUDED__
-#define __TIKI_STRAM_HPP_INCLUDED__
+#ifndef TIKI_STRAM_HPP_INCLUDED
+#define TIKI_STRAM_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -26,7 +26,7 @@ namespace tiki
 
 		virtual FileSize	read( void* pTargetData, FileSize bytesToRead ) const TIKI_PURE;
 		virtual FileSize	write( const void* pSourceData, FileSize bytesToWrite ) TIKI_PURE;
-		
+
 		virtual FileSize	getPosition() const TIKI_PURE;
 		virtual void		setPosition( FileSize position ) TIKI_PURE;
 		virtual FileSize	seekPosition( FileOffset offset, DataStreamSeek method = DataStreamSeek_Current ) TIKI_PURE;
@@ -37,4 +37,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_STRAM_HPP_INCLUDED__
+#endif

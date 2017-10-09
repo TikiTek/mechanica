@@ -1,90 +1,62 @@
 #pragma once
-#ifndef TIKI_RESOURCEWRITER_HPP
-#define TIKI_RESOURCEWRITER_HPP
+#ifndef TIKI_RESOURCE_WRITER_HPP_INCLUDED
+#define TIKI_RESOURCE_WRITER_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
-#include "tiki/base/platform.hpp"
-#include "tiki/base/types.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/container/list.hpp"
-#include "tiki/io/memorystream.hpp"
 #include "tiki/resource/resourcedefinition.hpp"
 #include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
 {
 	class ConverterBase;
-
-	struct AllocationInfo
-	{
-		uint8	allocatorId;
-	};
+	class ResourceSectionWriter;
 
 	struct ReferenceKey
 	{
 		ReferenceType	type;
-
 		uint			identifier;
 		uint			offsetInTargetSection;
 	};
 
 	class ResourceWriter
 	{
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ResourceWriter );
 		friend class ConverterBase;
 
 	public:
 
-		~ResourceWriter();
+						ResourceWriter();
+						~ResourceWriter();
 
 		void			openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion );
 		void			closeResource();
 
-		void			openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-		void			closeDataSection();
+		bool			openDataSection( ResourceSectionWriter& sectionWriter, SectionType allocatorType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void			closeDataSection( ResourceSectionWriter& sectionWriter );
 
 		ReferenceKey	addString( StringType type, const string& text );
 		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
 		ReferenceKey	addDataPoint();
-
-		void			writeAlignment( uint alignment );
-		void			writeData( const void* pData, uint length );
-		void			writeReference( const ReferenceKey* pKey );
-
-		void			writeUInt8( uint8 value );
-		void			writeUInt16( uint16 value );
-		void			writeUInt32( uint32 value );
-		void			writeUInt64( uint64 value );
-
-		void			writeSInt8( sint8 value );
-		void			writeSInt16( sint16 value );
-		void			writeSInt32( sint32 value );
-		void			writeSInt64( sint64 value );
-
-		void			writeFloat( float value );
-		void			writeDouble( double value );
-
-		uint			getSizeOfCurrentSection() const;
 
 	private:
 
 		struct ReferenceData
 		{
 			ReferenceKey	key;
-			
 			uint32			position;
 		};
 
 		struct SectionData
 		{
-			uint					id;
-
 			uint					alignment;
-			AllocatorType			allocatorType;
-			uint8					allocatorId;
+			SectionType				type;
 
-			MemoryStream			binaryData;
+			List< uint8 >			binaryData;
 			List< ReferenceData >	references;
 		};
-		
+
 		struct StringData
 		{
 			StringType	type;
@@ -112,7 +84,7 @@ namespace tiki
 			List< ResourceLinkData >	links;
 		};
 
-		string					m_fileName;
+		Path					m_filePath;
 		PlatformType			m_platform;
 
 		ResourceData*			m_pCurrentResource;
@@ -121,11 +93,11 @@ namespace tiki
 
 		List< ResourceData >	m_resources;
 
-		void					create( const string& fileName );
+		void					create( const Path& filePath );
 		void					dispose();
 
 	};
 }
 
 
-#endif // TIKI_RESOURCEWRITER_HPP
+#endif // TIKI_RESOURCE_WRITER_HPP_INCLUDED

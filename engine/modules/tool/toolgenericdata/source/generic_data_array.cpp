@@ -8,7 +8,7 @@
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
-#	include "tiki/converterbase/resourcewriter.hpp"
+#	include "tiki/converterbase/resource_writer.hpp"
 #endif
 
 namespace tiki

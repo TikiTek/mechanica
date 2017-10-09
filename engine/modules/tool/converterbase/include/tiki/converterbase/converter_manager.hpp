@@ -83,19 +83,12 @@ namespace tiki
 
 		typedef List< const ConverterBase* > ConverterList;
 
-		struct FileDescription
-		{
-			Path		filePath;
-			crc32		fileType;
-		};
-		typedef List< FileDescription > FileList;
-
 		struct TemplateDescription
 		{
-			string					fullFileName;
+			Path					filePath;
 			string					name;
 
-			Map< string, string >	arguments;
+			ConversionParameters	parameters;
 		};
 		typedef Map< string, TemplateDescription > TemplateMap;
 
@@ -133,7 +126,7 @@ namespace tiki
 		TemplateMap					m_templates;
 		ConverterList				m_converters;
 
-		List< string >				m_files;
+		List< Path >				m_files;
 		List< string >*				m_pChangedFilesList;
 
 		TaskSystem					m_taskSystem;
@@ -145,8 +138,8 @@ namespace tiki
 		void						addTemplate( const string& fileName );
 
 		bool						prepareTasks();
-		bool						generateTaskFromFiles( const List< FileDescription >& filesToBuild );
-		bool						readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc );
+		bool						fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath );
+		bool						generateTaskFromFiles( const List< ConversionAsset >& assetsToBuild );
 		bool						writeConvertInputs( List< ConversionTask >& tasks );
 		bool						checkDependencies( List< ConversionTask >& tasks );
 

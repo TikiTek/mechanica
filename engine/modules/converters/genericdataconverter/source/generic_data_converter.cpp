@@ -3,7 +3,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/converterbase/converter_manager.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"

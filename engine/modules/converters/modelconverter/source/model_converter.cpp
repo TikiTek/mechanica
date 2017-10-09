@@ -6,7 +6,7 @@
 #include "tiki/base/string_tools.hpp"
 #include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
 
 namespace tiki

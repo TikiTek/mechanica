@@ -5,7 +5,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/converterbase/conversion_asset.hpp"
-#include "tiki/converterbase/resourcewriter.hpp"
+#include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
