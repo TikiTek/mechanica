@@ -4,7 +4,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
-#include "tiki/converterbase/converter_manager.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texturewriter.hpp"
@@ -152,28 +152,25 @@ namespace tiki
 			return false;
 		}
 
+		TextureWriter textureWriter;
+		if( !textureWriter.create( image, writerParameters ) )
+		{
+			return false;
+		}
+
 		ResourceWriter writer;
 		openResourceWriter( writer, result, asset.assetName, "texture" );
-
 		for (const ResourceDefinition& definition : getResourceDefinitions())
 		{
-			writerParameters.targetApi = definition.getGraphicsApi();
-
-			TextureWriter textureWriter;
-			if ( !textureWriter.create( image, writerParameters ) )
-			{
-				continue;
-			}
-
 			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );
 
-			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer );
+			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer, definition.getGraphicsApi() );
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
-			writer.writeReference( &textureDataKey );
-			writer.closeDataSection();
-
+			ResourceSectionWriter sectionWriter;
+			writer.openDataSection( sectionWriter, SectionType_Initializaion );
+			sectionWriter.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
+			sectionWriter.writeReference( &textureDataKey );
+			writer.closeDataSection( sectionWriter );
 			writer.closeResource();
 
 			textureWriter.dispose();

@@ -45,7 +45,9 @@ namespace tiki
 
 		bool							removeField( const string& name );
 
-		bool							writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const;
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+		bool							writeToResource( ReferenceKey* pDataKey, ResourceSectionWriter& sectionWriter ) const;
+#endif
 
 		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_OVERRIDE_FINAL;
 		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;

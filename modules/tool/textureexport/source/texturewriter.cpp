@@ -1,6 +1,7 @@
 #include "tiki/textureexport/texturewriter.hpp"
 
 #include "tiki/base/basetypes.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/texturedescription.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
@@ -33,7 +34,7 @@ namespace tiki
 		m_description.format		= parameters.targetFormat;
 		m_description.type			= parameters.targetType;
 		m_description.flags			= TextureFlags_ShaderInput;
-		
+
 		if( parameters.targetType == TextureType_1d ||
 			parameters.targetType == TextureType_2d )
 		{
@@ -94,14 +95,15 @@ namespace tiki
 		m_pImage = nullptr;
 	}
 
-	ReferenceKey TextureWriter::writeTextureData( ResourceWriter& writer )
+	ReferenceKey TextureWriter::writeTextureData( ResourceWriter& writer, GraphicsApi graphicsApi )
 	{
 		TIKI_ASSERT( m_pImage != nullptr );
 
 		const PixelFormat format = (PixelFormat)m_description.format;
 
-		writer.openDataSection( 0u, AllocatorType_MainMemory );
-		const ReferenceKey dataKey = writer.addDataPoint();
+		ResourceSectionWriter sectionWriter;
+		writer.openDataSection( sectionWriter, SectionType_Main );
+		const ReferenceKey dataKey = sectionWriter.addDataPoint();
 
 		List<uint4> sourceRects;
 		if( m_parameters.targetType == TextureType_1d ||
@@ -144,11 +146,11 @@ namespace tiki
 				Array< uint8 > bitmap;
 				mipImage.convertTo( bitmap, format );
 
-				switch ( m_parameters.targetApi )
+				switch ( graphicsApi )
 				{
 				case GraphicsApi_D3D11:
 				case GraphicsApi_D3D12:
-					writer.writeData( bitmap.getBegin(), bitmap.getCount() );
+					sectionWriter.writeData( bitmap.getBegin(), bitmap.getCount() );
 					break;
 
 				case GraphicsApi_Vulkan:
@@ -159,7 +161,7 @@ namespace tiki
 						for (uint y = height - 1u; y < height; --y)
 						{
 							const uint8* pSourceData = bitmap.getBegin() + (bytesPerLine * y);
-							writer.writeData( pSourceData, bytesPerLine );
+							sectionWriter.writeData( pSourceData, bytesPerLine );
 						}
 					}
 					break;
@@ -168,7 +170,7 @@ namespace tiki
 					TIKI_TRACE_ERROR( "[TextureWriter] Graphics API not supported.\n" );
 					break;
 				}
-				
+
 				bitmap.dispose();
 				mipImage.dispose();
 
@@ -182,8 +184,7 @@ namespace tiki
 			height	= TIKI_MAX( height / 2u, 1u );
 		}
 
-		writer.closeDataSection();
-
+		writer.closeDataSection( sectionWriter );
 		return dataKey;
 	}
 }

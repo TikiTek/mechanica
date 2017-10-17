@@ -1,6 +1,8 @@
 #pragma once
-#ifndef __TIKI_RESOURCEBASE_HPP_INCLUDED__
-#define __TIKI_RESOURCEBASE_HPP_INCLUDED__
+#ifndef TIKI_RESOURCE_BASE_HPP_INCLUDED
+#define TIKI_RESOURCE_BASE_HPP_INCLUDED
+
+#include "tiki/resource/resource_definition.hpp"
 
 namespace tiki
 {
@@ -50,8 +52,10 @@ namespace tiki
 
 	struct FactoryContext
 	{
-		CreateResourceFunction		pCreateResource;
-		DisposeResourceFunction		pDisposeResource;
+		CreateResourceFunction					pCreateResource;
+		DisposeResourceFunction					pDisposeResource;
+
+		FlagMask8< ResourceDefinitionFeature >	resourceDefinitionFeatures;
 	};
 
 	template<class T>
@@ -77,4 +81,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_RESOURCEBASE_HPP_INCLUDED__
+#endif // TIKI_RESOURCE_BASE_HPP_INCLUDED

@@ -13,12 +13,13 @@
 namespace tiki
 {
 	class ResourceWriter;
+	class ResourceSectionWriter;
 	struct ReferenceKey;
 
 	class AnimationBuilder
 	{
 	public:
-				
+
 		bool								create( uint lengthInFrames, uint jointCount, uint framesPerChunk, float constEpsilon );
 		void								dispose();
 
@@ -73,7 +74,7 @@ namespace tiki
 		Array< DecomposedValue >			m_defaultPosePosition;
 		Array< DecomposedValue >			m_defaultPoseScale;
 
-		void								writeChunkData( ResourceWriter& resourceWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< SplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uint dimensions, bool normalizeValue, float factor, float factorTangent );
+		void								writeChunkData( ResourceSectionWriter& sectionWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< SplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uint dimensions, bool normalizeValue, float factor, float factorTangent );
 		void								fillDataArray( List< sint16 >& target, const SplineKey& sourceKey, uint dimensions, float factor, float factorTangent, bool isConstKey );
 		SplineKey							createInterpolatedKey( const SplineKey& leftKey, const SplineKey& rightKey, uint time, uint dimensions, bool normalizeValue );
 

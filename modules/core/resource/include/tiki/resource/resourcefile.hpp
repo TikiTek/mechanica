@@ -2,7 +2,6 @@
 #ifndef __TIKI_RESOURCEFILE_HPP_INCLUDED__
 #define __TIKI_RESOURCEFILE_HPP_INCLUDED__
 
-#include "tiki/base/endianness.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"
 
@@ -26,20 +25,20 @@ namespace tiki
 
 	struct ResourceHeader
 	{
-		fourcc	type;
-		crc32	key;
-		uint32	definition;
+		fourcc				type;
+		crc32				key;
+		ResourceDefinition	definition;
 
-		uint32	offsetInFile;
+		uint32				offsetInFile;
 
-		uint16	version;
+		uint16				version;
 
-		uint16	sectionCount;
-		uint16	stringCount;
-		uint16	linkCount;
+		uint16				sectionCount;
+		uint16				stringCount;
+		uint16				linkCount;
 
-		uint32	stringOffsetInResource;
-		uint32	stringSizeInBytes;
+		uint32				stringOffsetInResource;
+		uint32				stringSizeInBytes;
 	};
 
 	enum SectionType : uint8
@@ -60,7 +59,7 @@ namespace tiki
 		uint32		offsetInResource;
 	};
 
-	enum ReferenceType
+	enum ReferenceType : uint8
 	{
 		ReferenceType_Pointer,
 		ReferenceType_String,
@@ -69,24 +68,17 @@ namespace tiki
 
 	struct ReferenceItem
 	{
-		uint8	type;			// see ReferenceType
+		ReferenceType	type;
 		// 1 byte padding
-		uint16	targetId;
+		uint16			targetId;
 
-		uint32	offsetInSection;
-		uint32	offsetInTargetSection;
-	};
-
-	enum StringType
-	{
-		StringType_Char,
-		StringType_WideChar,
-		StringType_UTF8
+		uint32			offsetInSection;
+		uint32			offsetInTargetSection;
 	};
 
 	struct StringItem
 	{
-		uint32	type_lengthModifier_textLength; // 2 bits - type / 2 bits - lengthModifier / 28 bits - textLength
+		uint32	sizeInBytes;
 		uint32	offsetInBlock;
 	};
 
@@ -210,16 +202,6 @@ namespace tiki
 		} TIKI_ALIGN_POSTFIX( 8 );
 #endif
 	};
-
-	namespace resource
-	{
-		Endianness			getEndianness( const ResourceFileHeader& header );
-
-		StringType			getStringType( const StringItem& item );
-		uint				getStringLengthModifier( const StringItem& item );
-		uint				getStringTextLength( const StringItem& item );
-		uint				getStringLengthInBytes( const StringItem& item );
-	}
 }
 
 #endif // __TIKI_RESOURCEFILE_HPP_INCLUDED__

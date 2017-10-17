@@ -12,7 +12,7 @@ namespace tiki
 
 	enum PlatformType
 	{
-		PlatformType_Invalid = -1,
+		PlatformType_Invalid,
 
 		PlatformType_Windows,
 		PlatformType_UWP,
@@ -29,7 +29,7 @@ namespace tiki
 
 	enum GraphicsApi
 	{
-		GraphicsApi_Invalid = -1,
+		GraphicsApi_Invalid,
 
 		GraphicsApi_D3D11,
 		GraphicsApi_D3D12,
@@ -42,10 +42,21 @@ namespace tiki
 		GraphicsApi_Count,
 	};
 
+	enum SoundApi
+	{
+		SoundApi_Invalid,
+
+		SoundApi_XAudio,
+		SoundApi_SoftMix,
+
+		SoundApi_Count,
+	};
+
 	namespace platform
 	{
 		PlatformType							getHostPlatform();
 		GraphicsApi								getHostGraphicsApi();
+		SoundApi								getHostSoundApi();
 
 		uint									getProcessorCount();
 

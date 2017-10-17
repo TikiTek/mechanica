@@ -9,6 +9,7 @@
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 #	include "tiki/converterbase/resource_writer.hpp"
+#	include "tiki/converterbase/resource_section_writer.hpp"
 #endif
 
 namespace tiki
@@ -95,26 +96,25 @@ namespace tiki
 		return true;
 	}
 
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 	bool GenericDataArray::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
 	{
-#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
-		writer.openDataSection( 0u, AllocatorType_MainMemory );
-		dataKey = writer.addDataPoint();
+		ResourceSectionWriter sectionWriter;
+		writer.openDataSection( sectionWriter, SectionType_Main );
+
+		dataKey = sectionWriter.addDataPoint();
 
 		bool ok = true;
 		for (uint i = 0u; i < m_array.getCount(); ++i)
 		{
 			const GenericDataValue* pValue = m_array[ i ];
-			ok &= writeValueToResource( writer, *pValue );
+			ok &= writeValueToResource( sectionWriter, *pValue );
 		}
 
-		writer.closeDataSection();
-
+		writer.closeDataSection( sectionWriter );
 		return ok;
-#else
-		return false;
-#endif
 	}
+#endif
 
 	bool GenericDataArray::initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const
 	{

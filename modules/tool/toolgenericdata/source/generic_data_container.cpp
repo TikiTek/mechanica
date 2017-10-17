@@ -14,7 +14,7 @@
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 #	include "tiki/converterbase/converterhelper.hpp"
-#	include "tiki/converterbase/resourcewriter.hpp"
+#	include "tiki/converterbase/resource_writer.hpp"
 #endif
 
 namespace tiki
@@ -89,12 +89,12 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataContainer::writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const
-	{
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+	bool GenericDataContainer::writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataValue& value ) const
+	{
 		const GenericDataType* pType = value.getType();
 
-		writer.writeAlignment( pType->getAlignment() );
+		sectionWriter.writeAlignment( pType->getAlignment() );
 
 		switch ( value.getValueType() )
 		{
@@ -103,7 +103,7 @@ namespace tiki
 				bool b;
 				if ( value.getBoolean( b ) )
 				{
-					writer.writeUInt8( b );
+					sectionWriter.writeUInt8( b );
 					return true;
 				}
 			}
@@ -124,7 +124,7 @@ namespace tiki
 							sint8 s8;
 							if ( rangeCheckCast( s8, s ) )
 							{
-								writer.writeSInt8( s8 );
+								sectionWriter.writeSInt8( s8 );
 								return true;
 							}
 						}
@@ -135,7 +135,7 @@ namespace tiki
 							sint16 s16;
 							if ( rangeCheckCast( s16, s ) )
 							{
-								writer.writeSInt16( s16 );
+								sectionWriter.writeSInt16( s16 );
 								return true;
 							}
 						}
@@ -146,7 +146,7 @@ namespace tiki
 							sint32 s32;
 							if ( rangeCheckCast( s32, s ) )
 							{
-								writer.writeSInt32( s32 );
+								sectionWriter.writeSInt32( s32 );
 								return true;
 							}
 						}
@@ -157,7 +157,7 @@ namespace tiki
 							sint64 s64;
 							if ( rangeCheckCast( s64, s ) )
 							{
-								writer.writeSInt64( s64 );
+								sectionWriter.writeSInt64( s64 );
 								return true;
 							}
 						}
@@ -185,7 +185,7 @@ namespace tiki
 							uint8 u8;
 							if ( rangeCheckCast( u8, u ) )
 							{
-								writer.writeUInt8( u8 );
+								sectionWriter.writeUInt8( u8 );
 								return true;
 							}
 						}
@@ -196,7 +196,7 @@ namespace tiki
 							uint16 u16;
 							if ( rangeCheckCast( u16, u ) )
 							{
-								writer.writeUInt16( u16 );
+								sectionWriter.writeUInt16( u16 );
 								return true;
 							}
 						}
@@ -207,7 +207,7 @@ namespace tiki
 							uint32 u32;
 							if ( rangeCheckCast( u32, u ) )
 							{
-								writer.writeUInt32( u32 );
+								sectionWriter.writeUInt32( u32 );
 								return true;
 							}
 						}
@@ -218,7 +218,7 @@ namespace tiki
 							uint64 u64;
 							if ( rangeCheckCast( u64, u ) )
 							{
-								writer.writeUInt64( u64 );
+								sectionWriter.writeUInt64( u64 );
 								return true;
 							}
 						}
@@ -245,7 +245,7 @@ namespace tiki
 							float16 f16;
 							if ( rangeCheckCast( f16, f ) )
 							{
-								writer.writeUInt16( f16 );
+								sectionWriter.writeUInt16( f16 );
 								return true;
 							}
 						}
@@ -256,7 +256,7 @@ namespace tiki
 							float32 f32;
 							if ( rangeCheckCast( f32, f ) )
 							{
-								writer.writeFloat( f32 );
+								sectionWriter.writeFloat( f32 );
 								return true;
 							}
 						}
@@ -267,7 +267,7 @@ namespace tiki
 							float64 f64;
 							if ( rangeCheckCast( f64, f ) )
 							{
-								writer.writeDouble( f64 );
+								sectionWriter.writeDouble( f64 );
 								return true;
 							}
 						}
@@ -282,11 +282,11 @@ namespace tiki
 
 		case GenericDataValueType_String:
 			{
-				string t;
-				if ( value.getString( t ) )
+				string text;
+				if ( value.getString( text ) )
 				{
-					ReferenceKey key = writer.addString( StringType_UTF8, t );
-					writer.writeReference( &key );
+					ReferenceKey key = sectionWriter.addString( text );
+					sectionWriter.writeReference( &key );
 					return true;
 				}
 
@@ -308,7 +308,7 @@ namespace tiki
 						pObject = pStructType->getDefaultObject();
 					}
 
-					if ( pObject != nullptr && pObject->writeToResource( nullptr, writer ) )
+					if ( pObject != nullptr && pObject->writeToResource( nullptr, sectionWriter ) )
 					{
 						return true;
 					}
@@ -326,16 +326,16 @@ namespace tiki
 				if ( value.getArray( pArray ) )
 				{
 					ReferenceKey key;
-					if ( pArray != nullptr && pArray->writeToResource( key, writer ) )
+					if ( pArray != nullptr && pArray->writeToResource( key, sectionWriter.getResourceWriter() ) )
 					{
-						writer.writeReference( &key );
-						writer.writeUInt64( pArray->getCount() );
+						sectionWriter.writeReference( &key );
+						sectionWriter.writeUInt64( pArray->getCount() );
 						return true;
 					}
 					else
 					{
-						writer.writeReference( nullptr );
-						writer.writeUInt64( 0u );
+						sectionWriter.writeReference( nullptr );
+						sectionWriter.writeUInt64( 0u );
 
 						if ( pArray == nullptr )
 						{
@@ -363,14 +363,14 @@ namespace tiki
 					{
 						if ( writeValue.setSignedValue( enumValue, pValueType ) )
 						{
-							return writeValueToResource( writer, writeValue );
+							return writeValueToResource( sectionWriter, writeValue );
 						}
 					}
 					else if ( pValueType->isUnsignedInteger() )
 					{
 						if ( writeValue.setUnsignedValue( (uint64)enumValue, pValueType ) )
 						{
-							return writeValueToResource( writer, writeValue );
+							return writeValueToResource( sectionWriter, writeValue );
 						}
 					}
 				}
@@ -384,14 +384,14 @@ namespace tiki
 				{
 					if( refText.isEmpty() )
 					{
-						writer.writeReference( nullptr );
+						sectionWriter.writeReference( nullptr );
 						return true;
 					}
 
 					ReferenceKey key;
-					if ( readResourceReference( writer, refText, key ) )
+					if ( readResourceReference( sectionWriter, refText, key ) )
 					{
-						writer.writeReference( &key );
+						sectionWriter.writeReference( &key );
 						return true;
 					}
 				}
@@ -415,16 +415,16 @@ namespace tiki
 				bool ok = false;
 				if( pObject != nullptr )
 				{
-					ok = pObject->writeToResource( &dataKey, writer );
+					ok = pObject->writeToResource( &dataKey, sectionWriter );
 				}
 
-				writer.writeReference( ok ? &dataKey : nullptr );
+				sectionWriter.writeReference( ok ? &dataKey : nullptr );
 				return ok;
 			}
 			break;
 		}
-#endif
 
 		return false;
 	}
+#endif
 }

@@ -5,7 +5,7 @@
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/container/list.hpp"
-#include "tiki/resource/resourcedefinition.hpp"
+#include "tiki/resource/resource_definition.hpp"
 #include "tiki/resource/resourcefile.hpp"
 
 namespace tiki
@@ -22,7 +22,7 @@ namespace tiki
 
 	class ResourceWriter
 	{
-		TIKI_NONCOPYABLE_WITHCTOR_CLASS( ResourceWriter );
+		TIKI_NONCOPYABLE_CLASS( ResourceWriter );
 		friend class ConverterBase;
 
 	public:
@@ -33,12 +33,11 @@ namespace tiki
 		void			openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion );
 		void			closeResource();
 
-		bool			openDataSection( ResourceSectionWriter& sectionWriter, SectionType allocatorType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void			openDataSection( ResourceSectionWriter& sectionWriter, SectionType sectionType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
 		void			closeDataSection( ResourceSectionWriter& sectionWriter );
 
-		ReferenceKey	addString( StringType type, const string& text );
+		ReferenceKey	addString( const string& text );
 		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
-		ReferenceKey	addDataPoint();
 
 	private:
 
@@ -59,9 +58,7 @@ namespace tiki
 
 		struct StringData
 		{
-			StringType	type;
-			string		text;
-			uint		sizeInBytes;
+			string	text;
 		};
 
 		struct ResourceLinkData
@@ -87,15 +84,13 @@ namespace tiki
 		Path					m_filePath;
 		PlatformType			m_platform;
 
-		ResourceData*			m_pCurrentResource;
-		SectionData*			m_pCurrentSection;
-		List< uint >			m_sectionStack;
-
 		List< ResourceData >	m_resources;
+		ResourceData*			m_pCurrentResource;
 
 		void					create( const Path& filePath );
 		void					dispose();
 
+		bool					writeToFile();
 	};
 }
 

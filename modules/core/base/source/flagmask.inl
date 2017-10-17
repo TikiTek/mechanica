@@ -7,6 +7,12 @@
 namespace tiki
 {
 	template< class TEnum, class TStorage >
+	FlagMask<TEnum, TStorage>::FlagMask()
+	{
+		m_value = 0;
+	}
+
+	template< class TEnum, class TStorage >
 	FlagMask<TEnum, TStorage>::FlagMask( TEnum value )
 	{
 		setFlag( value );

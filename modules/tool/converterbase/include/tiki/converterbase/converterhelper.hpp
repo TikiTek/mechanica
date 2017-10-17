@@ -10,7 +10,7 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE bool readResourceReference( ResourceWriter& writer, const string& text, ReferenceKey& targetKey )
+	TIKI_FORCE_INLINE bool readResourceReference( ResourceSectionWriter& sectionWriter, const string& text, ReferenceKey& targetKey )
 	{
 		if ( text.isEmpty() == false && text.countSubstring( ":" ) >= 1u )
 		{
@@ -33,7 +33,7 @@ namespace tiki
 
 			components.dispose();
 
-			targetKey = writer.addResourceLink( fileName, resourceKey, resourceType );
+			targetKey = sectionWriter.addResourceLink( fileName, resourceKey, resourceType );
 			return true;
 		}
 		else
@@ -42,16 +42,16 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE void writeResourceReference( ResourceWriter& writer, const string& text )
+	TIKI_FORCE_INLINE void writeResourceReference( ResourceSectionWriter& sectionWriter, const string& text )
 	{
 		ReferenceKey key;
-		if ( readResourceReference( writer, text, key ) )
+		if ( readResourceReference( sectionWriter, text, key ) )
 		{
-			writer.writeReference( &key );
+			sectionWriter.writeReference( &key );
 		}
 		else
 		{
-			writer.writeReference( nullptr );
+			sectionWriter.writeReference( nullptr );
 		}
 	}
 }

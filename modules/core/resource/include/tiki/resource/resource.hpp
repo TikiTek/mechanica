@@ -6,7 +6,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/resource/resourcebase.hpp"
+#include "tiki/resource/resource_base.hpp"
 
 #define TIKI_DEFINE_RESOURCE( class_name, cc )											\
 	public:																				\

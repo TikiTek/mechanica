@@ -24,9 +24,7 @@ namespace tiki
 
 		TextureFlags_RenderTarget	= 1u << 0u,
 		TextureFlags_ShaderInput	= 1u << 1u,
-		TextureFlags_DepthStencil	= 1u << 2u,
-
-		TextureFlags_Count
+		TextureFlags_DepthStencil	= 1u << 2u
 	};
 	TIKI_FLAGS_ENUM( TextureFlags );
 

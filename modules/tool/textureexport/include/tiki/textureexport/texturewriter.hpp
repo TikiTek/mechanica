@@ -35,15 +35,13 @@ namespace tiki
 		{
 			targetType		= TextureType_Invalid;
 			targetFormat	= PixelFormat_Invalid;
-			targetApi		= GraphicsApi_Invalid;
 
 			mipMapCount		= 0u;
 		}
 
 		TextureType	targetType;
 		PixelFormat	targetFormat;
-		GraphicsApi	targetApi;
-		
+
 		uint		mipMapCount;
 
 		union
@@ -69,13 +67,13 @@ namespace tiki
 
 		const TextureDescription&	getDescription() const { return m_description; }
 
-		ReferenceKey				writeTextureData( ResourceWriter& writer );
+		ReferenceKey				writeTextureData( ResourceWriter& writer, GraphicsApi graphicsApi );
 
 	private:
 
 		TextureWriterParameters	m_parameters;
 		TextureDescription		m_description;
-		
+
 		const HdrImage*			m_pImage;
 
 	};
