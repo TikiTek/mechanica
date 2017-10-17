@@ -5,7 +5,7 @@
 #include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/base/zoneallocator.hpp"
-#include "tiki/resource/resourcedefinition.hpp"
+#include "tiki/resource/resource_definition.hpp"
 
 namespace tiki
 {

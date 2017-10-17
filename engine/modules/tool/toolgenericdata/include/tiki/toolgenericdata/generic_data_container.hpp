@@ -6,14 +6,12 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 
-struct _XmlElement;
-
 namespace tiki
 {
 	class GenericDataType;
 	class GenericDataTypeCollection;
 	class GenericDataValue;
-	class ResourceWriter;
+	class ResourceSectionWriter;
 	class XmlElement;
 
 	class GenericDataContainer
@@ -44,7 +42,9 @@ namespace tiki
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_PURE;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_PURE;
 
-		bool							writeValueToResource( ResourceWriter& writer, const GenericDataValue& value ) const;
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+		bool							writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataValue& value ) const;
+#endif
 	};
 }
 

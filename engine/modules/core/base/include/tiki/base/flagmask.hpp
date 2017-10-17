@@ -9,6 +9,7 @@ namespace tiki
 	{
 	public:
 
+					FlagMask();
 		explicit	FlagMask( TEnum value );
 
 		bool		isAnyFlagSet() const;

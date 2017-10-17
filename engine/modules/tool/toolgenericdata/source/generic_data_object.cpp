@@ -6,7 +6,7 @@
 #include "tiki/toolgenericdata/generic_data_value.hpp"
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
-#	include "tiki/converterbase/resourcewriter.hpp"
+#	include "tiki/converterbase/resource_writer.hpp"
 #endif
 
 namespace tiki
@@ -138,13 +138,17 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataObject::writeToResource( ReferenceKey* pDataKey, ResourceWriter& writer ) const
-	{
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+	bool GenericDataObject::writeToResource( ReferenceKey* pDataKey, ResourceSectionWriter& sectionWriter ) const
+	{
+		ResourceSectionWriter internalSectionWriter;
+		ResourceSectionWriter* pSectionWriter = &sectionWriter;
 		if ( pDataKey != nullptr )
 		{
-			writer.openDataSection( 0u, AllocatorType_MainMemory, getType()->getAlignment() );
-			*pDataKey = writer.addDataPoint();
+			sectionWriter.getResourceWriter().openDataSection( internalSectionWriter, SectionType_Main, getType()->getAlignment() );
+			pSectionWriter = &internalSectionWriter;
+
+			*pDataKey = pSectionWriter->addDataPoint();
 		}
 
 		bool ok = true;
@@ -172,7 +176,7 @@ namespace tiki
 			if ( pValue != nullptr )
 			{
 				TIKI_ASSERT( pValue->getType() == structField.pType );
-				if ( !writeValueToResource( writer, *pValue ) )
+				if ( !writeValueToResource( *pSectionWriter, *pValue ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", structField.name.cStr() );
 					ok = false;
@@ -186,14 +190,12 @@ namespace tiki
 
 		if ( pDataKey != nullptr )
 		{
-			writer.closeDataSection();
+			sectionWriter.getResourceWriter().closeDataSection( internalSectionWriter );
 		}
 
 		return ok;
-#else
-		return false;
-#endif
 	}
+#endif
 
 	bool GenericDataObject::initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const
 	{

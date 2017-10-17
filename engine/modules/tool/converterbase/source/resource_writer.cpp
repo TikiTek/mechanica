@@ -1,4 +1,3 @@
-
 #include "tiki/converterbase/resource_writer.hpp"
 
 #include "tiki/base/bits.hpp"
@@ -10,6 +9,11 @@ namespace tiki
 {
 	ResourceWriter::~ResourceWriter()
 	{
+		m_pCurrentResource = nullptr;
+	}
+
+	ResourceWriter::~ResourceWriter()
+	{
 		TIKI_ASSERT( m_filePath.isEmpty() );
 		TIKI_ASSERT( m_resources.isEmpty() );
 	}
@@ -18,10 +22,15 @@ namespace tiki
 	{
 		m_filePath			= filePath;
 		m_pCurrentResource	= nullptr;
-		m_pCurrentSection	= nullptr;
 	}
 
 	void ResourceWriter::dispose()
+	{
+		m_resources.dispose();
+		m_fileName.clear();
+	}
+
+	bool ResourceWriter::writeToFile()
 	{
 		ResourceFileHeader fileHeader;
 		fileHeader.tikiFourcc		= TIKI_FOURCC( 'T', 'I', 'K', 'I' );
@@ -32,7 +41,7 @@ namespace tiki
 		stream.write( &fileHeader, sizeof( ResourceFileHeader ) );
 
 		List< ResourceHeader > resourceHeaders;
-		for (uint i = 0u; i < m_resources.getCount(); ++i)
+		for( uint i = 0u; i < m_resources.getCount(); ++i )
 		{
 			const ResourceData& resource = m_resources[ i ];
 
@@ -53,20 +62,19 @@ namespace tiki
 		}
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
-		for (uint resourceIndex = 0u; resourceIndex < m_resources.getCount(); ++resourceIndex)
+		for( uint resourceIndex = 0u; resourceIndex < m_resources.getCount(); ++resourceIndex )
 		{
 			const ResourceData& resource	= m_resources[ resourceIndex ];
 			ResourceHeader& header			= resourceHeaders[ resourceIndex ];
 			header.offsetInFile				= uint32( stream.getPosition() );
 
 			List< SectionHeader > sectionHeaders;
-			for (uint j = 0u; j < resource.sections.getCount(); ++j)
+			for( uint j = 0u; j < resource.sections.getCount(); ++j )
 			{
 				const SectionData& sectionData = resource.sections[ j ];
 
 				SectionHeader& sectionHeader = sectionHeaders.add();
 				sectionHeader.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
-				sectionHeader.allocatorType_allocatorId	= uint8( ( sectionData.allocatorType << 6u ) | sectionData.allocatorId );
 				sectionHeader.referenceCount			= uint16( sectionData.references.getCount() );
 				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getLength() );
 				sectionHeader.offsetInResource			= 0u;
@@ -74,7 +82,7 @@ namespace tiki
 			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
 
 			List< StringItem > stringItems;
-			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
+			for( uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex )
 			{
 				const StringData& stringData = resource.strings[ stringIndex ];
 
@@ -90,7 +98,7 @@ namespace tiki
 			}
 			stream.write( stringItems.getBegin(), sizeof( StringItem ) * stringItems.getCount() );
 
-			for (uint linkIndex = 0u; linkIndex < resource.links.getCount(); ++linkIndex)
+			for( uint linkIndex = 0u; linkIndex < resource.links.getCount(); ++linkIndex )
 			{
 				const ResourceLinkData& linkData = resource.links[ linkIndex ];
 
@@ -102,7 +110,7 @@ namespace tiki
 				stream.write( &item, sizeof( item ) );
 			}
 
-			for (uint sectionIndex = 0u; sectionIndex < resource.sections.getCount(); ++sectionIndex)
+			for( uint sectionIndex = 0u; sectionIndex < resource.sections.getCount(); ++sectionIndex )
 			{
 				const SectionData& sectionData = resource.sections[ sectionIndex ];
 
@@ -111,7 +119,7 @@ namespace tiki
 				sectionHeaders[ sectionIndex ].offsetInResource = uint32( stream.getPosition() - header.offsetInFile );
 				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
 
-				for (uint k = 0u; k < sectionData.references.getCount(); ++k)
+				for( uint k = 0u; k < sectionData.references.getCount(); ++k )
 				{
 					const ReferenceData& referenceData = sectionData.references[ k ];
 
@@ -126,7 +134,7 @@ namespace tiki
 			}
 
 			header.stringOffsetInResource = uint32( stream.getPosition() - header.offsetInFile );
-			for (uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex)
+			for( uint stringIndex = 0u; stringIndex < resource.strings.getCount(); ++stringIndex )
 			{
 				stringItems[ stringIndex ].offsetInBlock = uint32( stream.getPosition() - header.offsetInFile - header.stringOffsetInResource );
 
@@ -144,7 +152,7 @@ namespace tiki
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		FileStream fileStream;
-		if (fileStream.create( m_fileName.cStr(), DataAccessMode_Write ))
+		if( fileStream.create( m_fileName.cStr(), DataAccessMode_Write ) )
 		{
 			fileStream.write( stream.getData(), stream.getLength() );
 			fileStream.dispose();
@@ -155,15 +163,11 @@ namespace tiki
 		}
 
 		stream.dispose();
-
-		m_resources.dispose();
-		m_fileName.clear();
 	}
 
 	void ResourceWriter::openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
 	{
 		TIKI_ASSERT( m_pCurrentResource == nullptr );
-		TIKI_ASSERT( m_pCurrentSection == nullptr );
 
 		ResourceData& resource = m_resources.add();
 		resource.name		= name;
@@ -177,31 +181,23 @@ namespace tiki
 	void ResourceWriter::closeResource()
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
-		TIKI_ASSERT( m_pCurrentSection == nullptr );
 		m_pCurrentResource = nullptr;
 	}
 
-	void ResourceWriter::openDataSection( uint8 allocatorId, AllocatorType allocatorType, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
+	void ResourceWriter::openDataSection( ResourceSectionWriter& sectionWriter, SectionType sectionType, uint alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		TIKI_ASSERT( m_pCurrentResource != nullptr );
 		TIKI_ASSERT( isPowerOfTwo( alignment ) );
-
-		if ( m_pCurrentSection != nullptr )
-		{
-			m_sectionStack.add( m_pCurrentSection->id );
-		}
 
 		const uint id = m_pCurrentResource->sections.getCount();
 		SectionData& section = m_pCurrentResource->sections.add();
 		section.id				= id;
+		section.type			= sectionType;
 		section.alignment		= alignment;
-		section.allocatorId		= allocatorId;
-		section.allocatorType	= allocatorType;
 
-		m_pCurrentSection = &section;
+		sectionWriter.create();
 	}
 
-	void ResourceWriter::closeDataSection()
+	void ResourceWriter::closeDataSection( ResourceSectionWriter& sectionWriter )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 		TIKI_ASSERT( m_pCurrentSection != nullptr );
@@ -219,7 +215,7 @@ namespace tiki
 		}
 	}
 
-	ReferenceKey ResourceWriter::addString( StringType type, const string& text )
+	ReferenceKey ResourceWriter::addString( const string& text )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 
@@ -228,9 +224,7 @@ namespace tiki
 		key.identifier	= m_pCurrentResource->strings.getCount();
 
 		StringData& data = m_pCurrentResource->strings.add();
-		data.type			= StringType_Char;
-		data.text			= text;
-		data.sizeInBytes	= text.getLength();
+		data.text = text;
 
 		return key;
 	}
@@ -252,18 +246,18 @@ namespace tiki
 		return key;
 	}
 
-	ReferenceKey ResourceWriter::addDataPoint()
-	{
-		TIKI_ASSERT( m_pCurrentResource != nullptr );
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
+	//ReferenceKey ResourceWriter::addDataPoint()
+	//{
+	//	TIKI_ASSERT( m_pCurrentResource != nullptr );
+	//	TIKI_ASSERT( m_pCurrentSection != nullptr );
 
-		ReferenceKey key;
-		key.type					= ReferenceType_Pointer;
-		key.identifier				= m_pCurrentSection->id;
-		key.offsetInTargetSection	= (uint)m_pCurrentSection->binaryData.getLength();
+	//	ReferenceKey key;
+	//	key.type					= ReferenceType_Pointer;
+	//	key.identifier				= m_pCurrentSection->id;
+	//	key.offsetInTargetSection	= (uint)m_pCurrentSection->binaryData.getLength();
 
-		return key;
-	}
+	//	return key;
+	//}
 
 	void ResourceWriter::writeAlignment( uint alignment )
 	{

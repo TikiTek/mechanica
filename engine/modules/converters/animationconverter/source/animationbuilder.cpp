@@ -1,9 +1,9 @@
-
 #include "tiki/animationconverter/animationbuilder.hpp"
 
 #include "tiki/animationconverter/spline.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/base/float32.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 
 namespace tiki
@@ -14,7 +14,7 @@ namespace tiki
 	bool AnimationBuilder::create( uint lengthInFrames, uint jointCount, uint framesPerChunk, float constEpsilon )
 	{
 		TIKI_ASSERT( framesPerChunk <= 64 );
-		
+
 		uint16 chunkCount = (uint16)((lengthInFrames + (framesPerChunk - 2u)) / (framesPerChunk - 1u));
 
 		m_jointCount			= jointCount;
@@ -185,16 +185,17 @@ namespace tiki
 
 	void AnimationBuilder::writeToResource( ResourceWriter& resourceWriter, ReferenceKey& targetKey )
 	{
-		resourceWriter.openDataSection( 0u, AllocatorType_MainMemory, 16u );
-		const ReferenceKey animationDataKey = resourceWriter.addDataPoint();
+		ResourceSectionWriter sectionWriter;
+		resourceWriter.openDataSection(  sectionWriter, SectionType_Main, 16u );
+		const ReferenceKey animationDataKey = sectionWriter.addDataPoint();
 
 		for (uint i = 0; i < m_headers.getCount(); ++i)
 		{
 			ChunkHeader& header = m_headers[ i ];
-			header.dataOffset = resourceWriter.getSizeOfCurrentSection();
+			header.dataOffset = sectionWriter.getCurrentSize();
 
 			writeChunkData(
-				resourceWriter,
+				sectionWriter,
 				header.interpolatedRotationJointCount,
 				header.usedRotationJointCount,
 				header.defaultPoseRotationJointCount,
@@ -208,7 +209,7 @@ namespace tiki
 			);
 
 			writeChunkData(
-				resourceWriter,
+				sectionWriter,
 				header.interpolatedPositionJointCount,
 				header.usedPositionJointCount,
 				header.defaultPosePositionJointCount,
@@ -222,7 +223,7 @@ namespace tiki
 			);
 
 			writeChunkData(
-				resourceWriter,
+				sectionWriter,
 				header.interpolatedScaleJointCount,
 				header.usedScaleJointCount,
 				header.defaultPoseScaleJointCount,
@@ -235,55 +236,55 @@ namespace tiki
 				getScaleTangentFactor()
 			);
 
-			resourceWriter.writeAlignment( 8u );
+			sectionWriter.writeAlignment( 8u );
 		}
-		resourceWriter.closeDataSection();
+		resourceWriter.closeDataSection( sectionWriter );
 
 		const uint16 headerOffset = sizeof( float ) * 4u + sizeof( uint16 ) * 4u + sizeof( ResRef< void > );
-		resourceWriter.openDataSection( 0u, AllocatorType_MainMemory, 4u );
-		targetKey = resourceWriter.addDataPoint();
+		resourceWriter.openDataSection( sectionWriter, SectionType_Main, 4u );
+		targetKey = sectionWriter.addDataPoint();
 
-		resourceWriter.writeFloat( getPositionFactor() );
-		resourceWriter.writeFloat( getPositionTangentFactor() );
-		resourceWriter.writeFloat( getScaleFactor() );
-		resourceWriter.writeFloat( getScaleTangentFactor() );
+		sectionWriter.writeFloat( getPositionFactor() );
+		sectionWriter.writeFloat( getPositionTangentFactor() );
+		sectionWriter.writeFloat( getScaleFactor() );
+		sectionWriter.writeFloat( getScaleTangentFactor() );
 
-		resourceWriter.writeUInt16( headerOffset );
-		resourceWriter.writeUInt16( (uint16)m_headers.getCount() );
+		sectionWriter.writeUInt16( headerOffset );
+		sectionWriter.writeUInt16( (uint16)m_headers.getCount() );
 
-		resourceWriter.writeUInt16( (uint16)(m_lengthInFrames - 1u )  );
-		resourceWriter.writeUInt16( (uint16)m_jointCount );
+		sectionWriter.writeUInt16( (uint16)(m_lengthInFrames - 1u )  );
+		sectionWriter.writeUInt16( (uint16)m_jointCount );
 
-		resourceWriter.writeReference( &animationDataKey );
+		sectionWriter.writeReference( &animationDataKey );
 
 		// write header
 		for (uint i = 0; i < m_headers.getCount(); ++i)
 		{
 			const ChunkHeader& header = m_headers[ i ];
 
-			resourceWriter.writeAlignment( 4u );
-			resourceWriter.writeUInt32( uint32( header.dataOffset ) );
+			sectionWriter.writeAlignment( 4u );
+			sectionWriter.writeUInt32( uint32( header.dataOffset ) );
 
-			resourceWriter.writeUInt16( header.startTime );
-			resourceWriter.writeUInt16( header.endTime );
+			sectionWriter.writeUInt16( header.startTime );
+			sectionWriter.writeUInt16( header.endTime );
 
-			resourceWriter.writeUInt16( header.usedRotationJointCount );
-			resourceWriter.writeUInt16( header.interpolatedRotationJointCount );
-			resourceWriter.writeUInt16( header.defaultPoseRotationJointCount );
+			sectionWriter.writeUInt16( header.usedRotationJointCount );
+			sectionWriter.writeUInt16( header.interpolatedRotationJointCount );
+			sectionWriter.writeUInt16( header.defaultPoseRotationJointCount );
 
-			resourceWriter.writeUInt16( header.usedPositionJointCount );
-			resourceWriter.writeUInt16( header.interpolatedPositionJointCount );
-			resourceWriter.writeUInt16( header.defaultPosePositionJointCount );
+			sectionWriter.writeUInt16( header.usedPositionJointCount );
+			sectionWriter.writeUInt16( header.interpolatedPositionJointCount );
+			sectionWriter.writeUInt16( header.defaultPosePositionJointCount );
 
-			resourceWriter.writeUInt16( header.usedScaleJointCount );
-			resourceWriter.writeUInt16( header.interpolatedScaleJointCount );
-			resourceWriter.writeUInt16( header.defaultPoseScaleJointCount );
+			sectionWriter.writeUInt16( header.usedScaleJointCount );
+			sectionWriter.writeUInt16( header.interpolatedScaleJointCount );
+			sectionWriter.writeUInt16( header.defaultPoseScaleJointCount );
 		}
 
-		resourceWriter.closeDataSection();
+		resourceWriter.closeDataSection( sectionWriter );
 	}
 
-	void AnimationBuilder::writeChunkData( ResourceWriter& resourceWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< SplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uint dimensions, bool normalizeValue, float factor, float factorTangent )
+	void AnimationBuilder::writeChunkData( ResourceSectionWriter& sectionWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< SplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uint dimensions, bool normalizeValue, float factor, float factorTangent )
 	{
 		List< uint64 > masks;
 		List< sint16 > interpolationData;
@@ -329,7 +330,7 @@ namespace tiki
 							break;
 						}
 					}
-					
+
 					if ( isEquals )
 					{
 						defaultPoseJointIndices.add( uint16( jointIndex ) );
@@ -358,25 +359,25 @@ namespace tiki
 			usedJointCount++;
 		}
 
-		resourceWriter.writeAlignment( 8u );
+		sectionWriter.writeAlignment( 8u );
 		for (uint i = 0u; i < masks.getCount(); ++i)
 		{
-			resourceWriter.writeUInt64( masks[ i ] );
-		} 
-				
+			sectionWriter.writeUInt64( masks[ i ] );
+		}
+
 		for (uint i = 0u; i < interpolationData.getCount(); ++i)
 		{
-			resourceWriter.writeSInt16( interpolationData[ i ] );
+			sectionWriter.writeSInt16( interpolationData[ i ] );
 		}
 
 		for (uint i = 0u; i < constantData.getCount(); ++i)
 		{
-			resourceWriter.writeSInt16( constantData[ i ] );
-		} 
+			sectionWriter.writeSInt16( constantData[ i ] );
+		}
 
 		for (uint i = 0u; i < defaultPoseJointIndices.getCount(); ++i)
 		{
-			resourceWriter.writeUInt16( defaultPoseJointIndices[ i ] );
+			sectionWriter.writeUInt16( defaultPoseJointIndices[ i ] );
 		}
 
 		defaultPoseJointCount = uint16( defaultPoseJointIndices.getCount() );
@@ -505,7 +506,7 @@ namespace tiki
 			}
 		}
 		TIKI_ASSERT( firstIndex != TIKI_SIZE_T_MAX );
-		
+
 		if ( sourceKeys[ firstIndex ].time != startTime )
 		{
 			firstKey = createInterpolatedKey( sourceKeys[ firstIndex ], sourceKeys[ firstIndex + 1 ], startTime, dimensions, normalizeValue );
@@ -543,7 +544,7 @@ namespace tiki
 		{
 			insertBitMask( targetList, mask, lastKey, startTime );
 		}
-		
+
 		if ( !isBitSet64( mask, 0x8000000000000001ull ) && sourceLastKey.time >= endTime )
 		{
 			TIKI_TRACE_ERROR( "incomplete bit mask in chunk: %i", (startTime / (endTime - startTime)) );

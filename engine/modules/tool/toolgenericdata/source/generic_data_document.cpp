@@ -85,9 +85,9 @@ namespace tiki
 		return m_document.saveToFile( pFilename );
 	}
 
-	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const
+	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceSectionWriter& sectionWriter ) const
 	{
-		return m_pObject->writeToResource( &dataKey, writer );
+		return m_pObject->writeToResource( &dataKey, sectionWriter );
 	}
 
 	bool GenericDataDocument::importFromXml()

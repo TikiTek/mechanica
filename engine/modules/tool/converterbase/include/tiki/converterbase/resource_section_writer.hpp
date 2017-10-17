@@ -2,6 +2,9 @@
 #ifndef TIKI_RESOURCE_SECTION_WRITER_HPP_INCLUDED
 #define TIKI_RESOURCE_SECTION_WRITER_HPP_INCLUDED
 
+#include "tiki/io/memorystream.hpp"
+#include "tiki/base/dynamic_string.hpp"
+
 namespace tiki
 {
 	class ResourceWriter;
@@ -12,6 +15,9 @@ namespace tiki
 		friend class ResourceWriter;
 
 	public:
+
+						ResourceSectionWriter();
+						~ResourceSectionWriter();
 
 		void			writeAlignment( uint alignment );
 		void			writeData( const void* pData, uint length );
@@ -32,9 +38,11 @@ namespace tiki
 
 		uint			getCurrentSize() const;
 
-		ReferenceKey	addString( StringType type, const string& text );
+		ReferenceKey	addString( const string& text );
 		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
 		ReferenceKey	addDataPoint();
+
+		ResourceWriter&	getResourceWriter();
 
 	private: // friend
 

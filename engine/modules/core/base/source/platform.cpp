@@ -26,6 +26,15 @@ namespace tiki
 #	error not supported
 #endif
 	}
+
+	SoundApi platform::getHostSoundApi()
+	{
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		return SoundApi_XAudio;
+#else
+#	error not supported
+#endif
+	}
 }
 
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
@@ -48,10 +57,7 @@ namespace tiki
 			TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.cStr() );
 		}
 
-		int returnValue = 0;
-		{
-			returnValue = mainEntryPoint();
-		}
+		const int returnValue = mainEntryPoint();
 
 		debug::dumpMemoryStats();
 

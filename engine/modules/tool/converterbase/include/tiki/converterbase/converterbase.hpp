@@ -6,15 +6,16 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
+#include "tiki/resource/resource_definition.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
 
 namespace tiki
 {
 	class ConversionResult;
 	class ConverterManager;
+	class ResourceDefinition;
 	class ResourceWriter;
 	struct ConversionAsset;
-	struct ResourceDefinition;
 
 	class ConverterBase
 	{
@@ -38,7 +39,7 @@ namespace tiki
 		TaskId						queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
 		void						waitForTask( TaskId taskId ) const;
 
-		List< ResourceDefinition >	getResourceDefinitions() const;
+		List< ResourceDefinition >	getResourceDefinitions( FlagMask8< ResourceDefinitionFeature > features ) const;
 
 		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
 		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_PURE;

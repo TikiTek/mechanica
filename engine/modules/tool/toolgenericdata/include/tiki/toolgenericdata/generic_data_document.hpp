@@ -37,7 +37,7 @@ namespace tiki
 		bool							importFromFile( const char* pFilename );
 		bool							exportToFile( const char* pFilename );
 
-		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
+		bool							writeToResource( ReferenceKey& dataKey, ResourceSectionWriter& sectionWriter ) const;
 
 	private:
 

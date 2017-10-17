@@ -41,7 +41,9 @@ namespace tiki
 		const GenericDataValue*			getElement( uint index ) const;
 		bool							removeElement( uint index );
 
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
+#endif
 
 		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_OVERRIDE_FINAL;
 		virtual const char*				getElementName() const TIKI_OVERRIDE_FINAL;
