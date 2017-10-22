@@ -61,7 +61,7 @@ namespace tiki
 		void					dispose();
 
 		// conversion
-		void					queueFile( const string& fileName );
+		void					queueFile( const Path& filePath );
 		bool					startConversion( Mutex* pConversionMutex = nullptr );
 
 		// misc
@@ -135,7 +135,7 @@ namespace tiki
 		void						traceCallback( const char* message, TraceLevel level );
 
 		void						addPackage( const string& packageName );
-		void						addTemplate( const string& fileName );
+		void						addTemplate( const Path& filePath );
 
 		bool						prepareTasks();
 		bool						fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath );

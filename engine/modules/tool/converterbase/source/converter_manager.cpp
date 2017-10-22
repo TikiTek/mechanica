@@ -78,7 +78,7 @@ namespace tiki
 			{
 				if ( m_dataBase.executeCommand( pCreateTableSql[ i ] ) == false )
 				{
-					TIKI_TRACE_ERROR( "[convertermanager] Could not create Table. Error: %s\n", m_dataBase.getLastError().cStr() );
+					TIKI_TRACE_ERROR( "[convertermanager] Could not create Table. Error: %s\n", m_dataBase.getLastError() );
 					m_dataBase.dispose();
 					return false;
 				}
@@ -93,7 +93,7 @@ namespace tiki
 			}
 			else
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] Unable to read from builds table. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] Unable to read from builds table. Error: %s\n", m_dataBase.getLastError() );
 				m_dataBase.dispose();
 				return false;
 			}
@@ -140,9 +140,9 @@ namespace tiki
 		m_dataBase.dispose();
 	}
 
-	void ConverterManager::queueFile( const string& fileName )
+	void ConverterManager::queueFile( const Path& filePath )
 	{
-		m_files.add( fileName );
+		m_files.add( filePath );
 	}
 
 	bool ConverterManager::startConversion( Mutex* pConversionMutex /* = nullptr */ )
@@ -229,10 +229,10 @@ namespace tiki
 
 	}
 
-	void ConverterManager::addTemplate( const string& fileName )
+	void ConverterManager::addTemplate( const Path& filePath )
 	{
 		XmlDocument document;
-		if( !document.loadFromFile( fileName.cStr() ) )
+		if( !document.loadFromFile( filePath.getCompletePath() ) )
 		{
 			return;
 		}
@@ -240,20 +240,20 @@ namespace tiki
 		const XmlElement* pRoot = document.findFirstChild( "template" );
 		if( pRoot == nullptr )
 		{
-			TIKI_TRACE_ERROR( "[convertermanager] can't find 'template' root node in '%s'.\n", fileName.cStr() );
+			TIKI_TRACE_ERROR( "[convertermanager] can't find 'template' root node in '%s'.\n", filePath.getCompletePath() );
 			return;
 		}
 
 		const XmlAttribute* pAttName = pRoot->findAttribute( "name" );
 		if( pAttName == nullptr )
 		{
-			TIKI_TRACE_ERROR( "[convertermanager] name argument not found. can't add template: %s\n", fileName.cStr() );
+			TIKI_TRACE_ERROR( "[convertermanager] name argument not found. can't add template: %s\n", filePath.getCompletePath() );
 			return;
 		}
 
 		TemplateDescription desc;
-		desc.fullFileName	= path::getAbsolutePath( fileName );
-		desc.name			= pAttName->getValue();
+		desc.name		= pAttName->getValue();
+		desc.filePath	= filePath;
 
 		const XmlElement* pParameterNode = pRoot->findFirstChild( "parameter" );
 		while( pParameterNode )
@@ -271,11 +271,11 @@ namespace tiki
 			}
 			else if( pAttValue == nullptr )
 			{
-				desc.arguments.set( pAttKey->getValue(), pParameterNode->getValue() );
+				desc.parameters.getMap().set( pAttKey->getValue(), pParameterNode->getValue() );
 			}
 			else
 			{
-				desc.arguments.set( pAttKey->getValue(), pAttValue->getValue() );
+				desc.parameters.getMap().set( pAttKey->getValue(), pAttValue->getValue() );
 			}
 
 			pParameterNode = pParameterNode->findNextSibling( "parameter" );
@@ -296,7 +296,7 @@ namespace tiki
 			ConversionAsset& asset = assetsToBuild.add();
 			if( !fillAssetFromFilePath( asset, file ) )
 			{
-				assetsToBuild.
+				//assetsToBuild.
 				filesFromDependencies.add( file );
 				continue;
 			}

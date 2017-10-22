@@ -155,17 +155,17 @@ namespace tiki
 		ResourceWriter resourceWriter;
 		openResourceWriter( resourceWriter, result, asset.assetName, "animation" );
 
-		for (const ResourceDefinition& definition : getResourceDefinitions())
+		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{
 			resourceWriter.openResource( asset.assetName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), definition, getConverterRevision( s_typeCrc ) );
 
 			ReferenceKey dataKey;
 			builder.writeToResource( resourceWriter, dataKey );
 
-			resourceWriter.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			resourceWriter.writeReference( &dataKey );
-			resourceWriter.closeDataSection();
-
+			ResourceSectionWriter sectionWriter;
+			resourceWriter.openDataSection( sectionWriter, SectionType_Initializaion );
+			sectionWriter.writeReference( &dataKey );
+			resourceWriter.closeDataSection( sectionWriter );
 			resourceWriter.closeResource();
 		}
 

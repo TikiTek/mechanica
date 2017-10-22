@@ -32,8 +32,8 @@ namespace tiki
 
 	private:
 
-		ReferenceKey			writeHierarchy( ResourceWriter& fileWriter, const ToolModelHierarchy& hierarchy ) const;
-		ReferenceKey			writeGeometry( ResourceWriter& fileWriter, const ToolModelGeometrie& geometry ) const;
+		ReferenceKey			writeHierarchy( ResourceWriter& resourceWriter, const ToolModelHierarchy& hierarchy ) const;
+		ReferenceKey			writeGeometry( ResourceWriter& resourceWriter, const ToolModelGeometrie& geometry ) const;
 
 	};
 }

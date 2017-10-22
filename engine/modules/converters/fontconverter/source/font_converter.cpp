@@ -5,6 +5,7 @@
 #include "tiki/base/numbers.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
@@ -169,42 +170,44 @@ namespace tiki
 		writerParameters.data.texture3d.sliceWidth	= fontSize;
 		writerParameters.data.texture3d.sliceHeight	= imageHeight;
 
+		TextureWriter textureWriter;
+		if( !textureWriter.create( image, writerParameters ) )
+		{
+			TIKI_TRACE_ERROR( "[fontconverter] Texture writer failed initilaztion.\n" );
+			return false;
+		}
+
 		ResourceWriter writer;
 		openResourceWriter( writer, result, asset.assetName, "font" );
 
-		for (const ResourceDefinition& definition : getResourceDefinitions())
+		FlagMask8< ResourceDefinitionFeature > features;
+		features.setFlag( ResourceDefinitionFeature_GraphicsApi );
+
+		for (const ResourceDefinition& definition : getResourceDefinitions( features ))
 		{
-			writerParameters.targetApi = definition.getGraphicsApi();
-
-			TextureWriter textureWriter;
-			if ( !textureWriter.create( image, writerParameters ) )
-			{
-				continue;
-			}
-
 			writer.openResource( asset.assetName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), definition, getConverterRevision( s_typeCrc ) );
 
-			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer );
+			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer, definition.getGraphicsApi() );
 
 			// write chars
-			writer.openDataSection( 0u, AllocatorType_MainMemory );
-			const ReferenceKey charArrayKey = writer.addDataPoint();
-			writer.writeData( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
-			writer.closeDataSection();
+			ResourceSectionWriter sectionWriter;
+			writer.openDataSection( sectionWriter, SectionType_Main );
+			const ReferenceKey charArrayKey = sectionWriter.addDataPoint();
+			sectionWriter.writeData( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
+			writer.closeDataSection( sectionWriter );
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writer.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
-			writer.writeReference( &textureDataKey );
-			writer.writeUInt32( uint32( chars.getCount() ) );
-			writer.writeReference( &charArrayKey );
-			writer.closeDataSection();
+			writer.openDataSection( sectionWriter, SectionType_Initializaion );
+			sectionWriter.writeData( &textureWriter.getDescription(), sizeof( textureWriter.getDescription() ) );
+			sectionWriter.writeReference( &textureDataKey );
+			sectionWriter.writeUInt32( uint32( chars.getCount() ) );
+			sectionWriter.writeReference( &charArrayKey );
+			writer.closeDataSection(sectionWriter);
 
 			writer.closeResource();
-
-			textureWriter.dispose();
 		}
 
 		closeResourceWriter( writer );
+		textureWriter.dispose();
 		image.dispose();
 
 		FT_Done_FreeType( library );

@@ -8,6 +8,7 @@
 namespace tiki
 {
 	class ResourceWriter;
+	struct ReferenceKey;
 
 	class ResourceSectionWriter
 	{

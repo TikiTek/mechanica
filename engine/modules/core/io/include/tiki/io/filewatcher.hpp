@@ -2,7 +2,7 @@
 #ifndef __TIKI_FILESYSTEMWATCHER_HPP_INCLUDED__
 #define __TIKI_FILESYSTEMWATCHER_HPP_INCLUDED__
 
-#include "tiki/base/dynamic_string.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/queue.hpp"
 #include "tiki/threading/mutex.hpp"
@@ -30,7 +30,7 @@ namespace tiki
 
 	struct FileWatcherEvent
 	{
-		string					fileName;
+		Path					filePath;
 		FileWatcherEventType	eventType;
 	};
 
@@ -48,7 +48,7 @@ namespace tiki
 
 		bool	popEvent( FileWatcherEvent& fileEvent );
 		bool	waitForEvent( timems timeOut = TIKI_TIME_OUT_INFINITY );
-		
+
 	private:
 
 		Queue< FileWatcherEvent >	m_events;

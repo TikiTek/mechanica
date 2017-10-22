@@ -137,7 +137,7 @@ namespace tiki
 			{
 				MutexStackLock lock( m_converterMutex );
 
-				m_manager.queueFile( fileEvent.fileName );
+				m_manager.queueFile( fileEvent.filePath );
 				m_manager.startConversion();
 			}
 			else
