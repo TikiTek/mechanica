@@ -8,40 +8,41 @@
 
 namespace tiki
 {
+	static FileWatcherEventType s_aEventTypeMapping[] =
+	{
+		FileWatcherEventType_Invalid,
+		FileWatcherEventType_Created,
+		FileWatcherEventType_Deleted,
+		FileWatcherEventType_Modified,
+		FileWatcherEventType_Deleted,
+		FileWatcherEventType_Created
+	};
+	TIKI_COMPILETIME_ASSERT( FILE_ACTION_ADDED == 1 );
+	TIKI_COMPILETIME_ASSERT( FILE_ACTION_REMOVED == 2 );
+	TIKI_COMPILETIME_ASSERT( FILE_ACTION_MODIFIED == 3 );
+	TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_OLD_NAME == 4 );
+	TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_NEW_NAME == 5 );
+
 	static void createEvents( Queue< FileWatcherEvent >& events, const char* pBasePath, const void* pData )
 	{
-		static FileWatcherEventType eventTypeMapping[] =
-		{
-			FileWatcherEventType_Invalid,
-			FileWatcherEventType_Created,
-			FileWatcherEventType_Deleted,
-			FileWatcherEventType_Modified,
-			FileWatcherEventType_Deleted,
-			FileWatcherEventType_Created
-		};
-		TIKI_COMPILETIME_ASSERT( FILE_ACTION_ADDED				== 1 );
-		TIKI_COMPILETIME_ASSERT( FILE_ACTION_REMOVED			== 2 );
-		TIKI_COMPILETIME_ASSERT( FILE_ACTION_MODIFIED			== 3 );
-		TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_OLD_NAME	== 4 );
-		TIKI_COMPILETIME_ASSERT( FILE_ACTION_RENAMED_NEW_NAME	== 5 );
-
 		const uint8* pBinaryData = static_cast< const uint8* >( pData );
 		const FILE_NOTIFY_INFORMATION* pNotifyInfo = reinterpret_cast< const FILE_NOTIFY_INFORMATION* >( pBinaryData );
 
 		do
 		{
-			char utf8Buffer[ TIKI_MAX_PATH ];
-			convertWidecharToUtf8String( utf8Buffer, TIKI_COUNT(utf8Buffer ), pNotifyInfo->FileName );
+			char filenameBuffer[ TIKI_MAX_PATH ];
+			convertWidecharToUtf8String( filenameBuffer, TIKI_COUNT( filenameBuffer ), pNotifyInfo->FileName );
 
-			const string fileName = path::combine( pBasePath, utf8Buffer );
-			if ( file::exists( fileName.cStr() ) )
+			Path filePath;
+			filePath.setCombinedPath( pBasePath, filenameBuffer );
+			if ( file::exists( filePath.getCompletePath() ) )
 			{
 				uint32 counter = 0;
 
 				HANDLE handle = INVALID_HANDLE_VALUE;
 				do
 				{
-					handle = CreateFile( fileName.cStr(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+					handle = CreateFile( filePath.getCompletePath(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 
 					if ( handle == INVALID_HANDLE_VALUE )
 					{
@@ -58,8 +59,8 @@ namespace tiki
 				}
 
 				FileWatcherEvent& fileEvent = events.push();
-				fileEvent.eventType	= eventTypeMapping[ pNotifyInfo->Action ];
-				fileEvent.fileName	= fileName;
+				fileEvent.eventType	= s_aEventTypeMapping[ pNotifyInfo->Action ];
+				fileEvent.filePath	= filePath;
 			}
 
 			pBinaryData += pNotifyInfo->NextEntryOffset;

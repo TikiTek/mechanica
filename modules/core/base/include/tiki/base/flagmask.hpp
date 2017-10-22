@@ -39,6 +39,11 @@ namespace tiki
 	{
 	public:
 
+		explicit FlagMask8()
+			: FlagMask()
+		{
+		}
+
 		explicit FlagMask8( TEnum value )
 			: FlagMask( value )
 		{
@@ -49,6 +54,11 @@ namespace tiki
 	class FlagMask16 : public FlagMask< TEnum, uint16 >
 	{
 	public:
+
+		explicit FlagMask16()
+			: FlagMask()
+		{
+		}
 
 		explicit FlagMask16( TEnum value )
 			: FlagMask( value )
@@ -61,6 +71,11 @@ namespace tiki
 	{
 	public:
 
+		explicit FlagMask32()
+			: FlagMask()
+		{
+		}
+
 		explicit FlagMask32( TEnum value )
 			: FlagMask( value )
 		{
@@ -71,6 +86,11 @@ namespace tiki
 	class FlagMask64 : public FlagMask< TEnum, uint64 >
 	{
 	public:
+
+		explicit FlagMask64()
+			: FlagMask()
+		{
+		}
 
 		explicit FlagMask64( TEnum value )
 			: FlagMask( value )

@@ -4,6 +4,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
@@ -89,19 +90,26 @@ namespace tiki
 		{
 			const string& extension = document.getType()->getPostFix();
 
-			ResourceWriter writer;
-			openResourceWriter( writer, result, asset.assetName, extension );
+			ResourceWriter resourceWriter;
+			openResourceWriter( resourceWriter, result, asset.assetName, extension );
 
-			for (const ResourceDefinition& definition : getResourceDefinitions())
+			for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 			{
-				writer.openResource( asset.assetName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
+				resourceWriter.openResource( asset.assetName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
+
+				ResourceSectionWriter sectionWriter;
+				resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
 				ReferenceKey dataKey;
-				if ( document.writeToResource( dataKey, writer ) )
+				const bool result = document.writeToResource( dataKey, sectionWriter );
+
+				resourceWriter.closeDataSection( sectionWriter );
+
+				if( result )
 				{
-					writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-					writer.writeReference( &dataKey );
-					writer.closeDataSection();
+					resourceWriter.openDataSection( sectionWriter, SectionType_Initializaion );
+					sectionWriter.writeReference( &dataKey );
+					resourceWriter.closeDataSection( sectionWriter );
 				}
 				else
 				{
@@ -109,10 +117,10 @@ namespace tiki
 					ok = false;
 				}
 
-				writer.closeResource();
+				resourceWriter.closeResource();
 			}
 
-			closeResourceWriter( writer );
+			closeResourceWriter( resourceWriter );
 		}
 		else
 		{

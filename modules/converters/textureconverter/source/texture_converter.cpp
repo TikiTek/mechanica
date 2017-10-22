@@ -4,6 +4,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
+#include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
@@ -160,7 +161,7 @@ namespace tiki
 
 		ResourceWriter writer;
 		openResourceWriter( writer, result, asset.assetName, "texture" );
-		for (const ResourceDefinition& definition : getResourceDefinitions())
+		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
 		{
 			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );
 
@@ -177,8 +178,8 @@ namespace tiki
 		}
 
 		closeResourceWriter( writer );
-
 		image.dispose();
+
 		return true;
 	}
 }

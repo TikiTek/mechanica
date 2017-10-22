@@ -66,7 +66,7 @@ namespace tiki
 		ResourceWriter writer;
 		openResourceWriter( writer, result, asset.assetName, "model" );
 
-		for (const ResourceDefinition& definition : getResourceDefinitions())
+		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{
 			writer.openResource( asset.assetName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_typeCrc ) );
 
@@ -102,16 +102,16 @@ namespace tiki
 				TIKI_TRACE_ERROR( "[modelconverter] Not every Mesh is skinned.\n" );
 			}
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
-			writeResourceReference( writer, material );
-			writer.writeReference( pHierarchyKey );
-			writer.writeUInt32( uint32( model.getGeometyCount() ) );
+			ResourceSectionWriter sectionWriter;
+			writer.openDataSection( sectionWriter, SectionType_Initializaion );
+			writeResourceReference( sectionWriter, material );
+			sectionWriter.writeReference( pHierarchyKey );
+			sectionWriter.writeUInt32( uint32( model.getGeometyCount() ) );
 			for( uint geometryIndex = 0u; geometryIndex < geometryKeys.getCount(); ++geometryIndex )
 			{
-				writer.writeReference( &geometryKeys[ geometryIndex ] );
+				sectionWriter.writeReference( &geometryKeys[ geometryIndex ] );
 			}
-			writer.closeDataSection();
-
+			writer.closeDataSection( sectionWriter );
 			writer.closeResource();
 		}
 
@@ -121,22 +121,23 @@ namespace tiki
 		return true;
 	}
 
-	ReferenceKey ModelConverter::writeHierarchy( ResourceWriter& writer, const ToolModelHierarchy& hierarchy ) const
+	ReferenceKey ModelConverter::writeHierarchy( ResourceWriter& resourceWriter, const ToolModelHierarchy& hierarchy ) const
 	{
-		writer.openDataSection( 0u, AllocatorType_MainMemory );
+		ResourceSectionWriter sectionWriter;
+		resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
 		const uint16 alignedJointCount = alignValue( (uint16)hierarchy.getJointCount(), (uint16)4u );
 
-		const ReferenceKey jointNamesKey = writer.addDataPoint();
+		const ReferenceKey jointNamesKey = sectionWriter.addDataPoint();
 		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
-			writer.writeUInt32( hierarchy.getJointByIndex( j ).crc );
+			sectionWriter.writeUInt32( hierarchy.getJointByIndex( j ).crc );
 		}
 
-		const ReferenceKey parentIndicesKey = writer.addDataPoint();
+		const ReferenceKey parentIndicesKey = sectionWriter.addDataPoint();
 		for (uint j = 0u; j < hierarchy.getJointCount(); ++j)
 		{
-			writer.writeUInt16( uint16( hierarchy.getJointByIndex( j ).parentIndex ) );
+			sectionWriter.writeUInt16( uint16( hierarchy.getJointByIndex( j ).parentIndex ) );
 		}
 
 		Array< Quaternion > dpRotation;
@@ -152,59 +153,59 @@ namespace tiki
 			matrix::decompose( dpRotation[ j ], dpPosition[ j ], dpScale[ j ], joint.defaultPose );
 		}
 
-		writer.writeAlignment( 16u );
-		const ReferenceKey defaultPoseKey = writer.addDataPoint();
+		sectionWriter.writeAlignment( 16u );
+		const ReferenceKey defaultPoseKey = sectionWriter.addDataPoint();
 		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
-			writer.writeFloat( dpRotation[ j ].x );
-			writer.writeFloat( dpRotation[ j ].y );
-			writer.writeFloat( dpRotation[ j ].z );
-			writer.writeFloat( dpRotation[ j ].w );
+			sectionWriter.writeFloat( dpRotation[ j ].x );
+			sectionWriter.writeFloat( dpRotation[ j ].y );
+			sectionWriter.writeFloat( dpRotation[ j ].z );
+			sectionWriter.writeFloat( dpRotation[ j ].w );
 		}
 
 		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
-			writer.writeFloat( dpPosition[ j ].x );
-			writer.writeFloat( dpPosition[ j ].y );
-			writer.writeFloat( dpPosition[ j ].z );
-			writer.writeFloat( 0.0f );
+			sectionWriter.writeFloat( dpPosition[ j ].x );
+			sectionWriter.writeFloat( dpPosition[ j ].y );
+			sectionWriter.writeFloat( dpPosition[ j ].z );
+			sectionWriter.writeFloat( 0.0f );
 		}
 
 		for (uint j = 0u; j < alignedJointCount; ++j)
 		{
-			writer.writeFloat( dpScale[ j ].x );
-			writer.writeFloat( dpScale[ j ].y );
-			writer.writeFloat( dpScale[ j ].z );
-			writer.writeFloat( 0.0f );
+			sectionWriter.writeFloat( dpScale[ j ].x );
+			sectionWriter.writeFloat( dpScale[ j ].y );
+			sectionWriter.writeFloat( dpScale[ j ].z );
+			sectionWriter.writeFloat( 0.0f );
 		}
 
 		dpRotation.dispose();
 		dpPosition.dispose();
 		dpScale.dispose();
 
-		writer.writeAlignment( 16u );
-		const ReferenceKey skinToBoneKey = writer.addDataPoint();
+		sectionWriter.writeAlignment( 16u );
+		const ReferenceKey skinToBoneKey = sectionWriter.addDataPoint();
 		for (uint i = 0u; i < hierarchy.getJointCount(); ++i)
 		{
 			const ToolModelJoint& joint = hierarchy.getJointByIndex( i );
-			writer.writeData( &joint.skinToBone.x.x, sizeof( Matrix44 ) );
+			sectionWriter.writeData( &joint.skinToBone.x.x, sizeof( Matrix44 ) );
 		}
 
-		const ReferenceKey refKey = writer.addDataPoint();
-		writer.writeUInt16( uint16( hierarchy.getJointCount() ) );
-		writer.writeUInt16( alignedJointCount );
+		const ReferenceKey refKey = sectionWriter.addDataPoint();
+		sectionWriter.writeUInt16( uint16( hierarchy.getJointCount() ) );
+		sectionWriter.writeUInt16( alignedJointCount );
 
-		writer.writeReference( &jointNamesKey );
-		writer.writeReference( &parentIndicesKey );
-		writer.writeReference( &defaultPoseKey );
-		writer.writeReference( &skinToBoneKey );
+		sectionWriter.writeReference( &jointNamesKey );
+		sectionWriter.writeReference( &parentIndicesKey );
+		sectionWriter.writeReference( &defaultPoseKey );
+		sectionWriter.writeReference( &skinToBoneKey );
 
-		writer.closeDataSection();
+		resourceWriter.closeDataSection( sectionWriter );
 
 		return refKey;
 	}
 
-	static void writeVertexAttribute( ResourceWriter& fileWriter, const uint8* pSource, VertexAttributeFormat targetFormat, bool isFloatFormat )
+	static void writeVertexAttribute( ResourceSectionWriter& sectionWriter, const uint8* pSource, VertexAttributeFormat targetFormat, bool isFloatFormat )
 	{
 		const uint elementCount = getVertexAttributeFormatElementCount( targetFormat );
 
@@ -221,7 +222,7 @@ namespace tiki
 				{
 					for (uint i = 0u; i < elementCount; ++i)
 					{
-						fileWriter.writeFloat( pSourceData[ i ] );
+						sectionWriter.writeFloat( pSourceData[ i ] );
 					}
 				}
 				break;
@@ -231,7 +232,7 @@ namespace tiki
 				{
 					for (uint i = 0u; i < elementCount; ++i)
 					{
-						fileWriter.writeUInt16( f16::convertFloat32to16( pSourceData[ i ] ) );
+						sectionWriter.writeUInt16( f16::convertFloat32to16( pSourceData[ i ] ) );
 					}
 				}
 				break;
@@ -242,7 +243,7 @@ namespace tiki
 					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= -1.0f && pSourceData[ i ] <= 1.0f );
-						fileWriter.writeSInt16( (sint16)( pSourceData[ i ] * 32667.0f ) );
+						sectionWriter.writeSInt16( (sint16)( pSourceData[ i ] * 32667.0f ) );
 					}
 				}
 				break;
@@ -253,7 +254,7 @@ namespace tiki
 					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= 0.0f && pSourceData[ i ] <= 1.0f );
-						fileWriter.writeUInt16( (uint16)( pSourceData[ i ] * 65535.0f ) );
+						sectionWriter.writeUInt16( (uint16)( pSourceData[ i ] * 65535.0f ) );
 					}
 				}
 				break;
@@ -262,7 +263,7 @@ namespace tiki
 					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= -1.0f && pSourceData[ i ] <= 1.0f );
-						fileWriter.writeUInt8( (sint8)( pSourceData[ i ] * 127.0f ) );
+						sectionWriter.writeUInt8( (sint8)( pSourceData[ i ] * 127.0f ) );
 					}
 				}
 				break;
@@ -271,7 +272,7 @@ namespace tiki
 					for (uint i = 0u; i < elementCount; ++i)
 					{
 						TIKI_ASSERT( pSourceData[ i ] >= 0.0f && pSourceData[ i ] <= 1.0f );
-						fileWriter.writeUInt8( (uint8)( pSourceData[ i ] * 255.0f ) );
+						sectionWriter.writeUInt8( (uint8)( pSourceData[ i ] * 255.0f ) );
 					}
 				}
 				break;
@@ -284,26 +285,27 @@ namespace tiki
 			for (uint i = 0u; i < elementCount; ++i)
 			{
 				TIKI_ASSERT( pSourceData[ i ] < 256u );
-				fileWriter.writeUInt8( (uint8)pSourceData[ i ] );
+				sectionWriter.writeUInt8( (uint8)pSourceData[ i ] );
 			}
 		}
 	}
 
-	ReferenceKey ModelConverter::writeGeometry( ResourceWriter& writer, const ToolModelGeometrie& geometry ) const
+	ReferenceKey ModelConverter::writeGeometry( ResourceWriter& resourceWriter, const ToolModelGeometrie& geometry ) const
 	{
 		const ToolModelVertexFormat& vertexFormat	= geometry.getVertexFormat();
 
-		writer.openDataSection( 0u, AllocatorType_MainMemory );
+		ResourceSectionWriter sectionWriter;
+		resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
-		writer.writeAlignment( 4u );
-		const ReferenceKey vertexAttributesKey = writer.addDataPoint();
-		writer.writeData(
+		sectionWriter.writeAlignment( 4u );
+		const ReferenceKey vertexAttributesKey = sectionWriter.addDataPoint();
+		sectionWriter.writeData(
 			geometry.getVertexFormat().getAttributes(),
 			geometry.getVertexFormat().getAttributeCount() * sizeof( VertexAttribute )
 		);
 
-		writer.writeAlignment( 16u );
-		const ReferenceKey vertexDataKey = writer.addDataPoint();
+		sectionWriter.writeAlignment( 16u );
+		const ReferenceKey vertexDataKey = sectionWriter.addDataPoint();
 		const VertexAttribute* pAttributes = vertexFormat.getAttributes();
 		for (uint k = 0u; k < geometry.getVertexCount(); ++k)
 		{
@@ -347,33 +349,33 @@ namespace tiki
 
 				if ( pSource != nullptr )
 				{
-					writeVertexAttribute( writer, pSource, att.format, isFloat );
+					writeVertexAttribute( sectionWriter, pSource, att.format, isFloat );
 				}
 			}
 		}
 
-		writer.writeAlignment( 4u );
-		const ReferenceKey indexDataKey = writer.addDataPoint();
+		sectionWriter.writeAlignment( 4u );
+		const ReferenceKey indexDataKey = sectionWriter.addDataPoint();
 		for (uint k = 0u; k < geometry.getIndexCount(); ++k)
 		{
-			writer.writeUInt32( uint32( geometry.getIndexByIndex( k ) ) );
+			sectionWriter.writeUInt32( uint32( geometry.getIndexByIndex( k ) ) );
 		}
 
-		const ReferenceKey geometryKey = writer.addDataPoint();
-		writer.writeUInt16( uint16( geometry.getVertexCount() ) );
-		writer.writeUInt16( uint16( geometry.getIndexCount() ) );
+		const ReferenceKey geometryKey = sectionWriter.addDataPoint();
+		sectionWriter.writeUInt16( uint16( geometry.getVertexCount() ) );
+		sectionWriter.writeUInt16( uint16( geometry.getIndexCount() ) );
 
-		writer.writeUInt8( geometry.getDesc().isSkinned );
-		writer.writeUInt8( uint8( vertexFormat.getVertexStride( 0u ) ) );
-		writer.writeUInt8( 4u ); // index size
-		writer.writeUInt8( uint8( vertexFormat.getAttributeCount() ) );
+		sectionWriter.writeUInt8( geometry.getDesc().isSkinned );
+		sectionWriter.writeUInt8( uint8( vertexFormat.getVertexStride( 0u ) ) );
+		sectionWriter.writeUInt8( 4u ); // index size
+		sectionWriter.writeUInt8( uint8( vertexFormat.getAttributeCount() ) );
 
-		writer.writeReference( &vertexAttributesKey );
+		sectionWriter.writeReference( &vertexAttributesKey );
 
-		writer.writeReference( &vertexDataKey );
-		writer.writeReference( &indexDataKey );
+		sectionWriter.writeReference( &vertexDataKey );
+		sectionWriter.writeReference( &indexDataKey );
 
-		writer.closeDataSection();
+		resourceWriter.closeDataSection( sectionWriter );
 
 		return geometryKey;
 	}

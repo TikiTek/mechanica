@@ -6,6 +6,7 @@
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/converterbase/converter_manager.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/io/file.hpp"
@@ -382,12 +383,14 @@ namespace tiki
 		ShaderPreprocessor preprocessor;
 		preprocessor.create( sourceCode );
 
-		ResourceWriter writer;
-		openResourceWriter( writer, result, asset.assetName, "shader" );
-
-		for (const ResourceDefinition& definition : getResourceDefinitions())
+		ResourceWriter resourceWriter;
+		openResourceWriter( resourceWriter, result, asset.assetName, "shader" );
+		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
 		{
-			writer.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
+			resourceWriter.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
+
+			ResourceSectionWriter sectionWriter;
+			resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
 			List< ShaderVariantData > shaderVariants;
 			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
@@ -432,38 +435,35 @@ namespace tiki
 						variantVarName.codeLength	= uint32( variantData.getCount() );
 						variantVarName.variantKey	= crcBytes( keyData, sizeof( keyData ) );
 
-						writer.openDataSection( 0u, AllocatorType_MainMemory );
-						variantVarName.key = writer.addDataPoint();
-						writer.writeData( variantData.getBegin(), variantData.getCount() );
-						writer.closeDataSection();
+						variantVarName.key = sectionWriter.addDataPoint();
+						sectionWriter.writeData( variantData.getBegin(), variantData.getCount() );
 
 						variantData.dispose();
 					}
 				}
 			}
 
-			writer.openDataSection( 0u, AllocatorType_InitializaionMemory );
+			resourceWriter.closeDataSection( sectionWriter );
+			resourceWriter.openDataSection( sectionWriter, SectionType_Initializaion );
 
-			writer.writeUInt32( uint32( shaderVariants.getCount() ) );
-			writer.writeAlignment( 8u );
+			sectionWriter.writeUInt32( uint32( shaderVariants.getCount() ) );
+			sectionWriter.writeAlignment( 8u );
 
 			for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
 			{
 				const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
 
-				writer.writeUInt32( shaderVarName.type );
-				writer.writeUInt32( shaderVarName.codeLength );
-				writer.writeUInt32( shaderVarName.variantKey );
-				writer.writeReference( &shaderVarName.key );
+				sectionWriter.writeUInt32( shaderVarName.type );
+				sectionWriter.writeUInt32( shaderVarName.codeLength );
+				sectionWriter.writeUInt32( shaderVarName.variantKey );
+				sectionWriter.writeReference( &shaderVarName.key );
 			}
 
-			writer.closeDataSection();
-
-			writer.closeResource();
+			resourceWriter.closeDataSection( sectionWriter );
+			resourceWriter.closeResource();
 		}
 
-		closeResourceWriter( writer );
-
+		closeResourceWriter( resourceWriter );
 		preprocessor.dispose();
 		return true;
 	}
