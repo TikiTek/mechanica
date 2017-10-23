@@ -1,4 +1,4 @@
-#include "assetconverter.hpp"
+#include "asset_converter.hpp"
 
 #include "tiki/io/path.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
@@ -67,8 +67,8 @@ namespace tiki
 		TIKI_TRACE_INFO( "AssetConverter: finish\n" );
 	}
 
-	//bool AssetConverter::convertAll()
-	//{
+	bool AssetConverter::convertAll()
+	{
 	//	List< string > assetFiles;
 	//	findFiles( m_sourcePath, assetFiles, ".xasset" );
 
@@ -82,7 +82,9 @@ namespace tiki
 	//	TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
 
 	//	return result;
-	//}
+		TIKI_NOT_IMPLEMENTED;
+		return false;
+	}
 
 	void AssetConverter::startWatch()
 	{

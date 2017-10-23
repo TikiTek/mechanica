@@ -23,7 +23,7 @@ namespace tiki
 		virtual void		dispose() TIKI_OVERRIDE_FINAL;
 
 		bool				isOpen() const;
-		const void*			getData() const;
+		const uint8*		getData() const;
 
 		virtual FileSize	read( void* pTargetData, FileSize bytesToRead ) const TIKI_OVERRIDE_FINAL;
 

@@ -19,6 +19,7 @@ namespace tiki
 	TIKI_FORCE_INLINE List< T >::List( const List<T>& copy )
 	{
 		m_pData		= nullptr;
+		m_count		= 0u;
 		m_capacity	= 0u;
 
 		*this = copy;
@@ -27,14 +28,7 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE List< T >::List( const T* pData, uint count )
 	{
-		m_capacity		= getNextSize( count );
-		m_count			= count;
-		m_pData			= TIKI_NEW_ARRAY( T, m_capacity, true );
-
-		for (uint i = 0u; i < m_count; ++i)
-		{
-			m_pData[ i ] = pData[ i ];
-		}
+		TIKI_VERIFY( create( pData, count ) );
 	}
 
 	template<typename T>
@@ -44,15 +38,29 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void List< T >::clear()
+	TIKI_FORCE_INLINE bool List<T>::create( const T* pData, uint count )
 	{
-		m_count = 0u;
+		m_capacity	= getNextSize( count );
+		m_count		= count;
+		m_pData		= TIKI_NEW_ARRAY( T, m_capacity, true );
+
+		if( m_pData == nullptr )
+		{
+			return false;
+		}
+
+		for( uint i = 0u; i < m_count; ++i )
+		{
+			m_pData[ i ] = pData[ i ];
+		}
+
+		return true;
 	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE void List<T>::dispose()
 	{
-		if ( m_pData != nullptr )
+		if( m_pData != nullptr )
 		{
 			TIKI_DELETE_ARRAY( m_pData, m_capacity );
 		}
@@ -60,6 +68,12 @@ namespace tiki
 		m_pData		= nullptr;
 		m_count		= 0u;
 		m_capacity	= 0u;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void List< T >::clear()
+	{
+		m_count = 0u;
 	}
 
 	template<typename T>
@@ -111,15 +125,13 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T& List< T >::add()
 	{
-		checkArraySize( m_count + 1u );
-		return m_pData[ m_count++ ];
+		return pushBack();
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T& List< T >::add( const T& item)
+	TIKI_FORCE_INLINE T& List< T >::add( const T& item )
 	{
-		checkArraySize( m_count + 1u );
-		return m_pData[ m_count++ ] = item;
+		return pushBack( item );
 	}
 
 	template<typename T>
@@ -154,6 +166,29 @@ namespace tiki
 			i--;
 		}
 		m_pData[ index ] = item;
+	}
+
+
+	template<typename T>
+	TIKI_FORCE_INLINE T& List<T>::pushBack()
+	{
+		checkArraySize( m_count + 1u );
+		return m_pData[ m_count++ ];
+	}
+
+
+	template<typename T>
+	TIKI_FORCE_INLINE T& List<T>::pushBack( const T& item )
+	{
+		checkArraySize( m_count + 1u );
+		return m_pData[ m_count++ ] = item;
+	}
+
+
+	template<typename T>
+	TIKI_FORCE_INLINE void List<T>::popBack()
+	{
+		m_count--;
 	}
 
 	template<typename T>

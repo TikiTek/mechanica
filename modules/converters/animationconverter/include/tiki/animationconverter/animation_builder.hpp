@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TIKI_ANIMATIONBUILDER_HPP_INCLUDED__
-#define __TIKI_ANIMATIONBUILDER_HPP_INCLUDED__
+#ifndef TIKI_ANIMATION_BUILDER_HPP_INCLUDED
+#define TIKI_ANIMATION_BUILDER_HPP_INCLUDED
 
 #include "tiki/animationconverter/spline.hpp"
 #include "tiki/base/types.hpp"
@@ -89,4 +89,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_ANIMATIONBUILDER_HPP_INCLUDED__
+#endif // TIKI_ANIMATION_BUILDER_HPP_INCLUDED

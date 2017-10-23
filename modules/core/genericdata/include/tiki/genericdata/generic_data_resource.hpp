@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_GENERICDATARESOURCE_HPP_INCLUDED__
-#define TIKI_GENERICDATARESOURCE_HPP_INCLUDED__
+#ifndef TIKI_GENERIC_DATA_RESOURCE_HPP_INCLUDED
+#define TIKI_GENERIC_DATA_RESOURCE_HPP_INCLUDED
 
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"
@@ -35,6 +35,6 @@ namespace tiki
 	};
 }
 
-#include "../../../source/genericdataresource.inl"
+#include "../../../source/generic_data_resource.inl"
 
-#endif // TIKI_GENERICDATARESOURCE_HPP_INCLUDED__
+#endif // TIKI_GENERIC_DATA_RESOURCE_HPP_INCLUDED

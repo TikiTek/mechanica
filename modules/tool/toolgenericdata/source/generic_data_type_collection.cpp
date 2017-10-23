@@ -82,6 +82,12 @@ namespace tiki
 
 	bool GenericDataTypeCollection::addPackage( const Package* pPackage )
 	{
+		if( m_packages.contains( pPackage ) )
+		{
+			return true;
+		}
+		m_packages.pushBack( pPackage );
+
 		for( const Package* pParentPackage : pPackage->getDependencies() )
 		{
 			if( !addPackage( pParentPackage ) )
@@ -359,13 +365,13 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode, const string& targetDir )
+	bool GenericDataTypeCollection::exportCode( GenericDataTypeMode mode, const Path& targetDir )
 	{
-		if ( !directory::exists( targetDir.cStr() ) )
+		if ( !directory::exists( targetDir.getCompletePath() ) )
 		{
-			if ( !directory::create( targetDir.cStr() ) )
+			if ( !directory::create( targetDir.getCompletePath() ) )
 			{
-				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::exportCode] unable to create target directory(%s).\n", targetDir.cStr() );
+				TIKI_TRACE_ERROR( "[GenericDataTypeCollection::exportCode] unable to create target directory(%s).\n", targetDir.getCompletePath() );
 				return false;
 			}
 		}
@@ -424,9 +430,9 @@ namespace tiki
 											"#endif // TIKI_%s_INCLUDED\n";
 
 		static const char* s_pReference				= "\tclass %s;\n";
-		static const char* s_pStringInclude			= "#include \"tiki/base/basicstring.hpp\"\n";
-		static const char* s_pResourceInclude		= "#include \"tiki/genericdata/genericdataresource.hpp\"\n";
-		static const char* s_pResourceFileInclude	= "#include \"tiki/resource/resourcefile.hpp\"\n";
+		static const char* s_pStringInclude			= "#include \"tiki/base/dynamic_string.hpp\"\n";
+		static const char* s_pResourceInclude		= "#include \"tiki/genericdata/generic_data_resource.hpp\"\n";
+		static const char* s_pResourceFileInclude	= "#include \"tiki/resource/resource_file.hpp\"\n";
 		static const char* s_pDependencyInclude		= "#include \"%s.hpp\"\n";
 
 		for (uint moduleIndex = 0u; moduleIndex < moduleCode.getCount(); ++moduleIndex)
@@ -436,7 +442,7 @@ namespace tiki
 
 			const string fileName		= kvp.key + ".hpp";
 			const string fileNameDefine	= fileName.toUpper().replace('.', '_');
-			const string fullPath		= path::combine( targetDir, fileName );
+			const Path fullPath( targetDir.getCompletePath(), fileName.cStr() );
 
 			if ( kvp.value.containsResource )
 			{
@@ -521,10 +527,10 @@ namespace tiki
 		const string headerFileName		= "genericdatafactories.hpp";
 		const string sourceFileName		= "genericdatafactories.cpp";
 
-		const string headerFullPath		= path::combine( targetDir, headerFileName );
-		const string sourceFullPath		= path::combine( targetDir, sourceFileName );
+		const Path headerFullPath( targetDir.getCompletePath(), headerFileName.cStr() );
+		const Path sourceFullPath( targetDir.getCompletePath(), sourceFileName.cStr() );
 
-		const string headerFinalCode	= formatDynamicString( s_pFactoriesHeaderFormat );
+		const string headerFinalCode	= s_pFactoriesHeaderFormat;
 		const string sourceFinalCode	= formatDynamicString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
 		writeToFileIfNotEquals( headerFullPath, headerFinalCode );
@@ -849,10 +855,10 @@ namespace tiki
 		return ok;
 	}
 
-	void GenericDataTypeCollection::writeToFileIfNotEquals( const string& fileName, const string& content )
+	void GenericDataTypeCollection::writeToFileIfNotEquals( const Path& filePath, const string& content )
 	{
 		Array< char > currentContent;
-		file::readAllText( fileName.cStr(), currentContent );
+		file::readAllText( filePath.getCompletePath(), currentContent );
 		const uint currentContentLength = currentContent.getCount() - 1;
 
 		bool isEquals = (content.getLength() == currentContentLength);
@@ -866,7 +872,7 @@ namespace tiki
 
 		if (!isEquals)
 		{
-			file::writeAllBytes( fileName.cStr(), (const uint8*)content.cStr(), content.getLength() );
+			file::writeAllBytes( filePath.getCompletePath(), (const uint8*)content.cStr(), content.getLength() );
 		}
 
 		currentContent.dispose();

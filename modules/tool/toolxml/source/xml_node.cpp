@@ -14,7 +14,15 @@ namespace tiki
 
 	const char* XmlNode::getValue() const
 	{
-		return getNativeNode()->Value();
+		const tinyxml2::XMLNode* pNode = getNativeNode();
+
+		const tinyxml2::XMLNode* pChildNode = pNode->FirstChild();
+		if( pChildNode != nullptr && pChildNode->ToText() != nullptr )
+		{
+			pNode = pChildNode;
+		}
+
+		return pChildNode->Value();
 	}
 
 	void XmlNode::setValue( const char* pValue )

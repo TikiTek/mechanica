@@ -2,23 +2,12 @@
 #ifndef TIKI_RESOURCE_WRITER_HPP_INCLUDED
 #define TIKI_RESOURCE_WRITER_HPP_INCLUDED
 
-#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
-#include "tiki/container/list.hpp"
-#include "tiki/resource/resource_definition.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/converterbase/resource_section_writer.hpp"
 
 namespace tiki
 {
 	class ConverterBase;
-	class ResourceSectionWriter;
-
-	struct ReferenceKey
-	{
-		ReferenceType	type;
-		uint			identifier;
-		uint			offsetInTargetSection;
-	};
 
 	class ResourceWriter
 	{
@@ -41,19 +30,14 @@ namespace tiki
 
 	private:
 
-		struct ReferenceData
-		{
-			ReferenceKey	key;
-			uint32			position;
-		};
-
 		struct SectionData
 		{
-			uint					alignment;
-			SectionType				type;
+			uint							id;
+			uint							alignment;
+			SectionType						type;
 
-			List< uint8 >			binaryData;
-			List< ReferenceData >	references;
+			List< uint8 >					binaryData;
+			List< ResourceReferenceData >	references;
 		};
 
 		struct StringData

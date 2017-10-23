@@ -65,7 +65,8 @@ namespace tiki
 #if TIKI_DISABLED( TIKI_BUILD_LIBRARY )
 		InstanceHandle							getInstanceHandle();
 		const StaticArray< const char* >&		getArguments();
-		bool									hasArgument( const char* name );
+		bool									hasArgument( const char* pName );
+		bool									findArgumentValue( const char** ppValue, const char* pName );
 
 		char**									getArgumentPointer();
 		int&									getArgumentCount();

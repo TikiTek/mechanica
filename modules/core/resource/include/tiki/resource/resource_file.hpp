@@ -1,9 +1,10 @@
 #pragma once
-#ifndef __TIKI_RESOURCEFILE_HPP_INCLUDED__
-#define __TIKI_RESOURCEFILE_HPP_INCLUDED__
+#ifndef TIKI_RESOURCE_FILE_HPP_INCLUDED
+#define TIKI_RESOURCE_FILE_HPP_INCLUDED
 
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/resource/resource_definition.hpp"
 
 namespace tiki
 {
@@ -204,4 +205,4 @@ namespace tiki
 	};
 }
 
-#endif // __TIKI_RESOURCEFILE_HPP_INCLUDED__
+#endif // TIKI_RESOURCE_FILE_HPP_INCLUDED

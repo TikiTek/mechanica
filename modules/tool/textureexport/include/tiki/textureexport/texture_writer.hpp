@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TIKI_TEXTUREWRITER_HPP__INCLUDED
-#define TIKI_TEXTUREWRITER_HPP__INCLUDED
+#ifndef TIKI_TEXTURE_WRITER_HPP_INCLUDED
+#define TIKI_TEXTURE_WRITER_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
@@ -79,4 +79,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_TEXTUREWRITER_HPP__INCLUDED
+#endif // TIKI_TEXTURE_WRITER_HPP_INCLUDED

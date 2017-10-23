@@ -6,7 +6,6 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/converterbase/resource_section_writer.hpp"
 
 namespace tiki
 {

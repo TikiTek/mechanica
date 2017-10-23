@@ -6,7 +6,6 @@
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/converterbase/converter_manager.hpp"
-#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/io/file.hpp"

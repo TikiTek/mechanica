@@ -1,8 +1,8 @@
 #pragma once
-#ifndef TIKI_GENERICDATARESOURCE_INL_INCLUDED__
-#define TIKI_GENERICDATARESOURCE_INL_INCLUDED__
+#ifndef TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED
+#define TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED
 
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -35,7 +35,7 @@ namespace tiki
 	{
 		resourceManager.unregisterResourceType( s_resourceType );
 	}
-	
+
 	template<typename TData, fourcc TFourCC>
 	const TData& GenericDataResource<TData, TFourCC>::getData() const
 	{
@@ -70,4 +70,4 @@ namespace tiki
 	}
 }
 
-#endif // TIKI_GENERICDATARESOURCE_INL_INCLUDED__
+#endif // TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED

@@ -293,15 +293,12 @@ namespace tiki
 		{
 			const Path& file = m_files[ i ];
 
-			ConversionAsset& asset = assetsToBuild.add();
+			ConversionAsset& asset = assetsToBuild.pushBack();
 			if( !fillAssetFromFilePath( asset, file ) )
 			{
-				//assetsToBuild.
+				assetsToBuild.popBack();
 				filesFromDependencies.add( file );
-				continue;
 			}
-
-			filesToBuild.add( file );
 		}
 
 		if ( filesFromDependencies.getCount() > 0u )
@@ -309,14 +306,16 @@ namespace tiki
 			string whereFileName;
 			for (uint i = 0u; i < filesFromDependencies.getCount(); ++i)
 			{
-				const string& fileName = filesFromDependencies[ i ];
+				const Path& filePath = filesFromDependencies[ i ];
 
 				if (i != 0u)
 				{
 					whereFileName += " OR ";
 				}
 
-				whereFileName += "dep.identifier = '" + fileName + "'";
+				whereFileName += "dep.identifier = '";
+				whereFileName += filePath.getCompletePath();
+				whereFileName += "'";
 			}
 
 			{
@@ -331,14 +330,15 @@ namespace tiki
 
 				while ( query.nextRow() )
 				{
-					FileDescription file;
-					file.filePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
-					file.fileType		= (crc32)query.getIntegerField( "type" );
+					ConversionAsset asset;
+					asset.inputFilePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
+					asset.assetName	= asset.inputFilePath.getFilename();
+					asset.typeCrc	= (crc32)query.getIntegerField( "type" );
 
 					bool found = false;
-					for (uint i = 0u; i < filesToBuild.getCount(); ++i)
+					for (uint i = 0u; i < assetsToBuild.getCount(); ++i)
 					{
-						if( isStringEquals( filesToBuild[ i ].filePath.getCompletePath(), file.filePath.getCompletePath() ) )
+						if( assetsToBuild[ i ].assetName == asset.assetName )
 						{
 							found = true;
 							break;
@@ -347,7 +347,7 @@ namespace tiki
 
 					if ( !found )
 					{
-						filesToBuild.add( file );
+						assetsToBuild.add( asset );
 					}
 				}
 			}
@@ -359,17 +359,27 @@ namespace tiki
 		return generateTaskFromFiles( assetsToBuild );
 	}
 
-	bool ConverterManager::generateTaskFromFiles( const List< FileDescription >& filesToBuild )
+	bool ConverterManager::fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath )
+	{
+		asset.inputFilePath = filePath;
+		asset.assetName		= asset.inputFilePath.getFilename();
+		//asset.typeCrc	= (crc32)query.getIntegerField( "type" );
+
+		return true;
+	}
+
+	bool ConverterManager::generateTaskFromFiles( const List< ConversionAsset >& assetsToBuild )
 	{
 		List< ConversionTask > tasks;
 
 		bool result = true;
-		for (uint fileIndex = 0u; fileIndex < filesToBuild.getCount(); ++fileIndex )
+		for (uint assetIndex = 0u; assetIndex < assetsToBuild.getCount(); ++assetIndex )
 		{
-			const FileDescription& fileDesc = filesToBuild[ fileIndex ];
+			const ConversionAsset& asset = assetsToBuild[ assetIndex ];
 
-			if ( !file::exists( fileDesc.filePath.getCompletePath() ) )
+			if ( !file::exists( asset.inputFilePath.getCompletePath() ) )
 			{
+				TIKI_TRACE_ERROR( "[converter] File to convert not found: %s.\n", asset.inputFilePath.getCompletePath() );
 				result = false;
 				continue;
 			}
@@ -379,7 +389,7 @@ namespace tiki
 			{
 				const ConverterBase* pConverter = m_converters[ converterIndex ];
 
-				if ( pConverter->canConvertType( fileDesc.fileType ) )
+				if ( pConverter->canConvertType( asset.typeCrc ) )
 				{
 					task.pConverter = pConverter;
 					break;
@@ -388,24 +398,16 @@ namespace tiki
 
 			if ( task.pConverter == nullptr )
 			{
-				TIKI_TRACE_ERROR( "No Converter found for file: '%s'.\n", fileDesc.filePath.getCompletePath() );
+				TIKI_TRACE_ERROR( "[converter] No Converter found for file: '%s'.\n", asset.inputFilePath.getCompletePath() );
 				result = false;
 				continue;
 			}
 
-			task.asset.assetId			= TIKI_SIZE_T_MAX;
+			task.asset					= asset;
 			task.asset.isBuildRequired	= false;
-			task.asset.inputFilePath	= fileDesc.filePath;
-			task.asset.typeCrc			= fileDesc.fileType;
+			task.pManager				= this;
 
-			if ( !readDataFromXasset( task, fileDesc ) )
-			{
-				result = false;
-				continue;
-			}
-
-			task.pManager = this;
-			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( fileDesc.fileType ) ) );
+			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( asset.typeCrc ) ) );
 			task.result.addInputFile( task.asset.inputFilePath );
 
 			tasks.add( task );
@@ -434,98 +436,98 @@ namespace tiki
 		return result;
 	}
 
-	bool ConverterManager::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
-	{
-		XmlReader xmlFile;
-		xmlFile.create( fileDesc.fullFileName.cStr() );
+	//bool ConverterManager::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
+	//{
+	//	XmlReader xmlFile;
+	//	xmlFile.create( fileDesc.fullFileName.cStr() );
 
-		// parse root node
-		const XmlElement* pRoot = xmlFile.findNodeByName( "tikiasset" );
-		if ( pRoot == nullptr )
-		{
-			TIKI_TRACE_ERROR( "no asset definition found.\n" );
-			return false;
-		}
+	//	// parse root node
+	//	const XmlElement* pRoot = xmlFile.findNodeByName( "tikiasset" );
+	//	if ( pRoot == nullptr )
+	//	{
+	//		TIKI_TRACE_ERROR( "no asset definition found.\n" );
+	//		return false;
+	//	}
 
-		const XmlAttribute* pOutput = xmlFile.findAttributeByName( "output-name", pRoot );
-		if ( pOutput == nullptr )
-		{
-			task.parameters.outputName = path::getFilenameWithoutExtension( path::getFilenameWithoutExtension( fileDesc.fullFileName ) );
-		}
-		else
-		{
-			task.parameters.outputName = pOutput->content;
-		}
+	//	const XmlAttribute* pOutput = xmlFile.findAttributeByName( "output-name", pRoot );
+	//	if ( pOutput == nullptr )
+	//	{
+	//		task.parameters.outputName = path::getFilenameWithoutExtension( path::getFilenameWithoutExtension( fileDesc.fullFileName ) );
+	//	}
+	//	else
+	//	{
+	//		task.parameters.outputName = pOutput->content;
+	//	}
 
-		// read inputs
-		const string inputDir		= path::getDirectoryName( fileDesc.fullFileName );
-		const XmlElement* pInput	= xmlFile.findNodeByName( "input" );
-		while ( pInput != nullptr )
-		{
-			const XmlAttribute* pAttFile	= xmlFile.findAttributeByName( "file", pInput );
-			const XmlAttribute* pAttType	= xmlFile.findAttributeByName( "type", pInput );
+	//	// read inputs
+	//	const string inputDir		= path::getDirectoryName( fileDesc.fullFileName );
+	//	const XmlElement* pInput	= xmlFile.findNodeByName( "input" );
+	//	while ( pInput != nullptr )
+	//	{
+	//		const XmlAttribute* pAttFile	= xmlFile.findAttributeByName( "file", pInput );
+	//		const XmlAttribute* pAttType	= xmlFile.findAttributeByName( "type", pInput );
 
-			if ( pAttFile == nullptr || pAttType == nullptr )
-			{
-				TIKI_TRACE_WARNING(
-					"[ConverterManager] XASSET: Input-Tag has wrong attributes: %s%s\n",
-					( pAttFile == nullptr ? "no file-attribute " : string( "file: " ) + pAttFile->content ).cStr(),
-					( pAttType == nullptr ? "no type-attribute " : string( "type: " ) + pAttType->content ).cStr()
-				);
-			}
-			else
-			{
-				ConversionParameters::InputFile input;
-				input.fileName	= pAttFile->content;
-				input.typeCrc	= crcString( pAttType->content );
+	//		if ( pAttFile == nullptr || pAttType == nullptr )
+	//		{
+	//			TIKI_TRACE_WARNING(
+	//				"[ConverterManager] XASSET: Input-Tag has wrong attributes: %s%s\n",
+	//				( pAttFile == nullptr ? "no file-attribute " : string( "file: " ) + pAttFile->content ).cStr(),
+	//				( pAttType == nullptr ? "no type-attribute " : string( "type: " ) + pAttType->content ).cStr()
+	//			);
+	//		}
+	//		else
+	//		{
+	//			ConversionParameters::InputFile input;
+	//			input.fileName	= pAttFile->content;
+	//			input.typeCrc	= crcString( pAttType->content );
 
-				if ( !file::exists( input.fileName.cStr() ) )
-				{
-					input.fileName = path::combine( inputDir, input.fileName );
-				}
+	//			if ( !file::exists( input.fileName.cStr() ) )
+	//			{
+	//				input.fileName = path::combine( inputDir, input.fileName );
+	//			}
 
-				if ( !file::exists( input.fileName.cStr() ) )
-				{
-					TIKI_TRACE_WARNING( "input file not found. these will be ignored. path: %s\n", input.fileName.cStr() );
-				}
-				else
-				{
-					input.fileName = path::getAbsolutePath( input.fileName );
-					task.parameters.inputFiles.add( input );
-				}
-			}
+	//			if ( !file::exists( input.fileName.cStr() ) )
+	//			{
+	//				TIKI_TRACE_WARNING( "input file not found. these will be ignored. path: %s\n", input.fileName.cStr() );
+	//			}
+	//			else
+	//			{
+	//				input.fileName = path::getAbsolutePath( input.fileName );
+	//				task.parameters.inputFiles.add( input );
+	//			}
+	//		}
 
-			pInput = xmlFile.findNext( "input", pInput );
-		}
+	//		pInput = xmlFile.findNext( "input", pInput );
+	//	}
 
-		if ( task.parameters.inputFiles.getCount() == 0u )
-		{
-			TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted. Filename: %s\n", task.parameters.sourceFile.cStr() );
-			xmlFile.dispose();
-			return false;
-		}
+	//	if ( task.parameters.inputFiles.getCount() == 0u )
+	//	{
+	//		TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted. Filename: %s\n", task.parameters.sourceFile.cStr() );
+	//		xmlFile.dispose();
+	//		return false;
+	//	}
 
-		// read params
-		parseParams( xmlFile, pRoot, task.parameters.arguments.getMap() );
+	//	// read params
+	//	parseParams( xmlFile, pRoot, task.parameters.arguments.getMap() );
 
-		const XmlAttribute* pTemplate = xmlFile.findAttributeByName( "template", pRoot );
-		if ( pTemplate != nullptr )
-		{
-			TemplateDescription desc;
-			if ( m_templates.findValue( &desc, pTemplate->content ) )
-			{
-				for (uint i = 0u; i < desc.arguments.getCount(); ++i)
-				{
-					KeyValuePair< string, string >& kvp = desc.arguments.getPairAt( i );
+	//	const XmlAttribute* pTemplate = xmlFile.findAttributeByName( "template", pRoot );
+	//	if ( pTemplate != nullptr )
+	//	{
+	//		TemplateDescription desc;
+	//		if ( m_templates.findValue( &desc, pTemplate->content ) )
+	//		{
+	//			for (uint i = 0u; i < desc.arguments.getCount(); ++i)
+	//			{
+	//				KeyValuePair< string, string >& kvp = desc.arguments.getPairAt( i );
 
-					task.parameters.arguments.getMap().set( kvp.key, kvp.value );
-				}
-			}
-		}
-		xmlFile.dispose();
+	//				task.parameters.arguments.getMap().set( kvp.key, kvp.value );
+	//			}
+	//		}
+	//	}
+	//	xmlFile.dispose();
 
-		return true;
-	}
+	//	return true;
+	//}
 
 	bool ConverterManager::writeConvertInputs( List< ConversionTask >& tasks )
 	{
@@ -541,8 +543,7 @@ namespace tiki
 		for (uint i = 0u; i < tasks.getCount(); ++i)
 		{
 			ConversionTask& task = tasks[ i ];
-
-			const string fileName = path::getFilename( task.parameters.sourceFile );
+			const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
 
 			if ( i != 0u )
 			{
@@ -557,28 +558,30 @@ namespace tiki
 		// read asset ids
 		string whereAssetId;
 		{
-			AutoDispose< SqliteQuery > query;
-			if ( !query->create( m_dataBase, "SELECT id, filename, has_error FROM assets WHERE " + whereFileName ) )
+			const string sql = "SELECT id, filename, has_error FROM assets WHERE " + whereFileName;
+
+			SqliteQuery query;
+			if ( !query.create( m_dataBase, sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				return false;
 			}
 
-			while ( query->nextRow() )
+			while ( query.nextRow() )
 			{
-				const string fileName = query->getTextField( "filename" );
+				const string fileName = query.getTextField( "filename" );
 
 				ConversionTask* pTask = nullptr;
 				if ( tasksByFileName.findValue( &pTask, fileName ) && pTask != nullptr )
 				{
-					pTask->parameters.assetId			= query->getIntegerField( "id" );
-					pTask->parameters.isBuildRequired	= (query->getIntegerField( "has_error" ) != 0u);
+					pTask->asset.assetId			= query.getIntegerField( "id" );
+					pTask->asset.isBuildRequired	= (query.getIntegerField( "has_error" ) != 0u);
 
 					if ( !whereAssetId.isEmpty() )
 					{
 						whereAssetId += " OR ";
 					}
-					whereAssetId += formatDynamicString( "asset_id = '%u'", pTask->parameters.assetId );
+					whereAssetId += formatDynamicString( "asset_id = '%u'", pTask->asset.assetId );
 				}
 			}
 
@@ -586,27 +589,27 @@ namespace tiki
 			{
 				ConversionTask& task = tasks[ i ];
 
-				if ( task.parameters.assetId == TIKI_SIZE_T_MAX )
+				if ( task.asset.assetId == TIKI_SIZE_T_MAX )
 				{
-					const string filePath = path::getDirectoryName( task.parameters.sourceFile );
-					const string fileName = path::getFilename( task.parameters.sourceFile );
+					const string filePath = task.asset.inputFilePath.getDirectoryWithPrefix();
+					const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
 
 					const string sql = formatDynamicString(
 						"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%u', '1');",
 						fileName.cStr(),
 						filePath.cStr(),
-						task.parameters.typeCrc
+						task.asset.typeCrc
 					);
 
-					if ( !m_dataBase.executeCommand( sql ) )
+					if ( !m_dataBase.executeCommand( sql.cStr() ) )
 					{
-						TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+						TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 						result = false;
 						continue;
 					}
 
-					task.parameters.assetId = m_dataBase.getLastInsertId();
-					task.parameters.isBuildRequired = true;
+					task.asset.assetId			= m_dataBase.getLastInsertId();
+					task.asset.isBuildRequired	= true;
 				}
 			}
 		}
@@ -614,9 +617,10 @@ namespace tiki
 		// delete old input files
 		if ( !whereAssetId.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "DELETE FROM input_files WHERE " + whereAssetId ) )
+			const string sql = formatDynamicString( "DELETE FROM input_files WHERE %s;", whereAssetId.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				return false;
 			}
 		}
@@ -626,28 +630,18 @@ namespace tiki
 		{
 			ConversionTask& task = tasks[ taskIndex ];
 
-			for (uint inputIndex = 0u; inputIndex < task.parameters.inputFiles.getCount(); ++inputIndex)
-			{
-				const ConversionParameters::InputFile& inputFile = task.parameters.inputFiles[ inputIndex ];
-				const string inputFileName = path::getAbsolutePath( inputFile.fileName );
-
-				if ( !insertInputFiles.isEmpty() )
-				{
-					insertInputFiles += ", ";
-				}
-
-				insertInputFiles += formatDynamicString(
-					"('%u','%s','%u')",
-					task.parameters.assetId,
-					inputFileName.cStr(),
-					inputFile.typeCrc
-				);
-			}
+			insertInputFiles += formatDynamicString(
+				"('%u','%s','%u')",
+				task.asset.assetId,
+				task.asset.inputFilePath.getCompletePath(),
+				task.asset.typeCrc
+			);
 		}
 
-		if ( !m_dataBase.executeCommand( "INSERT INTO input_files (asset_id,filename,type) VALUES " + insertInputFiles ) )
+		const string sql = formatDynamicString( "INSERT INTO input_files (asset_id,filename,type) VALUES %s;", insertInputFiles.cStr() );
+		if ( !m_dataBase.executeCommand( sql.cStr() ) )
 		{
-			TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+			TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 			return false;
 		}
 
@@ -660,7 +654,7 @@ namespace tiki
 		{
 			for( ConversionTask& task : tasks )
 			{
-				task.parameters.isBuildRequired = true;
+				task.asset.isBuildRequired = true;
 			}
 
 			return true;
@@ -672,29 +666,31 @@ namespace tiki
 		{
 			ConversionTask& task = tasks[ i ];
 
-			tasksByAssetId.set( task.parameters.assetId, &task );
+			tasksByAssetId.set( task.asset.assetId, &task );
 
 			if ( i != 0u )
 			{
 				whereAssetId += " OR ";
 			}
-			whereAssetId += formatDynamicString( "asset_id = '%u'", task.parameters.assetId );
+			whereAssetId += formatDynamicString( "asset_id = '%u'", task.asset.assetId );
 		}
 
 		if( !whereAssetId.isEmpty() )
 		{
 			// check output files
 			{
-				AutoDispose< SqliteQuery > query;
-				if( !query->create( m_dataBase, "SELECT asset_id, filename FROM output_files WHERE " + whereAssetId ) )
+				const string sql = formatDynamicString( "SELECT asset_id, filename FROM output_files WHERE %s;", whereAssetId.cStr() );
+
+				SqliteQuery query;
+				if( !query.create( m_dataBase, sql.cStr() ) )
 				{
-					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
+					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query.getLastError() );
 					return false;
 				}
 
-				while( query->nextRow() )
+				while( query.nextRow() )
 				{
-					const uint assetId = query->getIntegerField( "asset_id" );
+					const uint assetId = query.getIntegerField( "asset_id" );
 
 					ConversionTask* pTask = nullptr;
 					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
@@ -702,30 +698,32 @@ namespace tiki
 						continue;
 					}
 
-					if( pTask->parameters.isBuildRequired )
+					if( pTask->asset.isBuildRequired )
 					{
 						continue;
 					}
 
-					if( !file::exists( query->getTextField( "filename" ).cStr() ) )
+					if( !file::exists( query.getTextField( "filename" ) ) )
 					{
-						pTask->parameters.isBuildRequired = true;
+						pTask->asset.isBuildRequired = true;
 					}
 				}
 			}
 
 			// check dependency files
 			{
-				AutoDispose< SqliteQuery > query;
-				if( !query->create( m_dataBase, "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE " + whereAssetId ) )
+				const string sql = formatDynamicString( "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE %s;", whereAssetId.cStr() );
+
+				SqliteQuery query;
+				if( !query.create( m_dataBase, sql.cStr() ) )
 				{
-					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query->getLastError().cStr() );
+					TIKI_TRACE_ERROR( "[convertermanager] can't prepare sql command. error: %s\n", query.getLastError() );
 					return false;
 				}
 
-				while( query->nextRow() )
+				while( query.nextRow() )
 				{
-					const uint assetId = query->getIntegerField( "asset_id" );
+					const uint assetId = query.getIntegerField( "asset_id" );
 
 					ConversionTask* pTask = nullptr;
 					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
@@ -733,33 +731,34 @@ namespace tiki
 						continue;
 					}
 
-					if( pTask->parameters.isBuildRequired )
+					if( pTask->asset.isBuildRequired )
 					{
 						continue;
 					}
 
-					const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query->getIntegerField( "type" );
-					const string identifier	= query->getTextField( "identifier" );
-					const int valueInt		= query->getIntegerField( "value_int" );
+					const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query.getIntegerField( "type" );
+					const string identifier	= query.getTextField( "identifier" );
+					const int valueInt		= query.getIntegerField( "value_int" );
 
 					switch( type )
 					{
 					case ConversionResult::DependencyType_Converter:
 						{
-							const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->parameters.typeCrc );
+							const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->asset.typeCrc );
 							if( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
 							{
-								pTask->parameters.isBuildRequired = true;
+								pTask->asset.isBuildRequired = true;
 							}
 						}
 						break;
 
-					case ConversionResult::DependencyType_File:
+					case ConversionResult::DependencyType_InputFile:
+					case ConversionResult::DependencyType_OutputFile:
 						{
 							const crc32 fileChangeCrc = file::getLastChangeCrc( identifier.cStr() );
 							if( fileChangeCrc != (crc32)valueInt )
 							{
-								pTask->parameters.isBuildRequired = true;
+								pTask->asset.isBuildRequired = true;
 							}
 						}
 						break;
@@ -767,7 +766,7 @@ namespace tiki
 					case ConversionResult::DependencyType_Type:
 						{
 							// TODO
-							pTask->parameters.isBuildRequired = true;
+							pTask->asset.isBuildRequired = true;
 						}
 						break;
 
@@ -806,11 +805,11 @@ namespace tiki
 					}
 
 					dependencyValues += formatDynamicString(
-						"('%u','%u','%s','%u')",
-						task.parameters.assetId,
+						"('%u','%u','%s','%s')",
+						task.asset.assetId,
 						dependency.type,
 						dependency.identifier.cStr(),
-						dependency.valueInt
+						dependency.value.cStr()
 					);
 				}
 			}
@@ -830,7 +829,7 @@ namespace tiki
 
 					traceValues += formatDynamicString(
 						"('%u','%u','%s')",
-						task.parameters.assetId,
+						task.asset.assetId,
 						traceInfo.level,
 						escapeString( traceInfo.message ).cStr()
 					);
@@ -845,15 +844,15 @@ namespace tiki
 
 			if ( hasError )
 			{
-				TIKI_TRACE_ERROR( "[ConverterManager] Conversion of '%s' failed!\n", path::getFilename( task.parameters.sourceFile ).cStr() );
+				TIKI_TRACE_ERROR( "[ConverterManager] Conversion of '%s' failed!\n", task.asset.inputFilePath.getFilenameWithExtension() );
 			}
 
 			// output files
 			{
-				const List< string >& outputFiles = task.result.getOutputFiles();
+				const List< Path >& outputFiles = task.result.getOutputFiles();
 				for (uint i = 0u; i < outputFiles.getCount(); ++i)
 				{
-					const string& outputFile = outputFiles[ i ];
+					const Path& outputFilePath = outputFiles[ i ];
 
 					if( !outputFileValues.isEmpty() )
 					{
@@ -862,13 +861,13 @@ namespace tiki
 
 					outputFileValues += formatDynamicString(
 						"('%u','%s')",
-						task.parameters.assetId,
-						outputFile.cStr()
+						task.asset.assetId,
+						outputFilePath.getCompletePath()
 					);
 
 					if( m_pChangedFilesList != nullptr && !hasError )
 					{
-						m_pChangedFilesList->add( outputFile );
+						m_pChangedFilesList->add( outputFilePath.getCompletePath() );
 					}
 				}
 			}
@@ -877,14 +876,14 @@ namespace tiki
 			{
 				whereAssetId += " OR ";
 			}
-			whereAssetId += formatDynamicString( "asset_id = '%u'", task.parameters.assetId );
+			whereAssetId += formatDynamicString( "asset_id = '%u'", task.asset.assetId );
 
 			string& whereAssetIdFiltered = (hasError ? whereAssetIdFailed : whereAssetIdSucceeded);
 			if( !whereAssetIdFiltered.isEmpty() )
 			{
 				whereAssetIdFiltered += " OR ";
 			}
-			whereAssetIdFiltered += formatDynamicString( "id = '%u'", task.parameters.assetId );
+			whereAssetIdFiltered += formatDynamicString( "id = '%u'", task.asset.assetId );
 		}
 
 		// delete old stuff
@@ -895,9 +894,9 @@ namespace tiki
 				"DELETE FROM output_files WHERE " + whereAssetId + "; " +
 				"DELETE FROM traces WHERE " + whereAssetId + ";";
 
-			if ( !m_dataBase.executeCommand( deleteCommand ) )
+			if ( !m_dataBase.executeCommand( deleteCommand.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
@@ -905,9 +904,10 @@ namespace tiki
 		// dependencies
 		if ( !dependencyValues.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "INSERT INTO dependencies (asset_id,type,identifier,value_int) VALUES " + dependencyValues + ";" ) )
+			const string sql = formatDynamicString( "INSERT INTO dependencies (asset_id,type,identifier,value_int) VALUES %s;", dependencyValues.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
@@ -915,9 +915,10 @@ namespace tiki
 		// traces
 		if ( !traceValues.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "INSERT INTO traces (asset_id,level,message) VALUES " + traceValues + ";" ) )
+			const string sql = formatDynamicString( "INSERT INTO traces (asset_id,level,message) VALUES %s;", traceValues.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
@@ -925,9 +926,10 @@ namespace tiki
 		// output files
 		if ( !outputFileValues.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "INSERT INTO output_files (asset_id,filename) VALUES " + outputFileValues + ";" ) )
+			const string sql = formatDynamicString( "INSERT INTO output_files (asset_id,filename) VALUES %s;", outputFileValues.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
@@ -935,27 +937,29 @@ namespace tiki
 		// update asset
 		if ( !whereAssetIdFailed.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "UPDATE assets SET has_error = '1' WHERE " + whereAssetIdFailed + ";" ) )
+			const string sql = formatDynamicString( "UPDATE assets SET has_error = '1' WHERE %s;", whereAssetIdFailed.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
 
 		if ( !whereAssetIdSucceeded.isEmpty() )
 		{
-			if ( !m_dataBase.executeCommand( "UPDATE assets SET has_error = '0' WHERE " + whereAssetIdSucceeded + ";" ) )
+			const string sql = formatDynamicString( "UPDATE assets SET has_error = '0' WHERE %s;", whereAssetIdSucceeded.cStr() );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
 
 		{
-			const string hasErrorString = (hasGlobalError ? "1" : "0");
-			if ( !m_dataBase.executeCommand( "INSERT INTO builds (buildtime, has_error) VALUES (datetime('now'), " + hasErrorString + ");" ) )
+			const string sql = formatDynamicString( "INSERT INTO builds (buildtime, has_error) VALUES (datetime('now'), %d);", hasGlobalError );
+			if ( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError().cStr() );
+				TIKI_TRACE_ERROR( "[convertermanager] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
 				hasGlobalError = true;
 			}
 		}
@@ -970,8 +974,8 @@ namespace tiki
 
 		task.pManager->taskRegisterResult( context.thread.getThreadId(), task.result );
 
-		TIKI_TRACE_INFO( "Building asset: %s\n", path::getFilename( task.parameters.sourceFile ).cStr() );
-		task.pConverter->convert( task.result, task.parameters );
+		TIKI_TRACE_INFO( "Building asset: %s\n", task.asset.inputFilePath.getFilenameWithExtension() );
+		task.pConverter->convert( task.result, task.asset );
 	}
 
 	void ConverterManager::taskRegisterResult( uint64 threadId, ConversionResult& result )

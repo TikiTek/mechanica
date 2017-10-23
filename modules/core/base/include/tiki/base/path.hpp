@@ -11,6 +11,8 @@ namespace tiki
 	public:
 
 						Path();
+		explicit		Path( const char* pCompletePath );
+		explicit		Path( const char* pPath1, const char* pPath2 );
 
 		bool			isEmpty();
 
