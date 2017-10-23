@@ -12,7 +12,7 @@ module.import_func = function()
 	elseif is_linux then
 		use_vulkan	= true;
 	elseif is_apple then
-		use_vulkan	= true;
+		use_metal	= true;
 	else
 		throw("Operating System not supported.");
 	end
