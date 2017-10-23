@@ -1,4 +1,4 @@
-<tikigenerictypes base="components">
+<generictypes base="components">
 	<enum name="Components2dType">
 		<value name="Transform" value="{crc Transform2dComponent}" />
 		<value name="Sprite" value="{crc SpriteComponent}" />
@@ -27,4 +27,4 @@
 		<field type="{array float2}" name="uvs" />
 		<field type="uint32" name="layerId" />
 	</struct>
-</tikigenerictypes> 
+</generictypes> 

@@ -1,4 +1,4 @@
-<tikigenerictypes>
+<generictypes>
 	<!-- byte -->
 	<struct name="byte2">
 		<field name="x" type="uint8" />
@@ -111,4 +111,4 @@
 		<field name="z" type="float" />
 		<field name="w" type="float" />
 	</struct>
-</tikigenerictypes>
+</generictypes>

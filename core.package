@@ -1,7 +1,7 @@
-<tikipackage>
+<package>
 	<description>TikiEngine 3 Base Assets</description>
 	<author>TikiTek</author>
 	<dependencies />
 	<genericdatatypes>genericdata/types</genericdatatypes>
 	<templates>templates</templates>
-</tikipackage>
+</package>

@@ -1,4 +1,4 @@
-<tikigenerictypes base="components">
+<generictypes base="components">
 	<enum name="Physics2dComponentType">
 		<value name="Body" value="{crc Physics2dBodyComponent}" />
 		<value name="Collider" value="{crc Physics2dColliderComponent}" />
@@ -60,4 +60,4 @@
 			<filter fieldName="type" value="{enum Physics2dJointType.Revolute}" />
 		</field>
 	</struct>
-</tikigenerictypes> 
+</generictypes> 
