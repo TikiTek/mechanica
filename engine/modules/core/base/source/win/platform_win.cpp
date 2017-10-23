@@ -57,14 +57,45 @@ namespace tiki
 		return s_arguments;
 	}
 
-	bool platform::hasArgument( const char* name )
+	bool platform::hasArgument( const char* pName )
 	{
 		for (uint i = 0u; i < s_arguments.getCount(); ++i)
 		{
-			if ( isStringEquals( s_arguments[ i ], name ) )
+			if ( isStringEquals( s_arguments[ i ], pName ) )
 			{
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	bool platform::findArgumentValue( const char** ppValue, const char* pName )
+	{
+		TIKI_ASSERT( ppValue != nullptr );
+
+		for( uint i = 0u; i < s_arguments.getCount(); ++i )
+		{
+			const char* pArgument = s_arguments[ i ];
+
+			if( !doesStringStartWith( pArgument, pName ) )
+			{
+				continue;
+			}
+
+			const uint nameLength = getStringLength( pName );
+			if( pArgument[ nameLength ] == '=' )
+			{
+				*ppValue = pArgument + nameLength + 1u;
+				return true;
+			}
+			else if( i < s_arguments.getCount() - 1u )
+			{
+				*ppValue = s_arguments[ i + 1u ];
+				return true;
+			}
+
+			break;
 		}
 
 		return false;

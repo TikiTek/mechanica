@@ -6,7 +6,7 @@
 #include "tiki/io/filesystem.hpp"
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcestorage.hpp"
 
 namespace tiki

@@ -11,7 +11,7 @@ namespace tiki
 
 	class PackageManager
 	{
-		TIKI_NONCOPYABLE_CLASS( PackageManager );
+		TIKI_NONCOPYABLE_WITHCTOR_CLASS( PackageManager );
 
 	public:
 

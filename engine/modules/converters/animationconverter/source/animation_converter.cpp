@@ -1,6 +1,6 @@
 #include "tiki/animationconverter/animation_converter.hpp"
 
-#include "tiki/animationconverter/animationbuilder.hpp"
+#include "tiki/animationconverter/animation_builder.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"

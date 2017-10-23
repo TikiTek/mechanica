@@ -1,4 +1,4 @@
-<tikigenerictypes base="components">
+<generictypes base="components">
 	<enum name="MechanicaComponentType">
 		<value name="Breakable" value="{crc BreakableComponent}" />
 		<value name="Player" value="{crc PlayerComponent}" />
@@ -26,4 +26,4 @@
 	</struct>
 	<struct name="WiggleComponentInitData" base="ComponentInitData">
 	</struct>
-</tikigenerictypes> 
+</generictypes> 

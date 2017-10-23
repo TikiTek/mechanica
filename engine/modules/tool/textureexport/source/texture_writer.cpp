@@ -1,7 +1,6 @@
-#include "tiki/textureexport/texturewriter.hpp"
+#include "tiki/textureexport/texture_writer.hpp"
 
 #include "tiki/base/basetypes.hpp"
-#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/texturedescription.hpp"
 #include "tiki/textureexport/hdrimage.hpp"

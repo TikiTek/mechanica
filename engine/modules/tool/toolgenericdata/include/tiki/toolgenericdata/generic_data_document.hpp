@@ -37,7 +37,9 @@ namespace tiki
 		bool							importFromFile( const char* pFilename );
 		bool							exportToFile( const char* pFilename );
 
+#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		bool							writeToResource( ReferenceKey& dataKey, ResourceSectionWriter& sectionWriter ) const;
+#endif
 
 	private:
 

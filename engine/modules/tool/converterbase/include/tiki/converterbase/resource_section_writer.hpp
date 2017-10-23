@@ -2,13 +2,27 @@
 #ifndef TIKI_RESOURCE_SECTION_WRITER_HPP_INCLUDED
 #define TIKI_RESOURCE_SECTION_WRITER_HPP_INCLUDED
 
-#include "tiki/io/memorystream.hpp"
 #include "tiki/base/dynamic_string.hpp"
+#include "tiki/container/list.hpp"
+#include "tiki/io/memorystream.hpp"
+#include "tiki/resource/resource_file.hpp"
 
 namespace tiki
 {
 	class ResourceWriter;
-	struct ReferenceKey;
+
+	struct ReferenceKey
+	{
+		ReferenceType	type;
+		uint			identifier;
+		uint			offsetInTargetSection;
+	};
+
+	struct ResourceReferenceData
+	{
+		ReferenceKey	key;
+		uint			offsetInSection;
+	};
 
 	class ResourceSectionWriter
 	{
@@ -47,14 +61,16 @@ namespace tiki
 
 	private: // friend
 
-		bool	create();
+		void	create( ResourceWriter*	pResourceWriter, uint sectionId );
 		void	dispose();
 
 	private:
 
-		ResourceWriter*	m_pResourceWriter;
+		ResourceWriter*					m_pResourceWriter;
 
-		MemoryStream	m_dataStream;
+		uint							m_sectionId;
+		MemoryStream					m_sectionData;
+		List< ResourceReferenceData >	m_sectionReferences;
 	};
 }
 

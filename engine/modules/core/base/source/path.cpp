@@ -9,6 +9,16 @@ namespace tiki
 		clear();
 	}
 
+	Path::Path( const char* pCompletePath )
+	{
+		setCompletePath( pCompletePath );
+	}
+
+	Path::Path( const char* pPath1, const char* pPath2 )
+	{
+		setCombinedPath( pPath1, pPath2 );
+	}
+
 	bool Path::isEmpty()
 	{
 		return isStringEmpty( m_prefix ) &&
@@ -67,25 +77,6 @@ namespace tiki
 		}
 
 		setFilenameWithExtension( buffer + currentIndex );
-
-		//uint filenameEnd = stringLastIndexOf( buffer, '.' );
-		//if( filenameEnd == TIKI_SIZE_T_MAX )
-		//{
-		//	filenameEnd = pathLength + 1u;
-		//}
-
-		//const uint fileNameSize = TIKI_MIN( (filenameEnd - currentIndex) + 1u, sizeof( m_filename ) );
-		//copyString( m_filename, fileNameSize, buffer + currentIndex );
-
-		//if( filenameEnd != pathLength + 1u )
-		//{
-		//	const uint extensionSize = TIKI_MIN( (pathLength - filenameEnd) + 1u, sizeof( m_extension ) );
-		//	copyString( m_extension, extensionSize, buffer + filenameEnd );
-		//}
-		//else
-		//{
-		//	m_extension[ 0u ] = '\0';
-		//}
 	}
 
 	void Path::setCombinedPath( const char* pPath1, const char* pPath2 )
@@ -94,6 +85,12 @@ namespace tiki
 
 		Path path2;
 		path2.setCompletePath( pPath2 );
+		push( path2 );
+	}
+
+	void Path::setCombinedPath( const Path& path1, const Path& path2 )
+	{
+		*this = path1;
 		push( path2 );
 	}
 
@@ -119,26 +116,32 @@ namespace tiki
 		{
 			m_extension[ 0u ] = '\0';
 		}
+
+		m_bufferState = BufferState_Invalid;
 	}
 
 	void Path::setPrefix( const char* pPrefix )
 	{
 		copyString( m_prefix, sizeof( m_prefix ), pPrefix );
+		m_bufferState = BufferState_Invalid;
 	}
 
 	void Path::setDirectory( const char* pDirectory )
 	{
 		copyString( m_directory, sizeof( m_directory ), pDirectory );
+		m_bufferState = BufferState_Invalid;
 	}
 
 	void Path::setFilename( const char* pFilename )
 	{
 		copyString( m_filename, sizeof( m_filename ), pFilename );
+		m_bufferState = BufferState_Invalid;
 	}
 
 	void Path::setExtension( const char* pExtension )
 	{
 		copyString( m_extension, sizeof( m_extension ), pExtension );
+		m_bufferState = BufferState_Invalid;
 	}
 
 	bool Path::pop()
@@ -152,6 +155,7 @@ namespace tiki
 		setFilenameWithExtension( m_directory + index );
 		m_directory[ index ] = '\0';
 
+		m_bufferState = BufferState_Invalid;
 		return true;
 	}
 
@@ -227,6 +231,7 @@ namespace tiki
 		switch( targetState )
 		{
 		case BufferState_DirectoryWithPrefix:
+			TIKI_NOT_IMPLEMENTED;
 			break;
 
 		case BufferState_FilenameWithExtension:
@@ -239,6 +244,38 @@ namespace tiki
 			break;
 
 		case BufferState_CompletePath:
+			{
+				char* pBuffer = m_buffer;
+				uint bufferSize = sizeof( m_buffer );
+
+				uint stringSize = copyString( pBuffer, bufferSize, m_prefix );
+				pBuffer += stringSize;
+				bufferSize -= stringSize;
+
+				if( !isStringEmpty( m_prefix ) )
+				{
+					stringSize = copyString( pBuffer, bufferSize, "/" );
+					pBuffer += stringSize;
+					bufferSize -= stringSize;
+				}
+
+				stringSize = copyString( pBuffer, bufferSize, m_directory );
+				pBuffer += stringSize;
+				bufferSize -= stringSize;
+
+				if( !isStringEmpty( m_directory ) )
+				{
+					stringSize = copyString( pBuffer, bufferSize, "/" );
+					pBuffer += stringSize;
+					bufferSize -= stringSize;
+				}
+
+				stringSize = copyString( pBuffer, bufferSize, m_filename );
+				pBuffer += stringSize;
+				bufferSize -= stringSize;
+
+				copyString( pBuffer, bufferSize, m_extension );
+			}
 			break;
 
 		default:

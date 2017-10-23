@@ -4,10 +4,11 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/io/filestream.hpp"
+#include "tiki/io/memorystream.hpp"
 
 namespace tiki
 {
-	ResourceWriter::~ResourceWriter()
+	ResourceWriter::ResourceWriter()
 	{
 		m_pCurrentResource = nullptr;
 	}
@@ -27,7 +28,7 @@ namespace tiki
 	void ResourceWriter::dispose()
 	{
 		m_resources.dispose();
-		m_fileName.clear();
+		m_filePath.clear();
 	}
 
 	bool ResourceWriter::writeToFile()
@@ -48,7 +49,7 @@ namespace tiki
 			ResourceHeader& header = resourceHeaders.add();
 			header.type			= resource.type;
 			header.key			= crcString( resource.name );
-			header.definition	= resource.definition.definitionMask;
+			header.definition	= resource.definition;
 			header.version		= resource.version;
 
 			header.linkCount	= uint16( resource.links.getCount() );
@@ -76,7 +77,7 @@ namespace tiki
 				SectionHeader& sectionHeader = sectionHeaders.add();
 				sectionHeader.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
 				sectionHeader.referenceCount			= uint16( sectionData.references.getCount() );
-				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getLength() );
+				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getCount() );
 				sectionHeader.offsetInResource			= 0u;
 			}
 			stream.write( sectionHeaders.getBegin(), sizeof( SectionHeader ) * sectionHeaders.getCount() );
@@ -86,13 +87,9 @@ namespace tiki
 			{
 				const StringData& stringData = resource.strings[ stringIndex ];
 
-				uint32 bitMask = setBitValue( 0u, 0u, 2u, stringData.type );
-				bitMask = setBitValue( bitMask, 2u, 2u, uint32( stringData.sizeInBytes / stringData.text.getLength() ) );
-				bitMask = setBitValue( bitMask, 4u, 28u, uint32( stringData.text.getLength() ) );
-
 				StringItem& stringItem = stringItems.add();
-				stringItem.type_lengthModifier_textLength	= bitMask;
-				stringItem.offsetInBlock					= 0u;
+				stringItem.sizeInBytes		= (uint32)stringData.text.getLength();
+				stringItem.offsetInBlock	= 0u;
 
 				header.stringSizeInBytes += uint32( stringData.text.getLength() + 1u );
 			}
@@ -117,17 +114,17 @@ namespace tiki
 				stream.writeAlignment( sectionData.alignment );
 
 				sectionHeaders[ sectionIndex ].offsetInResource = uint32( stream.getPosition() - header.offsetInFile );
-				stream.write( sectionData.binaryData.getData(), sectionData.binaryData.getLength() );
+				stream.write( sectionData.binaryData.getBegin(), sectionData.binaryData.getCount() );
 
 				for( uint k = 0u; k < sectionData.references.getCount(); ++k )
 				{
-					const ReferenceData& referenceData = sectionData.references[ k ];
+					const ResourceReferenceData& referenceData = sectionData.references[ k ];
 
 					ReferenceItem item;
-					item.type					= uint8( referenceData.key.type );
+					item.type					= referenceData.key.type;
 					item.targetId				= uint16( referenceData.key.identifier );
 					item.offsetInTargetSection	= uint32( referenceData.key.offsetInTargetSection );
-					item.offsetInSection		= referenceData.position;
+					item.offsetInSection		= uint32( referenceData.offsetInSection );
 
 					stream.write( &item, sizeof( item ) );
 				}
@@ -152,17 +149,17 @@ namespace tiki
 		stream.write( resourceHeaders.getBegin(), sizeof( ResourceHeader ) * resourceHeaders.getCount() );
 
 		FileStream fileStream;
-		if( fileStream.create( m_fileName.cStr(), DataAccessMode_Write ) )
+		if( fileStream.create( m_filePath.getCompletePath(), DataAccessMode_Write ) )
 		{
 			fileStream.write( stream.getData(), stream.getLength() );
-			fileStream.dispose();
 		}
 		else
 		{
-			TIKI_TRACE_ERROR( "[converter] Unable to open resource file '%s'!\n", m_fileName.cStr() );
+			TIKI_TRACE_ERROR( "[converter] Unable to open resource file '%s'!\n", m_filePath.getCompletePath() );
+			return false;
 		}
 
-		stream.dispose();
+		return true;
 	}
 
 	void ResourceWriter::openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
@@ -194,25 +191,18 @@ namespace tiki
 		section.type			= sectionType;
 		section.alignment		= alignment;
 
-		sectionWriter.create();
+		sectionWriter.create( this, id );
 	}
 
 	void ResourceWriter::closeDataSection( ResourceSectionWriter& sectionWriter )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
 
-		if ( m_sectionStack.isEmpty() )
-		{
-			m_pCurrentSection = nullptr;
-		}
-		else
-		{
-			const uint sectionId = m_sectionStack.getLast();
-			m_sectionStack.removeSortedAtIndex( m_sectionStack.getCount() - 1u );
+		SectionData& sectionData = m_pCurrentResource->sections[ sectionWriter.m_sectionId ];
+		sectionData.binaryData.create( sectionWriter.m_sectionData.getData(), sectionWriter.m_sectionData.getLength() );
+		sectionData.references.create( sectionWriter.m_sectionReferences.getBegin(), sectionWriter.m_sectionReferences.getCount() );
 
-			m_pCurrentSection = &m_pCurrentResource->sections[ sectionId ];
-		}
+		sectionWriter.dispose();
 	}
 
 	ReferenceKey ResourceWriter::addString( const string& text )
@@ -244,119 +234,5 @@ namespace tiki
 		data.resourceType	= resourceType;
 
 		return key;
-	}
-
-	//ReferenceKey ResourceWriter::addDataPoint()
-	//{
-	//	TIKI_ASSERT( m_pCurrentResource != nullptr );
-	//	TIKI_ASSERT( m_pCurrentSection != nullptr );
-
-	//	ReferenceKey key;
-	//	key.type					= ReferenceType_Pointer;
-	//	key.identifier				= m_pCurrentSection->id;
-	//	key.offsetInTargetSection	= (uint)m_pCurrentSection->binaryData.getLength();
-
-	//	return key;
-	//}
-
-	void ResourceWriter::writeAlignment( uint alignment )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-
-		const uint8 null = 0u;
-		while ( m_pCurrentSection->binaryData.getLength() % alignment )
-		{
-			m_pCurrentSection->binaryData.write( &null, 1u );
-		}
-	}
-
-	void ResourceWriter::writeReference( const ReferenceKey* pKey )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-
-		writeAlignment( 8u );
-
-		if ( pKey != nullptr )
-		{
-			ReferenceData& data = m_pCurrentSection->references.add();
-			data.key		= *pKey;
-			data.position	= uint32( m_pCurrentSection->binaryData.getLength() );
-		}
-
-		// reserve space for the pointer
-		const uint64 zero = 0u;
-		m_pCurrentSection->binaryData.write( &zero, 8u );
-	}
-
-	void ResourceWriter::writeData( const void* pData, uint length )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( pData, length );
-	}
-
-	void ResourceWriter::writeUInt8( uint8 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeUInt16( uint16 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeUInt32( uint32 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeUInt64( uint64 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeSInt8( sint8 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeSInt16( sint16 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeSInt32( sint32 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeSInt64( sint64 value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeFloat( float value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	void ResourceWriter::writeDouble( double value )
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		m_pCurrentSection->binaryData.write( &value, sizeof( value ) );
-	}
-
-	uint ResourceWriter::getSizeOfCurrentSection() const
-	{
-		TIKI_ASSERT( m_pCurrentSection != nullptr );
-		return (uint)m_pCurrentSection->binaryData.getLength();
 	}
 }

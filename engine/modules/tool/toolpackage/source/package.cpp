@@ -4,6 +4,7 @@
 #include "tiki/io/file.hpp"
 #include "tiki/toolbase/directory_tool.hpp"
 #include "tiki/toolxml/xml_document.hpp"
+#include "tiki/toolxml/xml_element.hpp"
 
 namespace tiki
 {
@@ -35,7 +36,10 @@ namespace tiki
 
 	bool Package::create( const Path& filePath )
 	{
-		m_filename = filePath;
+		m_name		= filePath.getFilename();
+		m_filename	= filePath;
+		m_basepath	= filePath;
+		m_basepath.setExtension( "" );
 
 		if( file::exists( m_filename.getCompletePath() ) )
 		{
@@ -43,6 +47,53 @@ namespace tiki
 			if( !document.loadFromFile( m_filename.getCompletePath() ) )
 			{
 				return false;
+			}
+
+			const XmlElement* pRootNode = document.findFirstChild( "package" );
+			if( pRootNode == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[package] Failed to find 'package' node in %s.\n", m_filename.getCompletePath() );
+				return false;
+			}
+
+			const XmlElement* pDescriptionNode = pRootNode->findFirstChild( "description" );
+			if( pDescriptionNode != nullptr )
+			{
+				m_description = pDescriptionNode->getValue();
+			}
+			else
+			{
+				TIKI_TRACE_WARNING( "[package] Package has no 'description' node in %s.\n", m_filename.getCompletePath() );
+			}
+
+			const XmlElement* pAuthorNode = pRootNode->findFirstChild( "author" );
+			if( pAuthorNode != nullptr )
+			{
+				m_author = pAuthorNode->getValue();
+			}
+			else
+			{
+				TIKI_TRACE_WARNING( "[package] Package has no 'author' node in %s.\n", m_filename.getCompletePath() );
+			}
+
+			const XmlElement* pGenericDataTypesNode = pRootNode->findFirstChild( "genericdatatypes" );
+			if( pGenericDataTypesNode != nullptr )
+			{
+				m_genericDataTypesPath.setCompletePath( pGenericDataTypesNode->getValue() );
+			}
+			else
+			{
+				TIKI_TRACE_WARNING( "[package] Package has no 'genericdatatypes' node in %s.\n", m_filename.getCompletePath() );
+			}
+
+			const XmlElement* pAssetTemplatesNode = pRootNode->findFirstChild( "assettemplates" );
+			if( pAssetTemplatesNode != nullptr )
+			{
+				m_assetTemplatesPath.setCompletePath( pAssetTemplatesNode->getValue() );
+			}
+			else
+			{
+				TIKI_TRACE_WARNING( "[package] Package has no 'assettemplates' node in %s.\n", m_filename.getCompletePath() );
 			}
 		}
 

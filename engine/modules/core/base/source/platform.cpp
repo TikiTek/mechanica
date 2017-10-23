@@ -1,4 +1,3 @@
-
 #include "tiki/base/platform.hpp"
 
 namespace tiki

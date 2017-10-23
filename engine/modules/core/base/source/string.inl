@@ -117,6 +117,64 @@ namespace tiki
 		return pString1[ index ] == pString2[ index ] != '\0';
 	}
 
+	TIKI_FORCE_INLINE bool doesStringStartWith( const char* pString, const char* pValue )
+	{
+		if( pString == nullptr || pValue == nullptr )
+		{
+			return false;
+		}
+		else if( pString == pValue )
+		{
+			return true;
+		}
+
+		const uint stringLength = getStringLength( pString );
+		const uint valueLength = getStringLength( pValue );
+		if( stringLength < valueLength )
+		{
+			return false;
+		}
+
+		for( uint i = 0u; i < valueLength; ++i )
+		{
+			if( pString[ i ] != pValue[ i ] )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	TIKI_FORCE_INLINE bool doesStringEndWith( const char* pString, const char* pValue )
+	{
+		if( pString == nullptr || pValue == nullptr )
+		{
+			return false;
+		}
+		else if( pString == pValue )
+		{
+			return true;
+		}
+
+		const uint stringLength = getStringLength( pString );
+		const uint valueLength = getStringLength( pValue );
+		if( stringLength < valueLength )
+		{
+			return false;
+		}
+
+		for( uint i = stringLength - valueLength; i < stringLength; ++i )
+		{
+			if( pString[ i ] != pValue[ i ] )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	TIKI_FORCE_INLINE void stringReplace( char* pString, char oldChar, char newChar )
 	{
 		const uint stringSize = getStringSize( pString );

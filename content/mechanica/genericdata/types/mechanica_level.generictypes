@@ -1,4 +1,4 @@
-<tikigenerictypes base="entities">
+<generictypes base="entities">
 	<struct name="LevelThemeData">
 		<field type="{reference Texture}" name="backgroundImage" />
 		<field type="{reference Texture}" name="colorGradingMap" />
@@ -10,4 +10,4 @@
 		<field type="{array EntityTemplateData}" name="entities" />
 	</struct>
 	<resource name="Level" base="LevelData" postfix="level" fourcc="MLVL" />
-</tikigenerictypes>
+</generictypes>

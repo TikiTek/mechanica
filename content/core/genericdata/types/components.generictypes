@@ -1,4 +1,4 @@
-<tikigenerictypes base="base">
+<generictypes base="base">
 	<struct name="ComponentInitData">
 	</struct>
 	<enum name="ComponentsType">
@@ -7,4 +7,4 @@
 	<struct name="LifeTimeComponentInitData" base="ComponentInitData">
 		<field type="timems" name="lifeTimeInMs" />
 	</struct>
-</tikigenerictypes> 
+</generictypes> 

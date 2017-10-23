@@ -1,4 +1,4 @@
-<tikigenerictypes base="components">
+<generictypes base="components">
 	<struct name="EntityComponent">
 		<field type="crc32" name="componentType" />
 		<field type="{pointer ComponentInitData}" name="initData" />
@@ -7,4 +7,4 @@
 		<field type="{array EntityComponent}" name="components" />
 	</struct>
 	<resource name="EntityTemplate" base="EntityTemplateData" postfix="entity" fourcc="ETPL" />
-</tikigenerictypes> 
+</generictypes> 

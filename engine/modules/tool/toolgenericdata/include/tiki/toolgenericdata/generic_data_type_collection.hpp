@@ -58,14 +58,17 @@ namespace tiki
 		const GenericDataType*			parseType( const string& typeString );
 		bool							parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
-		bool							exportCode( GenericDataTypeMode mode, const string& targetDir );
+		bool							exportCode( GenericDataTypeMode mode, const Path& targetDir );
 
 	private:
 
+		typedef List< const Package* > PackageList;
 		typedef Map< string, GenericDataModuleData > ModuleMap;
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
 		typedef Map< const GenericDataTypeResource*, const GenericDataTypeReference* > TypeReferenceMap;
 		typedef Map< const GenericDataTypeStruct*, const GenericDataTypePointer* > TypePointerMap;
+
+		PackageList						m_packages;
 
 		TypeList						m_types;
 		TypeArrayMap					m_arrays;
@@ -88,7 +91,7 @@ namespace tiki
 		bool							loadFiles( const List< Path >& typeFiles );
 		bool							parseFile( XmlElement* pRootNode, const string& moduleName );
 
-		void							writeToFileIfNotEquals( const string& fileName, const string& content );
+		void							writeToFileIfNotEquals( const Path& filePath, const string& content );
 	};
 }
 

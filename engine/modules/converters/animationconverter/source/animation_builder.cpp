@@ -1,9 +1,8 @@
-#include "tiki/animationconverter/animationbuilder.hpp"
+#include "tiki/animationconverter/animation_builder.hpp"
 
 #include "tiki/animationconverter/spline.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/base/float32.hpp"
-#include "tiki/converterbase/resource_section_writer.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 
 namespace tiki

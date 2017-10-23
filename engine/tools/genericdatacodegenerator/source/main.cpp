@@ -1,9 +1,10 @@
-
 #include "tiki/base/debug.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolgenericdata/genericdatatypecollection.hpp"
+#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
+#include "tiki/toolpackage/package.hpp"
+#include "tiki/toolpackage/package_manager.hpp"
 
 int tiki::mainEntryPoint()
 {
@@ -11,25 +12,31 @@ int tiki::mainEntryPoint()
 
 	//debug::breakOnAlloc( 1449 );
 	{
-		string sourceDir = "../../../../../../content";
-		string targetDir = "../../genericdatatypes";
+		Path sourceDir( "../../../../../../content" );
+		Path targetDir( "../../genericdatatypes" );
 
-		for (uint i = 0u; i < platform::getArguments().getCount(); ++i)
+		const char* pValue = nullptr;
+		if( platform::findArgumentValue( &pValue, "--content-dir" ) )
 		{
-			const string arg = platform::getArguments()[ i ];
+			sourceDir.setCompletePath( pValue );
+		}
 
-			if ( arg.startsWith( "--content-dir=" ) )
-			{
-				sourceDir = arg.subString( getStringSize( "--content-dir=" ) );
-			}
-			else if ( arg.startsWith( "--target-dir=" ) )
-			{
-				targetDir = arg.subString( getStringSize( "--target-dir=" ) );
-			}
+		if( platform::findArgumentValue( &pValue, "--target-dir" ) )
+		{
+			targetDir.setCompletePath( pValue );
 		}
 
 		GenericDataTypeCollection collection;
-		collection.create( sourceDir, true );
+		collection.create();
+
+		PackageManager packageManager;
+		packageManager.create( sourceDir );
+
+		for( const Package& package : packageManager.getPackages() )
+		{
+			collection.addPackage( &package );
+		}
+
 		if ( !collection.exportCode( GenericDataTypeMode_RuntimeOnly, targetDir ) )
 		{
 			TIKI_TRACE_ERROR( "[genericdatacodegenerator] code generation finish with some errors.\n" );
@@ -42,7 +49,8 @@ int tiki::mainEntryPoint()
 		}
 
 		collection.dispose();
-	}		
-	
+		packageManager.dispose();
+	}
+
 	return retValue;
 }

@@ -15,12 +15,12 @@ namespace tiki
 	class SqliteDatabase
 	{
 		TIKI_NONCOPYABLE_CLASS( SqliteDatabase );
+		friend class SqliteQuery;
 
 	public:
 
-		SqliteDatabase();
-		~SqliteDatabase();
-		friend class SqliteQuery;
+						SqliteDatabase();
+						~SqliteDatabase();
 
 		bool			create( const char* pFileName );
 		void			dispose();
@@ -45,8 +45,8 @@ namespace tiki
 
 	public:
 
-		SqliteQuery();
-		~SqliteQuery();
+						SqliteQuery();
+						~SqliteQuery();
 
 		bool			create( const SqliteDatabase& dataBase, const char* pSql );
 		void			dispose();

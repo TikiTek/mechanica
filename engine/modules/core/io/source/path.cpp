@@ -48,6 +48,15 @@ namespace tiki
 
 	string path::combine( const string& path1, const string& path2 )
 	{
+		if( path1.isEmpty() )
+		{
+			return path2;
+		}
+		else if( path2.isEmpty() )
+		{
+			return path1;
+		}
+
 		char i1 = path1[ path1.getLength() - 1u ];
 		char i2 = path2[ 0u ];
 

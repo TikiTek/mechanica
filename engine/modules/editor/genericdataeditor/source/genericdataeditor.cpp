@@ -11,7 +11,7 @@ namespace tiki
 		: m_pInterface( pInterface )
 		, m_icon( ":/genericdata-editor/browser-file-genericdata.png" )
 	{
-		m_typeCollection.create( pInterface->getContentPath().absolutePath().toUtf8().data(), true );
+		m_typeCollection.create();
 	}
 
 	GenericDataEditor::~GenericDataEditor()

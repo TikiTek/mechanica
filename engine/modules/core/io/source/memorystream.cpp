@@ -88,7 +88,7 @@ namespace tiki
 		return m_pData != nullptr;
 	}
 
-	const void* MemoryStream::getData() const
+	const uint8* MemoryStream::getData() const
 	{
 		return m_pData;
 	}
