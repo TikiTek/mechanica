@@ -1,7 +1,5 @@
 #include "tiki/base/platform.hpp"
 
-#include "tiki/genericdataeditor/genericdataeditor.hpp"
-
 #include "editor.hpp"
 
 #include <QApplication>
@@ -12,7 +10,7 @@ namespace tiki
 	{
 		QApplication application( platform::getArgumentCount(), platform::getArgumentPointer() );
 		QApplication::setApplicationName( "editor" );
-		QApplication::setApplicationVersion( "0.1.0" );
+		QApplication::setApplicationVersion( "0.2.0" );
 
 		EditorWindow window;
 		window.show();

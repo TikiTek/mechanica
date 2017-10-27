@@ -10,15 +10,17 @@ module:add_dependency( "core/resource" );
 module:add_dependency( "core/genericdata" );
 
 module:add_dependency( "tool/toolbase" );
-module:add_dependency( "tool/qtapplication" );
 
-module:add_dependency( "editor/editorinterface" );
-module:add_dependency( "editor/packageeditor" );
-module:add_dependency( "editor/genericdataeditor" );
+module:add_dependency( "qt/qtapplication" );
+
+module:add_dependency( "editor/editor_interface" );
+module:add_dependency( "editor/package_editor" );
+module:add_dependency( "editor/generic_data_editor" );
+module:add_dependency( "editor/converter_editor" );
 
 module.import_func = function(project)
 	--module:add_ui_files( "source/mainwindow.ui" )
 
 	module:add_moc_files( "source/editor.hpp" )
-	module:add_moc_files( "source/editorwindow.hpp" )
+	module:add_moc_files( "source/editor_window.hpp" )
 end

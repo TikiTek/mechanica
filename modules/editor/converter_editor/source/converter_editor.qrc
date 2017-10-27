@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+	<qresource prefix="converter-editor">
+		<file alias="ribbon-convert-all.png">../resource/ribbon-convert-all.png</file>
+		<file alias="ribbon-show-converter.png">../resource/ribbon-show-converter.png</file>
+		<file alias="ribbon-show-last-result.png">../resource/ribbon-show-last-result.png</file>
+	</qresource>
+</RCC>

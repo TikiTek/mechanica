@@ -1,11 +1,12 @@
 #include "editor.hpp"
 
 #include "tiki/base/assert.hpp"
-#include "tiki/genericdataeditor/genericdataeditor.hpp"
-#include "tiki/packageeditor/package_editor.hpp"
+#include "tiki/converter_editor/converter_editor.hpp"
+#include "tiki/generic_data_editor/generic_data_editor.hpp"
+#include "tiki/package_editor/package_editor.hpp"
 
-#include "editorwindow.hpp"
-#include "editorfile.hpp"
+#include "editor_window.hpp"
+#include "editor_file.hpp"
 
 #include <QApplication>
 #include <QDir>
@@ -26,9 +27,13 @@ namespace tiki
 
 		m_pPackageEditor = new PackageEditor( this );
 		m_pGenericDataEditor = new GenericDataEditor( this );
+		m_pConverterEditor = new ConverterEditor();
 
 		registerFileEditor( m_pPackageEditor );
 		registerFileEditor( m_pGenericDataEditor );
+
+		registerEditorExtension( m_pPackageEditor );
+		registerEditorExtension( m_pConverterEditor );
 
 		connect( m_pWindow, &EditorWindow::fileCloseRequest, this, &Editor::fileCloseRequest );
 		connect( &m_openShortcut, &QShortcut::activated, this, &Editor::fileOpenShortcut );
@@ -41,6 +46,7 @@ namespace tiki
 		unregisterFileEditor( m_pGenericDataEditor );
 		unregisterFileEditor( m_pPackageEditor );
 
+		delete m_pConverterEditor;
 		delete m_pGenericDataEditor;
 		delete m_pPackageEditor;
 	}
@@ -168,25 +174,25 @@ namespace tiki
 		m_editors.remove( pEditor );
 	}
 
-	void Editor::addGlobalRibbonTab( QtRibbonTab* pTab )
-	{
-		m_pWindow->addRibbonTab( pTab );
-	}
+	//void Editor::addGlobalRibbonTab( QtRibbonTab* pTab )
+	//{
+	//	m_pWindow->addRibbonTab( pTab );
+	//}
 
-	void Editor::removeGlobalRibbonTab( QtRibbonTab* pTab )
-	{
-		m_pWindow->removeRibbonTab( pTab );
-	}
+	//void Editor::removeGlobalRibbonTab( QtRibbonTab* pTab )
+	//{
+	//	m_pWindow->removeRibbonTab( pTab );
+	//}
 
-	void Editor::addGlobalDockWidget( QDockWidget* pWidget )
-	{
-		m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pWidget );
-	}
+	//void Editor::addGlobalDockWidget( QDockWidget* pWidget )
+	//{
+	//	m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pWidget );
+	//}
 
-	void Editor::removeGlobalDockWidget( QDockWidget* pWidget )
-	{
-		m_pWindow->removeDockWidget( pWidget );
-	}
+	//void Editor::removeGlobalDockWidget( QDockWidget* pWidget )
+	//{
+	//	m_pWindow->removeDockWidget( pWidget );
+	//}
 
 	QDir Editor::getProjectPath() const
 	{
@@ -326,6 +332,32 @@ namespace tiki
 		return nullptr;
 	}
 
+	void Editor::registerEditorExtension( IEditorExtension* pExtension )
+	{
+		foreach( QtRibbonTab* pTab, pExtension->getGlobalRibbonTabs() )
+		{
+			m_pWindow->addRibbonTab( pTab );
+		}
+
+		foreach( QDockWidget* pDockWidget, pExtension->getGlobalDockWidgets() )
+		{
+			m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pDockWidget );
+		}
+	}
+
+	void Editor::unregisterEditorExtension( IEditorExtension* pExtension )
+	{
+		foreach( QtRibbonTab* pTab, pExtension->getGlobalRibbonTabs() )
+		{
+			m_pWindow->removeRibbonTab( pTab );
+		}
+
+		foreach( QDockWidget* pDockWidget, pExtension->getGlobalDockWidgets() )
+		{
+			m_pWindow->removeDockWidget( pDockWidget );
+		}
+	}
+
 	void Editor::beginEditing( EditorFile* pFile )
 	{
 		TIKI_ASSERT( pFile != nullptr );
@@ -334,12 +366,12 @@ namespace tiki
 		{
 			IFileEditor* pNextEditor = pFile->getFileEditor();
 
-			foreach( QtRibbonTab* pTab, pNextEditor->getRibbonTabs() )
+			foreach( QtRibbonTab* pTab, pNextEditor->getFileRibbonTabs() )
 			{
 				m_pWindow->addRibbonTab( pTab );
 			}
 
-			foreach( QDockWidget* pDockWidget, pNextEditor->getDockWidgets() )
+			foreach( QDockWidget* pDockWidget, pNextEditor->getFileDockWidgets() )
 			{
 				m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pDockWidget );
 			}
@@ -359,12 +391,12 @@ namespace tiki
 		{
 			IFileEditor* pCurrentEditor = m_pCurrentFile->getFileEditor();
 
-			foreach( QtRibbonTab* pTab, pCurrentEditor->getRibbonTabs() )
+			foreach( QtRibbonTab* pTab, pCurrentEditor->getFileRibbonTabs() )
 			{
 				m_pWindow->removeRibbonTab( pTab );
 			}
 
-			foreach( QDockWidget* pDockWidget, pCurrentEditor->getDockWidgets() )
+			foreach( QDockWidget* pDockWidget, pCurrentEditor->getFileDockWidgets() )
 			{
 				m_pWindow->removeDockWidget( pDockWidget );
 			}

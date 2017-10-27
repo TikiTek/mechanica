@@ -2,16 +2,16 @@
 #ifndef TIKI_EDITOR_HPP_INCLUDED
 #define TIKI_EDITOR_HPP_INCLUDED
 
-#include "tiki/editorinterface/ieditorinterface.hpp"
+#include "tiki/editor_interface/ieditorinterface.hpp"
 
 #include <QSet>
 #include <QShortcut>
 
-class QWidget;
-class QCommandLineOption;
+class QDockWidget;
 
 namespace tiki
 {
+	class ConverterEditor;
 	class EditorFile;
 	class EditorWindow;
 	class GenericDataEditor;
@@ -37,11 +37,8 @@ namespace tiki
 		virtual void			unregisterFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
 		virtual IFileEditor*	findEditorForFile( const QString& fileName ) const TIKI_OVERRIDE_FINAL;
 
-		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
-		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
-
-		virtual void			addGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
-		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void			registerEditorExtension( IEditorExtension* pExtension ) TIKI_OVERRIDE_FINAL;
+		virtual void			unregisterEditorExtension( IEditorExtension* pExtension ) TIKI_OVERRIDE_FINAL;
 
 		virtual QDir			getProjectPath() const TIKI_OVERRIDE_FINAL;
 		virtual QDir			getContentPath() const TIKI_OVERRIDE_FINAL;
@@ -54,37 +51,40 @@ namespace tiki
 
 	private slots:
 
-	void						fileOpenShortcut();
-	void						fileSaveShortcut();
-	void						fileCloseShortcut();
-	void						fileCloseRequest( QWidget* pWidget );
+		void					fileOpenShortcut();
+		void					fileSaveShortcut();
+		void					fileCloseShortcut();
+		void					fileCloseRequest( QWidget* pWidget );
 
 	private:
 
-		EditorWindow*			m_pWindow;
+		EditorWindow*				m_pWindow;
 
-		QDir					m_projectPath;
-		QDir					m_contentPath;
-		QDir					m_packagePath;
+		QDir						m_projectPath;
+		QDir						m_contentPath;
+		QDir						m_packagePath;
 
-		QSet< IFileEditor* >	m_editors;
-		PackageEditor*			m_pPackageEditor;
-		GenericDataEditor*		m_pGenericDataEditor;
+		QSet< IFileEditor* >		m_editors;
+		QSet< IEditorExtension* >	m_extensions;
 
-		QSet< QDockWidget* >	m_docks;
+		PackageEditor*				m_pPackageEditor;
+		GenericDataEditor*			m_pGenericDataEditor;
+		ConverterEditor*			m_pConverterEditor;
 
-		QSet< EditorFile* >		m_files;
-		EditorFile*				m_pCurrentFile;
+		QSet< QDockWidget* >		m_docks;
 
-		QShortcut				m_openShortcut;
-		QShortcut				m_saveShortcut;
-		QShortcut				m_closeShortcut;
+		QSet< EditorFile* >			m_files;
+		EditorFile*					m_pCurrentFile;
 
-		void					setProjectPathes();
-		void					setPackagePath();
+		QShortcut					m_openShortcut;
+		QShortcut					m_saveShortcut;
+		QShortcut					m_closeShortcut;
 
-		void					beginEditing( EditorFile* pFile );
-		bool					endEditing( EditorFile* pNextFile );
+		void						setProjectPathes();
+		void						setPackagePath();
+
+		void						beginEditing( EditorFile* pFile );
+		bool						endEditing( EditorFile* pNextFile );
 	};
 }
 
