@@ -83,7 +83,7 @@ namespace tiki
 			IFileEditor* pEditor = m_pInterface->findEditorForFile( filePath );
 			if( pEditor != nullptr )
 			{
-				icon = pEditor->getFileIcon();
+				icon = pEditor->getEditableIcon();
 			}
 
 			QStandardItem* pItem = new QStandardItem( icon, entry );

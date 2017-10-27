@@ -2,7 +2,6 @@
 #ifndef TIKI_PACKAGE_EDITOR_HPP_INCLUDED
 #define TIKI_PACKAGE_EDITOR_HPP_INCLUDED
 
-#include "tiki/editor_interface/ieditorextension.hpp"
 #include "tiki/editor_interface/ifileeditor.hpp"
 
 #include <QObject>
@@ -13,7 +12,7 @@ namespace tiki
 	class PackageFileBrowserWidget;
 	class QtRibbonButton;
 
-	class PackageEditor : public QObject, public IFileEditor, public IEditorExtension
+	class PackageEditor : public QObject, public IFileEditor
 	{
 		Q_OBJECT
 		TIKI_NONCOPYABLE_CLASS( PackageEditor );
@@ -24,12 +23,12 @@ namespace tiki
 		virtual									~PackageEditor();
 
 		virtual QWidget*						openFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual bool							saveFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void							closeFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual bool							saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void							closeEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
 
 		virtual QString							getFileTypeName() const TIKI_OVERRIDE_FINAL;
 		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
-		virtual QIcon							getFileIcon() const TIKI_OVERRIDE_FINAL;
+		virtual QIcon							getEditableIcon() const TIKI_OVERRIDE_FINAL;
 
 		QString									getPackageName() const;
 
@@ -43,6 +42,8 @@ namespace tiki
 	private:
 
 		IEditorInterface*			m_pInterface;
+
+		QIcon						m_icon;
 
 		QtRibbonTab*				m_pRibbon;
 		QtRibbonButton*				m_pNewPackageButton;

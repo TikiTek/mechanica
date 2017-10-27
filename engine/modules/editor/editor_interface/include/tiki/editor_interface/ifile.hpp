@@ -2,24 +2,22 @@
 #ifndef TIKI_IFILE_HPP_INCLUDED
 #define TIKI_IFILE_HPP_INCLUDED
 
-#include "tiki/base/types.hpp"
+#include "tiki/editor_interface/ieditable.hpp"
 
 namespace tiki
 {
 	class IFileEditor;
 
-	class IFile
+	class IFile : public IEditable
+
 	{
 	public:
 
 		virtual						~IFile() { }
 
 		virtual const QString&		getFileName() const TIKI_PURE;
-		virtual const IFileEditor*	getFileEditor() const TIKI_PURE;
-		virtual QWidget*			getEditWidget() const TIKI_PURE;
 
-		virtual bool				isDirty() const TIKI_PURE;
-		virtual void				markAsDirty() TIKI_PURE;
+		virtual IFile*				asFile() TIKI_OVERRIDE_FINAL { return this; }
 	};
 }
 
