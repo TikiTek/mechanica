@@ -17,6 +17,8 @@ namespace tiki
 	{
 		QResource::registerResource( "packageeditor.rcc" );
 
+		m_icon = QIcon( ":/package-editor/browser-package.png" );
+
 		m_pRibbon = new QtRibbonTab( "Package" );
 		m_pNewPackageButton		= m_pRibbon->addButton( "New", QIcon( ":/package-editor/ribbon-package-new.png" ) );
 		m_pOpenPackageButton	= m_pRibbon->addButton( "Open", QIcon( ":/package-editor/ribbon-package-open.png" ) );
@@ -30,12 +32,13 @@ namespace tiki
 
 		m_pFileBrowser = new PackageFileBrowserWidget( pInterface );
 
-		m_globalTabs.insert( m_pRibbon );
-		m_globalDocks.insert( m_pFileBrowser );
+		m_pInterface->addGlobalRibbonTab( m_pRibbon );
 	}
 
 	PackageEditor::~PackageEditor()
 	{
+		m_pInterface->removeGlobalRibbonTab( m_pRibbon );
+
 		delete m_pFileBrowser;
 		delete m_pRibbon;
 	}
@@ -54,17 +57,17 @@ namespace tiki
 		return pEditorWidget;
 	}
 
-	bool PackageEditor::saveFile( IFile* pFile )
+	bool PackageEditor::saveEditable( IEditable* pEditable )
 	{
-		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pFile->getEditWidget();
+		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pEditable->getEditWidget();
 		pEditorWidget->savePackage();
 
 		return true;
 	}
 
-	void PackageEditor::closeFile( IFile* pFile )
+	void PackageEditor::closeEditable( IEditable* pEditable )
 	{
-		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pFile->getEditWidget();
+		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pEditable->getEditWidget();
 		delete pEditorWidget;
 	}
 
@@ -78,9 +81,9 @@ namespace tiki
 		return "package";
 	}
 
-	QIcon PackageEditor::getFileIcon() const
+	QIcon PackageEditor::getEditableIcon() const
 	{
-		return QIcon( ":/package-editor/browser-package.png" );
+		return m_icon;
 	}
 
 	QString PackageEditor::getPackageName() const
@@ -133,7 +136,7 @@ namespace tiki
 		closePackage();
 
 		m_pFileBrowser->openPackage( fileInfo.baseName() );
-		//m_pInterface->addGlobalDockWidget( m_pFileBrowser );
+		m_pInterface->addGlobalDockWidget( m_pFileBrowser );
 
 		m_currentPackageName = fileInfo.baseName();
 	}
@@ -145,9 +148,9 @@ namespace tiki
 			return;
 		}
 
-		m_pInterface->closeAllFiles();
+		m_pInterface->closeAll();
 
-		//m_pInterface->removeGlobalDockWidget( m_pFileBrowser );
+		m_pInterface->removeGlobalDockWidget( m_pFileBrowser );
 		m_pFileBrowser->closePakage();
 
 		m_currentPackageName.clear();

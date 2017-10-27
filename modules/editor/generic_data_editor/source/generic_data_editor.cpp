@@ -31,30 +31,30 @@ namespace tiki
 		return pWidget;
 	}
 
-	bool GenericDataEditor::saveFile( IFile* pFile )
+	bool GenericDataEditor::saveEditable( IEditable* pEditable )
 	{
-		GenericDataEditorWidget* pWidget = (GenericDataEditorWidget*)pFile->getEditWidget();
+		GenericDataEditorWidget* pWidget = (GenericDataEditorWidget*)pEditable->getEditWidget();
 		return pWidget->saveFile();
 	}
 
-	void GenericDataEditor::closeFile( IFile* pFile )
+	void GenericDataEditor::closeEditable( IEditable* pEditable )
 	{
-		GenericDataEditorWidget* pWidget = (GenericDataEditorWidget*)pFile->getEditWidget();
+		GenericDataEditorWidget* pWidget = (GenericDataEditorWidget*)pEditable->getEditWidget();
 		pWidget->closeFile();
 		delete pWidget;
 	}
 
 	QString GenericDataEditor::getFileTypeName() const
 	{
-		return "Genric Data";
+		return "Generic Data";
 	}
 
 	QString GenericDataEditor::getFileExtension() const
 	{
-		return "tikigenericobjects";
+		return "genericobjects";
 	}
 
-	QIcon GenericDataEditor::getFileIcon() const
+	QIcon GenericDataEditor::getEditableIcon() const
 	{
 		return m_icon;
 	}

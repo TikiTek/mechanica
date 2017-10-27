@@ -12,10 +12,10 @@ class QDockWidget;
 namespace tiki
 {
 	class ConverterEditor;
-	class EditorFile;
+	class EditorEditable;
+	class EditorEditable;
 	class EditorWindow;
 	class GenericDataEditor;
-	class IFile;
 	class PackageEditor;
 
 	class Editor : public QObject, public IEditorInterface
@@ -28,17 +28,20 @@ namespace tiki
 								Editor( EditorWindow* pWindow );
 		virtual					~Editor();
 
+		virtual IEditable*		openEditable( const QString& title, QWidget* pEditWidget, IEditor* pEditor ) TIKI_OVERRIDE_FINAL;
 		virtual IFile*			openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void			saveFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void			closeFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void			closeAllFiles() TIKI_OVERRIDE_FINAL;
+		virtual void			saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeAll() TIKI_OVERRIDE_FINAL;
 
 		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
 		virtual void			unregisterFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual IFileEditor*	findEditorForFile( const QString& fileName ) const TIKI_OVERRIDE_FINAL;
+		virtual IFileEditor*	findEditorForFile( const QString& fileName ) const;
 
-		virtual void			registerEditorExtension( IEditorExtension* pExtension ) TIKI_OVERRIDE_FINAL;
-		virtual void			unregisterEditorExtension( IEditorExtension* pExtension ) TIKI_OVERRIDE_FINAL;
+		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void			addGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
 
 		virtual QDir			getProjectPath() const TIKI_OVERRIDE_FINAL;
 		virtual QDir			getContentPath() const TIKI_OVERRIDE_FINAL;
@@ -47,7 +50,7 @@ namespace tiki
 		virtual QWidget*		getDialogParent() const TIKI_OVERRIDE_FINAL;
 		virtual QString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
 
-		void					markFileAsDirty( EditorFile* pFile );
+		void					markFileAsDirty( EditorEditable* pEditorFile );
 
 	private slots:
 
@@ -65,7 +68,6 @@ namespace tiki
 		QDir						m_packagePath;
 
 		QSet< IFileEditor* >		m_editors;
-		QSet< IEditorExtension* >	m_extensions;
 
 		PackageEditor*				m_pPackageEditor;
 		GenericDataEditor*			m_pGenericDataEditor;
@@ -73,8 +75,8 @@ namespace tiki
 
 		QSet< QDockWidget* >		m_docks;
 
-		QSet< EditorFile* >			m_files;
-		EditorFile*					m_pCurrentFile;
+		QSet< EditorEditable* >			m_editables;
+		EditorEditable*					m_pCurrentEditable;
 
 		QShortcut					m_openShortcut;
 		QShortcut					m_saveShortcut;
@@ -83,8 +85,8 @@ namespace tiki
 		void						setProjectPathes();
 		void						setPackagePath();
 
-		void						beginEditing( EditorFile* pFile );
-		bool						endEditing( EditorFile* pNextFile );
+		void						beginEditing( EditorEditable* pEditorFile );
+		bool						endEditing( EditorEditable* pNextEditorFile );
 	};
 }
 

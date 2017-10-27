@@ -23,12 +23,12 @@ namespace tiki
 		virtual									~GenericDataEditor();
 
 		virtual QWidget*						openFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual bool							saveFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual void							closeFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
+		virtual bool							saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void							closeEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
 
 		virtual QString							getFileTypeName() const TIKI_OVERRIDE_FINAL;
 		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
-		virtual QIcon							getFileIcon() const TIKI_OVERRIDE_FINAL;
+		virtual QIcon							getEditableIcon() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
