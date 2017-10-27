@@ -3,5 +3,5 @@
 	<author>TikiTek</author>
 	<dependencies />
 	<genericdatatypes>genericdata/types</genericdatatypes>
-	<templates>templates</templates>
+	<assettemplates>templates</assettemplates>
 </package>
