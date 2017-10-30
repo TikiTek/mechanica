@@ -70,8 +70,28 @@ function vardump(value, depth, key)
 end
 
 function io.exists( file_name )
-	local file_handle = io.open( file_name, "rb" );
+	local file_handle = io.open( file_name, "r" );
 	if file_handle then
+		file_handle:close();
+		return true;
+	end
+	return false;
+end
+
+function io.readfile( file_name )
+	local file_handle = io.open( file_name, "r" );
+	local result = "";
+	if file_handle then
+		result = file_handle:read( "*a" );
+		file_handle:close();
+	end
+	return result;
+end
+
+function io.writefile( file_name, content )
+	local file_handle = io.open( file_name, "w" );
+	if file_handle then
+		file_handle:write( content );
 		file_handle:close();
 		return true;
 	end
