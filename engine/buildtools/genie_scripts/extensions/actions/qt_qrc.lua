@@ -1,4 +1,4 @@
--- library/buildtools/genie_scripts/extensions/actions/qt_moc
+-- library/buildtools/genie_scripts/extensions/actions/qt_qrc
 return function( data, config )
 	local output_path = path.join( config.build_path, "qt_files", config.project_name );
 	local output_file = path.join( output_path, data.output_filename );

@@ -5,6 +5,7 @@ qt_dir = "C:/Qt/5.7/msvc2015_64" --TODO: find real path e.g. os.getenv("QTDIR")
 local ui_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_ui.lua" ) );
 local moc_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_moc.lua" ) );
 local qrc_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_qrc.lua" ) );
+local qrc_gen_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_qrc_gen.lua" ) );
 
 function add_build_actions( module, pattern, prefix, ext, script )
 	local full_pattern = path.join( module.config.base_path, pattern );
@@ -24,7 +25,7 @@ function add_build_actions( module, pattern, prefix, ext, script )
 		}
 	
 		module:add_pre_build_step( script, step_data );
-		module:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true} );
+		module:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true } );
 	end
 end
 
@@ -38,4 +39,23 @@ end
 
 function Module:add_qrc_files( pattern )
 	add_build_actions( self, pattern, "rcc", "cpp", qrc_script );
+end
+
+function Module:add_qt_resources( pattern, prefix )
+	local qrc_filename = "rcc_" .. prefix .. ".qrc";
+	local qrc_fullpath = path.join( _OPTIONS[ "qt_dir" ], qrc_filename );
+	
+	local qrc_file = io.open( qrc_fullpath, "a" );
+	qrc_file:close();
+	
+	local step_data = {
+		prefix = prefix,
+		source_pattern = path.join( self.config.base_path, pattern ),
+		output_filename = qrc_fullpath
+	}
+	
+	self:add_pre_build_step( qrc_gen_script, step_data );
+	self:add_files( qrc_fullpath );
+
+	add_build_actions( self, qrc_fullpath, "rcc", "cpp", qrc_script );
 end
