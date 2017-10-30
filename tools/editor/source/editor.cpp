@@ -57,6 +57,7 @@ namespace tiki
 		{
 			if( pEditable->getEditWidget() == pEditWidget )
 			{
+				m_pWindow->selectFileTab( pEditWidget );
 				return pEditable;
 			}
 		}
@@ -86,6 +87,7 @@ namespace tiki
 
 			if( pFile->getFileName() == fileName )
 			{
+				m_pWindow->selectFileTab( pFile->getEditWidget() );
 				return pFile;
 			}
 		}
@@ -220,9 +222,9 @@ namespace tiki
 		m_pWindow->removeRibbonTab( pTab );
 	}
 
-	void Editor::addGlobalDockWidget( QDockWidget* pWidget )
+	void Editor::addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area )
 	{
-		m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pWidget );
+		m_pWindow->addDockWidget( area, pWidget );
 	}
 
 	void Editor::removeGlobalDockWidget( QDockWidget* pWidget )

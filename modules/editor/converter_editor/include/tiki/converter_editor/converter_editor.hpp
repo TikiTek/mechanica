@@ -8,10 +8,10 @@
 
 namespace tiki
 {
-	class IAssetConverter;
+	class AssetConverterInterface;
 	class IEditorInterface;
 	class QtAssetConverterBuildWidget;
-	class QtAssetConverterWidget;
+	class QtAssetConverterStatusWidget;
 	class QtRibbonButton;
 
 	class ConverterEditor : public QObject, public IEditor
@@ -21,7 +21,7 @@ namespace tiki
 
 	public:
 
-						ConverterEditor( IEditorInterface* pInterface, IAssetConverter* pAssetConverter );
+						ConverterEditor( IEditorInterface* pInterface, AssetConverterInterface* pAssetConverter );
 		virtual			~ConverterEditor();
 
 		virtual bool	saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
@@ -38,7 +38,7 @@ namespace tiki
 	private:
 
 		IEditorInterface*				m_pInterface;
-		IAssetConverter*				m_pConverter;
+		AssetConverterInterface*		m_pConverter;
 
 		QIcon							m_icon;
 
@@ -47,8 +47,8 @@ namespace tiki
 		QtRibbonButton*					m_pShowConverterButton;
 		QtRibbonButton*					m_pShowLastResultButton;
 
-		QtAssetConverterWidget*			m_pConverterWidget;
-		QtAssetConverterBuildWidget*	m_pAssetBuildWidget;
+		QtAssetConverterBuildWidget*	m_pBuildWidget;
+		QtAssetConverterStatusWidget*	m_pStatusWidget;
 	};
 }
 

@@ -22,6 +22,7 @@ namespace tiki
 
 		void			openFileTab( QWidget* pWidget, const QString& title );
 		void			changeFileTab( QWidget* pWidget, const QString& title );
+		void			selectFileTab( QWidget* pWidget );
 		void			closeFileTab( QWidget* pWidget );
 
 	signals:

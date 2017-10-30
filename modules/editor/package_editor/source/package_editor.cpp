@@ -136,7 +136,7 @@ namespace tiki
 		closePackage();
 
 		m_pFileBrowser->openPackage( fileInfo.baseName() );
-		m_pInterface->addGlobalDockWidget( m_pFileBrowser );
+		m_pInterface->addGlobalDockWidget( m_pFileBrowser, Qt::LeftDockWidgetArea );
 
 		m_currentPackageName = fileInfo.baseName();
 	}

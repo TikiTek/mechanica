@@ -11,19 +11,19 @@
 #include "tiki/threading/mutex.hpp"
 #include "tiki/threading/thread.hpp"
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER ) && TIKI_DISABLED( TIKI_BUILD_TOOLS )
-#	define TIKI_ENABLE_ASSET_CONVERTER TIKI_ON
-#else
-#	define TIKI_ENABLE_ASSET_CONVERTER TIKI_OFF
+#if !defined( TIKI_RESOUCE_ENABLE_CONVERTER )
+#	define TIKI_RESOUCE_ENABLE_CONVERTER TIKI_OFF
 #endif
 
 namespace tiki
 {
 	class FactoryBase;
-	class IAssetConverter;
 	class Resource;
 	class ResourceRequest;
 	struct ResourceId;
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+	class IAssetConverter;
+#endif
 
 	struct ResourceManagerParameters
 	{
@@ -61,7 +61,7 @@ namespace tiki
 
 		void										registerResourceType( fourcc type, const FactoryContext& factoryContext );
 		void										unregisterResourceType( fourcc type );
-		
+
 		template< typename T >
 		TIKI_FORCE_INLINE const T*					loadResource( const char* pFileName );
 		template< typename T >
@@ -82,7 +82,7 @@ namespace tiki
 		Thread								m_loadingThread;
 		Mutex								m_loadingMutex;
 
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		IAssetConverter*					m_pAssetConverter;
 #endif
 
