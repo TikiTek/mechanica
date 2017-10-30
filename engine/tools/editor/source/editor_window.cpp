@@ -54,6 +54,24 @@ namespace tiki
 		}
 	}
 
+	void EditorWindow::selectFileTab( QWidget* pWidget )
+	{
+		int index = -1;
+		for( int i = 0u; i < m_pFileTabs->count(); ++i )
+		{
+			if( m_pFileTabs->widget( i ) == pWidget )
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if( index >= 0 )
+		{
+			m_pFileTabs->setCurrentIndex( index );
+		}
+	}
+
 	void EditorWindow::closeFileTab( QWidget* pWidget )
 	{
 		int index = -1;

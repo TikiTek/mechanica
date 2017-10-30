@@ -36,7 +36,7 @@ namespace tiki
 
 		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_PURE;
 		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_PURE;
-		virtual void			addGlobalDockWidget( QDockWidget* pWidget ) TIKI_PURE;
+		virtual void			addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_PURE;
 		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_PURE;
 
 		virtual QDir			getProjectPath() const TIKI_PURE;

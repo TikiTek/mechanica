@@ -1,8 +1,8 @@
 #pragma once
-#ifndef TIKI_ASSETCONVERTER_HPP
-#define TIKI_ASSETCONVERTER_HPP
+#ifndef TIKI_ASSET_CONVERTER_HPP
+#define TIKI_ASSET_CONVERTER_HPP
 
-#include "tiki/converter/iassetconverter.hpp"
+#include "tiki/asset_converter_interface/asset_converter_interface.hpp"
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
@@ -50,4 +50,4 @@ namespace tiki
 	};
 }
 
-#endif // TIKI_ASSETCONVERTER_HPP
+#endif // TIKI_ASSET_CONVERTER_HPP

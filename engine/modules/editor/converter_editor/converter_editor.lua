@@ -13,7 +13,7 @@ module:add_dependency( "thirdparty/qt" );
 
 module.import_func = function(project)
 	module:add_moc_files( "include/tiki/converter_editor/*editor.hpp" )
-	--module:add_moc_files( "include/tiki/converter_editor/*widget.hpp" )
+	module:add_moc_files( "include/tiki/converter_editor/*widget.hpp" )
 	
-	module:add_qrc_files( "source/*.qrc" )
+	module:add_qt_resources( "resource/*.*", "converter_editor" );
 end

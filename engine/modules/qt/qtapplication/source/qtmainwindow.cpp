@@ -11,7 +11,7 @@ namespace tiki
 		m_pRibbonTabs = new QTabWidget();
 		m_pRibbonTabs->setFixedHeight( 110 );
 
-		m_pToolBar = new QToolBar();
+		m_pToolBar = new QToolBar( "Ribbons" );
 		m_pToolBar->setMovable( false );
 		m_pToolBar->addWidget( m_pRibbonTabs );
 		addToolBar( m_pToolBar );

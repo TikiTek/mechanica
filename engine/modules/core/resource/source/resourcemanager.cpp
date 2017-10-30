@@ -7,7 +7,7 @@
 #include "tiki/resource/factorybase.hpp"
 #include "tiki/resource/resource.hpp"
 #include "tiki/resource/resourcerequest.hpp"
-#include "tiki/converter/iassetconverter.hpp"
+#include "tiki/asset_converter_interface/asset_converter_interface.hpp"
 
 namespace tiki
 {
@@ -15,7 +15,7 @@ namespace tiki
 
 	ResourceManager::ResourceManager()
 	{
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		m_pAssetConverter = nullptr;
 #endif
 	}
@@ -45,7 +45,7 @@ namespace tiki
 			}
 		}
 
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		AssetConverterParamter converterParameters;
 		converterParameters.sourcePath			= "../../../../../content";
 		converterParameters.outputPath			= "../../../../../gamebuild";
@@ -58,7 +58,7 @@ namespace tiki
 			dispose();
 			return false;
 		}
-		
+
 		if ( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->startWatch();
@@ -70,7 +70,7 @@ namespace tiki
 
 	void ResourceManager::dispose()
 	{
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		if ( m_pAssetConverter != nullptr )
 		{
 			if ( s_enableAssetConverterWatch )
@@ -100,7 +100,7 @@ namespace tiki
 
 	void ResourceManager::update()
 	{
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		if ( m_pAssetConverter != nullptr && s_enableAssetConverterWatch )
 		{
 			Array< string > files;
@@ -113,7 +113,7 @@ namespace tiki
 					const string& file = files[ i ];
 					const string fileName = path::getFilename( file );
 					const crc32 resourceKey = crcString( fileName );
-					
+
 					Resource* pResource = nullptr;
 					m_resourceStorage.findResource( &pResource, resourceKey );
 
@@ -124,7 +124,7 @@ namespace tiki
 						const ResourceLoaderResult result = m_resourceLoader.reloadResource( pResource, resourceKey, resourceKey, resourceType );
 						traceResourceLoadResult( result, fileName.cStr(), resourceKey, resourceType );
 					}
-				} 
+				}
 
 				m_pAssetConverter->unlockConversion();
 				files.dispose();
@@ -157,7 +157,7 @@ namespace tiki
 	void ResourceManager::unloadGenericResource( const Resource** ppResource )
 	{
 		TIKI_ASSERT( ppResource != nullptr );
-				
+
 		if ( *ppResource == nullptr )
 		{
 			return;
@@ -295,7 +295,7 @@ namespace tiki
 	{
 		ResourceRequest& request = *pData;
 
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		if( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->lockConversion();
@@ -307,7 +307,7 @@ namespace tiki
 		const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
 		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
 
-#if TIKI_ENABLED( TIKI_ENABLE_ASSET_CONVERTER )
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		if( s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->unlockConversion();
