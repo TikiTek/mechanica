@@ -10,6 +10,7 @@ namespace tiki
 {
 	QtAssetConverterBuildWidget::QtAssetConverterBuildWidget( AssetConverterInterface* pConverter )
 		: QDockWidget( "Asset Converter" )
+		, m_pConverter( pConverter )
 	{
 		m_pSearchText = new QLineEdit();
 		m_pRescanButton = new QPushButton( QIcon( ":/converter_editor/button-rescan.png" ), "" );
@@ -30,7 +31,6 @@ namespace tiki
 		m_pMainLayout->setMargin( 0 );
 
 		m_pMainWidget = new QWidget();
-		//m_pMainWidget->setContentsMargins( 0, 0, 0, 0 );
 		m_pMainWidget->setLayout( m_pMainLayout );
 
 		setWidget( m_pMainWidget );

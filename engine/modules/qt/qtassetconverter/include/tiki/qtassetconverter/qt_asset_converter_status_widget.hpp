@@ -23,7 +23,7 @@ namespace tiki
 
 		AssetConverterStatus*	m_pStatus;
 
-		void					updateStatus();
+		void					updateStatus( int test );
 	};
 }
 

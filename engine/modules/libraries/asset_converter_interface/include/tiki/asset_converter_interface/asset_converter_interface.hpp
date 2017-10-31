@@ -15,6 +15,8 @@
 
 namespace tiki
 {
+	class AssetConverterStatus;
+
 	struct AssetConverterParamter
 	{
 		AssetConverterParamter()
