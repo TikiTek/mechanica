@@ -16,6 +16,4 @@ local project = Project:new(
 
 local solution = Solution:new( "editor" );
 solution:add_project( project );
---solution:add_project( find_project( "converterlibrary" ) );
-
 solution:finalize();
