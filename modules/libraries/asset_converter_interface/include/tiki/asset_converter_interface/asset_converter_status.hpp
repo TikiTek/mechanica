@@ -3,6 +3,7 @@
 #define TIKI_ASSET_CONVERTER_STATUS_HPP_INCLUDED
 
 #include "tiki/asset_converter_interface/asset_converter_types.hpp"
+#include "tiki/base/delegate.hpp"
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/container/list.hpp"
@@ -39,16 +40,25 @@ namespace tiki
 
 	public:
 
+		typedef Delegate< void, int > ChangedDelegate;
+
 		uint32						getBuildId() const { return m_buildId; }
 		const List< AssetStatus >&	getAssets() const { return m_assets;  }
 
+		void						addChangedListener( const ChangedDelegate& listener );
+		void						removeChangedListener( const ChangedDelegate& listener );
+
 	protected:
 
-		uint				m_buildId;
-		List< AssetStatus >	m_assets;
+		uint32					m_buildId;
+		List< AssetStatus >		m_assets;
 
-							AssetConverterStatus() { }
-		virtual				~AssetConverterStatus() { }
+		List< ChangedDelegate >	m_changedListener;
+		
+								AssetConverterStatus() { }
+		virtual					~AssetConverterStatus() { }
+
+		void					notifyChangedListner();
 	};
 }
 
