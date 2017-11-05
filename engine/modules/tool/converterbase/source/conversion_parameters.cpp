@@ -4,20 +4,28 @@
 
 namespace tiki
 {
-	Map< string, string >& ConversionParameters::getMap()
+	void ConversionParameters::copyFrom( const ConversionParameters& parameters )
 	{
-		return m_parameters;
+		for( uint i = 0u; i < parameters.m_parameters.getCount(); ++i )
+		{
+			const KeyValuePair< string, string >& kvp = parameters.m_parameters.getPairAt( i );
+			m_parameters.set( kvp.key, kvp.value );
+		}
 	}
 
-	const Map< string, string >& ConversionParameters::getMap() const
+	void ConversionParameters::addParameter( const string& key, const string& value )
 	{
-		return m_parameters;
+		m_parameters.set( key, value );
 	}
 
 	string ConversionParameters::getString( const string& key ) const
 	{
 		string value;
-		TIKI_VERIFY( getArgument( value, key ) );
+		if( !getArgument( value, key ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
+			return nullptr;
+		}
 
 		return value;
 	}
@@ -25,7 +33,11 @@ namespace tiki
 	float ConversionParameters::getFloat( const string& key ) const
 	{
 		string value;
-		TIKI_VERIFY( getArgument( value, key ) );
+		if( !getArgument( value, key ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
+			return 0.0f;
+		}
 
 		return string_tools::parseFloat32( value.cStr() );
 	}
@@ -33,7 +45,11 @@ namespace tiki
 	int ConversionParameters::getInt( const string& key ) const
 	{
 		string value;
-		TIKI_VERIFY( getArgument( value, key ) );
+		if( !getArgument( value, key ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
+			return 0;
+		}
 
 		return string_tools::parseSInt32( value.cStr() );
 	}

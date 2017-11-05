@@ -1,9 +1,11 @@
 #include "asset_converter.hpp"
 
+#include "tiki/base/crc32.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/tasksystem/taskcontext.hpp"
+#include "tiki/toolbase/directory_tool.hpp"
 #include "tiki/toolproject/package.hpp"
 #include "tiki/toolproject/project.hpp"
 #include "tiki/toolsql/sqlite_query.hpp"
@@ -38,6 +40,11 @@ namespace tiki
 
 	TIKI_ASSET_CONVERTER_METHOD void disposeAssetConverter( AssetConverterInterface* pAssetConverterInterface )
 	{
+		if( pAssetConverterInterface == nullptr )
+		{
+			return;
+		}
+
 		AssetConverter* pAssetConverter = ( AssetConverter* )pAssetConverterInterface;
 		pAssetConverter->dispose();
 		TIKI_DELETE( pAssetConverter );
@@ -54,13 +61,15 @@ namespace tiki
 
 	bool AssetConverter::create( const AssetConverterParamter& parameters )
 	{
-		m_pProject = parameters.pProject;
+		m_pProject		= parameters.pProject;
+		m_ownsProject	= false;
+		m_rebuildForced = parameters.forceRebuild;
+
 		if( m_pProject == nullptr )
 		{
 			m_pProject = TIKI_NEW( Project );
+			m_ownsProject = true;
 		}
-
-		m_rebuildForced = parameters.forceRebuild;
 
 		TaskSystemParameters taskParameters;
 		taskParameters.maxTaskCount = 1024u;
@@ -72,7 +81,7 @@ namespace tiki
 		}
 
 		Path databasePath = m_pProject->getGamebuildPath();
-		databasePath.setFilenameWithExtension( "build.sqlite" );
+		databasePath.push( "build.sqlite" );
 
 		m_isNewDatabase = !file::exists( databasePath.getCompletePath() );
 		if( !m_dataBase.create( databasePath.getCompletePath() ) )
@@ -97,7 +106,7 @@ namespace tiki
 
 			for( uint i = 0u; i < TIKI_COUNT( pCreateTableSql ); ++i )
 			{
-				if( m_dataBase.executeCommand( pCreateTableSql[ i ] ) == false )
+				if( !m_dataBase.executeCommand( pCreateTableSql[ i ] ) )
 				{
 					TIKI_TRACE_ERROR( "[converter] Could not create Table. Error: %s\n", m_dataBase.getLastError() );
 					m_dataBase.dispose();
@@ -141,8 +150,18 @@ namespace tiki
 			ConverterBase* pConverter = apConverters[ i ];
 
 			pConverter->create( m_pProject->getGamebuildPath(), &m_taskSystem );
+
+			List< string > extensions;
+			pConverter->getInputExtensions( extensions );
+			for( const string& extenstion : extensions )
+			{
+				m_extensions.set( extenstion, pConverter->getOutputType() );
+			}
+
 			registerConverter( pConverter );
 		}
+
+		m_genericDataConverter.setProject( m_pProject );
 
 		for( const Package& package : m_pProject->getPackages() )
 		{
@@ -154,25 +173,36 @@ namespace tiki
 			if( !convertAll() )
 			{
 				TIKI_TRACE_ERROR( "AssetConverter: Initial Asset conversion failed. Shutting down!\n" );
-
+				dispose();
 				return false;
 			}
 		}
 
-		TIKI_TRACE_INFO( "[AssetConverter] started\n" );
+		TIKI_TRACE_INFO( "[converter] started\n" );
 		return true;
 	}
 
 	void AssetConverter::dispose()
 	{
-		TIKI_TRACE_INFO( "[AssetConverter] shutdown\n" );
+		TIKI_TRACE_INFO( "[converter] shutdown\n" );
 
-		m_animationConverter.dispose();
-		m_fontConverter.dispose();
-		m_genericDataConverter.dispose();
-		m_modelConverter.dispose();
-		m_shaderConverter.dispose();
-		m_textureConverter.dispose();
+		ConverterBase* apConverters[] =
+		{
+			&m_animationConverter,
+			&m_fontConverter,
+			&m_genericDataConverter,
+			&m_modelConverter,
+			&m_shaderConverter,
+			&m_textureConverter
+		};
+
+		for( uint i = 0u; i < TIKI_COUNT( apConverters ); ++i )
+		{
+			ConverterBase* pConverter = apConverters[ i ];
+
+			unregisterConverter( pConverter );
+			pConverter->dispose();
+		}
 
 		debug::setTraceCallback( nullptr );
 
@@ -183,25 +213,31 @@ namespace tiki
 		m_loggingThreadResults.dispose();
 
 		m_dataBase.dispose();
+
+		if( m_ownsProject )
+		{
+			TIKI_DELETE( m_pProject );
+		}
 	}
 
 	bool AssetConverter::convertAll()
 	{
-	//	List< string > assetFiles;
-	//	findFiles( m_sourcePath, assetFiles, ".xasset" );
+		List< Path > assetFiles;
+		for( const KeyValuePair< string, crc32 >& extension : m_extensions )
+		{
+			directory::findFiles( assetFiles, m_pProject->getContentPath(), extension.key );
+		}
 
-	//	for (size_t i = 0u; i < assetFiles.getCount(); ++i)
-	//	{
-	//		m_manager.queueFile( assetFiles[ i ] );
-	//	}
-	//	TIKI_TRACE_INFO( "[AssetConverter] Complete scan finish!\n" );
+		for( const Path file : assetFiles )
+		{
+			queueFile( file );
+		}
+		TIKI_TRACE_INFO( "[converter] Complete scan finish! %u elements found.\n", assetFiles.getCount() );
 
-	//	const bool result = m_manager.startConversion( &m_converterMutex );
-	//	TIKI_TRACE_INFO( "[AssetConverter] Conversion %s!\n", result ? "successful" : "failed" );
+		const bool result = startConversion( nullptr );
+		TIKI_TRACE_INFO( "[converter] Conversion %s!\n", result ? "successful" : "failed" );
 
-	//	return result;
-		TIKI_NOT_IMPLEMENTED;
-		return false;
+		return result;
 	}
 
 	void AssetConverter::startWatch()
@@ -297,23 +333,12 @@ namespace tiki
 
 	void AssetConverter::addPackage( const Package& package )
 	{
-		//Path definitionFilename;
-		//definitionFilename.setCombinedPath( m_sourcePath.cStr(), packageName.cStr() );
-		//definitionFilename.setExtension( ".package" );
-
-		//XmlDocument document;
-		//if( !document.loadFromFile( definitionFilename.getCompletePath() ) )
-		//{
-		//	TIKI_TRACE_ERROR( "[converter] failed to load package definition from '%s'.\n", definitionFilename.getCompletePath() );
-		//	return;
-		//}
-
-		//const XmlElement* pPackageNode = document.findFirstChild( "package" );
-		//if( pPackageNode == nullptr )
-		//{
-		//	TIKI_TRACE_ERROR( "[converter] failed to find root node in package definition from '%s'.\n", definitionFilename.getCompletePath() );
-		//	return;
-		//}
+		List< Path > templates;
+		package.findAssetTemplateFiles( templates );
+		for( const Path& templatePath : templates )
+		{
+			addTemplate( templatePath );
+		}
 	}
 
 	void AssetConverter::addTemplate( const Path& filePath )
@@ -331,16 +356,17 @@ namespace tiki
 			return;
 		}
 
-		const XmlAttribute* pAttName = pRoot->findAttribute( "name" );
-		if( pAttName == nullptr )
+		const XmlAttribute* pBaseAtt = pRoot->findAttribute( "base" );
+		if( pBaseAtt == nullptr )
 		{
-			TIKI_TRACE_ERROR( "[converter] name argument not found. can't add template: %s\n", filePath.getCompletePath() );
+			TIKI_TRACE_ERROR( "[converter] 'base' attribute not found. can't add template: %s\n", filePath.getCompletePath() );
 			return;
 		}
 
 		TemplateDescription desc;
-		desc.name		= pAttName->getValue();
+		desc.name		= filePath.getFilename();
 		desc.filePath	= filePath;
+		desc.typeCrc	= crcString( pBaseAtt->getValue() );
 
 		const XmlElement* pParameterNode = pRoot->findFirstChild( "parameter" );
 		while( pParameterNode )
@@ -358,11 +384,11 @@ namespace tiki
 			}
 			else if( pAttValue == nullptr )
 			{
-				desc.parameters.getMap().set( pAttKey->getValue(), pParameterNode->getValue() );
+				desc.parameters.addParameter( pAttKey->getValue(), pParameterNode->getValue() );
 			}
 			else
 			{
-				desc.parameters.getMap().set( pAttKey->getValue(), pAttValue->getValue() );
+				desc.parameters.addParameter( pAttKey->getValue(), pAttValue->getValue() );
 			}
 
 			pParameterNode = pParameterNode->findNextSibling( "parameter" );
@@ -448,9 +474,39 @@ namespace tiki
 
 	bool AssetConverter::fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath )
 	{
+		Path assetPath;
+		assetPath.setCompletePath( filePath.getFilename() );
+
 		asset.inputFilePath = filePath;
-		asset.assetName		= asset.inputFilePath.getFilename();
-		//asset.typeCrc	= (crc32)query.getIntegerField( "type" );
+		asset.assetName		= assetPath.getFilename();
+
+		if( !isStringEmpty( assetPath.getExtension() ) )
+		{
+			const string templateName = assetPath.getExtension() + 1u;
+			if( m_templates.hasKey( templateName ) )
+			{
+				const TemplateDescription& templateDescription = m_templates[ templateName ];
+
+				asset.typeCrc = templateDescription.typeCrc;
+				asset.parameters.copyFrom( templateDescription.parameters );
+			}
+			else
+			{
+				asset.typeCrc = crcString( templateName );
+			}
+
+			return true;
+		}
+		else if( isStringEmpty( filePath.getExtension() ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] '%s' has no type or template in its name.\n", filePath.getCompletePath() );
+			return false;
+		}
+
+		if( !m_extensions.findValue( &asset.typeCrc, filePath.getExtension() ) )
+		{
+			TIKI_TRACE_ERROR( "[converter] '%s' extension has no type.\n", filePath.getCompletePath() );
+		}
 
 		return true;
 	}
@@ -557,7 +613,7 @@ namespace tiki
 	//		if ( pAttFile == nullptr || pAttType == nullptr )
 	//		{
 	//			TIKI_TRACE_WARNING(
-	//				"[AssetConverter] XASSET: Input-Tag has wrong attributes: %s%s\n",
+	//				"[converter] XASSET: Input-Tag has wrong attributes: %s%s\n",
 	//				( pAttFile == nullptr ? "no file-attribute " : string( "file: " ) + pAttFile->content ).cStr(),
 	//				( pAttType == nullptr ? "no type-attribute " : string( "type: " ) + pAttType->content ).cStr()
 	//			);
@@ -931,7 +987,7 @@ namespace tiki
 
 			if( hasError )
 			{
-				TIKI_TRACE_ERROR( "[AssetConverter] Conversion of '%s' failed!\n", task.asset.inputFilePath.getFilenameWithExtension() );
+				TIKI_TRACE_ERROR( "[converter] Conversion of '%s' failed!\n", task.asset.inputFilePath.getFilenameWithExtension() );
 			}
 
 			// output files

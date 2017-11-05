@@ -31,14 +31,14 @@ namespace tiki
 		return typeCrc == s_typeCrc;
 	}
 
+	void ModelConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		extensions.pushBack( ".dae" );
+	}
+
 	crc32 ModelConverter::getOutputType() const
 	{
 		return s_typeCrc;
-	}
-
-	void ModelConverter::getDependingType( List< crc32 >& types ) const
-	{
-		types.add( crcString( "material" ) );
 	}
 
 	bool ModelConverter::initializeConverter()

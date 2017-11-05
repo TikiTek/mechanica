@@ -25,13 +25,15 @@ namespace tiki
 		return typeCrc == s_typeCrc;
 	}
 
+	void TextureConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		extensions.pushBack( ".psd" );
+		extensions.pushBack( ".png" );
+	}
+
 	crc32 TextureConverter::getOutputType() const
 	{
 		return s_typeCrc;
-	}
-
-	void TextureConverter::getDependingType( List< crc32 >& types ) const
-	{
 	}
 
 	bool TextureConverter::initializeConverter()

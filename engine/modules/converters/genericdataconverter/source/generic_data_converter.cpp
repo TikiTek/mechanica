@@ -6,6 +6,8 @@
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
+#include "tiki/toolproject/package.hpp"
+#include "tiki/toolproject/project.hpp"
 
 namespace tiki
 {
@@ -15,6 +17,14 @@ namespace tiki
 
 	GenericDataConverter::~GenericDataConverter()
 	{
+	}
+
+	void GenericDataConverter::setProject( const Project* pProject )
+	{
+		for( const Package& package : pProject->getPackages() )
+		{
+			m_collection.addPackage( package );
+		}
 	}
 
 	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const
@@ -38,13 +48,14 @@ namespace tiki
 		return false;
 	}
 
+	void GenericDataConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		extensions.pushBack( ".tikigenericobjects" );
+	}
+
 	crc32 GenericDataConverter::getOutputType() const
 	{
 		return crcString( "genericdata" );
-	}
-
-	void GenericDataConverter::getDependingType( List< crc32 >& types ) const
-	{
 	}
 
 	bool GenericDataConverter::initializeConverter()

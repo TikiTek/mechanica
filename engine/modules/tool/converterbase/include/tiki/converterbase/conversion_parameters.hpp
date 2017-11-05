@@ -11,8 +11,8 @@ namespace tiki
 	{
 	public:
 
-		Map< string, string >&			getMap();
-		const Map< string, string >&	getMap() const;
+		void							copyFrom( const ConversionParameters& parameters );
+		void							addParameter( const string& key, const string& value );
 
 		string							getString( const string& key ) const;
 		float							getFloat( const string& key ) const;

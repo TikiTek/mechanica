@@ -37,7 +37,7 @@ namespace tiki
 	bool SqliteDatabase::executeCommand( const char* pSql )
 	{
 		TIKI_ASSERT( m_pDatabase != nullptr );
-		return sqlite3_exec( m_pDatabase, pSql, nullptr, nullptr, (char**)&m_pLastError ) != SQLITE_OK;
+		return sqlite3_exec( m_pDatabase, pSql, nullptr, nullptr, (char**)&m_pLastError ) == SQLITE_OK;
 	}
 
 	uint SqliteDatabase::getLastInsertId() const

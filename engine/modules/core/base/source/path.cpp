@@ -165,7 +165,7 @@ namespace tiki
 			return false;
 		}
 
-		setFilenameWithExtension( m_directory + index );
+		setFilenameWithExtension( m_directory + index + 1u );
 		m_directory[ index ] = '\0';
 
 		m_bufferState = BufferState_Invalid;

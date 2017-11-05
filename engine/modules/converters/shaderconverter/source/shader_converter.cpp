@@ -303,13 +303,14 @@ namespace tiki
 		return typeCrc == s_typeCrc;
 	}
 
+	void ShaderConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		extensions.pushBack( ".fx" );
+	}
+
 	crc32 ShaderConverter::getOutputType() const
 	{
 		return s_typeCrc;
-	}
-
-	void ShaderConverter::getDependingType( List< crc32 >& types ) const
-	{
 	}
 
 	bool ShaderConverter::initializeConverter()

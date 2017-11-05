@@ -43,7 +43,7 @@ namespace tiki
 		bool					create( const Path& filePath );
 		void					create( const Path& contentPath, const string& packageName );
 
-		bool					writeToFile();
+		bool					writeToFile() const;
 
 	private:
 
