@@ -140,7 +140,20 @@ namespace tiki
 
 	void Path::setExtension( const char* pExtension )
 	{
-		copyString( m_extension, sizeof( m_extension ), pExtension );
+		if( isStringEmpty( pExtension ) )
+		{
+			m_extension[ 0u ] == '\0';
+		}
+		else if( pExtension[ 0u ] != '.' )
+		{
+			m_extension[ 0u ] = '.';
+			copyString( m_extension + 1u, sizeof( m_extension ) - 1u, pExtension );
+		}
+		else
+		{
+			copyString( m_extension, sizeof( m_extension ), pExtension );
+		}
+
 		m_bufferState = BufferState_Invalid;
 	}
 

@@ -11,38 +11,37 @@
 #include "tiki/threading/thread.hpp"
 #include "tiki/container/list.hpp"
 
-
 namespace tiki
 {
-	class AssetConverter : public IAssetConverter
+	class AssetConverter : public AssetConverterInterface
 	{
 	public:
 
-		AssetConverter();
-		~AssetConverter();
+						AssetConverter();
+		virtual			~AssetConverter();
 
-		virtual bool	create( const AssetConverterParamter& parameters ) TIKI_OVERRIDE;
-		virtual void	dispose() TIKI_OVERRIDE;
+		virtual bool	create( const AssetConverterParamter& parameters );
+		virtual void	dispose();
 
-		virtual bool	convertAll() TIKI_OVERRIDE;
+		virtual bool	convertAll() TIKI_OVERRIDE_FINAL;
 
-		virtual void	startWatch() TIKI_OVERRIDE;
-		virtual void	stopWatch() TIKI_OVERRIDE;
-		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_OVERRIDE;
+		virtual void	startWatch() TIKI_OVERRIDE_FINAL;
+		virtual void	stopWatch() TIKI_OVERRIDE_FINAL;
 
-		virtual void	lockConversion() TIKI_OVERRIDE;
-		virtual void	unlockConversion() TIKI_OVERRIDE;
+		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
+		PacketManager*			m_pPacketManager;
 		string					m_sourcePath;
 
 		ConverterManager		m_manager;
 
-		Thread					m_watchThread;
-		FileWatcher				m_fileWatcher;
-		Mutex					m_converterMutex;
-		string					m_currentFileName;
+		Mutex					m_watcherMutex;
+		Thread					m_watcherThread;
+		FileWatcher				m_watcher;
+
+		Mutex					m_changedFilesMutex;
 		List< string >			m_changedFiles;
 
 		void					watchThreadEntryPoint( const Thread& thread );

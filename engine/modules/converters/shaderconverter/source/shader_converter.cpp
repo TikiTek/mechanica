@@ -383,7 +383,7 @@ namespace tiki
 		preprocessor.create( sourceCode );
 
 		ResourceWriter resourceWriter;
-		openResourceWriter( resourceWriter, result, asset.assetName, "shader" );
+		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "shader" );
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
 		{
 			resourceWriter.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );

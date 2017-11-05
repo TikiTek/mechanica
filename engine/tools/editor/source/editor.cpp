@@ -1,5 +1,6 @@
 #include "editor.hpp"
 
+#include "tiki/asset_converter_interface/asset_converter_interface.hpp"
 #include "tiki/base/assert.hpp"
 #include "tiki/converter_editor/converter_editor.hpp"
 #include "tiki/generic_data_editor/generic_data_editor.hpp"
@@ -25,9 +26,16 @@ namespace tiki
 	{
 		setProjectPathes();
 
+		m_packetManager.create( "..." );
+
+		AssetConverterParamter assetConverterParameters;
+		assetConverterParameters.pPacketManager = &m_packetManager;
+
+		m_pAssetConverter = createAssetConverter( assetConverterParameters );
+
 		m_pPackageEditor = new PackageEditor( this );
 		m_pGenericDataEditor = new GenericDataEditor( this );
-		m_pConverterEditor = new ConverterEditor( this, nullptr );
+		m_pConverterEditor = new ConverterEditor( this, m_pAssetConverter );
 
 		registerFileEditor( m_pPackageEditor );
 		registerFileEditor( m_pGenericDataEditor );
@@ -46,6 +54,9 @@ namespace tiki
 		delete m_pConverterEditor;
 		delete m_pGenericDataEditor;
 		delete m_pPackageEditor;
+
+		disposeAssetConverter( m_pAssetConverter );
+		m_packetManager.dispose();
 	}
 
 	IEditable* Editor::openEditable( const QString& title, QWidget* pEditWidget, IEditor* pEditor )

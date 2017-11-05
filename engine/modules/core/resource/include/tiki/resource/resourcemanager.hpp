@@ -22,7 +22,7 @@ namespace tiki
 	class ResourceRequest;
 	struct ResourceId;
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-	class IAssetConverter;
+	class AssetConverterInterface;
 #endif
 
 	struct ResourceManagerParameters
@@ -83,7 +83,7 @@ namespace tiki
 		Mutex								m_loadingMutex;
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		IAssetConverter*					m_pAssetConverter;
+		AssetConverterInterface*			m_pAssetConverter;
 #endif
 
 		const Resource*						loadGenericResource( const char* pFileName, fourcc type, crc32 resourceKey );

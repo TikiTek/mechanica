@@ -177,7 +177,7 @@ namespace tiki
 		}
 
 		ResourceWriter writer;
-		openResourceWriter( writer, result, asset.assetName, "font" );
+		openResourceWriter( writer, result, asset.assetName.cStr(), "font" );
 
 		FlagMask8< ResourceDefinitionFeature > features;
 		features.setFlag( ResourceDefinitionFeature_GraphicsApi );

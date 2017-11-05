@@ -65,8 +65,6 @@ namespace tiki
 		bool					startConversion( Mutex* pConversionMutex = nullptr );
 
 		// misc
-		//const string&			getSourcePath() const { return m_sourcePath; }
-		const string&			getOutputPath() const { return m_outputPath; }
 		bool					isNewDatabase() const { return m_isNewDatabase; }
 
 	private: // friend
@@ -105,8 +103,7 @@ namespace tiki
 
 		typedef Map< uint64, ConversionResult* > ThreadResultMap;
 
-		string						m_sourcePath;
-		string						m_outputPath;
+		Path						m_outputPath;
 
 		SqliteDatabase				m_dataBase;
 		bool						m_rebuildForced;

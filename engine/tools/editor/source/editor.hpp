@@ -4,6 +4,8 @@
 
 #include "tiki/editor_interface/ieditorinterface.hpp"
 
+#include "tiki/toolpackage/package_manager.hpp"
+
 #include <QSet>
 #include <QShortcut>
 
@@ -11,12 +13,14 @@ class QDockWidget;
 
 namespace tiki
 {
+	class AssetConverterInterface;
 	class ConverterEditor;
 	class EditorEditable;
 	class EditorEditable;
 	class EditorWindow;
 	class GenericDataEditor;
 	class PackageEditor;
+	class PacketManager;
 
 	class Editor : public QObject, public IEditorInterface
 	{
@@ -63,6 +67,9 @@ namespace tiki
 
 		EditorWindow*				m_pWindow;
 
+		PacketManager				m_packetManager;
+		AssetConverterInterface*	m_pAssetConverter;
+
 		QDir						m_projectPath;
 		QDir						m_contentPath;
 		QDir						m_packagePath;
@@ -75,8 +82,8 @@ namespace tiki
 
 		QSet< QDockWidget* >		m_docks;
 
-		QSet< EditorEditable* >			m_editables;
-		EditorEditable*					m_pCurrentEditable;
+		QSet< EditorEditable* >		m_editables;
+		EditorEditable*				m_pCurrentEditable;
 
 		QShortcut					m_openShortcut;
 		QShortcut					m_saveShortcut;
