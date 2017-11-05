@@ -39,7 +39,7 @@ namespace tiki
 		bool							create();
 		void							dispose();
 
-		bool							addPackage( const Package* pPackage );
+		bool							addPackage( const Package& package );
 
 		GenericDataTagHandler&			getTagHandler();
 

@@ -19,21 +19,21 @@ namespace tiki
 
 	public:
 
-								ShaderConverter();
-		virtual					~ShaderConverter();
+							ShaderConverter();
+		virtual				~ShaderConverter();
 
 	protected:
 
-		virtual uint32			getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
-		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
+		virtual uint32		getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
+		virtual bool		canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
 
-		virtual crc32			getOutputType() const TIKI_OVERRIDE_FINAL;
-		virtual void			getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE_FINAL;
+		virtual void		getInputExtensions( List< string >& extensions ) const TIKI_OVERRIDE_FINAL;
+		virtual crc32		getOutputType() const TIKI_OVERRIDE_FINAL;
 
-		virtual bool			initializeConverter() TIKI_OVERRIDE_FINAL;
-		virtual void			disposeConverter() TIKI_OVERRIDE_FINAL;
+		virtual bool		initializeConverter() TIKI_OVERRIDE_FINAL;
+		virtual void		disposeConverter() TIKI_OVERRIDE_FINAL;
 
-		virtual bool			startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const TIKI_OVERRIDE_FINAL;
+		virtual bool		startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const TIKI_OVERRIDE_FINAL;
 
 	private:
 
@@ -51,16 +51,16 @@ namespace tiki
 			bool			debugMode;
 		};
 
-		const char*				m_pBaseSourceCode;
+		const char*			m_pBaseSourceCode;
 
-		List< string >			m_includeDirs;
-		ShaderFileStorage*		m_pFileStorage;
+		List< string >		m_includeDirs;
+		ShaderFileStorage*	m_pFileStorage;
 
-		mutable Mutex			m_openGlMutex;
+		mutable Mutex		m_openGlMutex;
 
-		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
-		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
-		bool					compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
+		bool				compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
+		bool				compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
+		bool				compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
 
 	};
 }

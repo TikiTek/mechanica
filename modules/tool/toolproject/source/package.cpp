@@ -31,7 +31,7 @@ namespace tiki
 		Path templatePath;
 		templatePath.setCombinedPath( m_basepath, m_assetTemplatesPath );
 
-		directory::findFiles( targetList, templatePath, ".generictypes" );
+		directory::findFiles( targetList, templatePath, ".template" );
 	}
 
 	bool Package::create( const Path& filePath )
@@ -112,7 +112,7 @@ namespace tiki
 		m_basepath.push( packageName.cStr() );
 	}
 
-	bool Package::writeToFile()
+	bool Package::writeToFile() const
 	{
 		return false;
 	}

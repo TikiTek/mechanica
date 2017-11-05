@@ -32,13 +32,15 @@ namespace tiki
 		return typeCrc == s_typeCrc;
 	}
 
+	void AnimationConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		TIKI_NOT_IMPLEMENTED;
+		//extensions.pushBack( ".dae" );
+	}
+
 	crc32 AnimationConverter::getOutputType() const
 	{
 		return s_typeCrc;
-	}
-
-	void AnimationConverter::getDependingType( List< crc32 >& types ) const
-	{
 	}
 
 	bool AnimationConverter::initializeConverter()

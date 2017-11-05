@@ -31,13 +31,14 @@ namespace tiki
 		return typeCrc == s_typeCrc;
 	}
 
+	void FontConverter::getInputExtensions( List< string >& extensions ) const
+	{
+		extensions.pushBack( ".ttf" );
+	}
+
 	crc32 FontConverter::getOutputType() const
 	{
 		return s_typeCrc;
-	}
-
-	void FontConverter::getDependingType( List< crc32 >& types ) const
-	{
 	}
 
 	bool FontConverter::initializeConverter()

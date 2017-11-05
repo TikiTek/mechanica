@@ -55,6 +55,7 @@ namespace tiki
 		{
 			Path					filePath;
 			string					name;
+			crc32					typeCrc;
 
 			ConversionParameters	parameters;
 		};
@@ -74,6 +75,7 @@ namespace tiki
 		typedef Map< uint64, ConversionResult* > ThreadResultMap;
 
 		Project*					m_pProject;
+		bool						m_ownsProject;
 
 		SqliteDatabase				m_dataBase;
 		bool						m_rebuildForced;
@@ -90,8 +92,9 @@ namespace tiki
 		FileStream					m_loggingStream;
 		ThreadResultMap				m_loggingThreadResults;
 
-		TemplateMap					m_templates;
 		ConverterList				m_converters;
+		TemplateMap					m_templates;
+		Map< string, crc32 >		m_extensions;
 
 		List< Path >				m_files;
 		Mutex						m_changedFilesMutex;

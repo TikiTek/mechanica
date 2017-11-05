@@ -8,6 +8,8 @@
 
 namespace tiki
 {
+	class Project;
+
 	class GenericDataConverter : public ConverterBase
 	{
 	public:
@@ -15,13 +17,15 @@ namespace tiki
 									GenericDataConverter();
 		virtual						~GenericDataConverter();
 
+		void						setProject( const Project* pProject );
+
 	protected:
 
 		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
 		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
 
+		virtual void				getInputExtensions( List< string >& extensions ) const TIKI_OVERRIDE_FINAL;
 		virtual crc32				getOutputType() const TIKI_OVERRIDE_FINAL;
-		virtual void				getDependingType( List< crc32 >& types ) const TIKI_OVERRIDE_FINAL;
 
 		virtual bool				initializeConverter() TIKI_OVERRIDE_FINAL;
 		virtual void				disposeConverter() TIKI_OVERRIDE_FINAL;

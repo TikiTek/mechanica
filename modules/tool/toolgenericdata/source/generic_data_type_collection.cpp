@@ -81,24 +81,24 @@ namespace tiki
 		}
 	}
 
-	bool GenericDataTypeCollection::addPackage( const Package* pPackage )
+	bool GenericDataTypeCollection::addPackage( const Package& package )
 	{
-		if( m_packages.contains( pPackage ) )
+		if( m_packages.contains( &package ) )
 		{
 			return true;
 		}
-		m_packages.pushBack( pPackage );
+		m_packages.pushBack( &package );
 
-		for( const Package* pParentPackage : pPackage->getDependencies() )
+		for( const Package* pParentPackage : package.getDependencies() )
 		{
-			if( !addPackage( pParentPackage ) )
+			if( !addPackage( *pParentPackage ) )
 			{
 				return false;
 			}
 		}
 
 		List< Path > typeFiles;
-		pPackage->findGenericDataTypeFiles( typeFiles );
+		package.findGenericDataTypeFiles( typeFiles );
 
 		return loadFiles( typeFiles );
 	}
