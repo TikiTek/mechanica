@@ -43,7 +43,7 @@ namespace tiki
 	{
 		if( type == DependencyType_InputFile || type == DependencyType_OutputFile )
 		{
-			identifier	= path::getAbsolutePath( identifier );
+			//identifier	= path::getAbsolutePath( identifier );
 			value		= formatDynamicString( "%08x", file::getLastChangeCrc( identifier.cStr() ) );
 		}
 

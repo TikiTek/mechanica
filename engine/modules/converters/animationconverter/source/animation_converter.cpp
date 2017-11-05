@@ -153,7 +153,7 @@ namespace tiki
 		}
 
 		ResourceWriter resourceWriter;
-		openResourceWriter( resourceWriter, result, asset.assetName, "animation" );
+		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "animation" );
 
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{

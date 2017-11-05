@@ -2,7 +2,6 @@
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/converterbase/converter_manager.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"

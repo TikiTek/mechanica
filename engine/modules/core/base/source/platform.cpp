@@ -49,11 +49,11 @@ namespace tiki
 	int platform::startApplication()
 	{
 		{
-			const string currentPath = path::getCurrentDir();
-			const string exePath = path::getExecutablePath();
+			const Path& currentPath = platform::getCurrentPath();
+			const Path& exePath = platform::getExecutablePath();
 
-			TIKI_TRACE_DEBUG( "Executable Path: %s\n", exePath.cStr() );
-			TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.cStr() );
+			TIKI_TRACE_DEBUG( "Executable Path: %s\n", exePath.getCompletePath() );
+			TIKI_TRACE_DEBUG( "Current Path: %s\n", currentPath.getCompletePath() );
 		}
 
 		const int returnValue = mainEntryPoint();

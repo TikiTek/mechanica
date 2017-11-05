@@ -1,6 +1,6 @@
--- library/modules/tool/toolpackage
+-- library/modules/tool/toolsql
 
-local module = Module:new( "toolpackage" );
+local module = Module:new( "toolsql" );
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
@@ -8,3 +8,4 @@ module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "core/base" );
+module:add_dependency( "thirdparty/sqlite" );

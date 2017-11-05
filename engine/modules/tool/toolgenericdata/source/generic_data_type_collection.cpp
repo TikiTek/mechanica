@@ -19,7 +19,8 @@
 #include "tiki/toolgenericdata/generic_data_type_struct.hpp"
 #include "tiki/toolgenericdata/generic_data_type_value_type.hpp"
 #include "tiki/toolgenericdata/generic_data_value.hpp"
-#include "tiki/toolpackage/package.hpp"
+#include "tiki/toolproject/project.hpp"
+#include "tiki/toolproject/package.hpp"
 #include "tiki/toolxml/xml_attribute.hpp"
 #include "tiki/toolxml/xml_document.hpp"
 

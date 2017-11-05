@@ -9,11 +9,11 @@
 
 namespace tiki
 {
-	class PackageManager;
+	class Project;
 
 	class Package : public LinkedItem< Package >
 	{
-		friend class PackageManager;
+		friend class Project;
 
 	public:
 

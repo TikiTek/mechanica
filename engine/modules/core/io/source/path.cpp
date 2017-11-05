@@ -1,4 +1,3 @@
-
 #include "tiki/io/path.hpp"
 
 namespace tiki
@@ -73,38 +72,38 @@ namespace tiki
 		return combine( path1, combine( path2, path3 ) );
 	}
 
-	string path::getAbsolutePath( const string& path )
-	{
-		const string slashPath = checkSlashes( path );
+	//string path::getAbsolutePath( const string& path )
+	//{
+	//	const string slashPath = checkSlashes( path );
 
-		const bool beginWithDrive	= ( slashPath.subString( 1u, 2 ) == ":/" );
-		const bool containsDots		= ( slashPath.contains( "/../" ) || slashPath.contains( "/./" ) );
-		if ( beginWithDrive && !containsDots )
-		{
-			// is already absolute
-			return slashPath;
-		}
-		string fullPath = slashPath;
-		if ( !beginWithDrive )
-		{
-			fullPath = path::combine( getCurrentDir(), slashPath );
-		}
+	//	const bool beginWithDrive	= ( slashPath.subString( 1u, 2 ) == ":/" );
+	//	const bool containsDots		= ( slashPath.contains( "/../" ) || slashPath.contains( "/./" ) );
+	//	if ( beginWithDrive && !containsDots )
+	//	{
+	//		// is already absolute
+	//		return slashPath;
+	//	}
+	//	string fullPath = slashPath;
+	//	if ( !beginWithDrive )
+	//	{
+	//		fullPath = path::combine( platform::getCurrentPath().getCompletePath(), slashPath );
+	//	}
 
-		for (;;)
-		{
-			const int index = fullPath.indexOf( "/.." );
-			if ( index <= 0 )
-			{
-				break;
-			}
+	//	for (;;)
+	//	{
+	//		const int index = fullPath.indexOf( "/.." );
+	//		if ( index <= 0 )
+	//		{
+	//			break;
+	//		}
 
-			const uint lastIndex = (uint)index + 3u;
-			const uint prevIndex = (uint)fullPath.lastIndexOf( '/', (uint)index - 1u );
-			TIKI_ASSERT( prevIndex < fullPath.getLength() );
+	//		const uint lastIndex = (uint)index + 3u;
+	//		const uint prevIndex = (uint)fullPath.lastIndexOf( '/', (uint)index - 1u );
+	//		TIKI_ASSERT( prevIndex < fullPath.getLength() );
 
-			fullPath = fullPath.remove( prevIndex, lastIndex - prevIndex );
-		}
+	//		fullPath = fullPath.remove( prevIndex, lastIndex - prevIndex );
+	//	}
 
-		return fullPath.replace( "/./", "/" );
-	}
+	//	return fullPath.replace( "/./", "/" );
+	//}
 }

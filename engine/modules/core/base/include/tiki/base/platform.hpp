@@ -7,6 +7,8 @@
 
 namespace tiki
 {
+	class Path;
+
 	TIKI_DEFINE_HANLE( InstanceHandle );
 	TIKI_DEFINE_HANLE( WindowHandle );
 
@@ -57,8 +59,10 @@ namespace tiki
 		PlatformType							getHostPlatform();
 		GraphicsApi								getHostGraphicsApi();
 		SoundApi								getHostSoundApi();
-
 		uint									getProcessorCount();
+
+		const Path&								getCurrentPath();
+		const Path&								getExecutablePath();
 
 		void									getUserName( char* pBuffer, uint bufferSize );
 

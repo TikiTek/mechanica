@@ -26,10 +26,8 @@ namespace tiki
 	{
 		setProjectPathes();
 
-		m_packetManager.create( "..." );
-
 		AssetConverterParamter assetConverterParameters;
-		assetConverterParameters.pPacketManager = &m_packetManager;
+		assetConverterParameters.pProject = &m_project;
 
 		m_pAssetConverter = createAssetConverter( assetConverterParameters );
 
@@ -56,7 +54,6 @@ namespace tiki
 		delete m_pPackageEditor;
 
 		disposeAssetConverter( m_pAssetConverter );
-		m_packetManager.dispose();
 	}
 
 	IEditable* Editor::openEditable( const QString& title, QWidget* pEditWidget, IEditor* pEditor )

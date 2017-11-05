@@ -64,7 +64,7 @@ namespace tiki
 		}
 
 		ResourceWriter writer;
-		openResourceWriter( writer, result, asset.assetName, "model" );
+		openResourceWriter( writer, result, asset.assetName.cStr(), "model" );
 
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{

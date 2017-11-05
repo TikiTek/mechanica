@@ -2,9 +2,8 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/converterbase/converter_manager.hpp"
+#include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
-#include "tiki/io/xmlreader.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
 
@@ -90,7 +89,7 @@ namespace tiki
 			const string& extension = document.getType()->getPostFix();
 
 			ResourceWriter resourceWriter;
-			openResourceWriter( resourceWriter, result, asset.assetName, extension );
+			openResourceWriter( resourceWriter, result, asset.assetName.cStr(), extension.cStr() );
 
 			for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 			{
