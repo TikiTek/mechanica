@@ -18,9 +18,7 @@ namespace tiki
 		string	combine( const string& path1, const string& path2 );
 		string	combine( const string& path1, const string& path2, const string& path3 );
 
-		string	getAbsolutePath( const string& path );
-		string	getCurrentDir();
-		string	getExecutablePath();
+		//string	getAbsolutePath( const string& path );
 	}
 }
 

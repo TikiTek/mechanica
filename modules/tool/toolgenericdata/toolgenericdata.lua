@@ -9,4 +9,4 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "tool/toolbase" );
 module:add_dependency( "tool/toolxml" );
-module:add_dependency( "tool/toolpackage" );
+module:add_dependency( "tool/toolproject" );

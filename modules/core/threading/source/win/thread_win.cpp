@@ -61,12 +61,9 @@ namespace tiki
 			&m_platformData.threadId
 		);
 
-		if ( pName != nullptr )
-		{
-			copyString( m_platformData.name, TIKI_COUNT( m_platformData.name ), pName );
-		}
+		copyString( m_platformData.name, TIKI_COUNT( m_platformData.name ), pName );
 
-		if( getStringSize( m_platformData.name ) > 0u )
+		if( !isStringEmpty( m_platformData.name ) )
 		{
 			THREADNAME_INFO info;
 			info.dwType		= 0x1000;

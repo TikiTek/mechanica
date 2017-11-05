@@ -142,7 +142,7 @@ namespace tiki
 	{
 		if( isStringEmpty( pExtension ) )
 		{
-			m_extension[ 0u ] == '\0';
+			m_extension[ 0u ] = '\0';
 		}
 		else if( pExtension[ 0u ] != '.' )
 		{

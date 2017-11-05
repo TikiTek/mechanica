@@ -287,24 +287,10 @@ namespace tiki
 	{
 		ResourceRequest& request = *pData;
 
-#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		if( s_enableAssetConverterWatch )
-		{
-			m_pAssetConverter->lockConversion();
-		}
-#endif
-
 		const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
 
 		const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
 		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
-
-#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		if( s_enableAssetConverterWatch )
-		{
-			m_pAssetConverter->unlockConversion();
-		}
-#endif
 
 		request.m_isLoading = false;
 	}

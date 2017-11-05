@@ -9,24 +9,24 @@
 
 namespace tiki
 {
-	class PacketManager;
+	class Project;
 	class AssetConverterStatus;
 
 	struct AssetConverterParamter
 	{
 		AssetConverterParamter()
 		{
-			pPacketManager				= nullptr;
+			pProject					= nullptr;
 			waitForConversion			= false;
 			forceRebuild				= false;
 			rebuildOnMissingDatabase	= true;
 		}
 
-		PacketManager*	pPacketManager;
+		Project*	pProject;
 
-		bool			waitForConversion;
-		bool			forceRebuild;
-		bool			rebuildOnMissingDatabase;
+		bool		waitForConversion;
+		bool		forceRebuild;
+		bool		rebuildOnMissingDatabase;
 	};
 
 	class AssetConverterInterface
@@ -45,7 +45,7 @@ namespace tiki
 	};
 
 	TIKI_ASSET_CONVERTER_METHOD AssetConverterInterface*	createAssetConverter( const AssetConverterParamter& parameters );
-	TIKI_ASSET_CONVERTER_METHOD void						disposeAssetConverter( AssetConverterInterface* pObject );
+	TIKI_ASSET_CONVERTER_METHOD void						disposeAssetConverter( AssetConverterInterface* pAssetConverterInterface );
 }
 
 #endif // TIKI_IASSETCONVERTER_HPP

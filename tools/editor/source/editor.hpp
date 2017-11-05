@@ -4,7 +4,7 @@
 
 #include "tiki/editor_interface/ieditorinterface.hpp"
 
-#include "tiki/toolpackage/package_manager.hpp"
+#include "tiki/toolproject/project.hpp"
 
 #include <QSet>
 #include <QShortcut>
@@ -67,7 +67,7 @@ namespace tiki
 
 		EditorWindow*				m_pWindow;
 
-		PacketManager				m_packetManager;
+		Project						m_project;
 		AssetConverterInterface*	m_pAssetConverter;
 
 		QDir						m_projectPath;

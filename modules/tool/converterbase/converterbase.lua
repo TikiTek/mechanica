@@ -12,4 +12,5 @@ module:add_dependency( "core/threading" );
 module:add_dependency( "core/resource" );
 module:add_dependency( "runtime/tasksystem" );
 module:add_dependency( "tool/toolbase" );
-module:add_dependency( "thirdparty/sqlite" );
+module:add_dependency( "tool/toolsql" );
+

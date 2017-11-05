@@ -37,6 +37,44 @@ int main( int argc, char** argv )
 
 namespace tiki
 {
+	static Path s_currentDirectory;
+	static Path s_executablePath;
+
+	uint platform::getProcessorCount()
+	{
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo( &sysinfo );
+
+		return sysinfo.dwNumberOfProcessors;
+	}
+
+	const Path& platform::getCurrentPath()
+	{
+		wchar_t widecharBuffer[ TIKI_MAX_PATH ];
+		GetCurrentDirectoryW( TIKI_COUNT( widecharBuffer ), widecharBuffer );
+
+		char utf8Buffer[ TIKI_MAX_PATH ];
+		convertWidecharToUtf8String( utf8Buffer, TIKI_COUNT( utf8Buffer ), widecharBuffer );
+
+		s_currentDirectory.setCompletePath( utf8Buffer );
+		return s_currentDirectory;
+	}
+
+	const Path& platform::getExecutablePath()
+	{
+		HMODULE currentModule = GetModuleHandleA( nullptr );
+
+		wchar_t widecharBuffer[ TIKI_MAX_PATH ];
+		GetModuleFileNameW( currentModule, widecharBuffer, TIKI_COUNT( widecharBuffer ) );
+
+		char utf8Buffer[ TIKI_MAX_PATH ];
+		convertWidecharToUtf8String( utf8Buffer, TIKI_COUNT( utf8Buffer ), widecharBuffer );
+
+		s_executablePath.setCompletePath( utf8Buffer );
+		s_executablePath.pop();
+		return s_executablePath;
+	}
+
 	void platform::getUserName( char* pBuffer, uint bufferSize )
 	{
 		wchar_t aUserNameWideCharBuffer[ 128u ];
@@ -111,12 +149,4 @@ namespace tiki
 		return s_argumentCount;
 	}
 #endif
-
-	uint platform::getProcessorCount()
-	{
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo( &sysinfo );
-
-		return sysinfo.dwNumberOfProcessors;
-	}
 }
