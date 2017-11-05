@@ -159,7 +159,7 @@ namespace tiki
 		}
 
 		ResourceWriter writer;
-		openResourceWriter( writer, result, asset.assetName, "texture" );
+		openResourceWriter( writer, result, asset.assetName.cStr(), "texture" );
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
 		{
 			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );

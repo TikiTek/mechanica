@@ -2,61 +2,50 @@
 #ifndef TIKI_IASSETCONVERTER_HPP
 #define TIKI_IASSETCONVERTER_HPP
 
+#include "tiki/asset_converter_interface/asset_converter_types.hpp"
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/library_types.hpp"
-#include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
-
-#if TIKI_ENABLED( TIKI_BUILD_LIBRARY )
-#	define TIKI_ASSET_CONVERTER_METHOD	TIKI_LIBRARY_EXPORT_METHOD
-#else
-#	define TIKI_ASSET_CONVERTER_METHOD	TIKI_LIBRARY_IMPORT_METHOD
-#endif
 
 namespace tiki
 {
+	class PacketManager;
 	class AssetConverterStatus;
 
 	struct AssetConverterParamter
 	{
 		AssetConverterParamter()
 		{
+			pPacketManager				= nullptr;
 			waitForConversion			= false;
 			forceRebuild				= false;
 			rebuildOnMissingDatabase	= true;
 		}
 
-		string	sourcePath;
-		string	outputPath;
-		string	packageName;
+		PacketManager*	pPacketManager;
 
-		bool	waitForConversion;
-		bool	forceRebuild;
-		bool	rebuildOnMissingDatabase;
+		bool			waitForConversion;
+		bool			forceRebuild;
+		bool			rebuildOnMissingDatabase;
 	};
 
-	class IAssetConverter
+	class AssetConverterInterface
 	{
 	public:
 
-						IAssetConverter() {}
-		virtual			~IAssetConverter() {}
-
-		virtual bool	create( const AssetConverterParamter& parameters ) TIKI_PURE;
-		virtual void	dispose() TIKI_PURE;
+						AssetConverterInterface() {}
+		virtual			~AssetConverterInterface() {}
 
 		virtual bool	convertAll() TIKI_PURE;
 
 		virtual void	startWatch() TIKI_PURE;
 		virtual void	stopWatch() TIKI_PURE;
-		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_PURE;
 
-		virtual void	lockConversion() TIKI_PURE;
-		virtual void	unlockConversion() TIKI_PURE;
+		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_PURE;
 	};
 
-	TIKI_ASSET_CONVERTER_METHOD IAssetConverter*	createAssetConverter();
-	TIKI_ASSET_CONVERTER_METHOD void				disposeAssetConverter( IAssetConverter* pObject );
+	TIKI_ASSET_CONVERTER_METHOD AssetConverterInterface*	createAssetConverter( const AssetConverterParamter& parameters );
+	TIKI_ASSET_CONVERTER_METHOD void						disposeAssetConverter( AssetConverterInterface* pObject );
 }
 
 #endif // TIKI_IASSETCONVERTER_HPP

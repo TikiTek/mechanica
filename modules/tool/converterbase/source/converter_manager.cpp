@@ -105,12 +105,23 @@ namespace tiki
 
 		debug::setTraceCallback( globalTraceCallback, UserData( this ) );
 
-		m_animationConverter.create( this );
-		m_fontConverter.create( this );
-		m_genericDataConverter.create( this );
-		m_modelConverter.create( this );
-		m_shaderConverter.create( this );
-		m_textureConverter.create( this );
+		ConverterBase* apConverters[] =
+		{
+			&m_animationConverter,
+			&m_fontConverter,
+			&m_genericDataConverter,
+			&m_modelConverter,
+			&m_shaderConverter,
+			&m_textureConverter
+		};
+
+		for( uint i = 0u; i < TIKI_COUNT( apConverters ); ++i )
+		{
+			ConverterBase* pConverter = apConverters[ i ];
+
+			pConverter->create( m_outputPath, &m_taskSystem );
+			registerConverter( pConverter );
+		}
 
 		addPackage( parameters.packageName );
 

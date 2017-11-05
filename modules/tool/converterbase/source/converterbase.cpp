@@ -11,36 +11,37 @@ namespace tiki
 {
 	ConverterBase::ConverterBase()
 	{
-		m_pManager = nullptr;
+		m_pTaskSystem = nullptr;
 	}
 
 	ConverterBase::~ConverterBase()
 	{
-		TIKI_ASSERT( m_pManager == nullptr );
+		TIKI_ASSERT( m_pTaskSystem == nullptr );
 	}
 
-	void ConverterBase::create( ConverterManager* pManager )
+	void ConverterBase::create( const Path& outputPath, TaskSystem* pTaskSystem )
 	{
-		TIKI_ASSERT( m_pManager == nullptr );
-		m_pManager = pManager;
-		m_pManager->registerConverter( this );
+		TIKI_ASSERT( m_pTaskSystem == nullptr );
+
+		m_outputPath	= outputPath;
+		m_pTaskSystem	= pTaskSystem;
 
 		initializeConverter();
 	}
 
 	void ConverterBase::dispose()
 	{
-		TIKI_ASSERT( m_pManager != nullptr );
+		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
 		disposeConverter();
 
-		m_pManager->unregisterConverter( this );
-		m_pManager = nullptr;
+		m_pTaskSystem = nullptr;
+		m_outputPath.clear();
 	}
 
 	void ConverterBase::convert( ConversionResult& result, const ConversionAsset& asset ) const
 	{
-		TIKI_ASSERT( m_pManager != nullptr );
+		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
 		if ( !startConversionJob( result, asset ) )
 		{
@@ -48,15 +49,13 @@ namespace tiki
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension ) const
+	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pFileName, const char* pExtension ) const
 	{
-		TIKI_ASSERT( m_pManager != nullptr );
+		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
-		const string realName = fileName + "." + extension;
-
-		Path fullPath;
-		fullPath.setCompletePath( m_pManager->getOutputPath().cStr() );
-		fullPath.setFilenameWithExtension( realName.cStr() );
+		Path fullPath = m_outputPath;
+		fullPath.setFilename( pFileName );
+		fullPath.setExtension( pExtension );
 		result.addOutputFile( fullPath );
 
 		writer.create( fullPath );
@@ -69,16 +68,14 @@ namespace tiki
 
 	TaskId ConverterBase::queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId /*= InvalidTaskId */ ) const
 	{
-		TIKI_ASSERT( m_pManager != nullptr );
-
-		return m_pManager->queueTask( pFunc, pData, dependingTaskId );
+		TIKI_ASSERT( m_pTaskSystem != nullptr );
+		return m_pTaskSystem->queueTask( pFunc, pData, dependingTaskId );
 	}
 
 	void ConverterBase::waitForTask( TaskId taskId ) const
 	{
-		TIKI_ASSERT( m_pManager != nullptr );
-
-		m_pManager->waitForTask( taskId );
+		TIKI_ASSERT( m_pTaskSystem != nullptr );
+		m_pTaskSystem->waitForTask( taskId );
 	}
 
 	List< ResourceDefinition > ConverterBase::getResourceDefinitions( FlagMask8<ResourceDefinitionFeature> features ) const

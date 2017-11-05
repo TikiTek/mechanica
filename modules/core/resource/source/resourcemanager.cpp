@@ -46,14 +46,9 @@ namespace tiki
 		}
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		AssetConverterParamter converterParameters;
-		converterParameters.sourcePath			= "../../../../../content";
-		converterParameters.outputPath			= "../../../../../gamebuild";
-		converterParameters.waitForConversion	= false;
-		converterParameters.forceRebuild		= false;
-
-		m_pAssetConverter = createAssetConverter();
-		if ( !m_pAssetConverter->create( converterParameters ) )
+		AssetConverterParamter assetConverterParameters;
+		m_pAssetConverter = createAssetConverter( assetConverterParameters );
+		if ( m_pAssetConverter == nullptr )
 		{
 			dispose();
 			return false;
@@ -78,7 +73,6 @@ namespace tiki
 				m_pAssetConverter->stopWatch();
 			}
 
-			m_pAssetConverter->dispose();
 			disposeAssetConverter( m_pAssetConverter );
 			m_pAssetConverter = nullptr;
 		}
@@ -106,8 +100,6 @@ namespace tiki
 			Array< string > files;
 			if ( m_pAssetConverter->getChangedFiles( files ) )
 			{
-				m_pAssetConverter->lockConversion();
-
 				for (uint i = 0u; i < files.getCount(); ++i)
 				{
 					const string& file = files[ i ];
@@ -126,7 +118,6 @@ namespace tiki
 					}
 				}
 
-				m_pAssetConverter->unlockConversion();
 				files.dispose();
 			}
 		}
@@ -216,42 +207,43 @@ namespace tiki
 		switch ( result )
 		{
 		case ResourceLoaderResult_Success:
+			TIKI_TRACE_DEBUG( "[resource] File loaded: %s\n", pFileName );
 			break;
 
 		case ResourceLoaderResult_CouldNotAccessFile:
-			TIKI_TRACE_ERROR( "[resourcemanager] Could not access File: %s\n", pFileName );
+			TIKI_TRACE_ERROR( "[resource] Could not access File: %s\n", pFileName );
 			break;
 
 		case ResourceLoaderResult_CouldNotCreateResource:
-			TIKI_TRACE_ERROR( "[resourcemanager] Could not create Resource.\n" );
+			TIKI_TRACE_ERROR( "[resource] Could not create Resource.\n" );
 			break;
 
 		case ResourceLoaderResult_CouldNotInitialize:
-			TIKI_TRACE_ERROR( "[resourcemanager] Could not initialize Resource.\n" );
+			TIKI_TRACE_ERROR( "[resource] Could not initialize Resource.\n" );
 			break;
 
 		case ResourceLoaderResult_FileNotFound:
-			TIKI_TRACE_ERROR( "[resourcemanager] File not found: %s\n", pFileName );
+			TIKI_TRACE_ERROR( "[resource] File not found: %s\n", pFileName );
 			break;
 
 		case ResourceLoaderResult_OutOfMemory:
-			TIKI_TRACE_ERROR( "[resourcemanager] Out of Memory.\n" );
+			TIKI_TRACE_ERROR( "[resource] Out of Memory.\n" );
 			break;
 
 		case ResourceLoaderResult_ResourceNotFound:
-			TIKI_TRACE_ERROR( "[resourcemanager] Resource not found: %u\n", resourceKey );
+			TIKI_TRACE_ERROR( "[resource] Resource not found: %u\n", resourceKey );
 			break;
 
 		case ResourceLoaderResult_UnknownError:
-			TIKI_TRACE_ERROR( "[resourcemanager] Unknown error.\n" );
+			TIKI_TRACE_ERROR( "[resource] Unknown error.\n" );
 			break;
 
 		case ResourceLoaderResult_WrongFileFormat:
-			TIKI_TRACE_ERROR( "[resourcemanager] Wrong File format.\n" );
+			TIKI_TRACE_ERROR( "[resource] Wrong File format.\n" );
 			break;
 
 		case ResourceLoaderResult_WrongResourceType:
-			TIKI_TRACE_ERROR( "[resourcemanager] Wrong Resource type: %u\n", resourceType );
+			TIKI_TRACE_ERROR( "[resource] Wrong Resource type: %u\n", resourceType );
 			break;
 
 		default:

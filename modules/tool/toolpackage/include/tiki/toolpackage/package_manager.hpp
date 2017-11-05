@@ -2,6 +2,7 @@
 #ifndef TIKI_PACKAGE_MANAGER_HPP_INCLUDED
 #define TIKI_PACKAGE_MANAGER_HPP_INCLUDED
 
+#include "tiki/base/path.hpp"
 #include "tiki/container/chunkedpool.hpp"
 #include "tiki/container/linkedlist.hpp"
 
@@ -18,12 +19,14 @@ namespace tiki
 		void							create( const Path& contentPath );
 		void							dispose();
 
-		bool							writeToFile();
+		const Path&						getContentPath() const { return m_contentPath; }
 
 		Package*						addPackage( const string& packageName );
 		Package*						findPackage( const string& packageName );
 		const Package*					findPackage( const string& packageName ) const;
 		const LinkedList< Package >&	getPackages() const;
+
+		bool							writeToFile();
 
 	private:
 

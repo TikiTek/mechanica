@@ -5,12 +5,12 @@
 
 namespace tiki
 {
-	TIKI_ASSET_CONVERTER_METHOD IAssetConverter* createAssetConverter()
+	TIKI_ASSET_CONVERTER_METHOD AssetConverterInterface* createAssetConverter()
 	{
 		return TIKI_NEW( AssetConverter );
 	}
 
-	TIKI_ASSET_CONVERTER_METHOD void disposeAssetConverter( IAssetConverter* pObject )
+	TIKI_ASSET_CONVERTER_METHOD void disposeAssetConverter( AssetConverterInterface* pObject )
 	{
 		TIKI_DELETE( pObject );
 		Thread::shutdownSystem();
@@ -26,43 +26,38 @@ namespace tiki
 
 	bool AssetConverter::create( const AssetConverterParamter& parameters )
 	{
-		m_sourcePath = parameters.sourcePath;
+		m_pPacketManager = parameters.pPacketManager;
 
-		ConverterManagerParameter managerParameters;
-		managerParameters.sourcePath		= parameters.sourcePath;
-		managerParameters.outputPath		= parameters.outputPath;
-		managerParameters.packageName		= parameters.packageName;
-		managerParameters.pChangedFilesList	= &m_changedFiles;
-		managerParameters.forceRebuild		= parameters.forceRebuild;
+		//ConverterManagerParameter managerParameters;
+		//managerParameters.sourcePath		= parameters.sourcePath;
+		//managerParameters.outputPath		= parameters.outputPath;
+		//managerParameters.packageName		= parameters.packageName;
+		//managerParameters.pChangedFilesList	= &m_changedFiles;
+		//managerParameters.forceRebuild		= parameters.forceRebuild;
 
-		if( !m_manager.create( managerParameters ) )
-		{
-			return false;
-		}
-
-		m_converterMutex.create();
-
-		//m_navmeshConverter.create( &m_manager );
+		//if( !m_manager.create( managerParameters ) )
+		//{
+		//	return false;
+		//}
 
 		TIKI_TRACE_INFO( "AssetConverter: started\n" );
 
-		if ( (m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase) || parameters.waitForConversion )
-		{
-			if ( !convertAll() )
-			{
-				TIKI_TRACE_ERROR( "AssetConverter: Initial Asset conversion failed. Shutting down!\n" );
+		//if ( (m_manager.isNewDatabase() && parameters.rebuildOnMissingDatabase) || parameters.waitForConversion )
+		//{
+		//	if ( !convertAll() )
+		//	{
+		//		TIKI_TRACE_ERROR( "AssetConverter: Initial Asset conversion failed. Shutting down!\n" );
 
-				return false;
-			}
-		}
+		//		return false;
+		//	}
+		//}
 
 		return true;
 	}
 
 	void AssetConverter::dispose()
 	{
-		m_manager.dispose();
-		m_converterMutex.dispose();
+		//m_manager.dispose();
 
 		TIKI_TRACE_INFO( "AssetConverter: finish\n" );
 	}
@@ -88,26 +83,29 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		m_fileWatcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
-		m_watchThread.create( watchThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
+		m_watcherMutex.create();
+		m_watcher.create( path::getDirectoryName( m_sourcePath ).cStr(), 32u );
+		m_watcherThread.create( watchThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
 	}
 
 	void AssetConverter::stopWatch()
 	{
-		if ( m_watchThread.isCreated() )
+		if ( m_watcherThread.isCreated() )
 		{
-			m_watchThread.requestExit();
-			m_watchThread.waitForExit();
-			m_watchThread.dispose();
+			m_watcherThread.requestExit();
+			m_watcherThread.waitForExit();
+			m_watcherThread.dispose();
 		}
 
-		m_fileWatcher.dispose();
+		m_watcher.dispose();
+		m_watcherMutex.dispose();
 	}
 
 	bool AssetConverter::getChangedFiles( Array< string >& changedFiles )
 	{
-		MutexStackLock lock( m_converterMutex );
-		if ( m_changedFiles.getCount() != 0u )
+		MutexStackLock lock( m_changedFilesMutex );
+
+		if( !m_changedFiles.isEmpty() )
 		{
 			changedFiles.create( m_changedFiles.getBegin(), m_changedFiles.getCount() );
 			m_changedFiles.clear();
@@ -118,16 +116,6 @@ namespace tiki
 		return false;
 	}
 
-	void AssetConverter::lockConversion()
-	{
-		m_converterMutex.lock();
-	}
-
-	void AssetConverter::unlockConversion()
-	{
-		m_converterMutex.unlock();
-	}
-
 	void AssetConverter::watchThreadEntryPoint( const Thread& thread )
 	{
 		convertAll();
@@ -135,12 +123,12 @@ namespace tiki
 		while ( thread.isExitRequested() == false )
 		{
 			FileWatcherEvent fileEvent;
-			if ( m_fileWatcher.popEvent( fileEvent ) && fileEvent.eventType == FileWatcherEventType_Modified )
+			if ( m_watcher.popEvent( fileEvent ) && fileEvent.eventType == FileWatcherEventType_Modified )
 			{
-				MutexStackLock lock( m_converterMutex );
+				//MutexStackLock lock( m_converterMutex );
 
-				m_manager.queueFile( fileEvent.filePath );
-				m_manager.startConversion();
+				//m_manager.queueFile( fileEvent.filePath );
+				//m_manager.startConversion();
 			}
 			else
 			{

@@ -39,19 +39,6 @@ namespace tiki
 		m_packagePool.dispose();
 	}
 
-	bool PackageManager::writeToFile()
-	{
-		for( Package& package : m_packages )
-		{
-			if( !package.writeToFile() )
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	Package* PackageManager::addPackage( const string& packageName )
 	{
 		Package* pPackage = m_packagePool.push();
@@ -80,5 +67,18 @@ namespace tiki
 	const LinkedList< Package >& PackageManager::getPackages() const
 	{
 		return m_packages;
+	}
+
+	bool PackageManager::writeToFile()
+	{
+		for( Package& package : m_packages )
+		{
+			if( !package.writeToFile() )
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

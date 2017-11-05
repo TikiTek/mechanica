@@ -3,6 +3,7 @@
 #define TIKI_CONVERTERBASE_HPP
 
 #include "tiki/base/dynamic_string.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
@@ -11,29 +12,29 @@
 
 namespace tiki
 {
+	class AssetConverter;
 	class ConversionResult;
-	class ConverterManager;
 	class ResourceDefinition;
 	class ResourceWriter;
 	struct ConversionAsset;
 
 	class ConverterBase
 	{
-		friend class ConverterManager;
+		friend class AssetConverter;
 
 	public:
 
 									ConverterBase();
 		virtual						~ConverterBase();
 
-		void						create( ConverterManager* pManager );
+		void						create( const Path& outputPath, TaskSystem* pTaskSystem );
 		void						dispose();
 
 		void						convert( ConversionResult& result, const ConversionAsset& asset ) const;
 
 	protected:
 
-		void						openResourceWriter( ResourceWriter& writer, ConversionResult& result, const string& fileName, const string& extension ) const;
+		void						openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pFileName, const char* pExtension ) const;
 		void						closeResourceWriter( ResourceWriter& writer ) const;
 
 		TaskId						queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
@@ -54,7 +55,8 @@ namespace tiki
 
 	private:
 
-		ConverterManager*			m_pManager;
+		Path						m_outputPath;
+		TaskSystem*					m_pTaskSystem;
 	};
 }
 
