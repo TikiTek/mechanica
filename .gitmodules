@@ -25,3 +25,6 @@
 [submodule "blobs/tinyxml2"]
 	path = blobs/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "blobs/imgui"]
+	path = blobs/imgui
+	url = https://github.com/ocornut/imgui.git
