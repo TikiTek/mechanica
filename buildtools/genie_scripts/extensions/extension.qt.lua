@@ -1,6 +1,6 @@
 -- library/buildtools/extensions/extension.qt
 
-qt_dir = "C:/Qt/5.7/msvc2015_64" --TODO: find real path e.g. os.getenv("QTDIR")
+qt_dir = "E:/Misc/Qt5.9.4/5.9.4/msvc2017_64" --TODO: find real path e.g. os.getenv("QTDIR")
 
 local ui_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_ui.lua" ) );
 local moc_script = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), "actions/qt_moc.lua" ) );
