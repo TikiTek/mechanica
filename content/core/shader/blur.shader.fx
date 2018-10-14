@@ -1,3 +1,1 @@
-<tikiasset template="shader_defaults">
-	<input file="../../../library/modules/runtime/rendereffects/source/shader/blur.fx" type="shader" />
-<tikiasset>
+#include "../../../library/modules/runtime/rendereffects/source/shader/blur.fx"
