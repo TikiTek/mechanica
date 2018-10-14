@@ -1,3 +1,1 @@
-<tikiasset template="shader_defaults">
-	<input file="../../../library/modules/runtime/graphics/source/shader/immediate.fx" type="shader" />
-<tikiasset>
+#include "../../../library/modules/runtime/graphics/source/shader/immediate.fx"
