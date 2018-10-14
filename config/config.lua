@@ -8,7 +8,7 @@ module.import_func = function()
 		--use_d3d12	= true;
 		--use_vulkan	= true;
 		
-		windowstargetplatformversion( "10.0.16299.0" );
+		windowstargetplatformversion( "10.0.17134.0" );
 	elseif is_linux then
 		use_vulkan	= true;
 	elseif is_apple then
