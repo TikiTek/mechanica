@@ -10,7 +10,6 @@
 #include "tiki/graphics/graphicsrenderermode.hpp"
 #include "tiki/graphics/graphicsstateobject.hpp"
 #include "tiki/graphics/graphicsstateobjectcollection.hpp"
-#include "tiki/graphics/graphicstypes.hpp"
 #include "tiki/graphics/rasterizerstate.hpp"
 #include "tiki/graphics/rendertarget.hpp"
 #include "tiki/graphics/samplerstate.hpp"
@@ -18,6 +17,8 @@
 #include "tiki/graphics/texturedata.hpp"
 #include "tiki/graphics/vertexformat.hpp"
 #include "tiki/graphics/vertexinputbinding.hpp"
+
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/graphicssystem_d3d11.hpp"
@@ -124,7 +125,7 @@ namespace tiki
 		};
 
 		uint												m_frameNumber;
-		
+
 		GraphicsSystemPlatformData							m_platformData;
 		GraphicsContext										m_commandBuffer;
 

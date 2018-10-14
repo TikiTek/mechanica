@@ -1,7 +1,7 @@
 // vs-features= ps-features=TIKI_BLOOM,TIKI_COLOR_GRADING
 
-#include "shader/platform.fxh"
-#include "shader/2d_composite_shader.hpp"
+#include "tiki/graphics/shader/platform.fxh"
+#include "2d_composite_shader.hpp"
 
 // vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )

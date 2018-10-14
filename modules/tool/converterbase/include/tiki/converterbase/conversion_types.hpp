@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_CONVERSION_ASSET_HPP_INCLUDED
-#define TIKI_CONVERSION_ASSET_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
@@ -8,6 +6,8 @@
 
 namespace tiki
 {
+	class Project;
+
 	struct ConversionAsset
 	{
 		uint					assetId;
@@ -20,6 +20,9 @@ namespace tiki
 
 		ConversionParameters	parameters;
 	};
-}
 
-#endif // TIKI_CONVERSION_ASSET_HPP_INCLUDED
+	struct ConversionContext
+	{
+		const Project*			pProject;
+	};
+}

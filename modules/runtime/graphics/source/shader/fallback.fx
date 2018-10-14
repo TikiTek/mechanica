@@ -1,6 +1,6 @@
 // vs-features= ps-features=
 
-#include "shader/platform.fxh"
+#include "tiki/graphics/shader/platform.fxh"
 
 // vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )

@@ -71,6 +71,8 @@ namespace tiki
 			m_ownsProject = true;
 		}
 
+		m_context.pProject = m_pProject;
+
 		TaskSystemParameters taskParameters;
 		taskParameters.threadCount = 0u;
 		taskParameters.maxTaskCount = 1024u;
@@ -1117,12 +1119,12 @@ namespace tiki
 	/*static*/ void AssetConverter::taskConvertFile( const TaskContext& context )
 	{
 		TIKI_ASSERT( context.pTaskData != nullptr );
-		ConversionTask& task = *static_cast<ConversionTask*>(context.pTaskData);
+		ConversionTask& task = *static_cast< ConversionTask* >( context.pTaskData );
 
 		task.pAssetConverter->taskRegisterResult( context.thread.getThreadId(), task.result );
 
 		TIKI_TRACE_INFO( "Building asset: %s\n", task.asset.inputFilePath.getFilenameWithExtension() );
-		task.pConverter->convert( task.result, task.asset );
+		task.pConverter->convert( task.result, task.asset, task.pAssetConverter->getContext() );
 	}
 
 	void AssetConverter::taskRegisterResult( uint64 threadId, ConversionResult& result )

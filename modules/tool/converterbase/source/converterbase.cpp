@@ -38,11 +38,11 @@ namespace tiki
 		m_outputPath.clear();
 	}
 
-	void ConverterBase::convert( ConversionResult& result, const ConversionAsset& asset ) const
+	void ConverterBase::convert( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
-		if ( !startConversionJob( result, asset ) )
+		if ( !startConversionJob( result, asset, context ) )
 		{
 			TIKI_TRACE_ERROR( "converter returns an error.\n" );
 		}

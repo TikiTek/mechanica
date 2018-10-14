@@ -21,7 +21,7 @@ namespace tiki
 		virtual bool			initializeConverter() TIKI_OVERRIDE_FINAL;
 		virtual void			disposeConverter() TIKI_OVERRIDE_FINAL;
 
-		virtual bool			startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const TIKI_OVERRIDE_FINAL;
+		virtual bool			startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_OVERRIDE_FINAL;
 
 	};
 }

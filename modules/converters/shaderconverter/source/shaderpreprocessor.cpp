@@ -2,12 +2,14 @@
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
 
 #include "tiki/base/bits.hpp"
-#include "tiki/io/file.hpp"
-#include "tiki/io/path.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/list.hpp"
+#include "tiki/io/file.hpp"
+#include "tiki/io/path.hpp"
 
 #include "TRexpp.h"
+#include <pcre2.h>
 
 namespace tiki
 {
@@ -105,21 +107,33 @@ namespace tiki
 	{
 		string resultCode = shaderCode;
 
-		TRexpp regex;
-		regex.Compile( "^\\s*#include\\s+[<\"](.+)[>\"]\\s*$" );
-
-		const char* pExpBegin;
-		const char* pExpEnd;
-		while( regex.SearchRange( resultCode.cStr(), resultCode.cStr() + resultCode.getLength(), &pExpBegin, &pExpEnd ) )
+		int errorCode;
+		PCRE2_SIZE errorOffset;
+		pcre2_code* pExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*#\\s*include\\s+[<\"](.+)[>\"]\\s*$", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
+		if( !pExpression )
 		{
-			const char* pMatchBegin;
-			int matchLength;
-			if( !regex.GetSubExp( 1u, &pMatchBegin, &matchLength ) )
+			TIKI_TRACE_ERROR( "failed to compile RegEx. Error: %d\n", errorCode );
+			return "";
+		}
+		pcre2_match_data* pMatchData = pcre2_match_data_create_from_pattern( pExpression, nullptr );
+
+		Path lastPath;
+		while( pcre2_match( pExpression, (PCRE2_SPTR8)resultCode.cStr(), PCRE2_ZERO_TERMINATED, 0u, 0u, pMatchData, nullptr ) > 1 )
+		{
+			const uint32 offsetCount = pcre2_get_ovector_count( pMatchData );
+			if( offsetCount < 2u )
 			{
-				return resultCode;
+				TIKI_TRACE_ERROR( "not enought offset to replace include: %d\n", offsetCount );
+				return "";
 			}
-			const uint expBeginIndex = pExpBegin - resultCode.cStr();
-			const uint expLength = pExpEnd - pExpBegin;
+
+			const PCRE2_SIZE* pOffsets = pcre2_get_ovector_pointer( pMatchData );
+
+			PCRE2_SIZE expBeginIndex = pOffsets[ 0u ];
+			PCRE2_SIZE expLength = pOffsets[ 1u ] - pOffsets[ 0u ];
+
+			const char* pMatchBegin = resultCode.cStr() + pOffsets[ 2u ];
+			PCRE2_SIZE matchLength = pOffsets[ 3u ] - pOffsets[ 2u ];
 
 			string path = string( pMatchBegin, matchLength );
 			for (uint i = 0u; i < includeDirs.getCount(); ++i)
@@ -134,9 +148,20 @@ namespace tiki
 
 			if ( !file::exists( path.cStr() ) )
 			{
-				TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
-				return "";
+				const string fullPath = path::combine( lastPath.getDirectoryWithPrefix(), path );
+				if( !file::exists( fullPath.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
+					resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
+					continue;
+				}
+				else
+				{
+					path = fullPath;
+				}
 			}
+
+			lastPath.setCompletePath( path.cStr() );
 
 			Array< uint8 > fileData;
 			if ( !file::readAllBytes( path.cStr(), fileData ) )
@@ -145,12 +170,19 @@ namespace tiki
 				return "";
 			}
 
-			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
+			string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
+			//fileText = fileText.replace( "\r\n", "\n" );
+
 			resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
 			resultCode = resultCode.insert( fileText, expBeginIndex );
+
+			//resultCode = resultCode.cStr() + resultCode.indexOf( '#' );
+
 			fileData.dispose();
 		}
 
+		pcre2_match_data_free( pMatchData );
+		pcre2_code_free( pExpression );
 		return resultCode;
 	}
 
@@ -169,17 +201,23 @@ namespace tiki
 		return defineString;
 	}
 
-	void ShaderPreprocessor::create( const string& shaderText, const string& assetDir )
+	void ShaderPreprocessor::create( const string& shaderText, const string& projectDir, const string& assetDir )
 	{
 		// resolve includes
 		List< string > includeDirs;
 		includeDirs.add( assetDir );
-		includeDirs.add( "../../../../../../library/modules/runtime/graphics/include/tiki/graphics/shader" );
+
+		Path additionalPath( projectDir.cStr() );
+		additionalPath.push( "library/modules/runtime/graphics/include" );
+		includeDirs.add( additionalPath.getCompletePath() );
+
+		additionalPath.setCombinedPath( projectDir.cStr(), "library/modules/runtime/renderer2d/source/shader" );
+		includeDirs.add( additionalPath.getCompletePath() );
 
 		m_sourceCode = resolveIncludes( shaderText, includeDirs );
 
 		// parse features
-		const string featuresLine = shaderText.subString( 0u, shaderText.indexOf( '\n' ) );
+		const string featuresLine = m_sourceCode.subString( 0u, m_sourceCode.indexOf( '\n' ) );
 
 		if ( featuresLine.startsWith( "//" ) == false )
 		{

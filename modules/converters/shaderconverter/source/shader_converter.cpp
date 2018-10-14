@@ -5,14 +5,15 @@
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/container/map.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/conversion_result.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/shadertype.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/io/path.hpp"
 #include "tiki/shaderconverter/shaderpreprocessor.hpp"
+#include "tiki/toolproject/project.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	include <d3dcompiler.h>
@@ -356,7 +357,7 @@ namespace tiki
 		m_includeDirs.dispose();
 	}
 
-	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		ShaderIncludeHandler includeHandler( result, *m_pFileStorage );
 
@@ -382,7 +383,7 @@ namespace tiki
 		const bool debugMode = asset.parameters.getOptionalBool( "compile_debug", false );
 
 		ShaderPreprocessor preprocessor;
-		preprocessor.create( sourceCode, asset.inputFilePath.getDirectoryWithPrefix() );
+		preprocessor.create( sourceCode, context.pProject->getProjectPath().getCompletePath(), asset.inputFilePath.getDirectoryWithPrefix() );
 
 		ResourceWriter resourceWriter;
 		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "shader" );

@@ -1,7 +1,7 @@
 #ifndef TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED
 #define TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED
 
-#include "tiki/graphics/graphicstypes.hpp"
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 TIKI_GRAPHICS_NAMESPACE_BEGIN
 
