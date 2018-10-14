@@ -1,6 +1,6 @@
 #include "tiki/debugrenderer/debugrenderer.hpp"
 
-#include "tiki/base/basicstring.hpp"
+#include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/zoneallocator.hpp"
 #include "tiki/container/staticarray.hpp"
 #include "tiki/graphics/font.hpp"
@@ -1108,7 +1108,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pTextFormat );
-		const string text = formatStringArgs( pTextFormat, argptr );
+		const string text = formatDynamicStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
 		DebugRenderTextCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderTextCommand >( text.getLength() + 1u );
@@ -1124,7 +1124,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pTextFormat );
-		const string text = formatStringArgs( pTextFormat, argptr );
+		const string text = formatDynamicStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
 		DebugRenderText3DCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderText3DCommand >( text.getLength() + 1u );

@@ -4,9 +4,6 @@
 
 #include "tiki/base/defines.hpp"
 
-#define TIKI_ENABLED( value ) ( ( 0 + value ) == 2 )
-#define TIKI_DISABLED( value ) ( ( 0 + value ) != 2 )
-
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
@@ -84,7 +81,7 @@ namespace tiki
 #else
 
 #	define TIKI_OFFSETOF( type, member )		( (uint)(&((type*)nullptr)->member) )
-	
+
 #endif
 
 #define TIKI_DEFAULT_ALIGNMENT			0u
@@ -162,6 +159,10 @@ namespace tiki
 #	define TIKI_ALIGN_POSTFIX( var )
 #	define TIKI_ALIGNOF( type )			( __alignof( type ) )
 
+#	define TIKI_CPP_11					TIKI_ON
+#	define TIKI_CPP_14					TIKI_ON
+#	define TIKI_CPP_17					TIKI_OFF
+
 #	define TIKI_OVERRIDE				override
 #	define TIKI_FINAL					sealed
 
@@ -171,7 +172,25 @@ namespace tiki
 #	define TIKI_ALIGN_POSTFIX( var )	__attribute__( ( aligned( var ) ) )
 #	define TIKI_ALIGNOF( type )			( __alignof__( type ) )
 
-#if __cplusplus > 199711L
+#	if __cplusplus >= 201103L
+#		define TIKI_CPP_11					TIKI_ON
+#	else
+#		define TIKI_CPP_11					TIKI_OFF
+#	endif
+
+#	if __cplusplus >= 201402L
+#		define TIKI_CPP_14					TIKI_ON
+#	else
+#		define TIKI_CPP_14					TIKI_OFF
+#	endif
+
+#	if __cplusplus >= 201703L
+#		define TIKI_CPP_17					TIKI_ON
+#	else
+#		define TIKI_CPP_17					TIKI_OFF
+#	endif
+
+#if TIKI_ENABLED( TIKI_CPP_11 )
 #	define TIKI_OVERRIDE				override
 #	define TIKI_FINAL					final
 #else
@@ -183,34 +202,53 @@ namespace tiki
 
 #define TIKI_OVERRIDE_FINAL				TIKI_OVERRIDE TIKI_FINAL
 
-#if __cplusplus > 199711L
+#if TIKI_DISABLED( TIKI_CPP_11 )
+#	define TIKI_NONCOPYABLE_CLASS( class_name )		\
+		private:										\
+			class_name ( const class_name & );			\
+			void operator=( const class_name & )
+
+#	define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
+		 public:											\
+			class_name () { }			    				\
+			~ class_name () { }				        		\
+		private:											\
+			class_name ( const class_name & );	        	\
+			void operator=( const class_name & )
+
+#	define TIKI_NONCOPYABLE_STRUCT( class_name )	\
+		private:									\
+			class_name ( const class_name & );	    \
+			void operator=( const class_name & );	\
+		public:
+
+#	define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
+		private:											\
+			class_name ( const class_name & );	    	    \
+			void operator=( const class_name & );	    	\
+		public:												\
+			class_name () { }						        \
+			~ class_name () { }
 #else
-#define TIKI_NONCOPYABLE_CLASS( class_name )		\
-	private:										\
-		class_name ( const class_name & );			\
-		void operator=( const class_name & )
+#	define TIKI_NON_COPYABLE( type_name )				\
+		type_name ( const type_name & ) = delete;		\
+		void operator=( const type_name & ) = delete
 
-#define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
-	 public:											\
-		class_name () { }			    				\
-		~ class_name () { }				        		\
-	private:											\
-		class_name ( const class_name & );	        	\
-		void operator=( const class_name & )
+#	define TIKI_NON_COPYABLE_CONSTRUCTABLE( type_name )	\
+		TIKI_NON_COPYABLE( type_name );					\
+		type_name () = default
 
-#define TIKI_NONCOPYABLE_STRUCT( class_name )	\
-	private:									\
-		class_name ( const class_name & );	    \
-		void operator=( const class_name & );	\
-	public:
+#	define TIKI_NONCOPYABLE_CLASS( type_name )				TIKI_NON_COPYABLE( type_name )
 
-#define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
-	private:											\
-		class_name ( const class_name & );	    	    \
-		void operator=( const class_name & );	    	\
-	public:												\
-		class_name () { }						        \
-		~ class_name () { }
+#	define TIKI_NONCOPYABLE_WITHCTOR_CLASS( type_name )	\
+		public:											\
+			type_name () = default;						\
+		private:										\
+			TIKI_NON_COPYABLE( type_name )
+
+#	define TIKI_NONCOPYABLE_STRUCT( type_name )				TIKI_NON_COPYABLE( type_name )
+
+#	define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( type_name )	TIKI_NON_COPYABLE_CONSTRUCTABLE( type_name )
 #endif
 
 #define TIKI_DEFINE_HANLE( handle_name )		\

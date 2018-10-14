@@ -3,7 +3,7 @@
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/framework/mainwindow.hpp"
+#include "tiki/framework/main_window.hpp"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -86,7 +86,7 @@ namespace tiki
 		DIK_COMMA,		// KeyboardKey_Comma
 		DIK_DECIMAL,	// KeyboardKey_Dot
 		DIK_GRAVE,		// KeyboardKey_GraveAccent
-		
+
 		DIK_1,			// KeyboardKey_Alpha1
 		DIK_2,			// KeyboardKey_Alpha2
 		DIK_3,			// KeyboardKey_Alpha3
@@ -157,7 +157,7 @@ namespace tiki
 		DIK_SCROLL,			// KeyboardKey_Scroll
 	};
 
-	static const uint16 s_aControllerButtonMapping[ ControllerButton_Count ] = 
+	static const uint16 s_aControllerButtonMapping[ ControllerButton_Count ] =
 	{
 		XINPUT_GAMEPAD_A,				// ControllerButton_A
 		XINPUT_GAMEPAD_B,				// ControllerButton_B
@@ -277,7 +277,7 @@ namespace tiki
 			state.isValid		= true;
 			state.isNewPoint	= true;
 			state.index			= firstFreeIndex;
-			
+
 			return state;
 		}
 
@@ -355,7 +355,7 @@ namespace tiki
 			return true;
 		}
 
-		return false;		
+		return false;
 	}
 
 	bool input::initializeWindow( InputSystemPlatformData& platformData, InputSystem* pInputSystem )
@@ -424,7 +424,7 @@ namespace tiki
 		{
 			TIKI_TRACE_ERROR( "[input] Unable to initilaize Keyboard.\n" );
 		}
-		
+
 		if( input::initializeMouse( m_platformData, params ) )
 		{
 			InputDevice device;
@@ -436,7 +436,7 @@ namespace tiki
 		{
 			TIKI_TRACE_ERROR( "[input] Unable to initilaize Mouse.\n" );
 		}
-		
+
 		// controller
 		for( uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex )
 		{
@@ -513,7 +513,7 @@ namespace tiki
 		m_platformData.currentStateIndex = 1u - m_platformData.currentStateIndex;
 		InputSystemState* pCurrentState = m_platformData.pStates[ m_platformData.currentStateIndex ];
 
-		HRESULT result = DIERR_UNSUPPORTED;		
+		HRESULT result = DIERR_UNSUPPORTED;
 		if ( m_platformData.pKeyboard != nullptr )
 		{
 			result = m_platformData.pKeyboard->GetDeviceState( sizeof( pCurrentState->aKeyboard ), &pCurrentState->aKeyboard );
@@ -566,7 +566,7 @@ namespace tiki
 						inputEvent.deviceId		= 0u;
 						inputEvent.data.keybaordKey.key = mappedKey;
 					}
-				} 
+				}
 			}
 		}
 
@@ -607,8 +607,8 @@ namespace tiki
 						inputEvent.deviceId		= 0u;
 						inputEvent.data.mouseButton.button = s_aMouseButtonMapping[ i ];
 					}
-				} 
-				
+				}
+
 				if ( pCurrentState->mouse.lX != 0u || pCurrentState->mouse.lY != 0u )
 				{
 					InputEvent& inputEvent = m_events.push();
@@ -703,7 +703,7 @@ namespace tiki
 	{
 		return m_events.pop( inputEvent );
 	}
-	
+
 	void InputSystem::connectDevice( const InputDevice& device )
 	{
 		m_devices.push( device );

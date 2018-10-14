@@ -6,7 +6,7 @@
 #include "tiki/graphics/vertexbuffer.hpp"
 #include "tiki/graphics/vertexattribute.hpp"
 #include "tiki/math/matrix.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 
 namespace tiki
 {

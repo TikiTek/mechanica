@@ -19,7 +19,7 @@ namespace tiki
 		setCombinedPath( pPath1, pPath2 );
 	}
 
-	bool Path::isEmpty()
+	bool Path::isEmpty() const
 	{
 		return isStringEmpty( m_prefix ) &&
 			isStringEmpty( m_directory ) &&
@@ -234,6 +234,22 @@ namespace tiki
 		return m_buffer;
 	}
 
+	bool Path::operator==( const Path& rhs ) const
+	{
+		return isStringEquals( m_prefix, rhs.m_prefix ) &&
+			isStringEquals( m_directory, rhs.m_directory ) &&
+			isStringEquals( m_filename, rhs.m_filename ) &&
+			isStringEquals( m_extension, rhs.m_extension );
+	}
+
+	bool Path::operator!=( const Path& rhs ) const
+	{
+		return !isStringEquals( m_prefix, rhs.m_prefix ) ||
+			!isStringEquals( m_directory, rhs.m_directory ) ||
+			!isStringEquals( m_filename, rhs.m_filename ) ||
+			!isStringEquals( m_extension, rhs.m_extension );
+	}
+
 	void Path::buildPath( BufferState targetState ) const
 	{
 		if( m_bufferState == targetState )
@@ -244,7 +260,25 @@ namespace tiki
 		switch( targetState )
 		{
 		case BufferState_DirectoryWithPrefix:
-			TIKI_NOT_IMPLEMENTED;
+			{
+				char* pBuffer = m_buffer;
+				uint bufferSize = sizeof( m_buffer );
+
+				uint stringSize = copyString( pBuffer, bufferSize, m_prefix );
+				pBuffer += stringSize;
+				bufferSize -= stringSize;
+
+				if( !isStringEmpty( m_prefix ) )
+				{
+					stringSize = copyString( pBuffer, bufferSize, "/" );
+					pBuffer += stringSize;
+					bufferSize -= stringSize;
+				}
+
+				stringSize = copyString( pBuffer, bufferSize, m_directory );
+				pBuffer += stringSize;
+				bufferSize -= stringSize;
+			}
 			break;
 
 		case BufferState_FilenameWithExtension:

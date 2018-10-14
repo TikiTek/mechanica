@@ -1,158 +1,126 @@
 #include "tiki/package_editor/package_editor.hpp"
 
-#include "tiki/editor_interface/ieditorinterface.hpp"
-#include "tiki/editor_interface/ifile.hpp"
-#include "tiki/package_editor/package_editor_widget.hpp"
-#include "tiki/package_editor/package_file_browser_widget.hpp"
-#include "tiki/qtapplication/qtribbonbutton.hpp"
-#include "tiki/qtapplication/qtribbontab.hpp"
-
-#include <QFileDialog>
-#include <QResource>
+#include "tiki/editor_interface/editable_file.hpp"
+#include "tiki/editor_interface/editor_interface.hpp"
+#include "tiki/package_editor/package_file.hpp"
 
 namespace tiki
 {
-	PackageEditor::PackageEditor( IEditorInterface* pInterface )
-		: m_pInterface( pInterface )
+	PackageEditor::PackageEditor( EditorInterface* pInterface )
+		: FileEditor( pInterface, "package-editor/browser-package.png", "Package", "package" )
 	{
-		QResource::registerResource( "packageeditor.rcc" );
+		//m_pRibbon = new QtRibbonTab( "Package" );
+		//m_pNewPackageButton		= m_pRibbon->addButton( "New", QIcon( ":/package-editor/ribbon-package-new.png" ) );
+		//m_pOpenPackageButton	= m_pRibbon->addButton( "Open", QIcon( ":/package-editor/ribbon-package-open.png" ) );
+		//m_pClosePackageButton	= m_pRibbon->addButton( "Close", QIcon( ":/package-editor/ribbon-package-close.png" ) );
+		//m_pEditPackageButton	= m_pRibbon->addButton( "Edit", QIcon( ":/package-editor/ribbon-package-edit.png" ) );
+		//
+		//connect( m_pNewPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::newClicked );
+		//connect( m_pOpenPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::openClicked );
+		//connect( m_pClosePackageButton, &QtRibbonButton::clicked, this, &PackageEditor::closeClicked );
+		//connect( m_pEditPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::editClicked );
 
-		m_icon = QIcon( ":/package-editor/browser-package.png" );
+		//m_pFileBrowser = new PackageFileBrowserWidget( pInterface );
 
-		m_pRibbon = new QtRibbonTab( "Package" );
-		m_pNewPackageButton		= m_pRibbon->addButton( "New", QIcon( ":/package-editor/ribbon-package-new.png" ) );
-		m_pOpenPackageButton	= m_pRibbon->addButton( "Open", QIcon( ":/package-editor/ribbon-package-open.png" ) );
-		m_pClosePackageButton	= m_pRibbon->addButton( "Close", QIcon( ":/package-editor/ribbon-package-close.png" ) );
-		m_pEditPackageButton	= m_pRibbon->addButton( "Edit", QIcon( ":/package-editor/ribbon-package-edit.png" ) );
-
-		connect( m_pNewPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::newClicked );
-		connect( m_pOpenPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::openClicked );
-		connect( m_pClosePackageButton, &QtRibbonButton::clicked, this, &PackageEditor::closeClicked );
-		connect( m_pEditPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::editClicked );
-
-		m_pFileBrowser = new PackageFileBrowserWidget( pInterface );
-
-		m_pInterface->addGlobalRibbonTab( m_pRibbon );
+		m_pInterface->addGlobalRibbon( &m_ribbon );
 	}
 
 	PackageEditor::~PackageEditor()
 	{
-		m_pInterface->removeGlobalRibbonTab( m_pRibbon );
-
-		delete m_pFileBrowser;
-		delete m_pRibbon;
+		m_pInterface->removeGlobalRibbon( &m_ribbon );
 	}
 
-	QWidget* PackageEditor::openFile( IFile* pFile )
+	EditableFile* PackageEditor::openFile( const Path& fileName )
 	{
-		openPackage( pFile );
-
-		PackageEditorWidget* pEditorWidget = new PackageEditorWidget();
-		if( !pEditorWidget->openPackage( pFile ) )
+		PackageFile* pPackage = new PackageFile( fileName, this );
+		if( !pPackage->load() )
 		{
-			delete pEditorWidget;
+			delete pPackage;
 			return nullptr;
 		}
 
-		return pEditorWidget;
+		return pPackage;
 	}
 
-	bool PackageEditor::saveEditable( IEditable* pEditable )
+	bool PackageEditor::saveEditable( Editable* pEditable )
 	{
-		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pEditable->getEditWidget();
-		pEditorWidget->savePackage();
-
-		return true;
+		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
+		return pPackage->save();
 	}
 
-	void PackageEditor::closeEditable( IEditable* pEditable )
+	void PackageEditor::closeEditable( Editable* pEditable )
 	{
-		PackageEditorWidget* pEditorWidget = (PackageEditorWidget*)pEditable->getEditWidget();
-		delete pEditorWidget;
+		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
+		delete pPackage;
 	}
 
-	QString PackageEditor::getFileTypeName() const
-	{
-		return "Package";
-	}
-
-	QString PackageEditor::getFileExtension() const
-	{
-		return "package";
-	}
-
-	QIcon PackageEditor::getEditableIcon() const
-	{
-		return m_icon;
-	}
-
-	QString PackageEditor::getPackageName() const
+	DynamicString PackageEditor::getPackageName() const
 	{
 		return m_currentPackageName;
 	}
 
-	void PackageEditor::newClicked()
-	{
-		QString fileName = QFileDialog::getSaveFileName(
-			m_pInterface->getDialogParent(),
-			m_pInterface->getDialogTitle(),
-			m_pInterface->getContentPath().absolutePath(),
-			"Package (*.package)"
-		);
+	//void PackageEditor::newClicked()
+	//{
+	//	QString fileName = QFileDialog::getSaveFileName(
+	//		m_pInterface->getDialogParent(),
+	//		m_pInterface->getDialogTitle(),
+	//		m_pInterface->getContentPath().absolutePath(),
+	//		"Package (*.package)"
+	//	);
 
-		m_pInterface->openFile( fileName );
-	}
+	//	m_pInterface->openFile( fileName );
+	//}
 
-	void PackageEditor::openClicked()
-	{
-		QString fileName = QFileDialog::getOpenFileName(
-			m_pInterface->getDialogParent(),
-			m_pInterface->getDialogTitle(),
-			m_pInterface->getContentPath().absolutePath(),
-			"Package (*.package)"
-		);
+	//void PackageEditor::openClicked()
+	//{
+	//	QString fileName = QFileDialog::getOpenFileName(
+	//		m_pInterface->getDialogParent(),
+	//		m_pInterface->getDialogTitle(),
+	//		m_pInterface->getContentPath().absolutePath(),
+	//		"Package (*.package)"
+	//	);
 
-		m_pInterface->openFile( fileName );
-	}
+	//	m_pInterface->openFile( fileName );
+	//}
 
-	void PackageEditor::closeClicked()
-	{
-		closePackage();
-	}
+	//void PackageEditor::closeClicked()
+	//{
+	//	closePackage();
+	//}
 
-	void PackageEditor::editClicked()
-	{
-		m_pInterface->openFile( m_pInterface->getContentPath().absoluteFilePath( m_currentPackageName + ".package" ) );
-	}
+	//void PackageEditor::editClicked()
+	//{
+	//	m_pInterface->openFile( m_pInterface->getContentPath().absoluteFilePath( m_currentPackageName + ".package" ) );
+	//}
 
-	void PackageEditor::openPackage( IFile* pPackageFile )
-	{
-		QFileInfo fileInfo( pPackageFile->getFileName() );
-		if( m_currentPackageName == fileInfo.baseName() )
-		{
-			return;
-		}
+	//void PackageEditor::openPackage( IFile* pPackageFile )
+	//{
+	//	QFileInfo fileInfo( pPackageFile->getFileName() );
+	//	if( m_currentPackageName == fileInfo.baseName() )
+	//	{
+	//		return;
+	//	}
 
-		closePackage();
+	//	closePackage();
 
-		m_pFileBrowser->openPackage( fileInfo.baseName() );
-		m_pInterface->addGlobalDockWidget( m_pFileBrowser, Qt::LeftDockWidgetArea );
+	//	m_pFileBrowser->openPackage( fileInfo.baseName() );
+	//	m_pInterface->addGlobalDockWidget( m_pFileBrowser, Qt::LeftDockWidgetArea );
 
-		m_currentPackageName = fileInfo.baseName();
-	}
+	//	m_currentPackageName = fileInfo.baseName();
+	//}
 
-	void PackageEditor::closePackage()
-	{
-		if( m_currentPackageName.isEmpty() )
-		{
-			return;
-		}
+	//void PackageEditor::closePackage()
+	//{
+	//	if( m_currentPackageName.isEmpty() )
+	//	{
+	//		return;
+	//	}
 
-		m_pInterface->closeAll();
+	//	m_pInterface->closeAll();
 
-		m_pInterface->removeGlobalDockWidget( m_pFileBrowser );
-		m_pFileBrowser->closePakage();
+	//	m_pInterface->removeGlobalDockWidget( m_pFileBrowser );
+	//	m_pFileBrowser->closePakage();
 
-		m_currentPackageName.clear();
-	}
+	//	m_currentPackageName.clear();
+	//}
 }

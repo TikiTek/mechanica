@@ -73,6 +73,11 @@ namespace tiki
 
 	TIKI_FORCE_INLINE void DynamicString::clear()
 	{
+		if( m_pData == nullptr )
+		{
+			return;
+		}
+
 		m_pData[ 0u ] = '\0';
 		m_stringSize = 0u;
 	}
@@ -628,6 +633,11 @@ namespace tiki
 	TIKI_FORCE_INLINE bool operator==( const char* str1, const DynamicString& str2 )
 	{
 		return isStringEquals( str1, str2.cStr() );
+	}
+
+	TIKI_FORCE_INLINE bool operator==( const DynamicString& str1, const char* str2 )
+	{
+		return isStringEquals( str1.cStr(), str2 );
 	}
 
 	TIKI_FORCE_INLINE string operator+( const char* str1, const string& str2 )

@@ -2,7 +2,7 @@
 #include "tiki/graphics/model.hpp"
 
 #include "tiki/base/memory.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki

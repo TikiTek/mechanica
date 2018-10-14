@@ -10,6 +10,14 @@
 
 namespace tiki
 {
+	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, const char* pFormat, ... )
+	{
+		va_list argptr;
+		va_start( argptr, pFormat );
+		formatStringBufferArgs( pTargetBuffer, bufferSize, pFormat, argptr );
+		va_end( argptr );
+	}
+
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 	bool convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLengthInCharacters, const char* pSourceBuffer )
@@ -41,32 +49,22 @@ namespace tiki
 		return result != 0;
 	}
 
-	void formatStringBuffer( char* pTargetBuffer, uint targetLength, const char* format, ... )
+	void formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args )
 	{
-		va_list argptr;
-		va_start( argptr, format );
-
 		_vsprintf_s_l(
 			pTargetBuffer,
 			targetLength,
-			format,
+			pFormat,
 			nullptr,
-			argptr
+			args
 		);
-
-		va_end( argptr );
 	}
 
 #elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
-	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, const char* format, ... )
+	void formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args )
 	{
-		va_list argptr;
-		va_start( argptr, format );
-
-		vsnprintf( pTargetBuffer, bufferSize, format, argptr );
-
-		va_end( argptr );
+		vsnprintf( pTargetBuffer, bufferSize, pFormat, args );
 	}
 
 #endif

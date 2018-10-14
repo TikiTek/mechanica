@@ -2,9 +2,8 @@
 
 namespace tiki
 {
-	GenericDataTagEditor::GenericDataTagEditor( QWindow* pParent, GenericDataValue* pValue )
-		: QWindow( pParent )
-		, m_pValue( pValue )
+	GenericDataTagEditor::GenericDataTagEditor( GenericDataValue* pValue )
+		: m_pValue( pValue )
 	{
 	}
 

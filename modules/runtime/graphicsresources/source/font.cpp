@@ -2,7 +2,7 @@
 #include "tiki/graphics/font.hpp"
 
 #include "tiki/math/vector.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -38,7 +38,7 @@ namespace tiki
 	}
 
 	Font::Font()
-	{		
+	{
 	}
 
 	Font::~Font()
@@ -49,7 +49,7 @@ namespace tiki
 	{
 		const FontFactoryContext* pFactory		= static_cast< const FontFactoryContext* >( &factoryContext );
 		const FontInitializationData* pInitData	= static_cast< const FontInitializationData* >( initData.pData );
-				
+
 		if ( m_textureData.create( pFactory->graphicsSystem, pInitData->textureDesc, pInitData->textureData.getData(), getFileName() ) )
 		{
 			m_chars.create( pInitData->charArray.getData(), pInitData->charCount );
@@ -66,7 +66,7 @@ namespace tiki
 		m_chars.dispose();
 		m_textureData.dispose( pFactory->graphicsSystem );
 	}
-	
+
 	const FontChar& Font::getChar( char c ) const
 	{
 		return m_chars[ c ];
@@ -81,7 +81,7 @@ namespace tiki
 			const char charIndex		= pText[ i ];
 			const FontChar& charStruct	= m_chars[ charIndex ];
 			TIKI_ASSERT( charIndex != '\0' );
-			
+
 			textSize.x += charStruct.width;
 			textSize.y = TIKI_MAX( textSize.y, charStruct.height );
 		}

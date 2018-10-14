@@ -1,9 +1,8 @@
-
 #include "tiki/graphics/shaderset.hpp"
 
 #include "tiki/graphics/graphicssystem.hpp"
 #include "tiki/graphics/shader.hpp"
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -85,7 +84,7 @@ namespace tiki
 			{
 				m_shaderMap.set( variant.variantKey, &m_shaders[ i ] );
 			}
-		} 
+		}
 
 		return true;
 	}
@@ -98,7 +97,7 @@ namespace tiki
 		for (uint i = 0u; i < m_shaders.getCount(); ++i)
 		{
 			m_shaders[ i ].dispose( factory.graphicsSystem );
-		} 
+		}
 
 		m_shaderMap.dispose();
 		m_shaders.dispose();

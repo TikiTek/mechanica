@@ -16,17 +16,10 @@ else
 	throw "Platform not implemented"
 end
 
-module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Debug" );
-module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Release" );
-module:set_define( "TIKI_WEB_INTERFACE", "TIKI_OFF", "Master" );
-
-module:add_dependency( "runtime/graphics" );
 module:add_dependency( "core/resource" );
+module:add_dependency( "runtime/graphics" );
 module:add_dependency( "runtime/input" );
 module:add_dependency( "runtime/debuggui" );
 module:add_dependency( "runtime/debugguiwindows" );
 module:add_dependency( "runtime/runtimeshared" );
-module:add_dependency( "runtime/ui" );
 module:add_dependency( "runtime/debugrenderer" );
-
---module:add_dependency( "libraries/web" );

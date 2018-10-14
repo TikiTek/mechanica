@@ -14,7 +14,7 @@ namespace tiki
 		explicit		Path( const char* pCompletePath );
 		explicit		Path( const char* pPath1, const char* pPath2 );
 
-		bool			isEmpty();
+		bool			isEmpty() const;
 
 		void			clear();
 
@@ -39,6 +39,9 @@ namespace tiki
 		const char*		getDirectoryWithPrefix() const;
 		const char*		getFilenameWithExtension() const;
 		const char*		getCompletePath() const;
+
+		bool			operator==( const Path& rhs ) const;
+		bool			operator!=( const Path& rhs ) const;
 
 	private:
 

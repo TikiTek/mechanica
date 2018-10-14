@@ -48,13 +48,8 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		AssetConverterParamter assetConverterParameters;
 		m_pAssetConverter = createAssetConverter( assetConverterParameters );
-		if ( m_pAssetConverter == nullptr )
-		{
-			dispose();
-			return false;
-		}
-
-		if ( s_enableAssetConverterWatch )
+		if ( m_pAssetConverter != nullptr &&
+			 s_enableAssetConverterWatch )
 		{
 			m_pAssetConverter->startWatch();
 		}

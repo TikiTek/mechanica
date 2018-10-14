@@ -20,7 +20,7 @@ namespace tiki
 		m_nextTaskId = 0u;
 
 		m_globalMutex.create();
-		
+
 		if ( !m_taskCountSemaphore.create() )
 		{
 			dispose();
@@ -74,7 +74,7 @@ namespace tiki
 		}
 
 		m_threads.dispose();
-		m_tasks.dispose();	
+		m_tasks.dispose();
 
 		m_taskCountSemaphore.dispose();
 		m_globalMutex.dispose();
@@ -113,7 +113,7 @@ namespace tiki
 		}
 		while ( task.id <= taskId );
 	}
-	
+
 	void TaskSystem::waitForAllTasks()
 	{
 		const Thread& thread = Thread::getCurrentThread();
@@ -122,15 +122,14 @@ namespace tiki
 		do
 		{
 			task = Task();
-
-			if ( threadDispatchTask( task ) )
+			if( threadDispatchTask( task ) )
 			{
 				threadExecuteTask( thread, task );
 			}
 		}
-		while ( task.id != InvalidTaskId );
+		while( task.id != InvalidTaskId );
 
-		for (uint i = 0u; i < m_threads.getCount(); ++i)
+		for( uint i = 0u; i < m_threads.getCount(); ++i )
 		{
 			m_threads[ i ].workingEvent.waitForSignal();
 		}

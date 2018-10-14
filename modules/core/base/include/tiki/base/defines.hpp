@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __TIKI_DEFINES_HPP_INCLUDED__
-#define __TIKI_DEFINES_HPP_INCLUDED__
 
 #ifndef TIKI_ON
 #	define TIKI_ON 2
@@ -9,6 +7,9 @@
 #ifndef TIKI_OFF
 #	define TIKI_OFF 1
 #endif
+
+#define TIKI_ENABLED( value ) ( ( 0 + value ) == 2 )
+#define TIKI_DISABLED( value ) ( ( 0 + value ) != 2 )
 
 #ifndef TIKI_BUILD_DEBUG
 #	define TIKI_BUILD_DEBUG TIKI_OFF
@@ -49,5 +50,3 @@
 #ifndef TIKI_BUILD_CLANG
 #	define TIKI_BUILD_CLANG TIKI_OFF
 #endif
-
-#endif // __TIKI_DEFINES_HPP_INCLUDED__

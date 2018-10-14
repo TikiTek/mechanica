@@ -106,18 +106,25 @@ namespace tiki
 		string resultCode = shaderCode;
 
 		TRexpp regex;
-		regex.Compile( "^\\s*#include\\s+(<([^\"'<>|\\b]+)>|\"([^\"'<>|\\b]+)\")" );
+		regex.Compile( "^\\s*#include\\s+[<\"](.+)[>\"]\\s*$" );
 
-		const char* beginPath;
-		const char* endPath;
-		while ( regex.Search( resultCode.cStr(), &beginPath, &endPath ) )
+		const char* pExpBegin;
+		const char* pExpEnd;
+		while( regex.SearchRange( resultCode.cStr(), resultCode.cStr() + resultCode.getLength(), &pExpBegin, &pExpEnd ) )
 		{
-			string path = string( beginPath, endPath - beginPath );
+			const char* pMatchBegin;
+			int matchLength;
+			if( !regex.GetSubExp( 1u, &pMatchBegin, &matchLength ) )
+			{
+				return resultCode;
+			}
+			const uint expBeginIndex = pExpBegin - resultCode.cStr();
+			const uint expLength = pExpEnd - pExpBegin;
 
+			string path = string( pMatchBegin, matchLength );
 			for (uint i = 0u; i < includeDirs.getCount(); ++i)
 			{
 				const string fullPath = path::combine( includeDirs[ i ], path );
-
 				if ( file::exists( fullPath.cStr() ) )
 				{
 					path = fullPath;
@@ -138,8 +145,10 @@ namespace tiki
 				return "";
 			}
 
-			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ) );
-			resultCode = resultCode.replace( path, fileText );
+			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
+			resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
+			resultCode = resultCode.insert( fileText, expBeginIndex );
+			fileData.dispose();
 		}
 
 		return resultCode;
@@ -160,11 +169,11 @@ namespace tiki
 		return defineString;
 	}
 
-	void ShaderPreprocessor::create( const string& shaderText )
+	void ShaderPreprocessor::create( const string& shaderText, const string& assetDir )
 	{
 		// resolve includes
 		List< string > includeDirs;
-
+		includeDirs.add( assetDir );
 		includeDirs.add( "../../../../../../library/modules/runtime/graphics/include/tiki/graphics/shader" );
 
 		m_sourceCode = resolveIncludes( shaderText, includeDirs );

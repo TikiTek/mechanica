@@ -62,6 +62,10 @@ namespace tiki
 		void										registerResourceType( fourcc type, const FactoryContext& factoryContext );
 		void										unregisterResourceType( fourcc type );
 
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		AssetConverterInterface*					getAssetConverter() const { return m_pAssetConverter; }
+#endif
+
 		template< typename T >
 		TIKI_FORCE_INLINE const T*					loadResource( const char* pFileName );
 		template< typename T >

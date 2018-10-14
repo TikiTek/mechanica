@@ -162,7 +162,8 @@ namespace tiki
 
 		ResourceWriter writer;
 		openResourceWriter( writer, result, asset.assetName.cStr(), "texture" );
-		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
+		List< ResourceDefinition > definitions = getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) );
+		for( const ResourceDefinition& definition : definitions )
 		{
 			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );
 
@@ -174,11 +175,10 @@ namespace tiki
 			sectionWriter.writeReference( &textureDataKey );
 			writer.closeDataSection( sectionWriter );
 			writer.closeResource();
-
-			textureWriter.dispose();
 		}
 
 		closeResourceWriter( writer );
+		textureWriter.dispose();
 		image.dispose();
 
 		return true;

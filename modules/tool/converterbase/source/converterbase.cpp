@@ -79,16 +79,19 @@ namespace tiki
 
 	List< ResourceDefinition > ConverterBase::getResourceDefinitions( FlagMask8<ResourceDefinitionFeature> features ) const
 	{
+		const uint minPlatformType	= features.isFlagSet( ResourceDefinitionFeature_Platform ) ? 1u : 0u;
+		const uint minGraphicsApi	= features.isFlagSet( ResourceDefinitionFeature_GraphicsApi ) ? 1u : 0u;
+		const uint minSoundApi		= features.isFlagSet( ResourceDefinitionFeature_SoundApi ) ? 1u : 0u;
 		const uint maxPlatformType	= features.isFlagSet( ResourceDefinitionFeature_Platform ) ? PlatformType_Count : PlatformType_Invalid + 1u;
 		const uint maxGraphicsApi	= features.isFlagSet( ResourceDefinitionFeature_GraphicsApi ) ? GraphicsApi_Count : GraphicsApi_Invalid + 1u;
 		const uint maxSoundApi		= features.isFlagSet( ResourceDefinitionFeature_SoundApi ) ? SoundApi_Count : SoundApi_Invalid + 1u;
 
 		List< ResourceDefinition > definitions;
-		for (uint platformIndex = 0u; platformIndex < maxPlatformType; ++platformIndex)
+		for (uint platformIndex = minPlatformType; platformIndex < maxPlatformType; ++platformIndex)
 		{
-			for (uint graphicsIndex = 0u; graphicsIndex < maxGraphicsApi; ++graphicsIndex)
+			for (uint graphicsIndex = minGraphicsApi; graphicsIndex < maxGraphicsApi; ++graphicsIndex)
 			{
-				for( uint soundIndex = 0u; soundIndex < maxSoundApi; ++soundIndex )
+				for( uint soundIndex = minSoundApi; soundIndex < maxSoundApi; ++soundIndex )
 				{
 					ResourceDefinition& definition = definitions.add();
 					definition.setPlatformType( (PlatformType)platformIndex );
