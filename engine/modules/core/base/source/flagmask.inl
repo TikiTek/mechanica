@@ -15,6 +15,7 @@ namespace tiki
 	template< class TEnum, class TStorage >
 	FlagMask<TEnum, TStorage>::FlagMask( TEnum value )
 	{
+		m_value = 0;
 		setFlag( value );
 	}
 
@@ -92,7 +93,7 @@ namespace tiki
 	template< class TEnum, class TStorage >
 	TStorage FlagMask<TEnum, TStorage>::getEnumValue( TEnum value ) const
 	{
-		TIKI_ASSERT( 64u - countLeadingZeros64( (uint64)value ) >= sizeof( TStorage ) * 8u );
+		TIKI_ASSERT( 64u - countLeadingZeros64( (uint64)value ) < sizeof( TStorage ) * 8u );
 		return TStorage( 1 ) << TStorage( value );
 	}
 }

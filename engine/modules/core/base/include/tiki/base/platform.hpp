@@ -37,9 +37,9 @@ namespace tiki
 		GraphicsApi_D3D12,
 		//GraphicsApi_OpenGL, // die OpenGL, die!
 		GraphicsApi_Vulkan,
-		GraphicsApi_Metal,
-		GraphicsApi_GNM,
-		GraphicsApi_NVN,
+		//GraphicsApi_Metal,
+		//GraphicsApi_GNM,
+		//GraphicsApi_NVN,
 
 		GraphicsApi_Count,
 	};

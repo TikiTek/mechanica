@@ -1,24 +1,16 @@
 #pragma once
-#ifndef TIKI_GENERICDATAVALUETAGEDITOR_HPP_INCLUDED
-#define TIKI_GENERICDATAVALUETAGEDITOR_HPP_INCLUDED
-
-#include <QWindow>
-
-class QMenu;
-class QPushButton;
-class QTreeView;
 
 namespace tiki
 {
 	class GenericDataTag;
 
-	class GenericDataTagEditor : public QWindow
+	class GenericDataTagEditor
 	{
-		Q_OBJECT
+		TIKI_NONCOPYABLE_CLASS( GenericDataTagEditor );
 
 	public:
 
-		GenericDataTagEditor( QWindow* pParent, GenericDataValue* pValue );
+		GenericDataTagEditor( GenericDataValue* pValue );
 		~GenericDataTagEditor();
 
 	private:
@@ -27,17 +19,15 @@ namespace tiki
 		GenericDataTag*		m_pTag;
 		GenericDataTag*		m_pWorkingTag;
 
-		QPushButton*		m_pOkButton;
-		QPushButton*		m_pCancelButton;
+		//QPushButton*		m_pOkButton;
+		//QPushButton*		m_pCancelButton;
 
-		QMenu*				m_pItemMenu;
-		QPushButton*		m_pAddButton;
+		//QMenu*				m_pItemMenu;
+		//QPushButton*		m_pAddButton;
 
-		QTreeView*			m_pTreeView;
-		QStandardItemModel*	m_pTreeModel;
-		QStandardItem*		m_pTreeRootTagItem;
-		QStandardItem*		m_pTreeRootValueItem;
+		//QTreeView*			m_pTreeView;
+		//QStandardItemModel*	m_pTreeModel;
+		//QStandardItem*		m_pTreeRootTagItem;
+		//QStandardItem*		m_pTreeRootValueItem;
 	};
 }
-
-#endif // TIKI_GENERICDATAVALUETAGEDITOR_HPP_INCLUDED

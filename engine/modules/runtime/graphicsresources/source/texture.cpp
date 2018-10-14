@@ -1,7 +1,6 @@
-
 #include "tiki/graphics/texture.hpp"
 
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki

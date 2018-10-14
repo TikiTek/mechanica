@@ -1,7 +1,6 @@
-
 #include "tiki/graphics/material.hpp"
 
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 
 namespace tiki
@@ -26,7 +25,7 @@ namespace tiki
 		resourceManager.unregisterResourceType( s_resourceType );
 	}
 
-	Material::Material() 
+	Material::Material()
 	{
 	}
 

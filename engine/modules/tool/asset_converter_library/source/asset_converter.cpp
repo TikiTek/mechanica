@@ -72,6 +72,7 @@ namespace tiki
 		}
 
 		TaskSystemParameters taskParameters;
+		taskParameters.threadCount = 0u;
 		taskParameters.maxTaskCount = 1024u;
 		m_taskSystem.create( taskParameters );
 
@@ -217,6 +218,7 @@ namespace tiki
 		if( m_ownsProject )
 		{
 			TIKI_DELETE( m_pProject );
+			m_pProject = nullptr;
 		}
 	}
 
@@ -774,7 +776,8 @@ namespace tiki
 			ConversionTask& task = tasks[ taskIndex ];
 
 			insertInputFiles += formatDynamicString(
-				"('%u','%s','%u')",
+				"%s('%u','%s','%u')",
+				taskIndex == 0 ? "" : ",",
 				task.asset.assetId,
 				task.asset.inputFilePath.getCompletePath(),
 				task.asset.typeCrc

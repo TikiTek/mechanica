@@ -103,10 +103,13 @@ namespace tiki
 	};
 
 	TIKI_FORCE_INLINE bool			operator==( const char* str1, const DynamicString& str2 );
+	TIKI_FORCE_INLINE bool			operator==( const DynamicString& str1, const char* str2 );
 	TIKI_FORCE_INLINE DynamicString	operator+( const char* str1, const DynamicString& str2 );
 
 	DynamicString					formatDynamicString( const char* pFormat, ... );
 	DynamicString					formatDynamicStringArgs( const char* pFormat, va_list argptr );
+
+	DynamicString					operator ""_s( const char* pString, uint length );
 
 	typedef DynamicString string;
 }

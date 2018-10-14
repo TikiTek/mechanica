@@ -76,6 +76,11 @@ function find_module( module_name, importer_name )
 end
 
 function Module:new( name, initFunc )
+	if name == nil then
+		local source = debug.getinfo( 2 ).source;
+		name = source:match( "([^/]+).lua$" );
+	end
+
 	for _,module in pairs( global_module_storage ) do
 		if ( module.name == name ) then
 			throw( "Module name already used: " .. name .. "\n" .. module.stack_trace );

@@ -1,62 +1,47 @@
 #pragma once
-#ifndef TIKI_PACKAGE_EDITOR_HPP_INCLUDED
-#define TIKI_PACKAGE_EDITOR_HPP_INCLUDED
 
-#include "tiki/editor_interface/ifileeditor.hpp"
+#include "tiki/editor_interface/file_editor.hpp"
 
-#include <QObject>
+#include "tiki/package_editor/package_editor_ribbon.hpp"
 
 namespace tiki
 {
-	class IEditorInterface;
-	class PackageFileBrowserWidget;
-	class QtRibbonButton;
+	class EditorInterface;
 
-	class PackageEditor : public QObject, public IFileEditor
+	class PackageEditor : public FileEditor
 	{
-		Q_OBJECT
 		TIKI_NONCOPYABLE_CLASS( PackageEditor );
 
 	public:
 
-												PackageEditor( IEditorInterface* pInterface );
-		virtual									~PackageEditor();
+								PackageEditor( EditorInterface* pInterface );
+		virtual					~PackageEditor();
 
-		virtual QWidget*						openFile( IFile* pFile ) TIKI_OVERRIDE_FINAL;
-		virtual bool							saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void							closeEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual EditableFile*	openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual bool			saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 
-		virtual QString							getFileTypeName() const TIKI_OVERRIDE_FINAL;
-		virtual QString							getFileExtension() const TIKI_OVERRIDE_FINAL;
-		virtual QIcon							getEditableIcon() const TIKI_OVERRIDE_FINAL;
+		DynamicString			getPackageName() const;
 
-		QString									getPackageName() const;
+	private:
 
-	private	slots:
+		PackageEditorRibbon		m_ribbon;
+
+		//QtRibbonTab*				m_pRibbon;
+		//QtRibbonButton*				m_pNewPackageButton;
+		//QtRibbonButton*				m_pOpenPackageButton;
+		//QtRibbonButton*				m_pClosePackageButton;
+		//QtRibbonButton*				m_pEditPackageButton;
+
+		//PackageFileBrowserWidget*			m_pFileBrowser;
+		DynamicString				m_currentPackageName;
+
+		void						openPackage( EditableFile* pPackageFile );
+		void						closePackage();
 
 		void									newClicked();
 		void									openClicked();
 		void									closeClicked();
 		void									editClicked();
-
-	private:
-
-		IEditorInterface*			m_pInterface;
-
-		QIcon						m_icon;
-
-		QtRibbonTab*				m_pRibbon;
-		QtRibbonButton*				m_pNewPackageButton;
-		QtRibbonButton*				m_pOpenPackageButton;
-		QtRibbonButton*				m_pClosePackageButton;
-		QtRibbonButton*				m_pEditPackageButton;
-
-		PackageFileBrowserWidget*			m_pFileBrowser;
-		QString						m_currentPackageName;
-
-		void						openPackage( IFile* pPackageFile );
-		void						closePackage();
 	};
 }
-
-#endif // TIKI_PACKAGE_EDITOR_HPP_INCLUDED

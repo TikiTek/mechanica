@@ -382,7 +382,7 @@ namespace tiki
 		const bool debugMode = asset.parameters.getOptionalBool( "compile_debug", false );
 
 		ShaderPreprocessor preprocessor;
-		preprocessor.create( sourceCode );
+		preprocessor.create( sourceCode, asset.inputFilePath.getDirectoryWithPrefix() );
 
 		ResourceWriter resourceWriter;
 		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "shader" );

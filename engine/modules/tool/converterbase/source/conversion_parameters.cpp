@@ -24,7 +24,7 @@ namespace tiki
 		if( !getArgument( value, key ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
-			return nullptr;
+			return string();
 		}
 
 		return value;
@@ -95,7 +95,7 @@ namespace tiki
 		}
 		else
 		{
-			value = "";
+			value.clear();
 		}
 
 		return false;

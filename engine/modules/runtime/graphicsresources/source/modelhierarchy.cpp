@@ -1,7 +1,6 @@
-
 #include "tiki/graphics/modelhierarchy.hpp"
 
-#include "tiki/resource/resourcefile.hpp"
+#include "tiki/resource/resource_file.hpp"
 
 namespace tiki
 {

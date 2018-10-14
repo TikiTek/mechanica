@@ -4,8 +4,12 @@
 
 #include "tiki/base/types.hpp"
 
+#include <vadefs.h>
+
 namespace tiki
 {
+	static const uint InvalidStringIndex = (uint)-1;
+
 	TIKI_FORCE_INLINE uint	getStringSize( const char* pSource );		///< returns the string size in bytes
 	TIKI_FORCE_INLINE uint	getStringLength( const char* pSource );		///< returns the string length in chars(for UTF8)
 
@@ -29,8 +33,8 @@ namespace tiki
 	bool					convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLengthInCharacters, const char* pSourceBuffer );
 	bool					convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer );
 
-	void					formatStringBuffer( char* pTargetBuffer, uint targetLength, const char* format, ... );
-
+	void					formatStringBuffer( char* pTargetBuffer, uint targetLength, const char* pFormat, ... );
+	void					formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args );
 }
 
 #include "../../../source/string.inl"

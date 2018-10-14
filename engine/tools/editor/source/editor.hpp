@@ -2,98 +2,78 @@
 #ifndef TIKI_EDITOR_HPP_INCLUDED
 #define TIKI_EDITOR_HPP_INCLUDED
 
-#include "tiki/editor_interface/ieditorinterface.hpp"
+#include "tiki/editor_interface/editor_interface.hpp"
 
 #include "tiki/toolproject/project.hpp"
-
-#include <QSet>
-#include <QShortcut>
-
-class QDockWidget;
 
 namespace tiki
 {
 	class AssetConverterInterface;
 	class ConverterEditor;
-	class EditorEditable;
-	class EditorEditable;
-	class EditorWindow;
 	class GenericDataEditor;
 	class PackageEditor;
 	class PacketManager;
+	class EditorRibbon;
 
-	class Editor : public QObject, public IEditorInterface
+	class Editor : public EditorInterface
 	{
-		Q_OBJECT
 		TIKI_NONCOPYABLE_CLASS( Editor );
 
 	public:
 
-								Editor( EditorWindow* pWindow );
+								Editor();
 		virtual					~Editor();
 
-		virtual IEditable*		openEditable( const QString& title, QWidget* pEditWidget, IEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual IFile*			openFile( const QString& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void			saveEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void			closeEditable( IEditable* pEditable ) TIKI_OVERRIDE_FINAL;
+		bool					create();
+		void					dispose();
+
+		virtual Editable*		openEditable( const DynamicString& title, BaseEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual EditableFile*	openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void			saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void			closeAll() TIKI_OVERRIDE_FINAL;
 
-		virtual void			registerFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual void			unregisterFileEditor( IFileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual IFileEditor*	findEditorForFile( const QString& fileName ) const;
+		virtual void			registerFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual void			unregisterFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual FileEditor*		findEditorForFile( const Path& fileName ) const;
 
-		virtual void			addGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
-		virtual void			removeGlobalRibbonTab( QtRibbonTab* pTab ) TIKI_OVERRIDE_FINAL;
-		virtual void			addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_OVERRIDE_FINAL;
-		virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void			addGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void			removeGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
+		//virtual void			addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_OVERRIDE_FINAL;
+		//virtual void			removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
 
-		virtual QDir			getProjectPath() const TIKI_OVERRIDE_FINAL;
-		virtual QDir			getContentPath() const TIKI_OVERRIDE_FINAL;
-		virtual QDir			getPackagePath() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&		getProjectPath() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&		getContentPath() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&		getPackagePath() const TIKI_OVERRIDE_FINAL;
 
-		virtual QWidget*		getDialogParent() const TIKI_OVERRIDE_FINAL;
-		virtual QString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
-
-		void					markFileAsDirty( EditorEditable* pEditorFile );
-
-	private slots:
-
-		void					fileOpenShortcut();
-		void					fileSaveShortcut();
-		void					fileCloseShortcut();
-		void					fileCloseRequest( QWidget* pWidget );
+		//virtual QWidget*		getDialogParent() const TIKI_OVERRIDE_FINAL;
+		//virtual QString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
 
 	private:
-
-		EditorWindow*				m_pWindow;
 
 		Project						m_project;
 		AssetConverterInterface*	m_pAssetConverter;
 
-		QDir						m_projectPath;
-		QDir						m_contentPath;
-		QDir						m_packagePath;
+		Path						m_projectPath;
+		Path						m_contentPath;
+		Path						m_packagePath;
 
-		QSet< IFileEditor* >		m_editors;
+		List< BaseEditor* >			m_editors;
+		List< EditorRibbon* >		m_ribbons;
 
 		PackageEditor*				m_pPackageEditor;
 		GenericDataEditor*			m_pGenericDataEditor;
 		ConverterEditor*			m_pConverterEditor;
 
-		QSet< QDockWidget* >		m_docks;
+		List< Editable* >			m_editables;
+		Editable*					m_pCurrentEditable;
 
-		QSet< EditorEditable* >		m_editables;
-		EditorEditable*				m_pCurrentEditable;
-
-		QShortcut					m_openShortcut;
-		QShortcut					m_saveShortcut;
-		QShortcut					m_closeShortcut;
+		//QShortcut					m_openShortcut;
+		//QShortcut					m_saveShortcut;
+		//QShortcut					m_closeShortcut;
 
 		void						setProjectPathes();
 		void						setPackagePath();
-
-		void						beginEditing( EditorEditable* pEditorFile );
-		bool						endEditing( EditorEditable* pNextEditorFile );
 	};
 }
 

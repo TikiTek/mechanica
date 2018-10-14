@@ -19,7 +19,7 @@ namespace tiki
 
 	public:
 
-		void					create( const string& shaderText );
+		void					create( const string& shaderText, const string& assetDir );
 		void					dispose();
 
 		bool					isTypeEnabled( ShaderType type ) const				{ return m_variants[ type ].getCount() != 0u; }

@@ -56,6 +56,11 @@ namespace tiki
 	}
 
 #endif
+
+	DynamicString operator ""_s( const char* pString, uint length )
+	{
+		return DynamicString( pString, length );
+	}
 }
 
 
