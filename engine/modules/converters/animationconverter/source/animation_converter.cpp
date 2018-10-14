@@ -4,7 +4,7 @@
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/io/path.hpp"
@@ -52,7 +52,7 @@ namespace tiki
 	{
 	}
 
-	bool AnimationConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool AnimationConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		float paramScale = asset.parameters.getOptionalFloat( "scale", 1.0f );
 

@@ -5,9 +5,9 @@
 #include "tiki/asset_converter_interface/asset_converter_interface.hpp"
 
 #include "tiki/container/list.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
 #include "tiki/converterbase/conversion_parameters.hpp"
 #include "tiki/converterbase/conversion_result.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/io/filestream.hpp"
 #include "tiki/io/filewatcher.hpp"
 #include "tiki/tasksystem/tasksystem.hpp"
@@ -76,6 +76,7 @@ namespace tiki
 
 		Project*					m_pProject;
 		bool						m_ownsProject;
+		ConversionContext			m_context;
 
 		SqliteDatabase				m_dataBase;
 		bool						m_rebuildForced;
@@ -107,7 +108,7 @@ namespace tiki
 		TaskSystem					m_taskSystem;
 		List< ConversionTask >		m_tasks;
 
-		void						traceCallback( const char* message, TraceLevel level );
+		const ConversionContext&	getContext() const { return m_context; }
 
 		void						registerConverter( const ConverterBase* pConverter );
 		void						unregisterConverter( const ConverterBase* pConverter );
@@ -129,6 +130,8 @@ namespace tiki
 
 		void						watcherThreadEntryPoint( const Thread& thread );
 		static int					watcherThreadStaticEntryPoint( const Thread& thread );
+
+		void						traceCallback( const char* message, TraceLevel level );
 	};
 }
 

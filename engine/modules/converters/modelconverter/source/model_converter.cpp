@@ -4,7 +4,7 @@
 #include "tiki/base/float16.hpp"
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/converterhelper.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/modelexport/toolmodel.hpp"
@@ -50,7 +50,7 @@ namespace tiki
 	{
 	}
 
-	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		const string material	= asset.parameters.getOptionalString( "material", "" );
 		const float scale		= asset.parameters.getOptionalFloat( "scale", 1.0f );

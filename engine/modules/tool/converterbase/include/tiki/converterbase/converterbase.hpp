@@ -17,6 +17,7 @@ namespace tiki
 	class ResourceDefinition;
 	class ResourceWriter;
 	struct ConversionAsset;
+	struct ConversionContext;
 
 	class ConverterBase
 	{
@@ -30,7 +31,7 @@ namespace tiki
 		void						create( const Path& outputPath, TaskSystem* pTaskSystem );
 		void						dispose();
 
-		void						convert( ConversionResult& result, const ConversionAsset& asset ) const;
+		void						convert( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const;
 
 	protected:
 
@@ -51,7 +52,7 @@ namespace tiki
 		virtual bool				initializeConverter() TIKI_PURE;
 		virtual void				disposeConverter() TIKI_PURE;
 
-		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const TIKI_PURE;
+		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_PURE;
 
 	private:
 

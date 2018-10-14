@@ -2,7 +2,7 @@
 #ifndef TIKI_2D_SPRITE_SHADER_HPP_INCLUDED
 #define TIKI_2D_SPRITE_SHADER_HPP_INCLUDED
 
-#include "tiki/graphics/graphicstypes.hpp"
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 #ifdef __cplusplus
 #	include "tiki/graphics/color.hpp"

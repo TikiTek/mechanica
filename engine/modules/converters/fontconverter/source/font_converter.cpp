@@ -4,7 +4,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/numbers.hpp"
 #include "tiki/container/list.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/graphics/fontchar.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
@@ -50,7 +50,7 @@ namespace tiki
 	{
 	}
 
-	bool FontConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool FontConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		FT_Library library;
 		int error = FT_Init_FreeType( &library );

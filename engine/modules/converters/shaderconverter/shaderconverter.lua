@@ -10,6 +10,7 @@ module:add_include_dir( "include" );
 module:add_dependency( "runtime/graphicsbase" );
 module:add_dependency( "tool/converterbase" );
 module:add_dependency( "thirdparty/trex" );
+module:add_dependency( "thirdparty/pcre2" );
 module:add_dependency( "thirdparty/dlls" );
 
 if use_msvc then

@@ -2,7 +2,7 @@
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/toolgenericdata/generic_data_document.hpp"
 #include "tiki/toolgenericdata/generic_data_type_resource.hpp"
@@ -90,7 +90,7 @@ namespace tiki
 		m_collection.dispose();
 	}
 
-	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		bool ok = true;
 

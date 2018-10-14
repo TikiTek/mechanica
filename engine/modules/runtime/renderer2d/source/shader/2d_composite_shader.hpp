@@ -1,7 +1,7 @@
 #ifndef __TIKI_LIGHTING_SHADER_HPP_INCLUDED__
 #define __TIKI_LIGHTING_SHADER_HPP_INCLUDED__
 
-#include "tiki/graphics/graphicstypes.hpp"
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 #ifdef __cplusplus
 #	include "tiki/graphics/color.hpp"

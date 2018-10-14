@@ -4,7 +4,7 @@
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/container/array.hpp"
-#include "tiki/converterbase/conversion_asset.hpp"
+#include "tiki/converterbase/conversion_types.hpp"
 #include "tiki/converterbase/resource_writer.hpp"
 #include "tiki/textureexport/hdrimage.hpp"
 #include "tiki/textureexport/texture_writer.hpp"
@@ -45,7 +45,7 @@ namespace tiki
 	{
 	}
 
-	bool TextureConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset ) const
+	bool TextureConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		HdrImage image;
 		if( !image.createFromFile( asset.inputFilePath.getCompletePath() ) )
