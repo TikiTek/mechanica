@@ -8,7 +8,6 @@ namespace tiki
 	{
 		ShaderType_Invalid = -1,
 
-		ShaderType_Effect,
 		ShaderType_VertexShader,
 		ShaderType_PixelShader,
 		ShaderType_GeometrieShader,

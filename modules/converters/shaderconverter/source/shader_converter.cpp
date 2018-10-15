@@ -40,101 +40,40 @@ namespace tiki
 		string	name;
 	};
 
-	class ShaderFileStorage
+	class BasicIncludeHandler
 	{
-		TIKI_NONCOPYABLE_CLASS( ShaderFileStorage );
+        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
 
-	public:
+    public:
 
-		ShaderFileStorage( const List< string >& includeDirs )
-			: m_includeDirs( includeDirs )
-			, m_jobCount(0u)
+        BasicIncludeHandler( ConversionResult& result, const List< string >& includePathes )
+			: m_result( result )
+			, m_includePathes( includePathes )
 		{
-			m_mutex.create();
 		}
 
-		~ShaderFileStorage()
+		virtual ~BasicIncludeHandler()
 		{
-			m_mutex.dispose();
 		}
 
-		void beginJob()
-		{
-			m_jobCount++;
-		}
-
-		void endJob()
-		{
-			m_jobCount--;
-			if ( !m_jobCount )
-			{
-				m_fileMap.clear();
-			}
-		}
-
-		bool getFile( const char* pFileName, const char** ppFullName, const void** ppData, uint* pSizeInBytes )
-		{
-			TIKI_ASSERT( ppData != nullptr );
-			TIKI_ASSERT( pSizeInBytes != nullptr );
-
-			FileData data;
-
-			m_mutex.lock();
-			const bool found = m_fileMap.findValue( &data, pFileName );
-			if ( !found )
-			{
-				if ( !loadFile( pFileName, data ) )
-				{
-					m_mutex.unlock();
-					return false;
-				}
-			}
-			m_mutex.unlock();
-
-			*ppFullName		= data.pFullName;
-			*ppData			= data.pData;
-			*pSizeInBytes	= getStringSize( data.pData );
-
-			return true;
-		}
-
-		const List< string >& getIncludeDirs() const
-		{
-			return m_includeDirs;
-		}
-
-	private:
-
-		struct FileData
-		{
-			const char*	pFullName;
-			const char*	pData;
-		};
-
-		Mutex					m_mutex;
-		volatile uint			m_jobCount;
-
-		List< string >			m_includeDirs;
-		Map< string, FileData >	m_fileMap;
-
-		bool loadFile( const char* pFileName, FileData& data )
+		bool loadFile( const char* pFileName, const void** ppData, uint* pSizeInBytes )
 		{
 			bool found = false;
 
 			const string inputFilename = pFileName;
 			string fullName = inputFilename;
 
-			if ( file::exists( inputFilename.cStr() ) )
+			if( file::exists( inputFilename.cStr() ) )
 			{
 				found = true;
 			}
 			else
 			{
-				for (uint i = 0u; i < m_includeDirs.getCount(); ++i)
+				for( uint i = 0u; i < m_includePathes.getCount(); ++i )
 				{
-					fullName = path::combine( m_includeDirs[ i ], inputFilename );
+					fullName = path::combine( m_includePathes[ i ], inputFilename );
 
-					if ( file::exists( fullName.cStr() ) )
+					if( file::exists( fullName.cStr() ) )
 					{
 						found = true;
 						break;
@@ -142,20 +81,20 @@ namespace tiki
 				}
 			}
 
-			if ( found )
+			if( found )
 			{
 				Array< char > text;
-				if ( !file::readAllText( fullName.cStr(), text ) )
+				if( !file::readAllText( fullName.cStr(), text ) )
 				{
 					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
 					return false;
 				}
 
-				data.pFullName	= dublicateString( fullName.cStr() );
-				data.pData		= dublicateString( text.getBegin() );
+				*ppData = dublicateString( text.getBegin() );
+				*pSizeInBytes = text.getCapacity();
 				text.dispose();
 
-				m_fileMap.set( pFileName, data );
+				m_result.addDependency( ConversionResult::DependencyType_InputFile, fullName, "" );
 				return true;
 			}
 
@@ -163,56 +102,15 @@ namespace tiki
 			return false;
 		}
 
-	};
-
-	class BasicIncludeHandler
-	{
-        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
-
-    public:
-
-        BasicIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
-			: m_result( result )
-			, m_storage( storage )
+		void freeFile( void* pData )
 		{
-			m_storage.beginJob();
-		}
-
-		virtual ~BasicIncludeHandler()
-		{
-			m_storage.endJob();
-		}
-
-		bool loadFile( const char* pFileName, const void** ppData, uint* pSizeInBytes )
-		{
-			const char* pFullName;
-			if ( m_storage.getFile( pFileName, &pFullName, ppData, pSizeInBytes ) )
-			{
-				m_result.addDependency( ConversionResult::DependencyType_InputFile, pFullName, "" );
-
-				return true;
-			}
-
-			return false;
-		}
-
-		bool freeFile( const void* pData )
-		{
-			// nothing to do
-
-			return true;
-		}
-
-		const List< string >& getIncludeDirs() const
-		{
-			return m_storage.getIncludeDirs();
+			TIKI_FREE( pData );
 		}
 
 	private:
 
-		ConversionResult&	m_result;
-		ShaderFileStorage&	m_storage;
-
+		ConversionResult&		m_result;
+		const List< string >&	m_includePathes;
 	};
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
@@ -222,8 +120,8 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
-            : BasicIncludeHandler( result, storage )
+		ShaderIncludeHandler( ConversionResult& result, const List< string >& includePathes )
+            : BasicIncludeHandler( result, includePathes )
 		{
 		}
 
@@ -244,12 +142,8 @@ namespace tiki
 
 		virtual HRESULT	STDMETHODCALLTYPE Close( LPCVOID pData )
 		{
-			if ( freeFile( pData ) )
-			{
-				return S_OK;
-			}
-
-			return S_FALSE;
+			freeFile( (void*)pData );
+			return S_OK;
 		}
 
 	};
@@ -282,16 +176,14 @@ namespace tiki
 	static void		fppWrite( int c, void* pUserData );
 	static void		fppError( void* pUserData, char* pFormatString, va_list data );
 
-	static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
+	//static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
 
 	ShaderConverter::ShaderConverter()
 	{
-		m_pFileStorage = nullptr;
 	}
 
 	ShaderConverter::~ShaderConverter()
 	{
-		TIKI_ASSERT( m_pFileStorage == nullptr );
 	}
 
 	uint32 ShaderConverter::getConverterRevision( crc32 typeCrc ) const
@@ -321,8 +213,6 @@ namespace tiki
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
-		m_includeDirs.add( "./" );
-
 		Array< char > charArray;
 		if ( file::readAllText( "../../shaderinc.lst", charArray ) )
 		{
@@ -333,14 +223,12 @@ namespace tiki
 
 			for (uint i = 0u; i < dirs.getCount(); ++i)
 			{
-				m_includeDirs.add( dirs[ i ].trim() );
+				m_includePathes.add( dirs[ i ].trim() );
 			}
 
 			dirs.dispose();
 		}
 		charArray.dispose();
-
-		m_pFileStorage = TIKI_NEW( ShaderFileStorage )( m_includeDirs );
 
 		m_openGlMutex.create();
 
@@ -351,18 +239,25 @@ namespace tiki
 	{
 		m_openGlMutex.dispose();
 
-		TIKI_DELETE( m_pFileStorage );
-		m_pFileStorage = nullptr;
-
-		m_includeDirs.dispose();
+		m_includePathes.dispose();
 	}
 
 	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
-		ShaderIncludeHandler includeHandler( result, *m_pFileStorage );
+		List< string > includePathes = m_includePathes;
+		includePathes.pushBack( asset.inputFilePath.getDirectoryWithPrefix() );
 
-		const string shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
-		const string shaderDefine[]	= { "", "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
+		Path additionalPath;
+		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/rendereffects/source/shader" );
+		includePathes.add( additionalPath.getCompletePath() );
+
+		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/renderer2d/source/shader" );
+		includePathes.add( additionalPath.getCompletePath() );
+
+		ShaderIncludeHandler includeHandler( result, includePathes );
+
+		const string shaderStart[]	= { "vs", "ps", "gs", "hs", "ds", "cs" };
+		const string shaderDefine[]	= { "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
 
 		string functionNames[ ShaderType_Count ];
 		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
@@ -383,7 +278,7 @@ namespace tiki
 		const bool debugMode = asset.parameters.getOptionalBool( "compile_debug", false );
 
 		ShaderPreprocessor preprocessor;
-		preprocessor.create( sourceCode, context.pProject->getProjectPath().getCompletePath(), asset.inputFilePath.getDirectoryWithPrefix() );
+		preprocessor.create( sourceCode, includePathes );
 
 		ResourceWriter resourceWriter;
 		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "shader" );
@@ -395,7 +290,7 @@ namespace tiki
 			resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
 			List< ShaderVariantData > shaderVariants;
-			for (uint typeIndex = 1u; typeIndex < ShaderType_Count; ++typeIndex )
+			for (uint typeIndex = 0u; typeIndex < ShaderType_Count; ++typeIndex )
 			{
 				const ShaderType type = (ShaderType)typeIndex;
 
@@ -422,7 +317,7 @@ namespace tiki
 					args.defineCode = m_pBaseSourceCode;
 					args.defineCode += variant.defineCode;
 
-					for( uint defineTypeIndex = 1u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
+					for( uint defineTypeIndex = 0u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
 					{
 						args.defineCode	+= formatDynamicString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
 					}
@@ -525,8 +420,8 @@ namespace tiki
 			}
 			else if ( pErrorBlob )
 			{
-				string error = (const char*)pErrorBlob->GetBufferPointer();
-				TIKI_TRACE_ERROR( "failed to compile shader. error message:\n%s\n", error.cStr() );
+				const char* pError = (const char*)pErrorBlob->GetBufferPointer();
+				TIKI_TRACE_ERROR( "failed to compile shader. error message:\n%s\n", pError );
 			}
 			else
 			{

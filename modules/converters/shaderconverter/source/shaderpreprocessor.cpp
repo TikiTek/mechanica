@@ -55,7 +55,10 @@ namespace tiki
 			const string search = formatDynamicString( "%s-features=", pShaderTypes[ i ] );
 
 			const int index = featuresLine.indexOf( search );
-			pShaderEnabled[ i ] = ( index >= 0 );
+			if( i != 0 )
+			{
+				pShaderEnabled[ i - 1u ] = (index >= 0);
+			}
 
 			if ( index != -1 )
 			{
@@ -89,13 +92,15 @@ namespace tiki
 
 					if ( i == 0u ) // fx feature will be applied to all shaders in file
 					{
-						for (uint k = 1u; k < typeCount; ++k)
+						for (uint k = 0u; k < ShaderType_Count; ++k)
 						{
-							addFeature( pShaderFeatures[ i ], name, maxValue );
+							addFeature( pShaderFeatures[ k ], name, maxValue );
 						}
 					}
-
-					addFeature( pShaderFeatures[ i ], name, maxValue );
+					else
+					{
+						addFeature( pShaderFeatures[ i - 1u ], name, maxValue );
+					}
 				}
 
 				featuresList.dispose();
@@ -109,25 +114,34 @@ namespace tiki
 
 		int errorCode;
 		PCRE2_SIZE errorOffset;
-		pcre2_code* pExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*#\\s*include\\s+[<\"](.+)[>\"]\\s*$", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
-		if( !pExpression )
+		pcre2_code* pIncludeExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*#\\s*include\\s+[<\"](.+)[>\"]\\s*$", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
+		if( pIncludeExpression == nullptr )
 		{
 			TIKI_TRACE_ERROR( "failed to compile RegEx. Error: %d\n", errorCode );
 			return "";
 		}
-		pcre2_match_data* pMatchData = pcre2_match_data_create_from_pattern( pExpression, nullptr );
+
+		pcre2_code* pFeaturesExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*\\/\\/\\s+(fx|vs|ps|gs|hs|ds|cs)-features=", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
+		if( pFeaturesExpression == nullptr )
+		{
+			TIKI_TRACE_ERROR( "failed to compile RegEx. Error: %d\n", errorCode );
+			return "";
+		}
+
+		pcre2_match_data* pIncludeMatchData = pcre2_match_data_create_from_pattern( pIncludeExpression, nullptr );
+		pcre2_match_data* pFeaturesMatchData = pcre2_match_data_create_from_pattern( pFeaturesExpression, nullptr );
 
 		Path lastPath;
-		while( pcre2_match( pExpression, (PCRE2_SPTR8)resultCode.cStr(), PCRE2_ZERO_TERMINATED, 0u, 0u, pMatchData, nullptr ) > 1 )
+		while( pcre2_match( pIncludeExpression, (PCRE2_SPTR8)resultCode.cStr(), resultCode.getLength(), 0u, 0u, pIncludeMatchData, nullptr ) > 1 )
 		{
-			const uint32 offsetCount = pcre2_get_ovector_count( pMatchData );
+			const uint32 offsetCount = pcre2_get_ovector_count( pIncludeMatchData );
 			if( offsetCount < 2u )
 			{
 				TIKI_TRACE_ERROR( "not enought offset to replace include: %d\n", offsetCount );
-				return "";
+				break;
 			}
 
-			const PCRE2_SIZE* pOffsets = pcre2_get_ovector_pointer( pMatchData );
+			const PCRE2_SIZE* pOffsets = pcre2_get_ovector_pointer( pIncludeMatchData );
 
 			PCRE2_SIZE expBeginIndex = pOffsets[ 0u ];
 			PCRE2_SIZE expLength = pOffsets[ 1u ] - pOffsets[ 0u ];
@@ -167,22 +181,25 @@ namespace tiki
 			if ( !file::readAllBytes( path.cStr(), fileData ) )
 			{
 				TIKI_TRACE_ERROR( "open include file failed: %s\n", path.cStr() );
-				return "";
+				break;
 			}
 
-			string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
-			//fileText = fileText.replace( "\r\n", "\n" );
-
+			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
 			resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
 			resultCode = resultCode.insert( fileText, expBeginIndex );
 
-			//resultCode = resultCode.cStr() + resultCode.indexOf( '#' );
-
 			fileData.dispose();
+
+			if( pcre2_match( pFeaturesExpression, (PCRE2_SPTR8)resultCode.cStr(), resultCode.getLength(), 0u, 0u, pFeaturesMatchData, nullptr ) > 1 )
+			{
+				break;
+			}
 		}
 
-		pcre2_match_data_free( pMatchData );
-		pcre2_code_free( pExpression );
+		pcre2_match_data_free( pIncludeMatchData );
+		pcre2_match_data_free( pFeaturesMatchData );
+		pcre2_code_free( pIncludeExpression );
+		pcre2_code_free( pFeaturesExpression );
 		return resultCode;
 	}
 
@@ -201,20 +218,10 @@ namespace tiki
 		return defineString;
 	}
 
-	void ShaderPreprocessor::create( const string& shaderText, const string& projectDir, const string& assetDir )
+	void ShaderPreprocessor::create( const string& shaderText, const List< string >& includePathes )
 	{
 		// resolve includes
-		List< string > includeDirs;
-		includeDirs.add( assetDir );
-
-		Path additionalPath( projectDir.cStr() );
-		additionalPath.push( "library/modules/runtime/graphics/include" );
-		includeDirs.add( additionalPath.getCompletePath() );
-
-		additionalPath.setCombinedPath( projectDir.cStr(), "library/modules/runtime/renderer2d/source/shader" );
-		includeDirs.add( additionalPath.getCompletePath() );
-
-		m_sourceCode = resolveIncludes( shaderText, includeDirs );
+		m_sourceCode = resolveIncludes( shaderText, includePathes );
 
 		// parse features
 		const string featuresLine = m_sourceCode.subString( 0u, m_sourceCode.indexOf( '\n' ) );
@@ -225,14 +232,14 @@ namespace tiki
 			return;
 		}
 
-		const char* shaderStart[]	= { "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
-		bool shaderEnabled[ TIKI_COUNT( shaderStart ) ];
-		List< ShaderFeature > shaderFeatures[ TIKI_COUNT( shaderStart ) ];
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( shaderStart ) == ShaderType_Count );
+		bool shaderEnabled[ ShaderType_Count ];
+		List< ShaderFeature > shaderFeatures[ ShaderType_Count ];
 
+		const char* shaderStart[]	={ "fx", "vs", "ps", "gs", "hs", "ds", "cs" };
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( shaderStart ) == ShaderType_Count + 1u );
 		parseShaderFeatures( shaderEnabled, shaderFeatures, shaderStart, TIKI_COUNT( shaderStart ), featuresLine );
 
-		for (uint typeIndex = 0u; typeIndex < TIKI_COUNT( shaderStart ); ++typeIndex)
+		for (uint typeIndex = 0u; typeIndex < ShaderType_Count; ++typeIndex)
 		{
 			if ( shaderEnabled[ typeIndex ] && shaderFeatures[ typeIndex ].getCount() > 0u )
 			{

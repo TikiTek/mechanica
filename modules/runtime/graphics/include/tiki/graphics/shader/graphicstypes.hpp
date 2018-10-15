@@ -1,5 +1,5 @@
-#ifndef TIKI_GRAPHICSTYPES_HPP__INCLUDED
-#define TIKI_GRAPHICSTYPES_HPP__INCLUDED
+#ifndef TIKI_GRAPHICS_TYPES_HPP
+#define TIKI_GRAPHICS_TYPES_HPP
 
 #ifdef __cplusplus
 #include "tiki/base/types.hpp"
@@ -94,4 +94,4 @@ typedef float4x4 GraphicsMatrix44;
 
 #endif
 
-#endif // TIKI_GRAPHICSTYPES_HPP__INCLUDED
+#endif
