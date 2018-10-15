@@ -1,6 +1,6 @@
 // vs-features= ps-features=TIKI_CUTOFF[3],TIKI_ACCUMULATION
 
-#include "shader/platform.fxh"
+#include "tiki/graphics/shader/platform.fxh"
 
 // vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
@@ -37,7 +37,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "shader/bloom_shader.hpp"
+#include "bloom_shader.hpp"
 
 // pixel output
 TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )

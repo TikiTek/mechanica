@@ -1,8 +1,7 @@
 #pragma once
-#ifndef TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
-#define TIKI_SHADERPREPROCESSOR_HPP__INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
+#include "tiki/container/list.hpp"
 #include "tiki/graphics/shadertype.hpp"
 
 namespace tiki
@@ -19,7 +18,7 @@ namespace tiki
 
 	public:
 
-		void					create( const string& shaderText, const string& projectDir, const string& assetDir );
+		void					create( const string& shaderText, const List< string >& includePathes );
 		void					dispose();
 
 		bool					isTypeEnabled( ShaderType type ) const				{ return m_variants[ type ].getCount() != 0u; }
@@ -36,5 +35,3 @@ namespace tiki
 
 	};
 }
-
-#endif // TIKI_SHADERPREPROCESSOR_HPP__INCLUDED

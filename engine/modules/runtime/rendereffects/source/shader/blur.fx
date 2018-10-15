@@ -1,6 +1,6 @@
 // vs-features= ps-features=
 
-#include "shader/platform.fxh"
+#include "tiki/graphics/shader/platform.fxh"
 
 // vertex to pixel
 TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN( VertexToPixel )
@@ -37,7 +37,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "shader/blur_shader.hpp"
+#include "blur_shader.hpp"
 
 // pixel output
 TIKI_PIXEL_OUTPUT_DEFINITION_BEGIN( PixelOutput )

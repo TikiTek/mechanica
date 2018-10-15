@@ -1,7 +1,7 @@
 #ifndef __TIKI_BLOOM_SHADER_HPP_INCLUDED__
 #define __TIKI_BLOOM_SHADER_HPP_INCLUDED__
 
-#include "tiki/graphics/graphicstypes.hpp"
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 TIKI_GRAPHICS_NAMESPACE_BEGIN
 
@@ -21,4 +21,4 @@ float3 getCutoffThresold( BloomCutoffPixelConstantData data )
 
 TIKI_GRAPHICS_NAMESPACE_END
 
-#endif // __TIKI_BLOOM_SHADER_HPP_INCLUDED__
+#endif

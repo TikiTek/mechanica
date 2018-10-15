@@ -1,7 +1,8 @@
-#ifndef __TIKI_LIGHTING_SHADER_HPP_INCLUDED__
-#define __TIKI_LIGHTING_SHADER_HPP_INCLUDED__
+#ifndef TIKI_2D_COMPOSITE_SHADER_HPP
+#define TIKI_2D_COMPOSITE_SHADER_HPP
 
 #include "tiki/graphics/shader/graphicstypes.hpp"
+
 
 #ifdef __cplusplus
 #	include "tiki/graphics/color.hpp"
@@ -12,4 +13,4 @@ TIKI_GRAPHICS_NAMESPACE_BEGIN
 
 TIKI_GRAPHICS_NAMESPACE_END
 
-#endif // __TIKI_LIGHTING_SHADER_HPP_INCLUDED__
+#endif

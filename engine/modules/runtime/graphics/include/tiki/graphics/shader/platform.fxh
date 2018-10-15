@@ -334,4 +334,4 @@
 
 #endif // TIKI_ENABLED( TIKI_OPENGL4 )
 
-#endif // __TIKI_PLATFORM_FXH_INCLUDED__
+#endif

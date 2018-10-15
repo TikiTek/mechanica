@@ -12,4 +12,4 @@ struct ImmediateRendererConstantData
 
 TIKI_GRAPHICS_NAMESPACE_END
 
-#endif // TIKI_IMMEDIATERENDERER_SHADER_HPP__INCLUDED
+#endif

@@ -9,7 +9,6 @@
 
 namespace tiki
 {
-	class ShaderFileStorage;
 	class ShaderIncludeHandler;
 	enum GraphicsApi;
 
@@ -53,15 +52,13 @@ namespace tiki
 
 		const char*			m_pBaseSourceCode;
 
-		List< string >		m_includeDirs;
-		ShaderFileStorage*	m_pFileStorage;
+		List< string >		m_includePathes;
 
 		mutable Mutex		m_openGlMutex;
 
 		bool				compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
 		bool				compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
 		bool				compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
-
 	};
 }
 

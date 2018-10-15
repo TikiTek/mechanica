@@ -1,4 +1,3 @@
-#pragma once
 #ifndef TIKI_2D_SPRITE_SHADER_HPP_INCLUDED
 #define TIKI_2D_SPRITE_SHADER_HPP_INCLUDED
 
@@ -17,4 +16,4 @@ struct SpriteVertexConstantData
 
 TIKI_GRAPHICS_NAMESPACE_END
 
-#endif // TIKI_2D_SPRITE_SHADER_HPP_INCLUDED
+#endif
