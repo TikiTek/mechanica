@@ -11,6 +11,7 @@ namespace tiki
 	struct AnimationFactoryContext : public FactoryContextGenericBase< Animation >
 	{
 		AnimationFactoryContext()
+			: FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature >() )
 		{
 		}
 	};
@@ -63,7 +64,7 @@ namespace tiki
 	}
 
 	static TIKI_FORCE_INLINE uint getCountRightBit( uint* pRightBits, uint64 mask, uint bit )
-	{		
+	{
 		const uint64 andMask = mask & ((uint64)-1 << bit);
 		*pRightBits = 63u - countLeadingZeros64( andMask & (-(sint64)andMask) );
 
@@ -214,7 +215,7 @@ namespace tiki
 			}
 
 			// unused rotation
-			const uint16* pUnused = (uint16*)pData;				
+			const uint16* pUnused = (uint16*)pData;
 			const vf32* pDefaultPoseRotation = hierarchy.getDefaultPoseRotation();
 			for (uint i = 0; i < pHeader->defaultPoseRotationJointCount; ++i)
 			{
@@ -293,7 +294,7 @@ namespace tiki
 			}
 
 			// unused position
-			const uint16* pUnused = (uint16*)pData;				
+			const uint16* pUnused = (uint16*)pData;
 			const vf32* pDefaultPosePosition = hierarchy.getDefaultPosePosition();
 			for (uint i = 0; i < pHeader->defaultPosePositionJointCount; ++i)
 			{
@@ -372,7 +373,7 @@ namespace tiki
 			}
 
 			// unused scale
-			const uint16* pUnused = (uint16*)pData;				
+			const uint16* pUnused = (uint16*)pData;
 			const vf32* pDefaultPoseScale = hierarchy.getDefaultPoseScale();
 			for (uint i = 0; i < pHeader->defaultPoseScaleJointCount; ++i)
 			{

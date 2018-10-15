@@ -53,6 +53,7 @@ namespace tiki
 		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
 		Path fullPath = m_outputPath;
+		fullPath.push( "" );
 		fullPath.setFilename( pFileName );
 		fullPath.setExtension( pExtension );
 		result.addOutputFile( fullPath );
@@ -62,6 +63,7 @@ namespace tiki
 
 	void ConverterBase::closeResourceWriter( ResourceWriter& writer ) const
 	{
+		writer.writeToFile();
 		writer.dispose();
 	}
 

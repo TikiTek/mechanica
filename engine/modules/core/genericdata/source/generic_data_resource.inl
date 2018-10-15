@@ -26,7 +26,7 @@ namespace tiki
 	template<typename TData, fourcc TFourCC>
 	void GenericDataResource<TData, TFourCC>::registerResourceType( ResourceManager& resourceManager )
 	{
-		static FactoryContextGenericBase< GenericDataResource< TData, TFourCC > > context;
+		static FactoryContextGenericBase< GenericDataResource< TData, TFourCC > > context = FactoryContextGenericBase< GenericDataResource< TData, TFourCC > >( FlagMask8< ResourceDefinitionFeature >() );
 		resourceManager.registerResourceType( s_resourceType, context );
 	}
 

@@ -11,16 +11,16 @@ namespace tiki
 {
 	union LowHighSeperation
 	{
-		struct 
+		struct
 		{
 			LONG	lowLong;
 			LONG	highLong;
-		}; 
-		struct 
+		};
+		struct
 		{
 			DWORD	lowDoubleWord;
 			DWORD	highDoubleWord;
-		}; 
+		};
 		FileSize	size;
 		FileOffset	offset;
 	};
@@ -58,7 +58,7 @@ namespace tiki
 
 	FileStream::~FileStream()
 	{
-		TIKI_ASSERT( m_platformData.fileHandle == INVALID_HANDLE_VALUE );
+		dispose();
 	}
 
 	bool FileStream::create( const char* pFileName, DataAccessMode accessMode )
@@ -91,7 +91,7 @@ namespace tiki
 		TIKI_ASSERT( isOpen() );
 
 		DWORD bytesRead = 0u;
-		
+
 		if ( ReadFile( m_platformData.fileHandle, pTargetData, DWORD( bytesToRead ), &bytesRead, nullptr ) )
 		{
 			return bytesRead;

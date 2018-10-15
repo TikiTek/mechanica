@@ -13,7 +13,8 @@ namespace tiki
 	struct ModelFactoryContext : public FactoryContextGenericBase< Model >
 	{
 		ModelFactoryContext( GraphicsSystem& _graphicsSystem )
-			: graphicsSystem( _graphicsSystem )
+			: FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature >() )
+			, graphicsSystem( _graphicsSystem )
 		{
 		}
 

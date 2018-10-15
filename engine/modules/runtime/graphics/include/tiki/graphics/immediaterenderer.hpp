@@ -67,7 +67,7 @@ namespace tiki
 
 							ImmediateRenderer();
 							~ImmediateRenderer();
-		
+
 		bool				create( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceManager& resourceManager );
 
@@ -90,12 +90,14 @@ namespace tiki
 		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const;
 		void				endImmediateGeometry( StaticArray< ImmediateVertex >& vertices ) const;
 
+		const ShaderSet*	getShader() const { return m_pShaderSet; }
+
 	private:
 
 		GraphicsContext*			m_pContext;
 
 		const ShaderSet*			m_pShaderSet;
-		
+
 		const BlendState*			m_pBlendState[ ImmediateBlendState_Count ];
 		const DepthStencilState*	m_pDepthStencilState[ ImmediateDepthState_Count ];
 		const RasterizerState*		m_pRasterizerState;

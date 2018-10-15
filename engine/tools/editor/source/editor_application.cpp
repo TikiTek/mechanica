@@ -1,5 +1,13 @@
 #include "editor_application.hpp"
 
+#include "tiki/base/timer.hpp"
+#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/graphics/shaderset.hpp"
+#include "tiki/math/axisalignedrectangle.hpp"
+
+#include <imgui.h>
+
 namespace tiki
 {
 	EditorApplication::EditorApplication()
@@ -29,27 +37,133 @@ namespace tiki
 
 	void EditorApplication::fillToolParameters( ToolApplicationParamters& parameters )
 	{
-		parameters.pWindowTitle = "TikiEditor";
+		parameters.pWindowTitle		= "TikiEditor";
+		parameters.assetBuildPath	= m_project.getAssetBuildPath();
 	}
 
 	bool EditorApplication::initializeTool()
 	{
+		GraphicsSystem& graphicsSystem = getGraphicsSystem();
+		{
+			const VertexAttribute attributes[] =
+			{
+				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
+				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x16y16_unorm,		0u, VertexInputType_PerVertex },
+				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
+			};
+
+			m_pVertexFormat = graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
+			if( m_pVertexFormat == nullptr )
+			{
+				shutdownTool();
+				return false;
+			}
+
+			m_pVertexInputBinding = graphicsSystem.createVertexInputBinding( getImmediateRenderer().getShader()->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
+			if( m_pVertexInputBinding == nullptr )
+			{
+				shutdownTool();
+				return false;
+			}
+		}
+
+		ImGui::CreateContext();
+
+		// Build atlas
+		ImGuiIO& io = ImGui::GetIO();
+
+		unsigned char* tex_pixels = NULL;
+		int tex_w, tex_h;
+		io.Fonts->GetTexDataAsRGBA32( &tex_pixels, &tex_w, &tex_h );
+
 		return m_editor.create();
 	}
 
 	void EditorApplication::shutdownTool()
 	{
 		m_editor.dispose();
+
+		ImGui::DestroyContext();
 	}
 
 	void EditorApplication::updateTool( bool wantToShutdown )
 	{
+		const RenderTarget& backBuffer = getGraphicsSystem().getBackBuffer();
 
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize	= ImVec2( float( backBuffer.getWidth() ), float( backBuffer.getHeight() ) );
+		io.DeltaTime	= float( getFrameTimer().getElapsedTime() );
+
+		ImGui::NewFrame();
+		doUi();
+
+		ImGui::Render();
+		ImDrawData* pDrawData = ImGui::GetDrawData();
+
+		GraphicsSystem& graphicsSystem = getGraphicsSystem();
+		if( m_indexBuffer.getCount() < pDrawData->TotalIdxCount )
+		{
+			m_indexBuffer.dispose( graphicsSystem );
+			m_indexBuffer.create( graphicsSystem, getNextPowerOfTwo( pDrawData->TotalIdxCount ), (IndexType)sizeof( ImDrawIdx ), true, nullptr, "ImGuiIndex" );
+		}
+
+		if( m_vertexBuffer.getCount() < pDrawData->TotalVtxCount )
+		{
+			m_vertexBuffer.dispose( graphicsSystem );
+			m_vertexBuffer.create( graphicsSystem, getNextPowerOfTwo( pDrawData->TotalVtxCount ), sizeof( ImDrawVert ), true, nullptr, "ImGuiVertex" );
+		}
 	}
 
 	void EditorApplication::renderTool( GraphicsContext& graphicsContext ) const
 	{
+		ImDrawData* pDrawData = ImGui::GetDrawData();
+		if( pDrawData->TotalIdxCount == 0u ||
+			pDrawData->TotalVtxCount == 0u )
+		{
+			return;
+		}
 
+		ImDrawIdx* pIndices = graphicsContext.mapBuffer< ImDrawIdx >( m_indexBuffer );
+		ImDrawVert* pVertices = graphicsContext.mapBuffer< ImDrawVert >( m_vertexBuffer );
+		for( uint drawListIndex = 0u; drawListIndex < pDrawData->CmdListsCount; ++drawListIndex )
+		{
+			const ImDrawList* pDrawList = pDrawData->CmdLists[ drawListIndex ];
+			memory::copy( pIndices, pDrawList->IdxBuffer.Data, sizeof( ImDrawIdx ) * pDrawList->IdxBuffer.Size );
+			memory::copy( pVertices, pDrawList->VtxBuffer.Data, sizeof( ImDrawVert ) * pDrawList->VtxBuffer.Size );
+			pIndices += pDrawList->IdxBuffer.Size;
+			pVertices += pDrawList->VtxBuffer.Size;
+		}
+		graphicsContext.unmapBuffer( m_indexBuffer );
+		graphicsContext.unmapBuffer( m_vertexBuffer );
+
+		const ImmediateRenderer& renderer = getImmediateRenderer();
+		renderer.beginRenderPass();
+
+		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
+		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
+		graphicsContext.setIndexBuffer( m_indexBuffer );
+		graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
+
+		uint indexOffset = 0u;
+		uint vertexOffset = 0u;
+		for( uint drawListIndex = 0u; drawListIndex < pDrawData->CmdListsCount; ++drawListIndex )
+		{
+			const ImDrawList* pDrawList = pDrawData->CmdLists[ drawListIndex ];
+			for( uint drawCommandIndex = 0u; drawCommandIndex < pDrawList->CmdBuffer.Size; ++drawCommandIndex )
+			{
+				const ImDrawCmd* pDrawCommand = &pDrawList->CmdBuffer[ (int)drawCommandIndex ];
+				graphicsContext.setScissorRectangle( createAxisAlignedRectangleMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
+				graphicsContext.setPixelShaderTexture( 0u, (const TextureData*)pDrawCommand->TextureId );
+				graphicsContext.drawIndexedGeometry( pDrawCommand->ElemCount, indexOffset, vertexOffset );
+
+				indexOffset += pDrawCommand->ElemCount;
+			}
+
+			vertexOffset += pDrawList->VtxBuffer.Size;
+		}
+
+		renderer.drawRectangle( createAxisAlignedRectangle( 100, 100, 100, 100 ), TIKI_COLOR_GRAY );
+		renderer.endRenderPass();
 	}
 
 	bool EditorApplication::processToolInputEvent( const InputEvent& inputEvent )
@@ -60,6 +174,16 @@ namespace tiki
 	void EditorApplication::processToolWindowEvent( const WindowEvent& windowEvent )
 	{
 
+	}
+
+	void EditorApplication::doUi()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		static float f = 0.0f;
+		ImGui::Text( "Hello, world!" );
+		ImGui::SliderFloat( "float", &f, 0.0f, 1.0f );
+		ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate );
 	}
 
 	//void EditorApplication::openFileTab( QWidget* pWidget, const QString& title )

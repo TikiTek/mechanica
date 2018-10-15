@@ -24,8 +24,8 @@ namespace tiki
 		m_projectPath = projectPath;
 		m_contentPath = projectPath;
 		m_contentPath.push( "content" );
-		m_gamebuildPath = projectPath;
-		m_gamebuildPath.push( "assetbuild" );
+		m_assetBuildPath = projectPath;
+		m_assetBuildPath.push( "asset_build" );
 
 		m_packagePool.create( 4u );
 		loadFromFile();
@@ -36,8 +36,8 @@ namespace tiki
 		m_projectPath = projectPath;
 		m_contentPath = projectPath;
 		m_contentPath.push( "content" );
-		m_gamebuildPath = projectPath;
-		m_gamebuildPath.push( "assetbuild" );
+		m_assetBuildPath = projectPath;
+		m_assetBuildPath.push( "asset_build" );
 
 		m_packagePool.create( 4u );
 		loadFromFile();

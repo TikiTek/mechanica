@@ -64,6 +64,7 @@ namespace tiki
 		m_pProject		= parameters.pProject;
 		m_ownsProject	= false;
 		m_rebuildForced = parameters.forceRebuild;
+		m_changedFilesMutex.create();
 
 		if( m_pProject == nullptr )
 		{
@@ -74,16 +75,15 @@ namespace tiki
 		m_context.pProject = m_pProject;
 
 		TaskSystemParameters taskParameters;
-		taskParameters.threadCount = 0u;
 		taskParameters.maxTaskCount = 1024u;
 		m_taskSystem.create( taskParameters );
 
-		if( !directory::exists( m_pProject->getGamebuildPath().getCompletePath() ) )
+		if( !directory::exists( m_pProject->getAssetBuildPath().getCompletePath() ) )
 		{
-			directory::create( m_pProject->getGamebuildPath().getCompletePath() );
+			directory::create( m_pProject->getAssetBuildPath().getCompletePath() );
 		}
 
-		Path databasePath = m_pProject->getGamebuildPath();
+		Path databasePath = m_pProject->getAssetBuildPath();
 		databasePath.push( "build.sqlite" );
 
 		m_isNewDatabase = !file::exists( databasePath.getCompletePath() );
@@ -152,7 +152,7 @@ namespace tiki
 		{
 			ConverterBase* pConverter = apConverters[ i ];
 
-			pConverter->create( m_pProject->getGamebuildPath(), &m_taskSystem );
+			pConverter->create( m_pProject->getAssetBuildPath(), &m_taskSystem );
 
 			List< string > extensions;
 			pConverter->getInputExtensions( extensions );
@@ -164,7 +164,11 @@ namespace tiki
 			registerConverter( pConverter );
 		}
 
-		m_genericDataConverter.setProject( m_pProject );
+		if( !m_genericDataConverter.setProject( m_pProject ) )
+		{
+			TIKI_TRACE_ERROR( "AssetConverter: Could not load generic data types!\n" );
+			return false;
+		}
 
 		for( const Package& package : m_pProject->getPackages() )
 		{
@@ -222,6 +226,8 @@ namespace tiki
 			TIKI_DELETE( m_pProject );
 			m_pProject = nullptr;
 		}
+
+		m_changedFilesMutex.dispose();
 	}
 
 	bool AssetConverter::convertAll()
@@ -532,10 +538,9 @@ namespace tiki
 			}
 
 			ConversionTask task;
-			for( size_t converterIndex = 0u; converterIndex < m_converters.getCount(); ++converterIndex )
+			task.pConverter = nullptr;
+			for( const ConverterBase* pConverter : m_converters )
 			{
-				const ConverterBase* pConverter = m_converters[ converterIndex ];
-
 				if( pConverter->canConvertType( asset.typeCrc ) )
 				{
 					task.pConverter = pConverter;
@@ -546,7 +551,7 @@ namespace tiki
 			if( task.pConverter == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[converter] No Converter found for file: '%s'.\n", asset.inputFilePath.getCompletePath() );
-				result = false;
+				//result = false;
 				continue;
 			}
 

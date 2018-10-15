@@ -169,7 +169,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_pBaseData->gamebuildFileSystem.create( m_parameters.pGamebuildPath ) )
+		if( !m_pBaseData->gamebuildFileSystem.create( m_parameters.assetBuildPath ) )
 		{
 			return false;
 		}

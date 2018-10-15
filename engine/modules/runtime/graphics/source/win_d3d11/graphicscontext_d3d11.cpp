@@ -76,7 +76,7 @@ namespace tiki
 	{
 		float4 floatColor;
 		color::toFloat4( floatColor, color );
-		
+
 		UINT depthClearFlags = 0u;
 		if ( isBitSet( clearMask, ClearMask_Depth ) )
 		{
@@ -125,7 +125,7 @@ namespace tiki
 
 		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
-		
+
 		ID3D11ShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
 		{
 			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
@@ -183,6 +183,16 @@ namespace tiki
 		invalidateState();
 	}
 
+	void GraphicsContext::setScissorRectangle( const AxisAlignedRectangle& rect )
+	{
+		const D3D11_RECT d3dRect = {
+			(LONG)rect.getLeft(),
+			(LONG)rect.getTop(),
+			(LONG)rect.getRight(),
+			(LONG)rect.getBottom()
+		};
+		m_platformData.pContext->RSSetScissorRects( 1u, &d3dRect );
+	}
 
 	void GraphicsContext::setBlendState( const BlendState* pBlendState )
 	{
@@ -194,7 +204,7 @@ namespace tiki
 
 			m_platformData.pContext->OMSetBlendState( pBlendState->m_platformData.pBlendState, s_aBlendFactor, 0xffffffffu );
 			m_pBlendState = pBlendState;
-		}		
+		}
 	}
 
 	void GraphicsContext::setDepthStencilState( const DepthStencilState* pDepthStencilState )
@@ -205,7 +215,7 @@ namespace tiki
 		{
 			m_platformData.pContext->OMSetDepthStencilState( pDepthStencilState->m_platformData.pDepthStencilState, UINT( pDepthStencilState->m_platformData.stencilRef ) );
 			m_pDepthStencilState = pDepthStencilState;
-		}		
+		}
 	}
 
 	void GraphicsContext::setRasterizerState( const RasterizerState* pRasterizerState )
@@ -367,7 +377,7 @@ namespace tiki
 
 	void GraphicsContext::setIndexBuffer( const IndexBuffer& indexBuffer )
 	{
-		m_platformData.pContext->IASetIndexBuffer( 
+		m_platformData.pContext->IASetIndexBuffer(
 			indexBuffer.m_pBuffer,
 			( indexBuffer.m_indexType == IndexType_UInt32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT ),
 			0u

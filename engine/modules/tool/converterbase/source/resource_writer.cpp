@@ -75,6 +75,7 @@ namespace tiki
 				const SectionData& sectionData = resource.sections[ j ];
 
 				SectionHeader& sectionHeader = sectionHeaders.add();
+				sectionHeader.type						= sectionData.type;
 				sectionHeader.alignment					= uint8( 64u - countLeadingZeros64( sectionData.alignment ) );
 				sectionHeader.referenceCount			= uint16( sectionData.references.getCount() );
 				sectionHeader.sizeInBytes				= uint32( sectionData.binaryData.getCount() );

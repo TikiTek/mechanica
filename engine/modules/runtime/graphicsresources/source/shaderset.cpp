@@ -24,7 +24,8 @@ namespace tiki
 	struct ShaderSetFactoryContext : public FactoryContextGenericBase< ShaderSet >
 	{
 		ShaderSetFactoryContext( GraphicsSystem& _graphicsSystem )
-			: graphicsSystem( _graphicsSystem )
+			: FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) )
+			, graphicsSystem( _graphicsSystem )
 		{
 		}
 

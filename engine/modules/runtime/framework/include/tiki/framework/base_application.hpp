@@ -2,6 +2,7 @@
 #ifndef TIKI_BASEAPPLICATION_HPP_INCLUDED
 #define TIKI_BASEAPPLICATION_HPP_INCLUDED
 
+#include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphicsrenderermode.hpp"
 
@@ -28,8 +29,6 @@ namespace tiki
 			graphicsMode		= GraphicsRendererMode_Hardware;
 
 			pWindowTitle		= "TikiEngine 3.0";
-
-			pGamebuildPath		= "gamebuild/";
 		}
 
 		uint					screenWidth;
@@ -37,9 +36,9 @@ namespace tiki
 		bool					fullScreen;
 		GraphicsRendererMode	graphicsMode;
 
-		const char*					pWindowTitle;
+		const char*				pWindowTitle;
 
-		const char*					pGamebuildPath;
+		Path					assetBuildPath;
 	};
 
 	class BaseApplication

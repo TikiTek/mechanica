@@ -9,12 +9,12 @@
 
 namespace tiki
 {
-	bool GamebuildFileSystem::create( const char* pGamebuildPath, uint maxStreamCount /*= 4u */ )
+	bool GamebuildFileSystem::create( const Path& assetBuildPath, uint maxStreamCount /* = 4u */ )
 	{
-		copyString( m_gamebuildPath, sizeof( m_gamebuildPath ), pGamebuildPath );
+		m_assetBuildPath = assetBuildPath;
 
 		DirectoryIterator iterator;
-		if ( !iterator.create( m_gamebuildPath ) )
+		if ( !iterator.create( m_assetBuildPath.getCompletePath() ) )
 		{
 			return false;
 		}
@@ -80,7 +80,8 @@ namespace tiki
 
 	DataStream* GamebuildFileSystem::open( const char* pFileName, DataAccessMode accessMode )
 	{
-		const string fullPath = path::combine( m_gamebuildPath, pFileName );
+		Path fullPath = m_assetBuildPath;
+		fullPath.push( pFileName );
 
 		for (uint i = 0u; i < m_fileStreams.getCount(); ++i)
 		{
@@ -88,14 +89,14 @@ namespace tiki
 
 			if ( !stream.isOpen() )
 			{
-				if ( stream.create( fullPath.cStr(), accessMode ) )
+				if ( stream.create( fullPath.getCompletePath(), accessMode ) )
 				{
 					return &stream;
 				}
 
 				break;
 			}
-		} 
+		}
 
 		return nullptr;
 	}
