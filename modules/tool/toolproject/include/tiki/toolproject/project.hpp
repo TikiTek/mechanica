@@ -25,7 +25,7 @@ namespace tiki
 
 		const Path&						getProjectPath() const { return m_projectPath; }
 		const Path&						getContentPath() const { return m_contentPath; }
-		const Path&						getGamebuildPath() const { return m_gamebuildPath; }
+		const Path&						getAssetBuildPath() const { return m_assetBuildPath; }
 
 		const string&					getName() const { return m_name; }
 		void							setName( const string& value ) { m_name = value; }
@@ -51,7 +51,7 @@ namespace tiki
 
 		Path					m_projectPath;
 		Path					m_contentPath;
-		Path					m_gamebuildPath;
+		Path					m_assetBuildPath;
 
 		string					m_name;
 		string					m_description;

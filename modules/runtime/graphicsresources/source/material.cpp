@@ -7,6 +7,10 @@ namespace tiki
 {
 	struct MaterialFactoryContext : public FactoryContextGenericBase< Material >
 	{
+		MaterialFactoryContext()
+			: FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature >() )
+		{
+		}
 	};
 
 	struct MaterialInitData

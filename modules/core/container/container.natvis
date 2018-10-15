@@ -36,4 +36,18 @@
 			</ArrayItems>
 		</Expand>
 	</Type>
+	<Type Name="tiki::LinkedList&lt;*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<CustomListItems>
+				<Variable Name="pItem" InitialValue="m_pData"/>
+				<Loop>
+					<Break Condition="pItem == nullptr"/>
+					<Item>*pItem</Item>
+					<Exec>pItem = pItem-&gt;pNextItem</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
 </AutoVisualizer>

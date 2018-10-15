@@ -52,6 +52,11 @@ namespace tiki
 
 	struct FactoryContext
 	{
+		FactoryContext( FlagMask8< ResourceDefinitionFeature > inResourceDefinitionFeatures )
+			: resourceDefinitionFeatures( inResourceDefinitionFeatures )
+		{
+		}
+
 		CreateResourceFunction					pCreateResource;
 		DisposeResourceFunction					pDisposeResource;
 
@@ -61,7 +66,8 @@ namespace tiki
 	template<class T>
 	struct FactoryContextGenericBase : public FactoryContext
 	{
-		FactoryContextGenericBase()
+		FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature > resourceDefinitionFeatures )
+			: FactoryContext( resourceDefinitionFeatures )
 		{
 			pCreateResource		= factoryContextGenericCreateResourceFunction;
 			pDisposeResource	= factoryContextGenericDisposeResourceFunction;

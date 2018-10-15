@@ -35,6 +35,7 @@ namespace tiki
 	class VertexBuffer;
 	class VertexFormat;
 	class VertexInputBinding;
+	struct AxisAlignedRectangle;
 	struct GraphicsHandles;
 	struct Rectangle;
 	struct Vector2;
@@ -72,6 +73,8 @@ namespace tiki
 
 		void				beginRenderPass( const RenderTarget& renderTarget, const Viewport* pViewport = nullptr );
 		void				endRenderPass();
+
+		void				setScissorRectangle( const AxisAlignedRectangle& rect );
 
 		void				setVertexShader( const Shader* pVertexShader );
 		void				setPixelShader( const Shader* pPixelShader );
@@ -113,7 +116,7 @@ namespace tiki
 		template<typename T>
 		T*					mapBuffer( const BaseBuffer& buffer );
 		void				unmapBuffer( const BaseBuffer& buffer );
-		
+
 		const RenderTarget&	getBackBuffer() const;
 
 	private: // friend

@@ -8,7 +8,7 @@
 namespace tiki
 {
 	enum IndexType : uint8
-	{		
+	{
 		IndexType_Invalid	= 0u,
 
 		IndexType_UInt16	= 2u,
@@ -31,14 +31,12 @@ namespace tiki
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
 		TIKI_FORCE_INLINE IndexType	getIndexType() const	{ return m_indexType; }
-
 		TIKI_FORCE_INLINE size_t	getCount() const		{ return m_count; }
 
 	private:
 
 		IndexType					m_indexType;
 		size_t						m_count;
-
 	};
 }
 

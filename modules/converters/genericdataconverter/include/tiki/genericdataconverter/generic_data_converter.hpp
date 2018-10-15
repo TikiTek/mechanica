@@ -17,7 +17,7 @@ namespace tiki
 									GenericDataConverter();
 		virtual						~GenericDataConverter();
 
-		void						setProject( const Project* pProject );
+		bool						setProject( const Project* pProject );
 
 	protected:
 

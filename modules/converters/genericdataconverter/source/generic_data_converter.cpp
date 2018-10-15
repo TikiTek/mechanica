@@ -19,12 +19,17 @@ namespace tiki
 	{
 	}
 
-	void GenericDataConverter::setProject( const Project* pProject )
+	bool GenericDataConverter::setProject( const Project* pProject )
 	{
 		for( const Package& package : pProject->getPackages() )
 		{
-			m_collection.addPackage( package );
+			if( !m_collection.addPackage( package ) )
+			{
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const

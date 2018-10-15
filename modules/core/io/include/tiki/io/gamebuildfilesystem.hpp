@@ -1,9 +1,8 @@
 #pragma once
-#ifndef __TIKI_GAMEBUILDFILESYSTEM_HPP_INCLUDED__
-#define __TIKI_GAMEBUILDFILESYSTEM_HPP_INCLUDED__
 
 #include "tiki/io/filesystem.hpp"
 
+#include "tiki/base/path.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/container/linkedlist.hpp"
 #include "tiki/io/filestream.hpp"
@@ -16,7 +15,7 @@ namespace tiki
 
 	public:
 
-		bool				create( const char* pGamebuildPath, uint maxStreamCount = 4u );
+		bool				create( const Path& assetBuildPath, uint maxStreamCount = 4u );
 		void				dispose();
 
 		virtual const char*	getFilenameByCrc( crc32 filenameCrc ) const TIKI_OVERRIDE_FINAL;
@@ -33,12 +32,10 @@ namespace tiki
 		};
 		typedef LinkedList< GamebuildFile > GamebuildFileList;
 
-		char				m_gamebuildPath[ TIKI_MAX_PATH ];
+		Path				m_assetBuildPath;
 		GamebuildFileList	m_files;
 
 		Array< FileStream >	m_fileStreams;
 
 	};
 }
-
-#endif // __TIKI_GAMEBUILDFILESYSTEM_HPP_INCLUDED__

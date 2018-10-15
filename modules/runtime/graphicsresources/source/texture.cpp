@@ -14,7 +14,8 @@ namespace tiki
 	struct TextureFactoryContext : public FactoryContextGenericBase< Texture >
 	{
 		TextureFactoryContext( GraphicsSystem& _graphicsSystem )
-			: graphicsSystem( _graphicsSystem )
+			: FactoryContextGenericBase( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) )
+			, graphicsSystem( _graphicsSystem )
 		{
 		}
 
