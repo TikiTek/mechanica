@@ -12,6 +12,7 @@ namespace tiki
 	public:
 
 							ToolImage();
+		explicit			ToolImage( const char* pFilename );
 							~ToolImage();
 
 		bool				create( uint width, uint height, const Color* pPixels );

@@ -6,6 +6,11 @@ namespace tiki
 	{
 	}
 
+	ToolImage::ToolImage( const char* pFilename )
+	{
+		TIKI_VERIFY( createFromFile( pFilename ) );
+	}
+
 	ToolImage::~ToolImage()
 	{
 		dispose();

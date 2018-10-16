@@ -1,4 +1,8 @@
+#pragma  once
+
 #include "tiki/editor_interface/editor_ribbon.hpp"
+
+#include "tiki/toolapplication/tool_image.hpp"
 
 namespace tiki
 {
@@ -12,5 +16,8 @@ namespace tiki
 
 	private:
 
+		ToolImage		m_convertAllIcon;
+		ToolImage		m_showConverterIcon;
+		ToolImage		m_showLastResultIcon;
 	};
 }

@@ -214,11 +214,13 @@ namespace tiki
 
 	void Editor::addGlobalRibbon( EditorRibbon* pRibbon )
 	{
+		TIKI_ASSERT( pRibbon != nullptr );
 		m_ribbons.pushBack( pRibbon );
 	}
 
 	void Editor::removeGlobalRibbon( EditorRibbon* pRibbon )
 	{
+		TIKI_ASSERT( pRibbon != nullptr );
 		m_ribbons.removeSortedByValue( pRibbon );
 	}
 
