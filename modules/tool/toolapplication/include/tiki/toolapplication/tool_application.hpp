@@ -2,9 +2,16 @@
 
 #include "tiki/framework/base_application.hpp"
 
+#include "tiki/graphics/color_xkcd.hpp"
+#include "tiki/graphics/indexbuffer.hpp"
+#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/vertexbuffer.hpp"
+
 namespace tiki
 {
 	class ToolApplication;
+	class VertexFormat;
+	class VertexInputBinding;
 
 	namespace tool
 	{
@@ -13,9 +20,7 @@ namespace tiki
 
 	struct ToolApplicationParamters : public BaseApplicationParamters
 	{
-		ToolApplicationParamters()
-		{
-		}
+		Color backgroundColor = TIKI_COLOR_XKCD_AZUL;
 	};
 
 	class ToolApplication : public BaseApplication
@@ -49,11 +54,20 @@ namespace tiki
 		virtual void				updateTool( bool wantToShutdown ) TIKI_PURE;
 		virtual void				renderTool( GraphicsContext& graphicsContext ) const TIKI_PURE;
 
+		virtual void				doUi() TIKI_PURE;
+
 		virtual bool				processToolInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
 		virtual void				processToolWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
 
 	private:
 
 		ToolApplicationParamters	m_parameters;
+
+		const VertexFormat*			m_pVertexFormat;
+		const VertexInputBinding*	m_pVertexInputBinding;
+		IndexBuffer					m_indexBuffer;
+		VertexBuffer				m_vertexBuffer;
+
+		TextureData					m_fontTexture;
 	};
 }

@@ -1,10 +1,5 @@
 #include "editor_application.hpp"
 
-#include "tiki/base/timer.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/math/axisalignedrectangle.hpp"
 
 #include <imgui.h>
 
@@ -12,8 +7,7 @@ namespace tiki
 {
 	EditorApplication::EditorApplication()
 	{
-		m_pVertexFormat = nullptr;
-		m_pVertexInputBinding = nullptr;
+		m_pCurrentRibbon = nullptr;
 
 		//setMinimumSize( 300, 200 );
 
@@ -46,157 +40,20 @@ namespace tiki
 
 	bool EditorApplication::initializeTool()
 	{
-		GraphicsSystem& graphicsSystem = getGraphicsSystem();
-		{
-			const VertexAttribute attributes[] =
-			{
-				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
-				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
-			};
-
-			m_pVertexFormat = graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
-			if( m_pVertexFormat == nullptr )
-			{
-				shutdownTool();
-				return false;
-			}
-
-			m_pVertexInputBinding = graphicsSystem.createVertexInputBinding( getImmediateRenderer().getShader()->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
-			if( m_pVertexInputBinding == nullptr )
-			{
-				shutdownTool();
-				return false;
-			}
-		}
-
-		ImGui::CreateContext();
-
-		// Build atlas
-		ImGuiIO& io = ImGui::GetIO();
-
-		{
-			int fontTextureWidth;
-			int fontTextureHeight;
-			uint8* pFontTextureData = nullptr;
-			io.Fonts->GetTexDataAsRGBA32( &pFontTextureData, &fontTextureWidth, &fontTextureHeight );
-
-			TextureDescription fontTextureDescription;
-			fontTextureDescription.width	= fontTextureWidth;
-			fontTextureDescription.height	= fontTextureHeight;
-			fontTextureDescription.type		= TextureType_2d;
-			fontTextureDescription.format	= PixelFormat_R8G8B8A8;
-			fontTextureDescription.flags	= TextureFlags_ShaderInput;
-
-			if( !m_fontTexture.create( graphicsSystem, fontTextureDescription, pFontTextureData, "ImGuiFont" ) )
-			{
-				shutdownTool();
-				return false;
-			}
-
-			io.Fonts->TexID = (ImTextureID)&m_fontTexture;
-		}
-
 		return m_editor.create();
 	}
 
 	void EditorApplication::shutdownTool()
 	{
-		GraphicsSystem& graphicsSystem = getGraphicsSystem();
-
 		m_editor.dispose();
-
-		m_fontTexture.dispose( graphicsSystem );
-		m_indexBuffer.dispose( graphicsSystem );
-		m_vertexBuffer.dispose( graphicsSystem );
-		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
-		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
-
-		ImGui::DestroyContext();
 	}
 
 	void EditorApplication::updateTool( bool wantToShutdown )
 	{
-		const RenderTarget& backBuffer = getGraphicsSystem().getBackBuffer();
-
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize	= ImVec2( float( backBuffer.getWidth() ), float( backBuffer.getHeight() ) );
-		io.DeltaTime	= float( getFrameTimer().getElapsedTime() );
-
-		ImGui::NewFrame();
-		doUi();
-
-		ImGui::Render();
-		ImDrawData* pDrawData = ImGui::GetDrawData();
-
-		GraphicsSystem& graphicsSystem = getGraphicsSystem();
-		if( m_indexBuffer.getCount() < pDrawData->TotalIdxCount )
-		{
-			m_indexBuffer.dispose( graphicsSystem );
-			m_indexBuffer.create( graphicsSystem, getNextPowerOfTwo( pDrawData->TotalIdxCount ), (IndexType)sizeof( ImDrawIdx ), true, nullptr, "ImGuiIndex" );
-		}
-
-		if( m_vertexBuffer.getCount() < pDrawData->TotalVtxCount )
-		{
-			m_vertexBuffer.dispose( graphicsSystem );
-			m_vertexBuffer.create( graphicsSystem, getNextPowerOfTwo( pDrawData->TotalVtxCount ), sizeof( ImDrawVert ), true, nullptr, "ImGuiVertex" );
-		}
 	}
 
 	void EditorApplication::renderTool( GraphicsContext& graphicsContext ) const
 	{
-		ImDrawData* pDrawData = ImGui::GetDrawData();
-		if( pDrawData->TotalIdxCount == 0u ||
-			pDrawData->TotalVtxCount == 0u )
-		{
-			return;
-		}
-
-		ImDrawIdx* pIndices = graphicsContext.mapBuffer< ImDrawIdx >( m_indexBuffer );
-		ImDrawVert* pVertices = graphicsContext.mapBuffer< ImDrawVert >( m_vertexBuffer );
-		for( uint drawListIndex = 0u; drawListIndex < pDrawData->CmdListsCount; ++drawListIndex )
-		{
-			const ImDrawList* pDrawList = pDrawData->CmdLists[ drawListIndex ];
-			memory::copy( pIndices, pDrawList->IdxBuffer.Data, sizeof( ImDrawIdx ) * pDrawList->IdxBuffer.Size );
-			memory::copy( pVertices, pDrawList->VtxBuffer.Data, sizeof( ImDrawVert ) * pDrawList->VtxBuffer.Size );
-			pIndices += pDrawList->IdxBuffer.Size;
-			pVertices += pDrawList->VtxBuffer.Size;
-		}
-		graphicsContext.unmapBuffer( m_indexBuffer );
-		graphicsContext.unmapBuffer( m_vertexBuffer );
-
-		const ImmediateRenderer& renderer = getImmediateRenderer();
-		renderer.beginRenderPass();
-
-		renderer.drawTexturedRectangle( m_fontTexture, createAxisAlignedRectangle( 100, 100, 512, 64 ), TIKI_COLOR_GRAY );
-		renderer.drawRectangle( createAxisAlignedRectangle( 100, 200, 100, 100 ), TIKI_COLOR_GRAY );
-
-		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
-		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
-		graphicsContext.setIndexBuffer( m_indexBuffer );
-		graphicsContext.setVertexBuffer( 0u, m_vertexBuffer );
-
-		uint indexOffset = 0u;
-		uint vertexOffset = 0u;
-		for( uint drawListIndex = 0u; drawListIndex < pDrawData->CmdListsCount; ++drawListIndex )
-		{
-			const ImDrawList* pDrawList = pDrawData->CmdLists[ drawListIndex ];
-			for( uint drawCommandIndex = 0u; drawCommandIndex < pDrawList->CmdBuffer.Size; ++drawCommandIndex )
-			{
-				const ImDrawCmd* pDrawCommand = &pDrawList->CmdBuffer[ (int)drawCommandIndex ];
-
-				renderer.setShaderMode( pDrawCommand->TextureId != nullptr ? ImmediateShaderMode_Texture : ImmediateShaderMode_Color );
-				graphicsContext.setPixelShaderTexture( 0u, (const TextureData*)pDrawCommand->TextureId );
-				graphicsContext.setScissorRectangle( createAxisAlignedRectangleMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
-				graphicsContext.drawIndexedGeometry( pDrawCommand->ElemCount, indexOffset, vertexOffset );
-
-				indexOffset += pDrawCommand->ElemCount;
-			}
-
-			vertexOffset += pDrawList->VtxBuffer.Size;
-		}
-
-		renderer.endRenderPass();
 	}
 
 	bool EditorApplication::processToolInputEvent( const InputEvent& inputEvent )
@@ -206,12 +63,62 @@ namespace tiki
 
 	void EditorApplication::processToolWindowEvent( const WindowEvent& windowEvent )
 	{
-
 	}
 
 	void EditorApplication::doUi()
 	{
 		ImGuiIO& io = ImGui::GetIO();
+
+		ImGui::SetNextWindowPos( ImVec2( 10.f, 10.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( 500.0f, 100.0f ), ImGuiCond_Always );
+		ImGui::SetNextWindowBgAlpha( 0.3f );
+		if( ImGui::Begin( "Example: Simple Overlay", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		{
+			bool found;
+			for( EditorRibbon* pRibbon : m_editor.getGlobalRibbons() )
+			{
+				bool wasSelected = false;
+				if( m_pCurrentRibbon == pRibbon )
+				{
+					const ImGuiStyle& style = ImGui::GetStyle();
+					ImGui::PushStyleColor( ImGuiCol_Button, style.Colors[ ImGuiCol_ButtonHovered ] );
+					wasSelected = true;
+				}
+
+				if( ImGui::Button( pRibbon->getTitle().cStr() ) )
+				{
+					m_pCurrentRibbon = pRibbon;
+				}
+
+				if( wasSelected )
+				{
+					ImGui::PopStyleColor();
+				}
+
+				ImGui::SameLine();
+
+				found |= (m_pCurrentRibbon == pRibbon);
+			}
+			ImGui::NewLine();
+
+			if( !found )
+			{
+				m_pCurrentRibbon = nullptr;
+			}
+
+			ImGui::Button( "test" );
+			ImGui::SameLine();
+			ImGui::Button( "test" );
+			ImGui::SameLine();
+			ImGui::Button( "test" );
+
+			if( m_pCurrentRibbon != nullptr )
+			{
+				m_pCurrentRibbon->doUi();
+			}
+
+			ImGui::End();
+		}
 
 		static float f = 0.0f;
 		ImGui::Text( "Hello, world!" );

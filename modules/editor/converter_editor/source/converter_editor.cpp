@@ -9,17 +9,12 @@ namespace tiki
 		: BaseEditor( pInterface, "converter_editor/editable-icon.png" )
 		, m_pConverter( pAssetConverter )
 	{
-		//m_pRibbon = new QtRibbonTab( "Converter" );
-		//m_pConvertAllButton		= m_pRibbon->addButton( "Convert all", QIcon( ":/converter_editor/ribbon-convert-all.png" ) );
-		//m_pShowConverterButton	= m_pRibbon->addButton( "Show Converter", QIcon( ":/converter_editor/ribbon-show-converter.png" ) );
-		//m_pShowLastResultButton	= m_pRibbon->addButton( "Show last result", QIcon( ":/converter_editor/ribbon-show-last-result.png" ) );
-
-		m_pInterface->addGlobalRibbon( nullptr );
+		m_pInterface->addGlobalRibbon( &m_ribbon );
 	}
 
 	ConverterEditor::~ConverterEditor()
 	{
-		m_pInterface->removeGlobalRibbon( nullptr );
+		m_pInterface->removeGlobalRibbon( &m_ribbon );
 	}
 
 	bool ConverterEditor::saveEditable( Editable* pEditable )

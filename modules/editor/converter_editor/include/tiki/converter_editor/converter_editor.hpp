@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tiki/converter_editor/converter_editor_ribbon.hpp"
 #include "tiki/editor_interface/base_editor.hpp"
 #include "tiki/toolapplication/tool_image.hpp"
 
@@ -23,6 +24,8 @@ namespace tiki
 	private:
 
 		AssetConverterInterface*	m_pConverter;
+
+		ConverterEditorRibbon		m_ribbon;
 
 		void						convertAll();
 		void						showConverter();
