@@ -54,5 +54,7 @@ namespace tiki
 		const VertexInputBinding*	m_pVertexInputBinding;
 		IndexBuffer					m_indexBuffer;
 		VertexBuffer				m_vertexBuffer;
+
+		TextureData					m_fontTexture;
 	};
 }

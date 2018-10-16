@@ -34,7 +34,7 @@ namespace tiki
 		{
 			width		= 0u;
 			height		= 0u;
-			depth		= 0u;
+			depth		= 1u;
 			arrayCount	= 1u;
 			mipCount	= 1u;
 

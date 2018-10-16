@@ -12,6 +12,9 @@ namespace tiki
 {
 	EditorApplication::EditorApplication()
 	{
+		m_pVertexFormat = nullptr;
+		m_pVertexInputBinding = nullptr;
+
 		//setMinimumSize( 300, 200 );
 
 		//m_pFileTabs = new QTabWidget();
@@ -47,8 +50,8 @@ namespace tiki
 		{
 			const VertexAttribute attributes[] =
 			{
-				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
-				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x16y16_unorm,		0u, VertexInputType_PerVertex },
+				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
+				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
 				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
 			};
 
@@ -72,16 +75,42 @@ namespace tiki
 		// Build atlas
 		ImGuiIO& io = ImGui::GetIO();
 
-		unsigned char* tex_pixels = NULL;
-		int tex_w, tex_h;
-		io.Fonts->GetTexDataAsRGBA32( &tex_pixels, &tex_w, &tex_h );
+		{
+			int fontTextureWidth;
+			int fontTextureHeight;
+			uint8* pFontTextureData = nullptr;
+			io.Fonts->GetTexDataAsRGBA32( &pFontTextureData, &fontTextureWidth, &fontTextureHeight );
+
+			TextureDescription fontTextureDescription;
+			fontTextureDescription.width	= fontTextureWidth;
+			fontTextureDescription.height	= fontTextureHeight;
+			fontTextureDescription.type		= TextureType_2d;
+			fontTextureDescription.format	= PixelFormat_R8G8B8A8;
+			fontTextureDescription.flags	= TextureFlags_ShaderInput;
+
+			if( !m_fontTexture.create( graphicsSystem, fontTextureDescription, pFontTextureData, "ImGuiFont" ) )
+			{
+				shutdownTool();
+				return false;
+			}
+
+			io.Fonts->TexID = (ImTextureID)&m_fontTexture;
+		}
 
 		return m_editor.create();
 	}
 
 	void EditorApplication::shutdownTool()
 	{
+		GraphicsSystem& graphicsSystem = getGraphicsSystem();
+
 		m_editor.dispose();
+
+		m_fontTexture.dispose( graphicsSystem );
+		m_indexBuffer.dispose( graphicsSystem );
+		m_vertexBuffer.dispose( graphicsSystem );
+		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
+		graphicsSystem.disposeVertexFormat( m_pVertexFormat );
 
 		ImGui::DestroyContext();
 	}
@@ -139,6 +168,9 @@ namespace tiki
 		const ImmediateRenderer& renderer = getImmediateRenderer();
 		renderer.beginRenderPass();
 
+		renderer.drawTexturedRectangle( m_fontTexture, createAxisAlignedRectangle( 100, 100, 512, 64 ), TIKI_COLOR_GRAY );
+		renderer.drawRectangle( createAxisAlignedRectangle( 100, 200, 100, 100 ), TIKI_COLOR_GRAY );
+
 		graphicsContext.setPrimitiveTopology( PrimitiveTopology_TriangleList );
 		graphicsContext.setVertexInputBinding( m_pVertexInputBinding );
 		graphicsContext.setIndexBuffer( m_indexBuffer );
@@ -152,8 +184,10 @@ namespace tiki
 			for( uint drawCommandIndex = 0u; drawCommandIndex < pDrawList->CmdBuffer.Size; ++drawCommandIndex )
 			{
 				const ImDrawCmd* pDrawCommand = &pDrawList->CmdBuffer[ (int)drawCommandIndex ];
-				graphicsContext.setScissorRectangle( createAxisAlignedRectangleMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
+
+				renderer.setShaderMode( pDrawCommand->TextureId != nullptr ? ImmediateShaderMode_Texture : ImmediateShaderMode_Color );
 				graphicsContext.setPixelShaderTexture( 0u, (const TextureData*)pDrawCommand->TextureId );
+				graphicsContext.setScissorRectangle( createAxisAlignedRectangleMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
 				graphicsContext.drawIndexedGeometry( pDrawCommand->ElemCount, indexOffset, vertexOffset );
 
 				indexOffset += pDrawCommand->ElemCount;
@@ -162,7 +196,6 @@ namespace tiki
 			vertexOffset += pDrawList->VtxBuffer.Size;
 		}
 
-		renderer.drawRectangle( createAxisAlignedRectangle( 100, 100, 100, 100 ), TIKI_COLOR_GRAY );
 		renderer.endRenderPass();
 	}
 
