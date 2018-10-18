@@ -36,9 +36,6 @@ namespace tiki
 										GenericDataTypeCollection();
 										~GenericDataTypeCollection();
 
-		bool							create();
-		void							dispose();
-
 		bool							addPackage( const Package& package );
 
 		GenericDataTagHandler&			getTagHandler();
@@ -85,8 +82,8 @@ namespace tiki
 		bool							addType( GenericDataType& type );
 		bool							removeType( GenericDataType& type );
 
-		bool							registerDefaultValueTypes();
-		bool							registerDefaultResourceTypes();
+		void							registerDefaultValueTypes();
+		void							registerDefaultResourceTypes();
 
 		bool							loadFiles( const List< Path >& typeFiles );
 		bool							parseFile( XmlElement* pRootNode, const string& moduleName );

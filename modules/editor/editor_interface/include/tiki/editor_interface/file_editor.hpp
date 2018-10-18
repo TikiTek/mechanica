@@ -19,7 +19,7 @@ namespace tiki
 
 	protected:
 
-									FileEditor( EditorInterface* pInterface, const char* pIconPath, const DynamicString& fileTypeName, const DynamicString& fileExtension );
+									FileEditor( EditorInterface* pInterface, ConstMemoryBlock iconData, const DynamicString& fileTypeName, const DynamicString& fileExtension );
 		virtual						~FileEditor() { }
 
 	private:

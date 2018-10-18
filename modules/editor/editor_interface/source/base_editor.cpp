@@ -2,9 +2,9 @@
 
 namespace tiki
 {
-	BaseEditor::BaseEditor( EditorInterface* pInterface, const char* pIconPath )
+	BaseEditor::BaseEditor( EditorInterface* pInterface, ConstMemoryBlock iconData )
 		: m_pInterface( pInterface )
 	{
-		m_icon.createFromFile( pIconPath );
+		TIKI_VERIFY( m_icon.createFromMemory( iconData ) );
 	}
 }

@@ -2,13 +2,15 @@
 
 #include "tiki/toolapplication/tool_ui.hpp"
 
+#include "res_converter_editor.hpp"
+
 namespace tiki
 {
 	ConverterEditorRibbon::ConverterEditorRibbon()
 		: EditorRibbon( "Converter" )
-		, m_convertAllIcon( "converter_editor/ribbon-convert-all.png" )
-		, m_showConverterIcon( "converter_editor/ribbon-show-converter.png" )
-		, m_showLastResultIcon( "converter_editor/ribbon-show-last-result.png" )
+		, m_convertAllIcon( getConverterEditorResource( ConverterEditorResources_RibbonConvertAll ) )
+		, m_showConverterIcon( getConverterEditorResource( ConverterEditorResources_RibbonShowConverter ) )
+		, m_showLastResultIcon( getConverterEditorResource( ConverterEditorResources_RibbonShowLastResult ) )
 	{
 	}
 
@@ -18,15 +20,18 @@ namespace tiki
 		{
 
 		}
+		ImGui::SameLine();
 
 		if( ImGui::ImageButtonTextButton( ImGui::Tex( m_showConverterIcon ), "Show Converter" ) )
 		{
 
 		}
+		ImGui::SameLine();
 
 		if( ImGui::ImageButtonTextButton( ImGui::Tex( m_showLastResultIcon ), "Show last result" ) )
 		{
 
 		}
+		ImGui::SameLine();
 	}
 }

@@ -33,7 +33,7 @@ namespace tiki
 
 		List< EditorRibbon* >			m_editableTabs;
 
-										BaseEditor( EditorInterface* pInterface, const char* pIconPath );
+										BaseEditor( EditorInterface* pInterface, ConstMemoryBlock iconData );
 		virtual							~BaseEditor() { }
 	};
 }

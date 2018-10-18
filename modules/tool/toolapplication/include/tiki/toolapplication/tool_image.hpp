@@ -13,11 +13,13 @@ namespace tiki
 
 							ToolImage();
 		explicit			ToolImage( const char* pFilename );
+		explicit			ToolImage( ConstMemoryBlock imageData );
 							~ToolImage();
 
 		bool				create( uint width, uint height, const Color* pPixels );
 		bool				createFromFile( const Path& filename );
 		bool				createFromFile( const char* pFilename );
+		bool				createFromMemory( ConstMemoryBlock imageData );
 		void				dispose();
 
 		const TextureData&	getData() const { return m_data; }

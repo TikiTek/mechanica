@@ -9,3 +9,5 @@ module:add_files( "source/*.*" );
 
 module:add_dependency( "editor/editor_interface" );
 module:add_dependency( "thirdparty/tinyxml2" );
+
+module:add_resources( "resource/*.png" );

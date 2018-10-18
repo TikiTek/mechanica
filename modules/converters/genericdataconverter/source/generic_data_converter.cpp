@@ -65,12 +65,6 @@ namespace tiki
 
 	bool GenericDataConverter::initializeConverter()
 	{
-		if ( !m_collection.create() )
-		{
-			TIKI_TRACE_ERROR( "[GenericDataConverter::initializeConverter] Unable to initialize Type collection.\n" );
-			return false;
-		}
-
 		List< const GenericDataType* > resourceTypes;
 		m_collection.findTypesByType( resourceTypes, GenericDataTypeType_Resource );
 
@@ -92,7 +86,6 @@ namespace tiki
 	void GenericDataConverter::disposeConverter()
 	{
 		m_resourceTypeMap.dispose();
-		m_collection.dispose();
 	}
 
 	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const

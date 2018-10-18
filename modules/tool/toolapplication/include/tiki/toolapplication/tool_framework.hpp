@@ -17,7 +17,8 @@ namespace tiki
 	{
 		Path							getFile( const string& filename );
 
-		bool							loadImage( TextureData& target, const Path& filename );
+		bool							loadImage( TextureData& target, ConstMemoryBlock imageData );
+		bool							loadImageFromFile( TextureData& target, const Path& filename );
 
 		MainWindow&						getMainWindow();
 		GraphicsSystem&					getGraphicsSystem();

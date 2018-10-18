@@ -8,3 +8,5 @@ module:add_include_dir( "include" );
 module:add_files( "source/*.*" );
 
 module:add_dependency( "editor/editor_interface" );
+
+module:add_resources( "resource/*.png" );

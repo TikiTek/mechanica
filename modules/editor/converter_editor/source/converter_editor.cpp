@@ -3,10 +3,12 @@
 #include "tiki/asset_converter_interface//asset_converter_interface.hpp"
 #include "tiki/editor_interface/editor_interface.hpp"
 
+#include "res_converter_editor.hpp"
+
 namespace tiki
 {
 	ConverterEditor::ConverterEditor( EditorInterface* pInterface, AssetConverterInterface* pAssetConverter )
-		: BaseEditor( pInterface, "converter_editor/editable-icon.png" )
+		: BaseEditor( pInterface, getConverterEditorResource( ConverterEditorResources_EditableIcon ) )
 		, m_pConverter( pAssetConverter )
 	{
 		m_pInterface->addGlobalRibbon( &m_ribbon );
