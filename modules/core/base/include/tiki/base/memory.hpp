@@ -55,6 +55,18 @@
 
 namespace tiki
 {
+	struct MemoryBlock
+	{
+		void*		pStart;
+		uint		size;
+	};
+
+	struct ConstMemoryBlock
+	{
+		const void*	pStart;
+		uint		size;
+	};
+
 	namespace memory
 	{
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
@@ -91,13 +103,13 @@ namespace tiki
 
 		int						compare( const void* pData1, const void* pData2, uint sizeInBytes );
 		void					copy( void* pTargetData, const void* pSourceData, uint sizeInBytes );
-		
+
 		TIKI_FORCE_INLINE void	set8( void* pTargetData, uint count, uint8 value );
 		TIKI_FORCE_INLINE void	set16( void* pTargetData, uint count, uint16 value );
 		TIKI_FORCE_INLINE void	set32( void* pTargetData, uint count, uint32 value );
 		TIKI_FORCE_INLINE void	set64( void* pTargetData, uint count, uint64 value );
 		TIKI_FORCE_INLINE void	zero( void* pTargetData, uint sizeInBytes );
-		
+
 		template<typename T>
 		TIKI_FORCE_INLINE void	zero( T& pTargetData );
 	}

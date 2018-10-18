@@ -110,22 +110,10 @@ function Project:finalize_create_directories( project_pathes, configuration, pla
 		os.mkdir( project_pathes.build_dir );
 	end
 	
-	project_pathes.unity_dir = path.join( project_pathes.root_dir, "unity_files", self.name );
-	if not os.isdir( project_pathes.unity_dir ) then
-		print( "Create:" .. project_pathes.unity_dir );
-		os.mkdir( project_pathes.unity_dir );
-	end
-
-	project_pathes.genericdata_dir = path.join( project_pathes.root_dir, "genericdata_files", self.name );
-	if not os.isdir( project_pathes.genericdata_dir ) then
-		print( "Create:" .. project_pathes.genericdata_dir );
-		os.mkdir( project_pathes.genericdata_dir );
-	end
-
-	project_pathes.qt_dir = path.join( project_pathes.root_dir, "qt_files", self.name );
-	if not os.isdir( project_pathes.qt_dir ) then
-		print( "Create:" .. project_pathes.qt_dir );
-		os.mkdir( project_pathes.qt_dir );
+	project_pathes.generated_files_dir = path.join( project_pathes.root_dir, "generated_files", self.name );
+	if not os.isdir( project_pathes.generated_files_dir ) then
+		print( "Create:" .. project_pathes.generated_files_dir );
+		os.mkdir( project_pathes.generated_files_dir );
 	end
 end
 

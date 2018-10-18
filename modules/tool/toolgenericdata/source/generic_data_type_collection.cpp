@@ -45,10 +45,12 @@ namespace tiki
 		: m_tagHandler( *this )
 	{
 		m_pModeEnum = nullptr;
+		TIKI_VERIFY( create() );
 	}
 
 	GenericDataTypeCollection::~GenericDataTypeCollection()
 	{
+		dispose();
 	}
 
 	bool GenericDataTypeCollection::create()
@@ -479,7 +481,7 @@ namespace tiki
 				fileNameDefine.cStr()
 			);
 
-			writeToFileIfNotEquals( fullPath, finalCode );
+			file::writeToFileIfNotEquals( fullPath, finalCode );
 		}
 
 		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
@@ -534,8 +536,8 @@ namespace tiki
 		const string headerFinalCode	= s_pFactoriesHeaderFormat;
 		const string sourceFinalCode	= formatDynamicString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
-		writeToFileIfNotEquals( headerFullPath, headerFinalCode );
-		writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
+		file::writeToFileIfNotEquals( headerFullPath, headerFinalCode );
+		file::writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
 
 		return true;
 	}
@@ -854,28 +856,5 @@ namespace tiki
 		}
 
 		return ok;
-	}
-
-	void GenericDataTypeCollection::writeToFileIfNotEquals( const Path& filePath, const string& content )
-	{
-		Array< char > currentContent;
-		file::readAllText( filePath.getCompletePath(), currentContent );
-		const uint currentContentLength = currentContent.getCount() - 1;
-
-		bool isEquals = (content.getLength() == currentContentLength);
-		if (isEquals)
-		{
-			for (uint i = 0u; i < content.getLength() && isEquals; ++i)
-			{
-				isEquals &= content[ i ] == currentContent[ i ];
-			}
-		}
-
-		if (!isEquals)
-		{
-			file::writeAllBytes( filePath.getCompletePath(), (const uint8*)content.cStr(), content.getLength() );
-		}
-
-		currentContent.dispose();
 	}
 }

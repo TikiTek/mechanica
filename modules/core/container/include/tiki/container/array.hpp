@@ -63,6 +63,17 @@ namespace tiki
 		T*		m_pData;
 		uint	m_capacity;
 	};
+
+	template< class T >
+	class AutoArray : public Array< T >
+	{
+		TIKI_NONCOPYABLE_CLASS( AutoArray );
+
+	public:
+
+		TIKI_FORCE_INLINE					AutoArray() { }
+		TIKI_FORCE_INLINE					~AutoArray() { dispose(); }
+	};
 }
 
 #include "../../../source/array.inl"

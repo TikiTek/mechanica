@@ -25,7 +25,7 @@ function add_build_actions( module, pattern, prefix, ext, script )
 		}
 	
 		module:add_pre_build_step( script, step_data );
-		module:add_files( path.join( _OPTIONS[ "qt_dir" ], output_filename ), { optional = true } );
+		module:add_files( path.join( _OPTIONS[ "generated_files_dir" ], output_filename ), { optional = true } );
 	end
 end
 
@@ -43,7 +43,7 @@ end
 
 function Module:add_qt_resources( pattern, prefix )
 	local qrc_filename = "rcc_" .. prefix .. ".qrc";
-	local qrc_fullpath = path.join( _OPTIONS[ "qt_dir" ], qrc_filename );
+	local qrc_fullpath = path.join( _OPTIONS[ "generated_files_dir" ], qrc_filename );
 	
 	local qrc_file = io.open( qrc_fullpath, "a" );
 	qrc_file:close();

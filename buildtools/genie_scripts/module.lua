@@ -238,7 +238,7 @@ function Module:finalize_module( config, configuration, platform, project, solut
 				ext = "c"
 			end
 			
-			local unity_file_name = path.join( _OPTIONS[ "unity_dir" ], self.name .. "_unity." .. ext );			
+			local unity_file_name = path.join( _OPTIONS[ "generated_files_dir" ], self.name .. "_unity." .. ext );			
 			local c = {};
 			c[#c+1] = "// Unity file created by GENie";
 			c[#c+1] = "";
@@ -246,7 +246,7 @@ function Module:finalize_module( config, configuration, platform, project, solut
 			c[#c+1] = "";
 			for i,file_name in pairs( all_files ) do
 				if path.iscppfile( file_name ) then
-					local relative_file_name = path.getrelative( _OPTIONS[ "unity_dir" ], file_name );
+					local relative_file_name = path.getrelative( _OPTIONS[ "generated_files_dir" ], file_name );
 					c[#c+1] = string.format( "#include \"%s\"", relative_file_name );
 				end
 			end

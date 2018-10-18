@@ -90,8 +90,6 @@ namespace tiki
 
 		bool							loadFiles( const List< Path >& typeFiles );
 		bool							parseFile( XmlElement* pRootNode, const string& moduleName );
-
-		void							writeToFileIfNotEquals( const Path& filePath, const string& content );
 	};
 }
 

@@ -70,7 +70,7 @@ namespace tiki
 		InstanceHandle							getInstanceHandle();
 		const StaticArray< const char* >&		getArguments();
 		bool									hasArgument( const char* pName );
-		bool									findArgumentValue( const char** ppValue, const char* pName );
+		bool									findArgumentValue( const char** ppValue, const char* pName, bool onlyAssignment = false );
 
 		char**									getArgumentPointer();
 		int&									getArgumentCount();
