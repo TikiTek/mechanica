@@ -4,10 +4,12 @@
 #include "tiki/editor_interface/editor_interface.hpp"
 #include "tiki/package_editor/package_file.hpp"
 
+#include "res_package_editor.hpp"
+
 namespace tiki
 {
 	PackageEditor::PackageEditor( EditorInterface* pInterface )
-		: FileEditor( pInterface, "package-editor/browser-package.png", "Package", "package" )
+		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", "package" )
 	{
 		//m_pRibbon = new QtRibbonTab( "Package" );
 		//m_pNewPackageButton		= m_pRibbon->addButton( "New", QIcon( ":/package-editor/ribbon-package-new.png" ) );

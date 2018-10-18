@@ -4,18 +4,17 @@
 #include "tiki/editor_interface/editable_file.hpp"
 
 //#include "generic_data_editor_widget.hpp"
+#include "res_generic_data_editor.hpp"
 
 namespace tiki
 {
 	GenericDataEditor::GenericDataEditor( EditorInterface* pInterface )
-		: FileEditor( pInterface, "generic-data-editor/browser-file-genericdata.png", "Generic Data", "generic_data" )
+		: FileEditor( pInterface, getGenericDataEditorResource( GenericDataEditorResources_BrowserFileGenericData ), "Generic Data", "generic_data" )
 	{
-		m_typeCollection.create();
 	}
 
 	GenericDataEditor::~GenericDataEditor()
 	{
-		m_typeCollection.dispose();
 	}
 
 	EditableFile* GenericDataEditor::openFile( const Path& fileName )

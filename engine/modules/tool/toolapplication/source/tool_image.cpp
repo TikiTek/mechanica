@@ -11,6 +11,11 @@ namespace tiki
 		TIKI_VERIFY( createFromFile( pFilename ) );
 	}
 
+	ToolImage::ToolImage( ConstMemoryBlock imageData )
+	{
+		TIKI_VERIFY( createFromMemory( imageData ) );
+	}
+
 	ToolImage::~ToolImage()
 	{
 		dispose();
@@ -31,12 +36,17 @@ namespace tiki
 
 	bool ToolImage::createFromFile( const Path& filename )
 	{
-		return tool::loadImage( m_data, filename );
+		return tool::loadImageFromFile( m_data, filename );
 	}
 
 	bool ToolImage::createFromFile( const char* pFilename )
 	{
 		return createFromFile( tool::getFile( pFilename ) );
+	}
+
+	bool ToolImage::createFromMemory( ConstMemoryBlock imageData )
+	{
+		return tool::loadImage( m_data, imageData );
 	}
 
 	void ToolImage::dispose()
