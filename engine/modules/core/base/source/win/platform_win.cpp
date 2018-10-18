@@ -108,7 +108,7 @@ namespace tiki
 		return false;
 	}
 
-	bool platform::findArgumentValue( const char** ppValue, const char* pName )
+	bool platform::findArgumentValue( const char** ppValue, const char* pName, bool onlyAssignment /* = false */ )
 	{
 		TIKI_ASSERT( ppValue != nullptr );
 
@@ -127,7 +127,7 @@ namespace tiki
 				*ppValue = pArgument + nameLength + 1u;
 				return true;
 			}
-			else if( i < s_arguments.getCount() - 1u )
+			else if( !onlyAssignment && i < s_arguments.getCount() - 1u )
 			{
 				*ppValue = s_arguments[ i + 1u ];
 				return true;

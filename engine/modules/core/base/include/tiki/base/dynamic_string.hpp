@@ -72,8 +72,9 @@ namespace tiki
 		TIKI_FORCE_INLINE bool				operator!=(const DynamicString& rhs) const;
 		TIKI_FORCE_INLINE DynamicString&	operator=(const DynamicString& rhs);
 
-		TIKI_FORCE_INLINE DynamicString		operator+(const DynamicString& rhs) const;
-		TIKI_FORCE_INLINE DynamicString&	operator+=(const DynamicString& rhs);
+		TIKI_FORCE_INLINE DynamicString		operator+( const DynamicString& rhs ) const;
+		TIKI_FORCE_INLINE DynamicString&	operator+=( const DynamicString& rhs );
+		TIKI_FORCE_INLINE DynamicString&	operator+=( char c );
 
 		TIKI_FORCE_INLINE bool				operator>(const DynamicString& rhs) const;
 		TIKI_FORCE_INLINE bool				operator>=(const DynamicString& rhs) const;

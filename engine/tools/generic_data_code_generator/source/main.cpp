@@ -3,8 +3,8 @@
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/toolgenericdata/generic_data_type_collection.hpp"
-#include "tiki/toolpackage/package.hpp"
-#include "tiki/toolpackage/package_manager.hpp"
+#include "tiki/toolproject/package.hpp"
+#include "tiki/toolproject/project.hpp"
 
 int tiki::mainEntryPoint()
 {
@@ -29,12 +29,10 @@ int tiki::mainEntryPoint()
 		GenericDataTypeCollection collection;
 		collection.create();
 
-		PackageManager packageManager;
-		packageManager.create( sourceDir );
-
-		for( const Package& package : packageManager.getPackages() )
+		Project project( sourceDir );
+		for( const Package& package : project.getPackages() )
 		{
-			collection.addPackage( &package );
+			collection.addPackage( package );
 		}
 
 		if ( !collection.exportCode( GenericDataTypeMode_RuntimeOnly, targetDir ) )
@@ -47,9 +45,6 @@ int tiki::mainEntryPoint()
 		{
 			TIKI_TRACE_INFO( "[genericdatacodegenerator] code generation successfull.\n" );
 		}
-
-		collection.dispose();
-		packageManager.dispose();
 	}
 
 	return retValue;

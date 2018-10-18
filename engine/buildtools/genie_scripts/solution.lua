@@ -1,7 +1,5 @@
 
-newoption { trigger = "unity_dir", description = "" }
-newoption { trigger = "genericdata_dir", description = "" }
-newoption { trigger = "qt_dir", description = "" }
+newoption { trigger = "generated_files_dir", description = "" }
 
 Solution = class{
 	name = nil,
@@ -65,19 +63,9 @@ function Solution:finalize()
 		local project = self.projects[ next( self.projects ) ];
 		print( "Project: " .. project.name );
 
-		_OPTIONS[ "unity_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "unity_files", project.name ) );
-		if not os.isdir( _OPTIONS[ "unity_dir" ] ) then
-			os.mkdir( _OPTIONS[ "unity_dir" ] )
-		end
-
-		_OPTIONS[ "genericdata_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "genericdata_files", project.name ) );
-		if not os.isdir( _OPTIONS[ "genericdata_dir" ] ) then
-			os.mkdir( _OPTIONS[ "genericdata_dir" ] )
-		end
-
-		_OPTIONS[ "qt_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "qt_files", project.name ) );
-		if not os.isdir( _OPTIONS[ "qt_dir" ] ) then
-			os.mkdir( _OPTIONS[ "qt_dir" ] )
+		_OPTIONS[ "generated_files_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "generated_files", project.name ) );
+		if not os.isdir( _OPTIONS[ "generated_files_dir" ] ) then
+			os.mkdir( _OPTIONS[ "generated_files_dir" ] )
 		end
 
 		project:finalize_project( _OPTIONS[ "outpath" ], self );

@@ -2,8 +2,10 @@
 #ifndef TIKI_FILE_HPP
 #define TIKI_FILE_HPP
 
-#include "tiki/container/array.hpp"
+#include "tiki/base/dynamic_string.hpp"
+#include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
 
 namespace tiki
 {
@@ -18,6 +20,7 @@ namespace tiki
 		bool	readAllBytes( const char* pFileName, Array< uint8 >& buffer, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
 
 		bool	writeAllBytes( const char* pFileName, const uint8* pData, size_t dataLength );
+		bool	writeToFileIfNotEquals( const Path& filePath, const string& content );
 
 		crc32	getLastChangeCrc( const char* pFileName );
 	}

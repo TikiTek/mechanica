@@ -1,7 +1,7 @@
 -- library/tools/editor/project
 
 include( "../../../buildtools/genie_scripts" );
-add_extension( "qt" );
+add_extension( "resources" );
 
 dofile( "../editor.lua" );
 

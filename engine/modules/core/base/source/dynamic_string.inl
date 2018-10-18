@@ -536,6 +536,19 @@ namespace tiki
 		return *this;
 	}
 
+	TIKI_FORCE_INLINE DynamicString& DynamicString::operator+=( char c )
+	{
+		if( m_dataSize == m_stringSize )
+		{
+			reallocateData( m_stringSize + 1u );
+		}
+
+		m_pData[ m_stringSize++ ] = c;
+		m_pData[ m_stringSize ] = '\0';
+
+		return *this;
+	}
+
 	TIKI_FORCE_INLINE bool DynamicString::operator>( const DynamicString& rhs ) const
 	{
 		uint i = 0;
