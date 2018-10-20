@@ -20,7 +20,7 @@ namespace tiki
 
 	struct ToolApplicationParamters : public BaseApplicationParamters
 	{
-		Color backgroundColor = TIKI_COLOR_XKCD_AZUL;
+		Color backgroundColor = TIKI_COLOR_XKCD_DARK_NAVY;
 	};
 
 	class ToolApplication : public BaseApplication

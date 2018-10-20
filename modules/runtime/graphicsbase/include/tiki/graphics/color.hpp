@@ -144,6 +144,11 @@ namespace tiki
 		TIKI_FORCE_INLINE uint8 getChannelB( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_BLUE )	>> TIKI_COLOR_OFFSET_BLUE ); }
 		TIKI_FORCE_INLINE uint8 getChannelA( Color c ) { return (uint8)( ( c & TIKI_COLOR_MASK_ALPHA )	>> TIKI_COLOR_OFFSET_ALPHA ); }
 
+		TIKI_FORCE_INLINE Color setChannelR( Color c, uint8 r ) { return (c & ~TIKI_COLOR_MASK_RED) | (r << TIKI_COLOR_OFFSET_RED); }
+		TIKI_FORCE_INLINE Color setChannelG( Color c, uint8 g ) { return (c & ~TIKI_COLOR_MASK_GREEN) | (g << TIKI_COLOR_OFFSET_GREEN); }
+		TIKI_FORCE_INLINE Color setChannelB( Color c, uint8 b ) { return (c & ~TIKI_COLOR_MASK_BLUE) | (b << TIKI_COLOR_OFFSET_BLUE); }
+		TIKI_FORCE_INLINE Color setChannelA( Color c, uint8 a ) { return (c & ~TIKI_COLOR_MASK_ALPHA) | (a << TIKI_COLOR_OFFSET_ALPHA); }
+
 		TIKI_FORCE_INLINE float getFloatChannelR( Color c ) { return (float)getChannelR( c ) / 255.0f; }
 		TIKI_FORCE_INLINE float getFloatChannelG( Color c ) { return (float)getChannelG( c ) / 255.0f; }
 		TIKI_FORCE_INLINE float getFloatChannelB( Color c ) { return (float)getChannelB( c ) / 255.0f; }

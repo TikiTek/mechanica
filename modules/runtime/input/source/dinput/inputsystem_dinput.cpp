@@ -38,7 +38,7 @@ namespace tiki
 
 	struct InputSystemState
 	{
-		DIMOUSESTATE	mouse;
+		DIMOUSESTATE2	mouse;
 		uint8			aKeyboard[ 256u ];
 
 		bool			aControllerConnected[ XUSER_MAX_COUNT ];
@@ -47,7 +47,7 @@ namespace tiki
 		TOUCHINPUT		aTouchPoints[ MaxInputTouchPoints ];
 	};
 
-	static const uint8 s_aVirtualKeyCodeMapping[ KeyboardKey_Count ] =
+	static const uint8 s_aVirtualKeyCodeMapping[] =
 	{
 		DIK_ESCAPE,		// KeyboardKey_Escape
 		DIK_BACKSPACE,	// KeyboardKey_BackSpace
@@ -156,8 +156,9 @@ namespace tiki
 		DIK_NUMLOCK,		// KeyboardKey_Numlock
 		DIK_SCROLL,			// KeyboardKey_Scroll
 	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aVirtualKeyCodeMapping ) == KeyboardKey_Count );
 
-	static const uint16 s_aControllerButtonMapping[ ControllerButton_Count ] =
+	static const uint16 s_aControllerButtonMapping[] =
 	{
 		XINPUT_GAMEPAD_A,				// ControllerButton_A
 		XINPUT_GAMEPAD_B,				// ControllerButton_B
@@ -178,13 +179,17 @@ namespace tiki
 		XINPUT_GAMEPAD_START,			// ControllerButton_Start
 		XINPUT_GAMEPAD_BACK				// ControllerButton_Back
 	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aControllerButtonMapping ) == ControllerButton_Count );
 
-	static const MouseButton s_aMouseButtonMapping[ MouseButton_Count ] =
+	static const MouseButton s_aMouseButtonMapping[] =
 	{
 		MouseButton_Left,
 		MouseButton_Right,
-		MouseButton_Middle
+		MouseButton_Middle,
+		MouseButton_Special1,
+		MouseButton_Special2
 	};
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aMouseButtonMapping ) == MouseButton_Count );
 
 	TIKI_FORCE_INLINE static void input::checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
 	{
@@ -323,7 +328,7 @@ namespace tiki
 		HRESULT result = platformData.pInputDevice->CreateDevice( GUID_SysMouse, &platformData.pMouse, nullptr );
 		if( SUCCEEDED( result ) && platformData.pMouse != nullptr )
 		{
-			result = platformData.pMouse->SetDataFormat( &c_dfDIMouse );
+			result = platformData.pMouse->SetDataFormat( &c_dfDIMouse2 );
 			if( SUCCEEDED( result ) )
 			{
 				result = platformData.pMouse->SetCooperativeLevel( (HWND)parameters.windowHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
@@ -729,66 +734,83 @@ namespace tiki
 
 	/*static*/ bool InputSystemPlatform::handleWindowMessage( InputSystem& inputSystem, UINT message, WPARAM wParam, LPARAM lParam )
 	{
-		if( message == WM_TOUCH && inputSystem.m_platformData.isTouchInputReady )
+		switch( message )
 		{
-			InputSystemState* pCurrentState = inputSystem.m_platformData.pStates[ inputSystem.m_platformData.currentStateIndex ];
-
-			const HTOUCHINPUT touchHandle = (HTOUCHINPUT)lParam;
-			const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), LOWORD( wParam ) );
-			if( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
+		case WM_TOUCH:
+			if( inputSystem.m_platformData.isTouchInputReady )
 			{
-				for( uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++ )
+				InputSystemState* pCurrentState = inputSystem.m_platformData.pStates[ inputSystem.m_platformData.currentStateIndex ];
+
+				const HTOUCHINPUT touchHandle = (HTOUCHINPUT)lParam;
+				const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), LOWORD( wParam ) );
+				if( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
 				{
-					const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[ touchIndex ];
-
-					const TouchInputState state = input::getTouchInputMapping( touchInput.dwID, inputSystem.m_platformData.touchInputMapping, TIKI_COUNT( inputSystem.m_platformData.touchInputMapping ) );
-					if( !state.isValid )
+					for( uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++ )
 					{
-						continue;
+						const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[ touchIndex ];
+
+						const TouchInputState state = input::getTouchInputMapping( touchInput.dwID, inputSystem.m_platformData.touchInputMapping, TIKI_COUNT( inputSystem.m_platformData.touchInputMapping ) );
+						if( !state.isValid )
+						{
+							continue;
+						}
+
+						if( state.isNewPoint )
+						{
+							TIKI_ASSERT( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) );
+							inputSystem.m_platformData.touchInputMapping[ state.index ] = touchInput.dwID;
+						}
+
+						POINT touchPoint;
+						touchPoint.x = TOUCH_COORD_TO_PIXEL( touchInput.x );
+						touchPoint.y = TOUCH_COORD_TO_PIXEL( touchInput.y );
+						ScreenToClient( (HWND)inputSystem.m_platformData.windowHandle, &touchPoint );
+
+						InputEventType eventType = InputEventType_Touch_PointMove;
+						if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) )
+						{
+							eventType = InputEventType_Touch_PointDown;
+						}
+						else if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_UP ) )
+						{
+							eventType = InputEventType_Touch_PointUp;
+
+							TIKI_ASSERT( inputSystem.m_platformData.touchInputMapping[ state.index ] == touchInput.dwID );
+							inputSystem.m_platformData.touchInputMapping[ state.index ] = InvalidTouchInputMapping;
+						}
+
+						InputEvent& inputEvent = inputSystem.m_events.push();
+						inputEvent.eventType	= eventType;
+						inputEvent.deviceType	= InputDeviceType_Touch;
+						inputEvent.deviceId		= 0u;
+						inputEvent.data.touch.pointIndex	= (uint16)state.index;
+						inputEvent.data.touch.xState		= uint16( touchPoint.x );
+						inputEvent.data.touch.yState		= uint16( touchPoint.y );
 					}
-
-					if( state.isNewPoint )
-					{
-						TIKI_ASSERT( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) );
-						inputSystem.m_platformData.touchInputMapping[ state.index ] = touchInput.dwID;
-					}
-
-					POINT touchPoint;
-					touchPoint.x = TOUCH_COORD_TO_PIXEL( touchInput.x );
-					touchPoint.y = TOUCH_COORD_TO_PIXEL( touchInput.y );
-					ScreenToClient( (HWND)inputSystem.m_platformData.windowHandle, &touchPoint );
-
-					InputEventType eventType = InputEventType_Touch_PointMove;
-					if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_DOWN ) )
-					{
-						eventType = InputEventType_Touch_PointDown;
-					}
-					else if( isBitSet( touchInput.dwFlags, TOUCHEVENTF_UP ) )
-					{
-						eventType = InputEventType_Touch_PointUp;
-
-						TIKI_ASSERT( inputSystem.m_platformData.touchInputMapping[ state.index ] == touchInput.dwID );
-						inputSystem.m_platformData.touchInputMapping[ state.index ] = InvalidTouchInputMapping;
-					}
-
-					InputEvent& inputEvent = inputSystem.m_events.push();
-					inputEvent.eventType	= eventType;
-					inputEvent.deviceType	= InputDeviceType_Touch;
-					inputEvent.deviceId		= 0u;
-					inputEvent.data.touch.pointIndex	= (uint16)state.index;
-					inputEvent.data.touch.xState		= uint16( touchPoint.x );
-					inputEvent.data.touch.yState		= uint16( touchPoint.y );
 				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[input] Could not get touch points from Handle. Touch Input Events will not generated.\n" );
+				}
+
+				CloseTouchInputHandle( touchHandle );
+
+				return true;
 			}
-			else
+			break;
+
+		case WM_CHAR:
+			if( wParam != UNICODE_NOCHAR )
 			{
-				TIKI_TRACE_ERROR( "[input] Could not get touch points from Handle. Touch Input Events will not generated.\n" );
+				InputEvent& inputEvent = inputSystem.m_events.push();
+				inputEvent.eventType	= InputEventType_Keyboard_Character;
+				inputEvent.deviceType	= InputDeviceType_Keyboard;
+				inputEvent.deviceId		= 0u;
+				inputEvent.data.keyboardCharacter.rune = wParam;
+
+				return true;
 			}
-
-			CloseTouchInputHandle( touchHandle );
-
-			return true;
-		}
+			break;
 
 		//case WM_KEYDOWN:
 		//	{
@@ -853,6 +875,9 @@ namespace tiki
 		//		event.data.mouseButton.button	= MouseButton_Right;
 		//	}
 		//	break;
+		default:
+			break;
+		}
 
 		return false;
 	}

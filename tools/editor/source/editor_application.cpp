@@ -1,5 +1,8 @@
 #include "editor_application.hpp"
 
+#include "tiki/toolapplication/tool_ui.hpp"
+
+#include "res_package_editor.hpp"
 
 #include <imgui.h>
 
@@ -36,10 +39,14 @@ namespace tiki
 	{
 		parameters.pWindowTitle		= "TikiEditor";
 		parameters.assetBuildPath	= m_project.getAssetBuildPath();
+		parameters.screenWidth		= 1600u;
+		parameters.screenHeight		= 900u;
 	}
 
 	bool EditorApplication::initializeTool()
 	{
+		m_browserDefaultIcon.createFromMemory( getPackageEditorResource( PackageEditorResources_BrowserFileUnknown ) );
+
 		return m_editor.create();
 	}
 
@@ -67,12 +74,26 @@ namespace tiki
 
 	void EditorApplication::doUi()
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		doRibbonUi();
+		doBrowserUi();
 
-		ImGui::SetNextWindowPos( ImVec2( 10.f, 10.0f ), ImGuiCond_Always, ImVec2() );
-		ImGui::SetNextWindowSize( ImVec2( 500.0f, 100.0f ), ImGuiCond_Always );
-		ImGui::SetNextWindowBgAlpha( 0.3f );
-		if( ImGui::Begin( "Example: Simple Overlay", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+
+
+		//static float f = 0.0f;
+		//ImGui::Text( "Hello, world!" );
+		//ImGui::SliderFloat( "float", &f, 0.0f, 1.0f );
+		//ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate );
+
+		ImGui::ShowStyleEditor();
+	}
+
+	void EditorApplication::doRibbonUi()
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+
+		ImGui::SetNextWindowPos( ImVec2( 5.0f, 5.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 10.0f, 96.0f ), ImGuiCond_Always );
+		if( ImGui::Begin( "Ribbon", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
 		{
 			bool found;
 			for( EditorRibbon* pRibbon : m_editor.getGlobalRibbons() )
@@ -106,11 +127,10 @@ namespace tiki
 				m_pCurrentRibbon = nullptr;
 			}
 
-			ImGui::Button( "test" );
-			ImGui::SameLine();
-			ImGui::Button( "test" );
-			ImGui::SameLine();
-			ImGui::Button( "test" );
+			if( m_pCurrentRibbon == nullptr && !m_editor.getGlobalRibbons().isEmpty() )
+			{
+				m_pCurrentRibbon = m_editor.getGlobalRibbons().getFirst();
+			}
 
 			if( m_pCurrentRibbon != nullptr )
 			{
@@ -119,11 +139,50 @@ namespace tiki
 
 			ImGui::End();
 		}
+	}
 
-		static float f = 0.0f;
-		ImGui::Text( "Hello, world!" );
-		ImGui::SliderFloat( "float", &f, 0.0f, 1.0f );
-		ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate );
+	void EditorApplication::doBrowserUi()
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+
+		ImGui::SetNextWindowPos( ImVec2( 5.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( 250.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
+		if( ImGui::Begin( "Browser", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		{
+			ImGui::Button( "test" );
+
+			ImGui::PushID( 1 );
+			ImGui::AlignTextToFramePadding();  // Text and Tree nodes are less high than regular widgets, here we add vertical spacing to make the tree lines equal high.
+			ImGui::TreeNodeEx( "##hidden1", ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet );
+			ImGui::SameLine();
+			ImGui::AlignTextToFramePadding();  // Text and Tree nodes are less high than regular widgets, here we add vertical spacing to make the tree lines equal high.
+			ImGui::Image( ImGui::Tex( m_browserDefaultIcon ), ImVec2( m_browserDefaultIcon.getData().getWidth(), m_browserDefaultIcon.getData().getHeight() ) );
+			ImGui::SameLine();
+			ImGui::AlignTextToFramePadding();  // Text and Tree nodes are less high than regular widgets, here we add vertical spacing to make the tree lines equal high.
+			ImGui::Text( "Objects1" );
+			ImGui::PopID();
+
+			ImGui::PushID( 2 );
+			ImGui::AlignTextToFramePadding();
+			if( ImGui::TreeNode( "Object2" ) )
+			{
+				ImGui::PushID( 21 );
+				ImGui::AlignTextToFramePadding();
+				ImGui::TreeNodeEx( "Object21", ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet );
+				ImGui::PopID();
+
+				ImGui::PushID( 22 );
+				ImGui::AlignTextToFramePadding();
+				ImGui::TreeNodeEx( "Object22", ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet );
+				ImGui::PopID();
+
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+
+			ImGui::End();
+		}
 	}
 
 	//void EditorApplication::openFileTab( QWidget* pWidget, const QString& title )

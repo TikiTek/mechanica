@@ -9,8 +9,10 @@ namespace tiki
 		MouseButton_Invalid = -1,
 
 		MouseButton_Left,
-		MouseButton_Right,
 		MouseButton_Middle,
+		MouseButton_Right,
+		MouseButton_Special1,
+		MouseButton_Special2,
 
 		MouseButton_Count
 	};

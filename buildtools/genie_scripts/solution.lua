@@ -50,7 +50,7 @@ function Solution:finalize()
 			end
 		end
 	end
-	table.insert( var_configurations, 'Project' );
+	--table.insert( var_configurations, 'Project' );
 	
 	solution( self.name );
 	configurations( var_configurations );
@@ -73,7 +73,7 @@ function Solution:finalize()
 	end
 	
 	--local genie_exe = global_configuration.genie_path
-	--filter( 'Project' );
+	--configuration{ 'Project' }
 	--kind( 'Makefile' );
 	--buildcommands{ 'cd ..\\project', genie_exe .. ' /outpath=../build ' .. _ACTION };
 end

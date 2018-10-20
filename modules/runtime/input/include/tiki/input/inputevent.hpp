@@ -10,6 +10,11 @@
 
 namespace tiki
 {
+	enum
+	{
+		InputMouseWheelDelta = 120
+	};
+
 	enum InputEventType
 	{
 		InputEventType_Device_Connected,
@@ -17,6 +22,7 @@ namespace tiki
 
 		InputEventType_Keyboard_Down,
 		InputEventType_Keyboard_Up,
+		InputEventType_Keyboard_Character,
 
 		InputEventType_Mouse_Moved,
 		InputEventType_Mouse_ButtonDown,
@@ -44,6 +50,11 @@ namespace tiki
 	struct InputEventKeyboardKeyData
 	{
 		KeyboardKey key;
+	};
+
+	struct InputEventKeyboardCharacterData
+	{
+		uint32		rune;
 	};
 
 	struct InputEventMouseMovedData
@@ -94,6 +105,7 @@ namespace tiki
 		InputEventDeviceData				device;
 
 		InputEventKeyboardKeyData			keybaordKey;
+		InputEventKeyboardCharacterData		keyboardCharacter;
 
 		InputEventMouseMovedData			mouseMoved;
 		InputEventMouseButtonData			mouseButton;

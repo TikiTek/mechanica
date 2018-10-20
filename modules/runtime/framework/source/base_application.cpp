@@ -161,7 +161,6 @@ namespace tiki
 		const uint2 windowSize			= m_pBaseData->mainWindow.getClientSize();
 		graphicsParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );
 		graphicsParams.backBufferHeight	= TIKI_MAX( windowSize.y, 480u );
-		graphicsParams.backbufferFormat = PixelFormat_R16G16B16A16_Float;
 
 		if( !m_pBaseData->graphicSystem.create( graphicsParams ) )
 		{

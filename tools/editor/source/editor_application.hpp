@@ -46,5 +46,10 @@ namespace tiki
 		Editor						m_editor;
 
 		EditorRibbon*				m_pCurrentRibbon;
+
+		ToolImage					m_browserDefaultIcon;
+
+		void						doRibbonUi();
+		void						doBrowserUi();
 	};
 }
