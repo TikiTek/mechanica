@@ -17,5 +17,9 @@ namespace tiki
 
 	private:
 
+		ToolImage				m_newPackageIcon;
+		ToolImage				m_openPackageIcon;
+		ToolImage				m_closePackageIcon;
+		ToolImage				m_editPackageIcon;
 	};
 }

@@ -11,11 +11,6 @@ namespace tiki
 	PackageEditor::PackageEditor( EditorInterface* pInterface )
 		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", "package" )
 	{
-		//m_pRibbon = new QtRibbonTab( "Package" );
-		//m_pNewPackageButton		= m_pRibbon->addButton( "New", QIcon( ":/package-editor/ribbon-package-new.png" ) );
-		//m_pOpenPackageButton	= m_pRibbon->addButton( "Open", QIcon( ":/package-editor/ribbon-package-open.png" ) );
-		//m_pClosePackageButton	= m_pRibbon->addButton( "Close", QIcon( ":/package-editor/ribbon-package-close.png" ) );
-		//m_pEditPackageButton	= m_pRibbon->addButton( "Edit", QIcon( ":/package-editor/ribbon-package-edit.png" ) );
 		//
 		//connect( m_pNewPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::newClicked );
 		//connect( m_pOpenPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::openClicked );
