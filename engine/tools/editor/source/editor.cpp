@@ -10,11 +10,16 @@
 #include "tiki/package_editor/package_editor.hpp"
 #include "tiki/resource/resourcemanager.hpp"
 #include "tiki/toolapplication/tool_framework.hpp"
+#include "tiki/toolproject/package.hpp"
+
+#include <imgui.h>
 
 namespace tiki
 {
 	Editor::Editor()
-		: m_pCurrentEditable( nullptr )
+		: m_pCurrentRibbon( nullptr )
+		, m_pCurrentEditable( nullptr )
+		, m_fileBrowserUi( this )
 		//, m_openShortcut( QKeySequence( QKeySequence::Open ), m_pWindow )
 		//, m_saveShortcut( QKeySequence( QKeySequence::Save ), m_pWindow )
 		//, m_closeShortcut( QKeySequence( Qt::CTRL + Qt::Key_W ), m_pWindow )
@@ -41,6 +46,8 @@ namespace tiki
 		registerFileEditor( m_pPackageEditor );
 		registerFileEditor( m_pGenericDataEditor );
 
+		m_fileBrowserUi.create();
+
 		//connect( m_pWindow, &EditorWindow::fileCloseRequest, this, &Editor::fileCloseRequest );
 		//connect( &m_openShortcut, &QShortcut::activated, this, &Editor::fileOpenShortcut );
 		//connect( &m_saveShortcut, &QShortcut::activated, this, &Editor::fileSaveShortcut );
@@ -59,29 +66,41 @@ namespace tiki
 		delete m_pPackageEditor;
 	}
 
-	Editable* Editor::openEditable( const DynamicString& title, BaseEditor* pEditor )
+	void Editor::doUi()
 	{
-		TIKI_ASSERT( pEditor != nullptr );
+		doRibbonUi();
+		doBrowserUi();
+		doEditableUi();
 
-		for( Editable* pEditable : m_editables )
+		for( BaseEditor* pEditor : m_editors )
 		{
-			if( pEditable->getTitle() == title &&
-				pEditable->getEditor() == pEditor )
-			{
-				m_pCurrentEditable = pEditable;
-				return pEditable;
-			}
+			pEditor->doUi();
 		}
-
-		Editable* pEditable = pEditor->openEditable( title );
-		if( pEditable != nullptr )
-		{
-			m_editables.add( pEditable );
-		}
-
-		m_pCurrentEditable = pEditable;
-		return pEditable;
 	}
+
+	//Editable* Editor::openEditable( const DynamicString& title, BaseEditor* pEditor )
+	//{
+	//	TIKI_ASSERT( pEditor != nullptr );
+
+	//	for( Editable* pEditable : m_editables )
+	//	{
+	//		if( pEditable->getTitle() == title &&
+	//			pEditable->getEditor() == pEditor )
+	//		{
+	//			m_pCurrentEditable = pEditable;
+	//			return pEditable;
+	//		}
+	//	}
+
+	//	Editable* pEditable = pEditor->openEditable( title );
+	//	if( pEditable != nullptr )
+	//	{
+	//		m_editables.add( pEditable );
+	//	}
+
+	//	m_pCurrentEditable = pEditable;
+	//	return pEditable;
+	//}
 
 	EditableFile* Editor::openFile( const Path& fileName )
 	{
@@ -124,15 +143,25 @@ namespace tiki
 			return nullptr;
 		}
 
-		m_editables.pushBack( pFile );
+		openEditable( pFile );
+		return pFile;
+	}
 
-		if( pEditor == m_pPackageEditor )
+	void Editor::openEditable( Editable* pEditable )
+	{
+		TIKI_ASSERT( pEditable != nullptr );
+
+		if( !m_editables.contains( pEditable ) )
+		{
+			m_editables.pushBack( pEditable );
+		}
+
+		if( pEditable->getEditor() == m_pPackageEditor )
 		{
 			setPackagePath();
 		}
 
-		m_pCurrentEditable = pFile;
-		return pFile;
+		m_pCurrentEditable = pEditable;
 	}
 
 	void Editor::saveEditable( Editable* pEditable )
@@ -221,18 +250,19 @@ namespace tiki
 	void Editor::removeGlobalRibbon( EditorRibbon* pRibbon )
 	{
 		TIKI_ASSERT( pRibbon != nullptr );
+
+		if( pRibbon == m_pCurrentRibbon )
+		{
+			m_pCurrentRibbon = nullptr;
+		}
+
 		m_ribbons.removeSortedByValue( pRibbon );
 	}
 
-	//void Editor::addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area )
-	//{
-	//	m_pWindow->addDockWidget( area, pWidget );
-	//}
-
-	//void Editor::removeGlobalDockWidget( QDockWidget* pWidget )
-	//{
-	//	m_pWindow->removeDockWidget( pWidget );
-	//}
+	Project& Editor::getProject()
+	{
+		return m_project;
+	}
 
 	const Path& Editor::getProjectPath() const
 	{
@@ -350,15 +380,13 @@ namespace tiki
 
 	void Editor::setPackagePath()
 	{
-		const DynamicString packageName = m_pPackageEditor->getPackageName();
-
-		Path packagePath = m_contentPath;
-		packagePath.push( packageName.cStr() );
-		if( !directory::exists( packagePath.getCompletePath() ) )
+		m_packagePath = m_pPackageEditor->getPackage()->getBasepath();
+		if( !directory::exists( m_packagePath.getCompletePath() ) )
 		{
-			directory::create( packagePath.getCompletePath() );
+			directory::create( m_packagePath.getCompletePath() );
 		}
-		m_packagePath = packagePath;
+
+		m_fileBrowserUi.openPackage( *m_pPackageEditor->getPackage() );
 	}
 
 	FileEditor* Editor::findEditorForFile( const Path& filename ) const
@@ -381,54 +409,100 @@ namespace tiki
 		return nullptr;
 	}
 
-	//void Editor::beginEditing( Editable* pEditorFile )
-	//{
-	//	TIKI_ASSERT( pEditorFile != nullptr );
 
-	//	if( endEditing( pEditorFile ) )
-	//	{
-	//		IEditor* pNextEditor = pEditorFile->getEditor();
+	void Editor::doRibbonUi()
+	{
+		const ImGuiIO& io = ImGui::GetIO();
 
-	//		foreach( QtRibbonTab* pTab, pNextEditor->getEditableRibbonTabs() )
-	//		{
-	//			m_pWindow->addRibbonTab( pTab );
-	//		}
+		ImGui::SetNextWindowPos( ImVec2( 5.0f, 5.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 10.0f, 96.0f ), ImGuiCond_Always );
+		if( ImGui::Begin( "Ribbon", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		{
+			for( EditorRibbon* pRibbon : m_ribbons )
+			{
+				if( m_pCurrentRibbon == nullptr )
+				{
+					m_pCurrentRibbon = pRibbon;
+				}
 
-	//		foreach( QDockWidget* pDockWidget, pNextEditor->getEditableDockWidgets() )
-	//		{
-	//			m_pWindow->addDockWidget( Qt::LeftDockWidgetArea, pDockWidget );
-	//		}
-	//	}
+				bool wasSelected = false;
+				if( m_pCurrentRibbon == pRibbon )
+				{
+					const ImGuiStyle& style = ImGui::GetStyle();
+					ImGui::PushStyleColor( ImGuiCol_Button, style.Colors[ ImGuiCol_ButtonHovered ] );
+					wasSelected = true;
+				}
 
-	//	m_pCurrentEditable = pEditorFile;
-	//}
+				if( ImGui::Button( pRibbon->getTitle().cStr() ) )
+				{
+					m_pCurrentRibbon = pRibbon;
+				}
 
-	//bool Editor::endEditing( Editable* pNextEditorFile )
-	//{
-	//	if( m_pCurrentEditable == nullptr )
-	//	{
-	//		return true;
-	//	}
+				if( wasSelected )
+				{
+					ImGui::PopStyleColor();
+				}
 
-	//	if( pNextEditorFile == nullptr || m_pCurrentEditable->getEditor() != pNextEditorFile->getEditor() )
-	//	{
-	//		IEditor* pCurrentEditor = m_pCurrentEditable->getEditor();
+				ImGui::SameLine();
+			}
+			ImGui::NewLine();
 
-	//		foreach( QtRibbonTab* pTab, pCurrentEditor->getEditableRibbonTabs() )
-	//		{
-	//			m_pWindow->removeRibbonTab( pTab );
-	//		}
+			if( m_pCurrentRibbon != nullptr )
+			{
+				m_pCurrentRibbon->doUi();
+			}
 
-	//		foreach( QDockWidget* pDockWidget, pCurrentEditor->getEditableDockWidgets() )
-	//		{
-	//			m_pWindow->removeDockWidget( pDockWidget );
-	//		}
+			ImGui::End();
+		}
+	}
 
-	//		m_pCurrentEditable = nullptr;
-	//		return true;
-	//	}
+	void Editor::doBrowserUi()
+	{
+		const ImGuiIO& io = ImGui::GetIO();
 
-	//	m_pCurrentEditable = nullptr;
-	//	return false;
-	//}
+		ImGui::SetNextWindowPos( ImVec2( 5.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( 250.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
+		if( ImGui::Begin( "Browser", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		{
+			m_fileBrowserUi.doUi();
+			ImGui::End();
+		}
+	}
+
+	void Editor::doEditableUi()
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+
+		ImGui::SetNextWindowPos( ImVec2( 260.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
+		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 265.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
+		if( ImGui::Begin( "Editable", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		{
+			char titleBuffer[ 128u ];
+			for( Editable* pEditable : m_editables )
+			{
+				if( m_pCurrentEditable == nullptr )
+				{
+					m_pCurrentEditable = pEditable;
+				}
+
+				formatStringBuffer( titleBuffer, sizeof( titleBuffer ), "%s%s", pEditable->getTitle().cStr(), pEditable->isDirty() ? "*" : "" );
+				if( ImGui::Button( titleBuffer ) )
+				{
+					m_pCurrentEditable = pEditable;
+				}
+			}
+
+			if( ImGui::BeginChild( "Editor", ImVec2( 0.0f, 0.0f ), true ) )
+			{
+				if( m_pCurrentEditable != nullptr )
+				{
+					m_pCurrentEditable->doUi();
+				}
+
+				ImGui::End();
+			}
+
+			ImGui::End();
+		}
+	}
 }

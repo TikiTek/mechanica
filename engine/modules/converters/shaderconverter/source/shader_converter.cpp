@@ -542,7 +542,7 @@ namespace tiki
 
 		m_openGlMutex.unlock();
 
-		return targetData.create( static_cast< const uint8* >( stream.getData() ), stream.getLength() );
+		return targetData.create( static_cast< const uint8* >( stream.getData() ), uint( stream.getLength() ) );
 	}
 
 	char* fppRead( char* pBuffer, int size, void* pUserData )

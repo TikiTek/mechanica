@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tiki/toolapplication/tool_image.hpp"
+
 namespace tiki
 {
 	class EditorInterface;
@@ -10,20 +12,40 @@ namespace tiki
 
 	public:
 
-		explicit			EditorFileBrowserUi( EditorInterface* pInterface );
-		virtual				~EditorFileBrowserUi();
+		explicit					EditorFileBrowserUi( EditorInterface* pInterface );
+		virtual						~EditorFileBrowserUi();
 
-		void				openPackage( const DynamicString& packageName );
-		void				closePakage();
+		void						create();
+
+		void						openPackage( const Package& package );
+		void						closePakage();
+
+		void						doUi();
 
 	private:
 
-		EditorInterface*	m_pInterface;
-		DynamicString		m_packageName;
+		struct FileTreeNode
+		{
+			FileTreeNode*			pParentNode;
+			FileTreeNode*			pNextSibling;
+			FileTreeNode*			pFirstChild;
 
-		ToolImage			m_folderIcon;
-		ToolImage			m_unknownIcon;
+			const ToolImage*		pIcon;
+			Path					filename;
+		};
 
-		//void				addFiles( QStandardItem* pParentItem, QDir dir );
+		EditorInterface*			m_pInterface;
+		const Package*				m_pPackage;
+
+		ChunkedPool< FileTreeNode >	m_nodes;
+		FileTreeNode*				m_pFirstNode;
+
+		ToolImage					m_packageIcon;
+		ToolImage					m_folderIcon;
+		ToolImage					m_unknownIcon;
+
+		FileTreeNode*				addFiles( FileTreeNode* pParentNode, const Path& path );
+
+		void						doNodeUi( const FileTreeNode* pNode );
 	};
 }

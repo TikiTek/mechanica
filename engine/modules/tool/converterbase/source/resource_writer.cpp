@@ -200,7 +200,7 @@ namespace tiki
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 
 		SectionData& sectionData = m_pCurrentResource->sections[ sectionWriter.m_sectionId ];
-		sectionData.binaryData.create( sectionWriter.m_sectionData.getData(), sectionWriter.m_sectionData.getLength() );
+		sectionData.binaryData.create( sectionWriter.m_sectionData.getData(), uint( sectionWriter.m_sectionData.getLength() ) );
 		sectionData.references.create( sectionWriter.m_sectionReferences.getBegin(), sectionWriter.m_sectionReferences.getCount() );
 
 		sectionWriter.dispose();

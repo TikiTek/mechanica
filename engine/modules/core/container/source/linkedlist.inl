@@ -7,7 +7,7 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE LinkedList<T>::LinkedList()
 	{
-		m_pData = nullptr;
+		m_pFirst = nullptr;
 		m_pLast = nullptr;
 		m_count	= 0u;
 	}
@@ -15,13 +15,13 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE LinkedList<T>::~LinkedList()
 	{
-		TIKI_ASSERT( m_pData == nullptr );
+		TIKI_ASSERT( m_pFirst == nullptr );
 	}
 
 	template< typename T >
 	TIKI_FORCE_INLINE void LinkedList<T>::clear()
 	{
-		Item* pItem = m_pData;
+		Item* pItem = m_pFirst;
 		while ( pItem != nullptr )
 		{
 			Item* pNext = pItem->pNextItem;
@@ -35,7 +35,7 @@ namespace tiki
 			pItem = pNext;
 		}
 
-		m_pData = nullptr;
+		m_pFirst = nullptr;
 		m_pLast = nullptr;
 		m_count	= 0u;
 	}
@@ -45,7 +45,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( value.pList == nullptr );
 
-		if( m_pData == nullptr )
+		if( m_pFirst == nullptr )
 		{
 			value.pPrevItem = nullptr;
 			value.pNextItem = nullptr;
@@ -53,7 +53,7 @@ namespace tiki
 			value.pList		= this;
 #endif
 
-			m_pData = &value;
+			m_pFirst = &value;
 			m_pLast = &value;
 		}
 		else
@@ -76,7 +76,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T& tiki::LinkedList<T>::push( Pointer value )
+	TIKI_FORCE_INLINE T& LinkedList<T>::push( Pointer value )
 	{
 		return push( *value );
 	}
@@ -93,13 +93,51 @@ namespace tiki
 	}
 
 	template< typename T >
+	TIKI_FORCE_INLINE T* LinkedList<T>::popFirst()
+	{
+		if( m_pFirst == nullptr )
+		{
+			return nullptr;
+		}
+
+		if( m_pFirst == m_pLast )
+		{
+			m_pLast = nullptr;
+		}
+
+		T* pFirst = m_pFirst;
+		m_pFirst = pFirst->pNextItem;
+		m_count--;
+		return pFirst;
+	}
+
+	template< typename T >
+	TIKI_FORCE_INLINE T* LinkedList<T>::popLast()
+	{
+		if( m_pLast == nullptr )
+		{
+			return nullptr;
+		}
+
+		if( m_pFirst == m_pLast )
+		{
+			m_pFirst = nullptr;
+		}
+
+		T* pLast = m_pLast;
+		m_pLast = pFirst->pPrevItem;
+		m_count--;
+		return pLast;
+	}
+
+	template< typename T >
 	TIKI_FORCE_INLINE void LinkedList<T>::removeSortedByValue( Reference value )
 	{
 		TIKI_ASSERT( value.pList == this );
 
-		if ( &value == m_pData )
+		if ( &value == m_pFirst )
 		{
-			m_pData = value.pNextItem;
+			m_pFirst = value.pNextItem;
 		}
 
 		if ( &value == m_pLast )

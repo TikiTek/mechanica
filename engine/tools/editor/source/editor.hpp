@@ -1,10 +1,10 @@
 #pragma once
-#ifndef TIKI_EDITOR_HPP_INCLUDED
-#define TIKI_EDITOR_HPP_INCLUDED
 
 #include "tiki/editor_interface/editor_interface.hpp"
 
 #include "tiki/toolproject/project.hpp"
+
+#include "editor_file_browser_ui.hpp"
 
 namespace tiki
 {
@@ -27,8 +27,10 @@ namespace tiki
 		bool							create();
 		void							dispose();
 
-		virtual Editable*				openEditable( const DynamicString& title, BaseEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		void							doUi();
+
 		virtual EditableFile*			openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void					openEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeAll() TIKI_OVERRIDE_FINAL;
@@ -39,10 +41,11 @@ namespace tiki
 
 		virtual void					addGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
 		virtual void					removeGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
-		const List< EditorRibbon* >&	getGlobalRibbons() const { return m_ribbons; }
 
 		//virtual void					addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_OVERRIDE_FINAL;
 		//virtual void					removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+
+		virtual Project&				getProject() TIKI_OVERRIDE_FINAL;
 
 		virtual const Path&				getProjectPath() const TIKI_OVERRIDE_FINAL;
 		virtual const Path&				getContentPath() const TIKI_OVERRIDE_FINAL;
@@ -62,6 +65,7 @@ namespace tiki
 
 		List< BaseEditor* >			m_editors;
 		List< EditorRibbon* >		m_ribbons;
+		EditorRibbon*				m_pCurrentRibbon;
 
 		PackageEditor*				m_pPackageEditor;
 		GenericDataEditor*			m_pGenericDataEditor;
@@ -70,13 +74,17 @@ namespace tiki
 		List< Editable* >			m_editables;
 		Editable*					m_pCurrentEditable;
 
+		EditorFileBrowserUi			m_fileBrowserUi;
+
 		//QShortcut					m_openShortcut;
 		//QShortcut					m_saveShortcut;
 		//QShortcut					m_closeShortcut;
 
 		void						setProjectPathes();
 		void						setPackagePath();
+
+		void						doRibbonUi();
+		void						doBrowserUi();
+		void						doEditableUi();
 	};
 }
-
-#endif // TIKI_EDITOR_HPP_INCLUDED

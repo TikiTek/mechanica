@@ -57,6 +57,12 @@ namespace tiki
 	}
 
 	template<typename T>
+	TIKI_FORCE_INLINE void memory::deleteObjectAligned( const T* pPtr )
+	{
+		deleteObjectAligned( const_cast< T* >( pPtr ) );
+	}
+
+	template<typename T>
 	TIKI_FORCE_INLINE void memory::deleteObjectAligned( T* pPtr )
 	{
 		callDestructor( pPtr );

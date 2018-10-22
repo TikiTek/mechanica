@@ -23,6 +23,8 @@ namespace tiki
 		const ToolImage&				getEditableIcon() const { return m_icon; };
 		const List< EditorRibbon* >&	getEditableRibbons() const { return m_editableTabs; }
 
+		virtual void					doUi() { }
+
 		virtual FileEditor*				asFileEditor() { return nullptr; }
 
 	protected:

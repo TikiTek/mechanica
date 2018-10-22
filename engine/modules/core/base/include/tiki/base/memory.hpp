@@ -90,6 +90,9 @@ namespace tiki
 		void					freeAligned( void* pPtr );
 
 		template<typename T>
+		TIKI_FORCE_INLINE void	deleteObjectAligned( const T* pPtr );
+
+		template<typename T>
 		TIKI_FORCE_INLINE void	deleteObjectAligned( T* pPtr );
 
 		template<typename T>

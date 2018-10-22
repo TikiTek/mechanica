@@ -3,7 +3,8 @@
 namespace tiki
 {
 	Editable::Editable( const DynamicString& title, BaseEditor* pEditor )
-		: m_title( title )
+		: m_isDirty( false )
+		, m_title( title )
 		, m_pEditor( pEditor )
 	{
 	}

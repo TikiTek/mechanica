@@ -174,7 +174,10 @@ namespace tiki
 		}
 
 		ResourceManagerParameters resourceParams;
-		resourceParams.pFileSystem = &m_pBaseData->gamebuildFileSystem;
+		resourceParams.pFileSystem	= &m_pBaseData->gamebuildFileSystem;
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		resourceParams.pProject		= m_parameters.pProject;
+#endif
 
 		if( !m_pBaseData->resourceManager.create( resourceParams ) )
 		{

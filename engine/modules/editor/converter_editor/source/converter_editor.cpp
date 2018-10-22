@@ -40,6 +40,6 @@ namespace tiki
 
 	void ConverterEditor::showLastResult()
 	{
-		m_pInterface->openEditable( "Asset Build", this );
+		//m_pInterface->openEditable( "Asset Build", this );
 	}
 }

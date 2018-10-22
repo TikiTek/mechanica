@@ -47,6 +47,7 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		AssetConverterParamter assetConverterParameters;
+		assetConverterParameters.pProject = params.pProject;
 		m_pAssetConverter = createAssetConverter( assetConverterParameters );
 		if ( m_pAssetConverter != nullptr &&
 			 s_enableAssetConverterWatch )

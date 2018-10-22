@@ -7,9 +7,12 @@
 namespace tiki
 {
 	class EditorInterface;
+	class Package;
+	class PackageFile;
 
 	class PackageEditor : public FileEditor
 	{
+		friend class PackageEditorRibbon;
 		TIKI_NONCOPYABLE_CLASS( PackageEditor );
 
 	public:
@@ -21,27 +24,19 @@ namespace tiki
 		virtual bool			saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void			closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 
-		DynamicString			getPackageName() const;
+		virtual void			doUi() TIKI_OVERRIDE_FINAL;
+
+		Package*				getPackage() const { return m_pPackage; }
 
 	private:
 
 		PackageEditorRibbon		m_ribbon;
 
-		//QtRibbonTab*				m_pRibbon;
-		//QtRibbonButton*				m_pNewPackageButton;
-		//QtRibbonButton*				m_pOpenPackageButton;
-		//QtRibbonButton*				m_pClosePackageButton;
-		//QtRibbonButton*				m_pEditPackageButton;
+		Package*				m_pPackage;
+		PackageFile*			m_pPackageFile;
 
-		//PackageFileBrowserWidget*			m_pFileBrowser;
-		DynamicString				m_currentPackageName;
-
-		void						openPackage( EditableFile* pPackageFile );
-		void						closePackage();
-
-		void									newClicked();
-		void									openClicked();
-		void									closeClicked();
-		void									editClicked();
+		void					openPackage( Package& package );
+		void					closePackage();
+		void					editPackage();
 	};
 }
