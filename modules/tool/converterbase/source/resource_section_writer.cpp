@@ -83,7 +83,7 @@ namespace tiki
 		{
 			ResourceReferenceData& data = m_sectionReferences.add();
 			data.key				= *pKey;
-			data.offsetInSection	= m_sectionData.getLength();
+			data.offsetInSection	= uint( m_sectionData.getLength() );
 		}
 
 		// reserve space for the pointer

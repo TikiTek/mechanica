@@ -16,3 +16,5 @@ module:add_dependency( "editor/editor_interface" );
 module:add_dependency( "editor/package_editor" );
 module:add_dependency( "editor/generic_data_editor" );
 module:add_dependency( "editor/converter_editor" );
+
+module:add_resources( "resource/*.png" );

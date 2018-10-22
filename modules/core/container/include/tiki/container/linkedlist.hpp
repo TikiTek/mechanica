@@ -143,18 +143,21 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			push( Pointer value );
 		TIKI_FORCE_INLINE Pointer			pushRange( Pointer pData, uint count );
 
+		TIKI_FORCE_INLINE Pointer			popFirst();
+		TIKI_FORCE_INLINE Pointer			popLast();
+
 		TIKI_FORCE_INLINE void				removeSortedByValue( Reference value );
 
 		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
 
-		TIKI_FORCE_INLINE Iterator			getBegin()			{ return Iterator( m_pData ); }
-		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return ConstIterator( m_pData ); }
+		TIKI_FORCE_INLINE Iterator			getBegin()			{ return Iterator( m_pFirst ); }
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return ConstIterator( m_pFirst ); }
 
 		TIKI_FORCE_INLINE Iterator			getEnd()			{ return Iterator( nullptr ); }
 		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return ConstIterator( nullptr ); }
 
-		TIKI_FORCE_INLINE Reference			getFirst()			{ TIKI_ASSERT( m_count > 0u ); return *m_pData; }
-		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ TIKI_ASSERT( m_count > 0u ); return *m_pData; }
+		TIKI_FORCE_INLINE Reference			getFirst()			{ TIKI_ASSERT( m_count > 0u ); return *m_pFirst; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ TIKI_ASSERT( m_count > 0u ); return *m_pFirst; }
 
 		TIKI_FORCE_INLINE Reference			getLast()			{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
 		TIKI_FORCE_INLINE ConstReference	getLast() const		{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
@@ -167,11 +170,10 @@ namespace tiki
 
 	private:
 
-		Type*		m_pData;
+		Type*		m_pFirst;
 		Type*		m_pLast;
 
 		uint		m_count;
-
 	};
 }
 

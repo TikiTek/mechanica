@@ -23,6 +23,7 @@ namespace tiki
 	struct ResourceId;
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 	class AssetConverterInterface;
+	class Project;
 #endif
 
 	struct ResourceManagerParameters
@@ -43,6 +44,10 @@ namespace tiki
 		bool			enableMultiThreading;
 
 		FileSystem*		pFileSystem;
+
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		const Project*	pProject = nullptr;
+#endif
 	};
 
 	class ResourceManager

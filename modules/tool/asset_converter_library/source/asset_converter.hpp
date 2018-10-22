@@ -74,7 +74,7 @@ namespace tiki
 
 		typedef Map< uint64, ConversionResult* > ThreadResultMap;
 
-		Project*					m_pProject;
+		const Project*				m_pProject;
 		bool						m_ownsProject;
 		ConversionContext			m_context;
 

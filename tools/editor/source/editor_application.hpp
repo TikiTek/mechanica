@@ -27,29 +27,8 @@ namespace tiki
 		virtual bool	processToolInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
 		virtual void	processToolWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
-		//void			openFileTab( QWidget* pWidget, const QString& title );
-		//void			changeFileTab( QWidget* pWidget, const QString& title );
-		//void			selectFileTab( QWidget* pWidget );
-		//void			closeFileTab( QWidget* pWidget );
-
-	//signals:
-	//
-	//	void			fileCloseRequest( QWidget* pWidget );
-	//
-	//private slots:
-	//
-	//	void			fileCloseRequested( int index );
-
 	private:
 
-		Project						m_project;
 		Editor						m_editor;
-
-		EditorRibbon*				m_pCurrentRibbon;
-
-		ToolImage					m_browserDefaultIcon;
-
-		void						doRibbonUi();
-		void						doBrowserUi();
 	};
 }

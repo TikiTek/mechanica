@@ -3,21 +3,20 @@
 #include "tiki/editor_interface/editable_file.hpp"
 #include "tiki/editor_interface/editor_interface.hpp"
 #include "tiki/package_editor/package_file.hpp"
+#include "tiki/toolproject/package.hpp"
 
 #include "res_package_editor.hpp"
+
+#include <imgui.h>
 
 namespace tiki
 {
 	PackageEditor::PackageEditor( EditorInterface* pInterface )
 		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", "package" )
+		, m_ribbon( pInterface, *this )
 	{
-		//
-		//connect( m_pNewPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::newClicked );
-		//connect( m_pOpenPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::openClicked );
-		//connect( m_pClosePackageButton, &QtRibbonButton::clicked, this, &PackageEditor::closeClicked );
-		//connect( m_pEditPackageButton, &QtRibbonButton::clicked, this, &PackageEditor::editClicked );
-
-		//m_pFileBrowser = new PackageFileBrowserWidget( pInterface );
+		m_pPackage		= nullptr;
+		m_pPackageFile	= nullptr;
 
 		m_pInterface->addGlobalRibbon( &m_ribbon );
 	}
@@ -36,6 +35,7 @@ namespace tiki
 			return nullptr;
 		}
 
+		m_pPackageFile = pPackage;
 		return pPackage;
 	}
 
@@ -48,76 +48,49 @@ namespace tiki
 	void PackageEditor::closeEditable( Editable* pEditable )
 	{
 		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
+		m_pPackageFile = nullptr;
 		delete pPackage;
 	}
 
-	DynamicString PackageEditor::getPackageName() const
+	void PackageEditor::doUi()
 	{
-		return m_currentPackageName;
 	}
 
-	//void PackageEditor::newClicked()
-	//{
-	//	QString fileName = QFileDialog::getSaveFileName(
-	//		m_pInterface->getDialogParent(),
-	//		m_pInterface->getDialogTitle(),
-	//		m_pInterface->getContentPath().absolutePath(),
-	//		"Package (*.package)"
-	//	);
+	void PackageEditor::openPackage( Package& package )
+	{
+		if( &package == m_pPackage )
+		{
+			return;
+		}
 
-	//	m_pInterface->openFile( fileName );
-	//}
+		closePackage();
 
-	//void PackageEditor::openClicked()
-	//{
-	//	QString fileName = QFileDialog::getOpenFileName(
-	//		m_pInterface->getDialogParent(),
-	//		m_pInterface->getDialogTitle(),
-	//		m_pInterface->getContentPath().absolutePath(),
-	//		"Package (*.package)"
-	//	);
+		m_pPackage		= &package;
+		m_pPackageFile	= new PackageFile( package.getFilename(), this );
 
-	//	m_pInterface->openFile( fileName );
-	//}
+		m_pInterface->openEditable( m_pPackageFile );
+	}
 
-	//void PackageEditor::closeClicked()
-	//{
-	//	closePackage();
-	//}
+	void PackageEditor::closePackage()
+	{
+		if( m_pPackageFile == nullptr )
+		{
+			return;
+		}
 
-	//void PackageEditor::editClicked()
-	//{
-	//	m_pInterface->openFile( m_pInterface->getContentPath().absoluteFilePath( m_currentPackageName + ".package" ) );
-	//}
+		m_pInterface->closeAll();
 
-	//void PackageEditor::openPackage( IFile* pPackageFile )
-	//{
-	//	QFileInfo fileInfo( pPackageFile->getFileName() );
-	//	if( m_currentPackageName == fileInfo.baseName() )
-	//	{
-	//		return;
-	//	}
+		m_pPackage		= nullptr;
+		m_pPackageFile	= nullptr;
+	}
 
-	//	closePackage();
+	void PackageEditor::editPackage()
+	{
+		if( m_pPackageFile == nullptr )
+		{
+			return;
+		}
 
-	//	m_pFileBrowser->openPackage( fileInfo.baseName() );
-	//	m_pInterface->addGlobalDockWidget( m_pFileBrowser, Qt::LeftDockWidgetArea );
-
-	//	m_currentPackageName = fileInfo.baseName();
-	//}
-
-	//void PackageEditor::closePackage()
-	//{
-	//	if( m_currentPackageName.isEmpty() )
-	//	{
-	//		return;
-	//	}
-
-	//	m_pInterface->closeAll();
-
-	//	m_pInterface->removeGlobalDockWidget( m_pFileBrowser );
-	//	m_pFileBrowser->closePakage();
-
-	//	m_currentPackageName.clear();
-	//}
+		m_pInterface->openEditable( m_pPackageFile );
+	}
 }

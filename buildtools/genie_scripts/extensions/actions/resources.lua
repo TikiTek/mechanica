@@ -9,7 +9,7 @@ return function( data, config )
 	
 	local needBuild = false
 	for i, filename in pairs( matches ) do
-		needBuild = needBuild or is_build_required( filename, output_file );
+		needBuild = is_build_required( filename, output_file ) or needBuild;
 	end
 	
 	if needBuild then

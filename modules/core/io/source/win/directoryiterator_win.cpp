@@ -14,6 +14,11 @@ namespace tiki
 	{
 	}
 
+	bool DirectoryIterator::create( const Path& path )
+	{
+		return create( path.getCompletePath() );
+	}
+
 	bool DirectoryIterator::create( const char* pPath )
 	{
 		string finalPath = pPath;
@@ -71,7 +76,7 @@ namespace tiki
 
 		return result;
 	}
-	
+
 	bool DirectoryIterator::isCurrentFile() const
 	{
 		return !isBitSet( m_platformData.searchData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY );

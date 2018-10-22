@@ -7,6 +7,11 @@ namespace tiki
 	PackageFile::PackageFile( const Path& filename, PackageEditor* pEditor )
 		: EditableFile( filename, pEditor )
 	{
+		m_author[ 0u ] = '\0';
+		m_desciption[ 0u ] = '\0';
+		m_templates[ 0u ] = '\0';
+		m_genericDataTypes[ 0u ] = '\0';
+		TIKI_VERIFY( load() );
 	}
 
 	PackageFile::~PackageFile()
@@ -27,25 +32,25 @@ namespace tiki
 		tinyxml2::XMLElement* pAuthorElement = pRoot->FirstChildElement( "author" );
 		if( pAuthorElement != nullptr )
 		{
-			//m_pAuthorText->setText( pAuthorElement->GetText() );
+			copyString( m_author, sizeof( m_author ), pAuthorElement->GetText() );
 		}
 
 		tinyxml2::XMLElement* pDescriptionElement = pRoot->FirstChildElement( "description" );
 		if( pDescriptionElement != nullptr )
 		{
-			//m_pDescriptionText->setText( pDescriptionElement->GetText() );
+			copyString( m_desciption, sizeof( m_desciption ), pDescriptionElement->GetText() );
 		}
 
 		tinyxml2::XMLElement* pTemplatesElement = pRoot->FirstChildElement( "templates" );
 		if( pTemplatesElement != nullptr )
 		{
-			//m_pTemplatesText->setText( pTemplatesElement->GetText() );
+			copyString( m_templates, sizeof( m_templates ), pTemplatesElement->GetText() );
 		}
 
 		tinyxml2::XMLElement* pGenericDataTypesElement = pRoot->FirstChildElement( "genericdatatypes" );
 		if( pGenericDataTypesElement != nullptr )
 		{
-			//m_pGenericDataTypesText->setText( pGenericDataTypesElement->GetText() );
+			copyString( m_genericDataTypes, sizeof( m_genericDataTypes ), pGenericDataTypesElement->GetText() );
 		}
 
 		return true;
@@ -58,17 +63,27 @@ namespace tiki
 
 		pRoot->SetName( "package" );
 
-		//findOrCreateElement( "author" )->SetText( m_pAuthorText->text().toUtf8().data() );
-		//findOrCreateElement( "description" )->SetText( m_pDescriptionText->toPlainText().toUtf8().data() );
-		//findOrCreateElement( "templates" )->SetText( m_pTemplatesText->text().toUtf8().data() );
-		//findOrCreateElement( "genericdatatypes" )->SetText( m_pGenericDataTypesText->text().toUtf8().data() );
+		findOrCreateElement( "author" )->SetText( m_author );
+		findOrCreateElement( "description" )->SetText( m_desciption );
+		findOrCreateElement( "templates" )->SetText( m_templates );
+		findOrCreateElement( "genericdatatypes" )->SetText( m_genericDataTypes );
 
 		return m_document.SaveFile( getFileName().getCompletePath() ) == tinyxml2::XML_SUCCESS;
 	}
 
 	void PackageFile::doUi()
 	{
+		ImGui::Text( "Author:" );
+		m_isDirty |= ImGui::InputText( " ", m_author, sizeof( m_author ) );
 
+		ImGui::Text( "Description:" );
+		m_isDirty |= ImGui::InputText( "  ", m_desciption, sizeof( m_desciption ) );
+
+		ImGui::Text( "Templates folder:" );
+		m_isDirty |= ImGui::InputText( "   ", m_templates, sizeof( m_templates ) );
+
+		ImGui::Text( "Generic data types folder:" );
+		m_isDirty |= ImGui::InputText( "    ", m_genericDataTypes, sizeof( m_genericDataTypes ) );
 	}
 
 	tinyxml2::XMLElement* PackageFile::findOrCreateElement( const char* pName )

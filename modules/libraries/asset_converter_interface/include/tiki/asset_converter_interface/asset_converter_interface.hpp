@@ -22,11 +22,11 @@ namespace tiki
 			rebuildOnMissingDatabase	= true;
 		}
 
-		Project*	pProject;
+		const Project*	pProject;
 
-		bool		waitForConversion;
-		bool		forceRebuild;
-		bool		rebuildOnMissingDatabase;
+		bool			waitForConversion;
+		bool			forceRebuild;
+		bool			rebuildOnMissingDatabase;
 	};
 
 	class AssetConverterInterface

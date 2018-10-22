@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_CHUNKEDPOOL_INL_INCLUDED
-#define TIKI_CHUNKEDPOOL_INL_INCLUDED
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/memory.hpp"
@@ -11,10 +9,8 @@ namespace tiki
 	TIKI_FORCE_INLINE ChunkedPool<T>::ChunkedPool()
 	{
 		m_pFirstFree	= nullptr;
-		m_pLastFree		= nullptr;
 		m_count			= 0u;
-		m_freeCount		= 0u;
-		m_grow			= 0u;
+		m_chunkSize		= 0u;
 	}
 
 	template<typename T>
@@ -23,13 +19,12 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE bool ChunkedPool<T>::create( uint grow )
+	TIKI_FORCE_INLINE bool ChunkedPool<T>::create( uint chunkSize )
 	{
 		TIKI_COMPILETIME_ASSERT( sizeof( T ) >= sizeof( FreeElement ) );
 
 		m_count		= 0u;
-		m_freeCount	= 0u;
-		m_grow		= grow;
+		m_chunkSize	= chunkSize - 1u;
 
 		if( !allocateChunk() )
 		{
@@ -47,18 +42,12 @@ namespace tiki
 
 		while( !m_chunks.isEmpty() )
 		{
-			PoolChunk* pChunk = &m_chunks.getFirst();
-			m_chunks.removeSortedByValue( m_chunks.getFirst() );
-
-			pChunk->~PoolChunk();
-			TIKI_FREE( pChunk );
+			TIKI_FREE( m_chunks.popFirst() );
 		}
 
 		m_pFirstFree	= nullptr;
-		m_pLastFree		= nullptr;
 		m_count			= 0u;
-		m_freeCount		= 0u;
-		m_grow			= 0u;
+		m_chunkSize		= 0u;
 	}
 
 	template<typename T>
@@ -70,7 +59,7 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE bool ChunkedPool<T>::isEmpty() const
 	{
-		return m_count != 0u;
+		return m_count == 0u;
 	}
 
 	template<typename T>
@@ -78,7 +67,7 @@ namespace tiki
 	{
 		for( const PoolChunk& chunk : m_chunks )
 		{
-			if( &item >= chunk.pData && &item < chunk.pData + m_grow )
+			if( &item >= &chunk.data[ 0u ] && &item < &chunk.data[ m_chunkSize ] )
 			{
 				return true;
 			}
@@ -90,7 +79,7 @@ namespace tiki
 	template<typename T>
 	TIKI_FORCE_INLINE T* ChunkedPool<T>::push()
 	{
-		if( m_freeCount == 0u && !allocateChunk() )
+		if( m_pFirstFree == nullptr && !allocateChunk() )
 		{
 			return nullptr;
 		}
@@ -98,11 +87,8 @@ namespace tiki
 		T* pElement = (T*)m_pFirstFree;
 		m_pFirstFree = m_pFirstFree->pNextFree;
 		m_count++;
-		m_freeCount--;
 
-		pElement = new ( pElement ) T;
-
-		return pElement;
+		return new (pElement) T;
 	}
 
 	template<typename T>
@@ -124,55 +110,36 @@ namespace tiki
 		item.~T();
 
 		FreeElement* pNewFree = (FreeElement*)&item;
-		pNewFree->pNextFree = nullptr;
+		pNewFree->pNextFree = m_pFirstFree;
 
-		m_pLastFree->pNextFree = pNewFree;
-		m_pLastFree = pNewFree;
+		m_pFirstFree = pNewFree;
 
 		m_count--;
-		m_freeCount++;
 	}
 
 	template<typename T>
 	TIKI_FORCE_INLINE bool ChunkedPool<T>::allocateChunk()
 	{
-		const uint chunkSize = alignValue( sizeof( PoolChunk ), TIKI_ALIGNOF( T ) );
-		const uint size = chunkSize + (sizeof( T ) * m_grow);
+		TIKI_ASSERT( m_chunkSize > 0u );
 
-		PoolChunk* pChunk = (PoolChunk*)TIKI_ALLOC( size );
-		pChunk = new (pChunk) PoolChunk;
+		const uint chunkSize = sizeof( PoolChunk ) + (m_chunkSize * sizeof( T ));
+		PoolChunk* pChunk = (PoolChunk*)TIKI_ALLOC_ALIGNED( chunkSize, TIKI_ALIGNOF( PoolChunk ) );
 		if( pChunk == nullptr )
 		{
 			return false;
 		}
+
+		memory::zero( *pChunk );
 		m_chunks.push( pChunk );
 
-		pChunk->pData = addPointerCast< T >( pChunk, chunkSize );
-		TIKI_ASSERT( isPointerAligned( pChunk->pData, TIKI_ALIGNOF( T ) ) );
-
-		m_freeCount += m_grow;
-
-		FreeElement* pElement = (FreeElement*)pChunk->pData;
-		for( uint i = 0u; i < m_grow; ++i )
+		for( uint i = 0u; i < m_chunkSize; ++i )
 		{
-			pElement->pNextFree = (FreeElement*)(pChunk->pData + i);
-			pElement = pElement->pNextFree;
-		}
-		pElement->pNextFree = nullptr;
+			FreeElement* pElement = (FreeElement*)&pChunk->data[ i ];
+			pElement->pNextFree = m_pFirstFree;
 
-		if( m_pFirstFree == nullptr )
-		{
-			m_pFirstFree = (FreeElement*)pChunk->pData;
+			m_pFirstFree = pElement;
 		}
-		else
-		{
-			m_pFirstFree->pNextFree = (FreeElement*)pChunk->pData;
-		}
-
-		m_pLastFree = (FreeElement*)(pChunk->pData + m_grow - 1u);
 
 		return true;
 	}
 }
-
-#endif // TIKI_CHUNKEDPOOL_INL_INCLUDED

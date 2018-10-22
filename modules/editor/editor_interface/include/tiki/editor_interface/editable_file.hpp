@@ -9,7 +9,6 @@ namespace tiki
 	class FileEditor;
 
 	class EditableFile : public Editable
-
 	{
 	public:
 

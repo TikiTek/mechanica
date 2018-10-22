@@ -22,7 +22,7 @@ namespace tiki
 		TIKI_FORCE_INLINE					ChunkedPool();
 		TIKI_FORCE_INLINE					~ChunkedPool();
 
-		TIKI_FORCE_INLINE bool				create( uint grow );
+		TIKI_FORCE_INLINE bool				create( uint chunkSize );
 		TIKI_FORCE_INLINE void				dispose();
 
 		TIKI_FORCE_INLINE uint				getCount() const;
@@ -39,7 +39,7 @@ namespace tiki
 
 		struct PoolChunk : LinkedItem< PoolChunk >
 		{
-			T*						pData;
+			T						data[ 1u ];
 		};
 
 		struct FreeElement
@@ -50,11 +50,9 @@ namespace tiki
 		LinkedList< PoolChunk >		m_chunks;
 
 		FreeElement*				m_pFirstFree;
-		FreeElement*				m_pLastFree;
 
 		uint						m_count;
-		uint						m_freeCount;
-		uint						m_grow;
+		uint						m_chunkSize;
 
 		TIKI_FORCE_INLINE bool		allocateChunk();
 

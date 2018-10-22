@@ -18,6 +18,9 @@ namespace tiki
 	struct BaseApplicationkData;
 	struct InputEvent;
 	struct WindowEvent;
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+	class Project;
+#endif
 
 	struct BaseApplicationParamters
 	{
@@ -39,6 +42,9 @@ namespace tiki
 		const char*				pWindowTitle;
 
 		Path					assetBuildPath;
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		const Project*			pProject = nullptr;
+#endif
 	};
 
 	class BaseApplication

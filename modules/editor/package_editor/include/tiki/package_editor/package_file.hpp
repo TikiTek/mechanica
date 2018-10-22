@@ -24,6 +24,11 @@ namespace tiki
 
 		tinyxml2::XMLDocument	m_document;
 
+		char					m_author[ 128u ];
+		char					m_desciption[ 128u ];
+		char					m_templates[ 128u ];
+		char					m_genericDataTypes[ 128u ];
+
 		tinyxml2::XMLElement*	findOrCreateElement( const char* pName );
 	};
 }

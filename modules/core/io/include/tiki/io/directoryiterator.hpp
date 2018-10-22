@@ -23,6 +23,7 @@ namespace tiki
 						DirectoryIterator();
 						~DirectoryIterator();
 
+		bool			create( const Path& path );
 		bool			create( const char* pPath );
 		void			dispose();
 
@@ -35,7 +36,6 @@ namespace tiki
 	private:
 
 		DirectoryIteratorPlatformData	m_platformData;
-			
 	};
 }
 
