@@ -41,7 +41,7 @@
 		<Expand>
 			<Item Name="[size]" ExcludeView="simple">m_count</Item>
 			<CustomListItems>
-				<Variable Name="pItem" InitialValue="m_pData"/>
+				<Variable Name="pItem" InitialValue="m_pFirst"/>
 				<Loop>
 					<Break Condition="pItem == nullptr"/>
 					<Item>*pItem</Item>

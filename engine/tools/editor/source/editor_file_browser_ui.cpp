@@ -138,7 +138,7 @@ namespace tiki
 			ImGui::AlignTextToFramePadding();
 			if( pNode->pFirstChild == nullptr )
 			{
-				if( ImGui::TreeNodeEx( pName, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet ) )
+				if( ImGui::TreeNodeEx( pName, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick ) )
 				{
 					m_pInterface->openFile( pNode->filename );
 				}

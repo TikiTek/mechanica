@@ -12,3 +12,5 @@ module:add_dependency( "core/base" );
 module:add_dependency( "runtime/framework" );
 module:add_dependency( "thirdparty/imgui" );
 module:add_dependency( "thirdparty/stb" );
+
+module:add_resources( "resource/*.png" );

@@ -35,68 +35,16 @@ namespace tiki
 	};
 
 	template< class TEnum >
-	class FlagMask8 : public FlagMask< TEnum, uint8 >
-	{
-	public:
-
-		explicit FlagMask8()
-			: FlagMask()
-		{
-		}
-
-		explicit FlagMask8( TEnum value )
-			: FlagMask( value )
-		{
-		}
-	};
+	using FlagMask8 = FlagMask< TEnum, uint8 >;
 
 	template< class TEnum >
-	class FlagMask16 : public FlagMask< TEnum, uint16 >
-	{
-	public:
-
-		explicit FlagMask16()
-			: FlagMask()
-		{
-		}
-
-		explicit FlagMask16( TEnum value )
-			: FlagMask( value )
-		{
-		}
-	};
+	using FlagMask16 = FlagMask< TEnum, uint16 >;
 
 	template< class TEnum >
-	class FlagMask32 : public FlagMask< TEnum, uint32 >
-	{
-	public:
-
-		explicit FlagMask32()
-			: FlagMask()
-		{
-		}
-
-		explicit FlagMask32( TEnum value )
-			: FlagMask( value )
-		{
-		}
-	};
+	using FlagMask32 = FlagMask< TEnum, uint32 >;
 
 	template< class TEnum >
-	class FlagMask64 : public FlagMask< TEnum, uint64 >
-	{
-	public:
-
-		explicit FlagMask64()
-			: FlagMask()
-		{
-		}
-
-		explicit FlagMask64( TEnum value )
-			: FlagMask( value )
-		{
-		}
-	};
+	using FlagMask64 = FlagMask< TEnum, uint64 >;
 }
 
 #include "../../../source/flagmask.inl"

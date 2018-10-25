@@ -59,7 +59,7 @@ namespace tiki
 
 	void PackageEditorRibbon::doUiPopups()
 	{
-		if( ImGui::BeginPopupModal( s_pPopupNewPackage, NULL, ImGuiWindowFlags_AlwaysAutoResize ) )
+		if( ImGui::BeginPopupModal( s_pPopupNewPackage, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
 		{
 			char buffer[ 128u ];
 			copyString( buffer, sizeof( buffer ), m_packageName.cStr() );
@@ -81,7 +81,7 @@ namespace tiki
 			ImGui::EndPopup();
 		}
 
-		if( ImGui::BeginPopupModal( s_pPopupOpenPackage ) )
+		if( ImGui::BeginPopupModal( s_pPopupOpenPackage, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
 		{
 			for( const Package& package : m_pInterface->getProject().getPackages() )
 			{

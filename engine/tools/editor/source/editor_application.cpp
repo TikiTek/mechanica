@@ -1,11 +1,5 @@
 #include "editor_application.hpp"
 
-#include "tiki/toolapplication/tool_ui.hpp"
-
-#include "res_package_editor.hpp"
-
-#include <imgui.h>
-
 namespace tiki
 {
 	EditorApplication::EditorApplication()

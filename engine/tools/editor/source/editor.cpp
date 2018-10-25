@@ -48,10 +48,18 @@ namespace tiki
 
 		m_fileBrowserUi.create();
 
+		for( uint i = 1u; i < platform::getArguments().getCount(); ++i )
+		{
+			const char* pArgument = platform::getArguments()[ i ];
+			openFile( Path( pArgument ) );
+		}
+
 		//connect( m_pWindow, &EditorWindow::fileCloseRequest, this, &Editor::fileCloseRequest );
 		//connect( &m_openShortcut, &QShortcut::activated, this, &Editor::fileOpenShortcut );
 		//connect( &m_saveShortcut, &QShortcut::activated, this, &Editor::fileSaveShortcut );
 		//connect( &m_closeShortcut, &QShortcut::activated, this, &Editor::fileCloseShortcut );
+
+		m_messageBox.open( "Hello", "World!", ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Yes ), ToolMessageBoxIcon_Error );
 
 		return true;
 	}
@@ -76,6 +84,8 @@ namespace tiki
 		{
 			pEditor->doUi();
 		}
+
+		m_messageBox.doUi();
 	}
 
 	//Editable* Editor::openEditable( const DynamicString& title, BaseEditor* pEditor )
@@ -490,7 +500,9 @@ namespace tiki
 				{
 					m_pCurrentEditable = pEditable;
 				}
+				ImGui::SameLine();
 			}
+			ImGui::NewLine();
 
 			if( ImGui::BeginChild( "Editor", ImVec2( 0.0f, 0.0f ), true ) )
 			{
@@ -499,10 +511,9 @@ namespace tiki
 					m_pCurrentEditable->doUi();
 				}
 
-				ImGui::End();
 			}
-
 			ImGui::End();
 		}
+		ImGui::End();
 	}
 }

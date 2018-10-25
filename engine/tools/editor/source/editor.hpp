@@ -2,6 +2,7 @@
 
 #include "tiki/editor_interface/editor_interface.hpp"
 
+#include "tiki/toolapplication/tool_message_box.hpp"
 #include "tiki/toolproject/project.hpp"
 
 #include "editor_file_browser_ui.hpp"
@@ -75,6 +76,7 @@ namespace tiki
 		Editable*					m_pCurrentEditable;
 
 		EditorFileBrowserUi			m_fileBrowserUi;
+		ToolMessageBox				m_messageBox;
 
 		//QShortcut					m_openShortcut;
 		//QShortcut					m_saveShortcut;

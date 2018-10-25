@@ -35,7 +35,7 @@ namespace tiki
 		Package*				m_pPackage;
 		PackageFile*			m_pPackageFile;
 
-		void					openPackage( Package& package );
+		bool					openPackage( Package& package );
 		void					closePackage();
 		void					editPackage();
 	};

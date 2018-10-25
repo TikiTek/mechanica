@@ -4,6 +4,7 @@
 #include "tiki/editor_interface/editor_interface.hpp"
 #include "tiki/package_editor/package_file.hpp"
 #include "tiki/toolproject/package.hpp"
+#include "tiki/toolproject/project.hpp"
 
 #include "res_package_editor.hpp"
 
@@ -12,7 +13,7 @@
 namespace tiki
 {
 	PackageEditor::PackageEditor( EditorInterface* pInterface )
-		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", "package" )
+		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", ".package" )
 		, m_ribbon( pInterface, *this )
 	{
 		m_pPackage		= nullptr;
@@ -28,15 +29,15 @@ namespace tiki
 
 	EditableFile* PackageEditor::openFile( const Path& fileName )
 	{
-		PackageFile* pPackage = new PackageFile( fileName, this );
-		if( !pPackage->load() )
+		Package* pPackage = m_pInterface->getProject().findPackage( fileName.getFilename() );
+		if( pPackage == nullptr )
 		{
-			delete pPackage;
 			return nullptr;
 		}
 
-		m_pPackageFile = pPackage;
-		return pPackage;
+		openPackage( *pPackage );
+
+		return m_pPackageFile;
 	}
 
 	bool PackageEditor::saveEditable( Editable* pEditable )
@@ -47,6 +48,8 @@ namespace tiki
 
 	void PackageEditor::closeEditable( Editable* pEditable )
 	{
+		TIKI_ASSERT( pEditable == m_pPackageFile );
+
 		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
 		m_pPackageFile = nullptr;
 		delete pPackage;
@@ -56,11 +59,11 @@ namespace tiki
 	{
 	}
 
-	void PackageEditor::openPackage( Package& package )
+	bool PackageEditor::openPackage( Package& package )
 	{
 		if( &package == m_pPackage )
 		{
-			return;
+			return true;
 		}
 
 		closePackage();
@@ -68,7 +71,18 @@ namespace tiki
 		m_pPackage		= &package;
 		m_pPackageFile	= new PackageFile( package.getFilename(), this );
 
+		if( !m_pPackageFile->load() )
+		{
+			delete m_pPackageFile;
+
+			m_pPackage		= nullptr;
+			m_pPackageFile	= nullptr;
+
+			return false;
+		}
+
 		m_pInterface->openEditable( m_pPackageFile );
+		return true;
 	}
 
 	void PackageEditor::closePackage()
@@ -78,10 +92,10 @@ namespace tiki
 			return;
 		}
 
-		m_pInterface->closeAll();
-
 		m_pPackage		= nullptr;
 		m_pPackageFile	= nullptr;
+
+		m_pInterface->closeAll();
 	}
 
 	void PackageEditor::editPackage()
