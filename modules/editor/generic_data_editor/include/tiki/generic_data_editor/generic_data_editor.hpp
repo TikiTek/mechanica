@@ -12,12 +12,14 @@ namespace tiki
 
 	public:
 
-												GenericDataEditor( EditorInterface* pInterface );
-		virtual									~GenericDataEditor();
+									GenericDataEditor( EditorInterface* pInterface );
+		virtual						~GenericDataEditor();
 
-		virtual EditableFile*					openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual bool							saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void							closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual EditableFile*		openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual bool				saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void				closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+
+		GenericDataTypeCollection&	getTypeCollection() { return m_typeCollection; }
 
 	private:
 
