@@ -57,6 +57,7 @@ namespace tiki
 		ToolImage						m_warningIcon;
 		ToolImage						m_errorIcon;
 
+		bool							m_open;
 		DynamicString					m_title;
 		DynamicString					m_message;
 		ToolMessageBoxIcon				m_icon;

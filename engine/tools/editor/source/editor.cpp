@@ -16,10 +16,12 @@
 
 namespace tiki
 {
-	Editor::Editor()
-		: m_pCurrentRibbon( nullptr )
+	Editor::Editor( Project& project )
+		: m_project( project )
+		, m_pCurrentRibbon( nullptr )
 		, m_pCurrentEditable( nullptr )
-		, m_fileBrowserUi( this )
+		, m_fileBrowserUi( *this )
+		, m_editableRibbon( *this )
 		//, m_openShortcut( QKeySequence( QKeySequence::Open ), m_pWindow )
 		//, m_saveShortcut( QKeySequence( QKeySequence::Save ), m_pWindow )
 		//, m_closeShortcut( QKeySequence( Qt::CTRL + Qt::Key_W ), m_pWindow )
@@ -59,8 +61,6 @@ namespace tiki
 		//connect( &m_saveShortcut, &QShortcut::activated, this, &Editor::fileSaveShortcut );
 		//connect( &m_closeShortcut, &QShortcut::activated, this, &Editor::fileCloseShortcut );
 
-		m_messageBox.open( "Hello", "World!", ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Yes ), ToolMessageBoxIcon_Error );
-
 		return true;
 	}
 
@@ -84,8 +84,6 @@ namespace tiki
 		{
 			pEditor->doUi();
 		}
-
-		m_messageBox.doUi();
 	}
 
 	//Editable* Editor::openEditable( const DynamicString& title, BaseEditor* pEditor )
@@ -228,6 +226,11 @@ namespace tiki
 			m_pCurrentEditable = nullptr;
 		}
 
+		if( m_pCurrentRibbon == &m_editableRibbon )
+		{
+			m_pCurrentRibbon = nullptr;
+		}
+
 		m_editables.removeSortedByValue( pEditable );
 		pEditable->getEditor()->closeEditable( pEditable );
 	}
@@ -331,34 +334,6 @@ namespace tiki
 	//	openFile( fileName );
 	//}
 
-	//void Editor::fileSaveShortcut()
-	//{
-	//	if( m_pCurrentEditable != nullptr )
-	//	{
-	//		saveEditable( m_pCurrentEditable );
-	//	}
-	//}
-
-	//void Editor::fileCloseShortcut()
-	//{
-	//	if( m_pCurrentEditable != nullptr )
-	//	{
-	//		closeEditable( m_pCurrentEditable );
-	//	}
-	//}
-
-	//void Editor::fileCloseRequest( QWidget* pWidget )
-	//{
-	//	foreach( IEditable* pEditable, m_editables )
-	//	{
-	//		if( pEditable->getEditWidget() == pWidget )
-	//		{
-	//			closeEditable( pEditable );
-	//			return;
-	//		}
-	//	}
-	//}
-
 	void Editor::setProjectPathes()
 	{
 		Path currentPath( platform::getExecutablePath() );
@@ -428,8 +403,30 @@ namespace tiki
 		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 10.0f, 96.0f ), ImGuiCond_Always );
 		if( ImGui::Begin( "Ribbon", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
 		{
-			for( EditorRibbon* pRibbon : m_ribbons )
+			//if( ImGui::Button( "test" ) )
+			//{
+			//	m_messageBox.open( "Hello", "World!\nBla\ndfgdfg\ndgdfgdfg dgdfg dfg d fgdfgd fgdfgd gdf gdfg dfg dfgd", ToolMessageBoxButtons_YesNo, ToolMessageBoxIcon_Error );
+			//}
+			//ImGui::SameLine();
+
+
+			for( int i = -1; i < int( m_ribbons.getCount() ); ++i )
 			{
+				EditorRibbon* pRibbon = nullptr;
+				if( i < 0 )
+				{
+					if( m_pCurrentEditable == nullptr )
+					{
+						continue;
+					}
+
+					pRibbon = &m_editableRibbon;
+				}
+				else
+				{
+					pRibbon = m_ribbons[ i ];
+				}
+
 				if( m_pCurrentRibbon == nullptr )
 				{
 					m_pCurrentRibbon = pRibbon;
@@ -462,6 +459,7 @@ namespace tiki
 				m_pCurrentRibbon->doUi();
 			}
 
+			m_messageBox.doUi();
 			ImGui::End();
 		}
 	}

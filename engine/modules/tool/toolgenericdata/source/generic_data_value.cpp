@@ -439,12 +439,17 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getEnum( string& enumName, sint64& enumValue ) const
+	bool GenericDataValue::getEnum( string& enumName, sint64* pEnumValue /*= nullptr*/ ) const
 	{
 		if( m_valueType == GenericDataValueType_Enum )
 		{
-			enumName	= m_text;
-			enumValue	= m_value.s64;
+			enumName = m_text;
+
+			if( pEnumValue != nullptr )
+			{
+				*pEnumValue = m_value.s64;
+			}
+
 			return true;
 		}
 

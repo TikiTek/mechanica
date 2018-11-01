@@ -9,6 +9,11 @@ ImTextureID ImGui::Tex( const tiki::ToolImage& toolImage )
 	return (ImTextureID)&toolImage.getData();
 }
 
+ImVec2 ImGui::Vec2( const tiki::Vector2& vec2 )
+{
+	return ImVec2( vec2.x, vec2.y );
+}
+
 ImTextureID ImGui::Tex( const tiki::TextureData& textureData )
 {
 	return (ImTextureID)&textureData;

@@ -353,7 +353,7 @@ namespace tiki
 			{
 				string enumName;
 				sint64 enumValue;
-				if ( value.getEnum( enumName, enumValue ) )
+				if ( value.getEnum( enumName, &enumValue ) )
 				{
 					const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)value.getType();
 					const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pEnumType->getBaseType();

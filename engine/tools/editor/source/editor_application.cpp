@@ -4,16 +4,11 @@ namespace tiki
 {
 	EditorApplication::EditorApplication()
 	{
-		//QSettings settings( "TikiTek", "editor" );
-		//restoreGeometry( settings.value( "window/geometry" ).toByteArray() );
-		//restoreState( settings.value( "window/windowState" ).toByteArray() );
+		m_pEditor = nullptr;
 	}
 
 	EditorApplication::~EditorApplication()
 	{
-		//QSettings settings( "TikiTek", "editor" );
-		//settings.setValue( "window/geometry", saveGeometry() );
-		//settings.setValue( "window/windowState", saveState() );
 	}
 
 	void EditorApplication::fillToolParameters( ToolApplicationParamters& parameters )
@@ -21,20 +16,33 @@ namespace tiki
 		parameters.pWindowTitle		= "TikiEditor";
 		parameters.screenWidth		= 1600u;
 		parameters.screenHeight		= 900u;
-		parameters.assetBuildPath	= m_editor.getProject().getAssetBuildPath();
+		parameters.assetBuildPath	= m_project.getAssetBuildPath();
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		parameters.pProject			= &m_editor.getProject();
+		parameters.pProject			= &m_project;
 #endif
 	}
 
 	bool EditorApplication::initializeTool()
 	{
-		return m_editor.create();
+		m_pEditor = new Editor( m_project );
+
+		if( !m_pEditor->create() )
+		{
+			delete m_pEditor;
+			return false;
+		}
+
+		return true;
 	}
 
 	void EditorApplication::shutdownTool()
 	{
-		m_editor.dispose();
+		if( m_pEditor != nullptr )
+		{
+			m_pEditor->dispose();
+			delete m_pEditor;
+			m_pEditor = nullptr;
+		}
 	}
 
 	void EditorApplication::updateTool( bool wantToShutdown )
@@ -56,7 +64,7 @@ namespace tiki
 
 	void EditorApplication::doUi()
 	{
-		m_editor.doUi();
+		m_pEditor->doUi();
 	}
 
 	ToolApplication& tool::getTool()
