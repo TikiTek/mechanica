@@ -87,7 +87,7 @@ namespace tiki
 		bool						getArray( GenericDataArray*& pValue ) const;
 		bool						setArray( GenericDataArray* pValue );
 
-		bool						getEnum( string& enumName, sint64& enumValue ) const;
+		bool						getEnum( string& enumName, sint64* pEnumValue = nullptr ) const;
 		bool						setEnum( const string& valueName, const GenericDataType* pType = nullptr);
 
 		bool						getReference( string& refText ) const;

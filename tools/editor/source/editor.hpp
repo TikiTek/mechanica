@@ -5,6 +5,7 @@
 #include "tiki/toolapplication/tool_message_box.hpp"
 #include "tiki/toolproject/project.hpp"
 
+#include "editor_editable_ribbon.hpp"
 #include "editor_file_browser_ui.hpp"
 
 namespace tiki
@@ -22,7 +23,7 @@ namespace tiki
 
 	public:
 
-										Editor();
+										Editor( Project& project );
 		virtual							~Editor();
 
 		bool							create();
@@ -35,6 +36,7 @@ namespace tiki
 		virtual void					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeAll() TIKI_OVERRIDE_FINAL;
+		Editable*						getCurrentEditable() { return m_pCurrentEditable; }
 
 		virtual void					registerFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
 		virtual void					unregisterFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
@@ -57,7 +59,7 @@ namespace tiki
 
 	private:
 
-		Project						m_project;
+		Project&					m_project;
 		AssetConverterInterface*	m_pAssetConverter;
 
 		Path						m_projectPath;
@@ -76,6 +78,7 @@ namespace tiki
 		Editable*					m_pCurrentEditable;
 
 		EditorFileBrowserUi			m_fileBrowserUi;
+		EditorEditableRibbon		m_editableRibbon;
 		ToolMessageBox				m_messageBox;
 
 		//QShortcut					m_openShortcut;

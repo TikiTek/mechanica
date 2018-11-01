@@ -6,9 +6,10 @@
 
 namespace tiki
 {
-	EditorFileBrowserUi::EditorFileBrowserUi( EditorInterface* pInterface )
-		: m_pInterface( pInterface )
+	EditorFileBrowserUi::EditorFileBrowserUi( Editor& editor )
+		: m_editor( editor )
 		, m_pPackage( nullptr )
+		, m_pFirstNode( nullptr )
 	{
 	}
 
@@ -113,7 +114,7 @@ namespace tiki
 			pFileNode->pIcon		= &m_unknownIcon;
 			pFileNode->filename		= childPath;
 
-			FileEditor* pEditor = m_pInterface->findEditorForFile( childPath );
+			FileEditor* pEditor = m_editor.findEditorForFile( childPath );
 			if( pEditor != nullptr )
 			{
 				pFileNode->pIcon = &pEditor->getEditableIcon();
@@ -138,9 +139,9 @@ namespace tiki
 			ImGui::AlignTextToFramePadding();
 			if( pNode->pFirstChild == nullptr )
 			{
-				if( ImGui::TreeNodeEx( pName, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick ) )
+				if( ImGui::TreeNodeEx( pName, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick ) )
 				{
-					m_pInterface->openFile( pNode->filename );
+					m_editor.openFile( pNode->filename );
 				}
 			}
 			else if( ImGui::TreeNode( pName ) )

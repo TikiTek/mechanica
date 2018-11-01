@@ -31,5 +31,8 @@ namespace tiki
 		void					doArrayUi( GenericDataArray* pArray );
 		void					doElementUi( const string& name, GenericDataValue* pValue );
 		void					doValueUi( GenericDataValue* pValue );
+		void					doEnumUi( GenericDataValue* pValue );
+		void					doValueTypeUi( GenericDataValue* pValue );
+		void					doResourceUi( GenericDataValue* pValue );
 	};
 }

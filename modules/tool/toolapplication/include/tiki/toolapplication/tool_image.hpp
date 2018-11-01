@@ -22,6 +22,7 @@ namespace tiki
 		bool				createFromMemory( ConstMemoryBlock imageData );
 		void				dispose();
 
+		Vector2				getSize() const { return vector::create( float( m_data.getWidth() ), float( m_data.getHeight() ) ); }
 		const TextureData&	getData() const { return m_data; }
 
 	private:

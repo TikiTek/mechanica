@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	class EditorInterface;
+	class Editor;
 
 	class EditorFileBrowserUi
 	{
@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-		explicit					EditorFileBrowserUi( EditorInterface* pInterface );
+		explicit					EditorFileBrowserUi( Editor& editor );
 		virtual						~EditorFileBrowserUi();
 
 		void						create();
@@ -34,7 +34,7 @@ namespace tiki
 			Path					filename;
 		};
 
-		EditorInterface*			m_pInterface;
+		Editor&						m_editor;
 		const Package*				m_pPackage;
 
 		ChunkedPool< FileTreeNode >	m_nodes;

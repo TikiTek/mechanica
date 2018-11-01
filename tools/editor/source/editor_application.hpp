@@ -2,8 +2,6 @@
 
 #include "tiki/toolapplication/tool_application.hpp"
 
-#include "editor.hpp"
-
 namespace tiki
 {
 	class EditorApplication : public ToolApplication
@@ -29,6 +27,7 @@ namespace tiki
 
 	private:
 
-		Editor						m_editor;
+		Project			m_project;
+		Editor*			m_pEditor;
 	};
 }
