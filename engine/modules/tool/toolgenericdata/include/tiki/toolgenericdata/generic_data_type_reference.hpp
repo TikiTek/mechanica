@@ -15,7 +15,7 @@ namespace tiki
 
 	public:
 
-										GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType );
+										GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType );
 		virtual							~GenericDataTypeReference();
 
 		virtual bool					loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;

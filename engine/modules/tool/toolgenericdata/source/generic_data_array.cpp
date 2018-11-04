@@ -22,7 +22,7 @@ namespace tiki
 
 	GenericDataArray::~GenericDataArray()
 	{
-		TIKI_ASSERT( m_array.isEmpty() );
+		dispose();
 	}
 
 	bool GenericDataArray::create( const GenericDataTypeArray* pType )
@@ -44,13 +44,37 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataArray::createCopyFrom( const GenericDataArray* pCopyFrom )
+	{
+		if( pCopyFrom == nullptr ||
+			pCopyFrom->getType() == nullptr )
+		{
+			return false;
+		}
+
+		m_pType = pCopyFrom->getType();
+
+		m_array.resize( pCopyFrom->getCount() );
+		for( uint i = 0u; i < pCopyFrom->getCount(); ++i )
+		{
+			m_array[ i ] = TIKI_NEW( GenericDataValue )( m_pType->getBaseType() );
+			if( !m_array[ i ]->setCopyFromValue( m_collection, pCopyFrom->getElement( i ) ) )
+			{
+				dispose();
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	void GenericDataArray::dispose()
 	{
 		for (uint i = 0u; i < m_array.getCount(); ++i)
 		{
 			TIKI_DELETE( m_array[ i ] );
 		}
-		m_array.clear();
+		m_array.dispose();
 	}
 
 	const GenericDataTypeArray* GenericDataArray::getType() const

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "tiki/base/delegate.hpp"
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/flagmask.hpp"
+#include "tiki/base/user_data.hpp"
 #include "tiki/toolapplication/tool_image.hpp"
 
 namespace tiki
@@ -38,6 +40,8 @@ namespace tiki
 	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_AbortRetryIgnore	= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Abort ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ignore );
 	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_RetryCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Cancel );
 
+	typedef Delegate< void, ToolMessageBoxButton, UserData > ToolMessageBoxCallbackDelegate;
+
 	class ToolMessageBox
 	{
 		TIKI_NONCOPYABLE_CLASS( ToolMessageBox );
@@ -46,7 +50,7 @@ namespace tiki
 
 					ToolMessageBox();
 
-		void		open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon_None );
+		void		open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon_None, ToolMessageBoxCallbackDelegate callback = ToolMessageBoxCallbackDelegate(), UserData userData = UserData() );
 
 		void		doUi();
 
@@ -62,5 +66,7 @@ namespace tiki
 		DynamicString					m_message;
 		ToolMessageBoxIcon				m_icon;
 		ToolMessageBoxButtonFlagMask	m_buttons;
+		ToolMessageBoxCallbackDelegate	m_callback;
+		UserData						m_userData;
 	};
 }

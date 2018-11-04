@@ -6,8 +6,8 @@
 
 namespace tiki
 {
-	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
-		: GenericDataType( collection, name, GenericDataTypeType_Enum, mode )
+	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Enum, mode )
 		, m_pBaseType( pBaseType )
 	{
 		if( m_pBaseType == nullptr )

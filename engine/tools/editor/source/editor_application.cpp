@@ -4,7 +4,8 @@ namespace tiki
 {
 	EditorApplication::EditorApplication()
 	{
-		m_pEditor = nullptr;
+		m_pProject	= TIKI_NEW( Project )();
+		m_pEditor	= nullptr;
 	}
 
 	EditorApplication::~EditorApplication()
@@ -16,19 +17,19 @@ namespace tiki
 		parameters.pWindowTitle		= "TikiEditor";
 		parameters.screenWidth		= 1600u;
 		parameters.screenHeight		= 900u;
-		parameters.assetBuildPath	= m_project.getAssetBuildPath();
+		parameters.assetBuildPath	= m_pProject->getAssetBuildPath();
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		parameters.pProject			= &m_project;
+		parameters.pProject			= m_pProject;
 #endif
 	}
 
 	bool EditorApplication::initializeTool()
 	{
-		m_pEditor = new Editor( m_project );
+		m_pEditor = TIKI_NEW( Editor )( *m_pProject );
 
 		if( !m_pEditor->create() )
 		{
-			delete m_pEditor;
+			TIKI_DELETE( m_pEditor );
 			return false;
 		}
 
@@ -40,9 +41,12 @@ namespace tiki
 		if( m_pEditor != nullptr )
 		{
 			m_pEditor->dispose();
-			delete m_pEditor;
+			TIKI_DELETE( m_pEditor );
 			m_pEditor = nullptr;
 		}
+
+		TIKI_DELETE( m_pProject );
+		m_pProject = nullptr;
 	}
 
 	void EditorApplication::updateTool( bool wantToShutdown )

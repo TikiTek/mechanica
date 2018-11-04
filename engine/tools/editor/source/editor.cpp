@@ -66,6 +66,11 @@ namespace tiki
 
 	void Editor::dispose()
 	{
+		for( Editable* pEditable : m_editables )
+		{
+			closeEditableInternal( pEditable );
+		}
+
 		unregisterFileEditor( m_pGenericDataEditor );
 		unregisterFileEditor( m_pPackageEditor );
 
@@ -134,14 +139,14 @@ namespace tiki
 
 		if( !file::exists( fileName.getCompletePath() ) )
 		{
-			//QMessageBox::warning( getDialogParent(), getDialogTitle(), "File not found. Please choose an other file." );
+			m_messageBox.open( getDialogTitle(), "File not found. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon_Warning );
 			return nullptr;
 		}
 
 		FileEditor* pEditor = findEditorForFile( fileName );
 		if( pEditor == nullptr )
 		{
-			//QMessageBox::warning( getDialogParent(), getDialogTitle(), "File type is not supported. Please choose an other file." );
+			m_messageBox.open( getDialogTitle(), "File type is not supported. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon_Warning );
 			return nullptr;
 		}
 
@@ -205,34 +210,12 @@ namespace tiki
 				fileName = pEditable->getTitle();
 			}
 
-			const DynamicString text = "Do you want to save changes to '" + fileName + "'?";
-			//const QMessageBox::StandardButton button = (QMessageBox::StandardButton)QMessageBox::information( m_pWindow, m_pWindow->windowTitle(), text, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes );
-			//switch( button )
-			//{
-			//case QMessageBox::Yes:
-			//	saveEditable( pEditable );
-			//	break;
-			//
-			//case QMessageBox::Cancel:
-			//	return;
-			//
-			//default:
-			//	break;
-			//}
+			const DynamicString text = "Do you want to save changes of '" + fileName + "'?";
+			m_messageBox.open( getDialogTitle(), text, ToolMessageBoxButtons_YesNoCancel, ToolMessageBoxIcon_Question, ToolMessageBoxCallbackDelegate( this, &Editor::saveOnCloseCallback ), UserData( pEditable ) );
+			return;
 		}
 
-		if( pEditable == m_pCurrentEditable )
-		{
-			m_pCurrentEditable = nullptr;
-		}
-
-		if( m_pCurrentRibbon == &m_editableRibbon )
-		{
-			m_pCurrentRibbon = nullptr;
-		}
-
-		m_editables.removeSortedByValue( pEditable );
-		pEditable->getEditor()->closeEditable( pEditable );
+		closeEditableInternal( pEditable );
 	}
 
 	void Editor::closeAll()
@@ -292,22 +275,23 @@ namespace tiki
 		return m_packagePath;
 	}
 
-	//QWidget* Editor::getDialogParent() const
-	//{
-	//	return m_pWindow;
-	//}
+	DynamicString Editor::getDialogTitle() const
+	{
+		DynamicString title = "TikiEditor";
+		if( m_pPackageEditor->getPackage() != nullptr )
+		{
+			title += " - " + m_pPackageEditor->getPackage()->getName();
+		}
 
-	//QString Editor::getDialogTitle() const
-	//{
-	//	return m_pWindow->windowTitle();
-	//}
+		return title;
+	}
 
 	//void Editor::markFileAsDirty( EditorEditable* pEditable )
 	//{
 	//	EditorEditable* pEditorFile = (EditorEditable*)pEditable;
 	//	m_pWindow->changeFileTab( pEditable->getEditWidget(), pEditorFile->getTabTitle() );
 	//}
-
+	//
 	//void Editor::fileOpenShortcut()
 	//{
 	//	QString allFilter = "All supported files (";
@@ -323,16 +307,52 @@ namespace tiki
 	//		filter += QString( "%1 (*.%2)" ).arg( pEditor->getFileTypeName(), pEditor->getFileExtension() );
 	//	}
 	//	filter = allFilter + ");;" + filter + ";;All files (*.*)";
-
+	//
 	//	const QString fileName = QFileDialog::getOpenFileName(
 	//		getDialogParent(),
 	//		getDialogTitle(),
 	//		getPackagePath().absolutePath(),
 	//		filter
 	//	);
-
+	//
 	//	openFile( fileName );
 	//}
+
+	void Editor::saveOnCloseCallback( ToolMessageBoxButton button, UserData userData )
+	{
+		Editable* pEditable = static_cast< Editable* >( userData.pContext );
+
+		switch( button )
+		{
+		case ToolMessageBoxButton_Yes:
+			saveEditable( pEditable );
+			break;
+
+		case ToolMessageBoxButton_Cancel:
+			return;
+
+		default:
+			break;
+		}
+
+		closeEditableInternal( pEditable );
+	}
+
+	void Editor::closeEditableInternal( Editable* pEditable )
+	{
+		if( pEditable == m_pCurrentEditable )
+		{
+			m_pCurrentEditable = nullptr;
+		}
+
+		if( m_pCurrentRibbon == &m_editableRibbon )
+		{
+			m_pCurrentRibbon = nullptr;
+		}
+
+		m_editables.removeSortedByValue( pEditable );
+		pEditable->getEditor()->closeEditable( pEditable );
+	}
 
 	void Editor::setProjectPathes()
 	{
@@ -493,11 +513,25 @@ namespace tiki
 					m_pCurrentEditable = pEditable;
 				}
 
+				bool wasSelected = false;
+				if( m_pCurrentEditable == pEditable )
+				{
+					const ImGuiStyle& style = ImGui::GetStyle();
+					ImGui::PushStyleColor( ImGuiCol_Button, style.Colors[ ImGuiCol_ButtonHovered ] );
+					wasSelected = true;
+				}
+
 				formatStringBuffer( titleBuffer, sizeof( titleBuffer ), "%s%s", pEditable->getTitle().cStr(), pEditable->isDirty() ? "*" : "" );
 				if( ImGui::Button( titleBuffer ) )
 				{
 					m_pCurrentEditable = pEditable;
 				}
+
+				if( wasSelected )
+				{
+					ImGui::PopStyleColor();
+				}
+
 				ImGui::SameLine();
 			}
 			ImGui::NewLine();

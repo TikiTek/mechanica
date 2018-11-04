@@ -23,7 +23,9 @@ namespace tiki
 
 	public:
 
-												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
+		typedef ArrayView< GenericDataStructField > FieldArrayView;
+
+												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
 		virtual									~GenericDataTypeStruct();
 
 		virtual bool							loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE;
@@ -36,11 +38,16 @@ namespace tiki
 
 		const GenericDataTypeStruct*			getBaseType() const;
 
-		void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
-		void									removeField( const string& name );
+		//void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
+		//void									removeField( const string& name );
 
 		const List< GenericDataStructField >&	getFields() const;
-		const GenericDataType*					getFieldTypeByName( const string& name ) const;
+		uint									getFieldCount() const { return m_fields.getCount(); }
+		const GenericDataStructField*			getFieldByName( const string& name ) const;
+		uint									getFieldIndexByName( const string& name ) const;
+
+		FieldArrayView							getLocalFields() const;
+		uint									getLocalFieldOffset() const { return m_localFieldOffset; }
 
 		const GenericDataObject*				getDefaultObject() const { return m_pDefaultObject; }
 
@@ -54,7 +61,7 @@ namespace tiki
 		uint									m_size;
 
 		List< GenericDataStructField >			m_fields;
-
+		uint									m_localFieldOffset;
 	};
 }
 

@@ -51,27 +51,28 @@ namespace tiki
 
 	public:
 
-									GenericDataType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeType type, GenericDataTypeMode mode );
+									GenericDataType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeType type, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_PURE;
 		XmlElement*					createXmlElement( XmlDocument& document, const char* pName ) const;
 		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
 
-		const string&				getName() const;
-		GenericDataTypeMode			getMode() const;
-		GenericDataTypeType			getType() const;
-		const string&				getModule() const;
-		void						setModule( const string& value );
+		const string&				getName() const { return m_name; }
+		const string&				getModule() const { return m_module; }
+		void						setModule( const string& value ) { m_module = value; }
+		const string&				getFilename() const { return m_filename; }
+		GenericDataTypeMode			getMode() const { return m_mode; }
+		GenericDataTypeType			getType() const { return m_type; }
 
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
 		virtual string				getCodeExportName() const TIKI_PURE;
 		virtual crc32				getTypeCrc() const TIKI_PURE;
 
-		virtual bool				isTypeCompatible( const GenericDataType* pType ) const;
+		virtual bool				isTypeCompatible( const GenericDataType* pType ) const { return pType == this; }
 
-		const GenericDataValue*		getDefaultValue() const;
+		const GenericDataValue*		getDefaultValue() const { return m_pDefaultValue; }
 
 	protected:
 
@@ -84,6 +85,8 @@ namespace tiki
 
 		string						m_name;
 		string						m_module;
+		string						m_filename;
+
 		GenericDataTypeType			m_type;
 		GenericDataTypeMode			m_mode;
 	};

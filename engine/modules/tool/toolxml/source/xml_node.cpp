@@ -110,6 +110,11 @@ namespace tiki
 		getNativeNode()->DeleteChild( pElement->getNativeNode() );
 	}
 
+	uint XmlNode::getLineNumber() const
+	{
+		return uint( getNativeNode()->GetLineNum() );
+	}
+
 	XmlNode::XmlNode()
 	{
 	}

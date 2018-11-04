@@ -5,8 +5,8 @@
 
 namespace tiki
 {
-	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
-		: GenericDataType( collection, name, GenericDataTypeType_Reference, mode )
+	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Reference, mode )
 		, m_pBaseType( pBaseType )
 	{
 		m_pTypeTag = TIKI_NEW( GenericDataTag );

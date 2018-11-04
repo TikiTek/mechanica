@@ -45,13 +45,11 @@ namespace tiki
 	{
 		if( (m_valueType == GenericDataValueType_Object || m_valueType == GenericDataValueType_Pointer) && m_value.pObject != nullptr )
 		{
-			m_value.pObject->dispose();
 			TIKI_DELETE( m_value.pObject );
 			m_value.pObject = nullptr;
 		}
 		else if( m_valueType == GenericDataValueType_Array && m_value.pArray != nullptr )
 		{
-			m_value.pArray->dispose();
 			TIKI_DELETE( m_value.pArray );
 			m_value.pArray = nullptr;
 		}
@@ -393,7 +391,18 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getObject( GenericDataObject*& pValue ) const
+	bool GenericDataValue::getObject( GenericDataObject*& pValue )
+	{
+		if( m_valueType == GenericDataValueType_Object )
+		{
+			pValue = m_value.pObject;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::getObject( const GenericDataObject*& pValue ) const
 	{
 		if( m_valueType == GenericDataValueType_Object )
 		{
@@ -406,17 +415,34 @@ namespace tiki
 
 	bool GenericDataValue::setObject( GenericDataObject* pValue )
 	{
-		if( pValue == nullptr || !checkType( pValue->getType() ) )
+		if( (pValue == nullptr && m_valueType != GenericDataValueType_Object) ||
+			(pValue != nullptr && !checkType( pValue->getType() )) )
 		{
 			return false;
 		}
 
-		m_value.pObject = pValue;
+		if( m_value.pObject != nullptr )
+		{
+			TIKI_DELETE( m_value.pObject );
+			m_value.pObject = nullptr;
+		}
 
+		m_value.pObject = pValue;
 		return true;
 	}
 
-	bool GenericDataValue::getArray( GenericDataArray*& pValue ) const
+	bool GenericDataValue::getArray( GenericDataArray*& pValue )
+	{
+		if( m_valueType == GenericDataValueType_Array )
+		{
+			pValue = m_value.pArray;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::getArray( const GenericDataArray*& pValue ) const
 	{
 		if( m_valueType == GenericDataValueType_Array )
 		{
@@ -429,9 +455,16 @@ namespace tiki
 
 	bool GenericDataValue::setArray( GenericDataArray* pValue )
 	{
-		if( pValue == nullptr || !checkType( pValue->getType() ) )
+		if( (pValue == nullptr && m_valueType != GenericDataValueType_Array) ||
+			(pValue != nullptr && !checkType( pValue->getType() )) )
 		{
 			return false;
+		}
+
+		if( m_value.pArray != nullptr )
+		{
+			TIKI_DELETE( m_value.pArray );
+			m_value.pArray = nullptr;
 		}
 
 		m_value.pArray = pValue;
@@ -500,7 +533,18 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getPointer( GenericDataObject*& pValue ) const
+	bool GenericDataValue::getPointer( GenericDataObject*& pValue )
+	{
+		if( m_valueType == GenericDataValueType_Pointer )
+		{
+			pValue = m_value.pObject;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool GenericDataValue::getPointer( const GenericDataObject*& pValue ) const
 	{
 		if( m_valueType == GenericDataValueType_Pointer )
 		{
@@ -513,9 +557,16 @@ namespace tiki
 
 	bool GenericDataValue::setPointer( GenericDataObject* pValue )
 	{
-		if( pValue == nullptr || !checkType( pValue->getType() ) )
+		if( (pValue == nullptr && m_valueType != GenericDataValueType_Pointer) ||
+			(pValue != nullptr && !checkType( pValue->getType() )) )
 		{
 			return false;
+		}
+
+		if( m_value.pObject != nullptr )
+		{
+			TIKI_DELETE( m_value.pObject );
+			m_value.pObject = nullptr;
 		}
 
 		m_value.pObject = pValue;
@@ -618,7 +669,7 @@ namespace tiki
 			}
 			else
 			{
-				TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] child node has a invalid name: '%s'.\n", pChildNode->getName() );
+				TIKI_TRACE_ERROR( "[GenericDataValue::importFromXml] child node has a invalid name: '%s'.\n", pChildNode->getName() );
 				return false;
 			}
 		}
@@ -651,7 +702,7 @@ namespace tiki
 		{
 			if( m_value.pArray == nullptr )
 			{
-				TIKI_TRACE_ERROR( "[GenericDataContainer::exportToXml] tried to export null array.\n" );
+				TIKI_TRACE_ERROR( "[GenericDataValue::exportToXml] tried to export null array.\n" );
 				return false;
 			}
 
@@ -661,7 +712,7 @@ namespace tiki
 		{
 			if( m_value.pObject == nullptr )
 			{
-				TIKI_TRACE_ERROR( "[GenericDataContainer::exportToXml] tried to export null object.\n" );
+				TIKI_TRACE_ERROR( "[GenericDataValue::exportToXml] tried to export null object.\n" );
 				return false;
 			}
 
@@ -674,6 +725,101 @@ namespace tiki
 		else
 		{
 			m_pNode->setAttribute( "value", toString().cStr() );
+		}
+
+		return true;
+	}
+
+	bool GenericDataValue::setCopyFromValue( GenericDataTypeCollection& collection, const GenericDataValue* pValue )
+	{
+		if( pValue == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] can't copy null value.\n" );
+			return false;
+		}
+
+		if( pValue->getType() != m_pType )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] can't copy value from other type.\n" );
+			return false;
+		}
+
+		const GenericDataTag* pValueTag = pValue->getValueTag();
+		if( pValueTag != nullptr )
+		{
+			setValueTag( TIKI_NEW( GenericDataTag )( pValueTag ) );
+		}
+
+		if( m_valueType == GenericDataValueType_Array )
+		{
+			const GenericDataArray* pSourceArray = nullptr;
+			if( !pValue->getArray( pSourceArray ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not get array to copy.\n" );
+				return false;
+			}
+
+			GenericDataArray* pArray = nullptr;
+			if( pSourceArray != nullptr )
+			{
+				pArray = TIKI_NEW( GenericDataArray )(collection);
+				if( !pArray->createCopyFrom( pSourceArray ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not copy array.\n" );
+					return false;
+				}
+			}
+
+			if( !setArray( pArray ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not set copied array.\n" );
+				TIKI_DELETE( pArray );
+				return false;
+			}
+		}
+		else if( m_valueType == GenericDataValueType_Object ||
+				 m_valueType == GenericDataValueType_Pointer )
+		{
+			const GenericDataObject* pSourceObject = nullptr;
+			if( !pValue->getObject( pSourceObject ) &&
+				!pValue->getPointer( pSourceObject ) )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not get object to copy.\n" );
+				return false;
+			}
+
+			GenericDataObject* pObject = nullptr;
+			if( pSourceObject != nullptr )
+			{
+				pObject = TIKI_NEW( GenericDataObject )(collection);
+				if( !pObject->createCopyFrom( pSourceObject ) )
+				{
+					TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not copy object.\n" );
+					TIKI_DELETE( pObject );
+					return false;
+				}
+			}
+
+			bool result = false;
+			if( m_valueType == GenericDataValueType_Object )
+			{
+				result = setObject( pObject );
+			}
+			else
+			{
+				result = setPointer( pObject );
+			}
+
+			if( !result )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataValue::setCopyFromValue] could not set copied object.\n" );
+				TIKI_DELETE( pObject );
+				return false;
+			}
+		}
+		else
+		{
+			m_value = pValue->m_value;
 		}
 
 		return true;

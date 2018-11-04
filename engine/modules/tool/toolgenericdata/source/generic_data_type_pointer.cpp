@@ -4,8 +4,8 @@
 
 namespace tiki
 {
-	GenericDataTypePointer::GenericDataTypePointer( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
-		: GenericDataType( collection, name, GenericDataTypeType_Pointer, mode )
+	GenericDataTypePointer::GenericDataTypePointer( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Pointer, mode )
 		, m_pBaseType( pBaseType )
 	{
 		m_pTypeTag = TIKI_NEW( GenericDataTag );

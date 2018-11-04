@@ -5,10 +5,11 @@
 
 namespace tiki
 {
-	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type )
-		: GenericDataType( collection, name, GenericDataTypeType_ValueType, mode )
+	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, GenericDataValueTypeType type )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_ValueType, mode )
 		, m_type( type )
 	{
+		m_pDefaultValue = TIKI_NEW( GenericDataValue )( this );
 	}
 
 	GenericDataTypeValueType::~GenericDataTypeValueType()

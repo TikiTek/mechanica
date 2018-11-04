@@ -37,24 +37,24 @@ namespace tiki
 
 	public:
 
-										GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, GenericDataValueTypeType type );
-		virtual							~GenericDataTypeValueType();
+									GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, GenericDataValueTypeType type );
+		virtual						~GenericDataTypeValueType();
 
-		virtual bool					loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
-		virtual bool					exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE_FINAL;
+		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
+		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE_FINAL;
 
-		virtual uint					getAlignment() const TIKI_OVERRIDE_FINAL;
-		virtual uint					getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string					getCodeExportName() const TIKI_OVERRIDE_FINAL;
-		virtual crc32					getTypeCrc() const TIKI_OVERRIDE_FINAL;
+		virtual uint				getAlignment() const TIKI_OVERRIDE_FINAL;
+		virtual uint				getSize() const TIKI_OVERRIDE_FINAL;
+		virtual string				getCodeExportName() const TIKI_OVERRIDE_FINAL;
+		virtual crc32				getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
-		GenericDataValueTypeType		getValueType() const;
+		GenericDataValueTypeType	getValueType() const;
 
-		bool							isBoolean() const;
-		bool							isSignedInteger() const;
-		bool							isUnsignedInteger() const;
-		bool							isFloatingPoint() const;
-		bool							isString() const;
+		bool						isBoolean() const;
+		bool						isSignedInteger() const;
+		bool						isUnsignedInteger() const;
+		bool						isFloatingPoint() const;
+		bool						isString() const;
 
 	private:
 
