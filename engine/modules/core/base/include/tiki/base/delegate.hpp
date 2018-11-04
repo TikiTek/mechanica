@@ -4,54 +4,58 @@
 
 namespace tiki
 {
-	template< class TReturn, class TParam0 >
+	template< class TReturn, class ... TParams >
 	class Delegate
 	{
 	public:
 
-		typedef TReturn( *Function )( TParam0 );
+		typedef TReturn( *Function )( TParams ... );
+
+		template< class TInstance >
+		using TInstanceMethod = TReturn( TInstance::* )( TParams ... );
 
 							Delegate();
 		explicit			Delegate( Function pFunction );
-		template< class TInstance, typename TMethod >
-		explicit			Delegate( TInstance* pInstance, TMethod pMethod );
+		template< class TInstance >
+		explicit			Delegate( TInstance* pInstance, TInstanceMethod< TInstance > pMethod );
 
 		void				setStaticFunction( Function pFunction );
-		template< class TInstance, TReturn( TInstance::*TMethod )( TParam0 ) >
-		void				setInstanceMethod( TInstance* pInstance );
+		template< class TInstance >
+		void				setInstanceMethod( TInstance* pInstance, TInstanceMethod< TInstance > pMethod );
 
-		TReturn				invoke( TParam0 param0 ) const;
+		TReturn				invoke( TParams ... args ) const;
 
 	private:
 
 		struct Callback
 		{
-			virtual TReturn	invoke( TParam0 param0 ) const TIKI_PURE;
+			virtual TReturn	invoke( TParams ... args ) const TIKI_PURE;
 		};
 
 		struct StaticFunctionCallback : public Callback
 		{
 			Function		pFunction;
 
-			virtual TReturn	invoke( TParam0 param0 ) const TIKI_OVERRIDE_FINAL;
+			virtual TReturn	invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
 		};
 
 		struct DefaultInstanceMethod
 		{
-			TReturn			defaultFunction( TParam0 param0 );
+			TReturn			defaultFunction( TParams ... args );
 		};
 
-		template< class TInstance, TReturn( TInstance::*TMethod )( TParam0 ) >
+		template< class TInstance >
 		struct InstanceMethodCallback : public Callback
 		{
-			TInstance*		pInstance;
+			TInstance*						pInstance;
+			TInstanceMethod< TInstance >	pMethod;
 
-			virtual TReturn	invoke( TParam0 param0 ) const TIKI_OVERRIDE_FINAL;
+			virtual TReturn	invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
 		};
 
 		enum
 		{
-			InternalDelegateSize = TIKI_MAX( sizeof( StaticFunctionCallback ), sizeof( InstanceMethodCallback< DefaultInstanceMethod, &DefaultInstanceMethod::defaultFunction > ) )
+			InternalDelegateSize = TIKI_MAX( sizeof( StaticFunctionCallback ), sizeof( InstanceMethodCallback< DefaultInstanceMethod > ) )
 		};
 
 		uint8				m_internalCallbackData[ InternalDelegateSize ];
