@@ -4,8 +4,8 @@
 
 namespace tiki
 {
-	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
-		: GenericDataType( collection, name, GenericDataTypeType_Array, mode )
+	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Array, mode )
 		, m_pBaseType( pBaseType )
 	{
 		m_pTypeTag = TIKI_NEW( GenericDataTag );

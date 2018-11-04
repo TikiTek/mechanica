@@ -38,7 +38,6 @@ namespace tiki
 		virtual const Path&		getContentPath() const TIKI_PURE;
 		virtual const Path&		getPackagePath() const TIKI_PURE;
 
-		//virtual QWidget*		getDialogParent() const TIKI_PURE;
-		//virtual DynamicString	getDialogTitle() const TIKI_PURE;
+		virtual DynamicString	getDialogTitle() const TIKI_PURE;
 	};
 }

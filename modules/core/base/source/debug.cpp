@@ -27,25 +27,6 @@ namespace tiki
 
 	void debug::traceInternal( const char* pFormat, TraceLevel level, va_list pArgs )
 	{
-		static const char* s_aTracePrefix[] =
-		{
-			"",
-			"[DEBUG] ",
-			"[INFO] ",
-			"[WARNING] ",
-			"[ERROR] "
-		};
-
-		const uint formatStringLength = getStringSize( pFormat );
-
-		const char* pPrefix = s_aTracePrefix[ level ];
-		if( pFormat[ 0u ] != '[' && pFormat[ formatStringLength - 1u ] != '\n' )
-		{
-			pPrefix = "";
-		}
-
-		const uint prefixStringLength = strlen( pPrefix ) - (level > 0 && pFormat[ 0u ] == '[' ? 1u : 0u);
-
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 #	pragma warning(push)
 #	pragma warning(disable: 4996)
@@ -56,12 +37,10 @@ namespace tiki
 		pArgs = startList;
 #endif
 
-		string message( prefixStringLength + formattedStringLength );
-		copyString( (char*)message.cStr(), prefixStringLength + 1u, pPrefix );
-
+		string message( formattedStringLength );
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_vsprintf_s_l(
-			(char*)( message.cStr() + prefixStringLength ),
+			(char*)message.cStr(),
 			formattedStringLength + 1u,
 			pFormat,
 			nullptr,
@@ -70,7 +49,7 @@ namespace tiki
 #	pragma warning(pop)
 #else
         vsnprintf(
-            (char*)( message.cStr() + prefixStringLength ),
+            (char*)message.cStr(),
             formattedStringLength + 1u,
             pFormat,
             pArgs

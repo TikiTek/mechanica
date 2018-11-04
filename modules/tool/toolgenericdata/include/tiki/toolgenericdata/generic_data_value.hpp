@@ -82,9 +82,11 @@ namespace tiki
 		bool						getString( string& value ) const;
 		bool						setString( const string& value, const GenericDataType* pType = nullptr);
 
-		bool						getObject( GenericDataObject*& pValue ) const;
+		bool						getObject( GenericDataObject*& pValue );
+		bool						getObject( const GenericDataObject*& pValue ) const;
 		bool						setObject( GenericDataObject* pValue );
-		bool						getArray( GenericDataArray*& pValue ) const;
+		bool						getArray( GenericDataArray*& pValue );
+		bool						getArray( const GenericDataArray*& pValue ) const;
 		bool						setArray( GenericDataArray* pValue );
 
 		bool						getEnum( string& enumName, sint64* pEnumValue = nullptr ) const;
@@ -93,11 +95,14 @@ namespace tiki
 		bool						getReference( string& refText ) const;
 		bool						setReference( const string& refText, const GenericDataType* pType = nullptr);
 
-		bool						getPointer( GenericDataObject*& pValue ) const;
+		bool						getPointer( GenericDataObject*& pValue );
+		bool						getPointer( const GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
 
 		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
 		bool						exportToXml( XmlElement* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+
+		bool						setCopyFromValue( GenericDataTypeCollection& collection, const GenericDataValue* pValue );
 
 	private:
 

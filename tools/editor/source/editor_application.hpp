@@ -27,7 +27,7 @@ namespace tiki
 
 	private:
 
-		Project			m_project;
+		Project*		m_pProject;
 		Editor*			m_pEditor;
 	};
 }

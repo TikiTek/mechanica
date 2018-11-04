@@ -25,10 +25,11 @@ namespace tiki
 
 	public:
 
-										GenericDataArray( GenericDataTypeCollection& collection );
+		explicit						GenericDataArray( GenericDataTypeCollection& collection );
 										~GenericDataArray();
 
 		bool							create( const GenericDataTypeArray* pType );
+		bool							createCopyFrom( const GenericDataArray* pCopyFrom );
 		void							dispose();
 
 		const GenericDataTypeArray*		getType() const;

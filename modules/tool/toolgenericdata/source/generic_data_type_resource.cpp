@@ -7,14 +7,14 @@
 
 namespace tiki
 {
-	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType )
-		: GenericDataType( collection, name, GenericDataTypeType_Resource, mode )
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
 		, m_pBaseType( pBaseType )
 	{
 	}
 
-	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
-		: GenericDataType( collection, name, GenericDataTypeType_Resource, mode )
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
+		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
 	{
 		m_pBaseType = nullptr;
 		m_postFix	= postFix;

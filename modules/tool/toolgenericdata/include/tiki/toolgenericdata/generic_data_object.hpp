@@ -29,20 +29,24 @@ namespace tiki
 										~GenericDataObject();
 
 		bool							create( const GenericDataTypeStruct* pType, const GenericDataObject* pParentObject );
+		bool							createCopyFrom( const GenericDataObject* pCopyFrom );
 		void							dispose();
 
 		const GenericDataTypeStruct*	getType() const;
 		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
 
-		bool							hasField( const string& name ) const;
+		const GenericDataObject*		getParentObject() const { return m_pParentObject; }
+
+		//bool							hasField( const string& name ) const;
 		uint							getFieldCount() const { return m_fields.getCount(); }
 
 		const string&					getFieldName( uint index ) const;
 		const GenericDataType*			getFieldType( uint index ) const;
+		GenericDataValue*				getFieldValue( uint index, bool createMissing );
 		GenericDataValue*				getFieldValue( const string& name, bool createMissing );
-		const GenericDataValue*			getFieldOrDefaultValue( const string& name ) const;
-		GenericDataValue*				getFieldValue( uint index ) const;
+		const GenericDataValue*			getFieldOrDefaultValue( uint index ) const;
 
+		void							removeField( uint index );
 		bool							removeField( const string& name );
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
@@ -63,16 +67,17 @@ namespace tiki
 
 		struct ObjectField
 		{
+			string					name;
 			const GenericDataType*	pType;
 			GenericDataValue*		pValue;
 		};
 
-		typedef Map< string, ObjectField > FieldMap;
+		typedef Array< ObjectField > FieldArray;
 
 		const GenericDataTypeStruct*	m_pType;
 		const GenericDataObject*		m_pParentObject;
 
-		FieldMap						m_fields;
+		FieldArray						m_fields;
 	};
 }
 

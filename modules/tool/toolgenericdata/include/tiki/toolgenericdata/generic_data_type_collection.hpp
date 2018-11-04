@@ -86,7 +86,7 @@ namespace tiki
 		void							registerDefaultResourceTypes();
 
 		bool							loadFiles( const List< Path >& typeFiles );
-		bool							parseFile( XmlElement* pRootNode, const string& moduleName );
+		bool							parseFile( XmlElement* pRootNode, const string& filename, const string& moduleName );
 	};
 }
 

@@ -2,6 +2,8 @@
 #ifndef TIKI_XML_NODE_HPP_INCLUDED
 #define TIKI_XML_NODE_HPP_INCLUDED
 
+#include "tiki/base/types.hpp"
+
 namespace tinyxml2
 {
 	class XMLNode;
@@ -41,6 +43,8 @@ namespace tiki
 
 		void						appendChild( XmlElement* pElement );
 		void						removeChild( XmlElement* pElement );
+
+		uint						getLineNumber() const;
 
 	protected:
 

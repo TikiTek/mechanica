@@ -31,7 +31,7 @@ namespace tiki
 		m_buttons	= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ok );
 	}
 
-	void ToolMessageBox::open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons /*= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ok )*/, ToolMessageBoxIcon icon /*= ToolMessageBoxIcon_None */ )
+	void ToolMessageBox::open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons /* = ToolMessageBoxButtons_Ok */, ToolMessageBoxIcon icon /* = ToolMessageBoxIcon_None */, ToolMessageBoxCallbackDelegate callback /* = ToolMessageBoxCallbackDelegate() */, UserData userData /* = UserData() */ )
 	{
 		TIKI_ASSERT( buttons.isAnyFlagSet() );
 
@@ -46,6 +46,8 @@ namespace tiki
 		m_icon		= icon;
 		m_buttons	= buttons;
 		m_open		= true;
+		m_callback	= callback;
+		m_userData	= userData;
 
 		ImGui::OpenPopup( m_title.cStr() );
 	}
@@ -103,6 +105,7 @@ namespace tiki
 				if( ImGui::Button( s_apMessageBoxButtonTexts[ i ] ) )
 				{
 					m_open = false;
+					m_callback.invoke( button, m_userData );
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SameLine();

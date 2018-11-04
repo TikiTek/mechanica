@@ -14,6 +14,7 @@ namespace tiki
 	public:
 
 		explicit				GenericDataTag();
+		explicit				GenericDataTag( const GenericDataTag* pCopyFrom );
 								~GenericDataTag();
 
 		const string&			getTag() const;

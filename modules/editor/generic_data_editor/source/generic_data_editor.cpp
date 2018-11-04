@@ -26,7 +26,7 @@ namespace tiki
 
 	EditableFile* GenericDataEditor::openFile( const Path& fileName )
 	{
-		GenericDataFile* pFile = new GenericDataFile( fileName, this );
+		GenericDataFile* pFile = new GenericDataFile( fileName, *this );
 		if( !pFile->load() )
 		{
 			delete pFile;

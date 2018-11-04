@@ -7,6 +7,17 @@ namespace tiki
 		m_pChildTag = nullptr;
 	}
 
+	GenericDataTag::GenericDataTag( const GenericDataTag* pCopyFrom )
+	{
+		if( pCopyFrom->getChildTag() != nullptr )
+		{
+			m_pChildTag = new GenericDataTag( pCopyFrom->getChildTag() );
+		}
+
+		m_tag		= pCopyFrom->getTag();
+		m_content	= pCopyFrom->getContent();
+	}
+
 	GenericDataTag::~GenericDataTag()
 	{
 		if( m_pChildTag != nullptr )

@@ -173,7 +173,7 @@ namespace tiki
 		if ( !m_arrays.findValue( const_cast< const GenericDataTypeArray** >( &pArrayType ), pBaseType ) )
 		{
 			const string name = "ResArray<" + pBaseType->getName() + ">";
-			pArrayType = TIKI_NEW( GenericDataTypeArray )( *this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType );
+			pArrayType = TIKI_NEW( GenericDataTypeArray )( *this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType );
 			m_arrays.set( pBaseType, pArrayType );
 
 			TIKI_VERIFY( addType( *pArrayType ) );
@@ -188,7 +188,7 @@ namespace tiki
 		if ( !m_references.findValue( const_cast< const GenericDataTypeReference** >( &pReferenceType ), pBaseType ) )
 		{
 			const string name = "ResRef<" + pBaseType->getName() + ">";
-			pReferenceType = TIKI_NEW( GenericDataTypeReference )( *this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType );
+			pReferenceType = TIKI_NEW( GenericDataTypeReference )( *this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType );
 			m_references.set( pBaseType, pReferenceType );
 
 			TIKI_VERIFY( addType( *pReferenceType ) );
@@ -203,7 +203,7 @@ namespace tiki
 		if( !m_pointers.findValue( const_cast<const GenericDataTypePointer**>(&pPointerType), pBaseType ) )
 		{
 			const string name = pBaseType->getName() + "*";
-			pPointerType = TIKI_NEW( GenericDataTypePointer )(*this, name, GenericDataTypeMode_ToolAndRuntime, pBaseType);
+			pPointerType = TIKI_NEW( GenericDataTypePointer )(*this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType);
 			m_pointers.set( pBaseType, pPointerType );
 
 			TIKI_VERIFY( addType( *pPointerType ) );
@@ -524,30 +524,30 @@ namespace tiki
 
 	void GenericDataTypeCollection::registerDefaultValueTypes()
 	{
-		GenericDataTypeValueType* pShort	= TIKI_NEW( GenericDataTypeValueType )( *this, "short",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
-		GenericDataTypeValueType* pInt		= TIKI_NEW( GenericDataTypeValueType )( *this, "int",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
-		GenericDataTypeValueType* pLong		= TIKI_NEW( GenericDataTypeValueType )( *this, "long",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
+		GenericDataTypeValueType* pShort	= TIKI_NEW( GenericDataTypeValueType )( *this, "short",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
+		GenericDataTypeValueType* pInt		= TIKI_NEW( GenericDataTypeValueType )( *this, "int",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
+		GenericDataTypeValueType* pLong		= TIKI_NEW( GenericDataTypeValueType )( *this, "long",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
-		GenericDataTypeValueType* pSInt8	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint8",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger8 );
-		GenericDataTypeValueType* pSInt16	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
-		GenericDataTypeValueType* pSInt32	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
-		GenericDataTypeValueType* pSInt64	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
+		GenericDataTypeValueType* pSInt8	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint8",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger8 );
+		GenericDataTypeValueType* pSInt16	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint16",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger16 );
+		GenericDataTypeValueType* pSInt32	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint32",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger32 );
+		GenericDataTypeValueType* pSInt64	= TIKI_NEW( GenericDataTypeValueType )( *this, "sint64",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
-		GenericDataTypeValueType* pUInt8	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint8",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger8 );
-		GenericDataTypeValueType* pUInt16	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger16 );
-		GenericDataTypeValueType* pUInt32	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
-		GenericDataTypeValueType* pUInt64	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger64 );
+		GenericDataTypeValueType* pUInt8	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint8",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger8 );
+		GenericDataTypeValueType* pUInt16	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint16",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger16 );
+		GenericDataTypeValueType* pUInt32	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint32",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
+		GenericDataTypeValueType* pUInt64	= TIKI_NEW( GenericDataTypeValueType )( *this, "uint64",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger64 );
 
-		GenericDataTypeValueType* pHalf		= TIKI_NEW( GenericDataTypeValueType )( *this, "half",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
-		GenericDataTypeValueType* pFloat	= TIKI_NEW( GenericDataTypeValueType )( *this, "float",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
-		GenericDataTypeValueType* pDouble	= TIKI_NEW( GenericDataTypeValueType )( *this, "double",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
+		GenericDataTypeValueType* pHalf		= TIKI_NEW( GenericDataTypeValueType )( *this, "half",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
+		GenericDataTypeValueType* pFloat	= TIKI_NEW( GenericDataTypeValueType )( *this, "float",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
+		GenericDataTypeValueType* pDouble	= TIKI_NEW( GenericDataTypeValueType )( *this, "double",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
 
-		GenericDataTypeValueType* pFloat16	= TIKI_NEW( GenericDataTypeValueType )( *this, "float16",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
-		GenericDataTypeValueType* pFloat32	= TIKI_NEW( GenericDataTypeValueType )( *this, "float32",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
-		GenericDataTypeValueType* pFloat64	= TIKI_NEW( GenericDataTypeValueType )( *this, "float64",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
+		GenericDataTypeValueType* pFloat16	= TIKI_NEW( GenericDataTypeValueType )( *this, "float16",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint16 );
+		GenericDataTypeValueType* pFloat32	= TIKI_NEW( GenericDataTypeValueType )( *this, "float32",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint32 );
+		GenericDataTypeValueType* pFloat64	= TIKI_NEW( GenericDataTypeValueType )( *this, "float64",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_FloatingPoint64 );
 
-		GenericDataTypeValueType* pCrc32	= TIKI_NEW( GenericDataTypeValueType )( *this, "crc32",		GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
-		GenericDataTypeValueType* pTimeMs	= TIKI_NEW( GenericDataTypeValueType )( *this, "timems",	GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
+		GenericDataTypeValueType* pCrc32	= TIKI_NEW( GenericDataTypeValueType )( *this, "crc32",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_UnsingedInteger32 );
+		GenericDataTypeValueType* pTimeMs	= TIKI_NEW( GenericDataTypeValueType )( *this, "timems",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_SingedInteger64 );
 
 		TIKI_VERIFY( addType( *pShort ) );
 		TIKI_VERIFY( addType( *pInt ) );
@@ -572,13 +572,13 @@ namespace tiki
 		TIKI_VERIFY( addType( *pCrc32 ) );
 		TIKI_VERIFY( addType( *pTimeMs ) );
 
-		GenericDataTypeValueType* pBoolean	= TIKI_NEW( GenericDataTypeValueType )( *this, "bool", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_Boolean );
-		GenericDataTypeValueType* pString	= TIKI_NEW( GenericDataTypeValueType )( *this, "string", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_String );
+		GenericDataTypeValueType* pBoolean	= TIKI_NEW( GenericDataTypeValueType )( *this, "bool",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_Boolean );
+		GenericDataTypeValueType* pString	= TIKI_NEW( GenericDataTypeValueType )( *this, "string",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_String );
 
 		TIKI_VERIFY(  addType( *pBoolean ) );
 		TIKI_VERIFY(  addType( *pString ) );
 
-		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_NEW( GenericDataTypeEnum )( *this, "GenericDataTypeMode", GenericDataTypeMode_ToolOnly, pUInt8 );
+		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_NEW( GenericDataTypeEnum )( *this, "GenericDataTypeMode", "internal", GenericDataTypeMode_ToolOnly, pUInt8 );
 		pGenericDataTypeMode->addValue( "Invalid",			0, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "RuntimeOnly",		1, GenericDataTypeMode_ToolOnly );
 		pGenericDataTypeMode->addValue( "ToolOnly",			2, GenericDataTypeMode_ToolOnly );
@@ -591,11 +591,11 @@ namespace tiki
 
 	void GenericDataTypeCollection::registerDefaultResourceTypes()
 	{
-		GenericDataTypeResource* pAnimation	= TIKI_NEW( GenericDataTypeResource )( *this, "Animation",	GenericDataTypeMode_ToolAndRuntime, "animation",	TIKI_FOURCC( 'A', 'N', 'I', 'M' ) );
-		GenericDataTypeResource* pFont		= TIKI_NEW( GenericDataTypeResource )( *this, "Font",		GenericDataTypeMode_ToolAndRuntime, "font",			TIKI_FOURCC( 'F', 'O', 'N', 'T' ) );
-		GenericDataTypeResource* pModel		= TIKI_NEW( GenericDataTypeResource )( *this, "Model",		GenericDataTypeMode_ToolAndRuntime, "model",		TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
-		GenericDataTypeResource* pShader	= TIKI_NEW( GenericDataTypeResource )( *this, "ShaderSet",	GenericDataTypeMode_ToolAndRuntime, "shader",		TIKI_FOURCC( 'T', 'G', 'S', 'S' ) );
-		GenericDataTypeResource* pTexture	= TIKI_NEW( GenericDataTypeResource )( *this, "Texture",	GenericDataTypeMode_ToolAndRuntime, "texture",		TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
+		GenericDataTypeResource* pAnimation	= TIKI_NEW( GenericDataTypeResource )( *this, "Animation",	"internal", GenericDataTypeMode_ToolAndRuntime, "animation",	TIKI_FOURCC( 'A', 'N', 'I', 'M' ) );
+		GenericDataTypeResource* pFont		= TIKI_NEW( GenericDataTypeResource )( *this, "Font",		"internal", GenericDataTypeMode_ToolAndRuntime, "font",			TIKI_FOURCC( 'F', 'O', 'N', 'T' ) );
+		GenericDataTypeResource* pModel		= TIKI_NEW( GenericDataTypeResource )( *this, "Model",		"internal", GenericDataTypeMode_ToolAndRuntime, "model",		TIKI_FOURCC( 'M', 'O', 'D', 'L' ) );
+		GenericDataTypeResource* pShader	= TIKI_NEW( GenericDataTypeResource )( *this, "ShaderSet",	"internal", GenericDataTypeMode_ToolAndRuntime, "shader",		TIKI_FOURCC( 'T', 'G', 'S', 'S' ) );
+		GenericDataTypeResource* pTexture	= TIKI_NEW( GenericDataTypeResource )( *this, "Texture",	"internal", GenericDataTypeMode_ToolAndRuntime, "texture",		TIKI_FOURCC( 'T', 'E', 'X', 'R' ) );
 
 		TIKI_VERIFY( addType( *pAnimation ) );
 		TIKI_VERIFY( addType( *pFont ) );
@@ -674,7 +674,7 @@ namespace tiki
 					continue;
 				}
 
-				if( !parseFile( data.pRootNode, data.data.name ) )
+				if( !parseFile( data.pRootNode, data.filePath.getCompletePath(), data.data.name ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' can't be loaded.\n", data.filePath.getCompletePath() );
 					ok = false;
@@ -692,7 +692,7 @@ namespace tiki
 		return ok;
 	}
 
-	bool GenericDataTypeCollection::parseFile( XmlElement* pRootNode, const string& moduleName )
+	bool GenericDataTypeCollection::parseFile( XmlElement* pRootNode, const string& filename, const string& moduleName )
 	{
 		bool ok = true;
 		XmlElement* pChildNode = pRootNode->getFirstChild();
@@ -743,7 +743,7 @@ namespace tiki
 						if ( pBaseType == nullptr || pBaseType->getType() == GenericDataTypeType_ValueType )
 						{
 							const GenericDataTypeValueType* pTypesBase = (const GenericDataTypeValueType*)pBaseType;
-							pType = TIKI_NEW( GenericDataTypeEnum )( *this, pNameAtt->getValue(), mode, pTypesBase );
+							pType = TIKI_NEW( GenericDataTypeEnum )( *this, pNameAtt->getValue(), filename, mode, pTypesBase );
 						}
 						else
 						{
@@ -758,7 +758,7 @@ namespace tiki
 						if ( pBaseType == nullptr || pBaseType->getType() == GenericDataTypeType_Struct )
 						{
 							const GenericDataTypeStruct* pTypesBase = (const GenericDataTypeStruct*)pBaseType;
-							pType = TIKI_NEW( GenericDataTypeStruct )( *this, pNameAtt->getValue(), mode, pTypesBase );
+							pType = TIKI_NEW( GenericDataTypeStruct )( *this, pNameAtt->getValue(), filename, mode, pTypesBase );
 						}
 						else
 						{
@@ -773,7 +773,7 @@ namespace tiki
 						if ( pBaseType != nullptr && pBaseType->getType() == GenericDataTypeType_Struct )
 						{
 							const GenericDataTypeStruct* pTypesBase = (const GenericDataTypeStruct*)pBaseType;
-							pType = TIKI_NEW( GenericDataTypeResource )( *this, pNameAtt->getValue(), mode, pTypesBase );
+							pType = TIKI_NEW( GenericDataTypeResource )( *this, pNameAtt->getValue(), filename, mode, pTypesBase );
 						}
 						else
 						{

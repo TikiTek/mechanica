@@ -20,6 +20,7 @@ namespace tiki
 
 	GenericDataObject::~GenericDataObject()
 	{
+		dispose();
 	}
 
 	bool GenericDataObject::create( const GenericDataTypeStruct* pType, const GenericDataObject* pParentObject )
@@ -38,9 +39,66 @@ namespace tiki
 
 		m_pType			= pType;
 		m_pParentObject = pParentObject;
-		if( m_pParentObject == nullptr )
+		if( m_pParentObject == nullptr &&
+			this != pType->getDefaultObject() )
 		{
 			m_pParentObject = pType->getDefaultObject();
+		}
+
+		if( !m_fields.create( pType->getFieldCount() ) )
+		{
+			return false;
+		}
+
+		const List< GenericDataStructField >& structFields = pType->getFields();
+		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		{
+			ObjectField& field = m_fields[ i ];
+			const GenericDataStructField& structField = structFields[ i ];
+
+			field.name		= structField.name;
+			field.pType		= structField.pType;
+			field.pValue	= nullptr;
+		}
+
+		return true;
+	}
+
+	bool GenericDataObject::createCopyFrom( const GenericDataObject* pCopyFrom )
+	{
+		if( pCopyFrom == nullptr ||
+			pCopyFrom->getType() == nullptr )
+		{
+			return false;
+		}
+
+		m_pType			= pCopyFrom->getType();
+		m_pParentObject = pCopyFrom->getParentObject();
+
+		if( !m_fields.create( m_pType->getFieldCount() ) )
+		{
+			return false;
+		}
+
+		const List< GenericDataStructField >& structFields = m_pType->getFields();
+		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		{
+			ObjectField& field = m_fields[ i ];
+			const ObjectField& sourceField = pCopyFrom->m_fields[ i ];
+
+			field.name		= sourceField.name;
+			field.pType		= sourceField.pType;
+			field.pValue	= nullptr;
+
+			if( sourceField.pValue != nullptr )
+			{
+				field.pValue = TIKI_NEW( GenericDataValue )( sourceField.pType );
+				if( !field.pValue->setCopyFromValue( m_collection, sourceField.pValue ) )
+				{
+					dispose();
+					return false;
+				}
+			}
 		}
 
 		return true;
@@ -50,10 +108,13 @@ namespace tiki
 	{
 		for (uint i = 0u; i < m_fields.getCount(); ++i)
 		{
-			ObjectField& field = m_fields.getValueAt( i );
-			TIKI_DELETE( field.pValue );
+			ObjectField& field = m_fields[ i ];
+			if( field.pValue != nullptr )
+			{
+				TIKI_DELETE( field.pValue );
+			}
 		}
-		m_fields.clear();
+		m_fields.dispose();
 	}
 
 	const GenericDataTypeStruct* GenericDataObject::getType() const
@@ -61,80 +122,78 @@ namespace tiki
 		return m_pType;
 	}
 
-	bool GenericDataObject::hasField( const string& name ) const
-	{
-		return m_fields.hasKey( name );
-	}
+	//bool GenericDataObject::hasField( const string& name ) const
+	//{
+	//	return m_fields.hasKey( name );
+	//}
 
 	const string& GenericDataObject::getFieldName( uint index ) const
 	{
-		return m_fields.getPairAt( index ).key;
+		return m_fields[ index ].name;
 	}
 
 	const GenericDataType* GenericDataObject::getFieldType( uint index ) const
 	{
-		return m_fields.getValueAt( index ).pType;
+		return m_fields[ index ].pType;
+	}
+
+	GenericDataValue* GenericDataObject::getFieldValue( uint index, bool createMissing )
+	{
+		if( m_fields[ index ].pValue != nullptr )
+		{
+			return m_fields[ index ].pValue;
+		}
+		else if( createMissing )
+		{
+			ObjectField& field = m_fields[ index ];
+			field.pValue = TIKI_NEW( GenericDataValue )(field.pType);
+
+			return field.pValue;
+		}
+
+		return nullptr;
 	}
 
 	GenericDataValue* GenericDataObject::getFieldValue( const string& name, bool createMissing )
 	{
-		if( m_fields.hasKey( name ) )
-		{
-			return m_fields[ name ].pValue;
-		}
-		else if( createMissing )
-		{
-			const GenericDataType* pFieldType = m_pType->getFieldTypeByName( name );
-			if( pFieldType == nullptr )
-			{
-				return nullptr;
-			}
-
-			ObjectField field;
-			field.pType		= pFieldType;
-			field.pValue	= TIKI_NEW( GenericDataValue )( pFieldType );
-			m_fields.set( name, field );
-
-			return field.pValue;
-		}
-		else
+		const uint index = m_pType->getFieldIndexByName( name );
+		if( index == (uint)-1 )
 		{
 			return nullptr;
 		}
+
+		return getFieldValue( index, createMissing );
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const string& name ) const
+	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( uint index ) const
 	{
-		ObjectField field;
-		field.pValue = nullptr;
-
-		if( (!m_fields.findValue( &field, name ) || field.pValue == nullptr) && m_pParentObject != nullptr )
+		if( m_fields[ index ].pValue == nullptr && m_pParentObject != nullptr )
 		{
-			return m_pParentObject->getFieldOrDefaultValue( name );
+			return m_pParentObject->getFieldOrDefaultValue( index );
 		}
 
-		return field.pValue;
+		return m_fields[ index ].pValue;
 	}
 
-	GenericDataValue* GenericDataObject::getFieldValue( uint index ) const
+	void GenericDataObject::removeField( uint index )
 	{
-		return m_fields.getValueAt( index ).pValue;
+		ObjectField& field = m_fields[ index ];
+		if( field.pValue != nullptr )
+		{
+			TIKI_DELETE( field.pValue );
+			field.pValue = nullptr;
+		}
 	}
 
 	bool GenericDataObject::removeField( const string& name )
 	{
-		if( !m_fields.hasKey( name ) )
+		const uint index = m_pType->getFieldIndexByName( name );
+		if( index == (uint)-1 )
 		{
 			return false;
 		}
 
-		ObjectField& field = m_fields[ name ];
-		if( field.pValue != nullptr )
-		{
-			TIKI_DELETE( field.pValue );
-		}
-
-		m_fields.remove( name );
+		removeField( index );
 		return true;
 	}
 
@@ -152,20 +211,16 @@ namespace tiki
 		}
 
 		bool ok = true;
-
 		const List< GenericDataStructField >& fields = m_pType->getFields();
 		for (uint i = 0u; i < fields.getCount(); ++i)
 		{
 			const GenericDataStructField& structField = fields[ i ];
 
-			ObjectField field;
+			const ObjectField& field = m_fields[ i ];
 			const GenericDataValue* pValue = nullptr;
-			if ( !m_fields.findValue( &field, structField.name ) )
+			if ( field.pValue == nullptr && m_pParentObject != nullptr )
 			{
-				if( m_pParentObject != nullptr )
-				{
-					pValue = m_pParentObject->getFieldOrDefaultValue( structField.name );
-				}
+				pValue = m_pParentObject->getFieldOrDefaultValue( i );
 			}
 			else
 			{
@@ -201,13 +256,13 @@ namespace tiki
 	{
 		for( uint i = 0u; i < m_fields.getCount(); ++i )
 		{
-			const FieldMap::Pair& kvp = m_fields.getPairAt( i );
-			if( kvp.value.pValue != pValue )
+			const ObjectField& field = m_fields[ i ];
+			if( field.pValue != pValue )
 			{
 				continue;
 			}
 
-			pElement->setAttribute( "name", kvp.key.cStr() );
+			pElement->setAttribute( "name", field.name.cStr() );
 			return true;
 		}
 
@@ -249,6 +304,6 @@ namespace tiki
 			return nullptr;
 		}
 
-		return getFieldValue( index );
+		return getFieldValue( index, false );
 	}
 }

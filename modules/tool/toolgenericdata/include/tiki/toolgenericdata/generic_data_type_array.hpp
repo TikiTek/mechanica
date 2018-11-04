@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-									GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, GenericDataTypeMode mode, const GenericDataType* pBaseType );
+									GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType );
 		virtual						~GenericDataTypeArray();
 
 		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;

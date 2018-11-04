@@ -21,6 +21,7 @@ namespace tiki
 
 		Editor&			m_editor;
 
+		ToolImage		m_openEditableIcon;
 		ToolImage		m_saveEditableIcon;
 		ToolImage		m_closeEditableIcon;
 	};
