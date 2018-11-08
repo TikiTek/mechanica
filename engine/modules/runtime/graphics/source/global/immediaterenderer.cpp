@@ -28,7 +28,9 @@ namespace tiki
 		m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] = nullptr;
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] = nullptr;
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] = nullptr;
-		m_pRasterizerState		= nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_NoCulling ] = nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_CullBack ] = nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_CullFront ] = nullptr;
 		m_pSamplerState			= nullptr;
 
 		m_pVertexFormat			= nullptr;
@@ -45,7 +47,9 @@ namespace tiki
 		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ]	== nullptr );
 		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ]		== nullptr );
 		TIKI_ASSERT( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ]		== nullptr );
-		TIKI_ASSERT( m_pRasterizerState		== nullptr );
+		TIKI_ASSERT( m_pRasterizerState[ ImmediateRasterizerState_NoCulling ]		== nullptr );
+		TIKI_ASSERT( m_pRasterizerState[ ImmediateRasterizerState_CullBack ]		== nullptr );
+		TIKI_ASSERT( m_pRasterizerState[ ImmediateRasterizerState_CullFront ]		== nullptr );
 		TIKI_ASSERT( m_pSamplerState		== nullptr );
 
 		TIKI_ASSERT( m_pVertexFormat		== nullptr );
@@ -66,7 +70,7 @@ namespace tiki
 				{ VertexSementic_Position,	0u,	VertexAttributeFormat_x32y32z32_float,	0u, VertexInputType_PerVertex },
 				{ VertexSementic_TexCoord,	0u,	VertexAttributeFormat_x16y16_unorm,		0u, VertexInputType_PerVertex },
 				{ VertexSementic_Color,		0u,	VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
-			};		
+			};
 
 			m_pVertexFormat = graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
 			if ( m_pVertexFormat == nullptr )
@@ -90,7 +94,10 @@ namespace tiki
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ]	= graphicsSystem.createDepthStencilState( true, false );
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ]	= graphicsSystem.createDepthStencilState( true, true );
 
-		m_pRasterizerState		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back, WindingOrder_Clockwise );
+		m_pRasterizerState[ ImmediateRasterizerState_NoCulling ]	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_None );
+		m_pRasterizerState[ ImmediateRasterizerState_CullBack ]		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back );
+		m_pRasterizerState[ ImmediateRasterizerState_CullFront ]	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Front );
+
 		m_pSamplerState			= graphicsSystem.createSamplerState( SamplerStateParamters() );
 
 		if ( m_vertexConstantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ), "ImmediateVertexConstants" ) == false )
@@ -98,7 +105,7 @@ namespace tiki
 			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -114,14 +121,18 @@ namespace tiki
 		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] );
 		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] );
 		graphicsSystem.disposeDepthStencilState( m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] );
-		graphicsSystem.disposeRasterizerState( m_pRasterizerState );
+		graphicsSystem.disposeRasterizerState( m_pRasterizerState[ ImmediateRasterizerState_NoCulling ] );
+		graphicsSystem.disposeRasterizerState( m_pRasterizerState[ ImmediateRasterizerState_CullBack ] );
+		graphicsSystem.disposeRasterizerState( m_pRasterizerState[ ImmediateRasterizerState_CullFront ] );
 		graphicsSystem.disposeSamplerState( m_pSamplerState );
 		m_pBlendState[ ImmediateBlendState_None ] = nullptr;
 		m_pBlendState[ ImmediateBlendState_Add ] = nullptr;
 		m_pDepthStencilState[ ImmediateDepthState_TestOffWriteOff ] = nullptr;
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOff ] = nullptr;
 		m_pDepthStencilState[ ImmediateDepthState_TestOnWriteOn ] = nullptr;
-		m_pRasterizerState = nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_NoCulling ] = nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_CullBack ] = nullptr;
+		m_pRasterizerState[ ImmediateRasterizerState_CullFront ] = nullptr;
 		m_pSamplerState = nullptr;
 
 		graphicsSystem.disposeVertexInputBinding( m_pVertexInputBinding );
@@ -154,7 +165,7 @@ namespace tiki
 			pRenderTarget = &m_pContext->getBackBuffer();
 		}
 		m_pContext->beginRenderPass( *pRenderTarget );
-			
+
 		Matrix44 transformMatrix;
 		if ( pCamera == nullptr )
 		{
@@ -198,6 +209,13 @@ namespace tiki
 		TIKI_ASSERT( m_pContext != nullptr );
 		TIKI_ASSERT( depthState < ImmediateDepthState_Count );
 		m_pContext->setDepthStencilState( m_pDepthStencilState[ depthState ] );
+	}
+
+	void ImmediateRenderer::setRasterizerState( ImmediateRasterizerState rasterizerState ) const
+	{
+		TIKI_ASSERT( m_pContext != nullptr );
+		TIKI_ASSERT( rasterizerState < ImmediateRasterizerState_Count );
+		m_pContext->setRasterizerState( m_pRasterizerState[ rasterizerState ] );
 	}
 
 	void ImmediateRenderer::setPrimitiveTopology( PrimitiveTopology topology ) const
@@ -375,28 +393,28 @@ namespace tiki
 
 			// bottom left
 			createFloat3( vertices[ vertexIndex + 0u ].position, posLeft, posBottom, 0.0f );
-			vertices[ vertexIndex + 0u ].u		= character.x1; 
-			vertices[ vertexIndex + 0u ].v		= character.y2; 
+			vertices[ vertexIndex + 0u ].u		= character.x1;
+			vertices[ vertexIndex + 0u ].v		= character.y2;
 			vertices[ vertexIndex + 0u ].color	= color;
 
 			// top left
 			createFloat3( vertices[ vertexIndex + 1u ].position, posLeft, posTop, 0.0f );
-			vertices[ vertexIndex + 1u ].u		= character.x1; 
-			vertices[ vertexIndex + 1u ].v		= character.y1; 
+			vertices[ vertexIndex + 1u ].u		= character.x1;
+			vertices[ vertexIndex + 1u ].v		= character.y1;
 			vertices[ vertexIndex + 1u ].color	= color;
 
 			// bottom right
 			createFloat3( vertices[ vertexIndex + 2u ].position, posRight, posBottom, 0.0f );
-			vertices[ vertexIndex + 2u ].u		= character.x2; 
-			vertices[ vertexIndex + 2u ].v		= character.y2; 
+			vertices[ vertexIndex + 2u ].u		= character.x2;
+			vertices[ vertexIndex + 2u ].v		= character.y2;
 			vertices[ vertexIndex + 2u ].color	= color;
 
 			// top right
 			createFloat3( vertices[ vertexIndex + 3u ].position, posRight, posTop, 0.0f );
-			vertices[ vertexIndex + 3u ].u		= character.x2; 
-			vertices[ vertexIndex + 3u ].v		= character.y1; 
+			vertices[ vertexIndex + 3u ].u		= character.x2;
+			vertices[ vertexIndex + 3u ].v		= character.y1;
 			vertices[ vertexIndex + 3u ].color	= color;
-		
+
 			x += charWidth;
 		}
 
@@ -404,7 +422,7 @@ namespace tiki
 
 		m_pContext->endImmediateGeometry();
 	}
-	
+
 	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
@@ -423,12 +441,12 @@ namespace tiki
 		m_pContext->setVertexShader( m_pShaderSet->getShader( ShaderType_VertexShader, 0u ) );
 		m_pContext->setVertexShaderConstant( 0u, m_vertexConstantBuffer );
 
-		m_pContext->setRasterizerState( m_pRasterizerState );
 		m_pContext->setVertexInputBinding( m_pVertexInputBinding );
 
 		m_pContext->setPixelShaderSamplerState( 0u, m_pSamplerState );
 
 		setBlendState( ImmediateBlendState_Add );
 		setDepthState( ImmediateDepthState_TestOffWriteOff );
+		setRasterizerState( ImmediateRasterizerState_NoCulling );
 	}
 }

@@ -50,6 +50,15 @@ namespace tiki
 		ImmediateDepthState_Count
 	};
 
+	enum ImmediateRasterizerState
+	{
+		ImmediateRasterizerState_NoCulling,
+		ImmediateRasterizerState_CullBack,
+		ImmediateRasterizerState_CullFront,
+
+		ImmediateRasterizerState_Count
+	};
+
 	enum ImmediateShaderMode
 	{
 		ImmediateShaderMode_Texture,
@@ -79,6 +88,7 @@ namespace tiki
 
 		void				setBlendState( ImmediateBlendState blendState ) const;
 		void				setDepthState( ImmediateDepthState depthState ) const;
+		void				setRasterizerState( ImmediateRasterizerState rasterizerState ) const;
 		void				setPrimitiveTopology( PrimitiveTopology topology ) const;
 		void				setShaderMode( ImmediateShaderMode shaderMode) const;
 
@@ -100,7 +110,7 @@ namespace tiki
 
 		const BlendState*			m_pBlendState[ ImmediateBlendState_Count ];
 		const DepthStencilState*	m_pDepthStencilState[ ImmediateDepthState_Count ];
-		const RasterizerState*		m_pRasterizerState;
+		const RasterizerState*		m_pRasterizerState[ ImmediateRasterizerState_Count ];
 		const SamplerState*			m_pSamplerState;
 		const VertexFormat*			m_pVertexFormat;
 		const VertexInputBinding*	m_pVertexInputBinding;
