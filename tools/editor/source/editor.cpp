@@ -421,7 +421,7 @@ namespace tiki
 
 		ImGui::SetNextWindowPos( ImVec2( 5.0f, 5.0f ), ImGuiCond_Always, ImVec2() );
 		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 10.0f, 96.0f ), ImGuiCond_Always );
-		if( ImGui::Begin( "Ribbon", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		if( ImGui::Begin( "Ribbon", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
 		{
 			//if( ImGui::Button( "test" ) )
 			//{
@@ -490,7 +490,7 @@ namespace tiki
 
 		ImGui::SetNextWindowPos( ImVec2( 5.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
 		ImGui::SetNextWindowSize( ImVec2( 250.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
-		if( ImGui::Begin( "Browser", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		if( ImGui::Begin( "Browser", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
 		{
 			m_fileBrowserUi.doUi();
 			ImGui::End();
@@ -503,7 +503,7 @@ namespace tiki
 
 		ImGui::SetNextWindowPos( ImVec2( 260.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
 		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 265.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
-		if( ImGui::Begin( "Editable", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		if( ImGui::Begin( "Editable", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
 		{
 			char titleBuffer[ 128u ];
 			for( Editable* pEditable : m_editables )
@@ -536,7 +536,7 @@ namespace tiki
 			}
 			ImGui::NewLine();
 
-			if( ImGui::BeginChild( "Editor", ImVec2( 0.0f, 0.0f ), true ) )
+			if( ImGui::BeginChild( "Editor" ) )
 			{
 				if( m_pCurrentEditable != nullptr )
 				{

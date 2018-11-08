@@ -39,6 +39,7 @@ namespace tiki
 		stateDesc.CullMode				= s_aCullModeMapping[ creationParamter.cullMode ];
 		stateDesc.FrontCounterClockwise	= s_aWindingOrderMapping[ creationParamter.windingOrder ];
 		stateDesc.DepthClipEnable		= TRUE;
+		stateDesc.ScissorEnable			= TRUE;
 
 		HRESULT result = GraphicsSystemPlatform::getDevice( graphicsSystem )->CreateRasterizerState( &stateDesc, &m_platformData.pRasterizerState );
 		if( FAILED( result ) )

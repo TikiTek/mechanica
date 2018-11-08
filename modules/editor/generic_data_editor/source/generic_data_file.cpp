@@ -41,15 +41,11 @@ namespace tiki
 	void GenericDataFile::doUi()
 	{
 		ImGui::Columns( 2 );
-		ImGui::Separator();
 
 		GenericDataObject* pObject = m_document.getObject();
 		doObjectUi( pObject, false );
 
 		ImGui::Columns( 1 );
-		ImGui::Separator();
-
-		doTagsPopup();
 	}
 
 	void GenericDataFile::doObjectUi( GenericDataObject* pObject, bool readOnly )
@@ -202,13 +198,38 @@ namespace tiki
 	{
 		const GenericDataTypeValueType* pValueTypeType = (const GenericDataTypeValueType*)pValue->getType();
 
-		if( ImGui::ImageButton( ImGui::Tex( m_tagsIcon ), ImGui::Vec2( m_tagsIcon.getSize() ) ) )
+		GenericDataTag* pValueTag = pValue->getValueTag();
+
+		bool wasSelected = false;
+		if( pValueTag != nullptr )
 		{
-			ImGui::OpenPopup( s_pPopupTagEditor );
+			ImGui::PushStyleColor( ImGuiCol_Button, ImGui::GetStyle().Colors[ ImGuiCol_ButtonHovered ] );
+			wasSelected = true;
 		}
+		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 4.0f, 3.5f ) );
+
+		if( ImGui::ImageButton( ImGui::Tex( m_tagsIcon ), ImGui::Vec2( m_tagsIcon.getSize() ) ) && !readOnly )
+		{
+			if( pValueTag == nullptr )
+			{
+				pValueTag = TIKI_NEW( GenericDataTag )();
+			}
+			else
+			{
+				pValueTag = nullptr;
+			}
+
+			pValue->setValueTag( pValueTag );
+		}
+
+		ImGui::PopStyleVar();
+		if( wasSelected )
+		{
+			ImGui::PopStyleColor();
+		}
+
 		ImGui::SameLine();
 
-		GenericDataTag* pValueTag = pValue->getValueTag();
 		if( pValueTag != nullptr )
 		{
 			doValueTagUi( pValueTag, readOnly );
@@ -368,43 +389,42 @@ namespace tiki
 
 	void GenericDataFile::doValueTagUi( GenericDataTag* pTag, bool readOnly )
 	{
-		ImGui::Text( pTag->getTag().cStr() );
+		GenericDataTagHandler& tagHandler = m_genericDataEditor.getTypeCollection().getTagHandler();
+
+		ImGui::PushItemWidth( 100.0f );
+		if( ImGui::BeginCombo( "\n", pTag->getTag().cStr(), readOnly ? ImGuiComboFlags_NoArrowButton : 0 ) )
+		{
+			for( int i = 0; i < GenericDataValueTag_Count; i++ )
+			{
+				const GenericDataValueTag tag = (GenericDataValueTag)i;
+				const char* pTagName = tagHandler.getValueTag( tag );
+
+				bool selected = (pTag->getTag() == pTagName);
+				if( ImGui::Selectable( pTagName, &selected ) )
+				{
+					pTag->setTag( pTagName );
+				}
+
+				if( selected )
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
 		ImGui::SameLine();
-		ImGui::Text( pTag->getContent().cStr() );
+
+		char buffer[ 1024 ];
+		copyString( buffer, sizeof( buffer ), pTag->getContent().cStr() );
+		if( ImGui::InputText( "", buffer, sizeof( buffer ) ) )
+		{
+			pTag->setContent( buffer );
+		}
 	}
 
 	void GenericDataFile::doResourceUi( GenericDataValue* pValue, bool readOnly )
 	{
 		ImGui::Text( "resource" );
-	}
-
-	void GenericDataFile::doTagsPopup()
-	{
-		if( ImGui::BeginPopupModal( s_pPopupTagEditor, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove ) )
-		{
-			GenericDataTagHandler& tagHandler = m_genericDataEditor.getTypeCollection().getTagHandler();
-
-			if( ImGui::BeginCombo( "", nullptr ) )
-			{
-				for( int i = 0; i < GenericDataValueTag_Count; i++ )
-				{
-					const GenericDataValueTag tag = (GenericDataValueTag)i;
-					if( ImGui::Selectable( tagHandler.getValueTag( tag ) ) )
-					{
-
-					}
-				}
-				ImGui::EndCombo();
-			}
-			ImGui::SameLine();
-
-			static char test[ 256u ] = { 0u };
-			ImGui::InputText( "", test, sizeof( test ) );
-
-			ImGui::Button( "Ok" );
-			ImGui::Button( "Cancel" );
-
-			ImGui::EndPopup();
-		}
 	}
 }

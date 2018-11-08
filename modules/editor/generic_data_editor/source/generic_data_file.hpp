@@ -39,7 +39,5 @@ namespace tiki
 		void					doValueTypeUi( GenericDataValue* pValue, bool readOnly );
 		void					doValueTagUi( GenericDataTag* pTag, bool readOnly );
 		void					doResourceUi( GenericDataValue* pValue, bool readOnly );
-
-		void					doTagsPopup();
 	};
 }
