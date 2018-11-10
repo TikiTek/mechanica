@@ -123,7 +123,7 @@ namespace tiki
 			return false;
 		}
 
-		return m_pObject->importFromXml( pObjectNode );
+		return m_pObject->importFromXml( pObjectNode, false );
 	}
 
 	bool GenericDataDocument::exportToXml()

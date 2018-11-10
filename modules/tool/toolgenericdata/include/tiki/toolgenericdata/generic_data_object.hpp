@@ -43,6 +43,7 @@ namespace tiki
 		const string&					getFieldName( uint index ) const;
 		const GenericDataType*			getFieldType( uint index ) const;
 		GenericDataValue*				getFieldValue( uint index, bool createMissing );
+		bool							setFieldValue( uint index, GenericDataValue* pValue );
 		GenericDataValue*				getFieldValue( const string& name, bool createMissing );
 		const GenericDataValue*			getFieldOrDefaultValue( uint index ) const;
 
@@ -62,6 +63,7 @@ namespace tiki
 
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
+		virtual uint					getElementCount() TIKI_OVERRIDE_FINAL;
 
 	private:
 

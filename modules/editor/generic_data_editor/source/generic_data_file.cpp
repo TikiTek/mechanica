@@ -21,6 +21,8 @@ namespace tiki
 		, m_genericDataEditor( genericDataEditor )
 		, m_document( genericDataEditor.getTypeCollection() )
 		, m_tagsIcon( getGenericDataEditorResource( GenericDataEditorResources_TagEditor ) )
+		, m_valueCreateIcon( getGenericDataEditorResource( GenericDataEditorResources_ValueCreate ) )
+		, m_valueRemoveIcon( getGenericDataEditorResource( GenericDataEditorResources_ValueRemove ) )
 	{
 	}
 
@@ -35,7 +37,13 @@ namespace tiki
 
 	bool GenericDataFile::save()
 	{
-		return m_document.exportToFile( getFileName().getCompletePath() );
+		if( m_document.exportToFile( getFileName().getCompletePath() ) )
+		{
+			m_isDirty = false;
+			return true;
+		}
+
+		return false;
 	}
 
 	void GenericDataFile::doUi()
@@ -43,6 +51,11 @@ namespace tiki
 		ImGui::Columns( 2 );
 
 		GenericDataObject* pObject = m_document.getObject();
+		if( pObject->getParentObject() != nullptr )
+		{
+			//m_pSelectedObject
+		}
+
 		doObjectUi( pObject, false );
 
 		ImGui::Columns( 1 );
@@ -52,14 +65,24 @@ namespace tiki
 	{
 		for( uint i = 0u; i < pObject->getFieldCount(); ++i )
 		{
+			bool readOnlyValue = readOnly;
 			GenericDataValue* pValue = pObject->getFieldValue( i, false );
 			if( pValue == nullptr )
 			{
-				pValue		= const_cast< GenericDataValue* >( pObject->getFieldOrDefaultValue( i ) );
-				readOnly	= true;
+				pValue			= const_cast< GenericDataValue* >( pObject->getFieldOrDefaultValue( i ) );
+				readOnlyValue	= true;
 			}
 
-			doElementUi( pObject->getFieldName( i ), pValue, pObject->getFieldType( i ), readOnly );
+			GenericDataValue* pNewValue = doElementUi( pObject->getFieldName( i ), pValue, pObject->getFieldType( i ), readOnlyValue );
+			if( pNewValue != pValue && !readOnly )
+			{
+				pObject->setFieldValue( i, pNewValue );
+				m_isDirty = true;
+			}
+			else if( pNewValue != pValue && readOnly )
+			{
+				TIKI_DELETE( pNewValue );
+			}
 		}
 	}
 
@@ -72,7 +95,7 @@ namespace tiki
 		}
 	}
 
-	bool GenericDataFile::doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly )
+	GenericDataValue* GenericDataFile::doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly )
 	{
 		TIKI_ASSERT( pValue == nullptr || pValue->getType() == pType );
 		const bool canBeOpen = pType->getType() == GenericDataTypeType_Array || pType->getType() == GenericDataTypeType_Struct || pType->getType() == GenericDataTypeType_Pointer;
@@ -91,6 +114,26 @@ namespace tiki
 		ImGui::NextColumn();
 
 		ImGui::AlignTextToFramePadding();
+		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 4.0f, 3.5f ) );
+		if( readOnly && ImGui::ImageButton( ImGui::Tex( m_valueCreateIcon ), ImGui::Vec2( m_valueCreateIcon.getSize() ) ) )
+		{
+			GenericDataValue* pNewValue = TIKI_NEW( GenericDataValue )( pValue->getType() );
+			if( !pNewValue->setCopyFromValue( m_genericDataEditor.getTypeCollection(), pValue ) )
+			{
+				TIKI_DELETE( pNewValue );
+			}
+			else
+			{
+				pValue = pNewValue;
+			}
+		}
+		else if( !readOnly && ImGui::ImageButton( ImGui::Tex( m_valueRemoveIcon ), ImGui::Vec2( m_valueRemoveIcon.getSize() ) ) )
+		{
+			pValue = nullptr;
+		}
+		ImGui::PopStyleVar();
+		ImGui::SameLine();
+
 		if( canBeOpen )
 		{
 			ImGui::Text( " " );
@@ -133,7 +176,7 @@ namespace tiki
 		}
 		ImGui::PopID();
 
-		return nodeOpen;
+		return pValue;
 	}
 
 	void GenericDataFile::doValueUi( GenericDataValue* pValue, bool readOnly )
@@ -167,31 +210,30 @@ namespace tiki
 	{
 		const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)pValue->getType();
 
-		string enumName;
-		if( !pValue->getEnum( enumName ) )
+		if( readOnly )
 		{
-			ImGui::Text( "invalid enum" );
+			string enumName;
+			if( !pValue->getEnum( enumName ) )
+			{
+				ImGui::Text( "invalid enum" );
+				return;
+			}
+
+			string text = pValue->getType()->getName() + "." + enumName;
+			ImGui::Text( text.cStr() );
 			return;
 		}
 
-		if( ImGui::BeginCombo( "", enumName.cStr() ) )
+		GenericDataTag* pValueTag = pValue->getValueTag();
+		if( pValueTag == nullptr )
 		{
-			for( const GenericDataEnumValue& enumValue : pEnumType->getValues() )
-			{
-				bool isSelected = (enumValue.name == enumName);
-				if( ImGui::Selectable( enumValue.name.cStr(), &isSelected ) )
-				{
-					TIKI_VERIFY( pValue->setEnum( enumValue.name, pEnumType ) );
-					m_isDirty = true;
-				}
+			pValueTag = TIKI_NEW( GenericDataTag )();
+			pValueTag->setTag( "enum" );
 
-				if( isSelected )
-				{
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
+			pValue->setValueTag( pValueTag );
 		}
+
+		doValueTagUi( pValueTag, pValue->getType(), true, false );
 	}
 
 	void GenericDataFile::doValueTypeUi( GenericDataValue* pValue, bool readOnly )
@@ -232,7 +274,7 @@ namespace tiki
 
 		if( pValueTag != nullptr )
 		{
-			doValueTagUi( pValueTag, readOnly );
+			doValueTagUi( pValueTag, pValueTypeType, false, readOnly );
 			return;
 		}
 
@@ -387,12 +429,13 @@ namespace tiki
 		}
 	}
 
-	void GenericDataFile::doValueTagUi( GenericDataTag* pTag, bool readOnly )
+	void GenericDataFile::doValueTagUi( GenericDataTag* pTag, const GenericDataType* pTargetType, bool fixedTag, bool readOnly )
 	{
 		GenericDataTagHandler& tagHandler = m_genericDataEditor.getTypeCollection().getTagHandler();
 
+		GenericDataValueTag currentValueTag = GenericDataValueTag_Count;
 		ImGui::PushItemWidth( 100.0f );
-		if( ImGui::BeginCombo( "\n", pTag->getTag().cStr(), readOnly ? ImGuiComboFlags_NoArrowButton : 0 ) )
+		if( !fixedTag && ImGui::BeginCombo( "\n", pTag->getTag().cStr(), readOnly ? ImGuiComboFlags_NoArrowButton : 0 ) )
 		{
 			for( int i = 0; i < GenericDataValueTag_Count; i++ )
 			{
@@ -400,27 +443,161 @@ namespace tiki
 				const char* pTagName = tagHandler.getValueTag( tag );
 
 				bool selected = (pTag->getTag() == pTagName);
-				if( ImGui::Selectable( pTagName, &selected ) )
+				if( ImGui::Selectable( pTagName, &selected ) && !readOnly )
 				{
+					currentValueTag = tag;
 					pTag->setTag( pTagName );
 				}
 
 				if( selected )
 				{
+					currentValueTag = tag;
 					ImGui::SetItemDefaultFocus();
 				}
 			}
 			ImGui::EndCombo();
 		}
+		else
+		{
+			for( int i = 0; i < GenericDataValueTag_Count; i++ )
+			{
+				const GenericDataValueTag tag = (GenericDataValueTag)i;
+				const char* pTagName = tagHandler.getValueTag( tag );
+
+				if( pTag->getTag() == pTagName )
+				{
+					currentValueTag = tag;
+				}
+			}
+		}
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		char buffer[ 1024 ];
-		copyString( buffer, sizeof( buffer ), pTag->getContent().cStr() );
-		if( ImGui::InputText( "", buffer, sizeof( buffer ) ) )
+		switch( currentValueTag )
 		{
-			pTag->setContent( buffer );
+		case GenericDataValueTag_Enum:
+			{
+				bool hasChanged = false;
+				const GenericDataTypeEnum* pEnumType = nullptr;
+				const GenericDataEnumValue* pEnumValue = nullptr;
+				tagHandler.parseEnum( &pEnumType, &pEnumValue, pTag->getContent() );
+
+				if( pTargetType->getType() != GenericDataTypeType_Enum )
+				{
+					string enumTypeName = "";
+					if( pEnumType != nullptr )
+					{
+						enumTypeName = pEnumType->getName();
+					}
+
+					ImGui::PushID( currentValueTag );
+					ImGui::PushItemWidth( 250.0f );
+					if( ImGui::BeginCombo( "\n", enumTypeName.cStr(), readOnly ? ImGuiComboFlags_NoArrowButton : 0 ) )
+					{
+						for( const GenericDataType& type : m_genericDataEditor.getTypeCollection().getTypes() )
+						{
+							if( type.getType() != GenericDataTypeType_Enum )
+							{
+								continue;
+							}
+
+							bool selected = (&type == pEnumType);
+							if( ImGui::Selectable( type.getName().cStr(), &selected ) && !readOnly )
+							{
+								pEnumType = static_cast< const GenericDataTypeEnum* >( &type );
+								hasChanged = true;
+							}
+
+							if( selected )
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					ImGui::PopItemWidth();
+					ImGui::PopID();
+					ImGui::SameLine();
+				}
+
+				if( pEnumType == nullptr )
+				{
+					ImGui::Text( "Invalid enum" );
+					return;
+				}
+
+				string enumValueName = "";
+				if( pEnumValue != nullptr )
+				{
+					enumValueName = pEnumValue->name;
+				}
+
+				ImGui::PushID( pEnumType );
+				if( ImGui::BeginCombo( "\n", enumValueName.cStr(), readOnly ? ImGuiComboFlags_NoArrowButton : 0 ) )
+				{
+					for( const GenericDataEnumValue& value : pEnumType->getValues() )
+					{
+						bool selected = (value.name == enumValueName);
+						if( ImGui::Selectable( value.name.cStr(), &selected ) && !readOnly )
+						{
+							pEnumValue = &value;
+							hasChanged = true;
+						}
+
+						if( selected )
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::PopID();
+
+				if( hasChanged && pEnumValue != nullptr )
+				{
+					pTag->setContent( tagHandler.encodeEnum( pEnumType, *pEnumValue ) );
+					m_isDirty = true;
+				}
+			}
+			break;
+
+		//case GenericDataValueTag_Reference:
+		//	break;
+
+		case GenericDataValueTag_Bit:
+			{
+				char buffer[ 32u ];
+				copyString( buffer, sizeof( buffer ), pTag->getContent().cStr() );
+
+				if( ImGui::InputText( "", buffer, sizeof( buffer ), ImGuiInputTextFlags_CharsHexadecimal ) )
+				{
+					pTag->setContent( buffer );
+					m_isDirty = true;
+				}
+			}
+			break;
+
+		//case GenericDataValueTag_Offset:
+		//	break;
+
+		case GenericDataValueTag_Crc:
+			{
+				char buffer[ 1024u ];
+				copyString( buffer, sizeof( buffer ), pTag->getContent().cStr() );
+
+				if( ImGui::InputText( "", buffer, sizeof( buffer ) ) )
+				{
+					pTag->setContent( buffer );
+					m_isDirty = true;
+				}
+			}
+			break;
+
+		default:
+			ImGui::Text( "Unsupported Tag" );
+			break;
 		}
+
 	}
 
 	void GenericDataFile::doResourceUi( GenericDataValue* pValue, bool readOnly )

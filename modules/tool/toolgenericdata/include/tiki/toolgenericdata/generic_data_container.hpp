@@ -22,7 +22,7 @@ namespace tiki
 
 		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		bool							importFromXml( XmlElement* pObjectNode );
+		bool							importFromXml( XmlElement* pObjectNode, bool isType );
 		bool							exportToXml( XmlElement* pParentNode );
 
 		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_PURE;
@@ -41,6 +41,7 @@ namespace tiki
 
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_PURE;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_PURE;
+		virtual uint					getElementCount() TIKI_PURE;
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
 		bool							writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataValue& value ) const;

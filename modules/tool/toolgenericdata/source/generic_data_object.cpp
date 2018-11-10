@@ -165,6 +165,23 @@ namespace tiki
 		return getFieldValue( index, createMissing );
 	}
 
+	bool GenericDataObject::setFieldValue( uint index, GenericDataValue* pValue )
+	{
+		ObjectField& field = m_fields[ index ];
+		if( pValue != nullptr && field.pType != pValue->getType() )
+		{
+			return false;
+		}
+
+		if( field.pValue != nullptr && field.pValue != pValue )
+		{
+			TIKI_DELETE( field.pValue );
+		}
+
+		field.pValue = pValue;
+		return true;
+	}
+
 	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( uint index ) const
 	{
 		if( m_fields[ index ].pValue == nullptr && m_pParentObject != nullptr )
@@ -305,5 +322,10 @@ namespace tiki
 		}
 
 		return getFieldValue( index, false );
+	}
+
+	uint GenericDataObject::getElementCount()
+	{
+		return m_fields.getCount();
 	}
 }

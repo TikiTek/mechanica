@@ -174,4 +174,9 @@ namespace tiki
 
 		return getElement( index );
 	}
+
+	uint GenericDataArray::getElementCount()
+	{
+		return m_array.getCount();
+	}
 }

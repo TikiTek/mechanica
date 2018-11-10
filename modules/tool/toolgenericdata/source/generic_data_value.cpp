@@ -59,6 +59,12 @@ namespace tiki
 			TIKI_DELETE( m_pValueTag );
 			m_pValueTag = nullptr;
 		}
+
+		if( m_pNode != nullptr )
+		{
+			m_pNode->getParent()->removeChild( m_pNode );
+			m_pNode = nullptr;
+		}
 	}
 
 	const GenericDataType* GenericDataValue::getType() const
@@ -573,9 +579,12 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection )
+	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection, bool isType )
 	{
-		m_pNode = pNode;
+		if( !isType )
+		{
+			m_pNode = pNode;
+		}
 
 		const XmlAttribute* pValueAtt = pNode->findAttribute( "value" );
 		if( pValueAtt != nullptr )
@@ -631,7 +640,7 @@ namespace tiki
 					return false;
 				}
 
-				if( !pObject->importFromXml( pChildNode ) )
+				if( !pObject->importFromXml( pChildNode, isType ) )
 				{
 					TIKI_DELETE( pObject );
 					return false;
@@ -655,7 +664,7 @@ namespace tiki
 					return false;
 				}
 
-				if( !pArray->importFromXml( pChildNode ) )
+				if( !pArray->importFromXml( pChildNode, isType ) )
 				{
 					TIKI_DELETE( pArray );
 					return false;
