@@ -208,6 +208,26 @@ namespace tiki
 		return true;
 	}
 
+	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, const GenericDataEnumValue** ppEnumValue, const string& content ) const
+	{
+		string enumName;
+		if( !parseEnum( ppEnumType, enumName, content ) )
+		{
+			return false;
+		}
+
+		for( const GenericDataEnumValue& value : (*ppEnumType)->getValues() )
+		{
+			if( value.name == enumName )
+			{
+				*ppEnumValue = &value;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	string GenericDataTagHandler::encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const
 	{
 		TIKI_ASSERT( pEnumType->isValidValue( enumValue ) );

@@ -99,7 +99,7 @@ namespace tiki
 		bool						getPointer( const GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
 
-		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
+		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection, bool isType );
 		bool						exportToXml( XmlElement* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
 
 		bool						setCopyFromValue( GenericDataTypeCollection& collection, const GenericDataValue* pValue );

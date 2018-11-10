@@ -166,7 +166,7 @@ namespace tiki
 				XmlElement* pValueNode = pChildNode->findFirstChild( "value" );
 				if( pValueNode != nullptr )
 				{
-					if( !pDefaultValue->importFromXml( pValueNode, pType, m_pDefaultObject, m_collection ) )
+					if( !pDefaultValue->importFromXml( pValueNode, pType, m_pDefaultObject, m_collection, true ) )
 					{
 						TIKI_TRACE_ERROR( "%s(%u): default value node can't be parsed.\n", getFilename().cStr(), pChildNode->getLineNumber() );
 						ok = false;

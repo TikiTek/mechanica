@@ -29,7 +29,7 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataContainer::importFromXml( XmlElement* pObjectNode )
+	bool GenericDataContainer::importFromXml( XmlElement* pObjectNode, bool isType )
 	{
 		m_pObjectNode = pObjectNode;
 
@@ -58,7 +58,7 @@ namespace tiki
 					{
 						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else if ( !pValue->importFromXml( pChildNode, pElementType, this, m_collection ) )
+					else if ( !pValue->importFromXml( pChildNode, pElementType, this, m_collection, isType ) )
 					{
 						result = false;
 					}
@@ -79,14 +79,20 @@ namespace tiki
 			pParentNode->appendChild( m_pObjectNode );
 		}
 
-		uint index = 0u;
-		GenericDataValue* pCurrentValue = getElementValue( index );
-		for( ; pCurrentValue != nullptr; pCurrentValue = getElementValue( ++index ) )
+		bool ok = true;
+		const uint count = getElementCount();
+		for( uint i = 0u; i < count; ++i )
 		{
-			pCurrentValue->exportToXml( m_pObjectNode, this, m_collection );
+			GenericDataValue* pCurrentValue = getElementValue( i );
+			if( pCurrentValue == nullptr )
+			{
+				continue;
+			}
+
+			ok &= pCurrentValue->exportToXml( m_pObjectNode, this, m_collection );
 		}
 
-		return true;
+		return ok;
 	}
 
 #if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )

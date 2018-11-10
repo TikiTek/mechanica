@@ -55,6 +55,7 @@ namespace tiki
 
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
 		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
+		virtual uint					getElementCount() TIKI_OVERRIDE_FINAL;
 
 	private:
 
