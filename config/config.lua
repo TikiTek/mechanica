@@ -1,6 +1,4 @@
--- config
-
-local module = Module:new( "config" );
+local module = Module:new();
 
 module.import_func = function()
 	if is_windows then
@@ -18,4 +16,4 @@ module.import_func = function()
 	end
 end
 
-module:add_dependency( "config/libraryconfig" );
+module:add_dependency( "config/library_config" );
