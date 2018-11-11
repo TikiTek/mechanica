@@ -1,11 +1,9 @@
 #pragma once
-#ifndef TIKI_BASICSTRING_INL_INCLUDED__
-#define TIKI_BASICSTRING_INL_INCLUDED__
 
 #include "tiki/base/character.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/base/string.hpp"
-#include "tiki/container/sizedarray.hpp"
+#include "tiki/container/sized_array.hpp"
 
 namespace tiki
 {
@@ -658,5 +656,3 @@ namespace tiki
 		return string( str1 ) + str2;
 	}
 }
-
-#endif // TIKI_BASICSTRING_INL_INCLUDED__

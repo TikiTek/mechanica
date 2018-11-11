@@ -4,5 +4,5 @@ module:add_files( "source/*.*" );
 module:add_files( "*.lua" );
 
 module:add_dependency( "config" );
-module:add_dependency( "tool/toolbase" );
-module:add_dependency( "tool/toolgenericdata" );
+module:add_dependency( "tool/tool_base" );
+module:add_dependency( "tool/tool_generic_data" );

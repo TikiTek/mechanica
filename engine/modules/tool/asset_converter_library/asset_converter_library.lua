@@ -9,11 +9,11 @@ module:add_dependency( "libraries/asset_converter_interface" );
 
 module:add_dependency( "core/config" );
 module:add_dependency( "core/threading" );
-module:add_dependency( "tool/toolproject" );
+module:add_dependency( "tool/tool_project" );
 
-module:add_dependency( "converters/fontconverter" );
-module:add_dependency( "converters/shaderconverter" );
-module:add_dependency( "converters/textureconverter" );
-module:add_dependency( "converters/modelconverter" );
-module:add_dependency( "converters/animationconverter" );
-module:add_dependency( "converters/genericdataconverter" );
+module:add_dependency( "converters/font_converter" );
+module:add_dependency( "converters/shader_converter" );
+module:add_dependency( "converters/texture_converter" );
+module:add_dependency( "converters/model_converter" );
+module:add_dependency( "converters/animation_converter" );
+module:add_dependency( "converters/generic_data_converter" );

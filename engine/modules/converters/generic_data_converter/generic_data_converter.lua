@@ -1,0 +1,11 @@
+local module = Module:new();
+
+module:add_files( "source/*.*" );
+module:add_files( "include/**/*.hpp" );
+module:add_files( "*.lua" );
+module:add_include_dir( "include" );
+
+module:add_dependency( "tool/converter_base" );
+module:add_dependency( "tool/tool_generic_data" );
+
+module:set_define( "TIKI_GENERIC_DATA_CONVERTER", "TIKI_ON" );

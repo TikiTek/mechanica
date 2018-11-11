@@ -10,4 +10,3 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "core/base" );
 module:add_dependency( "core/threading" );
-module:add_dependency( "thirdparty/dbalsterxml" );

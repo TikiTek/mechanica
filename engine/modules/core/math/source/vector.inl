@@ -1,9 +1,7 @@
 #pragma once
-#ifndef __TIKI_VECTOR_INL_INCLUDED__
-#define __TIKI_VECTOR_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
-#include "tiki/base/basetypes.hpp"
+#include "tiki/base/base_types.hpp"
 
 namespace tiki
 {
@@ -826,5 +824,3 @@ namespace tiki
 		return vec;
 	}
 }
-
-#endif // __TIKI_VECTOR_INL_INCLUDED__

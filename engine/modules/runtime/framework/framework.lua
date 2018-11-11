@@ -1,6 +1,4 @@
--- library/modules/runtime/framework
-
-local module = Module:new( "framework" );
+local module = Module:new();
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
@@ -19,7 +17,5 @@ end
 module:add_dependency( "core/resource" );
 module:add_dependency( "runtime/graphics" );
 module:add_dependency( "runtime/input" );
-module:add_dependency( "runtime/debuggui" );
-module:add_dependency( "runtime/debugguiwindows" );
-module:add_dependency( "runtime/runtimeshared" );
-module:add_dependency( "runtime/debugrenderer" );
+module:add_dependency( "runtime/runtime_shared" );
+module:add_dependency( "runtime/debug_renderer" );

@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_RESOURCE_DEFINITION_HPP_INCLUDED
-#define TIKI_RESOURCE_DEFINITION_HPP_INCLUDED
 
-#include "tiki/base/flagmask.hpp"
+#include "tiki/base/flag_mask.hpp"
 #include "tiki/base/platform.hpp"
 
 namespace tiki
@@ -119,5 +117,3 @@ namespace tiki
 		uint32 m_definitionMask;
 	};
 }
-
-#endif // TIKI_RESOURCE_DEFINITION_HPP_INCLUDED

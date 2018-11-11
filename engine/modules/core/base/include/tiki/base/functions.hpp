@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_BASE_FUNCTIONS_HPP
-#define TIKI_BASE_FUNCTIONS_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/base/numberlimits.hpp"
+#include "tiki/base/number_limits.hpp"
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC ) && TIKI_ENABLED( TIKI_BUILD_64BIT )
 #	include <intrin.h>
@@ -64,7 +62,7 @@ namespace tiki
 	{
 		return (value % alignment) == 0;
 	}
-		
+
 	TIKI_FORCE_INLINE bool isPointerAligned( const void* value, uint alignment )
 	{
 		return (uint( value ) % alignment) == 0;
@@ -151,5 +149,3 @@ namespace tiki
 		value2 = backup;
 	}
 }
-
-#endif // TIKI_BASE_FUNCTIONS_HPP

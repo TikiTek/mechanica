@@ -1,9 +1,7 @@
 #pragma once
-#ifndef __TIKI_THREAD_HPP_INCLUDED__
-#define __TIKI_THREAD_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/container/linkedlist.hpp"
+#include "tiki/container/linked_list.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 #	include "../../../source/win/platformdata_win.hpp"
@@ -41,7 +39,7 @@ namespace tiki
 		uint64					getThreadId() const;
 		bool					isCreated() const;
 
-		static uint64			getCurrentThreadId(); 
+		static uint64			getCurrentThreadId();
 		static const Thread&	getCurrentThread();
 		static const Thread*	getThreadById( uint64 threadId );
 
@@ -61,14 +59,11 @@ namespace tiki
 		volatile bool			m_isExitRequested;
 
 		static ThreadList		s_threadList;
-		
+
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		static DWORD WINAPI		threadEntryPoint( void* pArgument );
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
 		static void*			threadEntryPoint( void* pArgument );
 #endif
-
 	};
 }
-
-#endif // __TIKI_THREAD_HPP_INCLUDED__

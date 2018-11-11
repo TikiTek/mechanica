@@ -2,9 +2,9 @@
 #include "tiki/base/path.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
-#include "tiki/toolproject/package.hpp"
-#include "tiki/toolproject/project.hpp"
+#include "tiki/tool_generic_data/generic_data_type_collection.hpp"
+#include "tiki/tool_project/package.hpp"
+#include "tiki/tool_project/project.hpp"
 
 int tiki::mainEntryPoint()
 {
@@ -27,7 +27,6 @@ int tiki::mainEntryPoint()
 		}
 
 		GenericDataTypeCollection collection;
-		collection.create();
 
 		Project project( sourceDir );
 		for( const Package& package : project.getPackages() )
