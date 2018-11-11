@@ -1,0 +1,22 @@
+<generictypes>
+	<enum name="MechanicaMaterialId">
+		<value name="Charakter" />
+		<value name="Chain" />
+		<value name="Gear" />
+		<value name="Island" />
+		<value name="Metal" />
+		<value name="Block" />
+		<value name="Slide" />
+		<value name="Wood" />
+	</enum>
+	<enum name="MechanicaRenderLayer">
+		<value name="BackgroundColor" />
+		<value name="BackgroundIslands" />
+		<value name="BackgroundClouds" />
+		<value name="Islands" />
+		<value name="Chacter" />
+		<value name="Effects" />
+		<value name="UI" />
+		<value name="Emissive" />
+	</enum>
+</generictypes> 
