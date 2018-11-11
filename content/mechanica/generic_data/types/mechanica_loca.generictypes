@@ -1,0 +1,6 @@
+<generictypes>
+	<enum name="MechanicaLocaTag">
+		<value name="Title" />
+		<value name="LevelName" />
+	</enum>
+</generictypes> 
