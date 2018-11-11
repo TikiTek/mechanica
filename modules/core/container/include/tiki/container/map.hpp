@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_MAP_HPP_INCLUDED__
-#define TIKI_MAP_HPP_INCLUDED__
 
-#include "tiki/container/keyvaluepair.hpp"
+#include "tiki/container/key_value_pair.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
@@ -71,5 +69,3 @@ namespace tiki
 }
 
 #include "../../../source/map.inl"
-
-#endif // TIKI_MAP_HPP_INCLUDED__

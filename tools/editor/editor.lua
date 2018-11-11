@@ -1,16 +1,14 @@
--- library/tools/editor
-
-local module = Module:new( "editor" );
+local module = Module:new();
 
 module:add_files( "source/*.*" );
 module:add_files( "*.lua" );
 
 module:add_dependency( "config" );
 module:add_dependency( "core/resource" );
-module:add_dependency( "core/genericdata" );
+module:add_dependency( "core/generic_data" );
 
-module:add_dependency( "tool/toolbase" );
-module:add_dependency( "tool/toolapplication" );
+module:add_dependency( "tool/tool_base" );
+module:add_dependency( "tool/tool_application" );
 
 module:add_dependency( "editor/editor_interface" );
 module:add_dependency( "editor/package_editor" );

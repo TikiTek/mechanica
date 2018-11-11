@@ -1,10 +1,8 @@
--- library/modules/core/io
-
-local module = Module:new( "io" );
+local module = Module:new();
 
 module:add_files( "source/*.*" );
 module:add_files( "include/**/*.hpp" );
-module:add_files( "io.lua" );
+module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 if is_windows then
@@ -17,4 +15,4 @@ end
 
 module:add_dependency( "core/base" );
 module:add_dependency( "core/threading" );
-module:add_dependency( "thirdparty/dbalsterxml" );
+module:add_dependency( "third_party/dbalsterxml" );

@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_PLATFORM_HPP
-#define TIKI_PLATFORM_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/container/staticarray.hpp"
+#include "tiki/container/static_array.hpp"
 
 namespace tiki
 {
@@ -79,5 +77,3 @@ namespace tiki
 
 	int											mainEntryPoint();
 }
-
-#endif // TIKI_PLATFORM_HPP

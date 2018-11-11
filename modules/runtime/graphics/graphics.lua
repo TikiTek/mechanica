@@ -1,6 +1,4 @@
--- library/modules/runtime/graphics
-
-local module = Module:new( "graphicsshader" );
+local module = Module:new( "graphics_shader" );
 
 module:add_files( "include/tiki/graphics/shader/*.hpp" );
 module:add_shader_dir( "include" );
@@ -10,14 +8,14 @@ local module = Module:new( "graphics" );
 module:add_files( "source/global/*.*" );
 module:add_files( "source/shader/*.fx" );
 module:add_files( "include/tiki/graphics/*.*" );
-module:add_files( "graphics.lua" );
+module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "core/math" );
-module:add_dependency( "runtime/graphicsbase" );
+module:add_dependency( "runtime/graphics_base" );
 module:add_dependency( "runtime/animation" );
 
-module:add_dependency( "graphicsshader" );
+module:add_dependency( "graphics_shader" );
 
 if use_d3d11 then
 	module:add_files( "source/win_d3d11/*.*" );

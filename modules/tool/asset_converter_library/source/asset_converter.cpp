@@ -4,14 +4,14 @@
 #include "tiki/base/string_tools.hpp"
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
-#include "tiki/tasksystem/taskcontext.hpp"
-#include "tiki/toolbase/directory_tool.hpp"
-#include "tiki/toolproject/package.hpp"
-#include "tiki/toolproject/project.hpp"
-#include "tiki/toolsql/sqlite_query.hpp"
-#include "tiki/toolxml/xml_attribute.hpp"
-#include "tiki/toolxml/xml_document.hpp"
-#include "tiki/toolxml/xml_element.hpp"
+#include "tiki/task_system/task_context.hpp"
+#include "tiki/tool_base/directory_tool.hpp"
+#include "tiki/tool_project/package.hpp"
+#include "tiki/tool_project/project.hpp"
+#include "tiki/tool_sql/sqlite_query.hpp"
+#include "tiki/tool_xml/xml_attribute.hpp"
+#include "tiki/tool_xml/xml_document.hpp"
+#include "tiki/tool_xml/xml_element.hpp"
 
 namespace tiki
 {

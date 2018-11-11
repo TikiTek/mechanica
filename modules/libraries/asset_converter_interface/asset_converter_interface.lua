@@ -1,5 +1,3 @@
--- library/modules/libraries/asset_converter_interface
-
 local asset_converter_library_project = Project:new(
 	"asset_converter_library",
 	"a7beb386-b92c-4c98-9250-c9394bd86b42",

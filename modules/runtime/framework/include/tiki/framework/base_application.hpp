@@ -1,10 +1,7 @@
 #pragma once
-#ifndef TIKI_BASEAPPLICATION_HPP_INCLUDED
-#define TIKI_BASEAPPLICATION_HPP_INCLUDED
 
 #include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicsrenderermode.hpp"
 
 namespace tiki
 {
@@ -29,7 +26,6 @@ namespace tiki
 			screenWidth			= 900;
 			screenHeight		= 600;
 			fullScreen			= false;
-			graphicsMode		= GraphicsRendererMode_Hardware;
 
 			pWindowTitle		= "TikiEngine 3.0";
 		}
@@ -37,7 +33,6 @@ namespace tiki
 		uint					screenWidth;
 		uint					screenHeight;
 		bool					fullScreen;
-		GraphicsRendererMode	graphicsMode;
 
 		const char*				pWindowTitle;
 
@@ -100,5 +95,3 @@ namespace tiki
 		bool							frame();
 	};
 }
-
-#endif // TIKI_BASEAPPLICATION_HPP_INCLUDED

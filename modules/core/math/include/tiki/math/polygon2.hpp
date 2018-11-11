@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_POLYGON2_HPP_INCLUDED
-#define TIKI_POLYGON2_HPP_INCLUDED
 
 #include "tiki/base/memory.hpp"
-#include "tiki/container/arrayview.hpp"
+#include "tiki/container/array_view.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -153,5 +151,3 @@ namespace tiki
 		bool splitPolygon( Polygon2& polygon1, Polygon2& polygon2, const Polygon2& sourcePolygon, const Line2& cutLine );
 	}
 }
-
-#endif // TIKI_POLYGON2_HPP_INCLUDED
