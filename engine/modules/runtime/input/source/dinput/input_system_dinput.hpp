@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_INPUTSYSTEM_DINPUT_HPP_INCLUDED__
-#define TIKI_INPUTSYSTEM_DINPUT_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/platform.hpp"
@@ -58,5 +56,3 @@ namespace tiki
 
 	};
 }
-
-#endif // TIKI_INPUTSYSTEM_DINPUT_HPP_INCLUDED__

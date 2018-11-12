@@ -1,5 +1,4 @@
-
-#include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphics/vertex_format.hpp"
 
 #include "tiki/base/types.hpp"
 
@@ -21,7 +20,7 @@ namespace tiki
 			}
 
 			m_vertexStride[ attribute.streamIndex ] += getVertexAttributeFormatSize( attribute.format );
-		} 
+		}
 	}
 
 	void VertexFormat::dispose()

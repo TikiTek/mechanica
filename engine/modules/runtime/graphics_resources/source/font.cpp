@@ -1,9 +1,8 @@
-
 #include "tiki/graphics/font.hpp"
 
 #include "tiki/math/vector.hpp"
 #include "tiki/resource/resource_file.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {

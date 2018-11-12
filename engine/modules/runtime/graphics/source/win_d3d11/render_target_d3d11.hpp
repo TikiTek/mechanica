@@ -1,10 +1,9 @@
-#ifndef TIKI_RENDERTARGET_D3D11_HPP__
-#define TIKI_RENDERTARGET_D3D11_HPP__
+#pragma once
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicssystemlimits.hpp"
+#include "tiki/graphics/graphics_system_limits.hpp"
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -24,5 +23,3 @@ namespace tiki
 		ID3D11DepthStencilView*		pDepthView;
 	};
 }
-
-#endif // TIKI_RENDERTARGET_D3D11_HPP__

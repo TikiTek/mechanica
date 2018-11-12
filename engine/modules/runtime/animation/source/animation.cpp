@@ -1,10 +1,9 @@
-
 #include "tiki/animation/animation.hpp"
 
 #include "tiki/animation/animationjoint.hpp"
 #include "tiki/base/simd.hpp"
-#include "tiki/graphics/modelhierarchy.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/graphics/model_hierarchy.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {

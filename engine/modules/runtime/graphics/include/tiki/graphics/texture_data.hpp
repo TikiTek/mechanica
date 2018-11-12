@@ -1,15 +1,13 @@
 #pragma once
-#ifndef TIKI_TEXTUREDATA_HPP__INCLUDED
-#define TIKI_TEXTUREDATA_HPP__INCLUDED
 
-#include "tiki/graphics/texturedescription.hpp"
+#include "tiki/graphics/texture_description.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/texturedata_d3d11.hpp"
+#	include "../../../source/win_d3d11/texture_data_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/texturedata_d3d12.hpp"
+#	include "../../../source/win_d3d12/texture_data_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/texturedata_vulkan.hpp"
+#	include "../../../source/global_vulkan/texture_data_vulkan.hpp"
 #endif
 
 namespace tiki
@@ -40,8 +38,5 @@ namespace tiki
 
 		TextureDescription			m_description;
 		TextureDataPlatformData		m_platformData;
-
 	};
 }
-
-#endif // TIKI_TEXTUREDATA_HPP__INCLUDED

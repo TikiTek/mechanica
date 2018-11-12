@@ -1,10 +1,9 @@
-
-#include "tiki/graphics/samplerstate.hpp"
+#include "tiki/graphics/sampler_state.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/functions.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include <d3d11.h>
 

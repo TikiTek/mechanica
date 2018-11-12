@@ -1,10 +1,9 @@
-
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/texture_data.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include <d3d11.h>
 
@@ -127,7 +126,7 @@ namespace tiki
 				width		= TIKI_MAX( width / 2u, 1u );
 				height		= TIKI_MAX( height / 2u, 1u );
 				depth		= TIKI_MAX( depth / 2u, 1u );
-			} 
+			}
 
 			pD3dInitData = initData;
 		}
@@ -207,7 +206,7 @@ namespace tiki
 			srvDesc.ViewDimension				= getViewDimentions( (TextureType)description.type );
 			srvDesc.Texture2D.MipLevels			= description.mipCount;
 			srvDesc.Texture2D.MostDetailedMip	= 0u;
-			
+
 			if ( FAILED( pDevice->CreateShaderResourceView( m_platformData.pResource, &srvDesc, &m_platformData.pShaderView ) ) )
 			{
 				TIKI_TRACE_ERROR( "[grpahics] Can't create ShaderView.\n" );

@@ -21,6 +21,8 @@ namespace tiki
 										Project( const Path& projectPath );
 										~Project();
 
+		bool							isValid() const { return m_isValid; }
+
 		const Path&						getProjectPath() const { return m_projectPath; }
 		const Path&						getContentPath() const { return m_contentPath; }
 		const Path&						getAssetBuildPath() const { return m_assetBuildPath; }
@@ -47,6 +49,8 @@ namespace tiki
 
 	private:
 
+		bool					m_isValid;
+
 		Path					m_projectPath;
 		Path					m_contentPath;
 		Path					m_assetBuildPath;
@@ -59,6 +63,6 @@ namespace tiki
 		ChunkedPool< Package >	m_packagePool;
 		LinkedList< Package >	m_packages;
 
-		void					loadFromFile();
+		bool					loadFromFile();
 	};
 }

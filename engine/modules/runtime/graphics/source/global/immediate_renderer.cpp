@@ -1,19 +1,19 @@
-#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
 
 #include "tiki/base/numbers.hpp"
 #include "tiki/graphics/font.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediatevertex.hpp"
-#include "tiki/graphics/primitivetopologies.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/immediate_vertex.hpp"
+#include "tiki/graphics/primitive_topology.hpp"
 #include "tiki/graphics/shader/immediaterenderer_shader.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/graphics/texturedata.hpp"
-#include "tiki/graphics/vertexformat.hpp"
-#include "tiki/math/axisalignedrectangle.hpp"
+#include "tiki/graphics/shader_set.hpp"
+#include "tiki/graphics/texture_data.hpp"
+#include "tiki/graphics/vertex_format.hpp"
+#include "tiki/math/axis_aligned_rectangle.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/projection.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {

@@ -1,15 +1,13 @@
 #pragma once
-#ifndef TIKI_IMMEDIATERENDERER_HPP__INCLUDED
-#define TIKI_IMMEDIATERENDERER_HPP__INCLUDED
 
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/container/sizedarray.hpp"
-#include "tiki/container/staticarray.hpp"
+#include "tiki/container/sized_array.hpp"
+#include "tiki/container/static_array.hpp"
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/constantbuffer.hpp"
-#include "tiki/graphics/primitivetopologies.hpp"
-#include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/graphics/constant_buffer.hpp"
+#include "tiki/graphics/primitive_topology.hpp"
+#include "tiki/graphics/vertex_buffer.hpp"
 
 #include "base.hpp"
 
@@ -118,8 +116,5 @@ namespace tiki
 		ConstantBuffer				m_vertexConstantBuffer;
 
 		void						setState() const;
-
 	};
 }
-
-#endif // TIKI_IMMEDIATERENDERER_HPP__INCLUDED

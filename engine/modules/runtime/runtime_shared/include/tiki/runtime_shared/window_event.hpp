@@ -1,10 +1,8 @@
 #pragma once
-#ifndef TIKI_WINDOWEVENT_HPP
-#define TIKI_WINDOWEVENT_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/input/keyboardkey.hpp"
-#include "tiki/input/mousebutton.hpp"
+#include "tiki/input/keyboard_key.hpp"
+#include "tiki/input/mouse_button.hpp"
 
 #include "base.hpp"
 
@@ -33,5 +31,3 @@ namespace tiki
 		WindowEventData		data;
 	};
 }
-
-#endif // TIKI_WINDOWEVENT_HPP

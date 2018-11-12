@@ -1,5 +1,4 @@
-#ifndef TIKI_BASEBUFFER_HPP__
-#define TIKI_BASEBUFFER_HPP__
+#pragma once
 
 #include "tiki/base/types.hpp"
 
@@ -16,11 +15,9 @@ namespace tiki
 }
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/basebuffer_d3d11.hpp"
+#	include "../../../source/win_d3d11/base_buffer_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/basebuffer_d3d12.hpp"
+#	include "../../../source/win_d3d12/base_buffer_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/basebuffer_vulkan.hpp"
+#	include "../../../source/global_vulkan/base_buffer_vulkan.hpp"
 #endif
-
-#endif // TIKI_BASEBUFFER_HPP__

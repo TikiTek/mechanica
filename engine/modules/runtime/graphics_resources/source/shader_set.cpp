@@ -1,9 +1,9 @@
-#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/shader_set.hpp"
 
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 #include "tiki/graphics/shader.hpp"
 #include "tiki/resource/resource_file.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {

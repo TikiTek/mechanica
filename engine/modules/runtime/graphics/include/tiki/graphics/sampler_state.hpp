@@ -1,16 +1,15 @@
-#ifndef TIKI_SAMPLERSTATE_HPP__
-#define TIKI_SAMPLERSTATE_HPP__
+#pragma once
 
-#include "tiki/graphics/graphicsstateobject.hpp"
+#include "tiki/graphics/graphics_state_object.hpp"
 
 #include "tiki/graphics/color.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/graphicsstates_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphics_states_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/graphicsstates_d3d12.hpp"
+#	include "../../../source/win_d3d12/graphics_states_d3d12.hpp"
 #elif  TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/graphicsstates_vulkan.hpp"
+#	include "../../../source/global_vulkan/graphics_states_vulkan.hpp"
 #else
 #	error Platform not supported
 #endif
@@ -41,10 +40,10 @@ namespace tiki
 		AddressMode addressU;
 		AddressMode addressV;
 		AddressMode addressW;
-		
+
 		FilterMode	magFilter;
 		FilterMode	mipFilter;
-		
+
 		uint		maxAnisotropy;
 		Color		borderColor;
 
@@ -53,7 +52,7 @@ namespace tiki
 			addressU		= AddressMode_Wrap;
 			addressV		= AddressMode_Wrap;
 			addressW		= AddressMode_Wrap;
-			
+
 			magFilter		= FilterMode_Linear;
 			mipFilter		= FilterMode_Nearest;
 
@@ -80,8 +79,5 @@ namespace tiki
 	private:
 
 		SamplerStatePlatformData	m_platformData;
-
 	};
 }
-
-#endif // TIKI_SAMPLERSTATE_HPP__

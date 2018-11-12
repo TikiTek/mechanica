@@ -28,7 +28,7 @@ namespace tiki
 		m_assetBuildPath.push( "asset_build" );
 
 		m_packagePool.create( 4u );
-		loadFromFile();
+		m_isValid = loadFromFile();
 	}
 
 	Project::Project( const Path& projectPath )
@@ -40,7 +40,7 @@ namespace tiki
 		m_assetBuildPath.push( "asset_build" );
 
 		m_packagePool.create( 4u );
-		loadFromFile();
+		m_isValid = loadFromFile();
 	}
 
 	Project::~Project()
@@ -124,11 +124,12 @@ namespace tiki
 		return true;
 	}
 
-	void Project::loadFromFile()
+	bool Project::loadFromFile()
 	{
 		Path filePath = m_projectPath;
 		filePath.push( "tikiproject.xml" );
 
+		bool ok = true;
 		XmlDocument document;
 		if( document.loadFromFile( filePath.getCompletePath() ) )
 		{
@@ -136,6 +137,7 @@ namespace tiki
 			if( pRoot == nullptr )
 			{
 				TIKI_TRACE_ERROR( "[project] 'tikiproject' root node not found in '%s'.\n", filePath.getCompletePath() );
+				ok = false;
 			}
 			else
 			{
@@ -180,6 +182,10 @@ namespace tiki
 				}
 			}
 		}
+		else
+		{
+			ok = false;
+		}
 
 		List< Path > packageFiles;
 		directory::findFiles( packageFiles, m_contentPath, ".package", false );
@@ -195,5 +201,7 @@ namespace tiki
 
 			m_packages.push( pPackage );
 		}
+
+		return ok;
 	}
 }

@@ -1,4 +1,4 @@
-#include "tiki/input/inputsystem.hpp"
+#include "tiki/input/input_system.hpp"
 
 #include "tiki/base/functions.hpp"
 #include "tiki/base/memory.hpp"

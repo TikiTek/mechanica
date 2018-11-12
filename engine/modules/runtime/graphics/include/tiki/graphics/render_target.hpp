@@ -1,17 +1,15 @@
 #pragma  once
-#ifndef TIKI_RENDERTARGET_HPP__
-#define TIKI_RENDERTARGET_HPP__
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicssystemlimits.hpp"
-#include "tiki/graphics/pixelformat.hpp"
+#include "tiki/graphics/graphics_system_limits.hpp"
+#include "tiki/graphics/pixel_format.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/rendertarget_d3d11.hpp"
+#	include "../../../source/win_d3d11/render_target_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/rendertarget_d3d12.hpp"
+#	include "../../../source/win_d3d12/render_target_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/rendertarget_vulkan.hpp"
+#	include "../../../source/global_vulkan/render_target_vulkan.hpp"
 #endif
 
 namespace tiki
@@ -64,7 +62,7 @@ namespace tiki
 		uint						getColorBufferCount() const					{ return m_colorBufferCount; }
 
 		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }
-		
+
 	private:
 
 		uint						m_width;
@@ -76,8 +74,5 @@ namespace tiki
 		RenderTargetBuffer			m_depthBuffer;
 
 		RenderTargetPlatformData	m_platformData;
-
 	};
 }
-
-#endif // TIKI_RENDERTARGET_HPP__

@@ -6,45 +6,49 @@
 #include "tiki/tool_project/package.hpp"
 #include "tiki/tool_project/project.hpp"
 
-int tiki::mainEntryPoint()
+namespace tiki
 {
-	int retValue = 0;
-
-	//debug::breakOnAlloc( 1449 );
+	void printUsage()
 	{
-		Path sourceDir( "../../../../../../content" );
-		Path targetDir( "../../genericdatatypes" );
+		TIKI_TRACE_ERROR( "Usage: generic_data_code_generator --content-dir=%CONTENT_DIR% --target-dir=%TARGET_DIR%\n" );
+	}
 
+	int mainEntryPoint()
+	{
 		const char* pValue = nullptr;
-		if( platform::findArgumentValue( &pValue, "--content-dir" ) )
+		if( !platform::findArgumentValue( &pValue, "--content-dir" ) )
 		{
-			sourceDir.setCompletePath( pValue );
+			printUsage();
+			return 1;
 		}
+		Path sourceDir( pValue );
 
-		if( platform::findArgumentValue( &pValue, "--target-dir" ) )
+		if( !platform::findArgumentValue( &pValue, "--target-dir" ) )
 		{
-			targetDir.setCompletePath( pValue );
+			printUsage();
+			return 1;
 		}
+		Path targetDir( pValue );
 
 		GenericDataTypeCollection collection;
 
-		Project project( sourceDir );
+		Project project;
+		if( !project.isValid() )
+		{
+			return 1;
+		}
+
 		for( const Package& package : project.getPackages() )
 		{
 			collection.addPackage( package );
 		}
 
-		if ( !collection.exportCode( GenericDataTypeMode_RuntimeOnly, targetDir ) )
+		if( !collection.exportCode( GenericDataTypeMode_RuntimeOnly, targetDir ) )
 		{
-			TIKI_TRACE_ERROR( "[genericdatacodegenerator] code generation finish with some errors.\n" );
+			TIKI_TRACE_ERROR( "code generation finished with errors.\n" );
+			return 1;
+		}
 
-			retValue = -1;
-		}
-		else
-		{
-			TIKI_TRACE_INFO( "[genericdatacodegenerator] code generation successfull.\n" );
-		}
+		return 0;
 	}
-
-	return retValue;
 }

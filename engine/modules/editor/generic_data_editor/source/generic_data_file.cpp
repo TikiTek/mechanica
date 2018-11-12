@@ -1,12 +1,12 @@
 #include "generic_data_file.hpp"
 
 #include "tiki/base/string_tools.hpp"
-#include "tiki/toolapplication/tool_ui.hpp"
-#include "tiki/toolgenericdata/generic_data_array.hpp"
-#include "tiki/toolgenericdata/generic_data_object.hpp"
-#include "tiki/toolgenericdata/generic_data_tag.hpp"
-#include "tiki/toolgenericdata/generic_data_type_array.hpp"
-#include "tiki/toolgenericdata/generic_data_type_enum.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
+#include "tiki/tool_generic_data/generic_data_array.hpp"
+#include "tiki/tool_generic_data/generic_data_object.hpp"
+#include "tiki/tool_generic_data/generic_data_tag.hpp"
+#include "tiki/tool_generic_data/generic_data_type_array.hpp"
+#include "tiki/tool_generic_data/generic_data_type_enum.hpp"
 
 #include "res_generic_data_editor.hpp"
 

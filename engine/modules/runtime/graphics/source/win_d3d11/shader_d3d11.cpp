@@ -1,11 +1,10 @@
-
 #include "tiki/graphics/shader.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/container/fixedsizedarray.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shadertype.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_type.hpp"
 
 #include <d3d11.h>
 

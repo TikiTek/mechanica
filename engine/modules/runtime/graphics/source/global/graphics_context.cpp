@@ -1,7 +1,6 @@
+#include "tiki/graphics/graphics_context.hpp"
 
-#include "tiki/graphics/graphicscontext.hpp"
-
-#include "tiki/graphics/stockvertex.hpp"
+#include "tiki/graphics/stock_vertex.hpp"
 
 namespace tiki
 {
@@ -48,7 +47,7 @@ namespace tiki
 			m_apPixelConstants[ i ] = nullptr;
 		}
 	}
-	
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	bool GraphicsContext::validateDrawCall() const
 	{
@@ -98,7 +97,7 @@ namespace tiki
 		TIKI_ASSERT( validateDrawCall() );
 
 		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 4u ) );
-		
+
 		createFloat2( pVertices[ 0u ].position, -1.0f, -1.0f );
 		createFloat2( pVertices[ 0u ].texCoord, u0, v1 );
 

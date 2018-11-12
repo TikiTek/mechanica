@@ -1,6 +1,6 @@
 #include "editor_file_browser_ui.hpp"
 
-#include "tiki/io/directoryiterator.hpp"
+#include "tiki/io/directory_iterator.hpp"
 
 #include "res_editor.hpp"
 

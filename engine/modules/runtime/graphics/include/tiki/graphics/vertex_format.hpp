@@ -1,12 +1,11 @@
-#ifndef TIKI_VERTEXFORMAT_HPP
-#define TIKI_VERTEXFORMAT_HPP
+#pragma once
 
-#include "tiki/container/fixedarray.hpp"
-#include "tiki/container/fixedsizedarray.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicsstateobject.hpp"
-#include "tiki/graphics/graphicssystemlimits.hpp"
-#include "tiki/graphics/vertexattribute.hpp"
+#include "tiki/container/fixed_array.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
+#include "tiki/graphics/graphics_state_object.hpp"
+#include "tiki/graphics/graphics_system_limits.hpp"
+#include "tiki/graphics/vertex_attribute.hpp"
 
 namespace tiki
 {
@@ -42,8 +41,5 @@ namespace tiki
 
 		FixedSizedArray< VertexAttribute, GraphicsSystemLimits_MaxVertexAttributes >	m_attributes;
 		FixedSizedArray< uint, GraphicsSystemLimits_MaxInputStreams >					m_vertexStride;
-
 	};
 }
-
-#endif // TIKI_VERTEXFORMAT_HPP

@@ -1,8 +1,7 @@
-
-#include "tiki/graphics/depthstencilstate.hpp"
+#include "tiki/graphics/depth_stencil_state.hpp"
 
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include <d3d11.h>
 
@@ -44,7 +43,7 @@ namespace tiki
 		stateDesc.StencilEnable		= creationParamter.stencilEnabled;
 		stateDesc.StencilReadMask	= creationParamter.stencilReadMask;
 		stateDesc.StencilWriteMask	= creationParamter.stencilWriteMask;
-		
+
 		stateDesc.FrontFace.StencilFunc			= s_aComparsionFunctionMapping[ creationParamter.frontFace.stencilFunction ];
 		stateDesc.FrontFace.StencilDepthFailOp	= s_aStencilOperationMapping[ creationParamter.frontFace.depthFailOperation ];
 		stateDesc.FrontFace.StencilFailOp		= s_aStencilOperationMapping[ creationParamter.frontFace.stencilFailOperation ];

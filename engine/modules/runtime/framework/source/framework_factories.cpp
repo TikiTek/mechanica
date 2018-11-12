@@ -4,7 +4,7 @@
 #include "tiki/graphics/font.hpp"
 #include "tiki/graphics/material.hpp"
 #include "tiki/graphics/model.hpp"
-#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/shader_set.hpp"
 #include "tiki/graphics/texture.hpp"
 
 namespace tiki

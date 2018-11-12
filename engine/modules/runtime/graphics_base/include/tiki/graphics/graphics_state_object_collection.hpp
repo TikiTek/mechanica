@@ -1,8 +1,6 @@
 #pragma once
-#ifndef __TIKI_GRAPHICSSTATEOBJECTCOLLECTION_HPP_INCLUDED__
-#define __TIKI_GRAPHICSSTATEOBJECTCOLLECTION_HPP_INCLUDED__
 
-#include "tiki/container/sizedarray.hpp"
+#include "tiki/container/sized_array.hpp"
 
 namespace tiki
 {
@@ -19,16 +17,13 @@ namespace tiki
 		TIKI_FORCE_INLINE T*	findOrAllocate( crc32 hashValue );
 
 	private:
-		
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		uint					m_maxCount;
 #endif
 
 		SizedArray< T >			m_data;
-		
 	};
 }
 
-#include "../../../source/graphicsstateobjectcollection.inl"
-
-#endif // __TIKI_GRAPHICSSTATEOBJECTCOLLECTION_HPP_INCLUDED__
+#include "../../../source/graphics_state_object_collection.inl"

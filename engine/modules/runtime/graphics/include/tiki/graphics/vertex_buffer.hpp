@@ -1,9 +1,8 @@
-#ifndef TIKI_VERTEXBUFFER_HPP
-#define TIKI_VERTEXBUFFER_HPP
+#pragma once
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/basebuffer.hpp"
+#include "tiki/graphics/base_buffer.hpp"
 
 namespace tiki
 {
@@ -21,9 +20,9 @@ namespace tiki
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
 		TIKI_FORCE_INLINE size_t	getStride() const	{ return m_stride; }
-		
+
 		TIKI_FORCE_INLINE size_t	getCount() const	{ return m_count; }
-			
+
 	private:
 
 		size_t						m_stride;
@@ -32,6 +31,4 @@ namespace tiki
 	};
 }
 
-#include "../../../source/global/vertexbuffer.inl"
-
-#endif // TIKI_VERTEXBUFFER_HPP
+#include "../../../source/global/vertex_buffer.inl"

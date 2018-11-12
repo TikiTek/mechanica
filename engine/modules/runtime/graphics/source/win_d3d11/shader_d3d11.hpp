@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_SHADER_D3D11_HPP
-#define TIKI_SHADER_D3D11_HPP
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -33,5 +31,3 @@ namespace tiki
 		ID3D11InputLayout* createVertexInputLayout( GraphicsSystem& graphicsSystem, const ShaderPlatformData& shaderData, const D3D11_INPUT_ELEMENT_DESC* pElements, uint elementCount );
 	}
 }
-
-#endif // TIKI_SHADER_D3D11_HPP

@@ -1,11 +1,9 @@
 #pragma once
-#ifndef __TIKI_TOUCHGAMESYSTEM_HPP_INCLUDED__
-#define __TIKI_TOUCHGAMESYSTEM_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/container/fixedarray.hpp"
-#include "tiki/container/fixedsizedarray.hpp"
-#include "tiki/input/inputsystem.hpp"
+#include "tiki/container/fixed_array.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
+#include "tiki/input/input_system.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -70,8 +68,5 @@ namespace tiki
 		Vector2					m_halfPointSize;
 		Vector2					m_padSize;
 		Vector2					m_halfPadSize;
-
 	};
 }
-
-#endif // __TIKI_TOUCHGAMESYSTEM_HPP_INCLUDED__

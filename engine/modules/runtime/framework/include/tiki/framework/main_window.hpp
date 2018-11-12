@@ -1,11 +1,9 @@
 #pragma once
-#ifndef TIKI_MAINWINDOW_HPP
-#define TIKI_MAINWINDOW_HPP
 
 #include "tiki/base/platform.hpp"
 #include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/runtimeshared/windoweventbuffer.hpp"
+#include "tiki/runtime_shared/window_event_buffer.hpp"
 
 #if TIKI_ENABLED( TIKI_SDL )
 #	include "../../../source/sdl/main_window_sdl.hpp"
@@ -67,5 +65,3 @@ namespace tiki
 		WindowEventBuffer			m_eventBuffer;
 	};
 }
-
-#endif // TIKI_MAINWINDOW_HPP

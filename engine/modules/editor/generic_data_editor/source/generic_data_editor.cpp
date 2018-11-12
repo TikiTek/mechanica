@@ -2,8 +2,8 @@
 
 #include "tiki/editor_interface/editable_file.hpp"
 #include "tiki/editor_interface/editor_interface.hpp"
-#include "tiki/toolproject/package.hpp"
-#include "tiki/toolproject/project.hpp"
+#include "tiki/tool_project/package.hpp"
+#include "tiki/tool_project/project.hpp"
 
 #include "generic_data_file.hpp"
 

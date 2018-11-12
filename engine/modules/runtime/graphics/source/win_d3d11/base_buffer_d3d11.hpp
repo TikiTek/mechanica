@@ -1,9 +1,8 @@
-#ifndef TIKI_BASEBUFFER_D3D11_HPP__
-#define TIKI_BASEBUFFER_D3D11_HPP__
+#pragma once
 
 #include "tiki/base/types.hpp"
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -24,7 +23,7 @@ namespace tiki
 
 		bool					create( GraphicsSystem& graphicsSystem, uint size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName );
 		void					dispose( GraphicsSystem& graphicsSystem );
-		
+
 		uint					getSize() const;
 
 	private:
@@ -32,8 +31,5 @@ namespace tiki
 		ID3D11Buffer*			m_pBuffer;
 		uint					m_size;
 		bool					m_dynamic;
-
 	};
 }
-
-#endif // TIKI_BASEBUFFER_D3D11_HPP__

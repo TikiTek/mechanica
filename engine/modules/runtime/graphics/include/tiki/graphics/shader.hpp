@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_SHADER_HPP
-#define TIKI_SHADER_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/shadertype.hpp"
+#include "tiki/graphics/shader_type.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/shader_d3d11.hpp"
@@ -41,8 +39,5 @@ namespace tiki
 		crc32					m_hash;
 
 		ShaderPlatformData		m_platformData;
-
 	};
 }
-
-#endif // TIKI_SHADER_HPP

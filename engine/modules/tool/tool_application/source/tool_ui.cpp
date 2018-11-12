@@ -1,6 +1,6 @@
-#include "tiki/toolapplication/tool_ui.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
 
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/texture_data.hpp"
 
 #include <imgui_internal.h>
 

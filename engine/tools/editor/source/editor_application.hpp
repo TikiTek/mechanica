@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tiki/toolapplication/tool_application.hpp"
+#include "tiki/tool_application/tool_application.hpp"
 
 namespace tiki
 {

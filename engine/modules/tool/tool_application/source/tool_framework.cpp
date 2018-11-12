@@ -1,6 +1,6 @@
-#include "tiki/toolapplication/tool_framework.hpp"
+#include "tiki/tool_application/tool_framework.hpp"
 
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/texture_data.hpp"
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
 

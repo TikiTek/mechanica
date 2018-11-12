@@ -2,7 +2,7 @@
 
 #include "tiki/editor_interface/file_editor.hpp"
 
-#include "tiki/toolgenericdata/generic_data_type_collection.hpp"
+#include "tiki/tool_generic_data/generic_data_type_collection.hpp"
 
 namespace tiki
 {

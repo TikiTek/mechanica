@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
-#define TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED
 
-#include "tiki/container/fixedarray.hpp"
-#include "tiki/math/axisalignedbox.hpp"
+#include "tiki/container/fixed_array.hpp"
+#include "tiki/math/axis_aligned_box.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/frustum.hpp"
 #include "tiki/math/matrix.hpp"
@@ -34,7 +32,7 @@ namespace tiki
 
 		DebugRenderCommandType_SetOption
 	};
-	
+
 	struct DebugRenderCommand
 	{
 		DebugRenderCommand*		pNext;
@@ -190,9 +188,5 @@ namespace tiki
 	struct DebugRenderSetOptionCommand : public DebugRenderCommand
 	{
 		static const DebugRenderCommandType CommandType = DebugRenderCommandType_SetOption;
-
-
 	};
 }
-
-#endif // TIKI_DEBUGRENDERER_TYPES_HPP_INCLUDED

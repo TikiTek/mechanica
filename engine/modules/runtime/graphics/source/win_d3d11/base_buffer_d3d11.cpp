@@ -1,9 +1,8 @@
-
-#include "tiki/graphics/basebuffer.hpp"
+#include "tiki/graphics/base_buffer.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include <d3d11.h>
 

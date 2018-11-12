@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_AXISALIGNEDRECTANGLE_HPP_INCLUDED
-#define TIKI_AXISALIGNEDRECTANGLE_HPP_INCLUDED
 
-#include "tiki/math/rectanglepoint.hpp"
+#include "tiki/math/rectangle_point.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -46,6 +44,4 @@ namespace tiki
 	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( float minX, float minY, float maxX, float maxY );
 }
 
-#include "../../../source/axisalignedrectangle.inl"
-
-#endif // TIKI_AXISALIGNEDRECTANGLE_HPP_INCLUDED
+#include "../../../source/axis_aligned_rectangle.inl"
