@@ -1,12 +1,10 @@
 #pragma once
-#ifndef __TIKI_INPUTEVENT_HPP_INCLUDED__
-#define __TIKI_INPUTEVENT_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/input/controllerbutton.hpp"
-#include "tiki/input/inputdevice.hpp"
-#include "tiki/input/keyboardkey.hpp"
-#include "tiki/input/mousebutton.hpp"
+#include "tiki/input/controller_button.hpp"
+#include "tiki/input/input_device.hpp"
+#include "tiki/input/keyboard_key.hpp"
+#include "tiki/input/mouse_button.hpp"
 
 namespace tiki
 {
@@ -127,5 +125,3 @@ namespace tiki
 		InputEventData	data;
 	};
 }
-
-#endif // __TIKI_INPUTEVENT_HPP_INCLUDED__

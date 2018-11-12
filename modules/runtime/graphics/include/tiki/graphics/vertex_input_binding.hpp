@@ -1,17 +1,15 @@
 #pragma once
-#ifndef TIKI_VERTEXINPUTBINDING_HPP
-#define TIKI_VERTEXINPUTBINDING_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/graphicssystemlimits.hpp"
-#include "tiki/graphics/graphicsstateobject.hpp"
+#include "tiki/graphics/graphics_state_object.hpp"
+#include "tiki/graphics/graphics_system_limits.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/graphicsstates_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphics_states_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/graphicsstates_d3d12.hpp"
+#	include "../../../source/win_d3d12/graphics_states_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/graphicsstates_vulkan.hpp"
+#	include "../../../source/global_vulkan/graphics_states_vulkan.hpp"
 #else
 #	error Platform not supported
 #endif
@@ -52,8 +50,5 @@ namespace tiki
 		const VertexFormat*				m_pVertexFormat;
 		const Shader*					m_pShader;
 		VertexInputBindingPlatformData	m_platformData;
-
 	};
 }
-
-#endif // TIKI_VERTEXINPUTBINDING_HPP

@@ -1,8 +1,7 @@
+#include "tiki/graphics/render_target.hpp"
 
-#include "tiki/graphics/rendertarget.hpp"
-
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/texture_data.hpp"
 
 #include <d3d11.h>
 
@@ -30,7 +29,7 @@ namespace tiki
 		for (uint i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
 		{
 			m_platformData.pColorViews[ i ] = nullptr;
-		} 
+		}
 
 		m_platformData.pDepthView = nullptr;
 	}
@@ -41,7 +40,7 @@ namespace tiki
 		for (uint i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
 		{
 			TIKI_ASSERT( m_platformData.pColorViews[ i ] == nullptr );
-		} 
+		}
 
 		TIKI_ASSERT( m_platformData.pDepthView == nullptr );
 #endif

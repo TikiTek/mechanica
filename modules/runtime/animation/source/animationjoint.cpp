@@ -2,7 +2,7 @@
 #include "tiki/animation/animationjoint.hpp"
 
 #include "tiki/base/functions.hpp"
-#include "tiki/graphics/modelhierarchy.hpp"
+#include "tiki/graphics/model_hierarchy.hpp"
 #include "tiki/math/matrix.hpp"
 
 namespace tiki

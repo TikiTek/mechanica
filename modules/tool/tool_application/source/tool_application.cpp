@@ -1,13 +1,13 @@
-#include "tiki/toolapplication/tool_application.hpp"
+#include "tiki/tool_application/tool_application.hpp"
 
 #include "tiki/base/timer.hpp"
 #include "tiki/graphics/color_xkcd.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/input/inputevent.hpp"
-#include "tiki/math/axisalignedrectangle.hpp"
-#include "tiki/runtimeshared/windowevent.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
+#include "tiki/graphics/shader_set.hpp"
+#include "tiki/input/input_event.hpp"
+#include "tiki/math/axis_aligned_rectangle.hpp"
+#include "tiki/runtime_shared/window_event.hpp"
 
 #include <imgui.h>
 

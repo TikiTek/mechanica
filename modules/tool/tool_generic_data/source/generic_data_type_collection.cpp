@@ -418,6 +418,7 @@ namespace tiki
 		static const char* s_pResourceFileInclude	= "#include \"tiki/resource/resource_file.hpp\"\n";
 		static const char* s_pDependencyInclude		= "#include \"%s.hpp\"\n";
 
+		bool ok = true;
 		for (uint moduleIndex = 0u; moduleIndex < moduleCode.getCount(); ++moduleIndex)
 		{
 			const auto& kvp = moduleCode.getPairAt( moduleIndex );
@@ -461,8 +462,12 @@ namespace tiki
 				fileNameDefine.cStr()
 			);
 
-			TIKI_TRACE_INFO( "Generic: %s\n", fullPath.getFilenameWithExtension() );
-			file::writeToFileIfNotEquals( fullPath, finalCode );
+			const FileWriteResult result = file::writeToFileIfNotEquals( fullPath, finalCode );
+			if( result != FileWriteResult_NoChanged )
+			{
+				TIKI_TRACE_INFO( "generic: %s\n", fullPath.getFilenameWithExtension() );
+				ok &= (result == FileWriteResult_Ok);
+			}
 		}
 
 		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
@@ -517,13 +522,21 @@ namespace tiki
 		const string headerFinalCode	= s_pFactoriesHeaderFormat;
 		const string sourceFinalCode	= formatDynamicString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
-		TIKI_TRACE_INFO( "Generic: %s\n", headerFullPath.getFilenameWithExtension() );
-		file::writeToFileIfNotEquals( headerFullPath, headerFinalCode );
+		FileWriteResult result = file::writeToFileIfNotEquals( headerFullPath, headerFinalCode );
+		if( result != FileWriteResult_NoChanged )
+		{
+			TIKI_TRACE_INFO( "generic: %s\n", headerFullPath.getFilenameWithExtension() );
+			ok &= (result == FileWriteResult_Ok);
+		}
 
-		TIKI_TRACE_INFO( "Generic: %s\n", sourceFullPath.getFilenameWithExtension() );
-		file::writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
+		result = file::writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
+		if( result != FileWriteResult_NoChanged )
+		{
+			TIKI_TRACE_INFO( "generic: %s\n", sourceFullPath.getFilenameWithExtension() );
+			ok &= (result == FileWriteResult_Ok);
+		}
 
-		return true;
+		return ok;
 	}
 
 	void GenericDataTypeCollection::registerDefaultValueTypes()

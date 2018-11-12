@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
-#define TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -22,7 +20,7 @@ namespace tiki
 			ID3D11Texture3D*		pTexture3d;
 		};
 
-		ID3D11ShaderResourceView*	pShaderView;		
+		ID3D11ShaderResourceView*	pShaderView;
 	};
 
 	namespace graphics
@@ -30,5 +28,3 @@ namespace tiki
 		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
 	}
 }
-
-#endif // TIKI_TEXTUREDATA_D3D11_HPP__INCLUDED

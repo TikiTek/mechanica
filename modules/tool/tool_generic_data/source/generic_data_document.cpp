@@ -85,7 +85,7 @@ namespace tiki
 		return m_document.saveToFile( pFilename );
 	}
 
-#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+#if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 	bool GenericDataDocument::writeToResource( ReferenceKey& dataKey, ResourceSectionWriter& sectionWriter ) const
 	{
 		return m_pObject->writeToResource( &dataKey, sectionWriter );

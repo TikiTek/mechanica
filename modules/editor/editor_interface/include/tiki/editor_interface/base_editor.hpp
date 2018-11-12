@@ -4,7 +4,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/editor_interface/editor_ribbon.hpp"
-#include "tiki/toolapplication/tool_image.hpp"
+#include "tiki/tool_application/tool_image.hpp"
 
 namespace tiki
 {

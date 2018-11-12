@@ -1,31 +1,28 @@
 #pragma once
-#ifndef TIKI_GRAPHICSYSTEM_HPP
-#define TIKI_GRAPHICSYSTEM_HPP
 
 #include "tiki/base/types.hpp"
-#include "tiki/container/linkedlist.hpp"
-#include "tiki/graphics/blendstate.hpp"
-#include "tiki/graphics/depthstencilstate.hpp"
-#include "tiki/graphics/graphicscontext.hpp"
-#include "tiki/graphics/graphicsrenderermode.hpp"
-#include "tiki/graphics/graphicsstateobject.hpp"
-#include "tiki/graphics/graphicsstateobjectcollection.hpp"
-#include "tiki/graphics/rasterizerstate.hpp"
-#include "tiki/graphics/rendertarget.hpp"
-#include "tiki/graphics/samplerstate.hpp"
+#include "tiki/container/linked_list.hpp"
+#include "tiki/graphics/blend_state.hpp"
+#include "tiki/graphics/depth_stencil_state.hpp"
+#include "tiki/graphics/graphics_context.hpp"
+#include "tiki/graphics/graphics_state_object.hpp"
+#include "tiki/graphics/graphics_state_object_collection.hpp"
+#include "tiki/graphics/rasterizer_state.hpp"
+#include "tiki/graphics/render_target.hpp"
+#include "tiki/graphics/sampler_state.hpp"
 #include "tiki/graphics/shader.hpp"
-#include "tiki/graphics/texturedata.hpp"
-#include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphics/vertexinputbinding.hpp"
+#include "tiki/graphics/texture_data.hpp"
+#include "tiki/graphics/vertex_format.hpp"
+#include "tiki/graphics/vertex_input_binding.hpp"
 
 #include "tiki/graphics/shader/graphicstypes.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/graphicssystem_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphics_system_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/graphicssystem_d3d12.hpp"
+#	include "../../../source/win_d3d12/graphics_system_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/graphicssystem_vulkan.hpp"
+#	include "../../../source/global_vulkan/graphics_system_vulkan.hpp"
 #else
 #	error Platform not implemented
 #endif
@@ -51,7 +48,6 @@ namespace tiki
 			backBufferHeight	= 600;
 			backbufferFormat	= PixelFormat_R8G8B8A8;
 			fullScreen			= false;
-			rendererMode		= GraphicsRendererMode_Hardware;
 
 			pWindowHandle		= nullptr;
 		}
@@ -60,7 +56,6 @@ namespace tiki
 		uint					backBufferHeight;
 		PixelFormat				backbufferFormat;
 		bool					fullScreen;
-		GraphicsRendererMode	rendererMode;
 
 		void*					pWindowHandle;
 	};
@@ -144,8 +139,5 @@ namespace tiki
 
 		bool												createPlatform( const GraphicsSystemParameters& params );
 		void												disposePlatform();
-
 	};
 }
-
-#endif // TIKI_GRAPHICSYSTEM_HPP

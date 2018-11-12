@@ -1,11 +1,12 @@
 #include "tiki/base/platform.hpp"
-#include "tiki/toolapplication/tool_application.hpp"
+#include "tiki/tool_application/tool_application.hpp"
 
 #include "tiki/base/debug.hpp"
 
-int tiki::mainEntryPoint()
+namespace tiki
 {
-	//debug::breakOnAlloc( 239 );
-
-	return tool::getTool().run();
+	int tiki::mainEntryPoint()
+	{
+		return tool::getTool().run();
+	}
 }

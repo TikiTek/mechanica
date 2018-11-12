@@ -1,6 +1,6 @@
 #include "tiki/converter_editor/converter_editor_ribbon.hpp"
 
-#include "tiki/toolapplication/tool_ui.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
 
 #include "res_converter_editor.hpp"
 

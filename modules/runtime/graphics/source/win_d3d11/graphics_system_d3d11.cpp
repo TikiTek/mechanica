@@ -1,11 +1,10 @@
-
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/memory.hpp"
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphics/vertex_format.hpp"
 
 #include <d3d11.h>
 #include <dxgi.h>
@@ -209,29 +208,9 @@ namespace tiki
 			D3D_FEATURE_LEVEL_11_0
 		};
 
-		D3D_DRIVER_TYPE rendererType;
-		switch ( params.rendererMode )
-		{
-		case GraphicsRendererMode_Hardware:
-			rendererType = D3D_DRIVER_TYPE_HARDWARE;
-			break;
-
-		case GraphicsRendererMode_Software:
-			rendererType = D3D_DRIVER_TYPE_SOFTWARE;
-			break;
-
-		case GraphicsRendererMode_Wrapper:
-			rendererType = D3D_DRIVER_TYPE_WARP;
-			break;
-
-		default:
-			TIKI_BREAK( "[graphics] renderer type not supported.\n" );
-			break;
-		}
-
 		HRESULT r = D3D11CreateDeviceAndSwapChain(
 			nullptr,
-			rendererType,
+			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 			D3D11_CREATE_DEVICE_DEBUG,

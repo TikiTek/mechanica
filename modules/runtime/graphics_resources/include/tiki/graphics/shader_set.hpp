@@ -1,10 +1,8 @@
 #pragma once
-#ifndef __TIKI_SHADERSET_HPP_INCLUDED__
-#define __TIKI_SHADERSET_HPP_INCLUDED__
 
-#include "tiki/container/sortedsizedmap.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/shadertype.hpp"
+#include "tiki/container/sorted_sized_map.hpp"
+#include "tiki/graphics/shader_type.hpp"
 #include "tiki/resource/resource.hpp"
 
 namespace tiki
@@ -35,8 +33,5 @@ namespace tiki
 
 		Array< Shader >							m_shaders;
 		SortedSizedMap< crc32, const Shader* >	m_shaderMap;
-
 	};
 }
-
-#endif // __TIKI_SHADERSET_HPP_INCLUDED__

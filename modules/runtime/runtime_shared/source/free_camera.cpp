@@ -1,6 +1,6 @@
-#include "tiki/runtimeshared/freecamera.hpp"
+#include "tiki/runtime_shared/free_camera.hpp"
 
-#include "tiki/input/inputevent.hpp"
+#include "tiki/input/input_event.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/math/quaternion.hpp"
 

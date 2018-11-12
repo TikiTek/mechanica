@@ -1,10 +1,8 @@
 #pragma once
-#ifndef TIKI_WINDOWEVENTBUFFER_HPP
-#define TIKI_WINDOWEVENTBUFFER_HPP
 
 #include "tiki/base/types.hpp"
 #include "tiki/container/queue.hpp"
-#include "tiki/runtimeshared/windowevent.hpp"
+#include "tiki/runtime_shared/window_event.hpp"
 
 namespace tiki
 {
@@ -21,12 +19,9 @@ namespace tiki
 		uint						getEventCount() const;
 
 	private:
-		
+
 		typedef Queue< WindowEvent > WindowEventArray;
 
 		WindowEventArray			m_events;
-
 	};
 }
-
-#endif // TIKI_WINDOWEVENTBUFFER_HPP

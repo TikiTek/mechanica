@@ -1,8 +1,7 @@
-#ifndef TIKI_RECTANGLE_HPP__
-#define TIKI_RECTANGLE_HPP__
+#pragma once
 
 #include "tiki/base/types.hpp"
-#include "tiki/math/rectanglepoint.hpp"
+#include "tiki/math/rectangle_point.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
@@ -34,6 +33,5 @@ namespace tiki
 		TIKI_FORCE_INLINE void		extend( const Vector2& _extents );
 	};
 }
-#include "../../../source/rectangle.inl"
 
-#endif // TIKI_RECTANGLE_HPP__
+#include "../../../source/rectangle.inl"

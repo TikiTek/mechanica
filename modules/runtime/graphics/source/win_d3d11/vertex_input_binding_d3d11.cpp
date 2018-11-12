@@ -1,12 +1,11 @@
+#include "tiki/graphics/vertex_input_binding.hpp"
 
-#include "tiki/graphics/vertexinputbinding.hpp"
-
-#include "tiki/container/array.hpp"
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
 #include "tiki/graphics/shader.hpp"
-#include "tiki/graphics/vertexformat.hpp"
-#include "tiki/graphics/vertexsemantic.hpp"
+#include "tiki/graphics/vertex_format.hpp"
+#include "tiki/graphics/vertex_semantic.hpp"
 
 #include <d3d11.h>
 
@@ -83,7 +82,7 @@ namespace tiki
 			desc[ i ].InputSlotClass		= ( att.inputType == VertexInputType_PerVertex ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA );
 			desc[ i ].InstanceDataStepRate	= 0;
 		}
-		
+
 		m_platformData.pInputLayout = graphics::createVertexInputLayout( graphicsSystem, m_pShader->m_platformData, desc, m_pVertexFormat->getAttributeCount() );
 		if ( m_platformData.pInputLayout == nullptr )
 		{

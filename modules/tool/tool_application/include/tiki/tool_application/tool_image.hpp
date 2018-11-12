@@ -1,7 +1,7 @@
-#pragma  once
+#pragma once
 
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/texture_data.hpp"
 
 namespace tiki
 {

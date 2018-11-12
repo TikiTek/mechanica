@@ -1,4 +1,4 @@
-#include "tiki/math/axisalignedbox.hpp"
+#include "tiki/math/axis_aligned_box.hpp"
 
 namespace tiki
 {

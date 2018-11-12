@@ -1,5 +1,4 @@
-
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include "tiki/base/crc32.hpp"
 
@@ -74,7 +73,7 @@ namespace tiki
 				disposeVertexFormat( m_pStockVertexFormats[ i ] );
 				m_pStockVertexFormats[ i ] = nullptr;
 			}
-		} 
+		}
 
 		m_blendStates.dispose();
 		m_depthStencilStates.dispose();
@@ -241,7 +240,7 @@ namespace tiki
 		{
 			return;
 		}
-		
+
 		SamplerState* pNonConstState = const_cast< SamplerState* >( pSamplerState );
 		if ( pNonConstState->releaseRef() == false )
 		{

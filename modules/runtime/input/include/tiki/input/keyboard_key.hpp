@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_KEYBOARDKEY_HPP
-#define TIKI_KEYBOARDKEY_HPP
 
 namespace tiki
 {
@@ -123,5 +121,3 @@ namespace tiki
 		const char*	getKeyboardKeyName( KeyboardKey key );
 	}
 }
-
-#endif // TIKI_KEYBOARDKEY_HPP

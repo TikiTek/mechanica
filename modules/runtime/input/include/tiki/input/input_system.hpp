@@ -1,16 +1,15 @@
-#ifndef TIKI_INPUTSYSTEM_HPP__
-#define TIKI_INPUTSYSTEM_HPP__
+#pragma once
 
-#include "tiki/container/fixedsizedarray.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
 #include "tiki/base/platform.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/input/inputdevice.hpp"
-#include "tiki/input/inputevent.hpp"
+#include "tiki/input/input_device.hpp"
+#include "tiki/input/input_event.hpp"
 
 #if TIKI_ENABLED( TIKI_SDL )
-#	include "../../../source/sdl/inputsystem_sdl.hpp"
+#	include "../../../source/sdl/input_system_sdl.hpp"
 #elif TIKI_ENABLED( TIKI_BUILD_MSVC )
-#	include "../../../source/dinput/inputsystem_dinput.hpp"
+#	include "../../../source/dinput/input_system_dinput.hpp"
 #else
 #	error Platform not supported
 #endif
@@ -28,12 +27,12 @@ namespace tiki
 		WindowHandle	windowHandle;
 		InstanceHandle	instanceHandle;
 	};
-	
+
 	class InputSystem
 	{
 		friend class InputSystemPlatform;
 		TIKI_NONCOPYABLE_CLASS( InputSystem );
-		
+
 	public:
 
 		enum
@@ -61,7 +60,7 @@ namespace tiki
 		bool					popEvent( InputEvent& inputEvent );
 
 	private:
-			
+
 		InputDeviceArray		m_devices;
 		InputEventArray			m_events;
 
@@ -72,4 +71,3 @@ namespace tiki
 
 	};
 }
-#endif // TIKI_INPUTSYSTEM_HPP__

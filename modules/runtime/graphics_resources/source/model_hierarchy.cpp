@@ -1,4 +1,4 @@
-#include "tiki/graphics/modelhierarchy.hpp"
+#include "tiki/graphics/model_hierarchy.hpp"
 
 #include "tiki/resource/resource_file.hpp"
 

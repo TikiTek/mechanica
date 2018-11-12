@@ -2,14 +2,14 @@
 
 #include "tiki/base/platform.hpp"
 #include "tiki/base/timer.hpp"
-#include "tiki/debugrenderer/debugrenderer.hpp"
+#include "tiki/debug_renderer/debug_renderer.hpp"
 #include "tiki/framework/framework_factories.hpp"
 #include "tiki/framework/main_window.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/input/inputsystem.hpp"
-#include "tiki/io/gamebuildfilesystem.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
+#include "tiki/input/input_system.hpp"
+#include "tiki/io/game_build_file_system.hpp"
+#include "tiki/resource/resource_manager.hpp"
 #include "tiki/threading/thread.hpp"
 
 namespace tiki
@@ -156,7 +156,6 @@ namespace tiki
 		GraphicsSystemParameters graphicsParams;
 		graphicsParams.fullScreen		= m_parameters.fullScreen;
 		graphicsParams.pWindowHandle	= m_pBaseData->mainWindow.getHandle();
-		graphicsParams.rendererMode		= m_parameters.graphicsMode;
 
 		const uint2 windowSize			= m_pBaseData->mainWindow.getClientSize();
 		graphicsParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );

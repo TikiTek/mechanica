@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_GRAPHICSCONTEXT_D3D11_HPP
-#define TIKI_GRAPHICSCONTEXT_D3D11_HPP
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -24,5 +22,3 @@ namespace tiki
 		uint					immediateVertexStride;
 	};
 }
-
-#endif // TIKI_GRAPHICSCONTEXT_D3D11_HPP

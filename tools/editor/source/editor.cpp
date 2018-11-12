@@ -8,9 +8,9 @@
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
 #include "tiki/package_editor/package_editor.hpp"
-#include "tiki/resource/resourcemanager.hpp"
-#include "tiki/toolapplication/tool_framework.hpp"
-#include "tiki/toolproject/package.hpp"
+#include "tiki/resource/resource_manager.hpp"
+#include "tiki/tool_application/tool_framework.hpp"
+#include "tiki/tool_project/package.hpp"
 
 #include <imgui.h>
 

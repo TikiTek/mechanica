@@ -1,11 +1,10 @@
-#ifndef TIKI_MODEL_HPP__
-#define TIKI_MODEL_HPP__
+#pragma once
 
 #include "tiki/resource/resource.hpp"
 
 #include "tiki/container/array.hpp"
-#include "tiki/graphics/modelhierarchy.hpp"
-#include "tiki/graphics/modelgeometry.hpp"
+#include "tiki/graphics/model_hierarchy.hpp"
+#include "tiki/graphics/model_geometry.hpp"
 
 namespace tiki
 {
@@ -42,8 +41,5 @@ namespace tiki
 		ModelHierarchy*						m_pHierarchy;
 
 		Array< ModelGeometry >				m_geometries;
-
 	};
 }
-
-#endif // TIKI_MODEL_HPP__

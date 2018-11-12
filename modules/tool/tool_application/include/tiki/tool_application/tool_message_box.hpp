@@ -2,9 +2,9 @@
 
 #include "tiki/base/delegate.hpp"
 #include "tiki/base/dynamic_string.hpp"
-#include "tiki/base/flagmask.hpp"
+#include "tiki/base/flag_mask.hpp"
 #include "tiki/base/user_data.hpp"
-#include "tiki/toolapplication/tool_image.hpp"
+#include "tiki/tool_application/tool_image.hpp"
 
 namespace tiki
 {

@@ -1,10 +1,10 @@
-#include "tiki/toolapplication/tool_message_box.hpp"
+#include "tiki/tool_application/tool_message_box.hpp"
 
-#include "tiki/toolapplication/tool_ui.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
 
 #include <imgui.h>
 
-#include "res_toolapplication.hpp"
+#include "res_tool_application.hpp"
 
 namespace tiki
 {
@@ -21,10 +21,10 @@ namespace tiki
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_apMessageBoxButtonTexts ) == ToolMessageBoxButton_Count );
 
 	ToolMessageBox::ToolMessageBox()
-		: m_informationIcon( getToolapplicationResource( ToolapplicationResources_DialogInformation ) )
-		, m_questionIcon( getToolapplicationResource( ToolapplicationResources_DialogQuestion ) )
-		, m_warningIcon( getToolapplicationResource( ToolapplicationResources_DialogWarning ) )
-		, m_errorIcon( getToolapplicationResource( ToolapplicationResources_DialogError ) )
+		: m_informationIcon( getToolApplicationResource( ToolApplicationResources_DialogInformation ) )
+		, m_questionIcon( getToolApplicationResource( ToolApplicationResources_DialogQuestion ) )
+		, m_warningIcon( getToolApplicationResource( ToolApplicationResources_DialogWarning ) )
+		, m_errorIcon( getToolApplicationResource( ToolApplicationResources_DialogError ) )
 	{
 		m_open		= false;
 		m_icon		= ToolMessageBoxIcon_None;

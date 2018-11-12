@@ -2,7 +2,7 @@
 
 #include "tiki/base/float32.hpp"
 #include "tiki/base/functions.hpp"
-#include "tiki/math/axisalignedbox.hpp"
+#include "tiki/math/axis_aligned_box.hpp"
 #include "tiki/math/box.hpp"
 #include "tiki/math/line2.hpp"
 #include "tiki/math/plane.hpp"

@@ -1,12 +1,10 @@
 #pragma once
-#ifndef TIKI_FONT_HPP__INCLUDED
-#define TIKI_FONT_HPP__INCLUDED
 
 #include "tiki/resource/resource.hpp"
 
 #include "tiki/container/array.hpp"
-#include "tiki/graphics/texturedata.hpp"
-#include "tiki/graphics/fontchar.hpp"
+#include "tiki/graphics/texture_data.hpp"
+#include "tiki/graphics/font_char.hpp"
 
 namespace tiki
 {
@@ -43,8 +41,5 @@ namespace tiki
 
 		TextureData				m_textureData;
 		Array< FontChar >		m_chars;
-
 	};
 }
-
-#endif // TIKI_FONT_HPP__INCLUDED

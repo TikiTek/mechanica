@@ -2,7 +2,7 @@
 
 namespace tiki
 {
-	bool file::writeToFileIfNotEquals( const Path& filePath, const string& content )
+	FileWriteResult file::writeToFileIfNotEquals( const Path& filePath, const string& content )
 	{
 		AutoArray< char > currentContent;
 		file::readAllText( filePath.getCompletePath(), currentContent );
@@ -19,9 +19,10 @@ namespace tiki
 
 		if( !isEquals )
 		{
-			return file::writeAllBytes( filePath.getCompletePath(), (const uint8*)content.cStr(), content.getLength() );
+			const bool result = file::writeAllBytes( filePath.getCompletePath(), (const uint8*)content.cStr(), content.getLength() );
+			return result ? FileWriteResult_Ok : FileWriteResult_Error;
 		}
 
-		return true;
+		return FileWriteResult_NoChanged;
 	}
 }

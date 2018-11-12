@@ -1,8 +1,6 @@
 #pragma once
-#ifndef __TIKI_GRAPHICSSTATES_D3D11_HPP_INCLUDED__
-#define __TIKI_GRAPHICSSTATES_D3D11_HPP_INCLUDED__
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -58,5 +56,3 @@ namespace tiki
 		ID3D11InputLayout* pInputLayout;
 	};
 }
-
-#endif // __TIKI_GRAPHICSSTATES_D3D11_HPP_INCLUDED__

@@ -1,9 +1,9 @@
-#ifndef TIKI_INDEXBUFFER_HPP
-#define TIKI_INDEXBUFFER_HPP
+#pragma once
+
+#include "tiki/graphics/base_buffer.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/basebuffer.hpp"
 
 namespace tiki
 {
@@ -40,6 +40,4 @@ namespace tiki
 	};
 }
 
-#include "../../../source/global/indexbuffer.inl"
-
-#endif // TIKI_INDEXBUFFER_HPP
+#include "../../../source/global/index_buffer.inl"

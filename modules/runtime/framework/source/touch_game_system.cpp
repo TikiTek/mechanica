@@ -1,11 +1,11 @@
 #include "tiki/framework/touch_game_system.hpp"
 
-#include "tiki/base/debugprop.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
+#include "tiki/base/debug_property.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/math/axisalignedrectangle.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/math/axis_aligned_rectangle.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {

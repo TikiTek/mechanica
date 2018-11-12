@@ -3,9 +3,9 @@
 #include "tiki/framework/base_application.hpp"
 
 #include "tiki/graphics/color_xkcd.hpp"
-#include "tiki/graphics/indexbuffer.hpp"
-#include "tiki/graphics/texturedata.hpp"
-#include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/graphics/index_buffer.hpp"
+#include "tiki/graphics/texture_data.hpp"
+#include "tiki/graphics/vertex_buffer.hpp"
 
 namespace tiki
 {

@@ -1,5 +1,4 @@
-#ifndef TIKI_GRAPHICSSTATEOBJECT_HPP
-#define TIKI_GRAPHICSSTATEOBJECT_HPP
+#pragma once
 
 #include "tiki/base/types.hpp"
 
@@ -33,10 +32,7 @@ namespace tiki
 
 		size_t		m_refCount;
 		crc32		m_hashValue;
-
 	};
 }
 
-#include "../../../source/graphicsstateobject.inl"
-
-#endif // TIKI_GRAPHICSSTATEOBJECT_HPP
+#include "../../../source/graphics_state_object.inl"

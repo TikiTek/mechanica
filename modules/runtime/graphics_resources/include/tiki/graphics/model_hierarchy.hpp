@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_MODELHIERARCHY_HPP
-#define TIKI_MODELHIERARCHY_HPP
 
 #include "tiki/base/simd.hpp"
-#include "tiki/container/staticarray.hpp"
+#include "tiki/container/static_array.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/math/matrix.hpp"
 
@@ -16,7 +14,7 @@ namespace tiki
 		friend class Model;
 
 	public:
-		
+
 		enum
 		{
 			InvalidBoneIndex = 0xffff
@@ -33,9 +31,9 @@ namespace tiki
 		TIKI_FORCE_INLINE const vf32*		getDefaultPoseScale() const					{ return &m_defaultPose[ 2 * m_alignedJointCount ]; }
 
 		TIKI_FORCE_INLINE const Matrix44&	getSkinToBoneMatrix( size_t index ) const	{ return m_skinToBoneMatrices[ index ]; }
-		
+
 	private:
-		
+
 		uint							m_jointCount;
 		uint							m_alignedJointCount;
 
@@ -46,8 +44,5 @@ namespace tiki
 
 		bool							initialize( const ModelHierarchyInitData& initData );
 		void							dispose();
-
 	};
 }
-
-#endif // TIKI_MODELHIERARCHY_HPP

@@ -4,7 +4,7 @@
 #include "tiki/tool_generic_data/generic_data_type_struct.hpp"
 #include "tiki/tool_generic_data/generic_data_value.hpp"
 
-#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+#if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 #	include "tiki/converter_base/resource_writer.hpp"
 #endif
 
@@ -213,7 +213,7 @@ namespace tiki
 		return true;
 	}
 
-#if TIKI_ENABLED( TIKI_GENERICDATA_CONVERTER )
+#if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 	bool GenericDataObject::writeToResource( ReferenceKey* pDataKey, ResourceSectionWriter& sectionWriter ) const
 	{
 		ResourceSectionWriter internalSectionWriter;

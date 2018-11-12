@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_AXISALIGNEDBOX_HPP_INCLUDED
-#define TIKI_AXISALIGNEDBOX_HPP_INCLUDED
 
 #include "tiki/math/vector.hpp"
 
@@ -34,7 +32,7 @@ namespace tiki
 	public:
 
 					AxisAlignedBox();
-					
+
 		void		createFromCenterExtends( const Vector3& center, const Vector3& extents );
 		void		createFromMinMax( const Vector3& _min, const Vector3& _max );
 		void		createFromMinMax( float minX, float minY, float minZ, float maxX, float maxY, float maxZ );
@@ -53,5 +51,3 @@ namespace tiki
 		Vector3		max;
 	};
 }
-
-#endif // TIKI_AXISALIGNEDBOX_HPP_INCLUDED

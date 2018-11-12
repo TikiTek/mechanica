@@ -1,8 +1,7 @@
-
-#include "tiki/graphics/blendstate.hpp"
+#include "tiki/graphics/blend_state.hpp"
 
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 
 #include <d3d11.h>
 

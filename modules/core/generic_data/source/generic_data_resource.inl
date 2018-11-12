@@ -1,9 +1,7 @@
 #pragma once
-#ifndef TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED
-#define TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED
 
 #include "tiki/resource/resource_file.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 namespace tiki
 {
@@ -69,5 +67,3 @@ namespace tiki
 		m_pData = nullptr;
 	}
 }
-
-#endif // TIKI_GENERIC_DATA_RESOURCE_INL_INCLUDED

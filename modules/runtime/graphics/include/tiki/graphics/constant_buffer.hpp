@@ -1,9 +1,9 @@
-#ifndef TIKI_CONSTANTBUFFER_HPP
-#define TIKI_CONSTANTBUFFER_HPP
+#pragma once
+
+#include "tiki/graphics/base_buffer.hpp"
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
-#include "tiki/graphics/basebuffer.hpp"
 
 namespace tiki
 {
@@ -25,10 +25,7 @@ namespace tiki
 	private:
 
 		uint						m_size;
-
 	};
 }
 
-#include "../../../source/global/constantbuffer.inl"
-
-#endif // TIKI_CONSTANTBUFFER_HPP
+#include "../../../source/global/constant_buffer.inl"

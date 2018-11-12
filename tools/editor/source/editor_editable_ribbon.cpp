@@ -1,6 +1,6 @@
 #include "editor_editable_ribbon.hpp"
 
-#include "tiki/toolapplication/tool_ui.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
 
 #include "res_editor.hpp"
 

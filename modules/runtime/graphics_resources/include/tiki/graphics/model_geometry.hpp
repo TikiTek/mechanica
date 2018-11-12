@@ -1,10 +1,9 @@
-#ifndef TIKI_MODELGEOMETRY_HPP__
-#define TIKI_MODELGEOMETRY_HPP__
+#pragma once
 
-#include "tiki/container/staticarray.hpp"
-#include "tiki/graphics/indexbuffer.hpp"
-#include "tiki/graphics/vertexbuffer.hpp"
-#include "tiki/graphics/vertexattribute.hpp"
+#include "tiki/container/static_array.hpp"
+#include "tiki/graphics/index_buffer.hpp"
+#include "tiki/graphics/vertex_attribute.hpp"
+#include "tiki/graphics/vertex_buffer.hpp"
 #include "tiki/math/matrix.hpp"
 #include "tiki/resource/resource_file.hpp"
 
@@ -71,8 +70,5 @@ namespace tiki
 
 		bool						initialize( GraphicsSystem& graphicsSystem, const ModelGeometryInitData& initData, const Material* pMaterial );
 		void						dispose( GraphicsSystem& graphicsSystem );
-
 	};
 }
-
-#endif // TIKI_MODELGEOMETRY_HPP__

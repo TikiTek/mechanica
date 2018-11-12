@@ -1,8 +1,6 @@
 #pragma once
-#ifndef TIKI_GRAPHICSSYSTEM_D3D11_HPP
-#define TIKI_GRAPHICSSYSTEM_D3D11_HPP
 
-#include "graphicstypes_d3d11.hpp"
+#include "graphics_types_d3d11.hpp"
 
 namespace tiki
 {
@@ -36,8 +34,5 @@ namespace tiki
 
 		static ID3D11Device*		getDevice( GraphicsSystem& graphicsSystem );
 		static ID3D11DeviceContext*	getContext( GraphicsSystem& graphicsSystem );
-
 	};
 }
-
-#endif // TIKI_GRAPHICSSYSTEM_D3D11_HPP

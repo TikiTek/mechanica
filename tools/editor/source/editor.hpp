@@ -2,8 +2,8 @@
 
 #include "tiki/editor_interface/editor_interface.hpp"
 
-#include "tiki/toolapplication/tool_message_box.hpp"
-#include "tiki/toolproject/project.hpp"
+#include "tiki/tool_application/tool_message_box.hpp"
+#include "tiki/tool_project/project.hpp"
 
 #include "editor_editable_ribbon.hpp"
 #include "editor_file_browser_ui.hpp"

@@ -1,20 +1,19 @@
-#ifndef TIKI_GRAPHICCOMMANDWRITER_HPP__
-#define TIKI_GRAPHICCOMMANDWRITER_HPP__
+#pragma once
 
-#include "tiki/container/array.hpp"
-#include "tiki/container/staticarray.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/container/array.hpp"
+#include "tiki/container/static_array.hpp"
 #include "tiki/graphics/color.hpp"
-#include "tiki/graphics/graphicssystemlimits.hpp"
-#include "tiki/graphics/primitivetopologies.hpp"
-#include "tiki/graphics/vertexbuffer.hpp"
+#include "tiki/graphics/graphics_system_limits.hpp"
+#include "tiki/graphics/primitive_topology.hpp"
+#include "tiki/graphics/vertex_buffer.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
-#	include "../../../source/win_d3d11/graphicscontext_d3d11.hpp"
+#	include "../../../source/win_d3d11/graphics_context_d3d11.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_D3D12 )
-#	include "../../../source/win_d3d12/graphicscontext_d3d12.hpp"
+#	include "../../../source/win_d3d12/graphics_context_d3d12.hpp"
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
-#	include "../../../source/global_vulkan/graphicscontext_vulkan.hpp"
+#	include "../../../source/global_vulkan/graphics_context_vulkan.hpp"
 #else
 #	error Platform not supported
 #endif
@@ -173,8 +172,4 @@ namespace tiki
 	};
 }
 
-#include "../../../source/global/graphicscontext.inl"
-
-#endif // TIKI_GRAPHICCOMMANDWRITER_HPP__
-
-
+#include "../../../source/global/graphics_context.inl"

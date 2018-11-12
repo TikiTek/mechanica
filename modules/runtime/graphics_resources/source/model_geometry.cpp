@@ -1,10 +1,9 @@
-
-#include "tiki/graphics/modelgeometry.hpp"
+#include "tiki/graphics/model_geometry.hpp"
 
 #include "tiki/base/memory.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/vertexformat.hpp"
+#include "tiki/graphics/graphics_system.hpp"
 #include "tiki/graphics/material.hpp"
+#include "tiki/graphics/vertex_format.hpp"
 
 namespace tiki
 {

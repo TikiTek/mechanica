@@ -1,10 +1,8 @@
 #pragma once
-#ifndef TIKI_TEXTURE_HPP
-#define TIKI_TEXTURE_HPP
 
 #include "tiki/resource/resource.hpp"
 
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/texture_data.hpp"
 
 namespace tiki
 {
@@ -32,8 +30,5 @@ namespace tiki
 		virtual					~Texture();
 
 		TextureData				m_textureData;
-
 	};
 }
-
-#endif // TIKI_TEXTURE_HPP
