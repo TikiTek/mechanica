@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <package>
 	<description>TikiEngine 3 Base Assets</description>
 	<author>TikiTek</author>
 	<dependencies />
-	<genericdatatypes>genericdata/types</genericdatatypes>
+	<genericdatatypes>generic_data/types</genericdatatypes>
 	<assettemplates>templates</assettemplates>
 </package>
