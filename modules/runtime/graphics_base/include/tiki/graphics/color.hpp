@@ -182,12 +182,14 @@ namespace tiki
 			target[ 3u ] = getFloatChannelA( c );
 		}
 
-		TIKI_FORCE_INLINE void toHdrColor( HdrColor& target, Color c )
+		TIKI_FORCE_INLINE HdrColor toHdrColor( Color c )
 		{
-			target.r = getFloatChannelR( c );
-			target.g = getFloatChannelG( c );
-			target.b = getFloatChannelB( c );
-			target.a = getFloatChannelA( c );
+			HdrColor hdrColor;
+			hdrColor.r = getFloatChannelR( c );
+			hdrColor.g = getFloatChannelG( c );
+			hdrColor.b = getFloatChannelB( c );
+			hdrColor.a = getFloatChannelA( c );
+			return hdrColor;
 		}
 
 		TIKI_FORCE_INLINE void toFloat3( float3& target, const HdrColor& c )

@@ -1,9 +1,9 @@
-#include "tiki/rendereffects/postblur.hpp"
+#include "tiki/render_effects/post_blur.hpp"
 
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_set.hpp"
 #include "tiki/graphics/viewport.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 #include "shader/blur_shader.hpp"
 
@@ -38,7 +38,7 @@ namespace tiki
 		bool success = true;
 
 		m_format = format;
-		
+
 		resourcePool.beginLoadResource( &m_pShader, "blur.shader" );
 
 		m_pBlendState		= graphicsSystem.createBlendState( false, Blend_One, Blend_Zero, BlendOperation_Add, ColorWriteMask_All );

@@ -1,9 +1,9 @@
-#include "tiki/rendereffects/postskybox.hpp"
+#include "tiki/render_effects/post_sky_box.hpp"
 
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shaderset.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_set.hpp"
 #include "tiki/graphics/texture.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 #include "shader/skybox_shader.hpp"
 
@@ -40,7 +40,7 @@ namespace tiki
 			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
-		
+
 		m_pInputBinding = graphicsSystem.createVertexInputBinding( m_pShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos3 ) );
 		if ( m_pInputBinding == nullptr )
 		{
@@ -64,7 +64,7 @@ namespace tiki
 			dispose( graphicsSystem, resourceManager );
 			return false;
 		}
-				
+
 		return true;
 	}
 

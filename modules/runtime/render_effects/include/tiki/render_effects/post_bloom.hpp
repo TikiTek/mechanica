@@ -1,11 +1,9 @@
 #pragma once
-#ifndef TIKI_POSTBLOOM_HPP_INCLUDED
-#define TIKI_POSTBLOOM_HPP_INCLUDED
 
 #include "tiki/container/array.hpp"
-#include "tiki/graphics/rendertarget.hpp"
-#include "tiki/graphics/texturedata.hpp"
-#include "tiki/rendereffects/postblur.hpp"
+#include "tiki/graphics/render_target.hpp"
+#include "tiki/graphics/texture_data.hpp"
+#include "tiki/render_effects/post_blur.hpp"
 
 namespace tiki
 {
@@ -44,7 +42,7 @@ namespace tiki
 		bool				create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, const PostProcessBloomParameters& parameters );
 		bool				createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
-		
+
 		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount = TIKI_SIZE_T_MAX );
 
 		void				render( GraphicsContext& graphicsContext, const PostProcessBloomRenderParameters& parameters ) const;
@@ -69,15 +67,12 @@ namespace tiki
 		const SamplerState*			m_pSamplerState;
 
 		const VertexInputBinding*	m_pInputBinding;
-		
+
 		ConstantBuffer				m_cutoffPixelConstants;
 		Array< TextureData >		m_textures;
 		Array< RenderTarget >		m_renderTargets;
-		
+
 		bool						createRenderTargets( GraphicsSystem& graphicsSystem );
 		void						disposeRenderTargets( GraphicsSystem& graphicsSystem );
-
 	};
 }
-
-#endif // TIKI_POSTBLOOM_HPP_INCLUDED

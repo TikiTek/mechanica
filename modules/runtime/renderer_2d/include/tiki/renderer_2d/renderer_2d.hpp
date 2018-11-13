@@ -1,19 +1,17 @@
 #pragma once
-#ifndef TIKI_RENDERER2D_HPP_INCLUDED
-#define TIKI_RENDERER2D_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
-#include "tiki/container/chunkedpool.hpp"
-#include "tiki/container/fixedarray.hpp"
-#include "tiki/container/fixedsizedarray.hpp"
-#include "tiki/container/linkedlist.hpp"
-#include "tiki/graphics/immediatevertex.hpp"
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/container/chunked_pool.hpp"
+#include "tiki/container/fixed_array.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
+#include "tiki/container/linked_list.hpp"
+#include "tiki/graphics/immediate_vertex.hpp"
+#include "tiki/graphics/texture_data.hpp"
 #include "tiki/math/camera.hpp"
-#include "tiki/math/rectanglepoint.hpp"
+#include "tiki/math/rectangle_point.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/rendereffects/postbloom.hpp"
+#include "tiki/render_effects/post_bloom.hpp"
 
 namespace tiki
 {
@@ -37,24 +35,14 @@ namespace tiki
 
 	struct Renderer2dRenderParameters
 	{
-		Renderer2dRenderParameters()
-		{
-			backgroundColor		= TIKI_COLOR_BLACK;
+		RenderTarget*		pRenderTarget			= nullptr;
+		Color				backgroundColor			= TIKI_COLOR_BLACK;
 
-			enableBloom			= false;
-			color::toHdrColor( bloomCutoffThreshold, TIKI_COLOR_WHITE );
+		bool				enableBloom				= false;
+		HdrColor			bloomCutoffThreshold	= color::toHdrColor( TIKI_COLOR_WHITE );
 
-			enableColorGrading	= false;
-			pColorGradingMap	= nullptr;
-		}
-
-		Color				backgroundColor;
-
-		bool				enableBloom;
-		HdrColor			bloomCutoffThreshold;
-
-		bool				enableColorGrading;
-		const TextureData*	pColorGradingMap;
+		bool				enableColorGrading		= false;
+		const TextureData*	pColorGradingMap		= nullptr;
 	};
 
 	class Renderer2d
@@ -83,7 +71,7 @@ namespace tiki
 
 		void				update( float deltaTime );
 		void				render( GraphicsContext& graphicsContext, const Renderer2dRenderParameters& parameters );
-		
+
 		const Camera&		getCamera() const { return m_camera; }
 
 		float				getTargetZoom() const { return m_targetZoom; }
@@ -102,7 +90,7 @@ namespace tiki
 		struct RenderCommand
 		{
 			typedef FixedArray< RenderVertex, 4u > VertexArray;
-			
+
 			const TextureData*			pTexture;
 			VertexArray					vertices;
 		};
@@ -158,5 +146,3 @@ namespace tiki
 		void							renderLayer( GraphicsContext& graphicsContext, RenderLayer& layer );
 	};
 }
-
-#endif // TIKI_RENDERER2D_HPP_INCLUDED
