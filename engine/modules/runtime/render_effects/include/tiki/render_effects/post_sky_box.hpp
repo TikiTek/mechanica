@@ -1,10 +1,8 @@
 #pragma once
-#ifndef TIKI_POSTSKYBOX_HPP_INCLUDED
-#define TIKI_POSTSKYBOX_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
-#include "tiki/graphics/constantbuffer.hpp"
+#include "tiki/graphics/constant_buffer.hpp"
 
 namespace tiki
 {
@@ -48,8 +46,5 @@ namespace tiki
 		const SamplerState*			m_pSamplerState;
 
 		const VertexInputBinding*	m_pInputBinding;
-		
 	};
 }
-
-#endif // TIKI_POSTSKYBOX_HPP_INCLUDED

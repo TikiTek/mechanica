@@ -1,14 +1,14 @@
-#include "tiki/renderer2d/renderer2d.hpp"
+#include "tiki/renderer_2d/renderer_2d.hpp"
 
-#include "tiki/base/debugprop.hpp"
+#include "tiki/base/debug_property.hpp"
 #include "tiki/base/numbers.hpp"
 #include "tiki/graphics/font.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/math/axisalignedrectangle.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_set.hpp"
+#include "tiki/math/axis_aligned_rectangle.hpp"
 #include "tiki/math/rectangle.hpp"
 #include "tiki/math/vector.hpp"
-#include "tiki/resource/resourcerequestpool.hpp"
+#include "tiki/resource/resource_request_pool.hpp"
 
 #include "shader/2d_sprite_shader.hpp"
 
@@ -159,7 +159,7 @@ namespace tiki
 		textureDescription.height	= height;
 		textureDescription.type		= TextureType_2d;
 		textureDescription.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
-		textureDescription.format	= PixelFormat_R8G8B8A8_Gamma;		
+		textureDescription.format	= PixelFormat_R8G8B8A8_Gamma;
 		if( !m_offscreenColorData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenColorData" ) ||
 			!m_offscreenEmissivData.create( *m_pGraphicsSystem, textureDescription, nullptr, "OffscreenEmissivData" ) )
 		{
@@ -245,7 +245,7 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
-		}		
+		}
 	}
 
 	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId )

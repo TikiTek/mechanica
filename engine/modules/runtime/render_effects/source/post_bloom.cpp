@@ -1,8 +1,8 @@
-#include "tiki/rendereffects/postbloom.hpp"
+#include "tiki/render_effects/post_bloom.hpp"
 
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/resource/resourcerequestpool.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_set.hpp"
+#include "tiki/resource/resource_request_pool.hpp"
 
 #include "shader/bloom_shader.hpp"
 
@@ -158,7 +158,7 @@ namespace tiki
 
 			graphicsContext.drawFullScreenQuadPos2Tex2();
 			graphicsContext.endRenderPass();
-			
+
 			m_blur.render( graphicsContext, m_textures[ passIndex ], m_renderTargets[ passIndex ] );
 		}
 
@@ -189,7 +189,7 @@ namespace tiki
 			graphicsContext.endRenderPass();
 		}
 	}
-	
+
 	const TextureData& PostProcessBloom::getResultData() const
 	{
 		return m_textures[ 0u ];
@@ -243,7 +243,7 @@ namespace tiki
 		for (uint i = 0u; i < m_textures.getCount(); ++i)
 		{
 			m_textures[ i ].dispose( graphicsSystem );
-		} 
+		}
 
 		m_renderTargets.dispose();
 		m_textures.dispose();

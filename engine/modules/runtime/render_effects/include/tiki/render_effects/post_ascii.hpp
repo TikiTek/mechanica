@@ -1,10 +1,8 @@
 #pragma once
-#ifndef __TIKI_POSTASCII_HPP_INCLUDED__
-#define __TIKI_POSTASCII_HPP_INCLUDED__
 
-#include "tiki/graphics/constantbuffer.hpp"
-#include "tiki/graphics/rendertarget.hpp"
-#include "tiki/graphics/texturedata.hpp"
+#include "tiki/graphics/constant_buffer.hpp"
+#include "tiki/graphics/render_target.hpp"
+#include "tiki/graphics/texture_data.hpp"
 #include "tiki/math/camera.hpp"
 
 namespace tiki
@@ -56,7 +54,7 @@ namespace tiki
 		const TextureData&	getResultData() const		{ return m_finalResultData; }
 
 		void				render( GraphicsContext& graphicsContext, const Camera& camera, const TextureData* pOffscreenColorData, const TextureData* pOffscreenDepthData ) const;
-		
+
 	private:
 
 		const Font*					m_pAsciiCharTexture;
@@ -77,8 +75,5 @@ namespace tiki
 		RenderTarget				m_downSampleTarget;
 
 		ConstantBuffer				m_pixelConstants;
-
 	};
 }
-
-#endif // __TIKI_POSTASCII_HPP_INCLUDED__

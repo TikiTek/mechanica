@@ -1,10 +1,10 @@
-#include "tiki/rendereffects/postascii.hpp"
+#include "tiki/render_effects/post_ascii.hpp"
 
 #include "tiki/graphics/font.hpp"
-#include "tiki/graphics/graphicssystem.hpp"
-#include "tiki/graphics/shaderset.hpp"
-#include "tiki/graphics/stockvertex.hpp"
-#include "tiki/resource/resourcemanager.hpp"
+#include "tiki/graphics/graphics_system.hpp"
+#include "tiki/graphics/shader_set.hpp"
+#include "tiki/graphics/stock_vertex.hpp"
+#include "tiki/resource/resource_manager.hpp"
 
 #include "shader/ascii_shader.hpp"
 

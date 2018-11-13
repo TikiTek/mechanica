@@ -1,7 +1,7 @@
 #ifndef __TIKI_ASCII_SHADER_HPP_INCLUDED__
 #define __TIKI_ASCII_SHADER_HPP_INCLUDED__
 
-#include "tiki/graphics/graphicstypes.hpp"
+#include "tiki/graphics/shader/graphicstypes.hpp"
 
 TIKI_GRAPHICS_NAMESPACE_BEGIN
 
