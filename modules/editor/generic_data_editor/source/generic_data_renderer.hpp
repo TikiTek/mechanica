@@ -30,6 +30,8 @@ namespace tiki
 		void							registerView( const GenericDataTypeStruct* pType, GenericDataView* pView );
 		void							unregisterView( const GenericDataTypeStruct* pType );
 
+		const TextureData&				getOutput() const { return m_renderTargetData; }
+
 		bool							handleInputEvent( const InputEvent& inputEvent );
 
 	private:

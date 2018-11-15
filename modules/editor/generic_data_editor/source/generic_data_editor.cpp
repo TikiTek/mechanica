@@ -11,17 +11,20 @@
 
 namespace tiki
 {
-	GenericDataEditor::GenericDataEditor( EditorInterface* pInterface )
+	GenericDataEditor::GenericDataEditor( EditorInterface* pInterface, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
 		: FileEditor( pInterface, getGenericDataEditorResource( GenericDataEditorResources_BrowserFileGenericData ), "Generic Data", ".generic_data" )
 	{
 		for( const Package& package : pInterface->getProject().getPackages() )
 		{
 			m_typeCollection.addPackage( package );
 		}
+
+		TIKI_VERIFY( m_renderer.create( resourceManager, graphicsSystem ) );
 	}
 
 	GenericDataEditor::~GenericDataEditor()
 	{
+		m_renderer.dispose();
 	}
 
 	EditableFile* GenericDataEditor::openFile( const Path& fileName )

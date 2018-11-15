@@ -49,12 +49,7 @@ namespace tiki
 
 	void GenericDataFile::doUi()
 	{
-		if( ImGui::BeginChildFrame( 42, ImVec2( 100, 100 ) ) )
-		{
-			ImVec2 test = ImGui::GetItemRectSize();
-
-			ImGui::EndChildFrame();
-		}
+		ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), ImVec2( 100, 100 ) );
 
 		ImGui::Columns( 2 );
 

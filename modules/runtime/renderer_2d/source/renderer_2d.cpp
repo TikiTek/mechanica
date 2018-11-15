@@ -43,6 +43,7 @@ namespace tiki
 		m_pCompositeShader	= nullptr;
 		m_currentZoom		= 1.0f;
 		m_targetZoom		= 1.0f;
+		m_emissivLayer		= parameters.emissivLayerId;
 
 		m_camera.create();
 

@@ -14,7 +14,7 @@ namespace tiki
 
 	public:
 
-									GenericDataEditor( EditorInterface* pInterface );
+									GenericDataEditor( EditorInterface* pInterface, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
 		virtual						~GenericDataEditor();
 
 		virtual EditableFile*		openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
