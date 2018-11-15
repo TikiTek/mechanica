@@ -42,7 +42,7 @@ namespace tiki
 		m_pAssetConverter = tool::getResourceManager().getAssetConverter();
 
 		m_pPackageEditor = TIKI_NEW( PackageEditor )( this );
-		m_pGenericDataEditor = TIKI_NEW( GenericDataEditor )( this );
+		m_pGenericDataEditor = TIKI_NEW( GenericDataEditor )( this, tool::getResourceManager(), tool::getGraphicsSystem() );
 		m_pConverterEditor = TIKI_NEW( ConverterEditor )( this, m_pAssetConverter );
 
 		registerFileEditor( m_pPackageEditor );

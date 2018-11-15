@@ -16,12 +16,12 @@ namespace tiki
 	{
 		m_pGraphicsSystem = &graphicsSystem;
 		m_resourceRequests.create( resourceManager );
-		m_width		= 100u;
-		m_height	= 100u;
+		uint16 width	= 100u;
+		uint16 height	= 100u;
 
 		Renderer2dCreationParameters rendererParameters;
-		rendererParameters.width				= m_width;
-		rendererParameters.height				= m_height;
+		rendererParameters.width				= width;
+		rendererParameters.height				= height;
 		rendererParameters.layerCount			= 6u;
 		rendererParameters.emissivLayerId		= 4u;
 		rendererParameters.drawToWorldFactor	= 100.0f;
@@ -32,8 +32,7 @@ namespace tiki
 			return false;
 		}
 
-		resize( m_width, m_height );
-		return true;
+		return resize( width, height );
 	}
 
 	void GenericDataRenderer::dispose()
@@ -53,11 +52,29 @@ namespace tiki
 
 	void GenericDataRenderer::update( float deltaTime )
 	{
+		if( !m_resourceRequests.isFinish() )
+		{
+			m_resourceRequests.update();
+			if( m_resourceRequests.isFinish() )
+			{
+				TIKI_VERIFY( m_renderer.createResources( *m_pGraphicsSystem, m_resourceRequests ) );
+			}
+			else
+			{
+				return;
+			}
+		}
+
 		m_renderer.update( deltaTime );
 	}
 
 	void GenericDataRenderer::render( GraphicsContext& graphicsContext )
 	{
+		if( !m_resourceRequests.isFinish() )
+		{
+			return;
+		}
+
 		Renderer2dRenderParameters renderParameters;
 		renderParameters.pRenderTarget	= &m_renderTarget;
 
