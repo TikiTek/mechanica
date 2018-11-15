@@ -35,7 +35,7 @@ namespace tiki
 
 	struct Renderer2dRenderParameters
 	{
-		RenderTarget*		pRenderTarget			= nullptr;
+		const RenderTarget*	pRenderTarget			= nullptr;
 		Color				backgroundColor			= TIKI_COLOR_BLACK;
 
 		bool				enableBloom				= false;

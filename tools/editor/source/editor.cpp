@@ -41,9 +41,9 @@ namespace tiki
 
 		m_pAssetConverter = tool::getResourceManager().getAssetConverter();
 
-		m_pPackageEditor = new PackageEditor( this );
-		m_pGenericDataEditor = new GenericDataEditor( this );
-		m_pConverterEditor = new ConverterEditor( this, m_pAssetConverter );
+		m_pPackageEditor = TIKI_NEW( PackageEditor )( this );
+		m_pGenericDataEditor = TIKI_NEW( GenericDataEditor )( this );
+		m_pConverterEditor = TIKI_NEW( ConverterEditor )( this, m_pAssetConverter );
 
 		registerFileEditor( m_pPackageEditor );
 		registerFileEditor( m_pGenericDataEditor );
@@ -74,9 +74,25 @@ namespace tiki
 		unregisterFileEditor( m_pGenericDataEditor );
 		unregisterFileEditor( m_pPackageEditor );
 
-		delete m_pConverterEditor;
-		delete m_pGenericDataEditor;
-		delete m_pPackageEditor;
+		TIKI_DELETE( m_pConverterEditor );
+		TIKI_DELETE( m_pGenericDataEditor );
+		TIKI_DELETE( m_pPackageEditor );
+	}
+
+	void Editor::update( float deltaTime )
+	{
+		for( BaseEditor* pEditor : m_editors )
+		{
+			pEditor->update( deltaTime );
+		}
+	}
+
+	void Editor::render( GraphicsContext& graphicsContext )
+	{
+		for( BaseEditor* pEditor : m_editors )
+		{
+			pEditor->render( graphicsContext );
+		}
 	}
 
 	void Editor::doUi()

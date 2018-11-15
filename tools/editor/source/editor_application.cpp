@@ -1,5 +1,7 @@
 #include "editor_application.hpp"
 
+#include "tiki/base/timer.hpp"
+
 namespace tiki
 {
 	EditorApplication::EditorApplication()
@@ -51,10 +53,12 @@ namespace tiki
 
 	void EditorApplication::updateTool( bool wantToShutdown )
 	{
+		m_pEditor->update( (float)tool::getFrameTimer().getElapsedTime() );
 	}
 
 	void EditorApplication::renderTool( GraphicsContext& graphicsContext ) const
 	{
+		m_pEditor->render( graphicsContext );
 	}
 
 	bool EditorApplication::processToolInputEvent( const InputEvent& inputEvent )

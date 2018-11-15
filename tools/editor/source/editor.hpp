@@ -29,6 +29,9 @@ namespace tiki
 		bool						create();
 		void						dispose();
 
+		void						update( float deltaTime );
+		void						render( GraphicsContext& graphicsContext );
+
 		void						doUi();
 
 		virtual EditableFile*		openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
