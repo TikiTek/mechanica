@@ -16,9 +16,10 @@ namespace tiki
 {
 	static const char* s_pPopupTagEditor = "Tag Editor";
 
-	GenericDataFile::GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor )
+	GenericDataFile::GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor, GenericDataRenderer& renderer )
 		: EditableFile( fileName, &genericDataEditor )
 		, m_genericDataEditor( genericDataEditor )
+		, m_renderer( renderer )
 		, m_document( genericDataEditor.getTypeCollection() )
 		, m_tagsIcon( getGenericDataEditorResource( GenericDataEditorResources_TagEditor ) )
 		, m_valueCreateIcon( getGenericDataEditorResource( GenericDataEditorResources_ValueCreate ) )
@@ -48,6 +49,13 @@ namespace tiki
 
 	void GenericDataFile::doUi()
 	{
+		if( ImGui::BeginChildFrame( 42, ImVec2( 100, 100 ) ) )
+		{
+			ImVec2 test = ImGui::GetItemRectSize();
+
+			ImGui::EndChildFrame();
+		}
+
 		ImGui::Columns( 2 );
 
 		GenericDataObject* pObject = m_document.getObject();

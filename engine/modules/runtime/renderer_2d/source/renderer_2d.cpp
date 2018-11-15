@@ -392,7 +392,13 @@ namespace tiki
 			m_bloom.render( graphicsContext, bloomParameters );
 		}
 
-		graphicsContext.beginRenderPass( graphicsContext.getBackBuffer() );
+		const RenderTarget* pRenderTarget = parameters.pRenderTarget;
+		if( pRenderTarget == nullptr )
+		{
+			pRenderTarget = &graphicsContext.getBackBuffer();
+		}
+
+		graphicsContext.beginRenderPass( *pRenderTarget );
 
 		uint32 pixelShaderIndex = 0u;
 		pixelShaderIndex |= (parameters.enableBloom ? 1u : 0u);

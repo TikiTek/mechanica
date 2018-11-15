@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __TIKI_TYPES_HPP_INCLUDED__
-#define __TIKI_TYPES_HPP_INCLUDED__
 
 #include "tiki/base/defines.hpp"
 
@@ -38,23 +36,21 @@ namespace tiki
 
 #endif
 
-#	if TIKI_ENABLED( TIKI_BUILD_32BIT )
+#if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
 	typedef sint32			sint;
 	typedef uint32			uint;
 	typedef uint32			size_t;
 
-#	elif TIKI_ENABLED( TIKI_BUILD_64BIT )
+#elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 
 	typedef sint64			sint;
 	typedef uint64			uint;
 	typedef uint64			size_t;
 
-#	else
-
+#else
 #	error Platform not suppored
-
-#	endif
+#endif
 
 	typedef uint32			crc32;
 	typedef uint32			fourcc;
@@ -63,14 +59,6 @@ namespace tiki
 	typedef uint16			float16;
 	typedef float			float32;
 	typedef double			float64;
-
-}
-
-#if __cplusplus >= 201103L || _MSC_VER >= 1800
-#	define TIKI_CPP_11		TIKI_ON
-#else
-#	define TIKI_CPP_11		TIKI_OFF
-#endif
 
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 
@@ -144,16 +132,7 @@ namespace tiki
 
 #endif
 
-#if _MANAGED
-
-#	define TIKI_ALIGN_PREFIX( var )
-#	define TIKI_ALIGN_POSTFIX( var )
-#	define TIKI_ALIGNOF( type )			( __alignof( type ) )
-
-#	define TIKI_OVERRIDE				override
-#	define TIKI_FINAL					sealed
-
-#elif TIKI_ENABLED( TIKI_BUILD_MSVC )
+#if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
 #	define TIKI_ALIGN_PREFIX( var )		__declspec( align( var ) )
 #	define TIKI_ALIGN_POSTFIX( var )
@@ -230,6 +209,13 @@ namespace tiki
 			class_name () { }						        \
 			~ class_name () { }
 #else
+	struct NonCopyable
+	{
+		NonCopyable() = default;
+		NonCopyable( const NonCopyable& ) = delete;
+		NonCopyable&	operator=( const NonCopyable& ) = delete;
+	};
+
 #	define TIKI_NON_COPYABLE( type_name )				\
 		type_name ( const type_name & ) = delete;		\
 		void operator=( const type_name & ) = delete
@@ -260,5 +246,4 @@ namespace tiki
 
 #define TIKI_MIN( a, b ) ( a < b ? a : b )
 #define TIKI_MAX( a, b ) ( a > b ? a : b )
-
-#endif // __TIKI_TYPES_HPP_INCLUDED__
+}

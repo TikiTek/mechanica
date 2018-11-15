@@ -15,7 +15,7 @@ namespace tiki
 
 	public:
 
-								GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor );
+								GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor, GenericDataRenderer& renderer );
 		virtual					~GenericDataFile();
 
 		bool					load();
@@ -26,6 +26,7 @@ namespace tiki
 	private:
 
 		GenericDataEditor&		m_genericDataEditor;
+		GenericDataRenderer&	m_renderer;
 
 		GenericDataDocument		m_document;
 		GenericDataObject*		m_pSelectedObject;

@@ -26,7 +26,7 @@ namespace tiki
 
 	EditableFile* GenericDataEditor::openFile( const Path& fileName )
 	{
-		GenericDataFile* pFile = new GenericDataFile( fileName, *this );
+		GenericDataFile* pFile = new GenericDataFile( fileName, *this, m_renderer );
 		if( !pFile->load() )
 		{
 			delete pFile;
@@ -45,5 +45,25 @@ namespace tiki
 	void GenericDataEditor::closeEditable( Editable* pEditable )
 	{
 		delete pEditable;
+	}
+
+	void GenericDataEditor::update( float deltaTime )
+	{
+		m_renderer.update( deltaTime );
+	}
+
+	void GenericDataEditor::render( GraphicsContext& graphicsContext )
+	{
+		m_renderer.render( graphicsContext );
+	}
+
+	void GenericDataEditor::registerView( const GenericDataTypeStruct* pType, GenericDataView* pView )
+	{
+		m_renderer.registerView( pType, pView );
+	}
+
+	void GenericDataEditor::unregisterView( const GenericDataTypeStruct* pType )
+	{
+		m_renderer.unregisterView( pType );
 	}
 }
