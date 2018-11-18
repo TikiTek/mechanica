@@ -22,9 +22,7 @@ module.import_func = function( project )
 	local arguments = "--content-dir=" .. content_path .. " --target-dir=" .. output_path;
 	local command_line = exe_path .. " " .. arguments;
 
-	print( command_line );
 	prebuildcommands { command_line };
-	
 	os.execute( command_line );
 end
 

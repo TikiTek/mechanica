@@ -49,17 +49,36 @@ namespace tiki
 
 	void GenericDataFile::doUi()
 	{
-		ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), ImVec2( 100, 100 ) );
+		m_renderer.setObject( m_document.getObject() );
 
 		ImGui::Columns( 2 );
 
-		GenericDataObject* pObject = m_document.getObject();
-		if( pObject->getParentObject() != nullptr )
+		if( ImGui::BeginChild( "View", ImVec2( 0.0f, 0.0f ), false, ImGuiWindowFlags_NoInputs ) )
 		{
-			//m_pSelectedObject
-		}
+			const ImVec2 size = ImGui::GetContentRegionAvail();
+			TIKI_VERIFY( m_renderer.resize( uint16( size.x ), uint16( size.y ) ) );
 
-		doObjectUi( pObject, false );
+			ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), size );
+
+			ImGui::EndChild();
+		}
+		ImGui::NextColumn();
+
+		if( ImGui::BeginChild( "Data" ) )
+		{
+			ImGui::Columns( 2 );
+
+			GenericDataObject* pObject = m_document.getObject();
+			if( pObject->getParentObject() != nullptr )
+			{
+				//m_pSelectedObject
+			}
+
+			doObjectUi( pObject, false );
+
+			ImGui::EndChild();
+		}
+		ImGui::NextColumn();
 
 		ImGui::Columns( 1 );
 	}

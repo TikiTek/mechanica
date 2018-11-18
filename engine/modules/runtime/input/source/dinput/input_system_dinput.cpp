@@ -806,7 +806,7 @@ namespace tiki
 				inputEvent.eventType	= InputEventType_Keyboard_Character;
 				inputEvent.deviceType	= InputDeviceType_Keyboard;
 				inputEvent.deviceId		= 0u;
-				inputEvent.data.keyboardCharacter.rune = wParam;
+				inputEvent.data.keyboardCharacter.rune = uint32( wParam );
 
 				return true;
 			}

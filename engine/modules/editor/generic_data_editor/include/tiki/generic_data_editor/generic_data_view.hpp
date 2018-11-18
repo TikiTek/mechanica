@@ -6,11 +6,12 @@
 namespace tiki
 {
 	class GenericDataObject;
-	class GraphicsContext;
+	class Renderer2d;
 	struct InputEvent;
 
 	struct GenericDataViewState
 	{
+		GenericDataView*		pView;
 		GenericDataObject*		pObject;
 		AxisAlignedRectangle	rectangle;
 	};
@@ -23,7 +24,7 @@ namespace tiki
 		virtual void					removeState( GenericDataViewState* pState ) TIKI_PURE;
 
 		virtual void					update( GenericDataViewState* pState ) TIKI_PURE;
-		virtual void					render( GraphicsContext& graphicsContext, GenericDataViewState* pState ) TIKI_PURE;
+		virtual void					render( Renderer2d& renderer, GenericDataViewState* pState ) TIKI_PURE;
 
 		virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) TIKI_PURE;
 
