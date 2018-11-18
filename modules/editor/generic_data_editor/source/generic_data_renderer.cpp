@@ -1,5 +1,7 @@
 #include "generic_data_renderer.hpp"
 
+#include "tiki/generic_data_editor/generic_data_view.hpp"
+
 namespace tiki
 {
 	GenericDataRenderer::GenericDataRenderer()
@@ -65,6 +67,11 @@ namespace tiki
 			}
 		}
 
+		for( GenericDataViewState* pState : m_states )
+		{
+			pState->pView->update( pState );
+		}
+
 		m_renderer.update( deltaTime );
 	}
 
@@ -75,10 +82,33 @@ namespace tiki
 			return;
 		}
 
+		for( GenericDataViewState* pState : m_states )
+		{
+			pState->pView->render( m_renderer, pState );
+		}
+
 		Renderer2dRenderParameters renderParameters;
 		renderParameters.pRenderTarget	= &m_renderTarget;
 
 		m_renderer.render( graphicsContext, renderParameters );
+	}
+
+	void GenericDataRenderer::setObject( GenericDataObject* pObject )
+	{
+		if( m_pObject == pObject )
+		{
+			return;
+		}
+
+		m_pObject = pObject;
+
+		for( GenericDataViewState* pState : m_states )
+		{
+			pState->pView->removeState( pState );
+		}
+		m_states.clear();
+
+		// ...
 	}
 
 	bool GenericDataRenderer::resize( uint16 width, uint16 height )

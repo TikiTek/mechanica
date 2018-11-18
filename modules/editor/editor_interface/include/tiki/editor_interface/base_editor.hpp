@@ -17,8 +17,8 @@ namespace tiki
 	public:
 
 		virtual Editable*				openEditable( const DynamicString& title ) { return nullptr; }
-		virtual bool					saveEditable( Editable* pEditable ) TIKI_PURE;
-		virtual void					closeEditable( Editable* pEditable ) TIKI_PURE;
+		virtual bool					saveEditable( Editable* pEditable ) { return false; }
+		virtual void					closeEditable( Editable* pEditable ) { }
 
 		virtual void					update( float deltaTime ) { }
 		virtual void					render( GraphicsContext& graphicsContext ) { }

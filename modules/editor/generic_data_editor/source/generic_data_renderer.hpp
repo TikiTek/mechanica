@@ -6,6 +6,7 @@
 
 namespace tiki
 {
+	class GenericDataObject;
 	class GenericDataTypeStruct;
 	class GenericDataView;
 	class GraphicsContext;
@@ -24,6 +25,8 @@ namespace tiki
 
 		void							update( float deltaTime );
 		void							render( GraphicsContext& graphicsContext );
+
+		void							setObject( GenericDataObject* pObject );
 
 		bool							resize( uint16 width, uint16 height );
 
@@ -47,7 +50,9 @@ namespace tiki
 		RenderTarget					m_renderTarget;
 		Renderer2d						m_renderer;
 
+		GenericDataObject*				m_pObject;
+		List< GenericDataViewState* >	m_states;
+
 		StructViewMap					m_views;
-		List< GenericDataViewState* >	m_viewStates;
 	};
 }
