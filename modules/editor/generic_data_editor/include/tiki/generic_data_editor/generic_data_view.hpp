@@ -6,13 +6,19 @@
 namespace tiki
 {
 	class GenericDataObject;
+	class GenericDataTypeCollection;
+	class GenericDataTypeStruct;
+	class GenericDataView;
 	class Renderer2d;
 	struct InputEvent;
 
-	struct GenericDataViewState
+	struct GenericDataViewInfo
 	{
 		GenericDataView*		pView;
 		GenericDataObject*		pObject;
+
+		bool					isActive;
+		uint32					focusLayer;
 		AxisAlignedRectangle	rectangle;
 	};
 
@@ -20,17 +26,19 @@ namespace tiki
 	{
 	public:
 
-		virtual GenericDataViewState*	addState( GenericDataObject* pObject ) TIKI_PURE;
-		virtual void					removeState( GenericDataViewState* pState ) TIKI_PURE;
+		const GenericDataTypeStruct*	getObjectType() const { return m_pType; }
 
-		virtual void					update( GenericDataViewState* pState ) TIKI_PURE;
-		virtual void					render( Renderer2d& renderer, GenericDataViewState* pState ) TIKI_PURE;
+		virtual void					updateObject( GenericDataViewInfo& objectInfo, List< GenericDataObject* >& childObjects ) TIKI_PURE;
+		virtual void					renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_PURE;
 
-		virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) TIKI_PURE;
+		//virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) TIKI_PURE;
 
 	protected:
 
-										GenericDataView();
-		virtual							~GenericDataView();
+										GenericDataView( GenericDataTypeCollection& typeCollection, const char* pTypeName );
+		virtual							~GenericDataView() { }
+
+		GenericDataTypeCollection&		m_typeCollection;
+		const GenericDataTypeStruct*	m_pType;
 	};
 }

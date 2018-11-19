@@ -13,9 +13,9 @@ namespace tiki
 	static const char* s_pPopupNewPackage = "New Package";
 	static const char* s_pPopupOpenPackage = "Open Package";
 
-	PackageEditorRibbon::PackageEditorRibbon( EditorInterface* pInterface, PackageEditor& packageEditor )
+	PackageEditorRibbon::PackageEditorRibbon( EditorInterface& editor, PackageEditor& packageEditor )
 		: EditorRibbon( "Package" )
-		, m_pInterface( pInterface )
+		, m_editor( editor )
 		, m_packageEditor( packageEditor )
 		, m_newPackageIcon( getPackageEditorResource( PackageEditorResources_RibbonPackageNew ) )
 		, m_openPackageIcon( getPackageEditorResource( PackageEditorResources_RibbonPackageOpen ) )
@@ -83,7 +83,7 @@ namespace tiki
 
 		if( ImGui::BeginPopupModal( s_pPopupOpenPackage, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
 		{
-			for( const Package& package : m_pInterface->getProject().getPackages() )
+			for( const Package& package : m_editor.getProject().getPackages() )
 			{
 				if( ImGui::Button( package.getName().cStr() ) )
 				{

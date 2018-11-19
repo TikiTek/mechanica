@@ -1,14 +1,13 @@
 #pragma once
 
 #include "tiki/container/list.hpp"
+#include "tiki/generic_data_editor/generic_data_view.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
 #include "tiki/renderer_2d/renderer_2d.hpp"
 #include "tiki/resource/resource_request_pool.hpp"
 
 namespace tiki
 {
-	class GenericDataObject;
-	class GenericDataTypeStruct;
-	class GenericDataView;
 	class GraphicsContext;
 	struct GenericDataViewState;
 	struct InputEvent;
@@ -26,12 +25,12 @@ namespace tiki
 		void							update( float deltaTime );
 		void							render( GraphicsContext& graphicsContext );
 
-		void							setObject( GenericDataObject* pObject );
+		void							setBaseObject( GenericDataObject* pBaseObject );
 
 		bool							resize( uint16 width, uint16 height );
 
-		void							registerView( const GenericDataTypeStruct* pType, GenericDataView* pView );
-		void							unregisterView( const GenericDataTypeStruct* pType );
+		void							registerView( GenericDataView& view );
+		void							unregisterView( GenericDataView& view );
 
 		const TextureData&				getOutput() const { return m_renderTargetData; }
 
@@ -40,6 +39,7 @@ namespace tiki
 	private:
 
 		typedef Map< const GenericDataTypeStruct*, GenericDataView* > StructViewMap;
+		typedef Map< GenericDataObject*, GenericDataViewInfo > ObjectInfoMap;
 
 		GraphicsSystem*					m_pGraphicsSystem;
 		ResourceRequestPool				m_resourceRequests;
@@ -49,9 +49,10 @@ namespace tiki
 		TextureData						m_renderTargetData;
 		RenderTarget					m_renderTarget;
 		Renderer2d						m_renderer;
+		ImmediateRenderer				m_immediateRenderer;
 
-		GenericDataObject*				m_pObject;
-		List< GenericDataViewState* >	m_states;
+		GenericDataObject*				m_pBaseObject;
+		ObjectInfoMap					m_objectInfos;
 
 		StructViewMap					m_views;
 	};

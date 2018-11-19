@@ -125,11 +125,20 @@ namespace tiki
 		m_apRenderPassesStack[ m_currentRenderPassDepth ] = &renderTarget;
 		m_currentRenderPassDepth++;
 
-		ID3D11ShaderResourceView* apShaderResources[ GraphicsSystemLimits_PixelShaderTextureSlots ] =
+		ID3D11ShaderResourceView* apShaderResources[] =
 		{
 			nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 		};
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( apShaderResources ) == GraphicsSystemLimits_PixelShaderTextureSlots );
 		m_platformData.pContext->PSSetShaderResources( 0u, TIKI_COUNT( apShaderResources ), apShaderResources );
+
+		const D3D11_RECT d3dRect = {
+			0,
+			0,
+			(LONG)renderTarget.getWidth(),
+			(LONG)renderTarget.getHeight()
+		};
+		m_platformData.pContext->RSSetScissorRects( 1u, &d3dRect );
 
 		m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 

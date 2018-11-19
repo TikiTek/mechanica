@@ -1,6 +1,8 @@
 #include "generic_data_renderer.hpp"
 
+#include "tiki/debug_renderer/debug_renderer.hpp"
 #include "tiki/generic_data_editor/generic_data_view.hpp"
+#include "tiki/graphics/graphics_context.hpp"
 
 namespace tiki
 {
@@ -28,11 +30,14 @@ namespace tiki
 		rendererParameters.emissivLayerId		= 4u;
 		rendererParameters.drawToWorldFactor	= 100.0f;
 
-		if( !m_renderer.create( graphicsSystem, m_resourceRequests, rendererParameters ) )
+		if( !m_renderer.create( graphicsSystem, m_resourceRequests, rendererParameters ) ||
+			!m_immediateRenderer.create( graphicsSystem, resourceManager ) )
 		{
 			dispose();
 			return false;
 		}
+
+		debugrenderer::initialize( resourceManager );
 
 		return resize( width, height );
 	}
@@ -43,6 +48,9 @@ namespace tiki
 		{
 			return;
 		}
+
+		debugrenderer::shutdown( *m_resourceRequests.getResourceManager() );
+		m_immediateRenderer.dispose( *m_pGraphicsSystem, *m_resourceRequests.getResourceManager() );
 
 		m_renderer.dispose( m_resourceRequests );
 		m_renderTarget.dispose( *m_pGraphicsSystem );
@@ -67,10 +75,10 @@ namespace tiki
 			}
 		}
 
-		for( GenericDataViewState* pState : m_states )
-		{
-			pState->pView->update( pState );
-		}
+		//for( GenericDataViewState* pState : m_states )
+		//{
+		//	pState->pView->update( pState );
+		//}
 
 		m_renderer.update( deltaTime );
 	}
@@ -82,33 +90,36 @@ namespace tiki
 			return;
 		}
 
-		for( GenericDataViewState* pState : m_states )
+		graphicsContext.clear( m_renderTarget, TIKI_COLOR_TRANSPARENT );
+
+		for( const ObjectInfoMap::Pair& kvp : m_objectInfos )
 		{
-			pState->pView->render( m_renderer, pState );
+			kvp.value.pView->renderObject( m_renderer, kvp.value );
 		}
 
 		Renderer2dRenderParameters renderParameters;
 		renderParameters.pRenderTarget	= &m_renderTarget;
 
 		m_renderer.render( graphicsContext, renderParameters );
+
+		static uint32 y = 200;
+		y = (y + 1) % 200;
+		debugrenderer::drawLine( vector::create( 10.0f, 10.0f ), vector::create( 200.0f, float( y ) ), TIKI_COLOR_GREEN );
+
+		m_immediateRenderer.beginRendering( graphicsContext );
+		debugrenderer::flush( m_immediateRenderer, m_renderer.getCamera(), &m_renderTarget );
+		m_immediateRenderer.endRendering();
 	}
 
-	void GenericDataRenderer::setObject( GenericDataObject* pObject )
+	void GenericDataRenderer::setBaseObject( GenericDataObject* pBaseObject )
 	{
-		if( m_pObject == pObject )
+		if( m_pBaseObject == pBaseObject )
 		{
 			return;
 		}
 
-		m_pObject = pObject;
-
-		for( GenericDataViewState* pState : m_states )
-		{
-			pState->pView->removeState( pState );
-		}
-		m_states.clear();
-
-		// ...
+		m_pBaseObject = pBaseObject;
+		m_objectInfos.clear();
 	}
 
 	bool GenericDataRenderer::resize( uint16 width, uint16 height )
@@ -156,14 +167,14 @@ namespace tiki
 		return true;
 	}
 
-	void GenericDataRenderer::registerView( const GenericDataTypeStruct* pType, GenericDataView* pView )
+	void GenericDataRenderer::registerView( GenericDataView& view )
 	{
-		m_views.set( pType, pView );
+		m_views.set( view.getObjectType(), &view );
 	}
 
-	void GenericDataRenderer::unregisterView( const GenericDataTypeStruct* pType )
+	void GenericDataRenderer::unregisterView( GenericDataView& view )
 	{
-		m_views.remove( pType );
+		m_views.remove( view.getObjectType() );
 	}
 
 	bool GenericDataRenderer::handleInputEvent( const InputEvent& inputEvent )

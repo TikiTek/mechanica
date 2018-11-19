@@ -15,7 +15,7 @@ namespace tiki
 
 	public:
 
-									ConverterEditor( EditorInterface* pInterface, AssetConverterInterface* pAssetConverter );
+									ConverterEditor( EditorInterface& editor, AssetConverterInterface* pAssetConverter );
 		virtual						~ConverterEditor();
 
 		virtual bool				saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;

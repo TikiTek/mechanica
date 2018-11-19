@@ -98,7 +98,7 @@ namespace tiki
 		m_pRasterizerState[ ImmediateRasterizerState_CullBack ]		= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Back );
 		m_pRasterizerState[ ImmediateRasterizerState_CullFront ]	= graphicsSystem.createRasterizerState( FillMode_Solid, CullMode_Front );
 
-		m_pSamplerState			= graphicsSystem.createSamplerState( SamplerStateParamters() );
+		m_pSamplerState = graphicsSystem.createSamplerState( SamplerStateParamters() );
 
 		if ( m_vertexConstantBuffer.create( graphicsSystem, sizeof( ImmediateRendererConstantData ), "ImmediateVertexConstants" ) == false )
 		{

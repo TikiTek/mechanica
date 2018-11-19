@@ -4,13 +4,13 @@
 #include "tiki/base/types.hpp"
 #include "tiki/container/list.hpp"
 #include "tiki/editor_interface/editor_ribbon.hpp"
-#include "tiki/tool_application/tool_image.hpp"
 
 namespace tiki
 {
 	class Editable;
 	class EditorInterface;
 	class FileEditor;
+	class GraphicsContext;
 
 	class BaseEditor
 	{
@@ -23,7 +23,6 @@ namespace tiki
 		virtual void					update( float deltaTime ) { }
 		virtual void					render( GraphicsContext& graphicsContext ) { }
 
-		const ToolImage&				getEditableIcon() const { return m_icon; };
 		const List< EditorRibbon* >&	getEditableRibbons() const { return m_editableTabs; }
 
 		virtual void					doUi() { }
@@ -32,13 +31,11 @@ namespace tiki
 
 	protected:
 
-		EditorInterface*				m_pInterface;
-
-		ToolImage						m_icon;
+		EditorInterface&				m_editor;
 
 		List< EditorRibbon* >			m_editableTabs;
 
-										BaseEditor( EditorInterface* pInterface, ConstMemoryBlock iconData );
+										BaseEditor( EditorInterface& editor );
 		virtual							~BaseEditor() { }
 	};
 }

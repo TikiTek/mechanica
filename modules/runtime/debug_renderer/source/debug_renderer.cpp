@@ -110,6 +110,7 @@ namespace tiki
 		m_list3D.clear();
 
 		m_pFont = resourceManager.loadResource< Font >( "debug.font" );
+		TIKI_ASSERT( m_pFont != nullptr );
 	}
 
 	void DebugRenderer::dispose( ResourceManager& resourceManager )
@@ -916,7 +917,25 @@ namespace tiki
 
 	void debugrenderer::drawLine( const Vector2& start, const Vector2& end, Color color /*= TIKI_COLOR_WHITE */ )
 	{
-		debugrenderer::drawLine( vector::create( start, 0.0f ), vector::create( end, 0.0f ), color );
+		const Vector2 aPoints[] = { start, end };
+		debugrenderer::drawLines( aPoints, TIKI_COUNT( aPoints ), color );
+	}
+
+	void debugrenderer::drawLines( const Vector2* pPoints, uint capacity, Color color /*= TIKI_COLOR_WHITE */ )
+	{
+		TIKI_ASSERT( pPoints != nullptr );
+
+		DebugRenderLinesCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderLinesCommand >( sizeof( Vector3 ) * capacity );
+		if( pCommand != nullptr )
+		{
+			pCommand->color			= color;
+			pCommand->pointCount	= capacity;
+
+			for( uint i = 0u; i < capacity; ++i )
+			{
+				pCommand->aPoints[ i ] = vector::create( pPoints[ i ], 0.0f );
+			}
+		}
 	}
 
 	void debugrenderer::drawLine( const Line3& line, Color color /*= TIKI_COLOR_WHITE */ )
