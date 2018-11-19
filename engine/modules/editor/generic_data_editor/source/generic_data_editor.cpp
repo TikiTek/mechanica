@@ -11,10 +11,10 @@
 
 namespace tiki
 {
-	GenericDataEditor::GenericDataEditor( EditorInterface* pInterface, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
-		: FileEditor( pInterface, getGenericDataEditorResource( GenericDataEditorResources_BrowserFileGenericData ), "Generic Data", ".generic_data" )
+	GenericDataEditor::GenericDataEditor( EditorInterface& editor, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
+		: FileEditor( editor, getGenericDataEditorResource( GenericDataEditorResources_BrowserFileGenericData ), "Generic Data", ".generic_data" )
 	{
-		for( const Package& package : pInterface->getProject().getPackages() )
+		for( const Package& package : m_editor.getProject().getPackages() )
 		{
 			m_typeCollection.addPackage( package );
 		}
@@ -60,13 +60,13 @@ namespace tiki
 		m_renderer.render( graphicsContext );
 	}
 
-	void GenericDataEditor::registerView( const GenericDataTypeStruct* pType, GenericDataView* pView )
+	void GenericDataEditor::registerView( GenericDataView& view )
 	{
-		m_renderer.registerView( pType, pView );
+		m_renderer.registerView( view );
 	}
 
-	void GenericDataEditor::unregisterView( const GenericDataTypeStruct* pType )
+	void GenericDataEditor::unregisterView( GenericDataView& view )
 	{
-		m_renderer.unregisterView( pType );
+		m_renderer.unregisterView( view );
 	}
 }

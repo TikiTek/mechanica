@@ -15,24 +15,25 @@ namespace tiki
 
 	public:
 
-		ResourceRequestPool();
-		~ResourceRequestPool();
+							ResourceRequestPool();
+							~ResourceRequestPool();
 
-		void		create( ResourceManager& resourceManager );
-		void		dispose();
+		void				create( ResourceManager& resourceManager );
+		void				dispose();
 
-		void		update();
-
-		template< typename T >
-		void		beginLoadResource( const T** ppTargetResource, const char* pFileName );
+		void				update();
 
 		template< typename T >
-		void		unloadResource( const T*& pResource );
+		void				beginLoadResource( const T** ppTargetResource, const char* pFileName );
+		template< typename T >
+		void				unloadResource( const T*& pResource );
 
-		void		resetError() { m_hasError = false; }
+		void				resetError() { m_hasError = false; }
 
-		bool		hasError() const { return m_hasError; }
-		bool		isFinish() const { return m_requests.isEmpty(); }
+		bool				hasError() const { return m_hasError; }
+		bool				isFinish() const { return m_requests.isEmpty(); }
+
+		ResourceManager*	getResourceManager() { return m_pResourceManager; }
 
 	private:
 

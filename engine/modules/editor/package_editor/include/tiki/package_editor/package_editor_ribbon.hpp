@@ -12,14 +12,14 @@ namespace tiki
 
 	public:
 
-								PackageEditorRibbon( EditorInterface* pInterface, PackageEditor& packageEditor );
+								PackageEditorRibbon( EditorInterface& editor, PackageEditor& packageEditor );
 		virtual					~PackageEditorRibbon();
 
 		virtual void			doUi() TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		EditorInterface*		m_pInterface;
+		EditorInterface&		m_editor;
 		PackageEditor&			m_packageEditor;
 
 		ToolImage				m_newPackageIcon;

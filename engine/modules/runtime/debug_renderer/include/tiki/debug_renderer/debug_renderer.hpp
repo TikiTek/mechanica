@@ -29,6 +29,8 @@ namespace tiki
 
 		void	drawLine( const Line2& line, Color color = TIKI_COLOR_WHITE );
 		void	drawLine( const Vector2& start, const Vector2& end, Color color = TIKI_COLOR_WHITE );
+		void	drawLines( const Vector2* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );
+
 		void	drawLine( const Line3& line, Color color = TIKI_COLOR_WHITE );
 		void	drawLine( const Vector3& start, const Vector3& end, Color color = TIKI_COLOR_WHITE );
 		void	drawLines( const Vector3* pPoints, uint capacity, Color color = TIKI_COLOR_WHITE );

@@ -12,24 +12,24 @@
 
 namespace tiki
 {
-	PackageEditor::PackageEditor( EditorInterface* pInterface )
-		: FileEditor( pInterface, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", ".package" )
-		, m_ribbon( pInterface, *this )
+	PackageEditor::PackageEditor( EditorInterface& editor )
+		: FileEditor( editor, getPackageEditorResource( PackageEditorResources_BrowserPackage ), "Package", ".package" )
+		, m_ribbon( editor, *this )
 	{
 		m_pPackage		= nullptr;
 		m_pPackageFile	= nullptr;
 
-		m_pInterface->addGlobalRibbon( &m_ribbon );
+		m_editor.addGlobalRibbon( &m_ribbon );
 	}
 
 	PackageEditor::~PackageEditor()
 	{
-		m_pInterface->removeGlobalRibbon( &m_ribbon );
+		m_editor.removeGlobalRibbon( &m_ribbon );
 	}
 
 	EditableFile* PackageEditor::openFile( const Path& fileName )
 	{
-		Package* pPackage = m_pInterface->getProject().findPackage( fileName.getFilename() );
+		Package* pPackage = m_editor.getProject().findPackage( fileName.getFilename() );
 		if( pPackage == nullptr )
 		{
 			return nullptr;
@@ -81,7 +81,7 @@ namespace tiki
 			return false;
 		}
 
-		m_pInterface->openEditable( m_pPackageFile );
+		m_editor.openEditable( m_pPackageFile );
 		return true;
 	}
 
@@ -95,7 +95,7 @@ namespace tiki
 		m_pPackage		= nullptr;
 		m_pPackageFile	= nullptr;
 
-		m_pInterface->closeAll();
+		m_editor.closeAll();
 	}
 
 	void PackageEditor::editPackage()
@@ -105,6 +105,6 @@ namespace tiki
 			return;
 		}
 
-		m_pInterface->openEditable( m_pPackageFile );
+		m_editor.openEditable( m_pPackageFile );
 	}
 }

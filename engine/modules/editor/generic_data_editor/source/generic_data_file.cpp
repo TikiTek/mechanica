@@ -49,7 +49,7 @@ namespace tiki
 
 	void GenericDataFile::doUi()
 	{
-		m_renderer.setObject( m_document.getObject() );
+		m_renderer.setBaseObject( m_document.getObject() );
 
 		ImGui::Columns( 2 );
 

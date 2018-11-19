@@ -7,16 +7,16 @@
 
 namespace tiki
 {
-	ConverterEditor::ConverterEditor( EditorInterface* pInterface, AssetConverterInterface* pAssetConverter )
-		: BaseEditor( pInterface, getConverterEditorResource( ConverterEditorResources_EditableIcon ) )
+	ConverterEditor::ConverterEditor( EditorInterface& editor, AssetConverterInterface* pAssetConverter )
+		: BaseEditor( editor )
 		, m_pConverter( pAssetConverter )
 	{
-		m_pInterface->addGlobalRibbon( &m_ribbon );
+		m_editor.addGlobalRibbon( &m_ribbon );
 	}
 
 	ConverterEditor::~ConverterEditor()
 	{
-		m_pInterface->removeGlobalRibbon( &m_ribbon );
+		m_editor.removeGlobalRibbon( &m_ribbon );
 	}
 
 	bool ConverterEditor::saveEditable( Editable* pEditable )

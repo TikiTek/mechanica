@@ -6,7 +6,6 @@
 
 namespace tiki
 {
-	class EditorInterface;
 	class Package;
 	class PackageFile;
 
@@ -17,7 +16,7 @@ namespace tiki
 
 	public:
 
-								PackageEditor( EditorInterface* pInterface );
+								PackageEditor( EditorInterface& editor );
 		virtual					~PackageEditor();
 
 		virtual EditableFile*	openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;

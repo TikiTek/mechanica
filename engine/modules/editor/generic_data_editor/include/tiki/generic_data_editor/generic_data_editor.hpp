@@ -14,7 +14,7 @@ namespace tiki
 
 	public:
 
-									GenericDataEditor( EditorInterface* pInterface, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
+									GenericDataEditor( EditorInterface& editor, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
 		virtual						~GenericDataEditor();
 
 		virtual EditableFile*		openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
@@ -24,8 +24,8 @@ namespace tiki
 		virtual void				update( float deltaTime ) TIKI_OVERRIDE_FINAL;
 		virtual void				render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
 
-		void						registerView( const GenericDataTypeStruct* pType, GenericDataView* pView );
-		void						unregisterView( const GenericDataTypeStruct* pType );
+		void						registerView( GenericDataView& view );
+		void						unregisterView( GenericDataView& view );
 
 		GenericDataTypeCollection&	getTypeCollection() { return m_typeCollection; }
 
