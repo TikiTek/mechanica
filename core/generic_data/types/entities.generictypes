@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <generictypes base="components">
 	<struct name="EntityComponent">
 		<field type="crc32" name="componentType" />
