@@ -5,7 +5,7 @@
 
 namespace tiki
 {
-	template<typename TKey, typename TValue>
+	template< typename TKey, typename TValue >
 	class Map
 	{
 	public:
@@ -13,6 +13,12 @@ namespace tiki
 		typedef KeyValuePair< TKey, TValue >		Pair;
 		typedef KeyValuePair< TKey, TValue >*		Iterator;
 		typedef const KeyValuePair< TKey, TValue >*	ConstIterator;
+
+		struct InsertResult
+		{
+			bool							isNew;
+			TValue*							pValue;
+		};
 
 		TIKI_FORCE_INLINE					Map();
 		TIKI_FORCE_INLINE					Map( const Map< TKey, TValue >& copy );
@@ -32,8 +38,11 @@ namespace tiki
 		TIKI_FORCE_INLINE Pair&				getPairAt( uint index );
 		TIKI_FORCE_INLINE const Pair&		getPairAt( uint index ) const;
 
+		TIKI_FORCE_INLINE TValue*			find( const TKey& key );
+		TIKI_FORCE_INLINE const TValue*		find( const TKey& key ) const;
 		TIKI_FORCE_INLINE bool				findValue( TValue* pTargetValue, const TKey& key ) const;
 
+		TIKI_FORCE_INLINE InsertResult		insertKey( const TKey& key );
 		TIKI_FORCE_INLINE TValue&			set( const TKey& key, const TValue& value );
 		TIKI_FORCE_INLINE bool				remove( const TKey& key );
 
@@ -61,6 +70,7 @@ namespace tiki
 		uint					m_capacity;
 
 		TIKI_FORCE_INLINE uint	findIndex( const TKey& key ) const;
+		TIKI_FORCE_INLINE uint	findPositionIndex( const TKey& key ) const;
 
 		TIKI_FORCE_INLINE uint	getNextSize( uint targetSize );
 		TIKI_FORCE_INLINE void	checkArraySize( uint neddedSize );
