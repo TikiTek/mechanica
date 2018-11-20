@@ -60,7 +60,18 @@ namespace tiki
 		m_pGraphicsSystem = nullptr;
 	}
 
-	void GenericDataRenderer::update( float deltaTime )
+	void GenericDataRenderer::setBaseObject( GenericDataRendererState& state, GenericDataObject* pBaseObject )
+	{
+		if( state.pBaseObject == pBaseObject )
+		{
+			return;
+		}
+
+		state.pBaseObject = pBaseObject;
+		state.objectInfos.clear();
+	}
+
+	void GenericDataRenderer::updateState( GenericDataRendererState& state, float deltaTime )
 	{
 		if( !m_resourceRequests.isFinish() )
 		{
@@ -75,15 +86,13 @@ namespace tiki
 			}
 		}
 
-		//for( GenericDataViewState* pState : m_states )
-		//{
-		//	pState->pView->update( pState );
-		//}
+		List< GenericDataObject* > childObjects;
+		updateViewInfo( state, state.pBaseObject, childObjects );
 
 		m_renderer.update( deltaTime );
 	}
 
-	void GenericDataRenderer::render( GraphicsContext& graphicsContext )
+	void GenericDataRenderer::renderState( GenericDataRendererState& state, GraphicsContext& graphicsContext )
 	{
 		if( !m_resourceRequests.isFinish() )
 		{
@@ -92,7 +101,7 @@ namespace tiki
 
 		graphicsContext.clear( m_renderTarget, TIKI_COLOR_TRANSPARENT );
 
-		for( const ObjectInfoMap::Pair& kvp : m_objectInfos )
+		for( const GenericDataRendererState::ObjectInfoMap::Pair& kvp : state.objectInfos )
 		{
 			kvp.value.pView->renderObject( m_renderer, kvp.value );
 		}
@@ -109,17 +118,6 @@ namespace tiki
 		m_immediateRenderer.beginRendering( graphicsContext );
 		debugrenderer::flush( m_immediateRenderer, m_renderer.getCamera(), &m_renderTarget );
 		m_immediateRenderer.endRendering();
-	}
-
-	void GenericDataRenderer::setBaseObject( GenericDataObject* pBaseObject )
-	{
-		if( m_pBaseObject == pBaseObject )
-		{
-			return;
-		}
-
-		m_pBaseObject = pBaseObject;
-		m_objectInfos.clear();
 	}
 
 	bool GenericDataRenderer::resize( uint16 width, uint16 height )
@@ -180,5 +178,46 @@ namespace tiki
 	bool GenericDataRenderer::handleInputEvent( const InputEvent& inputEvent )
 	{
 		return false;
+	}
+
+	GenericDataView* GenericDataRenderer::findViewForObject( const GenericDataObject* pObject ) const
+	{
+		const GenericDataTypeStruct* pType = pObject->getType();
+		GenericDataView*const* ppView = m_views.find( pType );
+		if( ppView != nullptr )
+		{
+			return *ppView;
+		}
+
+		return nullptr;
+	}
+
+	void GenericDataRenderer::updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, List< GenericDataObject* >& childObjects ) const
+	{
+		const GenericDataRendererState::ObjectInfoMap::InsertResult insertResult = state.objectInfos.insertKey( state.pBaseObject );
+		GenericDataViewInfo& viewInfo = *insertResult.pValue;
+		if( insertResult.isNew )
+		{
+			GenericDataView* pView = findViewForObject( state.pBaseObject );
+			if( pView == nullptr )
+			{
+				state.objectInfos.remove( pObject );
+				return;
+			}
+
+			viewInfo.pView		= pView;
+			viewInfo.pObject	= state.pBaseObject;
+			viewInfo.focusLayer	= 0u;
+			viewInfo.isActive	= false;
+			viewInfo.rectangle.clear();
+		}
+
+		childObjects.clear();
+		viewInfo.pView->updateObject( viewInfo, childObjects );
+
+		for( GenericDataObject* pChildObject : childObjects )
+		{
+			updateViewInfo( state, pChildObject, childObjects );
+		}
 	}
 }

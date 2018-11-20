@@ -12,6 +12,14 @@ namespace tiki
 	struct GenericDataViewState;
 	struct InputEvent;
 
+	struct GenericDataRendererState
+	{
+		typedef Map< GenericDataObject*, GenericDataViewInfo > ObjectInfoMap;
+
+		GenericDataObject*				pBaseObject;
+		ObjectInfoMap					objectInfos;
+	};
+
 	class GenericDataRenderer : public NonCopyable
 	{
 	public:
@@ -22,10 +30,9 @@ namespace tiki
 		bool							create( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
 		void							dispose();
 
-		void							update( float deltaTime );
-		void							render( GraphicsContext& graphicsContext );
-
-		void							setBaseObject( GenericDataObject* pBaseObject );
+		void							setBaseObject( GenericDataRendererState& state, GenericDataObject* pBaseObject );
+		void							updateState( GenericDataRendererState& state, float deltaTime );
+		void							renderState( GenericDataRendererState& state, GraphicsContext& graphicsContext );
 
 		bool							resize( uint16 width, uint16 height );
 
@@ -39,7 +46,6 @@ namespace tiki
 	private:
 
 		typedef Map< const GenericDataTypeStruct*, GenericDataView* > StructViewMap;
-		typedef Map< GenericDataObject*, GenericDataViewInfo > ObjectInfoMap;
 
 		GraphicsSystem*					m_pGraphicsSystem;
 		ResourceRequestPool				m_resourceRequests;
@@ -51,9 +57,10 @@ namespace tiki
 		Renderer2d						m_renderer;
 		ImmediateRenderer				m_immediateRenderer;
 
-		GenericDataObject*				m_pBaseObject;
-		ObjectInfoMap					m_objectInfos;
-
 		StructViewMap					m_views;
+
+		GenericDataView*				findViewForObject( const GenericDataObject* pObject ) const;
+
+		void							updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, List< GenericDataObject* >& childObjects ) const;
 	};
 }
