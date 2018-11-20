@@ -82,7 +82,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE KeyValuePair<TKey, TValue>& Map< TKey, TValue >::getPairAt( uint index )
+	TIKI_FORCE_INLINE KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uint index )
 	{
 		TIKI_ASSERT( index < m_capacity );
 		if ( index >= m_count )
@@ -93,10 +93,34 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const KeyValuePair<TKey, TValue>& Map< TKey, TValue >::getPairAt( uint index ) const
+	TIKI_FORCE_INLINE const KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uint index ) const
 	{
 		TIKI_ASSERT( index < m_capacity );
 		return m_pData[ index ];
+	}
+
+	template< typename TKey, typename TValue >
+	TIKI_FORCE_INLINE TValue* tiki::Map< TKey, TValue >::find( const TKey& key )
+	{
+		const uint index = findIndex( key );
+		if( index == TIKI_SIZE_T_MAX )
+		{
+			return nullptr;
+		}
+
+		return &m_pData[ index ].value;
+	}
+
+	template< typename TKey, typename TValue >
+	TIKI_FORCE_INLINE const TValue* tiki::Map< TKey, TValue >::find( const TKey& key ) const
+	{
+		const uint index = findIndex( key );
+		if( index == TIKI_SIZE_T_MAX )
+		{
+			return nullptr;
+		}
+
+		return &m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
@@ -114,45 +138,69 @@ namespace tiki
 		return true;
 	}
 
-	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::set( const TKey& key, const TValue& value )
+	template< typename TKey, typename TValue >
+	TIKI_FORCE_INLINE Map< TKey, TValue >::InsertResult Map< TKey, TValue >::insertKey( const TKey& key )
 	{
-		uint pos = 0u;
-		for (; pos < m_count; ++pos)
-		{
-			Pair& pair = m_pData[ pos ];
+		const uint pos = findPositionIndex( key );
 
-			if ( pair.key == key )
-			{
-				pair.value = value;
-				return pair.value;
-			}
-			else if ( pair.key > key )
-			{
-				break;
-			}
+		Pair& pair1 = m_pData[ pos ];
+		if( pair1.key == key )
+		{
+			InsertResult result;
+			result.isNew	= false;
+			result.pValue	= &value;
+			return result;
 		}
 
 		checkArraySize( m_count + 1 );
 
-		for (uint i = m_count; i > pos; --i)
+		for( uint i = m_count; i > pos; --i )
 		{
 			m_pData[ i ] = m_pData[ i - 1 ];
 		}
 
-		Pair& pair = m_pData[ pos ];
-		pair.key		= key;
-		pair.value	= value;
+		Pair& pair2 = m_pData[ pos ];
+		pair2.key	= key;
+		pair2.value	= value;
 		m_count++;
 
-		return pair.value;
+		InsertResult result;
+		result.isNew	= true;
+		result.pValue	= &pair2.value
+		return result;
+	}
+
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::set( const TKey& key, const TValue& value )
+	{
+		const uint pos = findPositionIndex( key );
+
+		Pair& pair1 = m_pData[ pos ];
+		if( pair1.key == key )
+		{
+			pair1.value = value;
+			return pair1.value;
+		}
+
+		checkArraySize( m_count + 1 );
+
+		for( uint i = m_count; i > pos; --i )
+		{
+			m_pData[ i ] = m_pData[ i - 1 ];
+		}
+
+		Pair& pair2 = m_pData[ pos ];
+		pair2.key	= key;
+		pair2.value	= value;
+		m_count++;
+
+		return pair2.value;
 	}
 
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE bool Map< TKey, TValue >::remove( const TKey& key )
 	{
 		const uint index = findIndex( key );
-
 		if ( index == TIKI_SIZE_T_MAX )
 		{
 			return false;
@@ -272,6 +320,38 @@ namespace tiki
 		}
 
 		return TIKI_SIZE_T_MAX;
+	}
+
+	template<typename TKey, typename TValue>
+	TIKI_FORCE_INLINE uint Map< TKey, TValue >::findPositionIndex( const TKey& key ) const
+	{
+		if( m_count == 0u )
+		{
+			return m_count;
+		}
+
+		uint rangeStart = 0u;
+		uint rangeEnd = int( m_count );
+		while( rangeEnd >= rangeStart )
+		{
+			const int rangeMid =  rangeStart + ((rangeEnd - rangeStart) / 2u);
+			const Pair& kvp = m_pData[ rangeMid ];
+
+			if( kvp.key == key )
+			{
+				return rangeMid;
+			}
+			else if( key < kvp.key )
+			{
+				rangeEnd = rangeMid - 1u;
+			}
+			else
+			{
+				rangeStart = rangeMid + 1u;
+			}
+		}
+
+		return rangeEnd;
 	}
 
 	template<typename TKey, typename TValue>
