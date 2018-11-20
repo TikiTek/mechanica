@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <generictypes base="components">
 	<enum name="Components2dType">
 		<value name="Transform" value="{crc Transform2dComponent}" />
