@@ -16,7 +16,7 @@ namespace tiki
 	{
 		typedef Map< GenericDataObject*, GenericDataViewInfo > ObjectInfoMap;
 
-		GenericDataObject*				pBaseObject;
+		GenericDataObject*				pBaseObject = nullptr;
 		ObjectInfoMap					objectInfos;
 	};
 
@@ -61,6 +61,6 @@ namespace tiki
 
 		GenericDataView*				findViewForObject( const GenericDataObject* pObject ) const;
 
-		void							updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, List< GenericDataObject* >& childObjects ) const;
+		void							updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, GenericDataObject* pParent ) const;
 	};
 }

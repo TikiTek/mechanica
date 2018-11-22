@@ -47,9 +47,19 @@ namespace tiki
 		return false;
 	}
 
+	void GenericDataFile::update( float deltaTime )
+	{
+		m_renderer.updateState( m_rendererState, deltaTime );
+	}
+
+	void GenericDataFile::render( GraphicsContext& graphicsContext )
+	{
+		m_renderer.renderState( m_rendererState, graphicsContext );
+	}
+
 	void GenericDataFile::doUi()
 	{
-		m_renderer.setBaseObject( m_document.getObject() );
+		m_renderer.setBaseObject( m_rendererState, m_document.getObject() );
 
 		ImGui::Columns( 2 );
 

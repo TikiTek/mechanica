@@ -15,33 +15,37 @@ namespace tiki
 
 	public:
 
-								GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor, GenericDataRenderer& renderer );
-		virtual					~GenericDataFile();
+									GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor, GenericDataRenderer& renderer );
+		virtual						~GenericDataFile();
 
-		bool					load();
-		bool					save();
+		bool						load();
+		bool						save();
 
-		virtual void			doUi() TIKI_OVERRIDE_FINAL;
+		virtual void				update( float deltaTime ) TIKI_OVERRIDE_FINAL;
+		virtual void				render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
+
+		virtual void				doUi() TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		GenericDataEditor&		m_genericDataEditor;
-		GenericDataRenderer&	m_renderer;
+		GenericDataEditor&			m_genericDataEditor;
+		GenericDataRenderer&		m_renderer;
+		GenericDataRendererState	m_rendererState;
 
-		GenericDataDocument		m_document;
-		GenericDataObject*		m_pSelectedObject;
+		GenericDataDocument			m_document;
+		GenericDataObject*			m_pSelectedObject;
 
-		ToolImage				m_tagsIcon;
-		ToolImage				m_valueCreateIcon;
-		ToolImage				m_valueRemoveIcon;
+		ToolImage					m_tagsIcon;
+		ToolImage					m_valueCreateIcon;
+		ToolImage					m_valueRemoveIcon;
 
-		void					doObjectUi( GenericDataObject* pObject, bool readOnly );
-		void					doArrayUi( GenericDataArray* pArray, bool readOnly );
-		GenericDataValue*		doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly );
-		void					doValueUi( GenericDataValue* pValue, bool readOnly );
-		void					doEnumUi( GenericDataValue* pValue, bool readOnly );
-		void					doValueTypeUi( GenericDataValue* pValue, bool readOnly );
-		void					doValueTagUi( GenericDataTag* pTag, const GenericDataType* pTargetType, bool fixedTag, bool readOnly );
-		void					doResourceUi( GenericDataValue* pValue, bool readOnly );
+		void						doObjectUi( GenericDataObject* pObject, bool readOnly );
+		void						doArrayUi( GenericDataArray* pArray, bool readOnly );
+		GenericDataValue*			doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly );
+		void						doValueUi( GenericDataValue* pValue, bool readOnly );
+		void						doEnumUi( GenericDataValue* pValue, bool readOnly );
+		void						doValueTypeUi( GenericDataValue* pValue, bool readOnly );
+		void						doValueTagUi( GenericDataTag* pTag, const GenericDataType* pTargetType, bool fixedTag, bool readOnly );
+		void						doResourceUi( GenericDataValue* pValue, bool readOnly );
 	};
 }

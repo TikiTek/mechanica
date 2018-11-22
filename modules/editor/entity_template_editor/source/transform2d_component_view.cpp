@@ -11,7 +11,7 @@ namespace tiki
 	{
 	}
 
-	void Transform2dComponentView::updateObject( GenericDataViewInfo& objectInfo, List< GenericDataObject* >& childObjects )
+	void Transform2dComponentView::updateObject( GenericDataViewInfo& objectInfo )
 	{
 
 	}

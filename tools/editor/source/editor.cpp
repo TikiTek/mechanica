@@ -4,6 +4,7 @@
 #include "tiki/base/assert.hpp"
 #include "tiki/converter_editor/converter_editor.hpp"
 #include "tiki/editor_interface/editable_file.hpp"
+#include "tiki/entity_template_editor/entity_template_editor.hpp"
 #include "tiki/generic_data_editor/generic_data_editor.hpp"
 #include "tiki/io/directory.hpp"
 #include "tiki/io/file.hpp"
@@ -43,6 +44,7 @@ namespace tiki
 
 		m_pPackageEditor = TIKI_NEW( PackageEditor )( *this );
 		m_pGenericDataEditor = TIKI_NEW( GenericDataEditor )( *this, tool::getResourceManager(), tool::getGraphicsSystem() );
+		m_pEntityTemplateEditor = TIKI_NEW( EntityTemplateEditor )( *this, *m_pGenericDataEditor );
 		m_pConverterEditor = TIKI_NEW( ConverterEditor )( *this, m_pAssetConverter );
 
 		registerFileEditor( m_pPackageEditor );
@@ -81,17 +83,17 @@ namespace tiki
 
 	void Editor::update( float deltaTime )
 	{
-		for( BaseEditor* pEditor : m_editors )
+		if( m_pCurrentEditable != nullptr )
 		{
-			pEditor->update( deltaTime );
+			m_pCurrentEditable->update( deltaTime );
 		}
 	}
 
 	void Editor::render( GraphicsContext& graphicsContext )
 	{
-		for( BaseEditor* pEditor : m_editors )
+		if( m_pCurrentEditable != nullptr )
 		{
-			pEditor->render( graphicsContext );
+			m_pCurrentEditable->render( graphicsContext );
 		}
 	}
 
