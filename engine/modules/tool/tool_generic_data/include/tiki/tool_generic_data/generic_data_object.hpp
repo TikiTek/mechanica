@@ -41,8 +41,10 @@ namespace tiki
 		const string&					getFieldName( uint index ) const;
 		const GenericDataType*			getFieldType( uint index ) const;
 		GenericDataValue*				getFieldValue( uint index, bool createMissing );
+		const GenericDataValue*			getFieldValue( uint index ) const;
 		bool							setFieldValue( uint index, GenericDataValue* pValue );
 		GenericDataValue*				getFieldValue( const string& name, bool createMissing );
+		const GenericDataValue*			getFieldValue( const string& name ) const;
 		const GenericDataValue*			getFieldOrDefaultValue( uint index ) const;
 
 		void							removeField( uint index );

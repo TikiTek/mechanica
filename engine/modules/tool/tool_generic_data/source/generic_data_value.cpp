@@ -1,5 +1,6 @@
 #include "tiki/tool_generic_data/generic_data_value.hpp"
 
+#include "tiki/base/float16.hpp"
 #include "tiki/base/number_limits.hpp"
 #include "tiki/tool_generic_data/generic_data_array.hpp"
 #include "tiki/tool_generic_data/generic_data_object.hpp"
@@ -257,6 +258,17 @@ namespace tiki
 		return false;
 	}
 
+	bool GenericDataValue::getUnsignedValue( uint32& value ) const
+	{
+		uint64 tempValue;
+		if( !getUnsignedValue( tempValue ) )
+		{
+			return false;
+		}
+
+		return rangeCheckCast( value, tempValue );
+	}
+
 	bool GenericDataValue::getUnsignedValue( uint64& value ) const
 	{
 		switch( m_valueType )
@@ -324,12 +336,24 @@ namespace tiki
 		return false;
 	}
 
+	bool GenericDataValue::getFloatingPoint( float32& value ) const
+	{
+		float64 tempValue;
+		if( !getFloatingPoint( tempValue ) )
+		{
+			return false;
+		}
+
+		value = float32( tempValue );
+		return true;
+	}
+
 	bool GenericDataValue::getFloatingPoint( float64& value ) const
 	{
 		switch( m_valueType )
 		{
 		case GenericDataValueType_FloatingPoint16:
-			value = m_value.f16;
+			value = f16::convertFloat16to32( m_value.f16 );
 			return true;
 
 		case GenericDataValueType_FloatingPoint32:
