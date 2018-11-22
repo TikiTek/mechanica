@@ -14,12 +14,15 @@ namespace tiki
 
 	struct GenericDataViewInfo
 	{
-		GenericDataView*		pView;
-		GenericDataObject*		pObject;
+		GenericDataView*			pView;
+		GenericDataObject*			pObject;
 
-		bool					isActive;
-		uint32					focusLayer;
-		AxisAlignedRectangle	rectangle;
+		GenericDataObject*			pParent;
+		List< GenericDataObject* >	childObjects;
+
+		bool						isActive;
+		uint32						focusLayer;
+		AxisAlignedRectangle		rectangle;
 	};
 
 	class GenericDataView
@@ -28,7 +31,7 @@ namespace tiki
 
 		const GenericDataTypeStruct*	getObjectType() const { return m_pType; }
 
-		virtual void					updateObject( GenericDataViewInfo& objectInfo, List< GenericDataObject* >& childObjects ) TIKI_PURE;
+		virtual void					updateObject( GenericDataViewInfo& objectInfo ) TIKI_PURE;
 		virtual void					renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_PURE;
 
 		//virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) TIKI_PURE;

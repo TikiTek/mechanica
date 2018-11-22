@@ -50,16 +50,6 @@ namespace tiki
 		delete pEditable;
 	}
 
-	void GenericDataEditor::update( float deltaTime )
-	{
-		m_renderer.update( deltaTime );
-	}
-
-	void GenericDataEditor::render( GraphicsContext& graphicsContext )
-	{
-		m_renderer.render( graphicsContext );
-	}
-
 	void GenericDataEditor::registerView( GenericDataView& view )
 	{
 		m_renderer.registerView( view );

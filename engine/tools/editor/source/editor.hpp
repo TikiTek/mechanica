@@ -12,10 +12,11 @@ namespace tiki
 {
 	class AssetConverterInterface;
 	class ConverterEditor;
+	class EditorRibbon;
+	class EntityTemplateEditor;
 	class GenericDataEditor;
 	class PackageEditor;
 	class PacketManager;
-	class EditorRibbon;
 
 	class Editor : public EditorInterface
 	{
@@ -72,9 +73,10 @@ namespace tiki
 		List< EditorRibbon* >		m_ribbons;
 		EditorRibbon*				m_pCurrentRibbon;
 
-		PackageEditor*				m_pPackageEditor;
-		GenericDataEditor*			m_pGenericDataEditor;
 		ConverterEditor*			m_pConverterEditor;
+		EntityTemplateEditor*		m_pEntityTemplateEditor;
+		GenericDataEditor*			m_pGenericDataEditor;
+		PackageEditor*				m_pPackageEditor;
 
 		List< Editable* >			m_editables;
 		Editable*					m_pCurrentEditable;

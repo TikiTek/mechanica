@@ -86,8 +86,7 @@ namespace tiki
 			}
 		}
 
-		List< GenericDataObject* > childObjects;
-		updateViewInfo( state, state.pBaseObject, childObjects );
+		updateViewInfo( state, state.pBaseObject, nullptr );
 
 		m_renderer.update( deltaTime );
 	}
@@ -98,8 +97,6 @@ namespace tiki
 		{
 			return;
 		}
-
-		graphicsContext.clear( m_renderTarget, TIKI_COLOR_TRANSPARENT );
 
 		for( const GenericDataRendererState::ObjectInfoMap::Pair& kvp : state.objectInfos )
 		{
@@ -192,13 +189,18 @@ namespace tiki
 		return nullptr;
 	}
 
-	void GenericDataRenderer::updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, List< GenericDataObject* >& childObjects ) const
+	void GenericDataRenderer::updateViewInfo( GenericDataRendererState& state, GenericDataObject* pObject, GenericDataObject* pParent ) const
 	{
-		const GenericDataRendererState::ObjectInfoMap::InsertResult insertResult = state.objectInfos.insertKey( state.pBaseObject );
+		if( pObject == nullptr )
+		{
+			return;
+		}
+
+		const GenericDataRendererState::ObjectInfoMap::InsertResult insertResult = state.objectInfos.insertKey( pObject );
 		GenericDataViewInfo& viewInfo = *insertResult.pValue;
 		if( insertResult.isNew )
 		{
-			GenericDataView* pView = findViewForObject( state.pBaseObject );
+			GenericDataView* pView = findViewForObject( pObject );
 			if( pView == nullptr )
 			{
 				state.objectInfos.remove( pObject );
@@ -206,18 +208,18 @@ namespace tiki
 			}
 
 			viewInfo.pView		= pView;
-			viewInfo.pObject	= state.pBaseObject;
+			viewInfo.pObject	= pObject;
+			viewInfo.pParent	= pParent;
 			viewInfo.focusLayer	= 0u;
 			viewInfo.isActive	= false;
 			viewInfo.rectangle.clear();
 		}
 
-		childObjects.clear();
-		viewInfo.pView->updateObject( viewInfo, childObjects );
+		viewInfo.pView->updateObject( viewInfo );
 
-		for( GenericDataObject* pChildObject : childObjects )
+		for( GenericDataObject* pChildObject : viewInfo.childObjects )
 		{
-			updateViewInfo( state, pChildObject, childObjects );
+			updateViewInfo( state, pChildObject, pObject );
 		}
 	}
 }

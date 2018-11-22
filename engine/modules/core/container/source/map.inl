@@ -139,16 +139,16 @@ namespace tiki
 	}
 
 	template< typename TKey, typename TValue >
-	TIKI_FORCE_INLINE Map< TKey, TValue >::InsertResult Map< TKey, TValue >::insertKey( const TKey& key )
+	TIKI_FORCE_INLINE typename Map< TKey, TValue >::InsertResult Map< TKey, TValue >::insertKey( const TKey& key )
 	{
 		const uint pos = findPositionIndex( key );
 
 		Pair& pair1 = m_pData[ pos ];
-		if( pair1.key == key )
+		if( pos < m_count && pair1.key == key )
 		{
 			InsertResult result;
 			result.isNew	= false;
-			result.pValue	= &value;
+			result.pValue	= &pair1.value;
 			return result;
 		}
 
@@ -161,12 +161,12 @@ namespace tiki
 
 		Pair& pair2 = m_pData[ pos ];
 		pair2.key	= key;
-		pair2.value	= value;
+		pair2.value	= TValue();
 		m_count++;
 
 		InsertResult result;
 		result.isNew	= true;
-		result.pValue	= &pair2.value
+		result.pValue	= &pair2.value;
 		return result;
 	}
 
@@ -176,7 +176,7 @@ namespace tiki
 		const uint pos = findPositionIndex( key );
 
 		Pair& pair1 = m_pData[ pos ];
-		if( pair1.key == key )
+		if( pos < m_count && pair1.key == key )
 		{
 			pair1.value = value;
 			return pair1.value;
@@ -330,11 +330,11 @@ namespace tiki
 			return m_count;
 		}
 
-		uint rangeStart = 0u;
-		uint rangeEnd = int( m_count );
-		while( rangeEnd >= rangeStart )
+		int rangeStart = 0;
+		int rangeEnd = int( m_count );
+		while( rangeEnd >= rangeStart && rangeStart < int( m_count ) )
 		{
-			const int rangeMid =  rangeStart + ((rangeEnd - rangeStart) / 2u);
+			const int rangeMid =  rangeStart + ((rangeEnd - rangeStart) / 2);
 			const Pair& kvp = m_pData[ rangeMid ];
 
 			if( kvp.key == key )
@@ -343,15 +343,15 @@ namespace tiki
 			}
 			else if( key < kvp.key )
 			{
-				rangeEnd = rangeMid - 1u;
+				rangeEnd = rangeMid - 1;
 			}
 			else
 			{
-				rangeStart = rangeMid + 1u;
+				rangeStart = rangeMid + 1;
 			}
 		}
 
-		return rangeEnd;
+		return uint( rangeStart );
 	}
 
 	template<typename TKey, typename TValue>

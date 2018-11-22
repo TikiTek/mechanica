@@ -4,15 +4,17 @@
 
 namespace tiki
 {
-	EntitytemplateEditor::EntitytemplateEditor( EditorInterface& editor, GenericDataEditor& genericDataEditor )
+	EntityTemplateEditor::EntityTemplateEditor( EditorInterface& editor, GenericDataEditor& genericDataEditor )
 		: BaseEditor( editor )
 		, m_genericDataEditor( genericDataEditor )
+		, m_entityTemplateVuew( genericDataEditor.getTypeCollection() )
 		, m_transformView( genericDataEditor.getTypeCollection() )
 	{
+		m_genericDataEditor.registerView( m_entityTemplateVuew );
 		m_genericDataEditor.registerView( m_transformView );
 	}
 
-	EntitytemplateEditor::~EntitytemplateEditor()
+	EntityTemplateEditor::~EntityTemplateEditor()
 	{
 	}
 }

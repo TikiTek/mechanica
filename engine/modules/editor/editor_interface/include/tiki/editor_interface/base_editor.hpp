@@ -20,9 +20,6 @@ namespace tiki
 		virtual bool					saveEditable( Editable* pEditable ) { return false; }
 		virtual void					closeEditable( Editable* pEditable ) { }
 
-		virtual void					update( float deltaTime ) { }
-		virtual void					render( GraphicsContext& graphicsContext ) { }
-
 		const List< EditorRibbon* >&	getEditableRibbons() const { return m_editableTabs; }
 
 		virtual void					doUi() { }

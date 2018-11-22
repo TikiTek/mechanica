@@ -20,6 +20,9 @@ namespace tiki
 		BaseEditor*						getEditor() const { return m_pEditor; }
 		bool							isDirty() const { return m_isDirty; }
 
+		virtual void					update( float deltaTime ) { }
+		virtual void					render( GraphicsContext& graphicsContext ) { }
+
 		virtual void					doUi() TIKI_PURE;
 
 		virtual EditableFile*			asFile() { return nullptr; }

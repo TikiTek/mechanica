@@ -21,8 +21,6 @@ namespace tiki
 		virtual bool				saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void				closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 
-		virtual void				update( float deltaTime ) TIKI_OVERRIDE_FINAL;
-		virtual void				render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
 
 		void						registerView( GenericDataView& view );
 		void						unregisterView( GenericDataView& view );
