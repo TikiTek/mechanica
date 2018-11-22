@@ -8,10 +8,16 @@ namespace tiki
 	{
 	public:
 
-												Transform2dComponentView( GenericDataTypeCollection& typeCollection );
-		virtual									~Transform2dComponentView();
+									Transform2dComponentView( GenericDataTypeCollection& typeCollection );
+		virtual						~Transform2dComponentView();
 
-		virtual void							updateObject( GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
-		virtual void							renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
+		GenericDataObject*			findTransformChild( GenericDataViewInfo& objectInfo ) const;
+
+		bool						getPosition( Vector2& targetPosition, const GenericDataObject* pTransformObject ) const;
+		bool						getRotation( float& targetRotation, const GenericDataObject* pTransformObject ) const;
+		bool						getScale( Vector2& targetScale, const GenericDataObject* pTransformObject ) const;
+
+		virtual void				updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo ) TIKI_OVERRIDE_FINAL;
+		virtual void				renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
 	};
 }

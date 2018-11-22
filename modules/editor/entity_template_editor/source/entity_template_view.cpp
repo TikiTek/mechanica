@@ -14,7 +14,7 @@ namespace tiki
 	{
 	}
 
-	void EntityTemplateView::updateObject( GenericDataViewInfo& objectInfo )
+	void EntityTemplateView::updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo )
 	{
 		GenericDataObject* pObject = objectInfo.pObject;
 

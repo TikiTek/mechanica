@@ -8,10 +8,18 @@ namespace tiki
 	{
 	public:
 
-												SpriteComponentView( GenericDataTypeCollection& typeCollection );
-		virtual									~SpriteComponentView();
+									SpriteComponentView( GenericDataTypeCollection& typeCollection, Transform2dComponentView& transformView );
+		virtual						~SpriteComponentView();
 
-		virtual void							updateObject( GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
-		virtual void							renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
+		bool						getTextureName( DynamicString& targetTextureName, const GenericDataObject* pSpriteObject ) const;
+		bool						getOffset( Vector2& targetOffset, const GenericDataObject* pSpriteObject ) const;
+		bool						getLayerId( uint32& targetLayerId, const GenericDataObject* pSpriteObject ) const;
+
+		virtual void				updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo ) TIKI_OVERRIDE_FINAL;
+		virtual void				renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
+
+	private:
+
+		Transform2dComponentView&	m_transformView;
 	};
 }

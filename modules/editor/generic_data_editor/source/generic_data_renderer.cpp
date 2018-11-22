@@ -197,7 +197,7 @@ namespace tiki
 		}
 
 		const GenericDataRendererState::ObjectInfoMap::InsertResult insertResult = state.objectInfos.insertKey( pObject );
-		GenericDataViewInfo& viewInfo = *insertResult.pValue;
+		GenericDataViewInfo* pViewInfo = insertResult.pValue;
 		if( insertResult.isNew )
 		{
 			GenericDataView* pView = findViewForObject( pObject );
@@ -207,17 +207,24 @@ namespace tiki
 				return;
 			}
 
-			viewInfo.pView		= pView;
-			viewInfo.pObject	= pObject;
-			viewInfo.pParent	= pParent;
-			viewInfo.focusLayer	= 0u;
-			viewInfo.isActive	= false;
-			viewInfo.rectangle.clear();
+			pViewInfo->pView		= pView;
+			pViewInfo->pObject		= pObject;
+			pViewInfo->pParent		= pParent;
+			pViewInfo->focusLayer	= 0u;
+			pViewInfo->isActive		= false;
+			pViewInfo->rectangle.clear();
 		}
 
-		viewInfo.pView->updateObject( viewInfo );
+		GenericDataViewInfo* pParentInfo = nullptr;
+		if( pParent != nullptr )
+		{
+			pParentInfo = &state.objectInfos[ pParent ];
+		}
 
-		for( GenericDataObject* pChildObject : viewInfo.childObjects )
+		pViewInfo->pView->updateObject( *pViewInfo, pParentInfo );
+
+		const List< GenericDataObject* > childObjects = pViewInfo->childObjects;
+		for( GenericDataObject* pChildObject : childObjects )
 		{
 			updateViewInfo( state, pChildObject, pObject );
 		}

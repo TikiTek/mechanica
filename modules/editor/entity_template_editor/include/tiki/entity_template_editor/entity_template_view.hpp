@@ -8,10 +8,10 @@ namespace tiki
 	{
 	public:
 
-												EntityTemplateView( GenericDataTypeCollection& typeCollection );
-		virtual									~EntityTemplateView();
+						EntityTemplateView( GenericDataTypeCollection& typeCollection );
+		virtual			~EntityTemplateView();
 
-		virtual void							updateObject( GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
-		virtual void							renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
+		virtual void	updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo ) TIKI_OVERRIDE_FINAL;
+		virtual void	renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
 	};
 }

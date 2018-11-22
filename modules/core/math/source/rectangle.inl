@@ -52,6 +52,24 @@ namespace tiki
 		}
 	}
 
+	TIKI_FORCE_INLINE AxisAlignedRectangle Rectangle::getBounds() const
+	{
+		Vector2 aVertices[ RectanglePoint_Count ];
+		getVertices( aVertices );
+
+		Vector2 min = aVertices[ 0u ];
+		Vector2 max = aVertices[ 0u ];
+		for( uint i = 1u; i < TIKI_COUNT( aVertices ); ++i )
+		{
+			min.x = TIKI_MIN( min.x, aVertices[ i ].x );
+			min.y = TIKI_MIN( min.y, aVertices[ i ].y );
+			max.x = TIKI_MAX( min.x, aVertices[ i ].x );
+			max.y = TIKI_MAX( min.y, aVertices[ i ].y );
+		}
+
+		return createAxisAlignedRectangleMinMax( min, max );
+	}
+
 	TIKI_FORCE_INLINE void Rectangle::clear()
 	{
 		vector::clear( center );

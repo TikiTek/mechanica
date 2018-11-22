@@ -153,6 +153,11 @@ namespace tiki
 		return nullptr;
 	}
 
+	const GenericDataValue* GenericDataObject::getFieldValue( uint index ) const
+	{
+		return m_fields[ index ].pValue;
+	}
+
 	GenericDataValue* GenericDataObject::getFieldValue( const string& name, bool createMissing )
 	{
 		const uint index = m_pType->getFieldIndexByName( name );
@@ -162,6 +167,17 @@ namespace tiki
 		}
 
 		return getFieldValue( index, createMissing );
+	}
+
+	const GenericDataValue* GenericDataObject::getFieldValue( const string& name ) const
+	{
+		const uint index = m_pType->getFieldIndexByName( name );
+		if( index == (uint)-1 )
+		{
+			return nullptr;
+		}
+
+		return getFieldValue( index );
 	}
 
 	bool GenericDataObject::setFieldValue( uint index, GenericDataValue* pValue )
