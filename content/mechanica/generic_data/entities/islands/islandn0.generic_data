@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <tikigenericobjects>
   <resource type="EntityTemplate">
     <object type="EntityTemplateData">
@@ -16,6 +17,7 @@
               <field type="crc32" name="componentType" value="{enum Components2dType.Sprite}" />
               <field type="{pointer ComponentInitData}" name="initData">
                 <object type="SpriteComponentInitData">
+                  <field type="{reference Texture}" name="texture" value="TEXR:islandn0.texture" />
                   <field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
                 </object>
               </field>
