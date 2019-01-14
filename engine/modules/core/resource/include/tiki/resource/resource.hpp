@@ -32,9 +32,9 @@ namespace tiki
 
 	public:
 
-		crc32				getKey() const { return m_id.key; }
+		crc32				getKey() const { return m_name.key; }
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		const char*			getFileName() const { return m_id.fileName.cStr(); }
+		const char*			getFileName() const { return m_name.fileName.cStr(); }
 #else
 		const char*			getFileName() const { return ""; }
 #endif
@@ -51,17 +51,16 @@ namespace tiki
 
 	private:
 
-		ResourceId			m_id;
+		ResourceName		m_name;
 		ResourceSectionData	m_sectionData;
 
 		mutable uint		m_referenceCount;
 
-		bool				create( const ResourceId& id, const ResourceSectionData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext );
+		bool				create( const ResourceName& name, const ResourceSectionData& sectorData, const ResourceInitData& initData, const FactoryContext& factoryContext );
 		void				dispose( const FactoryContext& factoryContext );
 
 		void				addReference() const;
 		bool				releaseReference() const;
-
 	};
 }
 

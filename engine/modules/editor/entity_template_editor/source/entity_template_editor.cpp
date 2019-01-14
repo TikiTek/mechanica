@@ -9,7 +9,7 @@ namespace tiki
 		, m_genericDataEditor( genericDataEditor )
 		, m_entityTemplateVuew( genericDataEditor.getTypeCollection() )
 		, m_transformView( genericDataEditor.getTypeCollection() )
-		, m_spriteView( genericDataEditor.getTypeCollection(), m_transformView )
+		, m_spriteView( editor, genericDataEditor.getTypeCollection(), m_transformView )
 	{
 		m_genericDataEditor.registerView( m_entityTemplateVuew );
 		m_genericDataEditor.registerView( m_transformView );

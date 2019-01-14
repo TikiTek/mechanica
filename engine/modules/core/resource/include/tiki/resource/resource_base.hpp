@@ -10,7 +10,23 @@ namespace tiki
 
 	struct ResourceId
 	{
-		ResourceId()
+		crc32	nameCrc;
+		fourcc	type;
+	};
+
+	inline bool operator==( ResourceId lhs, ResourceId rhs )
+	{
+		return lhs.nameCrc == rhs.nameCrc && lhs.type == rhs.type;
+	}
+
+	inline bool operator<( ResourceId lhs, ResourceId rhs )
+	{
+		return (lhs.nameCrc ^ lhs.type) < (rhs.nameCrc ^ rhs.type);
+	}
+
+	struct ResourceName
+	{
+		ResourceName()
 		{
 			key = TIKI_INVALID_CRC32;
 		}

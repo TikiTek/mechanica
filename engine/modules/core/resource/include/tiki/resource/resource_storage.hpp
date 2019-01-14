@@ -6,7 +6,7 @@
 namespace tiki
 {
 	class Resource;
-	struct ResourceId;
+	struct ResourceName;
 	struct ResourceSectorData;
 
 	class ResourceStorage
@@ -23,7 +23,7 @@ namespace tiki
 
 		bool	findResource( Resource** ppResource, crc32 resourceKey ) const;
 
-		void	allocateResource( Resource* pResource, const ResourceId& resourceId );
+		void	allocateResource( Resource* pResource, const ResourceName& resourceId );
 		void	addReferenceToResource( Resource* pResource );
 		bool	freeReferenceFromResource( Resource* pResource );
 

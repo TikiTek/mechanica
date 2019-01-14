@@ -18,7 +18,7 @@ namespace tiki
 	class FactoryBase;
 	class Resource;
 	class ResourceRequest;
-	struct ResourceId;
+	struct ResourceName;
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 	class AssetConverterInterface;
 	class Project;
@@ -71,39 +71,37 @@ namespace tiki
 
 		template< typename T >
 		TIKI_FORCE_INLINE const T*					loadResource( const char* pFileName );
+		const Resource*								loadGenericResource( const char* pFileName, fourcc type, crc32 resourceKey );
 		template< typename T >
 		void										unloadResource( const T*& pResource );
+		void										unloadGenericResource( const Resource** ppResource );
 
 		template< typename T >
 		TIKI_FORCE_INLINE const ResourceRequest&	beginResourceLoading( const char* pFileName );
+		const ResourceRequest&						beginGenericResourceLoading( const char* pFileName, fourcc type, crc32 resourceKey );
 		void										endResourceLoading( const ResourceRequest& request );
 
 	private:
 
-		ResourceLoader						m_resourceLoader;
-		ResourceStorage						m_resourceStorage;
+		ResourceLoader								m_resourceLoader;
+		ResourceStorage								m_resourceStorage;
 
-		Pool< ResourceRequest >				m_resourceRequests;
-		LinkedList< ResourceRequest >		m_runningRequests;
+		Pool< ResourceRequest >						m_resourceRequests;
+		LinkedList< ResourceRequest >				m_runningRequests;
 
-		Thread								m_loadingThread;
-		Mutex								m_loadingMutex;
+		Thread										m_loadingThread;
+		Mutex										m_loadingMutex;
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		AssetConverterInterface*			m_pAssetConverter;
+		AssetConverterInterface*					m_pAssetConverter;
 #endif
 
-		const Resource*						loadGenericResource( const char* pFileName, fourcc type, crc32 resourceKey );
-		const ResourceRequest&				beginGenericResourceLoading( const char* pFileName, fourcc type, crc32 resourceKey );
-		void								unloadGenericResource( const Resource** ppResource );
+		void										traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 
-		void								traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType );
+		void										threadEntry( const Thread& thread );
+		static int									staticThreadEntry( const Thread& thread );
 
-		void								threadEntry( const Thread& thread );
-		static int							staticThreadEntry( const Thread& thread );
-
-		void								updateResourceLoading( ResourceRequest* pData );
-
+		void										updateResourceLoading( ResourceRequest* pData );
 	};
 }
 

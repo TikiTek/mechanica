@@ -237,8 +237,14 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
+		Vector2 extends = destinationRectangle.extends;
+		vector::scale( extends, m_drawToWorldFactor );
+
+		Rectangle scaledRectangle;
+		scaledRectangle.createFromCenterExtends( destinationRectangle.center, extends, destinationRectangle.rotation );
+
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		destinationRectangle.getVertices( rectangleVertices );
+		scaledRectangle.getVertices( rectangleVertices );
 
 		for( uint i = 0u; i < command.vertices.getCount(); ++i )
 		{
@@ -256,8 +262,14 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
+		Vector2 extends = destinationRectangle.extends;
+		vector::scale( extends, m_drawToWorldFactor );
+
+		Rectangle scaledRectangle;
+		scaledRectangle.createFromCenterExtends( destinationRectangle.center, extends, destinationRectangle.rotation );
+
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		destinationRectangle.getVertices( rectangleVertices );
+		scaledRectangle.getVertices( rectangleVertices );
 
 		Vector2 sourcePoints[ RectanglePoint_Count ];
 		sourceCoordinates.getVertices( sourcePoints );
@@ -278,8 +290,10 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
+		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangle( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		destinationRectangle.getVertices( rectangleVertices );
+		scaledRectangle.getVertices( rectangleVertices );
 
 		for( uint i = 0u; i < command.vertices.getCount(); ++i )
 		{
@@ -297,8 +311,10 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
+		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangle( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		destinationRectangle.getVertices( rectangleVertices );
+		scaledRectangle.getVertices( rectangleVertices );
 
 		Vector2 sourcePoints[ RectanglePoint_Count ];
 		sourceCoordinates.getVertices( sourcePoints );

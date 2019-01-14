@@ -14,9 +14,9 @@ namespace tiki
 		TIKI_ASSERT( m_referenceCount == 0u );
 	}
 
-	bool Resource::create( const ResourceId& id, const ResourceSectionData& sectionData, const ResourceInitData& initData, const FactoryContext& factoryContext )
+	bool Resource::create( const ResourceName& name, const ResourceSectionData& sectionData, const ResourceInitData& initData, const FactoryContext& factoryContext )
 	{
-		m_id				= id;
+		m_name				= name;
 		m_sectionData		= sectionData;
 
 		return createInternal( initData, factoryContext );
