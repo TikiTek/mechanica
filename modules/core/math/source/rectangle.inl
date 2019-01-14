@@ -63,8 +63,8 @@ namespace tiki
 		{
 			min.x = TIKI_MIN( min.x, aVertices[ i ].x );
 			min.y = TIKI_MIN( min.y, aVertices[ i ].y );
-			max.x = TIKI_MAX( min.x, aVertices[ i ].x );
-			max.y = TIKI_MAX( min.y, aVertices[ i ].y );
+			max.x = TIKI_MAX( max.x, aVertices[ i ].x );
+			max.y = TIKI_MAX( max.y, aVertices[ i ].y );
 		}
 
 		return createAxisAlignedRectangleMinMax( min, max );

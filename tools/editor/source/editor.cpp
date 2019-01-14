@@ -10,6 +10,7 @@
 #include "tiki/io/file.hpp"
 #include "tiki/package_editor/package_editor.hpp"
 #include "tiki/resource/resource_manager.hpp"
+#include "tiki/resource/resource_request.hpp"
 #include "tiki/tool_application/tool_framework.hpp"
 #include "tiki/tool_project/package.hpp"
 
@@ -95,6 +96,16 @@ namespace tiki
 		{
 			m_pCurrentEditable->render( graphicsContext );
 		}
+	}
+
+	bool Editor::processToolInputEvent( const InputEvent& inputEvent )
+	{
+		if( m_pCurrentEditable != nullptr )
+		{
+
+		}
+
+		return false;
 	}
 
 	void Editor::doUi()
@@ -302,6 +313,46 @@ namespace tiki
 		}
 
 		return title;
+	}
+
+	EditorResourceResult Editor::getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType )
+	{
+		const crc32 resourceNameCrc	= crcString( pFilename );
+		const ResourceId resourceId	= { resourceNameCrc, resourceType };
+
+		const ResourceMap::InsertResult insertResult = m_resources.insertKey( resourceId );
+		EditorResource* pResource = insertResult.pValue;
+		if( insertResult.isNew )
+		{
+			pResource->result		= EditorResourceResult_Busy;
+			pResource->pResource	= nullptr;
+
+			pResource->pRequest = &tool::getResourceManager().beginGenericResourceLoading( pFilename, resourceId.type, resourceId.nameCrc );
+		}
+		else if( pResource->pRequest != nullptr &&
+				 !pResource->pRequest->isLoading() )
+		{
+			if( pResource->pRequest->isSuccessful() )
+			{
+				pResource->pResource	= pResource->pRequest->getResource< Resource >();
+				pResource->result		= EditorResourceResult_Ok;
+			}
+			else
+			{
+				pResource->result		= EditorResourceResult_Error;
+			}
+
+			tool::getResourceManager().endResourceLoading( *pResource->pRequest );
+			pResource->pRequest = nullptr;
+		}
+
+		if( pResource->result == EditorResourceResult_Ok )
+		{
+			TIKI_ASSERT( pResource->pResource != nullptr );
+			*ppResource = pResource->pResource;
+		}
+
+		return pResource->result;
 	}
 
 	//void Editor::markFileAsDirty( EditorEditable* pEditable )

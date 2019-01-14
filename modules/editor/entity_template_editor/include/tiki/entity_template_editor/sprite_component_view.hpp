@@ -8,7 +8,7 @@ namespace tiki
 	{
 	public:
 
-									SpriteComponentView( GenericDataTypeCollection& typeCollection, Transform2dComponentView& transformView );
+									SpriteComponentView( EditorInterface& editor, GenericDataTypeCollection& typeCollection, Transform2dComponentView& transformView );
 		virtual						~SpriteComponentView();
 
 		bool						getTextureName( DynamicString& targetTextureName, const GenericDataObject* pSpriteObject ) const;
@@ -19,6 +19,8 @@ namespace tiki
 		virtual void				renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_OVERRIDE_FINAL;
 
 	private:
+
+		EditorInterface&			m_editor;
 
 		Transform2dComponentView&	m_transformView;
 	};

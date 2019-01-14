@@ -207,6 +207,17 @@ namespace tiki
 		return m_fields[ index ].pValue;
 	}
 
+	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const string& name ) const
+	{
+		const uint index = m_pType->getFieldIndexByName( name );
+		if( index == (uint)-1 )
+		{
+			return nullptr;
+		}
+
+		return getFieldOrDefaultValue( index );
+	}
+
 	void GenericDataObject::removeField( uint index )
 	{
 		ObjectField& field = m_fields[ index ];

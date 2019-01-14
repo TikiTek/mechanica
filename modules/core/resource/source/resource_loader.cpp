@@ -40,7 +40,7 @@ namespace tiki
 		const FactoryContext*	pFactory;
 		Resource*				pResource;
 
-		ResourceId				resourceId;
+		ResourceName				resourceId;
 		ResourceSectionData		sectionData;
 		ResourceInitData		initializationData;
 	};

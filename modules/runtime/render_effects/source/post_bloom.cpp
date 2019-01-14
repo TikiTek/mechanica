@@ -17,6 +17,7 @@ namespace tiki
 		m_pDepthState		= nullptr;
 		m_pRasterizerState	= nullptr;
 		m_pSamplerState		= nullptr;
+		m_pInputBinding		= nullptr;
 	}
 
 	PostProcessBloom::~PostProcessBloom()
@@ -27,6 +28,7 @@ namespace tiki
 		TIKI_ASSERT( m_pDepthState			== nullptr );
 		TIKI_ASSERT( m_pRasterizerState		== nullptr );
 		TIKI_ASSERT( m_pSamplerState		== nullptr );
+		TIKI_ASSERT( m_pInputBinding		== nullptr );
 	}
 
 	bool PostProcessBloom::create( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool, const PostProcessBloomParameters& parameters )

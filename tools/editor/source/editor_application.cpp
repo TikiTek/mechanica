@@ -63,7 +63,7 @@ namespace tiki
 
 	bool EditorApplication::processToolInputEvent( const InputEvent& inputEvent )
 	{
-		return false;
+		return m_pEditor->processToolInputEvent( inputEvent );
 	}
 
 	void EditorApplication::processToolWindowEvent( const WindowEvent& windowEvent )

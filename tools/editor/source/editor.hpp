@@ -2,6 +2,8 @@
 
 #include "tiki/editor_interface/editor_interface.hpp"
 
+#include "tiki/container/map.hpp"
+#include "tiki/resource/resource.hpp"
 #include "tiki/tool_application/tool_message_box.hpp"
 #include "tiki/tool_project/project.hpp"
 
@@ -17,6 +19,8 @@ namespace tiki
 	class GenericDataEditor;
 	class PackageEditor;
 	class PacketManager;
+	class ResourceRequest;
+	struct InputEvent;
 
 	class Editor : public EditorInterface
 	{
@@ -24,79 +28,93 @@ namespace tiki
 
 	public:
 
-									Editor( Project& project );
-		virtual						~Editor();
+										Editor( Project& project );
+		virtual							~Editor();
 
-		bool						create();
-		void						dispose();
+		bool							create();
+		void							dispose();
 
-		void						update( float deltaTime );
-		void						render( GraphicsContext& graphicsContext );
+		void							update( float deltaTime );
+		void							render( GraphicsContext& graphicsContext );
 
-		void						doUi();
+		bool							processToolInputEvent( const InputEvent& inputEvent );
 
-		virtual EditableFile*		openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void				openEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void				saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void				closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void				closeAll() TIKI_OVERRIDE_FINAL;
-		Editable*					getCurrentEditable() { return m_pCurrentEditable; }
+		void							doUi();
 
-		virtual void				registerFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual void				unregisterFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
-		virtual FileEditor*			findEditorForFile( const Path& fileName ) const;
+		virtual EditableFile*			openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
+		virtual void					openEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void					closeAll() TIKI_OVERRIDE_FINAL;
+		Editable*						getCurrentEditable() { return m_pCurrentEditable; }
 
-		virtual void				addGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
-		virtual void				removeGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void					registerFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual void					unregisterFileEditor( FileEditor* pEditor ) TIKI_OVERRIDE_FINAL;
+		virtual FileEditor*				findEditorForFile( const Path& fileName ) const;
 
-		//virtual void				addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_OVERRIDE_FINAL;
-		//virtual void				removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
+		virtual void					addGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
+		virtual void					removeGlobalRibbon( EditorRibbon* pTab ) TIKI_OVERRIDE_FINAL;
 
-		virtual Project&			getProject() TIKI_OVERRIDE_FINAL;
+		//virtual void					addGlobalDockWidget( QDockWidget* pWidget, Qt::DockWidgetArea area ) TIKI_OVERRIDE_FINAL;
+		//virtual void					removeGlobalDockWidget( QDockWidget* pWidget ) TIKI_OVERRIDE_FINAL;
 
-		virtual const Path&			getProjectPath() const TIKI_OVERRIDE_FINAL;
-		virtual const Path&			getContentPath() const TIKI_OVERRIDE_FINAL;
-		virtual const Path&			getPackagePath() const TIKI_OVERRIDE_FINAL;
+		virtual Project&				getProject() TIKI_OVERRIDE_FINAL;
 
-		virtual DynamicString		getDialogTitle() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&				getProjectPath() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&				getContentPath() const TIKI_OVERRIDE_FINAL;
+		virtual const Path&				getPackagePath() const TIKI_OVERRIDE_FINAL;
+
+		virtual DynamicString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		Project&					m_project;
-		AssetConverterInterface*	m_pAssetConverter;
+		struct EditorResource
+		{
+			EditorResourceResult	result;
+			const ResourceRequest*	pRequest;
+			const Resource*			pResource;
+		};
+		typedef Map< ResourceId, EditorResource > ResourceMap;
 
-		Path						m_projectPath;
-		Path						m_contentPath;
-		Path						m_packagePath;
+		Project&						m_project;
+		AssetConverterInterface*		m_pAssetConverter;
 
-		List< BaseEditor* >			m_editors;
-		List< EditorRibbon* >		m_ribbons;
-		EditorRibbon*				m_pCurrentRibbon;
+		Path							m_projectPath;
+		Path							m_contentPath;
+		Path							m_packagePath;
 
-		ConverterEditor*			m_pConverterEditor;
-		EntityTemplateEditor*		m_pEntityTemplateEditor;
-		GenericDataEditor*			m_pGenericDataEditor;
-		PackageEditor*				m_pPackageEditor;
+		ResourceMap						m_resources;
 
-		List< Editable* >			m_editables;
-		Editable*					m_pCurrentEditable;
+		List< BaseEditor* >				m_editors;
+		List< EditorRibbon* >			m_ribbons;
+		EditorRibbon*					m_pCurrentRibbon;
 
-		EditorFileBrowserUi			m_fileBrowserUi;
-		EditorEditableRibbon		m_editableRibbon;
-		ToolMessageBox				m_messageBox;
+		ConverterEditor*				m_pConverterEditor;
+		EntityTemplateEditor*			m_pEntityTemplateEditor;
+		GenericDataEditor*				m_pGenericDataEditor;
+		PackageEditor*					m_pPackageEditor;
 
-		//QShortcut					m_openShortcut;
-		//QShortcut					m_saveShortcut;
-		//QShortcut					m_closeShortcut;
+		List< Editable* >				m_editables;
+		Editable*						m_pCurrentEditable;
 
-		void						saveOnCloseCallback( ToolMessageBoxButton button, UserData userData );
-		void						closeEditableInternal( Editable* pEditable );
+		EditorFileBrowserUi				m_fileBrowserUi;
+		EditorEditableRibbon			m_editableRibbon;
+		ToolMessageBox					m_messageBox;
 
-		void						setProjectPathes();
-		void						setPackagePath();
+		//QShortcut						m_openShortcut;
+		//QShortcut						m_saveShortcut;
+		//QShortcut						m_closeShortcut;
 
-		void						doRibbonUi();
-		void						doBrowserUi();
-		void						doEditableUi();
+		virtual EditorResourceResult	getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType ) TIKI_OVERRIDE_FINAL;
+
+		void							saveOnCloseCallback( ToolMessageBoxButton button, UserData userData );
+		void							closeEditableInternal( Editable* pEditable );
+
+		void							setProjectPathes();
+		void							setPackagePath();
+
+		void							doRibbonUi();
+		void							doBrowserUi();
+		void							doEditableUi();
 	};
 }

@@ -6,7 +6,7 @@ namespace tiki
 {
 	bool generic_data::getMemberVector2( Vector2& target, const GenericDataObject* pObject, const DynamicString& memberName )
 	{
-		const GenericDataValue* pVectorValue = pObject->getFieldValue( memberName );
+		const GenericDataValue* pVectorValue = pObject->getFieldOrDefaultValue( memberName );
 		if( pVectorValue == nullptr )
 		{
 			return false;

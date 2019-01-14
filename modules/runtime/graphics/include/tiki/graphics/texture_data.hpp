@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tiki/graphics/texture_description.hpp"
+#include "tiki/math/vector.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/texture_data_d3d11.hpp"
@@ -31,6 +32,8 @@ namespace tiki
 
 		uint						getWidth() const		{ return m_description.width; }
 		uint						getHeight() const		{ return m_description.height; }
+
+		Vector2						getVectorSize() const	{ return vector::create( float( m_description.width ), float( m_description.height ) ); }
 
 		const TextureDescription&	getDescription() const	{ return m_description; }
 
