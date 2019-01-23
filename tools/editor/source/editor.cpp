@@ -102,7 +102,7 @@ namespace tiki
 	{
 		if( m_pCurrentEditable != nullptr )
 		{
-
+			return m_pCurrentEditable->processToolInputEvent( inputEvent );
 		}
 
 		return false;

@@ -9,6 +9,7 @@ namespace tiki
 {
 	class BaseEditor;
 	class EditableFile;
+	struct InputEvent;
 
 	class Editable
 	{
@@ -22,8 +23,9 @@ namespace tiki
 
 		virtual void					update( float deltaTime ) { }
 		virtual void					render( GraphicsContext& graphicsContext ) { }
-
 		virtual void					doUi() TIKI_PURE;
+
+		virtual bool					processToolInputEvent( const InputEvent& inputEvent ) { return false; }
 
 		virtual EditableFile*			asFile() { return nullptr; }
 

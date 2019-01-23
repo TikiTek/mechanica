@@ -14,6 +14,11 @@ ImVec2 ImGui::Vec2( const tiki::Vector2& vec2 )
 	return ImVec2( vec2.x, vec2.y );
 }
 
+tiki::Vector2 ImGui::Vec2( const ImVec2& vec2 )
+{
+	return tiki::vector::create( vec2.x, vec2.y );
+}
+
 ImTextureID ImGui::Tex( const tiki::TextureData& textureData )
 {
 	return (ImTextureID)&textureData;

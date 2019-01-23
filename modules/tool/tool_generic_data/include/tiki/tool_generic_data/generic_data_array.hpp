@@ -35,7 +35,7 @@ namespace tiki
 
 		uint							getCount() const;
 
-		GenericDataValue*				addElement();
+		GenericDataValue*				addElement( bool createContainer );
 		GenericDataValue*				getElement( uint index );
 		const GenericDataValue*			getElement( uint index ) const;
 		bool							removeElement( uint index );

@@ -269,6 +269,20 @@ namespace tiki
 		return m_pBaseType;
 	}
 
+	bool GenericDataTypeStruct::isDerivedType( const GenericDataTypeStruct* pType ) const
+	{
+		if( m_pBaseType == pType )
+		{
+			return true;
+		}
+		else if( m_pBaseType != nullptr )
+		{
+			return m_pBaseType->isDerivedType( pType );
+		}
+
+		return false;
+	}
+
 	//void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
 	//{
 	//	TIKI_ASSERT( pType != nullptr );

@@ -104,6 +104,11 @@ namespace tiki
 
 	string GenericDataValue::toString() const
 	{
+		if( m_pValueTag != nullptr )
+		{
+			return m_pValueTag->writeTagString();
+		}
+
 		switch( m_valueType )
 		{
 		case GenericDataValueType_Boolean:
@@ -146,10 +151,10 @@ namespace tiki
 			return m_text;
 
 		case GenericDataValueType_Object:
-			return m_value.pObject->getType()->getName();
+			return m_pType->getName();
 
 		case GenericDataValueType_Array:
-			return m_value.pArray->getType()->getName();
+			return m_pType->getName();
 
 		case GenericDataValueType_Enum:
 			return m_text;
@@ -158,7 +163,7 @@ namespace tiki
 			return m_text;
 
 		case GenericDataValueType_Pointer:
-			return m_value.pObject->getType()->getName();
+			return m_pType->getName();
 
 		case GenericDataValueType_Invalid:
 		case GenericDataValueType_Count:

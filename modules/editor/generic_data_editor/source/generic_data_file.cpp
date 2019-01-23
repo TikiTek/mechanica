@@ -1,12 +1,15 @@
 #include "generic_data_file.hpp"
 
 #include "tiki/base/string_tools.hpp"
+#include "tiki/input/input_event.hpp"
 #include "tiki/tool_application/tool_ui.hpp"
 #include "tiki/tool_generic_data/generic_data_array.hpp"
 #include "tiki/tool_generic_data/generic_data_object.hpp"
 #include "tiki/tool_generic_data/generic_data_tag.hpp"
 #include "tiki/tool_generic_data/generic_data_type_array.hpp"
 #include "tiki/tool_generic_data/generic_data_type_enum.hpp"
+#include "tiki/tool_generic_data/generic_data_type_pointer.hpp"
+#include "tiki/tool_generic_data/generic_data_type_struct.hpp"
 
 #include "res_generic_data_editor.hpp"
 
@@ -65,8 +68,10 @@ namespace tiki
 
 		if( ImGui::BeginChild( "View", ImVec2( 0.0f, 0.0f ), false, ImGuiWindowFlags_NoInputs ) )
 		{
+			const ImVec2 position = ImGui::GetWindowPos();
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 			TIKI_VERIFY( m_renderer.resize( uint16( size.x ), uint16( size.y ) ) );
+			m_rendererRectangle = createAxisAlignedRectangle( ImGui::Vec2( position ), ImGui::Vec2( size ) );
 
 			ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), size );
 
@@ -91,6 +96,22 @@ namespace tiki
 		ImGui::NextColumn();
 
 		ImGui::Columns( 1 );
+	}
+
+	bool GenericDataFile::processToolInputEvent( const InputEvent& inputEvent )
+	{
+		if( inputEvent.eventType == InputEventType_Mouse_Moved )
+		{
+			const Vector2 position = vector::create( inputEvent.data.mouseMoved.xState, inputEvent.data.mouseMoved.yState );
+			m_hasRendererFocus = m_rendererRectangle.contains( position );
+		}
+
+		if( !m_hasRendererFocus )
+		{
+			return false;
+		}
+
+		return m_renderer.processStateInputEvent( m_rendererState, inputEvent );
 	}
 
 	void GenericDataFile::doObjectUi( GenericDataObject* pObject, bool readOnly )
@@ -124,6 +145,18 @@ namespace tiki
 		{
 			const string name = formatDynamicString( "%d", i );
 			doElementUi( name, pArray->getElement( i ), pArray->getType()->getBaseType(), readOnly );
+		}
+
+		if( !readOnly )
+		{
+			ImGui::TreeNodeEx( " ", ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet );
+			ImGui::NextColumn();
+
+			if( ImGui::Button( "Add Element" ) )
+			{
+				pArray->addElement( true );
+			}
+			ImGui::NextColumn();
 		}
 	}
 
@@ -166,13 +199,21 @@ namespace tiki
 		ImGui::PopStyleVar();
 		ImGui::SameLine();
 
-		if( canBeOpen )
-		{
-			ImGui::Text( " " );
-		}
-		else if( pValue == nullptr )
+		if( pValue == nullptr )
 		{
 			ImGui::Text( "null" );
+		}
+		else if( canBeOpen )
+		{
+			GenericDataObject* pSubObject = nullptr;
+			if( (pValue->getObject( pSubObject ) || pValue->getPointer( pSubObject )) && pSubObject == nullptr && !readOnly )
+			{
+				doCreateObjectUi( pValue );
+			}
+			else
+			{
+				ImGui::Text( getValuePreview( pValue ).cStr() );
+			}
 		}
 		else
 		{
@@ -193,8 +234,7 @@ namespace tiki
 			else if( pType->getType() == GenericDataTypeType_Struct || pType->getType() == GenericDataTypeType_Pointer )
 			{
 				GenericDataObject* pSubObject = nullptr;
-				if( pValue->getObject( pSubObject ) ||
-					pValue->getPointer( pSubObject ) )
+				if( (pValue->getObject( pSubObject ) || pValue->getPointer( pSubObject )) && pSubObject != nullptr )
 				{
 					doObjectUi( pSubObject, readOnly );
 				}
@@ -209,6 +249,75 @@ namespace tiki
 		ImGui::PopID();
 
 		return pValue;
+	}
+
+	void GenericDataFile::doCreateObjectUi( GenericDataValue* pValue )
+	{
+		const GenericDataTypeStruct* pType = nullptr;
+		if( pValue->getValueType() == GenericDataValueType_Pointer )
+		{
+			const GenericDataTypePointer* pPointerType = static_cast< const GenericDataTypePointer* >( pValue->getType() );
+			const GenericDataTypeStruct* pPointerStructType = static_cast<const GenericDataTypeStruct*>(pPointerType->getBaseType());
+			pType = pPointerStructType;
+
+			ImGuiStorage* pStorage = ImGui::GetStateStorage();
+
+			const ImGuiID typeId = ImGui::GetID( "type" );
+			void* pVoidType = pStorage->GetVoidPtr( typeId );
+			if( pVoidType != nullptr )
+			{
+				pType = (const GenericDataTypeStruct*)pVoidType;
+			}
+
+			if( ImGui::BeginCombo( "\n", pType->getName().cStr() ) )
+			{
+				const GenericDataTypeCollection::TypeList& types = m_genericDataEditor.getTypeCollection().getTypes();
+				for( const GenericDataType& type : types )
+				{
+					if( type.getType() != GenericDataTypeType_Struct )
+					{
+						continue;
+					}
+
+					const GenericDataTypeStruct* pStructType = static_cast< const GenericDataTypeStruct* >( &type );
+					if( !pStructType->isDerivedType( pPointerStructType ) )
+					{
+						continue;
+					}
+
+					if( ImGui::Selectable( pStructType->getName().cStr(), pStructType == pType ) )
+					{
+						pType = pStructType;
+						pStorage->SetVoidPtr( typeId, (void*)pStructType );
+					}
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::SameLine();
+		}
+		else
+		{
+			pType = static_cast< const GenericDataTypeStruct* >( pValue->getType() );
+		}
+
+		if( ImGui::Button( "Create" ) )
+		{
+			GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( m_genericDataEditor.getTypeCollection() );
+			if( !pObject->create(  pType, nullptr ) )
+			{
+				TIKI_DELETE( pObject );
+				return;
+			}
+
+			if( pValue->getValueType() == GenericDataValueType_Object )
+			{
+				TIKI_VERIFY( pValue->setObject( pObject ) );
+			}
+			else
+			{
+				TIKI_VERIFY( pValue->setPointer( pObject ) );
+			}
+		}
 	}
 
 	void GenericDataFile::doValueUi( GenericDataValue* pValue, bool readOnly )
@@ -537,6 +646,7 @@ namespace tiki
 							if( ImGui::Selectable( type.getName().cStr(), &selected ) && !readOnly )
 							{
 								pEnumType = static_cast< const GenericDataTypeEnum* >( &type );
+								pEnumValue = pEnumType->getValues().getBegin();
 								hasChanged = true;
 							}
 
@@ -635,5 +745,53 @@ namespace tiki
 	void GenericDataFile::doResourceUi( GenericDataValue* pValue, bool readOnly )
 	{
 		ImGui::Text( "resource" );
+	}
+
+	DynamicString GenericDataFile::getValuePreview( const GenericDataValue* pValue )
+	{
+		if( pValue->getValueType() == GenericDataValueType_Object ||
+			pValue->getValueType() == GenericDataValueType_Pointer )
+		{
+			const GenericDataObject* pObject = nullptr;
+			if( (pValue->getObject( pObject ) || pValue->getPointer( pObject )) && pObject != nullptr )
+			{
+				DynamicString fieldText;
+				for( uint i = 0u; i < pObject->getFieldCount(); ++i )
+				{
+					const GenericDataValue* pFieldValue = pObject->getFieldValue( i );
+					if( pFieldValue != nullptr )
+					{
+						if( !fieldText.isEmpty() )
+						{
+							fieldText += ", ";
+						}
+
+						fieldText += pObject->getFieldName( i ) + "=" + pFieldValue->toString();
+
+						if( fieldText.getLength() > 16u )
+						{
+							break;
+						}
+					}
+				}
+
+				if( !fieldText.isEmpty() )
+				{
+					return  "{" + fieldText + " }";
+				}
+
+				return pObject->getType()->getName();
+			}
+		}
+		else if( pValue->getValueType() == GenericDataValueType_Array )
+		{
+			const GenericDataArray* pArray = nullptr;
+			if( pValue->getArray( pArray ) && pArray != nullptr )
+			{
+				return pArray->getType()->getBaseType()->getName() + "[" + string_tools::toString( pArray->getCount() ) + "]";
+			}
+		}
+
+		return pValue->toString();
 	}
 }

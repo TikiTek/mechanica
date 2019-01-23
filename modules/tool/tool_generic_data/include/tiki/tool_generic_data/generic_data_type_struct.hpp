@@ -35,6 +35,7 @@ namespace tiki
 		virtual crc32							getTypeCrc() const TIKI_OVERRIDE;
 
 		const GenericDataTypeStruct*			getBaseType() const;
+		bool									isDerivedType( const GenericDataTypeStruct* pType ) const;
 
 		//void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
 		//void									removeField( const string& name );

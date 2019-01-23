@@ -108,18 +108,17 @@ namespace tiki
 
 	string GenericDataTag::writeTagString() const
 	{
-		TIKI_ASSERT( !m_tag.isEmpty() );
-		TIKI_ASSERT( !m_content.isEmpty() || m_pChildTag != nullptr );
-
 		if( m_pChildTag != nullptr )
 		{
 			const string childString = m_pChildTag->writeTagString();
 			return formatDynamicString( "{%s %s}", m_tag.cStr(), childString.cStr() );
 		}
-		else
+		else if ( !m_tag.isEmpty() && !m_content.isEmpty() )
 		{
 			return formatDynamicString( "{%s %s}", m_tag.cStr(), m_content.cStr() );
 		}
+
+		return "{Invalid Tag}";
 	}
 
 	/*static*/ bool GenericDataTag::isTagString( const string& rawText )
