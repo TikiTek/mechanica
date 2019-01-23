@@ -86,11 +86,38 @@ namespace tiki
 		return m_array.getCount();
 	}
 
-	GenericDataValue* GenericDataArray::addElement()
+	GenericDataValue* GenericDataArray::addElement( bool createContainer )
 	{
 		GenericDataValue* pValue = TIKI_NEW( GenericDataValue )( m_pType->getBaseType() );
-		m_array.add( pValue );
+		if( createContainer )
+		{
+			if( pValue->getValueType() == GenericDataValueType_Array )
+			{
+				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( m_collection );
+				if( !pArray->create( static_cast< const GenericDataTypeArray* >( pValue->getType() ) ) )
+				{
+					TIKI_DELETE( pArray );
+					TIKI_DELETE( pValue );
+					return nullptr;
+				}
 
+				TIKI_VERIFY( pValue->setArray( pArray ) );
+			}
+			else if( pValue->getValueType() == GenericDataValueType_Object )
+			{
+				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( m_collection );
+				if( !pObject->create( static_cast< const GenericDataTypeStruct* >( pValue->getType() ), nullptr ) )
+				{
+					TIKI_DELETE( pObject );
+					TIKI_DELETE( pValue );
+					return nullptr;
+				}
+
+				TIKI_VERIFY( pValue->setObject( pObject ) );
+			}
+		}
+
+		m_array.add( pValue );
 		return pValue;
 	}
 
@@ -161,7 +188,7 @@ namespace tiki
 
 	GenericDataValue* GenericDataArray::addElementValue( const XmlElement* pNode )
 	{
-		return addElement();
+		return addElement( false );
 	}
 
 	GenericDataValue* GenericDataArray::getElementValue( uint index )

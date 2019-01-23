@@ -17,7 +17,7 @@ namespace tiki
 		vector::set( aVertices[ RectanglePoint_XMaxYMax ], max.x, max.y );
 		vector::set( aVertices[ RectanglePoint_XMinYMax ], min.x, max.y );
 	}
-	
+
 	TIKI_FORCE_INLINE void AxisAlignedRectangle::translate( const Vector2& translation )
 	{
 		vector::add( min, translation );
@@ -87,7 +87,6 @@ namespace tiki
 	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( float x, float y, float width, float height )
 	{
 		AxisAlignedRectangle rect;
-
 		rect.min.x	= x;
 		rect.min.y	= y;
 		rect.max.x	= x + width;
@@ -96,7 +95,18 @@ namespace tiki
 		return rect;
 	}
 
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& center, const Vector2& extents )
+	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& position, const Vector2& size )
+	{
+		AxisAlignedRectangle rect;
+		rect.min.x	= position.x;
+		rect.min.y	= position.y;
+		rect.max.x	= position.x + size.x;
+		rect.max.y	= position.y + size.y;
+
+		return rect;
+	}
+
+	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleCentered( const Vector2& center, const Vector2& extents )
 	{
 		AxisAlignedRectangle rect;
 

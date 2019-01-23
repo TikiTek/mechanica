@@ -39,7 +39,8 @@ namespace tiki
 	};
 
 	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( float x, float y, float width, float height );
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& center, const Vector2& extents );
+	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& position, const Vector2& size );
+	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleCentered( const Vector2& center, const Vector2& extents );
 	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( const Vector2& _min, const Vector2& _max );
 	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( float minX, float minY, float maxX, float maxY );
 }

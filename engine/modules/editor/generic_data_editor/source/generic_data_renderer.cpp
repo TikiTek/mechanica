@@ -89,6 +89,8 @@ namespace tiki
 		updateViewInfo( state, state.pBaseObject, nullptr );
 
 		m_renderer.update( deltaTime );
+
+		state.camera.update( deltaTime );
 	}
 
 	void GenericDataRenderer::renderState( GenericDataRendererState& state, GraphicsContext& graphicsContext )
@@ -103,18 +105,12 @@ namespace tiki
 			kvp.value.pView->renderObject( m_renderer, kvp.value );
 		}
 
+		m_renderer.setCameraPosition( state.camera.getPosition() );
+		m_renderer.setZoom( state.camera.getZoom() );
+
 		Renderer2dRenderParameters renderParameters;
-		renderParameters.pRenderTarget	= &m_renderTarget;
-
+		renderParameters.pRenderTarget = &m_renderTarget;
 		m_renderer.render( graphicsContext, renderParameters );
-
-		static uint32 y = 200;
-		y = (y + 1) % 200;
-		debugrenderer::drawLine( vector::create( 10.0f, 10.0f ), vector::create( 200.0f, float( y ) ), TIKI_COLOR_GREEN );
-
-		m_immediateRenderer.beginRendering( graphicsContext );
-		debugrenderer::flush( m_immediateRenderer, m_renderer.getCamera(), &m_renderTarget );
-		m_immediateRenderer.endRendering();
 	}
 
 	bool GenericDataRenderer::resize( uint16 width, uint16 height )
@@ -172,8 +168,13 @@ namespace tiki
 		m_views.remove( view.getObjectType() );
 	}
 
-	bool GenericDataRenderer::handleInputEvent( const InputEvent& inputEvent )
+	bool GenericDataRenderer::processStateInputEvent( GenericDataRendererState& state, const InputEvent& inputEvent )
 	{
+		if( state.camera.processInputEvent( inputEvent ) )
+		{
+			return true;
+		}
+
 		return false;
 	}
 

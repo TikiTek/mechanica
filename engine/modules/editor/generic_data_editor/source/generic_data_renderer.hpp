@@ -5,6 +5,7 @@
 #include "tiki/graphics/immediate_renderer.hpp"
 #include "tiki/renderer_2d/renderer_2d.hpp"
 #include "tiki/resource/resource_request_pool.hpp"
+#include "tiki/runtime_shared/free_camera_2d.hpp"
 
 namespace tiki
 {
@@ -18,6 +19,7 @@ namespace tiki
 
 		GenericDataObject*				pBaseObject = nullptr;
 		ObjectInfoMap					objectInfos;
+		FreeCamera2D					camera;
 	};
 
 	class GenericDataRenderer : public NonCopyable
@@ -34,14 +36,14 @@ namespace tiki
 		void							updateState( GenericDataRendererState& state, float deltaTime );
 		void							renderState( GenericDataRendererState& state, GraphicsContext& graphicsContext );
 
+		bool							processStateInputEvent( GenericDataRendererState& state, const InputEvent& inputEvent );
+
 		bool							resize( uint16 width, uint16 height );
 
 		void							registerView( GenericDataView& view );
 		void							unregisterView( GenericDataView& view );
 
 		const TextureData&				getOutput() const { return m_renderTargetData; }
-
-		bool							handleInputEvent( const InputEvent& inputEvent );
 
 	private:
 

@@ -185,7 +185,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangleCentered(
 			Vector2::zero,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
@@ -210,7 +210,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangleCentered(
 			Vector2::zero,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
@@ -290,7 +290,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangle( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangleCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
 		scaledRectangle.getVertices( rectangleVertices );
@@ -311,7 +311,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangle( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangleCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
 		scaledRectangle.getVertices( rectangleVertices );

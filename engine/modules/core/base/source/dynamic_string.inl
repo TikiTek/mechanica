@@ -308,7 +308,7 @@ namespace tiki
 
 	TIKI_FORCE_INLINE int DynamicString::indexOf( char c, uint index /*= 0u*/ ) const
 	{
-		TIKI_ASSERT( index < m_stringSize );
+		TIKI_ASSERT( index < m_stringSize || m_stringSize == 0u );
 
 		uint i = index;
 		while( i < m_stringSize )
@@ -325,7 +325,10 @@ namespace tiki
 
 	TIKI_FORCE_INLINE int DynamicString::indexOf( const DynamicString& str, uint index /*= 0u*/ ) const
 	{
-		if( str.m_stringSize > m_stringSize ) return -1;
+		if( str.m_stringSize > m_stringSize )
+		{
+			return -1;
+		}
 
 		uint i = index;
 		uint c = m_stringSize - str.m_stringSize;
