@@ -314,7 +314,7 @@ namespace tiki
 	const VertexInputBinding* GraphicsSystem::createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat )
 	{
 		if( pShader == nullptr ||
-			pVertexFormat != nullptr )
+			pVertexFormat == nullptr )
 		{
 			return nullptr;
 		}
