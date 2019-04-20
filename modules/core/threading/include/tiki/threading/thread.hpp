@@ -43,9 +43,9 @@ namespace tiki
 		static const Thread&	getCurrentThread();
 		static const Thread*	getThreadById( uint64 threadId );
 
-		static void			sleepCurrentThread( timems time );
+		static void				sleepCurrentThread( timems time );
 
-		static void			shutdownSystem();
+		static void				shutdownSystem();
 
 	private:
 
