@@ -175,7 +175,7 @@ namespace tiki
 			Thread& thread = *it;
 
 			thread.dispose();
-			TIKI_DELETE( &thread  );
+			TIKI_DELETE( &thread );
 		}
 	}
 
