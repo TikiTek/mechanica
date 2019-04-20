@@ -13,7 +13,8 @@
 
 namespace tiki
 {
-	static const crc32 s_typeCrc = crcString( "texture" );
+	static const char* s_pTextureTypeName = "texture";
+	static const crc32 s_textureTypeCrc = crcString( s_pTextureTypeName );
 
 	uint32 TextureConverter::getConverterRevision( crc32 typeCrc ) const
 	{
@@ -22,7 +23,7 @@ namespace tiki
 
 	bool TextureConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return typeCrc == s_typeCrc;
+		return typeCrc == s_textureTypeCrc;
 	}
 
 	void TextureConverter::getInputExtensions( List< string >& extensions ) const
@@ -31,9 +32,9 @@ namespace tiki
 		extensions.pushBack( ".png" );
 	}
 
-	crc32 TextureConverter::getOutputType() const
+	const char* TextureConverter::getOutputType() const
 	{
-		return s_typeCrc;
+		return s_pTextureTypeName;
 	}
 
 	bool TextureConverter::initializeConverter()
@@ -165,7 +166,7 @@ namespace tiki
 		List< ResourceDefinition > definitions = getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) );
 		for( const ResourceDefinition& definition : definitions )
 		{
-			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_typeCrc ) );
+			writer.openResource( asset.assetName + ".texture", TIKI_FOURCC( 'T', 'E', 'X', 'R' ), definition, getConverterRevision( s_textureTypeCrc ) );
 
 			const ReferenceKey& textureDataKey = textureWriter.writeTextureData( writer, definition.getGraphicsApi() );
 

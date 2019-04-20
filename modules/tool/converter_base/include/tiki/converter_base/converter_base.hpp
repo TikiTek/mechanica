@@ -45,7 +45,7 @@ namespace tiki
 		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_PURE;
 
 		virtual void				getInputExtensions( List< string >& extensions ) const TIKI_PURE;
-		virtual crc32				getOutputType() const TIKI_PURE;
+		virtual const char*			getOutputType() const TIKI_PURE;
 
 		virtual bool				initializeConverter() TIKI_PURE;
 		virtual void				disposeConverter() TIKI_PURE;

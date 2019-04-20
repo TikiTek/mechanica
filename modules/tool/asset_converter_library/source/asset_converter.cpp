@@ -100,7 +100,7 @@ namespace tiki
 			const char* pCreateTableSql[] =
 			{
 				"CREATE TABLE builds (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, buildtime DATETIME, has_error BOOL);",
-				"CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, filename TEXT NOT NULL, path TEXT NOT NULL, type INTEGER NOT NULL, has_error BOOL);",
+				"CREATE TABLE assets (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, filename TEXT NOT NULL, path TEXT NOT NULL, type TEXT NOT NULL, has_error BOOL);",
 				"CREATE TABLE dependencies (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, type INTEGER, identifier TEXT, value_int BIGINT);",
 				"CREATE TABLE input_files (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, filename TEXT NOT NULL, type INTEGER NOT NULL);",
 				"CREATE TABLE output_files (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, filename TEXT NOT NULL);",
@@ -148,6 +148,12 @@ namespace tiki
 			&m_textureConverter
 		};
 
+		if( !m_genericDataConverter.setProject( m_pProject ) )
+		{
+			TIKI_TRACE_ERROR( "AssetConverter: Could not load generic data types!\n" );
+			return false;
+		}
+
 		for( uint i = 0u; i < TIKI_COUNT( apConverters ); ++i )
 		{
 			ConverterBase* pConverter = apConverters[ i ];
@@ -162,12 +168,6 @@ namespace tiki
 			}
 
 			registerConverter( pConverter );
-		}
-
-		if( !m_genericDataConverter.setProject( m_pProject ) )
-		{
-			TIKI_TRACE_ERROR( "AssetConverter: Could not load generic data types!\n" );
-			return false;
 		}
 
 		for( const Package& package : m_pProject->getPackages() )
@@ -233,7 +233,7 @@ namespace tiki
 	bool AssetConverter::convertAll()
 	{
 		List< Path > assetFiles;
-		for( const KeyValuePair< string, crc32 >& extension : m_extensions )
+		for( const KeyValuePair< string, string >& extension : m_extensions )
 		{
 			directory::findFiles( assetFiles, m_pProject->getContentPath(), extension.key );
 		}
@@ -376,7 +376,7 @@ namespace tiki
 		TemplateDescription desc;
 		desc.name		= filePath.getFilename();
 		desc.filePath	= filePath;
-		desc.typeCrc	= crcString( pBaseAtt->getValue() );
+		desc.type		= pBaseAtt->getValue();
 
 		const XmlElement* pParameterNode = pRoot->findFirstChild( "parameter" );
 		while( pParameterNode )
@@ -456,7 +456,7 @@ namespace tiki
 					ConversionAsset asset;
 					asset.inputFilePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
 					asset.assetName	= asset.inputFilePath.getFilename();
-					asset.typeCrc	= (crc32)query.getIntegerField( "type" );
+					asset.type		= query.getTextField( "type" );
 
 					bool found = false;
 					for( uint i = 0u; i < assetsToBuild.getCount(); ++i )
@@ -497,12 +497,12 @@ namespace tiki
 			{
 				const TemplateDescription& templateDescription = m_templates[ templateName ];
 
-				asset.typeCrc = templateDescription.typeCrc;
+				asset.type = templateDescription.type;
 				asset.parameters.copyFrom( templateDescription.parameters );
 			}
 			else
 			{
-				asset.typeCrc = crcString( templateName );
+				asset.type = templateName;
 			}
 
 			return true;
@@ -513,7 +513,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !m_extensions.findValue( &asset.typeCrc, filePath.getExtension() ) )
+		if( !m_extensions.findValue( &asset.type, filePath.getExtension() ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] '%s' extension has no type.\n", filePath.getCompletePath() );
 		}
@@ -529,6 +529,7 @@ namespace tiki
 		for( uint assetIndex = 0u; assetIndex < assetsToBuild.getCount(); ++assetIndex )
 		{
 			const ConversionAsset& asset = assetsToBuild[ assetIndex ];
+			const crc32 typeCrc = crcString( asset.type );
 
 			if( !file::exists( asset.inputFilePath.getCompletePath() ) )
 			{
@@ -541,7 +542,7 @@ namespace tiki
 			task.pConverter = nullptr;
 			for( const ConverterBase* pConverter : m_converters )
 			{
-				if( pConverter->canConvertType( asset.typeCrc ) )
+				if( pConverter->canConvertType( typeCrc ) )
 				{
 					task.pConverter = pConverter;
 					break;
@@ -559,7 +560,7 @@ namespace tiki
 			task.asset.isBuildRequired	= false;
 			task.pAssetConverter		= this;
 
-			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( asset.typeCrc ) ) );
+			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( typeCrc ) ) );
 			task.result.addInputFile( task.asset.inputFilePath );
 
 			tasks.add( task );
@@ -747,10 +748,10 @@ namespace tiki
 					const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
 
 					const string sql = formatDynamicString(
-						"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%u', '1');",
+						"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%s', '1');",
 						fileName.cStr(),
 						filePath.cStr(),
-						task.asset.typeCrc
+						task.asset.type.cStr()
 					);
 
 					if( !m_dataBase.executeCommand( sql.cStr() ) )
@@ -783,11 +784,11 @@ namespace tiki
 			ConversionTask& task = tasks[ taskIndex ];
 
 			insertInputFiles += formatDynamicString(
-				"%s('%u','%s','%u')",
+				"%s('%u','%s','%s')",
 				taskIndex == 0 ? "" : ",",
 				task.asset.assetId,
 				task.asset.inputFilePath.getCompletePath(),
-				task.asset.typeCrc
+				task.asset.type.cStr()
 			);
 		}
 
@@ -897,7 +898,8 @@ namespace tiki
 					{
 					case ConversionResult::DependencyType_Converter:
 						{
-							const uint32 converterRevision = pTask->pConverter->getConverterRevision( pTask->asset.typeCrc );
+							const crc32 typeCrc = crcString( pTask->asset.type );
+							const uint32 converterRevision = pTask->pConverter->getConverterRevision( typeCrc );
 							if( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
 							{
 								pTask->asset.isBuildRequired = true;
