@@ -16,7 +16,7 @@ namespace tiki
 		bool					isBuildRequired;
 
 		Path					inputFilePath;
-		crc32					typeCrc;
+		string					type;
 
 		ConversionParameters	parameters;
 	};

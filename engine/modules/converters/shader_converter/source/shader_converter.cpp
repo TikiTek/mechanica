@@ -24,7 +24,8 @@
 
 namespace tiki
 {
-	static const crc32 s_typeCrc = crcString( "shader" );
+	static const char* s_pShaderTypeName = "shader";
+	static const crc32 s_shaderTypeCrc = crcString( s_pShaderTypeName );
 
 	struct ShaderVariantData
 	{
@@ -193,7 +194,7 @@ namespace tiki
 
 	bool ShaderConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return typeCrc == s_typeCrc;
+		return typeCrc == s_shaderTypeCrc;
 	}
 
 	void ShaderConverter::getInputExtensions( List< string >& extensions ) const
@@ -201,9 +202,9 @@ namespace tiki
 		extensions.pushBack( ".fx" );
 	}
 
-	crc32 ShaderConverter::getOutputType() const
+	const char* ShaderConverter::getOutputType() const
 	{
-		return s_typeCrc;
+		return s_pShaderTypeName;
 	}
 
 	bool ShaderConverter::initializeConverter()
@@ -248,10 +249,10 @@ namespace tiki
 		includePathes.pushBack( asset.inputFilePath.getDirectoryWithPrefix() );
 
 		Path additionalPath;
-		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/rendereffects/source/shader" );
+		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/render_effects/source/shader" );
 		includePathes.add( additionalPath.getCompletePath() );
 
-		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/renderer2d/source/shader" );
+		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/renderer_2d/source/shader" );
 		includePathes.add( additionalPath.getCompletePath() );
 
 		ShaderIncludeHandler includeHandler( result, includePathes );
@@ -284,7 +285,7 @@ namespace tiki
 		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), "shader" );
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >( ResourceDefinitionFeature_GraphicsApi ) ) )
 		{
-			resourceWriter.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_typeCrc ) );
+			resourceWriter.openResource( asset.assetName + ".shader", TIKI_FOURCC( 'T', 'G', 'S', 'S' ), definition, getConverterRevision( s_shaderTypeCrc ) );
 
 			ResourceSectionWriter sectionWriter;
 			resourceWriter.openDataSection( sectionWriter, SectionType_Main );

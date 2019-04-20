@@ -11,6 +11,9 @@
 
 namespace tiki
 {
+	static const char* s_pGenericDataTypeName = "generic_data";
+	static const crc32 s_genericDataTypeCrc = crcString( s_pGenericDataTypeName );
+
 	GenericDataConverter::GenericDataConverter()
 	{
 	}
@@ -34,33 +37,35 @@ namespace tiki
 
 	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		const GenericDataType* pType = nullptr;
-		if ( m_resourceTypeMap.findValue( &pType, typeCrc ) )
-		{
-			return pType->getTypeCrc();
-		}
-
-		return (uint32)-1;
+		return 1u;
+		//const GenericDataType* pType = nullptr;
+		//if ( m_resourceTypeMap.findValue( &pType, typeCrc ) )
+		//{
+		//	return pType->getTypeCrc();
+		//}
+		//
+		//return (uint32)-1;
 	}
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const
 	{
-		if ( m_resourceTypeMap.hasKey( typeCrc ) )
-		{
-			return true;
-		}
-
-		return false;
+		return typeCrc == s_genericDataTypeCrc;
+		//if ( m_resourceTypeMap.hasKey( typeCrc ) )
+		//{
+		//	return true;
+		//}
+		//
+		//return false;
 	}
 
 	void GenericDataConverter::getInputExtensions( List< string >& extensions ) const
 	{
-		extensions.pushBack( ".tikigenericobjects" );
+		extensions.pushBack( ".generic_data.disabled" );
 	}
 
-	crc32 GenericDataConverter::getOutputType() const
+	const char* GenericDataConverter::getOutputType() const
 	{
-		return crcString( "genericdata" );
+		return s_pGenericDataTypeName;
 	}
 
 	bool GenericDataConverter::initializeConverter()

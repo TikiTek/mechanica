@@ -11,7 +11,8 @@
 
 namespace tiki
 {
-	static const crc32 s_typeCrc = crcString( "model" );
+	static const char* s_pModelTypeName = "model";
+	static const crc32 s_modelTypeCrc = crcString( s_pModelTypeName );
 
 	ModelConverter::ModelConverter()
 	{
@@ -28,7 +29,7 @@ namespace tiki
 
 	bool ModelConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return typeCrc == s_typeCrc;
+		return typeCrc == s_modelTypeCrc;
 	}
 
 	void ModelConverter::getInputExtensions( List< string >& extensions ) const
@@ -36,9 +37,9 @@ namespace tiki
 		extensions.pushBack( ".dae" );
 	}
 
-	crc32 ModelConverter::getOutputType() const
+	const char* ModelConverter::getOutputType() const
 	{
-		return s_typeCrc;
+		return s_pModelTypeName;
 	}
 
 	bool ModelConverter::initializeConverter()
@@ -68,7 +69,7 @@ namespace tiki
 
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{
-			writer.openResource( asset.assetName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_typeCrc ) );
+			writer.openResource( asset.assetName + ".model", TIKI_FOURCC( 'M', 'O', 'D', 'L' ), definition, getConverterRevision( s_modelTypeCrc ) );
 
 			// write hierarchy
 			const ReferenceKey* pHierarchyKey = nullptr;

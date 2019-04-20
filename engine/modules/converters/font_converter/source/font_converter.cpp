@@ -19,7 +19,8 @@
 
 namespace tiki
 {
-	static const crc32 s_typeCrc = crcString( "font" );
+	static const char* s_pFontTypeName = "font";
+	static const crc32 s_fontTypeCrc = crcString( s_pFontTypeName );
 
 	uint32 FontConverter::getConverterRevision( crc32 typeCrc ) const
 	{
@@ -28,7 +29,7 @@ namespace tiki
 
 	bool FontConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return typeCrc == s_typeCrc;
+		return typeCrc == s_fontTypeCrc;
 	}
 
 	void FontConverter::getInputExtensions( List< string >& extensions ) const
@@ -36,9 +37,9 @@ namespace tiki
 		extensions.pushBack( ".ttf" );
 	}
 
-	crc32 FontConverter::getOutputType() const
+	const char* FontConverter::getOutputType() const
 	{
-		return s_typeCrc;
+		return s_pFontTypeName;
 	}
 
 	bool FontConverter::initializeConverter()
@@ -185,7 +186,7 @@ namespace tiki
 
 		for (const ResourceDefinition& definition : getResourceDefinitions( features ))
 		{
-			writer.openResource( asset.assetName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), definition, getConverterRevision( s_typeCrc ) );
+			writer.openResource( asset.assetName + ".font", TIKI_FOURCC( 'F', 'O', 'N', 'T' ), definition, getConverterRevision( s_fontTypeCrc ) );
 
 			const ReferenceKey textureDataKey = textureWriter.writeTextureData( writer, definition.getGraphicsApi() );
 

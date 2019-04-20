@@ -12,7 +12,8 @@
 
 namespace tiki
 {
-	static const crc32 s_typeCrc = crcString( "animation" );
+	static const char* s_pAnimationTypeName = "animation";
+	static const crc32 s_animationTypeCrc = crcString( s_pAnimationTypeName );
 
 	AnimationConverter::AnimationConverter()
 	{
@@ -29,7 +30,7 @@ namespace tiki
 
 	bool AnimationConverter::canConvertType( crc32 typeCrc ) const
 	{
-		return typeCrc == s_typeCrc;
+		return typeCrc == s_animationTypeCrc;
 	}
 
 	void AnimationConverter::getInputExtensions( List< string >& extensions ) const
@@ -38,9 +39,9 @@ namespace tiki
 		//extensions.pushBack( ".dae" );
 	}
 
-	crc32 AnimationConverter::getOutputType() const
+	const char* AnimationConverter::getOutputType() const
 	{
-		return s_typeCrc;
+		return s_pAnimationTypeName;
 	}
 
 	bool AnimationConverter::initializeConverter()
@@ -159,7 +160,7 @@ namespace tiki
 
 		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
 		{
-			resourceWriter.openResource( asset.assetName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), definition, getConverterRevision( s_typeCrc ) );
+			resourceWriter.openResource( asset.assetName + ".animation", TIKI_FOURCC( 'A', 'N', 'I', 'M' ), definition, getConverterRevision( s_animationTypeCrc ) );
 
 			ReferenceKey dataKey;
 			builder.writeToResource( resourceWriter, dataKey );

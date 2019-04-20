@@ -55,7 +55,7 @@ namespace tiki
 		{
 			Path					filePath;
 			string					name;
-			crc32					typeCrc;
+			string					type;
 
 			ConversionParameters	parameters;
 		};
@@ -95,7 +95,7 @@ namespace tiki
 
 		ConverterList				m_converters;
 		TemplateMap					m_templates;
-		Map< string, crc32 >		m_extensions;
+		Map< string, string >		m_extensions;
 
 		List< Path >				m_files;
 		Mutex						m_changedFilesMutex;
