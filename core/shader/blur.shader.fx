@@ -1,1 +1,1 @@
-#include "../../../library/modules/runtime/rendereffects/source/shader/blur.fx"
+#include "../../../library/modules/runtime/render_effects/source/shader/blur.fx"
