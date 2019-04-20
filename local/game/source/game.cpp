@@ -1,15 +1,15 @@
 #include "tiki/game/game.hpp"
 
 #include "tiki/base/timer.hpp"
-#include "tiki/debugrenderer/debugrenderer.hpp"
-#include "tiki/gamestates/applicationstate.hpp"
-#include "tiki/gamestates/basicteststate.hpp"
-#include "tiki/gamestates/creditsstate.hpp"
-#include "tiki/gamestates/introstate.hpp"
-#include "tiki/gamestates/menustate.hpp"
-#include "tiki/gamestates/physicsteststate.hpp"
-#include "tiki/gamestates/playstate.hpp"
-#include "tiki/gamestates/teststate.hpp"
+#include "tiki/debug_renderer/debug_renderer.hpp"
+#include "tiki/game_states/application_state.hpp"
+#include "tiki/game_states/basic_test_state.hpp"
+#include "tiki/game_states/credits_state.hpp"
+#include "tiki/game_states/intro_state.hpp"
+#include "tiki/game_states/menu_state.hpp"
+#include "tiki/game_states/physics_test_state.hpp"
+#include "tiki/game_states/play_state.hpp"
+#include "tiki/game_states/test_state.hpp"
 
 namespace tiki
 {
@@ -50,14 +50,12 @@ namespace tiki
 		parameters.screenWidth	= 1280;
 		parameters.screenHeight	= 720;
 
-		parameters.graphicsMode = GraphicsRendererMode_Hardware;
-
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
 		parameters.pGamebuildPath = "./gamebuild/";
 #elif TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		if ( !debug::isDebuggerActive() )
 		{
-			parameters.pGamebuildPath = "../../../gamebuild/";
+			parameters.assetBuildPath = Path( "../../../asset_build/" );
 		}
 #endif
 	}
@@ -160,7 +158,7 @@ namespace tiki
 		for (uint i = 0u; i < m_touchSystem.getInputEventCount(); ++i)
 		{
 			processGameInputEvent( m_touchSystem.getInputEventByIndex( i ) );
-		} 
+		}
 
 		m_resourceRequestPool.update();
 		m_gameFlow.update();
@@ -215,7 +213,7 @@ namespace tiki
 	{
 		m_gameFlow.processWindowEvent( windowEvent );
 	}
-	
+
 	GameApplication& framework::getGame()
 	{
 		static Game game;

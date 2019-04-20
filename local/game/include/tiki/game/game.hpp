@@ -1,13 +1,11 @@
 #pragma once
-#ifndef TIKI_TIKIARENAGAME_HPP
-#define TIKI_TIKIARENAGAME_HPP
 
-#include "tiki/gameapplication/gameapplication.hpp"
+#include "tiki/game_application/game_application.hpp"
 
-#include "tiki/framework/touchgamesystem.hpp"
-#include "tiki/gameflow/gameflowsystem.hpp"
-#include "tiki/graphics/immediaterenderer.hpp"
-#include "tiki/resource/resourcerequestpool.hpp"
+#include "tiki/framework/touch_game_system.hpp"
+#include "tiki/game_flow/game_flow_system.hpp"
+#include "tiki/graphics/immediate_renderer.hpp"
+#include "tiki/resource/resource_request_pool.hpp"
 
 namespace tiki
 {
@@ -60,5 +58,3 @@ namespace tiki
 
 	};
 }
-
-#endif // TIKI_TIKIARENAGAME_HPP
