@@ -313,8 +313,11 @@ namespace tiki
 
 	const VertexInputBinding* GraphicsSystem::createVertexInputBinding( const Shader* pShader, const VertexFormat* pVertexFormat )
 	{
-		TIKI_ASSERT( pShader != nullptr );
-		TIKI_ASSERT( pVertexFormat != nullptr );
+		if( pShader == nullptr ||
+			pVertexFormat != nullptr )
+		{
+			return nullptr;
+		}
 
 		VertexInputBindingParameters parameters;
 		parameters.pShader			= pShader;
