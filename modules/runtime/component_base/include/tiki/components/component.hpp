@@ -1,9 +1,7 @@
 #pragma once
-#ifndef __TIKI_COMPONENTBASE_HPP_INCLUDED__
-#define __TIKI_COMPONENTBASE_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-#include "tiki/components/componentiterator.hpp"
+#include "tiki/components/component_iterator.hpp"
 
 namespace tiki
 {
@@ -32,7 +30,7 @@ namespace tiki
 #endif
 
 		ComponentTypeId			getTypeId() const { return m_registedTypeId; }
-		
+
 	protected:
 
 								ComponentBase( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
@@ -53,7 +51,7 @@ namespace tiki
 		TIKI_NONCOPYABLE_CLASS( Component );
 
 	public:
-		
+
 		typedef TState									State;
 		typedef TInitData								InitData;
 
@@ -64,7 +62,7 @@ namespace tiki
 
 		virtual bool	initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_OVERRIDE_FINAL;
 		virtual void	disposeState( ComponentState* pState ) TIKI_OVERRIDE_FINAL;
-		
+
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		virtual bool	checkIntegrity() const TIKI_OVERRIDE_FINAL;
 #endif
@@ -85,5 +83,3 @@ namespace tiki
 }
 
 #include "../../../source/component.inl"
-
-#endif // __TIKI_COMPONENTBASE_HPP_INCLUDED__

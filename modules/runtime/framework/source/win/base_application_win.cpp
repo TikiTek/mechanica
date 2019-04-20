@@ -9,6 +9,7 @@ namespace tiki
 
 	void BaseApplication::shutdownPlatform()
 	{
+		Thread::shutdownSystem();
 	}
 
 	void BaseApplication::updatePlatform()
