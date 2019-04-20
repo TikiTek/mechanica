@@ -5,6 +5,12 @@
 namespace tiki
 {
 	template< typename T >
+	void tiki::ResourceRequestPool::beginLoadResource( T** ppTargetResource, const char* pFileName )
+	{
+		return beginLoadResource( (const T**)ppTargetResource, pFileName );
+	}
+
+	template< typename T >
 	void ResourceRequestPool::beginLoadResource( const T** ppTargetResource, const char* pFileName )
 	{
 		TIKI_ASSERT( m_pResourceManager != nullptr );
