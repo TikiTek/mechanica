@@ -106,7 +106,6 @@ namespace tiki
 		FileWatcher					m_watcher;
 
 		TaskSystem					m_taskSystem;
-		List< ConversionTask >		m_tasks;
 
 		const ConversionContext&	getContext() const { return m_context; }
 
@@ -116,13 +115,13 @@ namespace tiki
 		void						addPackage( const Package& package );
 		void						addTemplate( const Path& filePath );
 
-		bool						prepareTasks();
+		bool						prepareTasks( List< ConversionTask >& tasks );
 		bool						fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath );
-		bool						generateTaskFromFiles( const List< ConversionAsset >& assetsToBuild );
+		bool						generateTaskFromFiles( List< ConversionTask >& tasks, const List< ConversionAsset >& assetsToBuild );
 		bool						writeConvertInputs( List< ConversionTask >& tasks );
 		bool						checkDependencies( List< ConversionTask >& tasks );
 
-		bool						finalizeTasks();
+		bool						finalizeTasks( List< ConversionTask >& tasks );
 
 		static void					taskConvertFile( const TaskContext& context );
 		void						taskRegisterResult( uint64 threadId, ConversionResult& result );

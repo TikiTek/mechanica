@@ -95,7 +95,7 @@ namespace tiki
 				*pSizeInBytes = text.getCapacity();
 				text.dispose();
 
-				m_result.addDependency( ConversionResult::DependencyType_InputFile, fullName, "" );
+				m_result.addDependency( ConversionResult::DependencyType_InputFile, fullName, 0 );
 				return true;
 			}
 

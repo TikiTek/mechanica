@@ -32,7 +32,7 @@ namespace tiki
 		{
 			DependencyType	type;
 			string			identifier;
-			string			value;
+			sint64			intValue;
 		};
 
 		const List< TraceInfo >&	getTraceInfos() const;
@@ -41,7 +41,7 @@ namespace tiki
 
 		void						addInputFile( const Path& filePath );
 		void						addOutputFile( const Path& filePath );
-		void						addDependency( DependencyType type, string identifier, string value );
+		void						addDependency( DependencyType type, string identifier, sint64 intValue );
 		void						addTraceInfo( TraceLevel level, const string& message );
 
 	private:
