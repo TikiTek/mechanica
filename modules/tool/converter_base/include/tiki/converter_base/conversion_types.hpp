@@ -13,7 +13,7 @@ namespace tiki
 		uint					assetId;
 		string					assetName;
 
-		bool					isBuildRequired;
+		bool					isAlradyBuilt;
 
 		Path					inputFilePath;
 		string					type;

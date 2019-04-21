@@ -292,20 +292,26 @@ namespace tiki
 
 	bool AssetConverter::startConversion( Mutex* pConversionMutex /* = nullptr */ )
 	{
-		if( !prepareTasks() )
+		List< ConversionTask > tasks;
+		if( !prepareTasks( tasks ) )
 		{
 			return false;
 		}
 
-		for( uint i = 0u; i < m_tasks.getCount(); ++i )
+		for( uint i = 0u; i < tasks.getCount(); ++i )
 		{
-			ConversionTask& task = m_tasks[ i ];
+			ConversionTask& task = tasks[ i ];
 			task.taskId = m_taskSystem.queueTask( taskConvertFile, &task );
 		}
 
 		m_taskSystem.waitForAllTasks();
 
-		return finalizeTasks();
+		if( !finalizeTasks( tasks ) )
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	void AssetConverter::registerConverter( const ConverterBase* pConverter )
@@ -407,7 +413,7 @@ namespace tiki
 		m_templates.set( desc.name, desc );
 	}
 
-	bool AssetConverter::prepareTasks()
+	bool AssetConverter::prepareTasks( List< ConversionTask >& tasks )
 	{
 		List< ConversionAsset > assetsToBuild;
 		List< Path > filesFromDependencies;
@@ -457,6 +463,7 @@ namespace tiki
 					asset.inputFilePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
 					asset.assetName	= asset.inputFilePath.getFilename();
 					asset.type		= query.getTextField( "type" );
+					asset.assetId	= TIKI_SIZE_T_MAX;
 
 					bool found = false;
 					for( uint i = 0u; i < assetsToBuild.getCount(); ++i )
@@ -477,9 +484,9 @@ namespace tiki
 		}
 
 		m_files.clear();
-		m_tasks.clear();
+		tasks.clear();
 
-		return generateTaskFromFiles( assetsToBuild );
+		return generateTaskFromFiles( tasks, assetsToBuild );
 	}
 
 	bool AssetConverter::fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath )
@@ -489,6 +496,7 @@ namespace tiki
 
 		asset.inputFilePath = filePath;
 		asset.assetName		= assetPath.getFilename();
+		asset.assetId		= TIKI_SIZE_T_MAX;
 
 		if( !isStringEmpty( assetPath.getExtension() ) )
 		{
@@ -521,9 +529,9 @@ namespace tiki
 		return true;
 	}
 
-	bool AssetConverter::generateTaskFromFiles( const List< ConversionAsset >& assetsToBuild )
+	bool AssetConverter::generateTaskFromFiles( List< ConversionTask >& tasks, const List< ConversionAsset >& assetsToBuild )
 	{
-		List< ConversionTask > tasks;
+		List< ConversionTask > tempTasks;
 
 		bool result = true;
 		for( uint assetIndex = 0u; assetIndex < assetsToBuild.getCount(); ++assetIndex )
@@ -557,130 +565,37 @@ namespace tiki
 			}
 
 			task.asset					= asset;
-			task.asset.isBuildRequired	= false;
+			task.asset.isAlradyBuilt	= false;
 			task.pAssetConverter		= this;
 
-			task.result.addDependency( ConversionResult::DependencyType_Converter, "", string_tools::toString( task.pConverter->getConverterRevision( typeCrc ) ) );
+			task.result.addDependency( ConversionResult::DependencyType_Converter, "", task.pConverter->getConverterRevision( typeCrc ) );
 			task.result.addInputFile( task.asset.inputFilePath );
 
-			tasks.add( task );
+			tempTasks.add( task );
 		}
 
-		if( !writeConvertInputs( tasks ) )
+		if( !writeConvertInputs( tempTasks ) )
 		{
 			return false;
 		}
 
-		if( !checkDependencies( tasks ) )
+		if( !checkDependencies( tempTasks ) )
 		{
 			return false;
 		}
 
-		for( uint i = 0u; i < tasks.getCount(); ++i )
+		for( uint i = 0u; i < tempTasks.getCount(); ++i )
 		{
-			ConversionTask& task = tasks[ i ];
+			ConversionTask& task = tempTasks[ i ];
 
-			if( task.asset.isBuildRequired )
+			if( !task.asset.isAlradyBuilt )
 			{
-				m_tasks.add( task );
+				tasks.add( task );
 			}
 		}
 
 		return result;
 	}
-
-	//bool AssetConverter::readDataFromXasset( ConversionTask& task, const FileDescription& fileDesc )
-	//{
-	//	XmlReader xmlFile;
-	//	xmlFile.create( fileDesc.fullFileName.cStr() );
-
-	//	// parse root node
-	//	const XmlElement* pRoot = xmlFile.findNodeByName( "tikiasset" );
-	//	if ( pRoot == nullptr )
-	//	{
-	//		TIKI_TRACE_ERROR( "no asset definition found.\n" );
-	//		return false;
-	//	}
-
-	//	const XmlAttribute* pOutput = xmlFile.findAttributeByName( "output-name", pRoot );
-	//	if ( pOutput == nullptr )
-	//	{
-	//		task.parameters.outputName = path::getFilenameWithoutExtension( path::getFilenameWithoutExtension( fileDesc.fullFileName ) );
-	//	}
-	//	else
-	//	{
-	//		task.parameters.outputName = pOutput->content;
-	//	}
-
-	//	// read inputs
-	//	const string inputDir		= path::getDirectoryName( fileDesc.fullFileName );
-	//	const XmlElement* pInput	= xmlFile.findNodeByName( "input" );
-	//	while ( pInput != nullptr )
-	//	{
-	//		const XmlAttribute* pAttFile	= xmlFile.findAttributeByName( "file", pInput );
-	//		const XmlAttribute* pAttType	= xmlFile.findAttributeByName( "type", pInput );
-
-	//		if ( pAttFile == nullptr || pAttType == nullptr )
-	//		{
-	//			TIKI_TRACE_WARNING(
-	//				"[converter] XASSET: Input-Tag has wrong attributes: %s%s\n",
-	//				( pAttFile == nullptr ? "no file-attribute " : string( "file: " ) + pAttFile->content ).cStr(),
-	//				( pAttType == nullptr ? "no type-attribute " : string( "type: " ) + pAttType->content ).cStr()
-	//			);
-	//		}
-	//		else
-	//		{
-	//			ConversionParameters::InputFile input;
-	//			input.fileName	= pAttFile->content;
-	//			input.typeCrc	= crcString( pAttType->content );
-
-	//			if ( !file::exists( input.fileName.cStr() ) )
-	//			{
-	//				input.fileName = path::combine( inputDir, input.fileName );
-	//			}
-
-	//			if ( !file::exists( input.fileName.cStr() ) )
-	//			{
-	//				TIKI_TRACE_WARNING( "input file not found. these will be ignored. path: %s\n", input.fileName.cStr() );
-	//			}
-	//			else
-	//			{
-	//				input.fileName = path::getAbsolutePath( input.fileName );
-	//				task.parameters.inputFiles.add( input );
-	//			}
-	//		}
-
-	//		pInput = xmlFile.findNext( "input", pInput );
-	//	}
-
-	//	if ( task.parameters.inputFiles.getCount() == 0u )
-	//	{
-	//		TIKI_TRACE_ERROR( "no inputs specified. asset can't be converted. Filename: %s\n", task.parameters.sourceFile.cStr() );
-	//		xmlFile.dispose();
-	//		return false;
-	//	}
-
-	//	// read params
-	//	parseParams( xmlFile, pRoot, task.parameters.arguments.getMap() );
-
-	//	const XmlAttribute* pTemplate = xmlFile.findAttributeByName( "template", pRoot );
-	//	if ( pTemplate != nullptr )
-	//	{
-	//		TemplateDescription desc;
-	//		if ( m_templates.findValue( &desc, pTemplate->content ) )
-	//		{
-	//			for (uint i = 0u; i < desc.arguments.getCount(); ++i)
-	//			{
-	//				KeyValuePair< string, string >& kvp = desc.arguments.getPairAt( i );
-
-	//				task.parameters.arguments.getMap().set( kvp.key, kvp.value );
-	//			}
-	//		}
-	//	}
-	//	xmlFile.dispose();
-
-	//	return true;
-	//}
 
 	bool AssetConverter::writeConvertInputs( List< ConversionTask >& tasks )
 	{
@@ -727,8 +642,8 @@ namespace tiki
 				ConversionTask* pTask = nullptr;
 				if( tasksByFileName.findValue( &pTask, fileName ) && pTask != nullptr )
 				{
-					pTask->asset.assetId			= query.getIntegerField( "id" );
-					pTask->asset.isBuildRequired	= (query.getIntegerField( "has_error" ) != 0u);
+					pTask->asset.assetId		= query.getIntegerField( "id" );
+					pTask->asset.isAlradyBuilt	= (query.getIntegerField( "has_error" ) == 0u);
 
 					if( !whereAssetId.isEmpty() )
 					{
@@ -741,29 +656,30 @@ namespace tiki
 			for( uint i = 0u; i < tasks.getCount(); ++i )
 			{
 				ConversionTask& task = tasks[ i ];
-
-				if( task.asset.assetId == TIKI_SIZE_T_MAX )
+				if( task.asset.assetId != TIKI_SIZE_T_MAX )
 				{
-					const string filePath = task.asset.inputFilePath.getDirectoryWithPrefix();
-					const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
-
-					const string sql = formatDynamicString(
-						"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%s', '1');",
-						fileName.cStr(),
-						filePath.cStr(),
-						task.asset.type.cStr()
-					);
-
-					if( !m_dataBase.executeCommand( sql.cStr() ) )
-					{
-						TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
-						result = false;
-						continue;
-					}
-
-					task.asset.assetId			= m_dataBase.getLastInsertId();
-					task.asset.isBuildRequired	= true;
+					continue;
 				}
+
+				const string filePath = task.asset.inputFilePath.getDirectoryWithPrefix();
+				const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
+
+				const string sql = formatDynamicString(
+					"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%s', '1');",
+					fileName.cStr(),
+					filePath.cStr(),
+					task.asset.type.cStr()
+				);
+
+				if( !m_dataBase.executeCommand( sql.cStr() ) )
+				{
+					TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
+					result = false;
+					continue;
+				}
+
+				task.asset.assetId			= m_dataBase.getLastInsertId();
+				task.asset.isAlradyBuilt	= false;
 			}
 		}
 
@@ -808,7 +724,7 @@ namespace tiki
 		{
 			for( ConversionTask& task : tasks )
 			{
-				task.asset.isBuildRequired = true;
+				task.asset.isAlradyBuilt = false;
 			}
 
 			return true;
@@ -852,14 +768,14 @@ namespace tiki
 						continue;
 					}
 
-					if( pTask->asset.isBuildRequired )
+					if( !pTask->asset.isAlradyBuilt )
 					{
 						continue;
 					}
 
 					if( !file::exists( query.getTextField( "filename" ) ) )
 					{
-						pTask->asset.isBuildRequired = true;
+						pTask->asset.isAlradyBuilt = false;
 					}
 				}
 			}
@@ -885,14 +801,14 @@ namespace tiki
 						continue;
 					}
 
-					if( pTask->asset.isBuildRequired )
+					if( !pTask->asset.isAlradyBuilt )
 					{
 						continue;
 					}
 
 					const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query.getIntegerField( "type" );
 					const string identifier	= query.getTextField( "identifier" );
-					const int valueInt		= query.getIntegerField( "value_int" );
+					const sint64 valueInt	= query.getBigIntField( "value_int" );
 
 					switch( type )
 					{
@@ -902,18 +818,26 @@ namespace tiki
 							const uint32 converterRevision = pTask->pConverter->getConverterRevision( typeCrc );
 							if( (uint32)valueInt != converterRevision || converterRevision == (uint32)-1 )
 							{
-								pTask->asset.isBuildRequired = true;
+								pTask->asset.isAlradyBuilt = false;
 							}
 						}
 						break;
 
 					case ConversionResult::DependencyType_InputFile:
-					case ConversionResult::DependencyType_OutputFile:
 						{
 							const crc32 fileChangeCrc = file::getLastChangeCrc( identifier.cStr() );
 							if( fileChangeCrc != (crc32)valueInt )
 							{
-								pTask->asset.isBuildRequired = true;
+								pTask->asset.isAlradyBuilt = false;
+							}
+						}
+						break;
+
+					case ConversionResult::DependencyType_OutputFile:
+						{
+							if( !file::exists( identifier.cStr() ) )
+							{
+								pTask->asset.isAlradyBuilt = false;
 							}
 						}
 						break;
@@ -921,7 +845,7 @@ namespace tiki
 					case ConversionResult::DependencyType_Type:
 						{
 							// TODO
-							pTask->asset.isBuildRequired = true;
+							pTask->asset.isAlradyBuilt = false;
 						}
 						break;
 
@@ -933,7 +857,7 @@ namespace tiki
 		return true;
 	}
 
-	bool AssetConverter::finalizeTasks()
+	bool AssetConverter::finalizeTasks( List<ConversionTask>& tasks )
 	{
 		string whereAssetId;
 		string whereAssetIdFailed;
@@ -943,9 +867,9 @@ namespace tiki
 		string outputFileValues;
 
 		bool hasGlobalError = false;
-		for( uint taskIndex = 0u; taskIndex < m_tasks.getCount(); ++taskIndex )
+		for( uint taskIndex = 0u; taskIndex < tasks.getCount(); ++taskIndex )
 		{
-			const ConversionTask& task = m_tasks[ taskIndex ];
+			const ConversionTask& task = tasks[ taskIndex ];
 
 			// dependencies
 			{
@@ -960,11 +884,11 @@ namespace tiki
 					}
 
 					dependencyValues += formatDynamicString(
-						"('%u','%u','%s','%s')",
+						"('%u','%u','%s','%lld')",
 						task.asset.assetId,
 						dependency.type,
 						dependency.identifier.cStr(),
-						dependency.value.cStr()
+						dependency.intValue
 					);
 				}
 			}
@@ -1132,6 +1056,8 @@ namespace tiki
 
 		TIKI_TRACE_INFO( "Building asset: %s\n", task.asset.inputFilePath.getFilenameWithExtension() );
 		task.pConverter->convert( task.result, task.asset, task.pAssetConverter->getContext() );
+
+		task.pAssetConverter->taskUnregisterResult( context.thread.getThreadId() );
 	}
 
 	void AssetConverter::taskRegisterResult( uint64 threadId, ConversionResult& result )

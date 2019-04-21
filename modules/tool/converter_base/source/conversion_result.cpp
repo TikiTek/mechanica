@@ -22,7 +22,7 @@ namespace tiki
 
 	void ConversionResult::addInputFile( const Path& filePath )
 	{
-		addDependency( DependencyType_InputFile, filePath.getCompletePath(), nullptr );
+		addDependency( DependencyType_InputFile, filePath.getCompletePath(), 0 );
 	}
 
 	void ConversionResult::addOutputFile( const Path& filePath )
@@ -36,17 +36,11 @@ namespace tiki
 		}
 
 		m_outputFiles.add( filePath );
-		addDependency( DependencyType_OutputFile, filePath.getCompletePath(), nullptr );
+		addDependency( DependencyType_OutputFile, filePath.getCompletePath(), 0 );
 	}
 
-	void ConversionResult::addDependency( DependencyType type, string identifier, string value )
+	void ConversionResult::addDependency( DependencyType type, string identifier, sint64 intValue )
 	{
-		if( type == DependencyType_InputFile || type == DependencyType_OutputFile )
-		{
-			//identifier	= path::getAbsolutePath( identifier );
-			value		= formatDynamicString( "%08x", file::getLastChangeCrc( identifier.cStr() ) );
-		}
-
 		Dependency* pDependency = nullptr;
 		for( uint i = 0u; i < m_dependencies.getCount(); ++i )
 		{
@@ -66,7 +60,14 @@ namespace tiki
 			pDependency->identifier	= identifier;
 		}
 
-		pDependency->value = value;
+		if( type == DependencyType_InputFile )
+		{
+			pDependency->intValue = file::getLastChangeCrc( identifier.cStr() );
+		}
+		else
+		{
+			pDependency->intValue = intValue;
+		}
 	}
 
 	void ConversionResult::addTraceInfo( TraceLevel level, const string& message )
