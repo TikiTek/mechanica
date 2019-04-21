@@ -98,11 +98,13 @@ namespace tiki
 		void				beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const;
 		void				endImmediateGeometry( StaticArray< ImmediateVertex >& vertices ) const;
 
-		const ShaderSet*	getShader() const { return m_pShaderSet; }
+		const ShaderSet*	getShaderSet() const		{ return m_pShaderSet; }
+		Vector2				getRenderTargetSize() const	{ return m_renderTargetSize; }
 
 	private:
 
 		GraphicsContext*			m_pContext;
+		mutable Vector2				m_renderTargetSize;
 
 		const ShaderSet*			m_pShaderSet;
 

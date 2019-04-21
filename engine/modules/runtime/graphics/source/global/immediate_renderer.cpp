@@ -189,6 +189,8 @@ namespace tiki
 		m_pContext->unmapBuffer( m_vertexConstantBuffer );
 
 		setState();
+
+		m_renderTargetSize = pRenderTarget->getVectorSize();
 	}
 
 	void ImmediateRenderer::endRenderPass() const
