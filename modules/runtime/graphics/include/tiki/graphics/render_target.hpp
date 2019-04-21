@@ -3,6 +3,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/graphics/graphics_system_limits.hpp"
 #include "tiki/graphics/pixel_format.hpp"
+#include "tiki/math/vector.hpp"
 
 #if TIKI_ENABLED( TIKI_GRAPHICS_D3D11 )
 #	include "../../../source/win_d3d11/render_target_d3d11.hpp"
@@ -55,8 +56,9 @@ namespace tiki
 		bool						create( GraphicsSystem& graphicsSystem, uint width, uint height, const RenderTargetBuffer* pColorBuffers, uint colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
 		void						dispose( GraphicsSystem& graphicsSystem );
 
-		uint						getWidth() const	{ return m_width; }
-		uint						getHeight() const	{ return m_height; }
+		uint						getWidth() const							{ return m_width; }
+		uint						getHeight() const							{ return m_height; }
+		Vector2						getVectorSize() const						{ return vector::create( float( m_width ), float( m_height ) ); }
 
 		const TextureData*			getColorTextureData( uint index ) const		{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
 		uint						getColorBufferCount() const					{ return m_colorBufferCount; }
