@@ -28,6 +28,8 @@ namespace tiki
 
 		int						getIntegerField( uint fieldIndex ) const;
 		int						getIntegerField( const char* pFieldName ) const;
+		sint64					getBigIntField( uint fieldIndex ) const;
+		sint64					getBigIntField( const char* pFieldName ) const;
 		const char*				getTextField( uint fieldIndex ) const;
 		const char*				getTextField( const char* pFieldName ) const;
 
