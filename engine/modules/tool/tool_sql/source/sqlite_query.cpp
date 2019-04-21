@@ -64,6 +64,18 @@ namespace tiki
 		return sqlite3_column_int( m_pQuery, findColunmIndexByName( pFieldName ) );
 	}
 
+	sint64 SqliteQuery::getBigIntField( uint fieldIndex ) const
+	{
+		TIKI_ASSERT( m_pQuery != nullptr );
+		return sqlite3_column_int64( m_pQuery, (int)fieldIndex );
+	}
+
+	sint64 SqliteQuery::getBigIntField( const char* pFieldName ) const
+	{
+		TIKI_ASSERT( m_pQuery != nullptr );
+		return sqlite3_column_int64( m_pQuery, findColunmIndexByName( pFieldName ) );
+	}
+
 	const char* SqliteQuery::getTextField( uint fieldIndex ) const
 	{
 		TIKI_ASSERT( m_pQuery != nullptr );
