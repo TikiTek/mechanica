@@ -53,7 +53,8 @@ namespace tiki
 		case TestStateTransitionSteps_Initialize:
 			if ( isCreating )
 			{
-				m_pRenderer = &m_pApplicationState->getRenderer();
+				TIKI_NOT_IMPLEMENTED;
+				//m_pRenderer = &m_pApplicationState->getRenderer();
 
 				return TransitionState_Finish;
 			}

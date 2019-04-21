@@ -27,7 +27,7 @@ namespace tiki
 		void					create( Game* pGame );
 		void					dispose();
 
-		Renderer2d&				getRenderer() { return m_renderer; }
+		//Renderer2d&				getRenderer() { return m_renderer; }
 
 		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE_FINAL;
 
