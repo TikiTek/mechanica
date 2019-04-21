@@ -56,6 +56,11 @@ namespace tiki
 		return vec;
 	}
 
+	TIKI_FORCE_INLINE Vector2 vector::create( const Vector2& source )
+	{
+		return source;
+	}
+
 	TIKI_FORCE_INLINE Vector3 vector::create( const Vector2& source, float z )
 	{
 		const Vector3 vec ={ source.x, source.y, z };
