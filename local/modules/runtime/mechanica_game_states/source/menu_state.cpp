@@ -17,7 +17,7 @@ namespace tiki
 		TIKI_ASSERT( m_pParentState == nullptr );
 	}
 
-	void MenuState::create(Game* pGame, ApplicationState* pParentState )
+	void MenuState::create( Game* pGame, ApplicationState* pParentState )
 	{
 		TIKI_ASSERT( pGame != nullptr );
 		TIKI_ASSERT( pParentState != nullptr );
@@ -33,8 +33,46 @@ namespace tiki
 		m_pParentState	= nullptr;
 	}
 
-	TransitionState MenuState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState MenuState::processCreationStep( size_t currentStep, bool isInital )
 	{
+		switch( currentStep )
+		{
+		case MenuStateTransitionSteps_LoadResources:
+			{
+				ResourceRequestPool& resourceRequestPool = m_pGame->getResourceRequestPool();
+
+				if( isInital )
+				{
+					resourceRequestPool.beginLoadResource( &m_pBundle, "menu_bundle.menu_bundle" );
+				}
+
+				return waitForResources( resourceRequestPool );
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		return TransitionState_Finish;
+	}
+
+	TransitionState MenuState::processDestructionStep( size_t currentStep, bool isInital )
+	{
+		switch( currentStep )
+		{
+		case MenuStateTransitionSteps_LoadResources:
+			{
+				ResourceManager& resourceManager = m_pGame->getResourceManager();
+
+				resourceManager.unloadResource( m_pBundle );
+			}
+			break;
+
+		default:
+			break;
+		}
+
 		return TransitionState_Finish;
 	}
 
@@ -45,17 +83,33 @@ namespace tiki
 
 	void MenuState::render( GraphicsContext& graphicsContext )
 	{
+		const MechanicaMenuBundle& bundle = m_pBundle->getData();
 
+		const ImmediateRenderer& renderer = m_pGame->getImmediateRenderer();
+		renderer.beginRenderPass();
+		const Vector2 renderSize = renderer.getRenderTargetSize();
+		const Vector2 backgroundSize = bundle.background->getTextureData().getVectorSize();
+
+		const Vector2 diff = vector::div( vector::create( renderSize ), backgroundSize );
+		const Vector2 extends = vector::scale( vector::create( backgroundSize ), (diff.x > diff.y ? diff.x : diff.y) );
+
+		const AxisAlignedRectangle backgroundRectangle = createAxisAlignedRectangleCentered(
+			vector::scale( vector::create( renderSize ), 0.5f ),
+			extends
+		);
+		renderer.drawTexturedRectangle( bundle.background->getTextureData(), backgroundRectangle );
+
+		renderer.endRenderPass();
 	}
 
 	bool MenuState::processInputEvent( const InputEvent& inputEvent )
 	{
-		if (inputEvent.eventType == InputEventType_Keyboard_Up)
-		{
-			m_pGame->getGameFlowSystem().startTransition( GameStates_Play );
+		//if (inputEvent.eventType == InputEventType_Keyboard_Up)
+		//{
+		//	m_pGame->getGameFlowSystem().startTransition( GameStates_Play );
 
-			return true;
-		}
+		//	return true;
+		//}
 
 		return false;
 	}

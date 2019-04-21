@@ -36,9 +36,10 @@ namespace tiki
 			 isStringEquals( userName, "mail" ) )
 		{
 			//return GameStates_PhysicsTest;
-			return GameStates_Test;
+			//return GameStates_Test;
 			//return GameStates_BasicTest;
 			//return GameStates_Play;
+			return GameStates_Menu;
 		}
 #endif
 
@@ -180,10 +181,10 @@ namespace tiki
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->physicsTestState.getCamera() );
 		}
-		else if( m_gameFlow.isInState( GameStates_Application ) )
-		{
-			debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
-		}
+		//else if( m_gameFlow.isInState( GameStates_Application ) )
+		//{
+		//	debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
+		//}
 #endif
 	}
 
