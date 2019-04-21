@@ -12,22 +12,25 @@
 #include "tiki/resource/resource_manager.hpp"
 #include "tiki/threading/thread.hpp"
 
+#include "generic_data_factories.hpp"
+
 namespace tiki
 {
 	struct BaseApplicationkData
 	{
-		MainWindow			mainWindow;
-		GraphicsSystem		graphicSystem;
-		InputSystem			inputSystem;
+		MainWindow				mainWindow;
+		GraphicsSystem			graphicSystem;
+		InputSystem				inputSystem;
 
-		GamebuildFileSystem	gamebuildFileSystem;
+		GamebuildFileSystem		gamebuildFileSystem;
 
-		ResourceManager		resourceManager;
-		FrameworkFactories	resourceFactories;
+		ResourceManager			resourceManager;
+		FrameworkFactories		resourceFactories;
+		GenericDataFactories	genericDataFactories;
 
-		ImmediateRenderer	immediateRenderer;
+		ImmediateRenderer		immediateRenderer;
 
-		Timer				frameTimer;
+		Timer					frameTimer;
 	};
 
 	BaseApplication::BaseApplication()
@@ -185,6 +188,7 @@ namespace tiki
 		}
 
 		m_pBaseData->resourceFactories.create( m_pBaseData->resourceManager, m_pBaseData->graphicSystem );
+		m_pBaseData->genericDataFactories.create( m_pBaseData->resourceManager );
 
 		InputSystemParameters inputParams;
 		inputParams.windowHandle	= m_pBaseData->mainWindow.getHandle();
@@ -219,6 +223,7 @@ namespace tiki
 		m_pBaseData->immediateRenderer.dispose( m_pBaseData->graphicSystem, m_pBaseData->resourceManager );
 		m_pBaseData->inputSystem.dispose();
 		m_pBaseData->graphicSystem.dispose();
+		m_pBaseData->genericDataFactories.dispose( m_pBaseData->resourceManager );
 		m_pBaseData->resourceFactories.dispose( m_pBaseData->resourceManager );
 		m_pBaseData->resourceManager.dispose();
 		m_pBaseData->gamebuildFileSystem.dispose();
