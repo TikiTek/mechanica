@@ -15,4 +15,5 @@ local project = Project:new(
 
 local solution = Solution:new( "generic_data_code_generator" );
 solution:add_project( project );
+
 solution:finalize();
