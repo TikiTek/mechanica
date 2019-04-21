@@ -12,13 +12,28 @@ namespace tiki
 	{
 		m_assetBuildPath = assetBuildPath;
 
+		m_fileStreams.create( maxStreamCount );
+
+		return rescan();
+	}
+
+	void GamebuildFileSystem::dispose()
+	{
+		disposeFiles();
+		m_fileStreams.dispose();
+	}
+
+	bool GamebuildFileSystem::rescan()
+	{
 		DirectoryIterator iterator;
-		if ( !iterator.create( m_assetBuildPath.getCompletePath() ) )
+		if( !iterator.create( m_assetBuildPath.getCompletePath() ) )
 		{
 			return false;
 		}
 
-		while ( iterator.findNextFile() )
+		disposeFiles();
+
+		while( iterator.findNextFile() )
 		{
 			const char* pFilename = iterator.getCurrentFileName();
 			const uint filenameSize = getStringSize( pFilename );
@@ -31,22 +46,7 @@ namespace tiki
 			m_files.push( pFile );
 		}
 
-		m_fileStreams.create( maxStreamCount );
-
 		return true;
-	}
-
-	void GamebuildFileSystem::dispose()
-	{
-		while ( !m_files.isEmpty() )
-		{
-			GamebuildFile& file = *m_files.getBegin();
-			m_files.removeSortedByValue( file );
-
-			TIKI_FREE( &file );
-		}
-
-		m_fileStreams.dispose();
 	}
 
 	const char* GamebuildFileSystem::getFilenameByCrc( crc32 filenameCrc ) const
@@ -98,5 +98,16 @@ namespace tiki
 		}
 
 		return nullptr;
+	}
+
+	void GamebuildFileSystem::disposeFiles()
+	{
+		while( !m_files.isEmpty() )
+		{
+			GamebuildFile& file = *m_files.getBegin();
+			m_files.removeSortedByValue( file );
+
+			TIKI_FREE( &file );
+		}
 	}
 }

@@ -24,6 +24,8 @@ namespace tiki
 
 	public:
 
+		virtual bool			rescan() { return true; }
+
 		virtual const char*		getFilenameByCrc( crc32 filenameCrc ) const TIKI_PURE;
 
 		virtual bool			exists( const char* pFileName ) const TIKI_PURE;
