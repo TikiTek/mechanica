@@ -24,8 +24,6 @@ namespace tiki
 		void				update();
 
 		template< typename T >
-		void				beginLoadResource( T** ppTargetResource, const char* pFileName );
-		template< typename T >
 		void				beginLoadResource( const T** ppTargetResource, const char* pFileName );
 		template< typename T >
 		void				unloadResource( const T*& pResource );
