@@ -94,7 +94,8 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		AssetConverterInterface*					m_pAssetConverter;
-#endif
+		FileSystem*									m_pFileSystem;
+#endif	
 
 		void										traceResourceLoadResult( ResourceLoaderResult result, const char* pFileName, crc32 resourceKey, fourcc resourceType );
 

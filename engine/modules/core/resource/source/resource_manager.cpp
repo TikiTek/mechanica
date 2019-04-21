@@ -24,19 +24,19 @@ namespace tiki
 	{
 	}
 
-	bool ResourceManager::create( const ResourceManagerParameters& params )
+	bool ResourceManager::create( const ResourceManagerParameters& parameters )
 	{
-		m_resourceStorage.create( params.maxResourceCount );
-		m_resourceLoader.create( params.pFileSystem, &m_resourceStorage );
+		m_resourceStorage.create( parameters.maxResourceCount );
+		m_resourceLoader.create( parameters.pFileSystem, &m_resourceStorage );
 
-		if ( !m_resourceRequests.create( params.maxRequestCount ) )
+		if ( !m_resourceRequests.create( parameters.maxRequestCount ) )
 		{
 			dispose();
 			return false;
 		}
 
 		m_loadingMutex.create();
-		if( params.enableMultiThreading )
+		if( parameters.enableMultiThreading )
 		{
 			if( !m_loadingThread.create( staticThreadEntry, this, 1024 * 1024, "ResourceManager" ) )
 			{
@@ -46,8 +46,10 @@ namespace tiki
 		}
 
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		m_pFileSystem = parameters.pFileSystem;
+
 		AssetConverterParamter assetConverterParameters;
-		assetConverterParameters.pProject = params.pProject;
+		assetConverterParameters.pProject = parameters.pProject;
 		m_pAssetConverter = createAssetConverter( assetConverterParameters );
 		if ( m_pAssetConverter != nullptr &&
 			 s_enableAssetConverterWatch )
@@ -283,7 +285,17 @@ namespace tiki
 	{
 		ResourceRequest& request = *pData;
 
-		const ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
+		ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		if( m_pAssetConverter != nullptr && result == ResourceLoaderResult_FileNotFound )
+		{
+			if( m_pAssetConverter->convertAll() )
+			{
+				m_pFileSystem->rescan();
+				result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
+			}
+		}
+#endif
 
 		const char* pFileName = (request.m_pResource != nullptr ? request.m_pResource->getFileName() : "");
 		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
