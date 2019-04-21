@@ -110,14 +110,14 @@ namespace tiki
 
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
-		Renderer2dRenderParameters parameters;
-		parameters.backgroundColor			= TIKI_COLOR_XKCD_BLUEBERRY;
-		parameters.enableBloom				= s_gameBloomEnable;
-		parameters.bloomCutoffThreshold.r	= s_gameBloomThresholdR;
-		parameters.bloomCutoffThreshold.g	= s_gameBloomThresholdG;
-		parameters.bloomCutoffThreshold.b	= s_gameBloomThresholdB;
-
-		m_renderer.render( graphicsContext, parameters );
+		//Renderer2dRenderParameters parameters;
+		//parameters.backgroundColor			= TIKI_COLOR_XKCD_BLUEBERRY;
+		//parameters.enableBloom				= s_gameBloomEnable;
+		//parameters.bloomCutoffThreshold.r	= s_gameBloomThresholdR;
+		//parameters.bloomCutoffThreshold.g	= s_gameBloomThresholdG;
+		//parameters.bloomCutoffThreshold.b	= s_gameBloomThresholdB;
+		//
+		//m_renderer.render( graphicsContext, parameters );
 	}
 
 	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )
