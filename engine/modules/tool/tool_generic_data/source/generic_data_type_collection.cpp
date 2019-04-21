@@ -390,8 +390,6 @@ namespace tiki
 		}
 
 		static const char* s_pBaseFormat =	"#pragma once\n"
-											"#ifndef TIKI_%s_INCLUDED\n"
-											"#define TIKI_%s_INCLUDED\n"
 											"\n"
 											"#include \"tiki/base/types.hpp\"\n"
 											"%s"
@@ -403,18 +401,17 @@ namespace tiki
 											"{\n"
 											"\t#pragma warning( push )\n"
 											"\t#pragma warning( disable: 4309 4369 4340 )\n"
-											"\t\n"
+											"\n"
 											"%s"
 											"%s"
-											"\t\n"
+											"\n"
 											"\t#pragma warning( pop )\n"
 											"}\n"
-											"\n"
-											"#endif // TIKI_%s_INCLUDED\n";
+											"\n";
 
 		static const char* s_pReference				= "\tclass %s;\n";
 		static const char* s_pStringInclude			= "#include \"tiki/base/dynamic_string.hpp\"\n";
-		static const char* s_pResourceInclude		= "#include \"tiki/genericdata/generic_data_resource.hpp\"\n";
+		static const char* s_pResourceInclude		= "#include \"tiki/generic_data/generic_data_resource.hpp\"\n";
 		static const char* s_pResourceFileInclude	= "#include \"tiki/resource/resource_file.hpp\"\n";
 		static const char* s_pDependencyInclude		= "#include \"%s.hpp\"\n";
 
@@ -425,7 +422,6 @@ namespace tiki
 			const auto& moduleData = m_modules[ kvp.key ];
 
 			const string fileName		= kvp.key + ".hpp";
-			const string fileNameDefine	= fileName.toUpper().replace('.', '_');
 			const Path fullPath( targetDir.getCompletePath(), fileName.cStr() );
 
 			if ( kvp.value.containsResource )
@@ -451,15 +447,12 @@ namespace tiki
 
 			string finalCode = formatDynamicString(
 				s_pBaseFormat,
-				fileNameDefine.cStr(),
-				fileNameDefine.cStr(),
 				(kvp.value.containsString ? s_pStringInclude : ""),
 				(kvp.value.containsResource ? s_pResourceInclude : ""),
 				(kvp.value.containsArray || !kvp.value.references.isEmpty() ? s_pResourceFileInclude : ""),
 				dependenciesIncludeCode.cStr(),
 				referencesCode.cStr(),
-				kvp.value.code.cStr(),
-				fileNameDefine.cStr()
+				kvp.value.code.cStr()
 			);
 
 			const FileWriteResult result = file::writeToFileIfNotEquals( fullPath, finalCode );
@@ -471,68 +464,41 @@ namespace tiki
 		}
 
 		static const char* s_pFactoriesHeaderFormat =	"#pragma once\n"
-														"#ifndef TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n"
-														"#define TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n"
 														"\n"
-														"#include \"tiki/base/types.hpp\"\n"
+														"%s"
 														"\n"
 														"namespace tiki\n"
 														"{\n"
 														"\tclass ResourceManager;\n"
-														"\t\n"
+														"\n"
 														"\tclass GenericDataFactories\n"
 														"\t{\n"
-														"\t\tTIKI_NONCOPYABLE_CLASS( GenericDataFactories );\n"
-														"\t\t\n"
+														"\t\tTIKI_NONCOPYABLE_WITHCTOR_CLASS( GenericDataFactories );\n"
+														"\n"
 														"\tpublic:\n"
-														"\t\t\n"
-														"\t\tvoid\tcreate( ResourceManager& resourceManager );\n"
-														"\t\tvoid\tdispose( ResourceManager& resourceManager );\n"
-														"\t\t\n"
+														"\n"
+														"\t\tvoid create( ResourceManager& resourceManager )\n"
+														"\t{\n"
+														"%s"
+														"\t}\n"
+														"\n"
+														"\t\tvoid dispose( ResourceManager& resourceManager )\n"
+														"\t{\n"
+														"%s"
+														"\t}\n"
 														"\t};\n"
 														"}\n"
-														"\n"
-														"#endif // TIKI_GENERICDATAFACTORIES_HPP_INCLUDED\n";
-
-		static const char* s_pFactoriesSourceFormat =	"\n"
-														"#include \"genericdatafactories.hpp\"\n"
-														"\n"
-														"%s"
-														"\n"
-														"namespace tiki\n"
-														"{\n"
-														"\tvoid GenericDataFactories::create( ResourceManager& resourceManager )\n"
-														"\t{\n"
-														"%s"
-														"\t}\n"
-														"\t\n"
-														"\tvoid GenericDataFactories::dispose( ResourceManager& resourceManager )\n"
-														"\t{\n"
-														"%s"
-														"\t}\n"
-														"};\n"
 														"\n";
 
-		const string headerFileName		= "genericdatafactories.hpp";
-		const string sourceFileName		= "genericdatafactories.cpp";
-
+		const string headerFileName		= "generic_data_factories.hpp";
 		const Path headerFullPath( targetDir.getCompletePath(), headerFileName.cStr() );
-		const Path sourceFullPath( targetDir.getCompletePath(), sourceFileName.cStr() );
 
-		const string headerFinalCode	= s_pFactoriesHeaderFormat;
-		const string sourceFinalCode	= formatDynamicString( s_pFactoriesSourceFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
+		const string headerFinalCode	= formatDynamicString( s_pFactoriesHeaderFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
 		FileWriteResult result = file::writeToFileIfNotEquals( headerFullPath, headerFinalCode );
 		if( result != FileWriteResult_NoChanged )
 		{
 			TIKI_TRACE_INFO( "generic: %s\n", headerFullPath.getFilenameWithExtension() );
-			ok &= (result == FileWriteResult_Ok);
-		}
-
-		result = file::writeToFileIfNotEquals( sourceFullPath, sourceFinalCode );
-		if( result != FileWriteResult_NoChanged )
-		{
-			TIKI_TRACE_INFO( "generic: %s\n", sourceFullPath.getFilenameWithExtension() );
 			ok &= (result == FileWriteResult_Ok);
 		}
 
