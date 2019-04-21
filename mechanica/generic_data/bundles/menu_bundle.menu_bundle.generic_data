@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<tikigenericobjects>
+	<resource type="MenuBundle">
+		<object type="MechanicaMenuBundle">
+			<field type="{reference Texture}" name="background" value="TEXR:menu_background.texture" />
+			<field type="{reference Texture}" name="circleBigText" value="TEXR:menu_admiral.texture" />
+			<field type="{reference Texture}" name="menuConnection" value="TEXR:menu_connection.texture" />
+			<field type="Circle" name="circleBig">
+				<object type="Circle">
+					<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_big_0.texture" />
+					<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_big_1.texture" />
+					<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_big_2.texture" />
+				</object>
+			</field>
+			<field type="{array Circle}" name="circleSmall">
+				<array type="Circle">
+					<element type="Circle">
+						<object type="Circle">
+							<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_00.texture" />
+							<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_01.texture" />
+							<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_02.texture" />
+						</object>
+					</element>
+					<element type="Circle">
+						<object type="Circle">
+							<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_10.texture" />
+							<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_11.texture" />
+							<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_12.texture" />
+						</object>
+					</element>
+				</array>
+			</field>
+			<field type="{array MenuElement}" name="menuElements">
+				<array type="MenuElement">
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_settings0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_settings1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_settings_text.texture" />
+							<field type="string" name="action" value="settings" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_play0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_play1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_play_text.texture" />
+							<field type="string" name="action" value="levels" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_exit0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_exit1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_exit_text.texture" />
+							<field type="string" name="action" value="exit" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_resume0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_resume1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_resume_text.texture" />
+							<field type="string" name="action" value="resume" />
+						</object>
+					</element>
+				</array>
+			</field>
+			<field type="{array MenuElement}" name="levelElement">
+				<array type="MenuElement">
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_level10.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_level11.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_level1_text.texture" />
+							<field type="string" name="action" value="level1" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_level20.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_level21.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_level2_text.texture" />
+							<field type="string" name="action" value="level2" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_level30.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_level31.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_level3_text.texture" />
+							<field type="string" name="action" value="level3" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_level40.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_level41.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_level4_text.texture" />
+							<field type="string" name="action" value="level4" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_back0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_back1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_back_text.texture" />
+							<field type="string" name="action" value="main" />
+						</object>
+					</element>
+				</array>
+			</field>
+			<field type="{array MenuElement}" name="settingsElements">
+				<array type="MenuElement">
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_audio0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_audio1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_audio_text.texture" />
+							<field type="string" name="action" value="audio" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_video0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_video1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_video_text.texture" />
+							<field type="string" name="action" value="video" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_team0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_team1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_team_text.texture" />
+							<field type="string" name="action" value="credits" />
+						</object>
+					</element>
+					<element type="MenuElement">
+						<object type="MenuElement">
+							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_back0.texture" />
+							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_back1.texture" />
+							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_back_text.texture" />
+							<field type="string" name="action" value="main" />
+						</object>
+					</element>
+				</array>
+			</field>
+		</object>
+	</resource>
+</tikigenericobjects>
