@@ -558,8 +558,8 @@ namespace tiki
 		GenericDataTypeValueType* pBoolean	= TIKI_NEW( GenericDataTypeValueType )( *this, "bool",		"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_Boolean );
 		GenericDataTypeValueType* pString	= TIKI_NEW( GenericDataTypeValueType )( *this, "string",	"internal", GenericDataTypeMode_ToolAndRuntime, GenericDataTypeValueTypeType_String );
 
-		TIKI_VERIFY(  addType( *pBoolean ) );
-		TIKI_VERIFY(  addType( *pString ) );
+		TIKI_VERIFY( addType( *pBoolean ) );
+		TIKI_VERIFY( addType( *pString ) );
 
 		GenericDataTypeEnum* pGenericDataTypeMode = TIKI_NEW( GenericDataTypeEnum )( *this, "GenericDataTypeMode", "internal", GenericDataTypeMode_ToolOnly, pUInt8 );
 		pGenericDataTypeMode->addValue( "Invalid",			0, GenericDataTypeMode_ToolOnly );
