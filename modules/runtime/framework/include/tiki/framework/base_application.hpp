@@ -2,6 +2,7 @@
 
 #include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/graphics/pixel_format.hpp"
 
 namespace tiki
 {
@@ -25,6 +26,7 @@ namespace tiki
 		{
 			screenWidth			= 900;
 			screenHeight		= 600;
+			backBufferFormat	= PixelFormat_R8G8B8A8;
 			fullScreen			= false;
 
 			pWindowTitle		= "TikiEngine 3.0";
@@ -32,6 +34,7 @@ namespace tiki
 
 		uint					screenWidth;
 		uint					screenHeight;
+		PixelFormat				backBufferFormat;
 		bool					fullScreen;
 
 		const char*				pWindowTitle;

@@ -73,11 +73,12 @@ namespace tiki
 		void				render( GraphicsContext& graphicsContext, const Renderer2dRenderParameters& parameters );
 
 		const Camera&		getCamera() const { return m_camera; }
-
 		float				getTargetZoom() const { return m_targetZoom; }
 		void				setTargetZoom( float zoom ) { m_targetZoom = zoom; }
 		void				setZoom( float zoom );
 		void				setCameraPosition( const Vector2& position );
+
+		Vector2				getVectorSize() const { return vector::create( float( m_width ), float( m_height ) ); }
 
 	private:
 
@@ -108,6 +109,9 @@ namespace tiki
 		};
 
 		GraphicsSystem*					m_pGraphicsSystem;
+
+		uint16							m_width;
+		uint16							m_height;
 
 		float							m_targetZoom;
 		float							m_currentZoom;

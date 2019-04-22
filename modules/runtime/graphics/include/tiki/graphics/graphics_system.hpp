@@ -44,17 +44,17 @@ namespace tiki
 	{
 		GraphicsSystemParameters()
 		{
-			backBufferWidth		= 900;
-			backBufferHeight	= 600;
-			backbufferFormat	= PixelFormat_R8G8B8A8;
+			backBufferWidth		= 0u;
+			backBufferHeight	= 0u;
+			backBufferFormat	= PixelFormat_Invalid;
 			fullScreen			= false;
 
 			pWindowHandle		= nullptr;
 		}
 
-		uint					backBufferWidth;
-		uint					backBufferHeight;
-		PixelFormat				backbufferFormat;
+		uint16					backBufferWidth;
+		uint16					backBufferHeight;
+		PixelFormat				backBufferFormat;
 		bool					fullScreen;
 
 		void*					pWindowHandle;
@@ -74,7 +74,7 @@ namespace tiki
 		bool						create( const GraphicsSystemParameters& params );
 		void						dispose();
 
-		bool						resize( uint width, uint height );
+		bool						resize( uint16 width, uint16 height );
 
 		const BlendState*			createBlendState( const BlendStateParamters& creationParameters );
 		const BlendState*			createBlendState( bool blendEnabled, Blend sourceBlend = Blend_One, Blend destinationBlend = Blend_Zero, BlendOperation operation = BlendOperation_Add, ColorWriteMask colorWriteMask = ColorWriteMask_All );

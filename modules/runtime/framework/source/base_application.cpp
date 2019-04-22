@@ -156,13 +156,14 @@ namespace tiki
 			return false;
 		}
 
+		const uint2 windowSize			= m_pBaseData->mainWindow.getClientSize();
+
 		GraphicsSystemParameters graphicsParams;
 		graphicsParams.fullScreen		= m_parameters.fullScreen;
 		graphicsParams.pWindowHandle	= m_pBaseData->mainWindow.getHandle();
-
-		const uint2 windowSize			= m_pBaseData->mainWindow.getClientSize();
-		graphicsParams.backBufferWidth	= TIKI_MAX( windowSize.x, 640u );
-		graphicsParams.backBufferHeight	= TIKI_MAX( windowSize.y, 480u );
+		graphicsParams.backBufferWidth	= TIKI_MAX( windowSize.x, 16u );
+		graphicsParams.backBufferHeight	= TIKI_MAX( windowSize.y, 16u );
+		graphicsParams.backBufferFormat	= m_parameters.backBufferFormat;
 
 		if( !m_pBaseData->graphicSystem.create( graphicsParams ) )
 		{

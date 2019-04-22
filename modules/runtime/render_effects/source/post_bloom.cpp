@@ -222,8 +222,8 @@ namespace tiki
 				return false;
 			}
 
-			RenderTargetBuffer colorBuffer( m_textures[ passIndex ] );
-			if ( !m_renderTargets[ passIndex ].create( graphicsSystem, 0u, 0u, &colorBuffer, 1u, nullptr ) )
+			const TextureData* pColorBuffer = &m_textures[ passIndex ];
+			if ( !m_renderTargets[ passIndex ].create( graphicsSystem, 0u, 0u, &pColorBuffer, 1u, nullptr ) )
 			{
 				return false;
 			}

@@ -1,6 +1,7 @@
 #pragma  once
 
 #include "tiki/base/types.hpp"
+#include "tiki/container/fixed_sized_array.hpp"
 #include "tiki/graphics/graphics_system_limits.hpp"
 #include "tiki/graphics/pixel_format.hpp"
 #include "tiki/math/vector.hpp"
@@ -19,29 +20,6 @@ namespace tiki
 	class GraphicsSystem;
 	class TextureData;
 
-	struct RenderTargetBuffer
-	{
-		RenderTargetBuffer()
-		{
-			clear();
-		}
-
-		RenderTargetBuffer( const TextureData& dataBuffer, PixelFormat pixelFormat = PixelFormat_Invalid )
-		{
-			format		= pixelFormat;
-			pDataBuffer	= &dataBuffer;
-		}
-
-		PixelFormat			format;
-		const TextureData*	pDataBuffer;
-
-		TIKI_FORCE_INLINE void clear()
-		{
-			format		= PixelFormat_Invalid;
-			pDataBuffer	= nullptr;
-		}
-	};
-
 	class RenderTarget
 	{
 		TIKI_NONCOPYABLE_CLASS( RenderTarget );
@@ -53,27 +31,27 @@ namespace tiki
 		RenderTarget();
 		~RenderTarget();
 
-		bool						create( GraphicsSystem& graphicsSystem, uint width, uint height, const RenderTargetBuffer* pColorBuffers, uint colorBufferCount, const RenderTargetBuffer* pDepthBuffer );
+		bool						create( GraphicsSystem& graphicsSystem, uint16 width, uint16 height, const TextureData** ppColorBuffers, uint colorBufferCount, const TextureData* pDepthBuffer );
 		void						dispose( GraphicsSystem& graphicsSystem );
 
-		uint						getWidth() const							{ return m_width; }
-		uint						getHeight() const							{ return m_height; }
+		uint16						getWidth() const							{ return m_width; }
+		uint16						getHeight() const							{ return m_height; }
 		Vector2						getVectorSize() const						{ return vector::create( float( m_width ), float( m_height ) ); }
 
-		const TextureData*			getColorTextureData( uint index ) const		{ TIKI_ASSERT( index < m_colorBufferCount ); return m_colorBuffers[ index ].pDataBuffer; }
-		uint						getColorBufferCount() const					{ return m_colorBufferCount; }
+		const TextureData*			getColorTextureData( uint index ) const		{ return m_colorBuffers[ index ]; }
+		uint						getColorBufferCount() const					{ return m_colorBuffers.getCount(); }
 
-		const TextureData*			getDepthTextureData() const					{ return m_depthBuffer.pDataBuffer; }
+		const TextureData*			getDepthTextureData() const					{ return m_pDepthBuffer; }
 
 	private:
 
-		uint						m_width;
-		uint						m_height;
+		using ColorBufferArray = FixedSizedArray< const TextureData*, GraphicsSystemLimits_RenderTargetSlots >;
 
-		RenderTargetBuffer			m_colorBuffers[ GraphicsSystemLimits_RenderTargetSlots ];
-		size_t						m_colorBufferCount;
+		uint16						m_width;
+		uint16						m_height;
 
-		RenderTargetBuffer			m_depthBuffer;
+		ColorBufferArray			m_colorBuffers;
+		const TextureData*			m_pDepthBuffer;
 
 		RenderTargetPlatformData	m_platformData;
 	};

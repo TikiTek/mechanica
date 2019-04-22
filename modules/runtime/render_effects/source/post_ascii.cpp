@@ -40,18 +40,18 @@ namespace tiki
 		description.height	= uint16( parameters.resultDataHeight );
 		description.flags	= TextureFlags_RenderTarget | TextureFlags_ShaderInput;
 		description.type	= TextureType_2d;
-		description.format	= PixelFormat_R8G8B8A8;
+		description.format	= PixelFormat_R8G8B8A8_Gamma;
 		success &= m_finalResultData.create( graphicsSystem, description );
 
 		description.width	= uint16( parameters.maxCharsWidth );
 		description.height	= uint16( parameters.maxCharsHeight );
 		success &= m_downSampleData.create( graphicsSystem, description );
 
-		RenderTargetBuffer renderTargetBuffer = RenderTargetBuffer( m_finalResultData );
-		success &= m_finalResultTarget.create( graphicsSystem, 0u, 0u, &renderTargetBuffer, 1u, nullptr );
+		const TextureData* pFinalResultData = &m_finalResultData;
+		success &= m_finalResultTarget.create( graphicsSystem, 0u, 0u, &pFinalResultData, 1u, nullptr );
 
-		renderTargetBuffer = RenderTargetBuffer( m_downSampleData );
-		success &= m_downSampleTarget.create( graphicsSystem, 0u, 0u, &renderTargetBuffer, 1u, nullptr );
+		const TextureData* pDownSampleData = &m_downSampleData;
+		success &= m_downSampleTarget.create( graphicsSystem, 0u, 0u, &pDownSampleData, 1u, nullptr );
 
 		m_pBlendState		= graphicsSystem.createBlendState( BlendStateParamters() );
 		m_pDepthState		= graphicsSystem.createDepthStencilState( false, false );

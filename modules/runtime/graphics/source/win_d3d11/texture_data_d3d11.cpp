@@ -9,15 +9,25 @@
 
 namespace tiki
 {
-	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags )
+	DXGI_FORMAT graphics::getD3dFormat( PixelFormat pixelFormat, TextureFlags flags, bool swapChain )
 	{
 		TIKI_ASSERT( pixelFormat < PixelFormat_Count );
 
-		static DXGI_FORMAT s_formatLookup[] =
+		if( pixelFormat == PixelFormat_Depth24Stencil8 && isBitSet( flags, TextureFlags_ShaderInput ) )
+		{
+			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		}
+		else if( pixelFormat == PixelFormat_R8G8B8A8_Gamma && swapChain )
+		{
+			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
+		static const DXGI_FORMAT s_formatLookup[] =
 		{
 			DXGI_FORMAT_R8_UNORM,				// PixelFormat_R8,
 			DXGI_FORMAT_R8G8B8A8_UNORM,			// PixelFormat_R8G8B8A8
 			DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,	// PixelFormat_R8G8B8A8_Gamma
+			DXGI_FORMAT_R10G10B10A2_UNORM,		// PixelFormat_R10G10B10A2
 			DXGI_FORMAT_R16G16B16A16_FLOAT,		// PixelFormat_R16G16B16A16_Float
 			DXGI_FORMAT_R32_FLOAT,				// PixelFormat_R32_Float
 			DXGI_FORMAT_R32G32B32_FLOAT,		// PixelFormat_R32G32B32_Float
@@ -25,11 +35,6 @@ namespace tiki
 			DXGI_FORMAT_D24_UNORM_S8_UINT		// PixelFormat_Depth24Stencil8
 		};
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_formatLookup ) == PixelFormat_Count );
-
-		if ( pixelFormat == PixelFormat_Depth24Stencil8 && isBitSet( flags, TextureFlags_ShaderInput ) )
-		{
-			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		}
 
 		return s_formatLookup[ pixelFormat ];
 	}
@@ -131,7 +136,7 @@ namespace tiki
 			pD3dInitData = initData;
 		}
 
-		const DXGI_FORMAT dxFormat = graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags );
+		const DXGI_FORMAT dxFormat = graphics::getD3dFormat( (PixelFormat)description.format, (TextureFlags)description.flags, false );
 		ID3D11Device* pDevice = GraphicsSystemPlatform::getDevice( graphicsSystem );
 		HRESULT result = S_FALSE;
 		switch ( m_description.type )
