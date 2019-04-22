@@ -251,7 +251,7 @@ namespace tiki
 		// Get intersection point
 
 		int quantity;
-		return doClipping( 0.0f, f32::maxValue, ray.origin, ray.direction, box, true, quantity, intersectionPoint );
+		return doClipping( 0.0f, NumberLimits<float32>::maxValue(), ray.origin, ray.direction, box, true, quantity, intersectionPoint );
 	}
 
 	IntersectionTypes intersection::intersectSphereAxisAlignedBox( const Sphere& sphere, const AxisAlignedBox& box )

@@ -1,11 +1,6 @@
 #pragma once
-#ifndef TIKI_NUMBERLIMITS_HPP_INCLUDED__
-#define TIKI_NUMBERLIMITS_HPP_INCLUDED__
 
 #include "tiki/base/types.hpp"
-
-#undef min
-#undef max
 
 namespace tiki
 {
@@ -14,12 +9,12 @@ namespace tiki
 	{
 	public:
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0;
 		}
@@ -57,19 +52,19 @@ namespace tiki
 
 		typedef sint8 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0x80;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0x7f;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -85,19 +80,19 @@ namespace tiki
 
 		typedef sint16 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0x8000;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0x7fff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -113,19 +108,19 @@ namespace tiki
 
 		typedef sint32 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0x80000000;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0x7fffffff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -141,19 +136,19 @@ namespace tiki
 
 		typedef sint64 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return 0x8000000000000000ll;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return 0x7fffffffffffffffll;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -169,19 +164,19 @@ namespace tiki
 
 		typedef uint8 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0xff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -197,19 +192,19 @@ namespace tiki
 
 		typedef uint16 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0xffff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -225,19 +220,19 @@ namespace tiki
 
 		typedef uint32 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0xffffffff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -253,19 +248,19 @@ namespace tiki
 
 		typedef uint64 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)0;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)0xffffffffffffffff;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return min();
+			return minValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -281,19 +276,19 @@ namespace tiki
 
 		typedef float32 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)1.175494351e-38f;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)3.402823466e+38f;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return -max();
+			return -maxValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -309,19 +304,19 @@ namespace tiki
 
 		typedef float64 T;
 
-		TIKI_FORCE_INLINE static T min()
+		TIKI_FORCE_INLINE static T minValue()
 		{
 			return (T)2.2250738585072014e-308;
 		}
 
-		TIKI_FORCE_INLINE static T max()
+		TIKI_FORCE_INLINE static T maxValue()
 		{
 			return (T)1.7976931348623158e+308;
 		}
 
 		TIKI_FORCE_INLINE static T lowest()
 		{
-			return -max();
+			return -maxValue();
 		}
 
 		TIKI_FORCE_INLINE static T epsilon()
@@ -330,5 +325,3 @@ namespace tiki
 		}
 	};
 }
-
-#endif // TIKI_NUMBERLIMITS_HPP_INCLUDED__
