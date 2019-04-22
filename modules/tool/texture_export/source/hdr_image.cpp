@@ -275,10 +275,12 @@ namespace tiki
 
 	void HdrImage::covertGamma( const GammaType gammaType )
 	{
-		TIKI_ASSERT( m_gammaType != gammaType );
+		if( m_gammaType == gammaType )
+		{
+			return;
+		}
 
 		float powVal = 0.0f;
-
 		if ( m_gammaType == GammaType_SRGB && gammaType == GammaType_Linear )
 		{
 			powVal = 0.45f;
@@ -458,7 +460,7 @@ namespace tiki
 			return false;
 		}
 
-		m_gammaType = GammaType_SRGB;
+		m_gammaType = GammaType_Linear;
 		m_width = width;
 		m_height = height;
 
