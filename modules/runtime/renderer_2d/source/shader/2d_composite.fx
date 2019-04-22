@@ -29,7 +29,7 @@ TIKI_ENTRY_POINT( VertexInput, VertexToPixel, main )
 
 	TIKI_VERTEX_TO_PIXEL_SET_POSITION( TIKI_OUTPUT_POSITION0, position );
 	TIKI_VERTEX_TO_PIXEL_SET( TIKI_TEXCOORD0, texCoord );
-    
+
     TIKI_VERTEX_TO_PIXEL_END( VertexToPixel );
 }
 
@@ -59,7 +59,7 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 	TIKI_PIXEL_OUTPUT_BEGIN( PixelOutput );
 
 	float2 texCoord = TIKI_VERTEX_TO_PIXEL_GET( TIKI_TEXCOORD0 );
-	
+
 	float3 color = TIKI_TEX2D( t_color, s_samplerLinear, texCoord ).rgb;
 	color = pow( color.rgb, 2.2 );
 
@@ -70,6 +70,8 @@ TIKI_ENTRY_POINT( VertexToPixel, PixelOutput, main )
 #if TIKI_COLOR_GRADING
 	color += TIKI_TEX3D( t_colorGrading, s_samplerLinear, color ).rgb;
 #endif
+
+	color = pow( color, 0.45 );
 
 	float4 outputColor = float4(color, 1.0f);
 	TIKI_PIXEL_OUTPUT_SET( TIKI_OUTPUT_COLOR0, outputColor );
