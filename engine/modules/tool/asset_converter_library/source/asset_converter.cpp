@@ -651,6 +651,10 @@ namespace tiki
 					}
 					whereAssetId += formatDynamicString( "asset_id = '%u'", pTask->asset.assetId );
 				}
+				else
+				{
+					TIKI_TRACE_ERROR( "[converter] Could not find task for '%s'.\n", fileName.cStr() );
+				}
 			}
 
 			for( uint i = 0u; i < tasks.getCount(); ++i )
