@@ -6,7 +6,7 @@
 		<field type="{reference Texture}" name="textureText" />
 		<field type="string" name="action" />
 	</struct>
-	<struct name="Circle">
+	<struct name="CircleTextures">
 		<field type="{reference Texture}" name="texture0" />
 		<field type="{reference Texture}" name="texture1" />
 		<field type="{reference Texture}" name="texture2" />
@@ -15,8 +15,9 @@
 		<field type="{reference Texture}" name="background" />
 		<field type="{reference Texture}" name="circleBigText" />
 		<field type="{reference Texture}" name="menuConnection" />
-		<field type="Circle" name="circleBig" />
-		<field type="{array Circle}" name="circleSmall" />
+		<field type="{reference Texture}" name="robo" />
+		<field type="CircleTextures" name="circleBig" />
+		<field type="{array CircleTextures}" name="circleSmall" />
 		<field type="{array MenuElement}" name="menuElements" />
 		<field type="{array MenuElement}" name="levelElement" />
 		<field type="{array MenuElement}" name="settingsElements" />
