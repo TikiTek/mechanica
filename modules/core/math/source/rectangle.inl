@@ -46,7 +46,7 @@ namespace tiki
 		Matrix22 rotationMatrix;
 		matrix::createRotationZ( rotationMatrix, rotation );
 
-		for( uint i = 0u; i < TIKI_COUNT( aVertices ); ++i )
+		for( uint i = 0u; i < RectanglePoint_Count; ++i )
 		{
 			matrix::transform( aVertices[ i ], rotationMatrix );
 		}
@@ -59,7 +59,7 @@ namespace tiki
 
 		Vector2 min = aVertices[ 0u ];
 		Vector2 max = aVertices[ 0u ];
-		for( uint i = 1u; i < TIKI_COUNT( aVertices ); ++i )
+		for( uint i = 1u; i < RectanglePoint_Count; ++i )
 		{
 			min.x = TIKI_MIN( min.x, aVertices[ i ].x );
 			min.y = TIKI_MIN( min.y, aVertices[ i ].y );
