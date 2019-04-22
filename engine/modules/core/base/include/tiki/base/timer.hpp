@@ -1,11 +1,15 @@
 #pragma once
-#ifndef TIKI_TIMESYSTEM_HPP
-#define TIKI_TIMESYSTEM_HPP
 
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
+	struct GameTime
+	{
+		double	elapsedTime;
+		double	totalTime;
+	};
+
 	class Timer
 	{
 	public:
@@ -14,8 +18,9 @@ namespace tiki
 
 		void		update();
 
-		double		getElapsedTime() const	{ return m_elapsedTime; };
-		double		getTotalTime() const	{ return m_totalTime; };
+		GameTime	getTime() const			{ return m_time; }
+		double		getElapsedTime() const	{ return m_time.elapsedTime; };
+		double		getTotalTime() const	{ return m_time.totalTime; };
 
 		void		setTimeScale( const double timeScale ) { m_timeScale = timeScale; }
 
@@ -40,11 +45,7 @@ namespace tiki
 		TimeStamp	m_last;
 		TimeStamp	m_current;
 
-		double		m_elapsedTime;
-		double		m_totalTime;
+		GameTime	m_time;
 		double		m_timeScale;
-
 	};
 }
-
-#endif
