@@ -48,8 +48,9 @@ namespace tiki
 
 	void Game::fillGameParameters( GameApplicationParamters& parameters )
 	{
-		parameters.screenWidth	= 1280;
-		parameters.screenHeight	= 720;
+		parameters.screenWidth		= 1280u;
+		parameters.screenHeight		= 720u;
+		parameters.backBufferFormat	= PixelFormat_R10G10B10A2;
 
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
 		parameters.pGamebuildPath = "./gamebuild/";
@@ -181,10 +182,10 @@ namespace tiki
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->physicsTestState.getCamera() );
 		}
-		//else if( m_gameFlow.isInState( GameStates_Application ) )
-		//{
-		//	debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
-		//}
+		else if( m_gameFlow.isInState( GameStates_Application ) )
+		{
+			debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
+		}
 #endif
 	}
 
