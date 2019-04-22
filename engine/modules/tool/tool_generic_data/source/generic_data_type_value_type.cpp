@@ -55,6 +55,11 @@ namespace tiki
 
 	string GenericDataTypeValueType::getCodeExportName() const
 	{
+		if( m_type == GenericDataTypeValueTypeType_String )
+		{
+			return "ResRef< char >";
+		}
+
 		return getName();
 	}
 
