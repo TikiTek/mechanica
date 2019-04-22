@@ -14,6 +14,7 @@ namespace tiki
 		typedef const T*					ConstIterator;
 
 		explicit							ArrayView();
+		explicit							ArrayView( T* pData, uint count );
 		explicit							ArrayView( const T* pData, uint count );
 		explicit							ArrayView( ConstIterator pBegin, ConstIterator pEnd );
 

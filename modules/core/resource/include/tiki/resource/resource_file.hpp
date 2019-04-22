@@ -188,6 +188,11 @@ namespace tiki
 			return getAt( index );
 		}
 
+		TIKI_FORCE_INLINE ArrayView< T > getView() const
+		{
+			return ArrayView< T >( m_pData, m_size );
+		}
+
 	private:
 
 #if TIKI_ENABLED( TIKI_BUILD_64BIT )

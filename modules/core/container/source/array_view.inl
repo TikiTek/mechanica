@@ -12,6 +12,13 @@ namespace tiki
 	}
 
 	template< typename T >
+	ArrayView<T>::ArrayView( T* pData, uint count )
+		: m_pData( pData )
+		, m_count( count )
+	{
+	}
+
+	template< typename T >
 	ArrayView<T>::ArrayView( const T* pData, uint count )
 		: m_pData( pData )
 		, m_count( count )
