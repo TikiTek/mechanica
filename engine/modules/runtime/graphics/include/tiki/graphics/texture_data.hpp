@@ -30,8 +30,8 @@ namespace tiki
 		bool						create( GraphicsSystem& graphicsSystem, const TextureDescription& description, const void* pTextureData = nullptr, const char* pDebugName = nullptr );
 		void						dispose( GraphicsSystem& graphicsSystem );
 
-		uint						getWidth() const		{ return m_description.width; }
-		uint						getHeight() const		{ return m_description.height; }
+		uint16						getWidth() const		{ return m_description.width; }
+		uint16						getHeight() const		{ return m_description.height; }
 
 		Vector2						getVectorSize() const	{ return vector::create( float( m_description.width ), float( m_description.height ) ); }
 

@@ -25,6 +25,6 @@ namespace tiki
 
 	namespace graphics
 	{
-		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags );
+		DXGI_FORMAT getD3dFormat( PixelFormat pixelFormat, TextureFlags flags, bool swapChain );
 	}
 }

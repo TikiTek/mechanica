@@ -189,8 +189,8 @@ namespace tiki
 			return false;
 		}
 
-		RenderTargetBuffer colorBuffer( m_textureData );
-		if ( !m_renderTarget.create( graphicsSystem, 0u, 0u, &colorBuffer, 1u, nullptr ) )
+		const TextureData* pColorBuffer = &m_textureData;
+		if ( !m_renderTarget.create( graphicsSystem, 0u, 0u, &pColorBuffer, 1u, nullptr ) )
 		{
 			return false;
 		}

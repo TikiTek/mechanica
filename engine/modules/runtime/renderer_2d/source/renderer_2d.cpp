@@ -44,6 +44,8 @@ namespace tiki
 		m_currentZoom		= 1.0f;
 		m_targetZoom		= 1.0f;
 		m_emissivLayer		= parameters.emissivLayerId;
+		m_width				= 0u;
+		m_height			= 0u;
 
 		m_camera.create();
 
@@ -142,18 +144,20 @@ namespace tiki
 		resourcePool.unloadResource( m_pSpriteShader );
 		resourcePool.unloadResource( m_pCompositeShader );
 
-		m_pGraphicsSystem	= nullptr;
+		m_pGraphicsSystem = nullptr;
 	}
 
 	bool Renderer2d::resize( uint16 width, uint16 height )
 	{
+		if( m_width == width && m_height == height )
+		{
+			return true;
+		}
+
 		m_offscreenEmissivTarget.dispose( *m_pGraphicsSystem );
 		m_offscreenColorTarget.dispose( *m_pGraphicsSystem );
 		m_offscreenEmissivData.dispose( *m_pGraphicsSystem );
 		m_offscreenColorData.dispose( *m_pGraphicsSystem );
-
-		Projection projection;
-		projection.createOrthographic( width, width, 0.0f, 10.0f );
 
 		TextureDescription textureDescription;
 		textureDescription.width	= width;
@@ -167,15 +171,23 @@ namespace tiki
 			return false;
 		}
 
-		RenderTargetBuffer colorTargetBuffer( m_offscreenColorData );
-		RenderTargetBuffer emissivTargetBuffer( m_offscreenEmissivData );
-		if( !m_offscreenColorTarget.create( *m_pGraphicsSystem, width, height, &colorTargetBuffer, 1u, nullptr ) ||
-			!m_offscreenEmissivTarget.create( *m_pGraphicsSystem, width, height, &emissivTargetBuffer, 1u, nullptr ))
+		const TextureData* pColorTargetBuffer = &m_offscreenColorData;
+		const TextureData* pEmissivTargetBuffer = &m_offscreenEmissivData;
+		if( !m_offscreenColorTarget.create( *m_pGraphicsSystem, width, height, &pColorTargetBuffer, 1u, nullptr ) ||
+			!m_offscreenEmissivTarget.create( *m_pGraphicsSystem, width, height, &pEmissivTargetBuffer, 1u, nullptr ))
 		{
 			return false;
 		}
 
-		return m_bloom.resize( *m_pGraphicsSystem, width / 2u, height / 2u );
+		if( !m_bloom.resize( *m_pGraphicsSystem, width / 2u, height / 2u ) )
+		{
+			return false;
+		}
+
+		m_width		= width;
+		m_height	= height;
+
+		return true;
 	}
 
 	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId )

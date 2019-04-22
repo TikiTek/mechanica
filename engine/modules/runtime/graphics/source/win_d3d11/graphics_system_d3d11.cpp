@@ -14,7 +14,7 @@ namespace tiki
 	namespace graphics
 	{
 		static bool initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
-		static bool initBackBuffer( GraphicsSystemPlatformData& data );
+		static bool initBackBuffer( GraphicsSystemPlatformData& data, PixelFormat format );
 		static bool initDepthStencilBuffer( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 		static void initViewPort( GraphicsSystemPlatformData& data, const uint2& backBufferSize );
 
@@ -59,7 +59,7 @@ namespace tiki
 			return false;
 		}
 
-		if( !graphics::initBackBuffer( m_platformData ) )
+		if( !graphics::initBackBuffer( m_platformData, params.backBufferFormat ) )
 		{
 			TIKI_TRACE_ERROR( "[graphics] Could not create BackBuffer.\n" );
 			disposePlatform();
@@ -77,17 +77,26 @@ namespace tiki
 
 		// create back buffer target
 		{
-			m_backBufferTarget.m_width	= params.backBufferWidth;
-			m_backBufferTarget.m_height	= params.backBufferHeight;
+			m_backBufferColorData.m_description.width			= backBufferSize.x;
+			m_backBufferColorData.m_description.height			= backBufferSize.y;
+			m_backBufferColorData.m_description.flags			= TextureFlags_RenderTarget;
+			m_backBufferColorData.m_description.type			= TextureType_2d;
+			m_backBufferColorData.m_description.format			= params.backBufferFormat;
 
-			m_backBufferTarget.m_colorBuffers[ 0u ].format		= PixelFormat_R8G8B8A8_Gamma;
-			m_backBufferTarget.m_colorBuffers[ 0u ].pDataBuffer = nullptr;
+			m_backBufferDepthData.m_description.width			= backBufferSize.x;
+			m_backBufferDepthData.m_description.height			= backBufferSize.y;
+			m_backBufferDepthData.m_description.flags			= TextureFlags_DepthStencil;
+			m_backBufferDepthData.m_description.type			= TextureType_2d;
+			m_backBufferDepthData.m_description.format			= PixelFormat_Depth24Stencil8;
+
+			m_backBufferTarget.m_width							= params.backBufferWidth;
+			m_backBufferTarget.m_height							= params.backBufferHeight;
+
+			m_backBufferTarget.m_colorBuffers.push( &m_backBufferColorData );
 			m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
-			m_backBufferTarget.m_colorBufferCount = 1u;
 
-			m_backBufferTarget.m_depthBuffer.format			= PixelFormat_Depth24Stencil8;
-			m_backBufferTarget.m_depthBuffer.pDataBuffer	= nullptr;
-			m_backBufferTarget.m_platformData.pDepthView	= m_platformData.pDepthStencilView;
+			m_backBufferTarget.m_pDepthBuffer					= &m_backBufferDepthData;
+			m_backBufferTarget.m_platformData.pDepthView		= m_platformData.pDepthStencilView;
 		}
 
 		if ( !m_commandBuffer.create( *this ) )
@@ -107,11 +116,10 @@ namespace tiki
 			m_backBufferTarget.m_width	= 0u;
 			m_backBufferTarget.m_height	= 0u;
 
-			m_backBufferTarget.m_colorBuffers[ 0u ].clear();
+			m_backBufferTarget.m_colorBuffers.clear();
 			m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= nullptr;
-			m_backBufferTarget.m_colorBufferCount = 0u;
 
-			m_backBufferTarget.m_depthBuffer.clear();
+			m_backBufferTarget.m_pDepthBuffer = nullptr;
 			m_backBufferTarget.m_platformData.pDepthView = nullptr;
 		}
 
@@ -137,9 +145,13 @@ namespace tiki
 		safeRelease( &m_platformData.pDevice );
 	}
 
-	bool GraphicsSystem::resize( uint width, uint height )
+	bool GraphicsSystem::resize( uint16 width, uint16 height )
 	{
-		if ( width == 0u || height == 0u )
+		if( width == m_backBufferTarget.m_width && height == m_backBufferTarget.m_height )
+		{
+			return true;
+		}
+		else if ( width == 0u || height == 0u )
 		{
 			return false;
 		}
@@ -157,12 +169,20 @@ namespace tiki
 			return false;
 		}
 
-		uint2 backBufferSize = { uint32( width ), uint32( height ) };
-		graphics::initBackBuffer( m_platformData );
-		graphics::initDepthStencilBuffer( m_platformData, backBufferSize );
+		m_backBufferColorData.m_description.width	= width;
+		m_backBufferColorData.m_description.height	= height;
+		m_backBufferDepthData.m_description.width	= width;
+		m_backBufferDepthData.m_description.height	= height;
+		m_backBufferTarget.m_width					= width;
+		m_backBufferTarget.m_height					= height;
 
-		m_backBufferTarget.m_width	= width;
-		m_backBufferTarget.m_height	= height;
+		const uint2 backBufferSize = { uint32( width ), uint32( height ) };
+		if( !graphics::initBackBuffer( m_platformData, m_backBufferColorData.m_description.format ) ||
+			!graphics::initDepthStencilBuffer( m_platformData, backBufferSize ) )
+		{
+			return false;
+		}
+
 		m_backBufferTarget.m_platformData.pColorViews[ 0u ]	= m_platformData.pBackBufferTargetView;
 		m_backBufferTarget.m_platformData.pDepthView		= m_platformData.pDepthStencilView;
 
@@ -187,7 +207,7 @@ namespace tiki
 	{
 		TIKI_DECLARE_STACKANDZERO( DXGI_SWAP_CHAIN_DESC, swapDesc );
 		swapDesc.BufferCount						= 2;
-		swapDesc.BufferDesc.Format					= getD3dFormat( params.backbufferFormat, TextureFlags_RenderTarget );
+		swapDesc.BufferDesc.Format					= getD3dFormat( params.backBufferFormat, TextureFlags_RenderTarget, false );
 		swapDesc.BufferDesc.Width					= backBufferSize.x;
 		swapDesc.BufferDesc.Height					= backBufferSize.y;
 		swapDesc.BufferDesc.RefreshRate.Denominator	= 1;
@@ -197,14 +217,14 @@ namespace tiki
 		swapDesc.SampleDesc.Count					= 1;
 		swapDesc.SampleDesc.Quality					= 0;
 		swapDesc.Windowed							= !params.fullScreen;
-		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+		swapDesc.SwapEffect							= DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapDesc.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		D3D_FEATURE_LEVEL level;
 		D3D_FEATURE_LEVEL aLevels[] =
 		{
-			D3D_FEATURE_LEVEL_10_0,
-			D3D_FEATURE_LEVEL_10_1,
+			//D3D_FEATURE_LEVEL_10_0,
+			//D3D_FEATURE_LEVEL_10_1,
 			D3D_FEATURE_LEVEL_11_0
 		};
 
@@ -230,17 +250,26 @@ namespace tiki
 		return SUCCEEDED( r );
 	}
 
-	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data )
+	static bool graphics::initBackBuffer( GraphicsSystemPlatformData& data, PixelFormat format )
 	{
 		ID3D11Texture2D* pBackBufferPtr;
 		HRESULT r = data.pSwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferPtr );
+		if( FAILED( r ) )
+		{
+			return false;
+		}
 
-		if (FAILED(r)) { return false; }
+		D3D11_RENDER_TARGET_VIEW_DESC backBufferViewDesc;
+		backBufferViewDesc.Format				= graphics::getD3dFormat( format, TextureFlags_RenderTarget, false );
+		backBufferViewDesc.ViewDimension		= D3D11_RTV_DIMENSION_TEXTURE2D;
+		backBufferViewDesc.Texture2D.MipSlice	= 0;
 
-		r = data.pDevice->CreateRenderTargetView( pBackBufferPtr, nullptr, &data.pBackBufferTargetView );
+		r = data.pDevice->CreateRenderTargetView( pBackBufferPtr, &backBufferViewDesc, &data.pBackBufferTargetView );
 		pBackBufferPtr->Release();
-
-		if (FAILED(r)) { return false; }
+		if( FAILED( r ) )
+		{
+			return false;
+		}
 
 		return true;
 	}

@@ -100,7 +100,7 @@ namespace tiki
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color5 == ClearMask_Color0 << 5u );
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color6 == ClearMask_Color0 << 6u );
 		TIKI_COMPILETIME_ASSERT( ClearMask_Color7 == ClearMask_Color0 << 7u );
-		for (uint i = 0u; i < renderTarget.m_colorBufferCount; ++i)
+		for (uint i = 0u; i < renderTarget.m_colorBuffers.getCount(); ++i)
 		{
 			if ( isBitSet( clearMask, ClearMask_Color0 << i ) )
 			{
@@ -140,7 +140,7 @@ namespace tiki
 		};
 		m_platformData.pContext->RSSetScissorRects( 1u, &d3dRect );
 
-		m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+		m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBuffers.getCount(), renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 
 		D3D11_VIEWPORT viewPort;
 		if ( pViewport == nullptr )
@@ -176,7 +176,7 @@ namespace tiki
 		if ( m_currentRenderPassDepth != 0u )
 		{
 			const RenderTarget& renderTarget = *m_apRenderPassesStack[ m_currentRenderPassDepth - 1u ];
-			m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBufferCount, renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
+			m_platformData.pContext->OMSetRenderTargets( (UINT)renderTarget.m_colorBuffers.getCount(), renderTarget.m_platformData.pColorViews, renderTarget.m_platformData.pDepthView );
 		}
 		else
 		{
