@@ -42,6 +42,7 @@ namespace tiki
 		size_t			getWidth() const		{ return m_width; }
 		size_t			getHeight() const		{ return m_height; }
 		size_t			getChannelCount() const { return ChannelCount; }
+		GammaType		getGammaType() const	{ return m_gammaType; }
 
 		float*			getData() { return m_data.getBegin(); }
 

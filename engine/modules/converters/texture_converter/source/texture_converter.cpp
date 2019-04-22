@@ -18,7 +18,7 @@ namespace tiki
 
 	uint32 TextureConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 7u;
+		return 9u;
 	}
 
 	bool TextureConverter::canConvertType( crc32 typeCrc ) const
@@ -122,7 +122,7 @@ namespace tiki
 		}
 
 		TextureWriterParameters writerParameters;
-		writerParameters.targetFormat	= PixelFormat_R8G8B8A8;
+		writerParameters.targetFormat = image.getGammaType() == HdrImage::GammaType_SRGB ? PixelFormat_R8G8B8A8_Gamma : PixelFormat_R8G8B8A8;
 
 		writerParameters.mipMapCount = 1u;
 		if ( asset.parameters.getOptionalBool( "generate_mipmaps", true ) )
