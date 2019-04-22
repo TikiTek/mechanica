@@ -11,6 +11,16 @@
 			</ArrayItems>
 		</Expand>
 	</Type>
+	<Type Name="tiki::FixedSizedArray&lt;*,*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<ArrayItems>
+				<Size>m_count</Size>
+				<ValuePointer>m_aData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
 	<Type Name="tiki::Map&lt;*,*&gt;">
 		<DisplayString>{{ size={m_count} }}</DisplayString>
 		<Expand>
