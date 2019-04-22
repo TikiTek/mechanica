@@ -1,8 +1,7 @@
 #pragma once
-#ifndef TIKI_FLOAT_HPP
-#define TIKI_FLOAT_HPP
 
 #include "tiki/base/types.hpp"
+#include "tiki/base/number_limits.hpp"
 
 #include <math.h>
 #include <stdlib.h>
@@ -12,25 +11,23 @@ namespace tiki
 	namespace f32
 	{
 		static const float epsilon			= 1.192092896e-07f;
+		static const float zeroTolerance	= 1.0e-20f;
 		static const float pi				= 3.141592653f;
 		static const float twoPi			= 6.283185307f;
 		static const float piOver2			= 1.570796326f;
 		static const float piOver4			= 0.785398163f;
-		static const float minValue			= 1.175494351e-38f;
-		static const float maxValue			= 3.402823466e+38f;
-		static const float zeroTolerance	= 1e-06f;
 
-		TIKI_FORCE_INLINE float	abs( float a )
+		TIKI_FORCE_INLINE float abs( float a )
 		{
 			return -a > a ? -a : a;
 		}
 
-		TIKI_FORCE_INLINE bool	isZero( float a, float epsilon2 = 1.0e-20f )
+		TIKI_FORCE_INLINE bool isZero( float a, float epsilon2 = f32::zeroTolerance )
 		{
 			return f32::abs( a ) < epsilon2;
 		}
 
-		TIKI_FORCE_INLINE bool	isEquals( float a, float b, float epsilon2 = f32::epsilon )
+		TIKI_FORCE_INLINE bool isEquals( float a, float b, float epsilon2 = f32::epsilon )
 		{
 			return f32::abs( a - b ) < epsilon2;
 		}
@@ -118,5 +115,3 @@ namespace tiki
 		}
 	}
 }
-
-#endif // TIKI_FLOAT_HPP

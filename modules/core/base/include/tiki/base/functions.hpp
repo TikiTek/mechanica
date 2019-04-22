@@ -132,7 +132,7 @@ namespace tiki
 		{
 			return false;
 		}
-		else if ( (TTarget)value > NumberLimits< TTarget >::max() )
+		else if ( (TTarget)value > NumberLimits< TTarget >::maxValue() )
 		{
 			return false;
 		}
