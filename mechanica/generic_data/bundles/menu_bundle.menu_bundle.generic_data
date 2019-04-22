@@ -5,24 +5,25 @@
 			<field type="{reference Texture}" name="background" value="TEXR:menu_background.texture" />
 			<field type="{reference Texture}" name="circleBigText" value="TEXR:menu_admiral.texture" />
 			<field type="{reference Texture}" name="menuConnection" value="TEXR:menu_connection.texture" />
-			<field type="Circle" name="circleBig">
-				<object type="Circle">
+			<field type="{reference Texture}" name="robo" value="TEXR:menu_robo.texture" />
+			<field type="CircleTextures" name="circleBig">
+				<object type="CircleTextures">
 					<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_big_0.texture" />
 					<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_big_1.texture" />
 					<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_big_2.texture" />
 				</object>
 			</field>
-			<field type="{array Circle}" name="circleSmall">
-				<array type="Circle">
-					<element type="Circle">
-						<object type="Circle">
+			<field type="{array CircleTextures}" name="circleSmall">
+				<array type="CircleTextures">
+					<element type="CircleTextures">
+						<object type="CircleTextures">
 							<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_00.texture" />
 							<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_01.texture" />
 							<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_02.texture" />
 						</object>
 					</element>
-					<element type="Circle">
-						<object type="Circle">
+					<element type="CircleTextures">
+						<object type="CircleTextures">
 							<field type="{reference Texture}" name="texture0" value="TEXR:menu_circle_10.texture" />
 							<field type="{reference Texture}" name="texture1" value="TEXR:menu_circle_11.texture" />
 							<field type="{reference Texture}" name="texture2" value="TEXR:menu_circle_12.texture" />
