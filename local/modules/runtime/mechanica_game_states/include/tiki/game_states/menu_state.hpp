@@ -12,6 +12,7 @@ namespace tiki
 	enum MenuStateTransitionSteps
 	{
 		MenuStateTransitionSteps_LoadResources,
+		MenuStateTransitionSteps_Initialize,
 
 		MenuStateTransitionSteps_Count
 	};
@@ -38,10 +39,14 @@ namespace tiki
 
 	private:
 
-		static const uint MaxCircleCount = 24u;
+		static const uint MaxCircleCount = 8u;
 
 		struct Circle
 		{
+			const TextureData*		pTexture;
+
+			float					angle;
+
 			float					angleMin;
 			float					angleMax;
 			float					angleSpeed;
@@ -51,14 +56,24 @@ namespace tiki
 
 		using CircleArray = FixedSizedArray< Circle, MaxCircleCount >;
 
+		using MenuEntry = FixedArray< Circle, 6u >;
+		using MenuEntryArray = FixedSizedArray< MenuEntry, MaxCircleCount >;
+
+
 		Game*									m_pGame;
 		ApplicationState*						m_pParentState;
 
 		const MenuBundleGenericDataResource*	m_pBundle;
 
-		CircleArray								m_circles;
+		uint2									m_mouseState;
 
-		void									updateCircle( Circle& circle, double deltaTime );
-		void									renderCircle( const ImmediateRenderer& renderer, const Circle& circle );
+		CircleArray								m_mainCircles;
+		MenuEntryArray							m_menuEntries;
+
+		void									createMainCircles();
+		void									createMenuCircles( const ResArray< MenuElement >& elements );
+
+		void									updateCircle( Circle& circle, GameTime time );
+		void									renderCircle( Renderer2d& renderer, const Circle& circle );
 	};
 }

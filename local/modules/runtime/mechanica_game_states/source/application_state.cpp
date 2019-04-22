@@ -67,6 +67,12 @@ namespace tiki
 							TIKI_TRACE_ERROR( "[applicationstate] Could not create Renderer.\n" );
 							return TransitionState_Error;
 						}
+
+						m_renderParameters.backgroundColor			= TIKI_COLOR_XKCD_BLUEBERRY;
+						m_renderParameters.enableBloom				= s_gameBloomEnable;
+						m_renderParameters.bloomCutoffThreshold.r	= s_gameBloomThresholdR;
+						m_renderParameters.bloomCutoffThreshold.g	= s_gameBloomThresholdG;
+						m_renderParameters.bloomCutoffThreshold.b	= s_gameBloomThresholdB;
 					}
 
 					if ( resourceRequestPool.isFinish() )
@@ -110,14 +116,7 @@ namespace tiki
 
 	void ApplicationState::postRender( GraphicsContext& graphicsContext )
 	{
-		//Renderer2dRenderParameters parameters;
-		//parameters.backgroundColor			= TIKI_COLOR_XKCD_BLUEBERRY;
-		//parameters.enableBloom				= s_gameBloomEnable;
-		//parameters.bloomCutoffThreshold.r	= s_gameBloomThresholdR;
-		//parameters.bloomCutoffThreshold.g	= s_gameBloomThresholdG;
-		//parameters.bloomCutoffThreshold.b	= s_gameBloomThresholdB;
-		//
-		//m_renderer.render( graphicsContext, parameters );
+		m_renderer.render( graphicsContext, m_renderParameters );
 	}
 
 	bool ApplicationState::processInputEvent( const InputEvent& inputEvent )
