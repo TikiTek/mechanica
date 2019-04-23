@@ -52,6 +52,11 @@ namespace tiki
 			return acosf( value );
 		}
 
+		TIKI_FORCE_INLINE float atan2( float y, float x )
+		{
+			return atan2f( y, x );
+		}
+
 		TIKI_FORCE_INLINE float lerp( float from, float to, float position )
 		{
 			return from + ( to - from ) * position;
