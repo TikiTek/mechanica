@@ -102,8 +102,15 @@ namespace tiki
 		const GameTime time			= m_pGame->getFrameTimer().getTime();
 		const Vector2 renderSize	= m_pParentState->getRenderer().getVectorSize();
 
+		Vector2 mousePosition = vector::create( float( m_mouseState.x ), float( m_mouseState.y ) );
+		vector::sub( mousePosition, vector::scale( vector::create( renderSize ), 0.5f ) );
+		vector::scale( mousePosition, 0.01f );
+
 		m_mainCircles[ 0u ].angle = float( m_mouseState.x ) / 500.0f;
 		m_mainCircles[ 1u ].angle = float( m_mouseState.y ) / 500.0f;
+
+		m_alpha -= (float)time.elapsedTime;
+		m_alpha = TIKI_MAX( m_alpha, 0.0f );
 
 		for( Circle& circle : m_mainCircles )
 		{
@@ -112,9 +119,36 @@ namespace tiki
 			updateCircle( circle, time );
 		}
 
-		for( MenuEntry& entry : m_menuEntries )
+		for( uint i = 0u; i < m_menuEntries.getCount(); ++i )
 		{
-			for( Circle& circle : entry )
+			MenuEntry& menuEntry		= m_menuEntries[ i ];
+			Circle& menuCircle			= menuEntry.circles.getFirst();
+			Circle& connectionCircle	= m_connectionCircles[ i ];
+
+			connectionCircle.position.x = renderSize.x * -0.005f;
+
+			const float angleTime = TIKI_MAX( 0.0f, m_alpha - 0.5f );
+			const float a = f32::pi * (menuEntry.angle - angleTime);
+
+			Vector2 entryPosition = vector::create( f32::sin( a ), f32::cos( a ) );
+			vector::scale( entryPosition, 5.0f );
+			vector::add( entryPosition, connectionCircle.position );
+			for( Circle& circle : menuEntry.circles )
+			{
+				circle.position = entryPosition;
+			}
+
+			const Vector2 diff = vector::sub( vector::create( connectionCircle.position ), menuCircle.position );
+			const float dot = f32::atan2( diff.x, diff.y ) - (f32::pi * 0.5f);
+			connectionCircle.angle = dot + f32::pi;
+
+			float distance = vector::distance( menuCircle.position, mousePosition ) - 0.5f;
+			distance = f32::clamp( distance, 0.0f, 1.0f );
+
+			menuEntry.circles[ 3u ].alpha = distance;
+			menuEntry.circles[ 4u ].alpha = 1.0f - distance;
+
+			for( Circle& circle : menuEntry.circles )
 			{
 				updateCircle( circle, time );
 			}
@@ -143,9 +177,14 @@ namespace tiki
 			renderCircle( renderer, circle );
 		}
 
+		for( Circle& circle : m_connectionCircles )
+		{
+			renderCircle( renderer, circle );
+		}
+
 		for( MenuEntry& entry : m_menuEntries )
 		{
-			for( Circle& circle : entry )
+			for( Circle& circle : entry.circles )
 			{
 				renderCircle( renderer, circle );
 			}
@@ -162,25 +201,33 @@ namespace tiki
 		return false;
 	}
 
+	void MenuState::clearCircle( Circle& circle )
+	{
+		memory::zero( circle );
+
+		circle.scale	= 1.0f;
+		circle.alpha	= 1.0f;
+	}
+
 	void MenuState::createMainCircles()
 	{
 		const MechanicaMenuBundle& bundle = m_pBundle->getData();
 
 		Circle& circle0 = m_mainCircles.push();
-		memory::zero( circle0 );
+		clearCircle( circle0 );
 		circle0.pTexture = &bundle.circleBig.texture0->getTextureData();
 
 		Circle& circle1 = m_mainCircles.push();
-		memory::zero( circle1 );
+		clearCircle( circle1 );
 		circle1.pTexture = &bundle.circleBig.texture1->getTextureData();
 
 		Circle& circle2 = m_mainCircles.push();
-		memory::zero( circle2 );
+		clearCircle( circle2 );
 		circle2.pTexture = &bundle.circleBig.texture2->getTextureData();
 		circle2.angleSpeed = 0.2f;
 
 		Circle& circleText = m_mainCircles.push();
-		memory::zero( circleText );
+		clearCircle( circleText );
 		circleText.pTexture		= &bundle.circleBigText->getTextureData();
 		circleText.angleMin		= 0.1f;
 		circleText.angleMax		= 0.95f;
@@ -192,18 +239,22 @@ namespace tiki
 		const MechanicaMenuBundle& bundle = m_pBundle->getData();
 
 		RandomNumberGenerator random;
-		random.createFromTime();
+		random.createFromSeed( (uint64)&elements );
+
+		m_alpha = 1.0f;
 
 		m_menuEntries.clear();
-
-		for( const MenuElement& element : elements.getView() )
+		for( uint i = 0u; i < elements.getCount(); ++i )
 		{
+			const MenuElement& element = elements[ i ];
 			MenuEntry& entry = m_menuEntries.push();
+
+			entry.angle = f32::lerp( 0.75f, 0.25f, 1.0f / (elements.getCount() - 1u) * i );
 
 			for( uint i = 0u; i < 3u; ++i )
 			{
-				Circle& circle = entry[ i ];
-				memory::zero( circle );
+				Circle& circle = entry.circles[ i ];
+				clearCircle( circle );
 
 				const uint64 angleType = random.nextUniformUInt64( 0u, 1u );
 				const uint64 textureIndex = random.nextUniformUInt64( 0u, bundle.circleSmall.getCount() );
@@ -228,28 +279,50 @@ namespace tiki
 
 				if( angleType == 0u )
 				{
-					circle.angleSpeed	= random.nextUniformFloat32( -0.001f, 0.001f );
+					circle.angleSpeed	= random.nextUniformFloat32( -1.0f, 1.0f );
 				}
 				else
 				{
 					circle.angleMin		= random.nextNormalizedFloat32();
 					circle.angleMax		= random.nextNormalizedFloat32();
 				}
+
+				circle.scale = 0.75f;
 			}
 
-			Circle& circleIcon = entry[ 3u ];
-			memory::zero( circleIcon );
+			Circle& circleIcon = entry.circles[ 3u ];
+			clearCircle( circleIcon );
 			circleIcon.pTexture			= &element.texture->getTextureData();
+			circleIcon.scale			= 0.75f;
 
-			Circle& circleIconHover = entry[ 4u ];
-			memory::zero( circleIconHover );
+			Circle& circleIconHover = entry.circles[ 4u ];
+			clearCircle( circleIconHover );
 			circleIconHover.pTexture	= &element.textureHover->getTextureData();
+			circleIconHover.scale		= 0.75f;
+			circleIconHover.alpha		= 0.0f;
 
-			Circle& circleText = entry[ 5u ];
-			memory::zero( circleText );
+			Circle& circleText = entry.circles[ 5u ];
+			clearCircle( circleText );
 			circleText.pTexture			= &element.textureText->getTextureData();
 			circleText.angleMin			= -0.4f;
 			circleText.angleMax			= 0.1f;
+			circleText.scale			= 0.75f;
+		}
+
+		createConnectionCircles( elements.getCount() );
+	}
+
+	void MenuState::createConnectionCircles( uint count )
+	{
+		const MechanicaMenuBundle& bundle = m_pBundle->getData();
+
+		m_connectionCircles.clear();
+		for( uint i = 0u; i < count; ++i )
+		{
+			Circle& circle = m_connectionCircles.push();
+			clearCircle( circle );
+
+			circle.pTexture = &bundle.menuConnection->getTextureData();
 		}
 	}
 
@@ -268,6 +341,10 @@ namespace tiki
 
 	void MenuState::renderCircle( Renderer2d& renderer, const Circle& circle )
 	{
+		Matrix32 scaleMatrix;
+		scaleMatrix.pos = Vector2::zero;
+		matrix::createScale( scaleMatrix.rot, vector::create( circle.scale, circle.scale ) );
+
 		Matrix32 rotationMatrix;
 		rotationMatrix.pos = Vector2::zero;
 		matrix::createRotationZ( rotationMatrix.rot, circle.angle );
@@ -277,8 +354,10 @@ namespace tiki
 		matrix::createIdentity( translationMatrix.rot );
 
 		Matrix32 matrix;
-		matrix::mul( matrix, rotationMatrix, translationMatrix );
+		matrix::mul( matrix, scaleMatrix, rotationMatrix );
+		matrix::mul( matrix, translationMatrix );
 
-		renderer.queueSprite( *circle.pTexture, matrix, MechanicaRenderLayer_UI );
+		const Color color = color::fromFloatRGBA( 1.0f, 1.0f, 1.0f, circle.alpha );
+		renderer.queueSprite( *circle.pTexture, matrix, MechanicaRenderLayer_UI, color );
 	}
 }
