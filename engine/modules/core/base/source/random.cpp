@@ -14,7 +14,7 @@ namespace tiki
 
 	void RandomNumberGenerator::createFromTime()
 	{
-		//m_state = createFromSeed( time() );
+		//createFromSeed( time() );
 	}
 
 	void RandomNumberGenerator::createFromSeed( uint64 seed )
@@ -81,12 +81,12 @@ namespace tiki
 
 	float32 RandomNumberGenerator::nextUniformFloat32( float32 minValue, float32 maxValue )
 	{
-		return (nextNormalizedFloat32() + minValue) * (maxValue - minValue);
+		return minValue + (nextNormalizedFloat32() * (maxValue - minValue));
 	}
 
 	float64 RandomNumberGenerator::nextUniformFloat64( float64 minValue, float64 maxValue )
 	{
-		return (nextNormalizedFloat64() + minValue) * (maxValue - minValue);
+		return minValue + (nextNormalizedFloat64() * (maxValue - minValue));
 	}
 
 	uint64 RandomNumberGenerator::next()
