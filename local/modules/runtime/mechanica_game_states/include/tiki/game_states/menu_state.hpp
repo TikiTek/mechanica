@@ -63,6 +63,10 @@ namespace tiki
 			using CircleArray = FixedArray< Circle, 6u >;
 
 			float					angle;
+			float					distance;
+
+			const char*				pAction;
+
 			CircleArray				circles;
 		};
 
@@ -71,6 +75,7 @@ namespace tiki
 		Game*									m_pGame;
 		ApplicationState*						m_pParentState;
 
+		const Texture*							m_pWhiteTexture;
 		const MenuBundleGenericDataResource*	m_pBundle;
 
 		uint2									m_mouseState;
@@ -85,6 +90,8 @@ namespace tiki
 		void									createMainCircles();
 		void									createMenuCircles( const ResArray< MenuElement >& elements );
 		void									createConnectionCircles( uint count );
+
+		void									executeAction( const char* pAction );
 
 		void									updateCircle( Circle& circle, GameTime time );
 		void									renderCircle( Renderer2d& renderer, const Circle& circle );
