@@ -46,6 +46,7 @@ namespace tiki
 
 				if( isInital )
 				{
+					resourceRequestPool.beginLoadResource( &m_pWhiteTexture, "color_white.texture" );
 					resourceRequestPool.beginLoadResource( &m_pBundle, "menu_bundle.menu_bundle" );
 				}
 
@@ -56,7 +57,7 @@ namespace tiki
 		case MenuStateTransitionSteps_Initialize:
 			{
 				Renderer2dRenderParameters& renderParameters = m_pParentState->getRenderParameters();
-				renderParameters.enableBloom		= false;
+				renderParameters.enableBloom		= true;
 				renderParameters.enableColorGrading	= false;
 
 				createMainCircles();
@@ -87,6 +88,7 @@ namespace tiki
 				ResourceManager& resourceManager = m_pGame->getResourceManager();
 
 				resourceManager.unloadResource( m_pBundle );
+				resourceManager.unloadResource( m_pWhiteTexture );
 			}
 			break;
 
@@ -110,7 +112,13 @@ namespace tiki
 		m_mainCircles[ 1u ].angle = float( m_mouseState.y ) / 500.0f;
 
 		m_alpha -= (float)time.elapsedTime;
-		m_alpha = TIKI_MAX( m_alpha, 0.0f );
+		m_alpha = TIKI_MAX( m_alpha, -1.0f );
+
+		Renderer2dRenderParameters& renderParameters = m_pParentState->getRenderParameters();
+		renderParameters.bloomCutoffThreshold.r		= 2.0f - (m_alpha + 1.0f);
+		renderParameters.bloomCutoffThreshold.g		= 2.0f - (m_alpha + 1.0f);
+		renderParameters.bloomCutoffThreshold.b		= 2.0f - (m_alpha + 1.0f);
+		renderParameters.bloomCutoffThreshold.a		= 2.0f - (m_alpha + 1.0f);
 
 		for( Circle& circle : m_mainCircles )
 		{
@@ -119,6 +127,7 @@ namespace tiki
 			updateCircle( circle, time );
 		}
 
+		const float angleAlpha = TIKI_MAX( m_alpha, 0.0f );
 		for( uint i = 0u; i < m_menuEntries.getCount(); ++i )
 		{
 			MenuEntry& menuEntry		= m_menuEntries[ i ];
@@ -127,7 +136,7 @@ namespace tiki
 
 			connectionCircle.position.x = renderSize.x * -0.005f;
 
-			const float angleTime = TIKI_MAX( 0.0f, m_alpha - 0.5f );
+			const float angleTime = TIKI_MAX( 0.0f, angleAlpha - 0.5f );
 			const float a = f32::pi * (menuEntry.angle - angleTime);
 
 			Vector2 entryPosition = vector::create( f32::sin( a ), f32::cos( a ) );
@@ -142,11 +151,11 @@ namespace tiki
 			const float dot = f32::atan2( diff.x, diff.y ) - (f32::pi * 0.5f);
 			connectionCircle.angle = dot + f32::pi;
 
-			float distance = vector::distance( menuCircle.position, mousePosition ) - 0.5f;
-			distance = f32::clamp( distance, 0.0f, 1.0f );
+			menuEntry.distance = vector::distance( menuCircle.position, mousePosition ) - 0.5f;
+			menuEntry.distance = f32::clamp( menuEntry.distance, 0.0f, 1.0f );
 
-			menuEntry.circles[ 3u ].alpha = distance;
-			menuEntry.circles[ 4u ].alpha = 1.0f - distance;
+			menuEntry.circles[ 3u ].alpha = menuEntry.distance;
+			menuEntry.circles[ 4u ].alpha = 1.0f - menuEntry.distance;
 
 			for( Circle& circle : menuEntry.circles )
 			{
@@ -189,6 +198,13 @@ namespace tiki
 				renderCircle( renderer, circle );
 			}
 		}
+
+		if( m_alpha > 0.0f )
+		{
+			const float renderAlpha = m_alpha * m_alpha;
+			const Color color = color::fromFloatRGBA( 1.0f, 1.0f, 1.0f, renderAlpha );
+			renderer.queueSprite( m_pWhiteTexture->getTextureData(), backgroundRectangle, MechanicaRenderLayer_BackgroundIslands, color );
+		}
 	}
 
 	bool MenuState::processInputEvent( const InputEvent& inputEvent )
@@ -196,6 +212,19 @@ namespace tiki
 		if( inputEvent.eventType == InputEventType_Mouse_Moved )
 		{
 			createUint2( m_mouseState, inputEvent.data.mouseMoved.xState, inputEvent.data.mouseMoved.yState );
+		}
+		else if( inputEvent.eventType == InputEventType_Mouse_ButtonDown )
+		{
+			for( const MenuEntry& entry : m_menuEntries )
+			{
+				if( entry.distance == 1.0f )
+				{
+					continue;
+				}
+
+				executeAction( entry.pAction );
+				return true;
+			}
 		}
 
 		return false;
@@ -249,7 +278,9 @@ namespace tiki
 			const MenuElement& element = elements[ i ];
 			MenuEntry& entry = m_menuEntries.push();
 
-			entry.angle = f32::lerp( 0.75f, 0.25f, 1.0f / (elements.getCount() - 1u) * i );
+			entry.angle		= f32::lerp( 0.75f, 0.25f, 1.0f / (elements.getCount() - 1u) * i );
+			entry.distance	= 0.0f;
+			entry.pAction	= element.action.getData();
 
 			for( uint i = 0u; i < 3u; ++i )
 			{
@@ -323,6 +354,24 @@ namespace tiki
 			clearCircle( circle );
 
 			circle.pTexture = &bundle.menuConnection->getTextureData();
+		}
+	}
+
+	void MenuState::executeAction( const char* pAction )
+	{
+		const MechanicaMenuBundle& bundle = m_pBundle->getData();
+
+		if( isStringEquals( pAction, "main" ) )
+		{
+			createMenuCircles( bundle.menuElements );
+		}
+		else if( isStringEquals( pAction, "levels" ) )
+		{
+			createMenuCircles( bundle.levelElement );
+		}
+		else if( isStringEquals( pAction, "settings" ) )
+		{
+			createMenuCircles( bundle.settingsElements );
 		}
 	}
 
