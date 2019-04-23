@@ -102,7 +102,20 @@ namespace tiki
 			return false;
 		}
 
-		m_pSpriteInputBinding = graphicsSystem.createVertexInputBinding( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
+		VertexAttribute attributes[] =
+		{
+			{ VertexSementic_Position,	0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
+			{ VertexSementic_TexCoord,	0u, VertexAttributeFormat_x32y32_float,		0u, VertexInputType_PerVertex },
+			{ VertexSementic_Color,		0u, VertexAttributeFormat_x8y8z8w8_unorm,	0u, VertexInputType_PerVertex }
+		};
+		m_pVertexFormat = graphicsSystem.createVertexFormat( attributes, TIKI_COUNT( attributes ) );
+		if( m_pVertexFormat == nullptr )
+		{
+			dispose( resourcePool );
+			return false;
+		}
+
+		m_pSpriteInputBinding = graphicsSystem.createVertexInputBinding( m_pSpriteShader->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 		m_pCompositeInputBinding = graphicsSystem.createVertexInputBinding( m_pCompositeShader->getShader( ShaderType_VertexShader, 0u ), graphicsSystem.getStockVertexFormat( StockVertexFormat_Pos2Tex2 ) );
 		if( m_pSpriteInputBinding == nullptr || m_pCompositeInputBinding == nullptr )
 		{
@@ -134,6 +147,7 @@ namespace tiki
 
 		m_pGraphicsSystem->disposeVertexInputBinding( m_pCompositeInputBinding );
 		m_pGraphicsSystem->disposeVertexInputBinding( m_pSpriteInputBinding );
+		m_pGraphicsSystem->disposeVertexFormat( m_pVertexFormat );
 
 		m_pGraphicsSystem->disposeSamplerState( m_pSamplerState );
 		m_pGraphicsSystem->disposeRasterizerState( m_pRasterizerState );
@@ -190,7 +204,7 @@ namespace tiki
 		return true;
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -212,10 +226,12 @@ namespace tiki
 			matrix::transform( rectangleVertices[ i ], worldTransform );
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -239,10 +255,12 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -264,10 +282,12 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -292,10 +312,12 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, sourcePoints[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -313,10 +335,12 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, m_defaultTexCoords[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId )
+	void Renderer2d::queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		RenderLayer& layer = m_layers[ layerId ];
 
@@ -337,10 +361,12 @@ namespace tiki
 
 			vector::toFloat( vertex.position, rectangleVertices[ i ] );
 			vector::toFloat( vertex.texCoord, sourcePoints[ i ] );
+
+			vertex.color = color;
 		}
 	}
 
-	void Renderer2d::queueText( Font* pFont, const Vector2& position, const char* pText, uint32 layerId )
+	void Renderer2d::queueText( Font* pFont, const Vector2& position, const char* pText, uint32 layerId, Color color /*= TIKI_COLOR_WHITE*/ )
 	{
 		TIKI_ASSERT( pFont != nullptr );
 		TIKI_ASSERT( pText != nullptr );
@@ -366,7 +392,7 @@ namespace tiki
 				u16::unormToFloat( c.y2 )
 			);
 
-			queueSprite( fontTexture, destinationRectangle, sourceCoordinates, layerId );
+			queueSprite( fontTexture, destinationRectangle, sourceCoordinates, layerId, color );
 			pText++;
 		}
 	}

@@ -18,6 +18,7 @@ namespace tiki
 	class Font;
 	class GraphicsSystem;
 	class ResourceRequestPool;
+	class VertexFormat;
 	struct AxisAlignedRectangle;
 	struct Matrix32;
 	struct Rectangle;
@@ -60,14 +61,14 @@ namespace tiki
 
 		bool				resize( uint16 width, uint16 height );
 
-		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId );
-		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId );
-		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId );
-		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId );
-		void				queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId );
-		void				queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId );
+		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, uint32 layerId, Color color = TIKI_COLOR_WHITE );
+		void				queueSprite( const TextureData& texture, const Matrix32& worldTransform, const Vector2& originOffset, uint32 layerId, Color color = TIKI_COLOR_WHITE );
+		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, uint32 layerId, Color color = TIKI_COLOR_WHITE );
+		void				queueSprite( const TextureData& texture, const Rectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId, Color color = TIKI_COLOR_WHITE );
+		void				queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, uint32 layerId, Color color = TIKI_COLOR_WHITE );
+		void				queueSprite( const TextureData& texture, const AxisAlignedRectangle& destinationRectangle, const AxisAlignedRectangle& sourceCoordinates, uint32 layerId, Color color = TIKI_COLOR_WHITE );
 
-		void				queueText( Font* pFont, const Vector2& position, const char* pText, uint32 layerId );
+		void				queueText( Font* pFont, const Vector2& position, const char* pText, uint32 layerId, Color color = TIKI_COLOR_WHITE );
 
 		void				update( float deltaTime );
 		void				render( GraphicsContext& graphicsContext, const Renderer2dRenderParameters& parameters );
@@ -86,6 +87,7 @@ namespace tiki
 		{
 			float2						position;
 			float2						texCoord;
+			Color						color;
 		};
 
 		struct RenderCommand
@@ -129,6 +131,7 @@ namespace tiki
 		const RasterizerState*			m_pRasterizerState;
 		const SamplerState*				m_pSamplerState;
 
+		const VertexFormat*				m_pVertexFormat;
 		const VertexInputBinding*		m_pSpriteInputBinding;
 		const VertexInputBinding*		m_pCompositeInputBinding;
 
