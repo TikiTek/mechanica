@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<tikigenericobjects>
+	<resource type="Level">
+		<object type="LevelData">
+			<field type="{reference LevelTheme}" name="theme" value="MLTH:default.level_theme" />
+			<field type="{array EntityTemplateData}" name="entities">
+				<array type="EntityTemplateData">
+					<element type="EntityTemplateData">
+						<object type="EntityTemplateData">
+						
+						</object>
+					</element>
+				</array>
+			</field>
+		</object>
+	</resource>
+</tikigenericobjects>

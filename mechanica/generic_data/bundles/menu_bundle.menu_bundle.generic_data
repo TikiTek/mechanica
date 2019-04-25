@@ -57,14 +57,14 @@
 							<field type="string" name="action" value="exit" />
 						</object>
 					</element>
-					<element type="MenuElement">
+					<!--element type="MenuElement">
 						<object type="MenuElement">
 							<field type="{reference Texture}" name="texture" value="TEXR:menu_item_resume0.texture" />
 							<field type="{reference Texture}" name="textureHover" value="TEXR:menu_item_resume1.texture" />
 							<field type="{reference Texture}" name="textureText" value="TEXR:menu_item_resume_text.texture" />
 							<field type="string" name="action" value="resume" />
 						</object>
-					</element>
+					</element-->
 				</array>
 			</field>
 			<field type="{array MenuElement}" name="levelElement">
