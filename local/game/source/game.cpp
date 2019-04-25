@@ -25,7 +25,7 @@ namespace tiki
 		PhysicsTestState	physicsTestState;
 	};
 
-	static GameStates getStartState()
+	static GameState getStartState()
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		char userName[ 32u ];
@@ -35,15 +35,21 @@ namespace tiki
 			 isStringEquals( userName, "tim.boden" ) ||
 			 isStringEquals( userName, "mail" ) )
 		{
-			//return GameStates_PhysicsTest;
-			//return GameStates_Test;
-			//return GameStates_BasicTest;
-			//return GameStates_Play;
-			return GameStates_Menu;
+			//return GameState_PhysicsTest;
+			//return GameState_Test;
+			//return GameState_BasicTest;
+			//return GameState_Play;
+			return GameState_Menu;
 		}
 #endif
 
-		return GameStates_Play;
+		return GameState_Play;
+	}
+
+	void Game::startTransition( GameState targetState, const GameTransitionData& data )
+	{
+		m_transitionData = data;
+		m_gameFlow.startTransition( targetState );
 	}
 
 	void Game::fillGameParameters( GameApplicationParamters& parameters )
@@ -92,7 +98,7 @@ namespace tiki
 				{ &m_pStates->basicTestState,		0u,	BasicTestStateTransitionSteps_Count,	"BasicTestState" },		// F11
 				{ &m_pStates->physicsTestState,		0u,	PhysicsTestStateTransitionSteps_Count,	"PhysicsTestState" }	// F12
 		};
-		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == GameStates_Count );
+		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == GameState_Count );
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
 		m_gameFlow.startTransition( getStartState() );
@@ -119,7 +125,7 @@ namespace tiki
 				m_gameFlow.update();
 			}
 
-			m_gameFlow.startTransition( GameStates_Root );
+			m_gameFlow.startTransition( GameState_Root );
 
 			while ( m_gameFlow.isInTransition() )
 			{
@@ -178,11 +184,11 @@ namespace tiki
 		m_touchSystem.render( getImmediateRenderer() );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		if( m_gameFlow.isInState( GameStates_PhysicsTest ) )
+		if( m_gameFlow.isInState( GameState_PhysicsTest ) )
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->physicsTestState.getCamera() );
 		}
-		else if( m_gameFlow.isInState( GameStates_Application ) )
+		else if( m_gameFlow.isInState( GameState_Application ) )
 		{
 			debugrenderer::flush( getImmediateRenderer(), m_pStates->applicationState.getRenderer().getCamera() );
 		}

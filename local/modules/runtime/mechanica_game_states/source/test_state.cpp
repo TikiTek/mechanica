@@ -108,7 +108,7 @@ namespace tiki
 		case TestStateTransitionSteps_CreateGameClient:
 			if ( isCreating )
 			{
-				TIKI_VERIFY( m_gameClient.create( m_pGame->getGraphicsSystem() ) );
+				TIKI_VERIFY( m_gameClient.create() );
 
 				m_playerEntityId = m_gameClient.createPlayerEntity( vector::create( 0.0, -2.0f ) );
 				m_islandEntityId = m_gameClient.createEntityFromTemplate( m_pIsland1->getData() );
@@ -152,13 +152,10 @@ namespace tiki
 
 	void TestState::update()
 	{
-		const float timeDelta		= float( m_pGame->getFrameTimer().getElapsedTime() );
-		const float totalGameTime	= float( m_pGame->getFrameTimer().getTotalTime() );
-		const float timeValue		= (float)m_pGame->getFrameTimer().getTotalTime() / 10.0f;
+		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
 
 		GameClientUpdateContext gameClientUpdateContext;
-		gameClientUpdateContext.timeDelta		= timeDelta;
-		gameClientUpdateContext.totalGameTime	= totalGameTime;
+		gameClientUpdateContext.gameTime = m_pGame->getFrameTimer().getTime();
 		m_gameClient.update( gameClientUpdateContext );
 
 		debugrenderer::drawText( Vector2::zero, TIKI_COLOR_GREEN, " Zoom: %.2f, FPS: %.2f", m_pRenderer->getTargetZoom(), 1.0f / timeDelta );

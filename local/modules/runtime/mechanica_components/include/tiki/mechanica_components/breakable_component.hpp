@@ -30,7 +30,7 @@ namespace tiki
 		bool				create( EntitySystem& entitySystem, Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent, const Physics2dBodyComponent& bodyComponent, const SpriteComponent& spriteComponent, const PolygonComponent& polygonComponent );
 		void				dispose();
 
-		void				update( float deltaTime ) const;
+		void				update( double deltaTime ) const;
 
 		void				breakBody( BreakableComponentState* pState ) const;
 

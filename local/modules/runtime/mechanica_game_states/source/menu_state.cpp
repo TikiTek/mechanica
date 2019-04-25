@@ -373,6 +373,13 @@ namespace tiki
 		{
 			createMenuCircles( bundle.settingsElements );
 		}
+		else if( doesStringStartWith( pAction, "level" ) )
+		{
+			GameTransitionData transitionData;
+			transitionData.play.levelName = pAction;
+
+			m_pGame->startTransition( GameState_Play, transitionData );
+		}
 	}
 
 	void MenuState::updateCircle( Circle& circle, GameTime time )

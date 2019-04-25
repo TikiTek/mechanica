@@ -1,11 +1,8 @@
 #include "tiki/gameplay/game_client.hpp"
 
 #include "tiki/base/base_types.hpp"
-#include "tiki/base/debug_property.hpp"
-#include "tiki/graphics/color_xkcd.hpp"
-#include "tiki/graphics/graphics_context.hpp"
-#include "tiki/graphics/graphics_system.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/resource/resource_request_pool.hpp"
 
 #include "components_2d.hpp"
 #include "mechanica_components.hpp"
@@ -20,10 +17,8 @@ namespace tiki
 	{
 	}
 
-	bool GameClient::create( GraphicsSystem& graphicsSystem )
+	bool GameClient::create()
 	{
-		m_pGraphicsSystem = &graphicsSystem;
-
 		EntitySystemParameters entitySystemParams;
 		entitySystemParams.typeRegisterMaxCount		= MaxTypeCount;
 		entitySystemParams.storageChunkSize			= ChunkSize;
@@ -114,8 +109,17 @@ namespace tiki
 
 		m_physicsWorld.dispose();
 		m_entitySystem.dispose();
+	}
 
-		m_pGraphicsSystem = nullptr;
+	void GameClient::startLoadLevel( ResourceRequestPool& requestPool, string levelName )
+	{
+		const string levelResourceName = levelName + ".level";
+		requestPool.beginLoadResource( &m_pLevel, levelResourceName.cStr() );
+	}
+
+	void GameClient::unloadLevel( ResourceRequestPool& requestPool )
+	{
+		requestPool.unloadResource( m_pLevel );
 	}
 
 	EntityId GameClient::createPlayerEntity( const Vector2& position )
@@ -288,14 +292,14 @@ namespace tiki
 
 	void GameClient::update( GameClientUpdateContext& updateContext )
 	{
-		const timems timeMs = timems( updateContext.timeDelta * 1000.0f );
+		const timems timeMs = timems( updateContext.gameTime.elapsedTime * 1000.0f );
 
 		m_entitySystem.update();
-		m_physicsWorld.update( updateContext.timeDelta );
+		m_physicsWorld.update( updateContext.gameTime.elapsedTime );
 
 		m_physicsBodyComponent.update();
-		m_breakableComponent.update( updateContext.timeDelta );
-		m_playerComponent.update( updateContext.timeDelta );
+		m_breakableComponent.update( updateContext.gameTime.elapsedTime );
+		m_playerComponent.update( updateContext.gameTime.elapsedTime );
 		m_lifeTimeComponent.update( m_entitySystem, timeMs );
 
 		m_transformComponent.update();

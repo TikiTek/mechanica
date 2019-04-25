@@ -131,7 +131,7 @@ namespace tiki
 			if( !m_renderer.resize( windowEvent.data.sizeChanged.size.x, windowEvent.data.sizeChanged.size.y ) )
 			{
 				m_renderer.dispose( m_pGame->getResourceRequestPool() );
-				m_pGame->getGameFlowSystem().startTransition( GameStates_Root );
+				m_pGame->startTransition( GameState_Root, GameTransitionData() );
 			}
 		}
 	}

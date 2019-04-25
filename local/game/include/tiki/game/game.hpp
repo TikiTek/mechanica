@@ -11,19 +11,29 @@ namespace tiki
 {
 	struct States;
 
-	enum GameStates
+	enum GameState
 	{
-		GameStates_Root,
-			GameStates_Application,
-				GameStates_Intro,
-				GameStates_Menu,
-				GameStates_Play,
-				GameStates_Credits,
-				GameStates_Test,
-			GameStates_BasicTest,
-			GameStates_PhysicsTest,
+		GameState_Root,
+			GameState_Application,
+				GameState_Intro,
+				GameState_Menu,
+				GameState_Play,
+				GameState_Credits,
+				GameState_Test,
+			GameState_BasicTest,
+			GameState_PhysicsTest,
 
-		GameStates_Count
+		GameState_Count
+	};
+
+	struct GameTransitionPlayerData
+	{
+		string						levelName;
+	};
+
+	struct GameTransitionData
+	{
+		GameTransitionPlayerData	play;
 	};
 
 	class Game : public GameApplication
@@ -32,29 +42,31 @@ namespace tiki
 
 	public:
 
-		GameFlowSystem&			getGameFlowSystem()			{ return m_gameFlow; }
-		ResourceRequestPool&	getResourceRequestPool()	{ return m_resourceRequestPool; }
+		void						startTransition( GameState targetState, const GameTransitionData& data );
+		const GameTransitionData&	getTransitionData() const { return m_transitionData; }
+
+		ResourceRequestPool&		getResourceRequestPool()	{ return m_resourceRequestPool; }
 
 	protected:
 
-		virtual void			fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE_FINAL;
-		virtual bool			initializeGame() TIKI_OVERRIDE_FINAL;
-		virtual void			shutdownGame() TIKI_OVERRIDE_FINAL;
+		virtual void				fillGameParameters( GameApplicationParamters& parameters ) TIKI_OVERRIDE_FINAL;
+		virtual bool				initializeGame() TIKI_OVERRIDE_FINAL;
+		virtual void				shutdownGame() TIKI_OVERRIDE_FINAL;
 
-		virtual void			updateGame( bool wantToShutdown ) TIKI_OVERRIDE_FINAL;
-		virtual void			renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE_FINAL;
+		virtual void				updateGame( bool wantToShutdown ) TIKI_OVERRIDE_FINAL;
+		virtual void				renderGame( GraphicsContext& graphicsContext ) const TIKI_OVERRIDE_FINAL;
 
-		virtual bool			processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
-		virtual void			processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
+		virtual bool				processGameInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
+		virtual void				processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
-		ResourceRequestPool		m_resourceRequestPool;
+		ResourceRequestPool			m_resourceRequestPool;
 
-		GameFlowSystem			m_gameFlow;
-		States*					m_pStates;
+		GameFlowSystem				m_gameFlow;
+		GameTransitionData			m_transitionData;
+		States*						m_pStates;
 
-		TouchGameSystem			m_touchSystem;
-
+		TouchGameSystem				m_touchSystem;
 	};
 }

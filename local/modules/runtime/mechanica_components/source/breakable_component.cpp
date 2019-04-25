@@ -75,7 +75,7 @@ namespace tiki
 		m_pPolgonComponent		= nullptr;
 	}
 
-	void BreakableComponent::update( float deltaTime ) const
+	void BreakableComponent::update( double deltaTime ) const
 	{
 		Iterator componentStates = getIterator();
 
@@ -87,7 +87,7 @@ namespace tiki
 				continue;
 			}
 
-			pState->breakAfterSeconds -= deltaTime;
+			pState->breakAfterSeconds -= float( deltaTime );
 			if( pState->breakAfterSeconds <= 0.0f )
 			{
 				breakBody( pState );
