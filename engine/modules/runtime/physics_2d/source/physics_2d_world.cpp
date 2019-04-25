@@ -81,9 +81,9 @@ namespace tiki
 	//	return callback.getCollides();
 	//}
 
-	void Physics2dWorld::update( float timeStep )
+	void Physics2dWorld::update( double timeStep )
 	{
-		m_world.Step( timeStep, s_stepVelocityIterations, s_stepPositionIterations );
+		m_world.Step( float32( timeStep ), s_stepVelocityIterations, s_stepPositionIterations );
 	}
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
