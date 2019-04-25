@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<tikigenericobjects>
+	<resource type="LevelTheme">
+		<object type="LevelThemeData">
+			<field type="{reference Texture}" name="background" value="TEXR:menu_background.texture" />
+			<field type="float3" name="bloomCutOffThreshold">
+				<object type="float3">
+					<field type="float" name="x" value="2.0" />
+					<field type="float" name="y" value="2.0" />
+					<field type="float" name="z" value="2.0" />
+				</object>
+			</field>
+		</object>
+	</resource>
+</tikigenericobjects>
