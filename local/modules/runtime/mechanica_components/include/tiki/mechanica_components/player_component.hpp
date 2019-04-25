@@ -28,8 +28,8 @@ namespace tiki
 		bool				create( Physics2dWorld& physicsWorld, const Transform2dComponent& transformComponent );
 		void				dispose();
 
-		void				update( float timeDelta );
-		
+		void				update( double timeDelta );
+
 		bool				processInputEvent( const InputEvent& inputEvent );
 
 	protected:

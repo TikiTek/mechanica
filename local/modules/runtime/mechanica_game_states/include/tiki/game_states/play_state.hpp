@@ -2,7 +2,7 @@
 
 #include "tiki/game_flow/game_flow_state.hpp"
 
-#include "tiki/gameplay/game_session.hpp"
+#include "tiki/gameplay/game_client.hpp"
 #include "tiki/graphics/immediate_renderer.hpp"
 #include "tiki/render_effects/post_bloom.hpp"
 
@@ -13,8 +13,8 @@ namespace tiki
 
 	enum PlayStateTransitionSteps
 	{
-		PlayStateTransitionSteps_InitializeGraphics,
 		PlayStateTransitionSteps_CreateClientSystems,
+		PlayStateTransitionSteps_LoadLevel,
 		PlayStateTransitionSteps_SetRendererData,
 
 		PlayStateTransitionSteps_Count
@@ -32,24 +32,19 @@ namespace tiki
 		void						create( Game* pGame, ApplicationState* pApplicationState );
 		void						dispose();
 
-		virtual TransitionState		processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
+		virtual TransitionState		processCreationStep( size_t currentStep, bool isInital ) TIKI_OVERRIDE_FINAL;
+		virtual TransitionState		processDestructionStep( size_t currentStep, bool isInital ) TIKI_OVERRIDE_FINAL;
 
-		virtual void				update();
-		virtual void				render( GraphicsContext& graphicsContext );
+		virtual void				update() TIKI_OVERRIDE_FINAL;
+		virtual void				render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;
 
-		virtual bool				processInputEvent( const InputEvent& inputEvent );
-		virtual void				processWindowEvent( const WindowEvent& windowEvent );
+		virtual bool				processInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		Game*						m_pGame;
 		ApplicationState*			m_pApplicationState;
 
-		Renderer2d*					m_pRenderer;
-		//ImmediateRenderer			m_immediateRenderer;
-		//PostProcessBloom			m_bloom;
-
-		GameSession					m_gameSession;
-
+		GameClient					m_gameClient;
 	};
 }

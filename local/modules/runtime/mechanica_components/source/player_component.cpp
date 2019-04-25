@@ -103,7 +103,7 @@ namespace tiki
 		m_pPhysicsWorld			= nullptr;
 	}
 
-	void PlayerComponent::update( float timeDelta )
+	void PlayerComponent::update( double timeDelta )
 	{
 		Iterator componentStates = getIterator();
 		State* pState = nullptr;

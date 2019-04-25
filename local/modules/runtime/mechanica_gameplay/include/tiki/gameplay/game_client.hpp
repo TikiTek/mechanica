@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tiki/base/timer.hpp"
 #include "tiki/entity_system/entity_system.hpp"
 #include "tiki/math/camera.hpp"
 #include "tiki/physics_2d/physics_2d_world.hpp"
@@ -17,17 +18,17 @@
 #include "tiki/physics_2d_components/physics_2d_joint_component.hpp"
 
 #include "entities.hpp"
+#include "mechanica_level.hpp"
 
 namespace tiki
 {
-	class GraphicsSystem;
 	class Renderer2d;
+	class ResourceRequestPool;
 	struct InputEvent;
 
 	struct GameClientUpdateContext
 	{
-		float	totalGameTime;
-		float	timeDelta;
+		GameTime	gameTime;
 	};
 
 	class GameClient
@@ -39,8 +40,11 @@ namespace tiki
 														GameClient();
 														~GameClient();
 
-		bool											create( GraphicsSystem& graphicsSystem );
+		bool											create();
 		void											dispose();
+
+		void											startLoadLevel( ResourceRequestPool& requestPool, string levelName );
+		void											unloadLevel( ResourceRequestPool& requestPool );
 
 		EntityId										createPlayerEntity( const Vector2& position );
 		EntityId										createEntityFromTemplate( const EntityTemplateData& entityTemplate );
@@ -79,10 +83,9 @@ namespace tiki
 		};
 
 		EntitySystem					m_entitySystem;
-
-		GraphicsSystem*					m_pGraphicsSystem;
-
 		Physics2dWorld					m_physicsWorld;
+
+		const LevelGenericDataResource*	m_pLevel;
 
 		LifeTimeComponent				m_lifeTimeComponent;
 
