@@ -34,7 +34,7 @@ namespace tiki
 		//bool		checkIntersection( const PhysicsShape& physicsShape, const Vector3& position ) const;
 		//bool		checkIntersection( const PhysicsCollisionObject& physicsObject1, const PhysicsCollisionObject& physicsObject2 ) const;
 
-		void		update( float timeStep );
+		void		update( double timeStep );
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		void		renderDebug();
