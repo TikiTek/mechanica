@@ -83,7 +83,7 @@ namespace tiki
 				return false;
 			}
 
-			m_pVertexInputBinding = graphicsSystem.createVertexInputBinding( getImmediateRenderer().getShader()->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
+			m_pVertexInputBinding = graphicsSystem.createVertexInputBinding( getImmediateRenderer().getShaderSet()->getShader( ShaderType_VertexShader, 0u ), m_pVertexFormat );
 			if( m_pVertexInputBinding == nullptr )
 			{
 				shutdownTool();
