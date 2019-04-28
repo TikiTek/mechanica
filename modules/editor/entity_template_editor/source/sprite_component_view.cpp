@@ -3,7 +3,7 @@
 #include "tiki/editor_interface/editor_interface.hpp"
 #include "tiki/graphics/texture.hpp"
 #include "tiki/math/rectangle.hpp"
-#include "tiki/tool_generic_data/generic_data_helper.hpp"
+#include "tiki/generic_data_editor/generic_data_helper.hpp"
 
 namespace tiki
 {

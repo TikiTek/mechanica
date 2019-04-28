@@ -140,8 +140,8 @@ namespace tiki
 			return false;
 		}
 
-		RenderTargetBuffer renderTargetBuffer( m_renderTargetData );
-		if( !m_renderTarget.create( *m_pGraphicsSystem, width, height, &renderTargetBuffer, 1u, nullptr ) )
+		const TextureData* pRenderTargetBuffer = &m_renderTargetData;
+		if( !m_renderTarget.create( *m_pGraphicsSystem, width, height, &pRenderTargetBuffer, 1u, nullptr ) )
 		{
 			dispose();
 			return false;

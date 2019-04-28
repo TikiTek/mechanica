@@ -27,6 +27,7 @@ namespace tiki
 		m_pRasterizerState			= nullptr;
 		m_pSamplerState				= nullptr;
 
+		m_pVertexFormat				= nullptr;
 		m_pSpriteInputBinding		= nullptr;
 		m_pCompositeInputBinding	= nullptr;
 	}
