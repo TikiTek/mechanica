@@ -177,7 +177,7 @@ function PlatformConfiguration:add_include_dir( include_dir, configuration, plat
 	if type( include_dir ) == "string" then
 		self:get_config( configuration, platform ):add_include_dir( include_dir, self.base_path );
 	else
-		throw "[add_binary_dir] Invalid args.";
+		throw "[add_include_dir] Invalid args.";
 	end
 end
 
