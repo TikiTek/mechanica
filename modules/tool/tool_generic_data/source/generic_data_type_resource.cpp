@@ -5,18 +5,19 @@
 
 namespace tiki
 {
-	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
 		, m_pBaseType( pBaseType )
+		, m_isGenericData( isGenericDataType )
 	{
 	}
 
 	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
+		, m_pBaseType( nullptr )
+		, m_isGenericData( false )
+		, m_postFix( postFix )
 	{
-		m_pBaseType = nullptr;
-		m_postFix	= postFix;
-
 		const uint8* pFourCC = (const uint8*)&fourCC;
 		for (uint i = 0u; i < 4u; ++i )
 		{
@@ -86,6 +87,11 @@ namespace tiki
 
 	string GenericDataTypeResource::getCodeExportName() const
 	{
+		if( m_isGenericData )
+		{
+			return formatDynamicString( "ResRef< %sGenericDataResource >", getName().cStr() );
+		}
+
 		return formatDynamicString( "ResRef< %s >", getName().cStr() );
 	}
 

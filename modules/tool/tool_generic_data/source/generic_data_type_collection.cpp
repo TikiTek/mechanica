@@ -756,7 +756,7 @@ namespace tiki
 						if ( pBaseType != nullptr && pBaseType->getType() == GenericDataTypeType_Struct )
 						{
 							const GenericDataTypeStruct* pTypesBase = (const GenericDataTypeStruct*)pBaseType;
-							pType = TIKI_NEW( GenericDataTypeResource )( *this, pNameAtt->getValue(), filename, mode, pTypesBase );
+							pType = TIKI_NEW( GenericDataTypeResource )( *this, pNameAtt->getValue(), filename, mode, pTypesBase, true );
 						}
 						else
 						{
