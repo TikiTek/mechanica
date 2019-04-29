@@ -13,7 +13,7 @@ namespace tiki
 
 	public:
 
-										GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType );
+										GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType );
 										GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const string& postFix, fourcc fourCC );
 		virtual							~GenericDataTypeResource();
 
@@ -33,6 +33,7 @@ namespace tiki
 
 		const GenericDataType*			m_pBaseType;
 
+		bool							m_isGenericData;
 		string							m_postFix;
 		FixedArray< char, 4 >			m_fourCC;
 	};
