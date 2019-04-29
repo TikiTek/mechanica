@@ -917,7 +917,7 @@ namespace tiki
 						escapeString( traceInfo.message ).cStr()
 					);
 
-					if( traceInfo.level >= TraceLevel_Warning )
+					if( traceInfo.level == TraceLevel_Error )
 					{
 						hasError = true;
 						hasGlobalError = true;
