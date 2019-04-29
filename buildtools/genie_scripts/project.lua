@@ -99,6 +99,18 @@ function Project:add_library_file( library_filename, configuration, platform )
 	self.config:add_library_file( library_filename, configuration, platform );
 end
 
+function Project:add_install( pattern, target_path, configuration, platform )
+	local config = self.config:get_config( configuration, platform );
+	
+	local step_script = path.join( global_configuration.scripts_path, "actions/install_binary.lua" );
+	local step_data = {
+		pattern = pattern,
+		target = target_path
+	};
+	
+	config:add_post_build_step( step_script, step_data );
+end
+
 function Project:finalize_create_directories( project_pathes, configuration, platform )
 	project_pathes.root_dir = _OPTIONS[ "outpath" ];
 	if not os.isdir( project_pathes.root_dir ) then
