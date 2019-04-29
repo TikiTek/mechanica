@@ -13,6 +13,8 @@ local project = Project:new(
 	ProjectTypes.consoleApplication
 );
 
+project:add_install( "*.exe", "library/buildtools/generic_data_code_generator", "Release" );
+
 local solution = Solution:new( "generic_data_code_generator" );
 solution:add_project( project );
 
