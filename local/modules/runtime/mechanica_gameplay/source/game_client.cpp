@@ -2,6 +2,7 @@
 
 #include "tiki/base/base_types.hpp"
 #include "tiki/math/vector.hpp"
+#include "tiki/renderer_2d/renderer_2d.hpp"
 #include "tiki/resource/resource_request_pool.hpp"
 
 #include "components_2d.hpp"
@@ -115,6 +116,22 @@ namespace tiki
 	{
 		const string levelResourceName = levelName + ".level";
 		requestPool.beginLoadResource( &m_pLevel, levelResourceName.cStr() );
+	}
+
+	GameClientLoadResult GameClient::finalizeLoadLevel( ResourceRequestPool& requestPool )
+	{
+		if( requestPool.isFinish() )
+		{
+			if( requestPool.hasError() )
+			{
+				return GameClientLoadResult_Error;
+			}
+
+			createLevelEntities();
+			return GameClientLoadResult_Successful;
+		}
+
+		return GameClientLoadResult_InProcess;
 	}
 
 	void GameClient::unloadLevel( ResourceRequestPool& requestPool )
@@ -290,6 +307,16 @@ namespace tiki
 		m_entitySystem.disposeEntity( entityId );
 	}
 
+	void GameClient::applyRenderParameters( Renderer2dRenderParameters& renderParameters )
+	{
+		const LevelThemeData& levelTheme = m_pLevel->getData().theme->getData();
+
+		renderParameters.enableBloom			= true;
+		renderParameters.bloomCutoffThreshold.r	= levelTheme.bloomCutOffThreshold.x;
+		renderParameters.bloomCutoffThreshold.g	= levelTheme.bloomCutOffThreshold.y;
+		renderParameters.bloomCutoffThreshold.b	= levelTheme.bloomCutOffThreshold.z;
+	}
+
 	void GameClient::update( GameClientUpdateContext& updateContext )
 	{
 		const timems timeMs = timems( updateContext.gameTime.elapsedTime * 1000.0f );
@@ -323,5 +350,11 @@ namespace tiki
 		}
 
 		return false;
+	}
+
+	void GameClient::createLevelEntities()
+	{
+		const LevelData& levelData = m_pLevel->getData();
+		//levelData.theme
 	}
 }

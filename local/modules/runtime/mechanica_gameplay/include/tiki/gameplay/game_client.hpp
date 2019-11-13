@@ -25,10 +25,18 @@ namespace tiki
 	class Renderer2d;
 	class ResourceRequestPool;
 	struct InputEvent;
+	struct Renderer2dRenderParameters;
 
 	struct GameClientUpdateContext
 	{
 		GameTime	gameTime;
+	};
+
+	enum GameClientLoadResult
+	{
+		GameClientLoadResult_InProcess,
+		GameClientLoadResult_Error,
+		GameClientLoadResult_Successful
 	};
 
 	class GameClient
@@ -44,6 +52,7 @@ namespace tiki
 		void											dispose();
 
 		void											startLoadLevel( ResourceRequestPool& requestPool, string levelName );
+		GameClientLoadResult							finalizeLoadLevel( ResourceRequestPool& requestPool );
 		void											unloadLevel( ResourceRequestPool& requestPool );
 
 		EntityId										createPlayerEntity( const Vector2& position );
@@ -53,6 +62,8 @@ namespace tiki
 		//EntityId										createTerrainEntity( const Model* pModel, const Vector3& position );
 
 		void											disposeEntity( EntityId entityId );
+
+		void											applyRenderParameters( Renderer2dRenderParameters& renderParameters );
 
 		void											update( GameClientUpdateContext& updateContext );
 		void											render( Renderer2d& renderer );
@@ -100,5 +111,7 @@ namespace tiki
 		BreakableComponent				m_breakableComponent;
 		PlayerComponent					m_playerComponent;
 		WiggleComponent					m_wiggleComponent;
+
+		void							createLevelEntities();
 	};
 }

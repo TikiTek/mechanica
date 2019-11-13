@@ -25,31 +25,10 @@ namespace tiki
 		PhysicsTestState	physicsTestState;
 	};
 
-	static GameState getStartState()
-	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		char userName[ 32u ];
-		platform::getUserName( userName, TIKI_COUNT( userName ) );
-
-		if ( isStringEquals( userName, "Tim") ||
-			 isStringEquals( userName, "tim.boden" ) ||
-			 isStringEquals( userName, "mail" ) )
-		{
-			//return GameState_PhysicsTest;
-			//return GameState_Test;
-			//return GameState_BasicTest;
-			//return GameState_Play;
-			return GameState_Menu;
-		}
-#endif
-
-		return GameState_Play;
-	}
-
-	void Game::startTransition( GameState targetState, const GameTransitionData& data )
+	void Game::startTransition( const GameTransitionData& data )
 	{
 		m_transitionData = data;
-		m_gameFlow.startTransition( targetState );
+		m_gameFlow.startTransition( data.state );
 	}
 
 	void Game::fillGameParameters( GameApplicationParamters& parameters )
@@ -101,7 +80,7 @@ namespace tiki
 		TIKI_COMPILETIME_ASSERT( TIKI_COUNT( gameDefinition ) == GameState_Count );
 
 		m_gameFlow.create( gameDefinition, TIKI_COUNT( gameDefinition ) );
-		m_gameFlow.startTransition( getStartState() );
+		startFirstTransition();
 
 		if ( !m_touchSystem.create( graphicsSystem, resourceManager ) )
 		{
@@ -222,9 +201,45 @@ namespace tiki
 		m_gameFlow.processWindowEvent( windowEvent );
 	}
 
+	void Game::startFirstTransition()
+	{
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+		char userName[ 32u ];
+		platform::getUserName( userName, TIKI_COUNT( userName ) );
+
+		if( isStringEquals( userName, "Tim" ) ||
+			isStringEquals( userName, "tim.boden" ) ||
+			isStringEquals( userName, "mail" ) )
+		{
+			//return GameState_PhysicsTest;
+			//return GameState_Test;
+			//return GameState_BasicTest;
+			//return GameState_Play;
+			startTransition( GameTransitionData::createPlay( "level1" ) );
+		}
+#endif
+
+		startTransition( GameTransitionData::createMenu() );
+	}
+
 	GameApplication& framework::getGame()
 	{
 		static Game game;
 		return game;
+	}
+
+	GameTransitionData GameTransitionData::createMenu()
+	{
+		GameTransitionData data;
+		data.state			= GameState_Menu;
+		return data;
+	}
+
+	GameTransitionData GameTransitionData::createPlay( const string& levelName )
+	{
+		GameTransitionData data;
+		data.state			= GameState_Play;
+		data.play.levelName = levelName;
+		return data;
 	}
 }
