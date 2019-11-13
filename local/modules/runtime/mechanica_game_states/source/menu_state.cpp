@@ -375,10 +375,7 @@ namespace tiki
 		}
 		else if( doesStringStartWith( pAction, "level" ) )
 		{
-			GameTransitionData transitionData;
-			transitionData.play.levelName = pAction;
-
-			m_pGame->startTransition( GameState_Play, transitionData );
+			m_pGame->startTransition( GameTransitionData::createPlay( pAction ) );
 		}
 	}
 

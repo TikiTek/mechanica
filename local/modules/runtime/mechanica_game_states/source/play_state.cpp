@@ -55,15 +55,23 @@ namespace tiki
 					m_gameClient.startLoadLevel( resourceRequestPool, m_pGame->getTransitionData().play.levelName );
 				}
 
-				return waitForResources( resourceRequestPool );
+				switch( m_gameClient.finalizeLoadLevel( resourceRequestPool ) )
+				{
+				case GameClientLoadResult_InProcess:
+					return TransitionState_InProcess;
+
+				case GameClientLoadResult_Successful:
+					return TransitionState_Finish;
+
+				default:
+				case GameClientLoadResult_Error:
+					return TransitionState_Error;
+				}
 			}
 			break;
 
 		case PlayStateTransitionSteps_SetRendererData:
 			{
-				Renderer2dRenderParameters& renderParameters = m_pApplicationState->getRenderParameters();
-
-				renderParameters.enableBloom = true;
 			}
 			break;
 
@@ -110,6 +118,7 @@ namespace tiki
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
+		m_gameClient.applyRenderParameters( m_pApplicationState->getRenderParameters() );
 		m_gameClient.render( m_pApplicationState->getRenderer() );
 	}
 

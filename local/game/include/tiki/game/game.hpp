@@ -33,7 +33,11 @@ namespace tiki
 
 	struct GameTransitionData
 	{
+		GameState					state;
 		GameTransitionPlayerData	play;
+
+		static GameTransitionData	createMenu();
+		static GameTransitionData	createPlay( const string& levelName );
 	};
 
 	class Game : public GameApplication
@@ -42,7 +46,7 @@ namespace tiki
 
 	public:
 
-		void						startTransition( GameState targetState, const GameTransitionData& data );
+		void						startTransition( const GameTransitionData& data );
 		const GameTransitionData&	getTransitionData() const { return m_transitionData; }
 
 		ResourceRequestPool&		getResourceRequestPool()	{ return m_resourceRequestPool; }
@@ -68,5 +72,7 @@ namespace tiki
 		States*						m_pStates;
 
 		TouchGameSystem				m_touchSystem;
+
+		void						startFirstTransition();
 	};
 }
