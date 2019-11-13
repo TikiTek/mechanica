@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <generictypes base="entities">
-	<struct name="LevelThemeProp">
+	<struct name="LevelThemeBackgroundSprite">
 		<field type="{reference Texture}" name="texture" />
+		<field type="float" name="scale" />
+	</struct>
+	<struct name="LevelThemeBackgroundLayer">
+		<field type="float" name="minDistanceX" />
+		<field type="float" name="maxDistanceX" />
+		<field type="float" name="minPositionY" />
+		<field type="float" name="maxPositionY" />
+		<field type="float" name="speed" />
+		<field type="{array LevelThemeBackgroundSprite}" name="sprites" />
 	</struct>
 	<struct name="LevelThemeData">
-		<field type="{reference Texture}" name="background" />
-		<field type="{reference Texture}" name="colorGradingMap" />
-		<field type="{reference Texture}" name="clouds" />
 		<field type="float3" name="bloomCutOffThreshold" />
+		<field type="{reference Texture}" name="background" />
+		<field type="{array LevelThemeBackgroundLayer}" name="backgroundLayer" />
+		<field type="{reference Texture}" name="colorGradingMap" />
 	</struct>
 	<resource name="LevelTheme" base="LevelThemeData" postfix="level_theme" fourcc="MLTH" />
 	<struct name="LevelData">
