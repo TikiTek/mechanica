@@ -6,7 +6,7 @@ namespace tiki
 {
 	class DebugGui;
 	class GameApplication;
-	struct GameApplicationkData;
+	struct GameApplicationData;
 
 	namespace framework
 	{
@@ -61,7 +61,7 @@ namespace tiki
 	private:
 
 		GameApplicationParamters	m_parameters;
-		GameApplicationkData*		m_pGameData;
+		GameApplicationData*		m_pGameData;
 
 	};
 }

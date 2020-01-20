@@ -79,7 +79,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( targetStateIndex < m_stateDefinition.getCount() );
 
-		const uint currentState = isInTransition() ? m_transition.getCurrentTransitionState() : m_currentState;
+		const uint currentState = isInTransition() ? m_transition.currentState : m_currentState;
 
 		if ( m_currentState == targetStateIndex && !isInTransition() )
 		{
