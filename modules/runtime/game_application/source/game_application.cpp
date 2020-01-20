@@ -8,9 +8,9 @@
 
 namespace tiki
 {
-	struct GameApplicationkData
+	struct GameApplicationData
 	{
-		GameApplicationkData()
+		GameApplicationData()
 		{
 		}
 	};
@@ -34,7 +34,7 @@ namespace tiki
 
 	bool GameApplication::initializeApplication()
 	{
-		m_pGameData = TIKI_NEW( GameApplicationkData );
+		m_pGameData = TIKI_NEW( GameApplicationData );
 
 		if ( !initializeDebugSystems() )
 		{
