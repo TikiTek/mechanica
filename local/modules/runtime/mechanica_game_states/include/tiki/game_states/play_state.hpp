@@ -3,6 +3,7 @@
 #include "tiki/game_flow/game_flow_state.hpp"
 
 #include "tiki/gameplay/game_client.hpp"
+#include "tiki/gameplay/level_renderer.hpp"
 #include "tiki/graphics/immediate_renderer.hpp"
 #include "tiki/render_effects/post_bloom.hpp"
 
@@ -45,6 +46,7 @@ namespace tiki
 		Game*						m_pGame;
 		ApplicationState*			m_pApplicationState;
 
+		LevelRenderer				m_levelRenderer;
 		GameClient					m_gameClient;
 	};
 }
