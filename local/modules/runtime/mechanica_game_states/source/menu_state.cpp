@@ -373,6 +373,10 @@ namespace tiki
 		{
 			createMenuCircles( bundle.settingsElements );
 		}
+		else if( isStringEquals( pAction, "exit" ) )
+		{
+			m_pGame->startTransition( GameTransitionData::createExit() );
+		}
 		else if( doesStringStartWith( pAction, "level" ) )
 		{
 			m_pGame->startTransition( GameTransitionData::createPlay( pAction ) );

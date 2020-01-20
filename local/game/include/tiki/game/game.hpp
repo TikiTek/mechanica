@@ -38,6 +38,7 @@ namespace tiki
 
 		static GameTransitionData	createMenu();
 		static GameTransitionData	createPlay( const string& levelName );
+		static GameTransitionData	createExit();
 	};
 
 	class Game : public GameApplication
