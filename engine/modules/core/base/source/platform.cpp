@@ -7,7 +7,7 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
 		return PlatformType_Windows;
 #elif TIKI_ENABLED( TIKI_PLATFORM_LINUX )
-        return PlatformType_Linux;
+		return PlatformType_Linux;
 #else
 #	error not supported
 #endif

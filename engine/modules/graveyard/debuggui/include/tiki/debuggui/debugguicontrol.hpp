@@ -17,7 +17,7 @@ namespace tiki
 	struct DebugGuiEvent;
 	struct DebugGuiInputState;
 	struct InputEvent;
-    class DebugGui;
+	class DebugGui;
 
 	enum
 	{

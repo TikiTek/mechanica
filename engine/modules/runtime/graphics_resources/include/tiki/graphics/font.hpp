@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-    class ResourceManager;
+	class ResourceManager;
 
 	struct Vector2;
 
