@@ -1,6 +1,6 @@
 @echo off
 cd project
-..\..\..\buildtools\genie\genie.exe /outpath=../build vs2015
+..\..\..\buildtools\genie\genie.exe /outpath=../build vs2017
 if errorlevel 1 goto error
 goto exit
 
