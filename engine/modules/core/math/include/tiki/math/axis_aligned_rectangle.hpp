@@ -12,37 +12,36 @@ namespace tiki
 	//	0-------1
 	struct AxisAlignedRectangle
 	{
-	public:
+		Vector2								min;
+		Vector2								max;
 
-		Vector2						min;
-		Vector2						max;
+		inline void							clear();
 
-		TIKI_FORCE_INLINE void		clear();
+		inline void							getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const;
 
-		TIKI_FORCE_INLINE void		getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const;
+		inline void							translate( const Vector2& translation );
+		inline void							extend( const Vector2& extents );
 
-		TIKI_FORCE_INLINE void		translate( const Vector2& translation );
-		TIKI_FORCE_INLINE void		extend( const Vector2& extents );
+		inline bool							contains( const Vector2& point ) const;
 
-		TIKI_FORCE_INLINE bool		contains( const Vector2& point ) const;
+		inline Vector2						getCenter() const	{ return Vector2::scale( Vector2::add( min, max ), 0.5f ); }
+		inline Vector2						getSize() const		{ return Vector2::sub( max, min ); }
 
-		TIKI_FORCE_INLINE Vector2	getCenter() const;
-		TIKI_FORCE_INLINE Vector2	getSize() const;
+		inline float						getWidth() const	{ return max.x - min.x; }
+		inline float						getHeight() const	{ return max.y - min.y; }
 
-		TIKI_FORCE_INLINE float		getWidth() const;
-		TIKI_FORCE_INLINE float		getHeight() const;
+		inline float						getLeft() const		{ return min.x; }
+		inline float						getTop() const		{ return min.y; }
+		inline float						getRight() const	{ return max.x; }
+		inline float						getBottom() const	{ return max.y; }
 
-		TIKI_FORCE_INLINE float		getLeft() const;
-		TIKI_FORCE_INLINE float		getTop() const;
-		TIKI_FORCE_INLINE float		getRight() const;
-		TIKI_FORCE_INLINE float		getBottom() const;
+		static inline AxisAlignedRectangle create( float x, float y, float width, float height );
+		static inline AxisAlignedRectangle create( const Vector2& position, const Vector2& size );
+		static inline AxisAlignedRectangle createCentered( const Vector2& center, const Vector2& extents );
+		static inline AxisAlignedRectangle createMinMax( const Vector2& _min, const Vector2& _max );
+		static inline AxisAlignedRectangle createMinMax( float minX, float minY, float maxX, float maxY );
+		static inline AxisAlignedRectangle createFill( const Vector2& targetSize, const Vector2& sourceSize );
 	};
-
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( float x, float y, float width, float height );
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& position, const Vector2& size );
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleCentered( const Vector2& center, const Vector2& extents );
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( const Vector2& _min, const Vector2& _max );
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( float minX, float minY, float maxX, float maxY );
 }
 
 #include "../../../source/axis_aligned_rectangle.inl"

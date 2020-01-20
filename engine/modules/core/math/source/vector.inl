@@ -5,6 +5,193 @@
 
 namespace tiki
 {
+	Vector2 Vector2::create( float x, float y )
+	{
+		const Vector2 result = { x, y };
+		return result;
+	}
+
+	Vector2 Vector2::create( float2 source )
+	{
+		const Vector2 result = { source.x, source.y };
+		return result;
+	}
+
+	bool Vector2::isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isEquals( lhs.x, rhs.x, epsilon ) && f32::isEquals( lhs.y, rhs.y, epsilon );
+	}
+
+	bool Vector2::isZero( const Vector2& vec, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isZero( vec.x, epsilon ) && f32::isZero( vec.y, epsilon );
+	}
+
+	bool Vector2::isNormalized( const Vector2& vec, float epsilon /*= f32::epsilon */ )
+	{
+		return f32::isEquals( Vector2::length( vec ), 1.0f, epsilon );
+	}
+
+	float2 Vector2::toFloat( const Vector2& vec )
+	{
+		const float2 f2 = { vec.x, vec.y };
+		return f2;
+	}
+
+	Vector2 Vector2::add( const Vector2& lhs, const Vector2& rhs )
+	{
+		const Vector2 result = { lhs.x + rhs.x, lhs.y + rhs.y };
+		return result;
+	}
+
+	Vector2 Vector2::sub( const Vector2& lhs, const Vector2& rhs )
+	{
+		const Vector2 result = { lhs.x - rhs.x, lhs.y - rhs.y };
+		return result;
+	}
+
+	Vector2 Vector2::mul( const Vector2& lhs, const Vector2& rhs )
+	{
+		const Vector2 result = { lhs.x * rhs.x, lhs.y * rhs.y };
+		return result;
+	}
+
+	Vector2 Vector2::div( const Vector2& lhs, const Vector2& rhs )
+	{
+		const Vector2 result = { lhs.x / rhs.x, lhs.y / rhs.y };
+		return result;
+	}
+
+	Vector2 Vector2::scale( const Vector2& vec, float val )
+	{
+		const Vector2 result = { vec.x * val, vec.y * val };
+		return result;
+	}
+
+	Vector2 Vector2::negate( const Vector2& vec )
+	{
+		const Vector2 result = { -vec.x, -vec.y };
+		return result;
+	}
+
+	float Vector2::length( const Vector2& vec )
+	{
+		return f32::sqrt( lengthSquared( vec ) );
+	}
+
+	float Vector2::lengthSquared( const Vector2& vec )
+	{
+		return dot( vec, vec );
+	}
+
+	float Vector2::distance( const Vector2& start, const Vector2& end )
+	{
+		return f32::sqrt( distanceSquared( start, end ) );
+	}
+
+	float Vector2::distanceSquared( const Vector2& start, const Vector2& end )
+	{
+		const Vector2 vec = sub( end, start );
+		return lengthSquared( vec );
+	}
+
+	Vector2 Vector2::normalize( const Vector2& vec )
+	{
+		const float lengthSq = lengthSquared( vec );
+		TIKI_ASSERT( !f32::isZero( lengthSq ) );
+		return scale( vec, f32::rsqrt( lengthSq ) );
+	}
+
+	Vector2 Vector2::normalizeZero( const Vector2& vec )
+	{
+		const float lenghtSq = lengthSquared( vec );
+		if( f32::isZero( lenghtSq ) )
+		{
+			return zero;
+		}
+
+		return scale( vec, f32::rsqrt( lenghtSq ) );
+	}
+
+	Vector2 Vector2::truncate( const Vector2& vec, float len )
+	{
+		TIKI_ASSERT( !f32::isZero( len ) );
+		return scale( vec, len * f32::rsqrt( lengthSquared( vec ) ) );
+	}
+
+	float Vector2::dot( const Vector2& lhs, const Vector2& rhs )
+	{
+		return lhs.x * rhs.x + lhs.y * rhs.y;
+	}
+
+	float Vector2::cross( const Vector2& vec, const Vector2& lhs, const Vector2& rhs )
+	{
+		return (lhs.x * rhs.y) - (lhs.y * rhs.x);
+	}
+
+	Vector2 Vector2::reflect( const Vector2& vec, const Vector2& source, const Vector2& normal )
+	{
+		TIKI_ASSERT( isNormalized( normal ) );
+
+		const Vector2 modNormal = scale( normal, dot( source, normal ) * 2.0f );
+		return sub( source, modNormal );
+	}
+
+	Vector2 Vector2::clamp( const Vector2& vec, const Vector2& min, const Vector2& max )
+	{
+		Vector2 result;
+		result.x = f32::clamp( vec.x, min.x, max.x );
+		result.y = f32::clamp( vec.y, min.y, max.y );
+		return result;
+	}
+
+	Vector2 Vector2::lerp( const Vector2& vec, const Vector2& start, const Vector2& end, float amount )
+	{
+		TIKI_ASSERT( amount >= 0.0f && amount <= 1.0f );
+
+		Vector2 result;
+		result.x = f32::lerp( start.x, end.x, amount );
+		result.y = f32::lerp( start.y, end.y, amount );
+		return vec;
+	}
+
+	Vector2 Vector2::smooth( const Vector2& vec, const Vector2& start, const Vector2& end, float amount )
+	{
+		return lerp( vec, start, end, amount * amount * (3.0f - 2.0f * amount) );
+	}
+
+	Vector2 Vector2::floor( const Vector2& vec )
+	{
+		Vector2 result;
+		result.x = f32::floor( vec.x );
+		result.y = f32::floor( vec.y );
+		return result;
+	}
+
+	Vector2 Vector2::ceil( const Vector2& vec )
+	{
+		Vector2 result;
+		result.x = f32::ceil( vec.x );
+		result.y = f32::ceil( vec.y );
+		return result;
+	}
+
+	Vector2 Vector2::minimum( const Vector2& lhs, const Vector2& rhs )
+	{
+		Vector2 result;
+		result.x = TIKI_MIN( lhs.x, rhs.x );
+		result.y = TIKI_MIN( lhs.y, rhs.y );
+		return result;
+	}
+
+	Vector2 Vector2::maximum( const Vector2& lhs, const Vector2& rhs )
+	{
+		Vector2 result;
+		result.x = TIKI_MAX( lhs.x, rhs.x );
+		result.y = TIKI_MAX( lhs.y, rhs.y );
+		return result;
+	}
+
 	TIKI_FORCE_INLINE bool vector::isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon /*= f32::epsilon*/ )
 	{
 		return f32::isEquals( lhs.x, rhs.x, epsilon ) && f32::isEquals( lhs.y, rhs.y, epsilon );

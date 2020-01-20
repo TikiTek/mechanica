@@ -160,14 +160,14 @@ namespace tiki
 		const float height = float( m_pGraphicsSystem->getBackBuffer().getHeight() );
 		const float globalScale = width / 4096.0f;
 
-		const AxisAlignedRectangle leftPadRect = createAxisAlignedRectangle(
+		const AxisAlignedRectangle leftPadRect = AxisAlignedRectangle::create(
 			m_padSize.x * 0.5f * globalScale,
 			height - ( m_padSize.y * 1.5f * globalScale ),
 			m_padSize.x * globalScale,
 			m_padSize.y * globalScale
 		);
 
-		const AxisAlignedRectangle rightPadRect = createAxisAlignedRectangle(
+		const AxisAlignedRectangle rightPadRect = AxisAlignedRectangle::create(
 			width - ( m_padSize.x * 1.5f * globalScale ),
 			height - ( m_padSize.y * 1.5f * globalScale ),
 			m_padSize.x * globalScale,
@@ -185,7 +185,7 @@ namespace tiki
 			{
 				const float pointScale = globalScale * point.scale;
 
-				const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+				const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::create(
 					point.position.x - ( m_halfPointSize.x * pointScale ),
 					point.position.y - ( m_halfPointSize.y * pointScale ),
 					m_pointSize.x * pointScale,

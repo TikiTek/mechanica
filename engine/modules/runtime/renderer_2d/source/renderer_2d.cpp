@@ -87,7 +87,7 @@ namespace tiki
 		resourcePool.beginLoadResource( &m_pSpriteShader, "2d_sprite.shader" );
 		resourcePool.beginLoadResource( &m_pCompositeShader, "2d_composite.shader" );
 
-		const AxisAlignedRectangle defaultRectangle = createAxisAlignedRectangle( 0.0f, 0.0f, 1.0f, 1.0f );
+		const AxisAlignedRectangle defaultRectangle = AxisAlignedRectangle::create( 0.0f, 0.0f, 1.0f, 1.0f );
 		defaultRectangle.getVertices( m_defaultTexCoords );
 
 		m_drawToWorldFactor = parameters.drawToWorldFactor;
@@ -212,7 +212,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangleCentered(
+		const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::createCentered(
 			Vector2::zero,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
@@ -239,7 +239,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangleCentered(
+		const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::createCentered(
 			Vector2::zero,
 			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
 		);
@@ -325,7 +325,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangleCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+		const AxisAlignedRectangle scaledRectangle = AxisAlignedRectangle::createCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
 		scaledRectangle.getVertices( rectangleVertices );
@@ -348,7 +348,7 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = createAxisAlignedRectangleCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
+		const AxisAlignedRectangle scaledRectangle = AxisAlignedRectangle::createCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
 		scaledRectangle.getVertices( rectangleVertices );
@@ -379,14 +379,14 @@ namespace tiki
 		{
 			const FontChar& c = pFont->getChar( *pText );
 
-			const AxisAlignedRectangle destinationRectangle = createAxisAlignedRectangle(
+			const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::create(
 				currentPosition.x,
 				currentPosition.y,
 				c.width,
 				c.height
 			);
 
-			const AxisAlignedRectangle sourceCoordinates = createAxisAlignedRectangleMinMax(
+			const AxisAlignedRectangle sourceCoordinates = AxisAlignedRectangle::createMinMax(
 				u16::unormToFloat( c.x1 ),
 				u16::unormToFloat( c.y1 ),
 				u16::unormToFloat( c.x2 ),

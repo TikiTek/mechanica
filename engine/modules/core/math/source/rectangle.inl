@@ -67,7 +67,7 @@ namespace tiki
 			max.y = TIKI_MAX( max.y, aVertices[ i ].y );
 		}
 
-		return createAxisAlignedRectangleMinMax( min, max );
+		return AxisAlignedRectangle::createMinMax( min, max );
 	}
 
 	TIKI_FORCE_INLINE void Rectangle::clear()
