@@ -169,16 +169,10 @@ namespace tiki
 		Renderer2d& renderer				= m_pParentState->getRenderer();
 
 		const MechanicaMenuBundle& bundle	= m_pBundle->getData();
+
 		const Vector2 renderSize			= renderer.getVectorSize();
 		const Vector2 backgroundSize		= bundle.background->getTextureData().getVectorSize();
-
-		const Vector2 diff = vector::div( vector::create( renderSize ), backgroundSize );
-		const Vector2 extends = vector::scale( vector::create( backgroundSize ), (diff.x > diff.y ? diff.x : diff.y) );
-
-		const AxisAlignedRectangle backgroundRectangle = createAxisAlignedRectangleCentered(
-			Vector2::zero,
-			extends
-		);
+		const AxisAlignedRectangle backgroundRectangle = AxisAlignedRectangle::createFill( renderSize, backgroundSize );
 		renderer.queueSprite( bundle.background->getTextureData(), backgroundRectangle, MechanicaRenderLayer_BackgroundIslands );
 
 		for( Circle& circle : m_mainCircles )

@@ -72,6 +72,10 @@ namespace tiki
 
 		case PlayStateTransitionSteps_SetRendererData:
 			{
+				if( !m_levelRenderer.create( m_gameClient.getLevel()->getData().theme->getData() ) )
+				{
+					return TransitionState_Error;
+				}
 			}
 			break;
 
@@ -87,6 +91,9 @@ namespace tiki
 		switch( currentStep )
 		{
 		case PlayStateTransitionSteps_SetRendererData:
+			{
+				m_levelRenderer.dispose();
+			}
 			break;
 
 		case PlayStateTransitionSteps_LoadLevel:
@@ -113,11 +120,13 @@ namespace tiki
 		GameClientUpdateContext updateContext;
 		updateContext.gameTime = m_pGame->getFrameTimer().getTime();
 
+		m_levelRenderer.update( updateContext.gameTime );
 		m_gameClient.update( updateContext );
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
 	{
+		m_levelRenderer.render( m_pApplicationState->getRenderer() );
 		m_gameClient.applyRenderParameters( m_pApplicationState->getRenderParameters() );
 		m_gameClient.render( m_pApplicationState->getRenderer() );
 	}

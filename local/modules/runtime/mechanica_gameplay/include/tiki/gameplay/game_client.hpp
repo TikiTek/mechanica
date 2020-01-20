@@ -53,6 +53,7 @@ namespace tiki
 
 		void											startLoadLevel( ResourceRequestPool& requestPool, string levelName );
 		GameClientLoadResult							finalizeLoadLevel( ResourceRequestPool& requestPool );
+		const LevelGenericDataResource*					getLevel() const { return m_pLevel; }
 		void											unloadLevel( ResourceRequestPool& requestPool );
 
 		EntityId										createPlayerEntity( const Vector2& position );
