@@ -216,6 +216,7 @@ namespace tiki
 			//return GameState_BasicTest;
 			//return GameState_Play;
 			startTransition( GameTransitionData::createPlay( "level1" ) );
+			return;
 		}
 #endif
 
@@ -240,6 +241,13 @@ namespace tiki
 		GameTransitionData data;
 		data.state			= GameState_Play;
 		data.play.levelName = levelName;
+		return data;
+	}
+
+	GameTransitionData GameTransitionData::createExit()
+	{
+		GameTransitionData data;
+		data.state			= GameState_Root;
 		return data;
 	}
 }
