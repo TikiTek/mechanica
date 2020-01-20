@@ -14,8 +14,8 @@ namespace tiki
 {
 	namespace intersection
 	{
-		bool    doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint );
-		bool    clip( float denom, float numer, float& t0, float& t1 );
+		bool	doClipping( float t0, float t1, const Vector3& origin, const Vector3& direction, const Box& box, bool solid, int& quantity, Vector3& intersectionPoint );
+		bool	clip( float denom, float numer, float& t0, float& t1 );
 	}
 
 	// 2d

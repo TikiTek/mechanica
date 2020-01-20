@@ -6,8 +6,8 @@
 
 namespace tiki
 {
-    class ResourceManager;
-    class GraphicsSystem;
+	class ResourceManager;
+	class GraphicsSystem;
 
 	class FrameworkFactories
 	{

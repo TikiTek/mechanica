@@ -189,24 +189,24 @@ namespace tiki
 
 #	define TIKI_NONCOPYABLE_WITHCTOR_CLASS( class_name )	\
 		 public:											\
-			class_name () { }			    				\
-			~ class_name () { }				        		\
+			class_name () { }								\
+			~ class_name () { }								\
 		private:											\
-			class_name ( const class_name & );	        	\
+			class_name ( const class_name & );				\
 			void operator=( const class_name & )
 
 #	define TIKI_NONCOPYABLE_STRUCT( class_name )	\
 		private:									\
-			class_name ( const class_name & );	    \
+			class_name ( const class_name & );		\
 			void operator=( const class_name & );	\
 		public:
 
 #	define TIKI_NONCOPYABLE_WITHCTOR_STRUCT( class_name )	\
 		private:											\
-			class_name ( const class_name & );	    	    \
-			void operator=( const class_name & );	    	\
+			class_name ( const class_name & );				\
+			void operator=( const class_name & );			\
 		public:												\
-			class_name () { }						        \
+			class_name () { }								\
 			~ class_name () { }
 #else
 	struct NonCopyable

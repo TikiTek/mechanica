@@ -48,12 +48,12 @@ namespace tiki
 		);
 #	pragma warning(pop)
 #else
-        vsnprintf(
-            (char*)message.cStr(),
-            formattedStringLength + 1u,
-            pFormat,
-            pArgs
-        );
+		vsnprintf(
+			(char*)message.cStr(),
+			formattedStringLength + 1u,
+			pFormat,
+			pArgs
+		);
 #endif
 
 		debug::nativeTrace( message.cStr() );

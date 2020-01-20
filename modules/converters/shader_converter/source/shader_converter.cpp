@@ -43,11 +43,11 @@ namespace tiki
 
 	class BasicIncludeHandler
 	{
-        TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
+		TIKI_NONCOPYABLE_CLASS( BasicIncludeHandler );
 
-    public:
+	public:
 
-        BasicIncludeHandler( ConversionResult& result, const List< string >& includePathes )
+		BasicIncludeHandler( ConversionResult& result, const List< string >& includePathes )
 			: m_result( result )
 			, m_includePathes( includePathes )
 		{
@@ -122,23 +122,23 @@ namespace tiki
 	public:
 
 		ShaderIncludeHandler( ConversionResult& result, const List< string >& includePathes )
-            : BasicIncludeHandler( result, includePathes )
+			: BasicIncludeHandler( result, includePathes )
 		{
 		}
 
 		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
 		{
-		    const void* pData = nullptr;
-		    uint dataSize = 0u;
-		    if ( loadFile( pFileName, &pData, &dataSize ) )
-            {
-                *ppData = pData;
-                *pBytes = (UINT)dataSize;
+			const void* pData = nullptr;
+			uint dataSize = 0u;
+			if ( loadFile( pFileName, &pData, &dataSize ) )
+			{
+				*ppData = pData;
+				*pBytes = (UINT)dataSize;
 
-                return S_OK;
-            }
+				return S_OK;
+			}
 
-            return S_FALSE;
+			return S_FALSE;
 		}
 
 		virtual HRESULT	STDMETHODCALLTYPE Close( LPCVOID pData )
@@ -156,7 +156,7 @@ namespace tiki
 	public:
 
 		ShaderIncludeHandler( ConversionResult& result, ShaderFileStorage& storage )
-            : BasicIncludeHandler( result, storage )
+			: BasicIncludeHandler( result, storage )
 		{
 		}
 	};
@@ -450,7 +450,7 @@ namespace tiki
 
 		return true;
 #else
-        return false;
+		return false;
 #endif
 	}
 

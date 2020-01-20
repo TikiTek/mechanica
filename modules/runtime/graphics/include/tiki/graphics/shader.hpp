@@ -13,7 +13,7 @@
 
 namespace tiki
 {
-    class GraphicsSystem;
+	class GraphicsSystem;
 
 	class Shader
 	{

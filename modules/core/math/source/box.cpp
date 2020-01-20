@@ -32,7 +32,7 @@ namespace tiki
 		center = min;
 		vector::add( center, max );
 		vector::scale( center, 0.5f );
-		
+
 		// extents = (max - min) / 2
 		extents = max;
 		vector::sub( extents, min );
