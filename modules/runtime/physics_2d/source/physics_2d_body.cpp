@@ -174,7 +174,7 @@ namespace tiki
 		b2AABB aabb;
 		m_pFixture->GetShape()->ComputeAABB( &aabb, m_pBody->GetTransform(), 0u );
 
-		return createAxisAlignedRectangleMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
+		return AxisAlignedRectangle::createMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
 	}
 
 	AxisAlignedRectangle Physics2dBody::getBodyBounds() const
@@ -182,7 +182,7 @@ namespace tiki
 		b2AABB aabb;
 		m_pFixture->GetShape()->ComputeAABB( &aabb, m_pBody->GetTransform(), 0u );
 
-		return createAxisAlignedRectangleMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
+		return AxisAlignedRectangle::createMinMax( toEngineVector( aabb.lowerBound ), toEngineVector( aabb.upperBound ) );
 	}
 
 	b2Body* Physics2dBody::getNativeObject() const

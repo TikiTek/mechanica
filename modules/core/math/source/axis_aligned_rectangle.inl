@@ -4,13 +4,13 @@
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE void AxisAlignedRectangle::clear()
+	inline void AxisAlignedRectangle::clear()
 	{
 		vector::clear( min );
 		vector::clear( max );
 	}
 
-	TIKI_FORCE_INLINE void AxisAlignedRectangle::getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const
+	inline void AxisAlignedRectangle::getVertices( Vector2 aVertices[ RectanglePoint_Count ] ) const
 	{
 		vector::set( aVertices[ RectanglePoint_XMinYMin ], min.x, min.y );
 		vector::set( aVertices[ RectanglePoint_XMaxYMin ], max.x, min.y );
@@ -18,13 +18,13 @@ namespace tiki
 		vector::set( aVertices[ RectanglePoint_XMinYMax ], min.x, max.y );
 	}
 
-	TIKI_FORCE_INLINE void AxisAlignedRectangle::translate( const Vector2& translation )
+	inline void AxisAlignedRectangle::translate( const Vector2& translation )
 	{
 		vector::add( min, translation );
 		vector::add( max, translation );
 	}
 
-	TIKI_FORCE_INLINE void AxisAlignedRectangle::extend( const Vector2& extents )
+	inline void AxisAlignedRectangle::extend( const Vector2& extents )
 	{
 		Vector2 halfExtents = extents;
 		vector::scale( halfExtents, 0.5f );
@@ -33,58 +33,13 @@ namespace tiki
 		vector::add( max, halfExtents );
 	}
 
-	TIKI_FORCE_INLINE bool AxisAlignedRectangle::contains( const Vector2& point ) const
+	inline bool AxisAlignedRectangle::contains( const Vector2& point ) const
 	{
 		return min.x <= point.x && min.y <= point.y &&
 			max.x >= point.x && max.y >= point.y;
 	}
 
-	TIKI_FORCE_INLINE Vector2 AxisAlignedRectangle::getCenter() const
-	{
-		Vector2 center;
-		vector::add( center, min, max );
-		vector::scale( center, 0.5f );
-		return center;
-	}
-
-	TIKI_FORCE_INLINE Vector2 AxisAlignedRectangle::getSize() const
-	{
-		Vector2 size;
-		vector::sub( size, max, min );
-		return size;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getWidth() const
-	{
-		return max.x - min.x;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getHeight() const
-	{
-		return max.y - min.y;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getLeft() const
-	{
-		return min.x;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getTop() const
-	{
-		return min.y;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getRight() const
-	{
-		return max.x;
-	}
-
-	TIKI_FORCE_INLINE float AxisAlignedRectangle::getBottom() const
-	{
-		return max.y;
-	}
-
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( float x, float y, float width, float height )
+	inline AxisAlignedRectangle AxisAlignedRectangle::create( float x, float y, float width, float height )
 	{
 		AxisAlignedRectangle rect;
 		rect.min.x	= x;
@@ -95,7 +50,7 @@ namespace tiki
 		return rect;
 	}
 
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangle( const Vector2& position, const Vector2& size )
+	inline AxisAlignedRectangle AxisAlignedRectangle::create( const Vector2& position, const Vector2& size )
 	{
 		AxisAlignedRectangle rect;
 		rect.min.x	= position.x;
@@ -106,7 +61,7 @@ namespace tiki
 		return rect;
 	}
 
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleCentered( const Vector2& center, const Vector2& extents )
+	inline AxisAlignedRectangle AxisAlignedRectangle::createCentered( const Vector2& center, const Vector2& extents )
 	{
 		AxisAlignedRectangle rect;
 
@@ -119,7 +74,7 @@ namespace tiki
 		return rect;
 	}
 
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( const Vector2& _min, const Vector2& _max )
+	inline AxisAlignedRectangle AxisAlignedRectangle::createMinMax( const Vector2& _min, const Vector2& _max )
 	{
 		AxisAlignedRectangle rect;
 
@@ -129,7 +84,7 @@ namespace tiki
 		return rect;
 	}
 
-	TIKI_FORCE_INLINE AxisAlignedRectangle createAxisAlignedRectangleMinMax( float minX, float minY, float maxX, float maxY )
+	inline AxisAlignedRectangle AxisAlignedRectangle::createMinMax( float minX, float minY, float maxX, float maxY )
 	{
 		AxisAlignedRectangle rect;
 
@@ -137,6 +92,14 @@ namespace tiki
 		vector::set( rect.max, maxX, maxY );
 
 		return rect;
+	}
+
+	inline AxisAlignedRectangle AxisAlignedRectangle::createFill( const Vector2& targetSize, const Vector2& sourceSize )
+	{
+		const Vector2 diff		= Vector2::div( targetSize, sourceSize );
+		const Vector2 extends	= Vector2::scale( sourceSize, (diff.x > diff.y ? diff.x : diff.y) );
+
+		return AxisAlignedRectangle::createCentered( Vector2::zero, extends );
 	}
 }
 

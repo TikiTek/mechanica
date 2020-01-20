@@ -41,12 +41,14 @@ namespace tiki
 	typedef sint32			sint;
 	typedef uint32			uint;
 	typedef uint32			size_t;
+	typedef uint32			uintreg;	// unsigned integer in size of a CPU register
 
 #elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 
 	typedef sint64			sint;
 	typedef uint64			uint;
 	typedef uint64			size_t;
+	typedef uint64			uintreg;	// unsigned integer in size of a CPU register
 
 #else
 #	error Platform not suppored

@@ -11,48 +11,88 @@ namespace tiki
 {
 	TIKI_ALIGN_PREFIX( 8 ) struct Vector2
 	{
-		float x;
-		float y;
+		float					x;
+		float					y;
 
-		static const Vector2 zero;
-		static const Vector2 one;
-		static const Vector2 negativeOne;
-		static const Vector2 unitX;
-		static const Vector2 unitY;
+		static const Vector2	zero;
+		static const Vector2	one;
+		static const Vector2	negativeOne;
+		static const Vector2	unitX;
+		static const Vector2	unitY;
+
+		static inline Vector2	create( float x, float y );
+		static inline Vector2	create( float2 source );
+
+		static inline bool		isEquals( const Vector2& lhs, const Vector2& rhs, float epsilon = f32::epsilon );
+		static inline bool		isZero( const Vector2& vec, float epsilon = f32::epsilon );
+		static inline bool		isNormalized( const Vector2& vec, float epsilon = f32::epsilon );
+
+		static inline float2	toFloat( const Vector2& vec );
+
+		static inline Vector2	add( const Vector2& lhs, const Vector2& rhs );
+		static inline Vector2	sub( const Vector2& lhs, const Vector2& rhs );
+		static inline Vector2	mul( const Vector2& lhs, const Vector2& rhs );
+		static inline Vector2	div( const Vector2& lhs, const Vector2& rhs );
+
+		static inline Vector2	scale( const Vector2& vec, float val );
+		static inline Vector2	negate( const Vector2& vec );
+
+		static inline float		length( const Vector2& vec );
+		static inline float		lengthSquared( const Vector2& vec );
+		static inline float		distance( const Vector2& start, const Vector2& end );
+		static inline float		distanceSquared( const Vector2& start, const Vector2& end );
+
+		static inline Vector2	normalize( const Vector2& vec );
+		static inline Vector2	normalizeZero( const Vector2& vec );
+		static inline Vector2	truncate( const Vector2& vec, float len );
+
+		static inline float		dot( const Vector2& lhs, const Vector2& rhs );
+		static inline float		cross( const Vector2& vec, const Vector2& lhs, const Vector2& rhs );
+		static inline Vector2	reflect( const Vector2& vec, const Vector2& source, const Vector2& normal );
+
+		static inline Vector2	clamp( const Vector2& vec, const Vector2& min, const Vector2& max );
+		static inline Vector2	lerp( const Vector2& vec, const Vector2& start, const Vector2& end, float amount );
+		static inline Vector2	smooth( const Vector2& vec, const Vector2& start, const Vector2& end, float amount );
+
+		static inline Vector2	floor( const Vector2& vec );
+		static inline Vector2	ceil( const Vector2& vec );
+
+		static inline Vector2	minimum( const Vector2& lhs, const Vector2& rhs );
+		static inline Vector2	maximum( const Vector2& lhs, const Vector2& rhs );
 	}
 	TIKI_ALIGN_POSTFIX( 8 );
 
 	TIKI_ALIGN_PREFIX( 16 ) struct Vector3
 	{
-		float x;
-		float y;
-		float z;
+		float					x;
+		float					y;
+		float					z;
 
-		float _pad;
+		float					_pad;
 
-		static const Vector3 zero;
-		static const Vector3 one;
-		static const Vector3 negativeOne;
-		static const Vector3 unitX;
-		static const Vector3 unitY;
-		static const Vector3 unitZ;
+		static const Vector3	zero;
+		static const Vector3	one;
+		static const Vector3	negativeOne;
+		static const Vector3	unitX;
+		static const Vector3	unitY;
+		static const Vector3	unitZ;
 	}
 	TIKI_ALIGN_POSTFIX( 16 );
 
 	TIKI_ALIGN_PREFIX( 16 ) struct Vector4
 	{
-		float x;
-		float y;
-		float z;
-		float w;
+		float					x;
+		float					y;
+		float					z;
+		float					w;
 
-		static const Vector4 zero;
-		static const Vector4 one;
-		static const Vector4 negativeOne;
-		static const Vector4 unitX;
-		static const Vector4 unitY;
-		static const Vector4 unitZ;
-		static const Vector4 unitW;
+		static const Vector4	zero;
+		static const Vector4	one;
+		static const Vector4	negativeOne;
+		static const Vector4	unitX;
+		static const Vector4	unitY;
+		static const Vector4	unitZ;
+		static const Vector4	unitW;
 	}
 	TIKI_ALIGN_POSTFIX( 16 );
 
