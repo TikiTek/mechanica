@@ -12,4 +12,5 @@ module:add_dependency( "runtime/resource" );
 module:add_dependency( "runtime/renderer_2d" );
 module:add_dependency( "runtime/game_flow" );
 
+module:add_dependency( "runtime/mechanica_types" );
 module:add_dependency( "runtime/mechanica_gameplay" );

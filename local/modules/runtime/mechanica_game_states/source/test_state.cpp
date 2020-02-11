@@ -154,7 +154,7 @@ namespace tiki
 	{
 		const float timeDelta = float( m_pGame->getFrameTimer().getElapsedTime() );
 
-		GameClientUpdateContext gameClientUpdateContext;
+		MechanicaUpdateContext gameClientUpdateContext;
 		gameClientUpdateContext.gameTime = m_pGame->getFrameTimer().getTime();
 		m_gameClient.update( gameClientUpdateContext );
 
@@ -223,7 +223,7 @@ namespace tiki
 			{
 			case KeyboardKey_X:
 				{
-					const BreakableComponent& breakableComponent = m_gameClient.getBreakableComponent();
+					BreakableComponent& breakableComponent = m_gameClient.getBreakableComponent();
 
 					BreakableComponentState* pBreakableState = (BreakableComponentState*)m_gameClient.getEntitySystem().getFirstComponentOfEntityAndType( m_islandEntityId, breakableComponent.getTypeId() );
 					breakableComponent.breakBody( pBreakableState );

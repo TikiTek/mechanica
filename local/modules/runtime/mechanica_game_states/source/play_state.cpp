@@ -117,11 +117,15 @@ namespace tiki
 
 	void PlayState::update()
 	{
-		GameClientUpdateContext updateContext;
+		MechanicaUpdateContext updateContext;
+		updateContext.renderUnitSize = mech::toUnitSize( m_pApplicationState->getRenderer().getVectorSize() );
 		updateContext.gameTime = m_pGame->getFrameTimer().getTime();
 
-		m_levelRenderer.update( updateContext.gameTime );
+		m_levelRenderer.update( updateContext );
 		m_gameClient.update( updateContext );
+
+		debugrenderer::drawText( Vector2::create( 10.0f, 10.0f), TIKI_COLOR_YELLOW, "Zoom: %.3f", m_pApplicationState->getRenderer().getTargetZoom() );
+		debugrenderer::drawText( Vector2::create( 10.0f, 20.0f ), TIKI_COLOR_YELLOW, "Wheel: %.3f", m_scrollState );
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
@@ -133,6 +137,19 @@ namespace tiki
 
 	bool PlayState::processInputEvent( const InputEvent& inputEvent )
 	{
+#if 1
+		if( inputEvent.eventType == InputEventType_Mouse_Wheel )
+		{
+			m_scrollState += inputEvent.data.mouseWheel.offset;
+
+			const float targetZoom = ((m_scrollState / 1000.0f) + 1.0f);
+			if( targetZoom > 0u )
+			{
+				m_pApplicationState->getRenderer().setTargetZoom( targetZoom );
+			}
+		}
+#endif
+
 		if( m_gameClient.processInputEvent( inputEvent ) )
 		{
 			return true;

@@ -46,6 +46,8 @@ namespace tiki
 		Game*						m_pGame;
 		ApplicationState*			m_pApplicationState;
 
+		float						m_scrollState = 0.0f;
+
 		LevelRenderer				m_levelRenderer;
 		GameClient					m_gameClient;
 	};
