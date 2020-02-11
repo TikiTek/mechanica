@@ -96,16 +96,5 @@ namespace tiki
 		{
 			return ::ceil( value );
 		}
-
-		// return random value between 0 and 1
-		TIKI_FORCE_INLINE float64 random()
-		{
-			return float64( rand() ) / RAND_MAX;
-		}
-
-		TIKI_FORCE_INLINE float64 random( float64 min, float64 max )
-		{
-			return min + ( random() * ( max - min ) );
-		}
 	}
 }

@@ -107,16 +107,5 @@ namespace tiki
 		{
 			return (float)ceilf( value );
 		}
-
-		// return random value between 0 and 1
-		TIKI_FORCE_INLINE float random()
-		{
-			return float( rand() ) / RAND_MAX;
-		}
-
-		TIKI_FORCE_INLINE float random( float min, float max )
-		{
-			return min + ( random() * ( max - min ) );
-		}
 	}
 }
