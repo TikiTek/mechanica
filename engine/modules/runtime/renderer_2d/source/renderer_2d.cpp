@@ -90,7 +90,7 @@ namespace tiki
 		const AxisAlignedRectangle defaultRectangle = AxisAlignedRectangle::create( 0.0f, 0.0f, 1.0f, 1.0f );
 		defaultRectangle.getVertices( m_defaultTexCoords );
 
-		m_drawToWorldFactor = parameters.drawToWorldFactor;
+		m_drawToUnitFactor = parameters.drawToWorldFactor;
 
 		return true;
 	}
@@ -214,7 +214,7 @@ namespace tiki
 
 		const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::createCentered(
 			Vector2::zero,
-			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
+			vector::create( texture.getWidth() * m_drawToUnitFactor, texture.getHeight() * m_drawToUnitFactor )
 		);
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
@@ -241,7 +241,7 @@ namespace tiki
 
 		const AxisAlignedRectangle destinationRectangle = AxisAlignedRectangle::createCentered(
 			Vector2::zero,
-			vector::create( texture.getWidth() * m_drawToWorldFactor, texture.getHeight() * m_drawToWorldFactor )
+			vector::create( texture.getWidth() * m_drawToUnitFactor, texture.getHeight() * m_drawToUnitFactor )
 		);
 
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
@@ -268,14 +268,8 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		Vector2 extends = destinationRectangle.extends;
-		vector::scale( extends, m_drawToWorldFactor );
-
-		Rectangle scaledRectangle;
-		scaledRectangle.createFromCenterExtends( destinationRectangle.center, extends, destinationRectangle.rotation );
-
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		scaledRectangle.getVertices( rectangleVertices );
+		destinationRectangle.getVertices( rectangleVertices );
 
 		for( uint i = 0u; i < command.vertices.getCount(); ++i )
 		{
@@ -295,14 +289,8 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		Vector2 extends = destinationRectangle.extends;
-		vector::scale( extends, m_drawToWorldFactor );
-
-		Rectangle scaledRectangle;
-		scaledRectangle.createFromCenterExtends( destinationRectangle.center, extends, destinationRectangle.rotation );
-
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		scaledRectangle.getVertices( rectangleVertices );
+		destinationRectangle.getVertices( rectangleVertices );
 
 		Vector2 sourcePoints[ RectanglePoint_Count ];
 		sourceCoordinates.getVertices( sourcePoints );
@@ -325,10 +313,8 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = AxisAlignedRectangle::createCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
-
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		scaledRectangle.getVertices( rectangleVertices );
+		destinationRectangle.getVertices( rectangleVertices );
 
 		for( uint i = 0u; i < command.vertices.getCount(); ++i )
 		{
@@ -348,10 +334,8 @@ namespace tiki
 		RenderCommand& command = allocateCommand( layer );
 		command.pTexture = &texture;
 
-		const AxisAlignedRectangle scaledRectangle = AxisAlignedRectangle::createCentered( destinationRectangle.getCenter(), vector::scale( destinationRectangle.getSize(), m_drawToWorldFactor ) );
-
 		Vector2 rectangleVertices[ RectanglePoint_Count ];
-		scaledRectangle.getVertices( rectangleVertices );
+		destinationRectangle.getVertices( rectangleVertices );
 
 		Vector2 sourcePoints[ RectanglePoint_Count ];
 		sourceCoordinates.getVertices( sourcePoints );
@@ -503,7 +487,7 @@ namespace tiki
 		RenderChunk* pChunk = nullptr;
 		if( !layer.chunks.isEmpty() )
 		{
-			pChunk = &layer.chunks.getLast();
+			pChunk = layer.chunks.getLast();
 		}
 
 		if( pChunk == nullptr || pChunk->commands.isFull() )
@@ -534,11 +518,11 @@ namespace tiki
 	{
 		while( !layer.chunks.isEmpty() )
 		{
-			RenderChunk& chunk = layer.chunks.getFirst();
+			RenderChunk* pChunk = layer.chunks.popFirst();
 
-			for( uint commandIndex = 0u; commandIndex < chunk.commands.getCount(); ++commandIndex )
+			for( uint commandIndex = 0u; commandIndex < pChunk->commands.getCount(); ++commandIndex )
 			{
-				RenderCommand& command = chunk.commands[ commandIndex ];
+				RenderCommand& command = pChunk->commands[ commandIndex ];
 
 				graphicsContext.setPixelShaderTexture( 0u, command.pTexture );
 
@@ -551,8 +535,7 @@ namespace tiki
 				graphicsContext.endImmediateGeometry( vertices );
 			}
 
-			layer.chunks.removeSortedByValue( chunk );
-			m_chunks.removeUnsortedByValue( chunk );
+			m_chunks.removeUnsortedByValue( pChunk );
 		}
 	}
 }

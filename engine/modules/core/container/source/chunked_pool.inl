@@ -63,7 +63,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE bool ChunkedPool<T>::contains( const T& item ) const
+	TIKI_FORCE_INLINE bool ChunkedPool<T>::contains( ConstReference item ) const
 	{
 		for( const PoolChunk& chunk : m_chunks )
 		{
@@ -103,7 +103,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void ChunkedPool<T>::removeUnsortedByValue( const T& item )
+	TIKI_FORCE_INLINE void ChunkedPool<T>::removeUnsortedByValue( ConstReference item )
 	{
 		TIKI_ASSERT( contains( item ) );
 
@@ -115,6 +115,13 @@ namespace tiki
 		m_pFirstFree = pNewFree;
 
 		m_count--;
+	}
+
+	template<typename T>
+	TIKI_FORCE_INLINE void ChunkedPool<T>::removeUnsortedByValue( ConstPointer pItem )
+	{
+		TIKI_ASSERT( pItem != nullptr);
+		removeUnsortedByValue( *pItem );
 	}
 
 	template<typename T>

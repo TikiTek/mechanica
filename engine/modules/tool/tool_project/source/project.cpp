@@ -47,9 +47,9 @@ namespace tiki
 	{
 		while( !m_packages.isEmpty() )
 		{
-			Package& package = m_packages.getFirst();
-			m_packages.removeSortedByValue( package );
-			m_packagePool.removeUnsortedByValue( package );
+			Package* pPackage = m_packages.getFirst();
+			m_packages.removeSortedByValue( pPackage );
+			m_packagePool.removeUnsortedByValue( pPackage );
 		}
 
 		m_packagePool.dispose();
