@@ -9,13 +9,14 @@
 		<field type="float" name="maxDistanceX" />
 		<field type="float" name="minPositionY" />
 		<field type="float" name="maxPositionY" />
+		<field type="bool" name="bottomPositionY" />
 		<field type="float" name="speed" />
 		<field type="{array LevelThemeBackgroundSprite}" name="sprites" />
 	</struct>
 	<struct name="LevelThemeData">
 		<field type="float3" name="bloomCutOffThreshold" />
 		<field type="{reference Texture}" name="background" />
-		<field type="{array LevelThemeBackgroundLayer}" name="backgroundLayer" />
+		<field type="{array LevelThemeBackgroundLayer}" name="backgroundLayers" />
 		<field type="{reference Texture}" name="colorGradingMap" />
 	</struct>
 	<resource name="LevelTheme" base="LevelThemeData" postfix="level_theme" fourcc="MLTH" />
