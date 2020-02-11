@@ -62,6 +62,8 @@ namespace tiki
 		m_pSpriteComponent		= &spriteComponent;
 		m_pPolgonComponent		= &polygonComponent;
 
+		m_random.createFromTime();
+
 		return true;
 	}
 
@@ -75,7 +77,7 @@ namespace tiki
 		m_pPolgonComponent		= nullptr;
 	}
 
-	void BreakableComponent::update( double deltaTime ) const
+	void BreakableComponent::update( double deltaTime )
 	{
 		Iterator componentStates = getIterator();
 
@@ -95,7 +97,7 @@ namespace tiki
 		}
 	}
 
-	void BreakableComponent::breakBody( BreakableComponentState* pState ) const
+	void BreakableComponent::breakBody( BreakableComponentState* pState )
 	{
 		if( pState->fragmentMaxDepth )
 		{
@@ -123,7 +125,7 @@ namespace tiki
 		else
 		{
 			pState->pFragments			= nullptr;
-			pState->breakAfterSeconds	= f32::random( pInitData->fragmentMinBreakAfterSeconds, pInitData->fragmentMaxBreakAfterSeconds );
+			pState->breakAfterSeconds	= m_random.nextUniformFloat32( pInitData->fragmentMinBreakAfterSeconds, pInitData->fragmentMaxBreakAfterSeconds );
 		}
 
 		pState->destructionForce				= pInitData->destructionForce;
@@ -150,7 +152,7 @@ namespace tiki
 		}
 	}
 
-	void BreakableComponent::breakToCuttedFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState ) const
+	void BreakableComponent::breakToCuttedFragmentEntities( const ComponentEntityIterator& parentEntityComponentIterator, const BreakableComponentState* pParentState )
 	{
 		const Transform2dComponentState* pTransformState	= m_pTransformComponent->getFirstStateOfEntity( parentEntityComponentIterator );
 		const Physics2dBodyComponentState* pBodyState		= m_pBodyComponent->getFirstStateOfEntity( parentEntityComponentIterator );
@@ -175,7 +177,7 @@ namespace tiki
 		}
 		boundingCircle.radius = f32::sqrt( boundingCircle.radius );
 
-		const float angle1 = f32::random( 0.0f, f32::twoPi );
+		const float angle1 = m_random.nextUniformFloat32( 0.0f, f32::twoPi );
 		const float angle2 = angle1 + f32::pi;
 
 		Line2 cutLine;
