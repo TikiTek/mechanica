@@ -66,6 +66,8 @@ namespace tiki
 	uint64 RandomNumberGenerator::nextUniformUInt64( uint64 minValue, uint64 maxValue )
 	{
 		const uint64 range = (maxValue - minValue);
+		TIKI_ASSERT( range > 0u );
+
 		return minValue + (next() % range);
 	}
 
