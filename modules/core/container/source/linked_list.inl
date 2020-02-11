@@ -76,20 +76,10 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T& LinkedList<T>::push( Pointer value )
+	TIKI_FORCE_INLINE T& LinkedList<T>::push( Pointer pValue )
 	{
-		return push( *value );
-	}
-
-	template< typename T >
-	TIKI_FORCE_INLINE T* LinkedList<T>::pushRange( Pointer pData, uint count )
-	{
-		for (uint i = 0u; i < count; ++i)
-		{
-			push( pData[ i ] );
-		}
-
-		return pData;
+		TIKI_ASSERT( pValue != nullptr );
+		return push( *pValue );
 	}
 
 	template< typename T >
@@ -107,6 +97,13 @@ namespace tiki
 
 		T* pFirst = m_pFirst;
 		m_pFirst = pFirst->pNextItem;
+
+		pFirst->pPrevItem	= nullptr;
+		pFirst->pNextItem	= nullptr;
+#if TIKI_ENABLED( TIKI_USE_ASSERT )
+		pFirst->pList		= nullptr;
+#endif
+
 		m_count--;
 		return pFirst;
 	}
@@ -126,6 +123,13 @@ namespace tiki
 
 		T* pLast = m_pLast;
 		m_pLast = pFirst->pPrevItem;
+
+		pLast->pPrevItem	= nullptr;
+		pLast->pNextItem	= nullptr;
+#if TIKI_ENABLED( TIKI_USE_ASSERT )
+		pLast->pList		= nullptr;
+#endif
+
 		m_count--;
 		return pLast;
 	}
@@ -162,6 +166,13 @@ namespace tiki
 #endif
 
 		m_count--;
+	}
+
+	template< typename T >
+	TIKI_FORCE_INLINE void LinkedList< T >::removeSortedByValue( Pointer pValue )
+	{
+		TIKI_ASSERT( pValue != nullptr );
+		removeSortedByValue( *pValue );
 	}
 }
 

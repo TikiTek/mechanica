@@ -5,6 +5,12 @@
 
 namespace tiki
 {
+	Vector2 Vector2::create( float xy )
+	{
+		const Vector2 result = { xy, xy };
+		return result;
+	}
+
 	Vector2 Vector2::create( float x, float y )
 	{
 		const Vector2 result = { x, y };

@@ -138,33 +138,37 @@ namespace tiki
 		TIKI_FORCE_INLINE bool				isEmpty() const	{ return m_count == 0u; }
 
 		TIKI_FORCE_INLINE Reference			push( Reference value );
-		TIKI_FORCE_INLINE Reference			push( Pointer value );
-		TIKI_FORCE_INLINE Pointer			pushRange( Pointer pData, uint count );
+		TIKI_FORCE_INLINE Reference			push( Pointer pValue );
 
 		TIKI_FORCE_INLINE Pointer			popFirst();
 		TIKI_FORCE_INLINE Pointer			popLast();
 
 		TIKI_FORCE_INLINE void				removeSortedByValue( Reference value );
+		TIKI_FORCE_INLINE void				removeSortedByValue( Pointer pValue );
 
-		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
+		TIKI_FORCE_INLINE uint				getCount() const						{ return m_count; }
 
-		TIKI_FORCE_INLINE Iterator			getBegin()			{ return Iterator( m_pFirst ); }
-		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return ConstIterator( m_pFirst ); }
+		TIKI_FORCE_INLINE Iterator			getBegin()								{ return Iterator( m_pFirst ); }
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const						{ return ConstIterator( m_pFirst ); }
 
-		TIKI_FORCE_INLINE Iterator			getEnd()			{ return Iterator( nullptr ); }
-		TIKI_FORCE_INLINE ConstIterator		getEnd() const		{ return ConstIterator( nullptr ); }
+		TIKI_FORCE_INLINE Iterator			getEnd()								{ return Iterator( nullptr ); }
+		TIKI_FORCE_INLINE ConstIterator		getEnd() const							{ return ConstIterator( nullptr ); }
 
-		TIKI_FORCE_INLINE Reference			getFirst()			{ TIKI_ASSERT( m_count > 0u ); return *m_pFirst; }
-		TIKI_FORCE_INLINE ConstReference	getFirst() const	{ TIKI_ASSERT( m_count > 0u ); return *m_pFirst; }
+		TIKI_FORCE_INLINE Pointer			getFirst()								{ return m_pFirst; }
+		TIKI_FORCE_INLINE ConstPointer		getFirst() const						{ return m_pFirst; }
+		TIKI_FORCE_INLINE Pointer			getLast()								{ return m_pLast; }
+		TIKI_FORCE_INLINE ConstPointer		getLast() const							{ return m_pLast; }
 
-		TIKI_FORCE_INLINE Reference			getLast()			{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
-		TIKI_FORCE_INLINE ConstReference	getLast() const		{ TIKI_ASSERT( m_count > 0u ); return *m_pLast; }
+		TIKI_FORCE_INLINE Pointer			getNext( Pointer pValue )				{ return pValue->pNextItem; }
+		TIKI_FORCE_INLINE ConstPointer		getNext( ConstPointer pValue ) const	{ return pValue->pNextItem; }
+		TIKI_FORCE_INLINE Pointer			getPrev( Pointer pValue )				{ return pValue->pPrevItem; }
+		TIKI_FORCE_INLINE ConstPointer		getPrev( ConstPointer pValue ) const	{ return pValue->pPrevItem; }
 
-		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
-		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
+		TIKI_FORCE_INLINE Iterator			begin()									{ return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const							{ return getBegin(); }
 
-		TIKI_FORCE_INLINE Iterator			end()				{ return getEnd(); }
-		TIKI_FORCE_INLINE ConstIterator		end() const			{ return getEnd(); }
+		TIKI_FORCE_INLINE Iterator			end()									{ return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const								{ return getEnd(); }
 
 	private:
 

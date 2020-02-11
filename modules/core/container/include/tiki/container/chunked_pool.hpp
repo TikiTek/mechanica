@@ -16,6 +16,8 @@ namespace tiki
 		typedef T							Type;
 		typedef T&							Reference;
 		typedef const T&					ConstReference;
+		typedef T*							Pointer;
+		typedef const T*					ConstPointer;
 
 		TIKI_FORCE_INLINE					ChunkedPool();
 		TIKI_FORCE_INLINE					~ChunkedPool();
@@ -26,12 +28,13 @@ namespace tiki
 		TIKI_FORCE_INLINE uint				getCount() const;
 		TIKI_FORCE_INLINE bool				isEmpty() const;
 
-		TIKI_FORCE_INLINE bool				contains( const T& item ) const;
+		TIKI_FORCE_INLINE bool				contains( ConstReference item ) const;
 
-		TIKI_FORCE_INLINE T*				push();
-		TIKI_FORCE_INLINE T*				push( const T& item );
+		TIKI_FORCE_INLINE Pointer			push();
+		TIKI_FORCE_INLINE Pointer			push( const T& item );
 
-		TIKI_FORCE_INLINE void				removeUnsortedByValue( const T& item );
+		TIKI_FORCE_INLINE void				removeUnsortedByValue( ConstReference item );
+		TIKI_FORCE_INLINE void				removeUnsortedByValue( ConstPointer pItem );
 
 	private:
 

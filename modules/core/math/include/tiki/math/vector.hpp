@@ -20,6 +20,7 @@ namespace tiki
 		static const Vector2	unitX;
 		static const Vector2	unitY;
 
+		static inline Vector2	create( float xy );
 		static inline Vector2	create( float x, float y );
 		static inline Vector2	create( float2 source );
 

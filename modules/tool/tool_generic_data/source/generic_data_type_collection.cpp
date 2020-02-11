@@ -56,10 +56,8 @@ namespace tiki
 
 		while( !m_types.isEmpty() )
 		{
-			GenericDataType& type = m_types.getFirst();
-
-			m_types.removeSortedByValue( type );
-			TIKI_DELETE( &type );
+			GenericDataType* pType = m_types.popFirst();
+			TIKI_DELETE( pType );
 		}
 	}
 

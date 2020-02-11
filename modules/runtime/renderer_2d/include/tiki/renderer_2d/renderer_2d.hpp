@@ -120,7 +120,7 @@ namespace tiki
 		Camera							m_camera;
 
 		Vector2							m_defaultTexCoords[ RectanglePoint_Count ];
-		float							m_drawToWorldFactor;
+		float							m_drawToUnitFactor;
 
 		const ShaderSet*				m_pSpriteShader;
 		const ShaderSet*				m_pCompositeShader;
