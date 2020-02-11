@@ -98,29 +98,6 @@ function io.writefile( file_name, content )
 	return false;
 end
 
-function table.join( src1, src2, src3 )
-	if type( src1 ) ~= "table" or type( src2 ) ~= "table" then
-		throw( "table.join: null argument exception" );
-	end
-
-	target = {}
-	for i,val in pairs( src1 ) do
-		target[ #target + 1 ] = val;
-	end
-
-	for i,val in pairs( src2 ) do
-		target[ #target + 1 ] = val;
-	end
-
-	if src3 ~= nil then
-		for i,val in pairs( src3 ) do
-			target[ #target + 1 ] = val;
-		end
-	end
-
-	return target;
-end
-
 function table.flatten( array_array )
 	if type( array_array ) ~= "table" then
 		throw( "table.flatten: invalid argument" );

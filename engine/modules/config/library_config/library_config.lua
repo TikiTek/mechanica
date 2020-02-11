@@ -50,7 +50,7 @@ use_vulkan	= false;
 
 use_sdl		= false;
 
-if _ACTION == "vs2010" or _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION == "vs2015" or _ACTION == "vs2017" then
+if _ACTION == "vs2015" or _ACTION == "vs2017" or _ACTION == "vs2019" then
 	module:set_define( "WIN_NT" );
 	module:set_define( "WIN32" );
 	module:set_define( "_WIN32" );
