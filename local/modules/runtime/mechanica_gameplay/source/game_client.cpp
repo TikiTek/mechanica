@@ -317,7 +317,7 @@ namespace tiki
 		renderParameters.bloomCutoffThreshold.b	= levelTheme.bloomCutOffThreshold.z;
 	}
 
-	void GameClient::update( GameClientUpdateContext& updateContext )
+	void GameClient::update( const MechanicaUpdateContext& updateContext )
 	{
 		const timems timeMs = timems( updateContext.gameTime.elapsedTime * 1000.0f );
 

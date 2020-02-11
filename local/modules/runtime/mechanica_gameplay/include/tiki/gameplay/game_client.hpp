@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tiki/base/timer.hpp"
 #include "tiki/entity_system/entity_system.hpp"
 #include "tiki/math/camera.hpp"
+#include "tiki/mechanica_types/mechanica_types.hpp"
 #include "tiki/physics_2d/physics_2d_world.hpp"
 #include "tiki/runtime_shared/free_camera.hpp"
 
@@ -26,11 +26,6 @@ namespace tiki
 	class ResourceRequestPool;
 	struct InputEvent;
 	struct Renderer2dRenderParameters;
-
-	struct GameClientUpdateContext
-	{
-		GameTime	gameTime;
-	};
 
 	enum GameClientLoadResult
 	{
@@ -66,7 +61,7 @@ namespace tiki
 
 		void											applyRenderParameters( Renderer2dRenderParameters& renderParameters );
 
-		void											update( GameClientUpdateContext& updateContext );
+		void											update( const MechanicaUpdateContext& updateContext );
 		void											render( Renderer2d& renderer );
 
 		bool											processInputEvent( const InputEvent& inputEvent );
@@ -81,7 +76,7 @@ namespace tiki
 		const Physics2dBodyComponent&					getPhysicsBodyComponent() const		{ return m_physicsBodyComponent; }
 		const Physics2dColliderComponent&				getPhysicsColliderComponent() const	{ return m_physicsColliderComponent; }
 		const Physics2dJointComponent&					getPhysicsJointComponent() const	{ return m_physicsJointComponent; }
-		const BreakableComponent&						getBreakableComponent() const		{ return m_breakableComponent; }
+		BreakableComponent&								getBreakableComponent() 		{ return m_breakableComponent; }
 		const PlayerComponent&							getPlayerComponent() const			{ return m_playerComponent; }
 		const WiggleComponent&							getWiggleComponent() const			{ return m_wiggleComponent; }
 

@@ -6,6 +6,7 @@
 #include "tiki/game/game.hpp"
 #include "tiki/graphics/color_xkcd.hpp"
 #include "tiki/graphics/graphics_system.hpp"
+#include "tiki/mechanica_types/mechanica_units.hpp"
 #include "tiki/resource/resource_request_pool.hpp"
 
 #include "mechanica_base.hpp"
@@ -60,7 +61,7 @@ namespace tiki
 						parameters.height				= (uint16)graphicsSystem.getBackBuffer().getHeight();
 						parameters.layerCount			= MechanicaRenderLayer_Count;
 						parameters.emissivLayerId		= MechanicaRenderLayer_Emissive;
-						parameters.drawToWorldFactor	= 0.01f;
+						parameters.drawToWorldFactor	= DrawToUnitFactor;
 
 						if ( !m_renderer.create( graphicsSystem, resourceRequestPool, parameters ) )
 						{

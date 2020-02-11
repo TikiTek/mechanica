@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tiki/base/random.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
@@ -14,17 +15,26 @@ namespace tiki
 		bool					create( const LevelThemeData& levelTheme );
 		void					dispose();
 
-		void					update( const GameTime& gameTime );
+		void					update( const MechanicaUpdateContext& updateContext );
 		void					render( Renderer2d& renderer );
 
 	private:
 
-		struct BackgroundSprite
+		struct BackgroundSprite : LinkedItem< BackgroundSprite >
 		{
-			uintreg				layerIndex;
-			s
+			uint8				spriteIndex;
+			Vector2				position;
 		};
 
-		const LevelThemeData*	m_pLevelTheme;
+		using BackgroundSpritePool = ChunkedPool< BackgroundSprite >;
+		using BackgroundSpriteLayer = LinkedList< BackgroundSprite >;
+		using BackgroundSpriteLayerArray = Array< BackgroundSpriteLayer >;
+
+		const LevelThemeData*		m_pLevelTheme;
+
+		RandomNumberGenerator		m_random;
+
+		BackgroundSpritePool		m_backgroundSpritePool;
+		BackgroundSpriteLayerArray	m_backgroundLayers;
 	};
 }
