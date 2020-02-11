@@ -10,15 +10,14 @@
 				</object>
 			</field>
 			<field type="{reference Texture}" name="background" value="TEXR:background_color_0.texture" />
-			<field type="{array LevelThemeBackgroundLayer}" name="backgroundLayer">
+			<field type="{array LevelThemeBackgroundLayer}" name="backgroundLayers">
 				<array type="LevelThemeBackgroundLayer">
 					<element type="LevelThemeBackgroundLayer">
 						<object type="LevelThemeBackgroundLayer">
 							<field type="float" name="minDistanceX" value="19.62" />
 							<field type="float" name="maxDistanceX" value="19.62" />
-							<field type="float" name="minPositionY" value="0.0" />
-							<field type="float" name="maxPositionY" value="0.0" />
-							<field type="float" name="speed" value="0.5" />
+							<field type="bool" name="bottomPositionY" value="true" />
+							<field type="float" name="speed" value="0.15" />
 							<field type="{array LevelThemeBackgroundSprite}" name="sprites">
 								<array type="LevelThemeBackgroundSprite">
 									<element type="LevelThemeBackgroundSprite">
@@ -37,7 +36,7 @@
 							<field type="float" name="maxDistanceX" value="9.0" />
 							<field type="float" name="minPositionY" value="-3.5" />
 							<field type="float" name="maxPositionY" value="0.0" />
-							<field type="float" name="speed" value="0.75" />
+							<field type="float" name="speed" value="0.225" />
 							<field type="{array LevelThemeBackgroundSprite}" name="sprites">
 								<array type="LevelThemeBackgroundSprite">
 									<element type="LevelThemeBackgroundSprite">
@@ -80,6 +79,86 @@
 										<object type="LevelThemeBackgroundSprite">
 											<field type="{reference Texture}" name="texture" value="TEXR:background_cloud_small_6.texture" />
 											<field type="float" name="scale" value="1.0" />
+										</object>
+									</element>
+								</array>
+							</field>
+						</object>
+					</element>
+					<element type="LevelThemeBackgroundLayer">
+						<object type="LevelThemeBackgroundLayer">
+							<field type="float" name="minDistanceX" value="13.0" />
+							<field type="float" name="maxDistanceX" value="17.0" />
+							<field type="float" name="minPositionY" value="-2.5" />
+							<field type="float" name="maxPositionY" value="0.5" />
+							<field type="float" name="speed" value="0.3" />
+							<field type="{array LevelThemeBackgroundSprite}" name="sprites">
+								<array type="LevelThemeBackgroundSprite">
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_cloud_big_0.texture" />
+											<field type="float" name="scale" value="1.0" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_cloud_big_1.texture" />
+											<field type="float" name="scale" value="1.0" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_cloud_big_2.texture" />
+											<field type="float" name="scale" value="1.0" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_cloud_big_3.texture" />
+											<field type="float" name="scale" value="1.0" />
+										</object>
+									</element>
+								</array>
+							</field>
+						</object>
+					</element>
+					<element type="LevelThemeBackgroundLayer">
+						<object type="LevelThemeBackgroundLayer">
+							<field type="float" name="minDistanceX" value="4.0" />
+							<field type="float" name="maxDistanceX" value="8.0" />
+							<field type="float" name="minPositionY" value="-2.5" />
+							<field type="float" name="maxPositionY" value="0.5" />
+							<field type="float" name="speed" value="0.12" />
+							<field type="{array LevelThemeBackgroundSprite}" name="sprites">
+								<array type="LevelThemeBackgroundSprite">
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_island_0.texture" />
+											<field type="float" name="scale" value="0.75" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_island_1.texture" />
+											<field type="float" name="scale" value="0.75" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_island_2.texture" />
+											<field type="float" name="scale" value="0.75" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_island_3.texture" />
+											<field type="float" name="scale" value="0.75" />
+										</object>
+									</element>
+									<element type="LevelThemeBackgroundSprite">
+										<object type="LevelThemeBackgroundSprite">
+											<field type="{reference Texture}" name="texture" value="TEXR:background_island_3.texture" />
+											<field type="float" name="scale" value="0.75" />
 										</object>
 									</element>
 								</array>
