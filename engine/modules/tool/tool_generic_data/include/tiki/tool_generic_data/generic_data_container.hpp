@@ -44,7 +44,7 @@ namespace tiki
 		virtual uint					getElementCount() TIKI_PURE;
 
 #if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
-		bool							writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataValue& value ) const;
+		bool							writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataType* pTargetType, const GenericDataValue& value ) const;
 #endif
 	};
 }
