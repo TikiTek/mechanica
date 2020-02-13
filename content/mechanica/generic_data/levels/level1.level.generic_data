@@ -7,7 +7,36 @@
 				<array type="EntityTemplateData">
 					<element type="EntityTemplateData">
 						<object type="EntityTemplateData">
-						
+							<field type="{array EntityComponent}" name="components">
+								<array type="EntityComponent">
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum Components2dType.Transform}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="Transform2dComponentInitData">
+													<field type="float2" name="position">
+														<object type="float2">
+															<field name="x" type="float" value="15.0" />
+															<field name="y" type="float" value="20.0" />
+														</object>
+													</field>
+												</object>
+											</field>
+										</object>
+									</element>
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum Components2dType.Sprite}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="SpriteComponentInitData">
+													<field type="{reference Texture}" name="texture" value="TEXR:island1.texture" />
+													<field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
+												</object>
+											</field>
+										</object>
+									</element>
+								</array>
+							</field>
 						</object>
 					</element>
 				</array>
