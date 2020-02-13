@@ -274,7 +274,7 @@ namespace tiki
 			if ( pValue != nullptr )
 			{
 				TIKI_ASSERT( pValue->getType() == structField.pType );
-				if ( !writeValueToResource( *pSectionWriter, *pValue ) )
+				if ( !writeValueToResource( *pSectionWriter, structField.pType, *pValue ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataObject::writeToResource] Unable to write value for Field '%s'\n", structField.name.cStr() );
 					ok = false;

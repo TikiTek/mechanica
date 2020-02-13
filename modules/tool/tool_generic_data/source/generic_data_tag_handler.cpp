@@ -91,37 +91,27 @@ namespace tiki
 
 			if( pCurrentTag->getTag() == "enum" )
 			{
-				const int dotIndex = content.indexOf( '.' );
-				if( dotIndex == -1 )
+				const GenericDataTypeEnum* pEnumType = nullptr;
+				const GenericDataEnumValue* pEnumValue = nullptr;
+
+				if( !parseEnum( &pEnumType, &pEnumValue, content ) )
 				{
-					TIKI_TRACE_ERROR( "[resolveValueTag] Please use {enum TypeName.ValueName} for enum tags.\n" );
 					return false;
 				}
-
-				const string enumTypeName = content.subString( 0u, dotIndex );
-				const GenericDataType* pEnumType = m_collection.findTypeByName( enumTypeName );
-				if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
-				{
-					TIKI_TRACE_ERROR( "[resolveValueTag] '%s' not found or not an enum.\n", enumTypeName.cStr() );
-					return false;
-				}
-
-				content = content.subString( dotIndex + 1 );
-
-				const GenericDataTypeEnum* pTypedEnumType = (const GenericDataTypeEnum*)pEnumType;
-				const GenericDataValue* pValue = pTypedEnumType->getValueByName( content );
 
 				sint64 intValue = 0;
-				if( pValue == nullptr )
+				if( pEnumValue->pValue == nullptr )
 				{
 					TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), content.cStr() );
 					return false;
 				}
-				else if( !pValue->getSignedValue( intValue ) )
+				else if( !pEnumValue->pValue->getSignedValue( intValue ) )
 				{
 					TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), content.cStr() );
 					return false;
 				}
+
+				content = string_tools::toString( intValue );
 			}
 			else if( pCurrentTag->getTag() == "reference" )
 			{

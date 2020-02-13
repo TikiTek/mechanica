@@ -83,7 +83,6 @@ namespace tiki
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value is not an integer value.\n", getName().cStr() );
 							return false;
 						}
-						currentValue++;
 					}
 					else
 					{
@@ -92,6 +91,8 @@ namespace tiki
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to set default enum value.\n", getName().cStr() );
 						}
 					}
+
+					currentValue++;
 				}
 				else
 				{

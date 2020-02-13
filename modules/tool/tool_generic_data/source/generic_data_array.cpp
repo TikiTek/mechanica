@@ -158,7 +158,7 @@ namespace tiki
 		for (uint i = 0u; i < m_array.getCount(); ++i)
 		{
 			const GenericDataValue* pValue = m_array[ i ];
-			ok &= writeValueToResource( sectionWriter, *pValue );
+			ok &= writeValueToResource( sectionWriter, m_pType->getBaseType(), *pValue );
 		}
 
 		writer.closeDataSection( sectionWriter );
