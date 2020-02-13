@@ -34,17 +34,19 @@ namespace tiki
 		return result != 0;
 	}
 
-	bool convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer )
+	bool convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer, uintreg length /*= 0u*/ )
 	{
+		const int sourceCount = (length == 0u ? -1 : int(length));
 		const int result = WideCharToMultiByte(
 			CP_UTF8, 0,
 			pSourceBuffer,
-			-1,
+			sourceCount,
 			pTargetBuffer,
 			(int)targetLengthInCharacters,
 			nullptr,
 			nullptr
 		);
+		pTargetBuffer[ result ] = '\0';
 
 		return result != 0;
 	}

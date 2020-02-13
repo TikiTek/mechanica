@@ -36,8 +36,8 @@ namespace tiki
 			break;
 
 		case Physics2dShapeType_Polygon:
-			TIKI_ASSERT( isPointerAligned( initData.vertices.getData(), TIKI_ALIGNOF( Vector2 ) ) );
-			shape.polygonShape.create( (const Vector2*)initData.vertices.getData(), initData.vertices.getCount() );
+			TIKI_ASSERT( isPointerAligned( initData.vertices.getBegin(), TIKI_ALIGNOF( Vector2 ) ) );
+			shape.polygonShape.create( (const Vector2*)initData.vertices.getBegin(), initData.vertices.getCount() );
 			pShape = &shape.polygonShape;
 			break;
 

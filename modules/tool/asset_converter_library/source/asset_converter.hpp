@@ -11,6 +11,7 @@
 #include "tiki/io/file_stream.hpp"
 #include "tiki/io/file_watcher.hpp"
 #include "tiki/task_system/task_system.hpp"
+#include "tiki/threading/atomic.hpp"
 #include "tiki/threading/thread.hpp"
 #include "tiki/tool_sql/sqlite_database.hpp"
 
@@ -38,13 +39,13 @@ namespace tiki
 		virtual bool	create( const AssetConverterParamter& parameters );
 		virtual void	dispose();
 
-		virtual bool	convertAll() TIKI_OVERRIDE_FINAL;
-		void			queueFile( const Path& filePath );
-		bool			startConversion( Mutex* pConversionMutex = nullptr );
+		virtual void	queueAll() TIKI_OVERRIDE_FINAL;
 
 		virtual void	startWatch() TIKI_OVERRIDE_FINAL;
 		virtual void	stopWatch() TIKI_OVERRIDE_FINAL;
 
+		virtual bool	isConvertionRunning() TIKI_OVERRIDE_FINAL;
+		virtual bool	popFinishConversion() TIKI_OVERRIDE_FINAL;
 		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_OVERRIDE_FINAL;
 
 	private:
@@ -97,11 +98,13 @@ namespace tiki
 		TemplateMap					m_templates;
 		Map< string, string >		m_extensions;
 
-		List< Path >				m_files;
+		Mutex						m_queuedFilesMutex;
+		List< Path >				m_queuedFiles;
 		Mutex						m_changedFilesMutex;
 		List< string >				m_changedFiles;
 
-		Mutex						m_watcherMutex;
+		Atomic< bool >				m_threadWork;
+		Atomic< bool >				m_threadFinish;
 		Thread						m_watcherThread;
 		FileWatcher					m_watcher;
 
@@ -115,6 +118,7 @@ namespace tiki
 		void						addPackage( const Package& package );
 		void						addTemplate( const Path& filePath );
 
+		bool						startConversion();
 		bool						prepareTasks( List< ConversionTask >& tasks );
 		bool						fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath );
 		bool						generateTaskFromFiles( List< ConversionTask >& tasks, const List< ConversionAsset >& assetsToBuild );

@@ -143,68 +143,67 @@ namespace tiki
 	{
 	public:
 
+		typedef T			Type;
+		typedef T&			Reference;
+		typedef const T&	ConstReference;
+		typedef T*			Iterator;
+		typedef const T*	ConstIterator;
+
 		TIKI_FORCE_INLINE ResArray()
 			: m_pData( nullptr )
-			, m_size( 0u )
+			, m_count( 0u )
 		{
 		}
 
-		TIKI_FORCE_INLINE ResArray( const T* pData, size_t size )
+		TIKI_FORCE_INLINE ResArray( const T* pData, uintreg size )
 			: m_pData( pData )
-			, m_size( size )
+			, m_count( size )
 		{
 		}
 
 		TIKI_FORCE_INLINE ResArray( const ResArray< T >& copy )
 			: m_pData( copy.m_pData )
-			, m_size( copy.m_size )
+			, m_count( copy.m_count )
 		{
 		}
 
 		TIKI_FORCE_INLINE ~ResArray()
 		{
 			m_pData	= nullptr;
-			m_size	= 0u;
+			m_count	= 0u;
 		}
 
-		TIKI_FORCE_INLINE size_t getCount() const
-		{
-			return m_size;
-		}
+		TIKI_FORCE_INLINE uintreg			getCount() const { return m_count; }
+		TIKI_FORCE_INLINE uintreg			getCapacity() const { return m_count; }
 
-		TIKI_FORCE_INLINE const T* getData() const
-		{
-			return m_pData;
-		}
+		TIKI_FORCE_INLINE ConstIterator		getBegin() const { return m_pData; }
+		TIKI_FORCE_INLINE ConstIterator		getEnd() const { return m_pData + m_count; }
+		TIKI_FORCE_INLINE ConstReference	getFirst() const { return getAt( 0u ); }
+		TIKI_FORCE_INLINE ConstReference	getLast() const { return getAt( m_count - 1u ); }
 
-		TIKI_FORCE_INLINE const T& getAt( size_t index ) const
-		{
-			TIKI_ASSERT( index < m_size );
-			return m_pData[ index ];
-		}
+		TIKI_FORCE_INLINE const T&			getAt( uintreg index ) const { TIKI_ASSERT( index < m_count ); return m_pData[ index ]; }
+		TIKI_FORCE_INLINE const T&			operator[]( uintreg index ) const { return getAt( index ); }
 
-		TIKI_FORCE_INLINE const T& operator[]( size_t index ) const
-		{
-			return getAt( index );
-		}
+		TIKI_FORCE_INLINE ArrayView< T >	getView() const { return ArrayView< T >( m_pData, m_count ); }
 
-		TIKI_FORCE_INLINE ArrayView< T > getView() const
-		{
-			return ArrayView< T >( m_pData, m_size );
-		}
+		TIKI_FORCE_INLINE Iterator			begin() { return getBegin(); }
+		TIKI_FORCE_INLINE ConstIterator		begin() const { return getBegin(); }
+
+		TIKI_FORCE_INLINE Iterator			end() { return getEnd(); }
+		TIKI_FORCE_INLINE ConstIterator		end() const { return getEnd(); }
 
 	private:
 
 #if TIKI_ENABLED( TIKI_BUILD_64BIT )
 		const T*		m_pData;
-		size_t			m_size;
+		uintreg			m_count;
 #else
 		TIKI_ALIGN_PREFIX( 8 )	struct
 		{
 			const T*	m_pData;
-			size_t		m_pad0;
-			size_t		m_size;
-			size_t		m_pad1;
+			uintreg		m_pad0;
+			uintreg		m_count;
+			uintreg		m_pad1;
 		} TIKI_ALIGN_POSTFIX( 8 );
 #endif
 	};
