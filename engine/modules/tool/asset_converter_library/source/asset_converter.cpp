@@ -177,12 +177,7 @@ namespace tiki
 
 		if( (m_isNewDatabase && parameters.rebuildOnMissingDatabase) || parameters.waitForConversion )
 		{
-			if( !convertAll() )
-			{
-				TIKI_TRACE_ERROR( "AssetConverter: Initial Asset conversion failed. Shutting down!\n" );
-				dispose();
-				return false;
-			}
+			queueAll();
 		}
 
 		TIKI_TRACE_INFO( "[converter] started\n" );
@@ -230,7 +225,7 @@ namespace tiki
 		m_changedFilesMutex.dispose();
 	}
 
-	bool AssetConverter::convertAll()
+	void AssetConverter::queueAll()
 	{
 		List< Path > assetFiles;
 		for( const KeyValuePair< string, string >& extension : m_extensions )
@@ -238,21 +233,17 @@ namespace tiki
 			directory::findFiles( assetFiles, m_pProject->getContentPath(), extension.key );
 		}
 
-		for( const Path file : assetFiles )
+		MutexStackLock lock( m_queuedFilesMutex );
+		for( const Path& file : assetFiles )
 		{
-			queueFile( file );
+			m_queuedFiles.add( file );
 		}
-		TIKI_TRACE_INFO( "[converter] Complete scan finish! %u elements found.\n", assetFiles.getCount() );
-
-		const bool result = startConversion( nullptr );
-		TIKI_TRACE_INFO( "[converter] Conversion %s!\n", result ? "successful" : "failed" );
-
-		return result;
+		TIKI_TRACE_INFO( "[converter] Scan complete: %u elements queued.\n", assetFiles.getCount() );
 	}
 
 	void AssetConverter::startWatch()
 	{
-		m_watcherMutex.create();
+		m_queuedFilesMutex.create();
 		m_watcher.create( m_pProject->getContentPath().getCompletePath(), 32u );
 		m_watcherThread.create( watcherThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
 	}
@@ -267,7 +258,17 @@ namespace tiki
 		}
 
 		m_watcher.dispose();
-		m_watcherMutex.dispose();
+		m_queuedFilesMutex.dispose();
+	}
+
+	bool AssetConverter::isConvertionRunning()
+	{
+		return m_threadWork.getRelaxed();
+	}
+
+	bool AssetConverter::popFinishConversion()
+	{
+		return m_threadFinish.andRelaxed( false );
 	}
 
 	bool AssetConverter::getChangedFiles( Array< string >& changedFiles )
@@ -285,12 +286,7 @@ namespace tiki
 		return false;
 	}
 
-	void AssetConverter::queueFile( const Path& filePath )
-	{
-		m_files.add( filePath );
-	}
-
-	bool AssetConverter::startConversion( Mutex* pConversionMutex /* = nullptr */ )
+	bool AssetConverter::startConversion()
 	{
 		List< ConversionTask > tasks;
 		if( !prepareTasks( tasks ) )
@@ -418,16 +414,21 @@ namespace tiki
 		List< ConversionAsset > assetsToBuild;
 		List< Path > filesFromDependencies;
 
-		for( uint i = 0u; i < m_files.getCount(); ++i )
 		{
-			const Path& file = m_files[ i ];
+			MutexStackLock lock( m_queuedFilesMutex );
 
-			ConversionAsset& asset = assetsToBuild.pushBack();
-			if( !fillAssetFromFilePath( asset, file ) )
+			for( uint i = 0u; i < m_queuedFiles.getCount(); ++i )
 			{
-				assetsToBuild.popBack();
-				filesFromDependencies.add( file );
+				const Path& file = m_queuedFiles[ i ];
+
+				ConversionAsset& asset = assetsToBuild.pushBack();
+				if( !fillAssetFromFilePath( asset, file ) )
+				{
+					assetsToBuild.popBack();
+					filesFromDependencies.add( file );
+				}
 			}
+			m_queuedFiles.clear();
 		}
 
 		if( filesFromDependencies.getCount() > 0u )
@@ -483,7 +484,6 @@ namespace tiki
 			}
 		}
 
-		m_files.clear();
 		tasks.clear();
 
 		return generateTaskFromFiles( tasks, assetsToBuild );
@@ -1080,22 +1080,47 @@ namespace tiki
 
 	void AssetConverter::watcherThreadEntryPoint( const Thread& thread )
 	{
-		convertAll();
+		queueAll();
 
-		while ( thread.isExitRequested() == false )
+		while ( !thread.isExitRequested() )
 		{
 			FileWatcherEvent fileEvent;
-			if ( m_watcher.popEvent( fileEvent ) && fileEvent.eventType == FileWatcherEventType_Modified )
+			while( m_watcher.popEvent( fileEvent )  )
 			{
-				//MutexStackLock lock( m_converterMutex );
+				if( fileEvent.eventType != FileWatcherEventType_Modified )
+				{
+					continue;
+				}
 
-				//m_manager.queueFile( fileEvent.filePath );
-				//m_manager.startConversion();
+				MutexStackLock lock( m_queuedFilesMutex );
+
+				bool found = false;
+				for( uint i = 0u; i < m_queuedFiles.getCount(); ++i )
+				{
+					found |= (m_queuedFiles[ i ] == fileEvent.filePath);
+				}
+
+				if( !found )
+				{
+					m_queuedFiles.pushBack( fileEvent.filePath );
+				}
 			}
-			else
+
+			bool start = false;
 			{
-				Thread::sleepCurrentThread( 10u );
+				MutexStackLock lock( m_queuedFilesMutex );
+				start = !m_queuedFiles.isEmpty();
 			}
+
+			if( start )
+			{
+				m_threadWork.setRelaxed( true );
+				startConversion();
+				m_threadFinish.setRelaxed( true );
+				m_threadWork.setRelaxed( false );
+			}
+
+			Thread::sleepCurrentThread( 10u );
 		}
 	}
 

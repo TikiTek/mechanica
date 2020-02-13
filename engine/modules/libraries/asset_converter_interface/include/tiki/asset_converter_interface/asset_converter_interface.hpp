@@ -36,11 +36,13 @@ namespace tiki
 						AssetConverterInterface() {}
 		virtual			~AssetConverterInterface() {}
 
-		virtual bool	convertAll() TIKI_PURE;
+		virtual void	queueAll() TIKI_PURE;
 
 		virtual void	startWatch() TIKI_PURE;
 		virtual void	stopWatch() TIKI_PURE;
 
+		virtual bool	isConvertionRunning() = 0;
+		virtual bool	popFinishConversion() = 0;
 		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_PURE;
 	};
 

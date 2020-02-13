@@ -285,15 +285,24 @@ namespace tiki
 	{
 		ResourceRequest& request = *pData;
 
+#if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
+		if( m_pAssetConverter != nullptr &&
+			m_pAssetConverter->popFinishConversion() )
+		{
+			m_pFileSystem->rescan();
+		}
+#endif
+
 		ResourceLoaderResult result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		if( m_pAssetConverter != nullptr && result == ResourceLoaderResult_FileNotFound )
+		if( m_pAssetConverter != nullptr &&
+			result == ResourceLoaderResult_FileNotFound )
 		{
-			if( m_pAssetConverter->convertAll() )
+			if( !m_pAssetConverter->isConvertionRunning() )
 			{
-				m_pFileSystem->rescan();
-				result = m_resourceLoader.loadResource( &request.m_pResource, request.m_fileNameCrc, request.m_resourceKey, request.m_resourceType, true );
+				m_pAssetConverter->queueAll();
 			}
+			return;
 		}
 #endif
 

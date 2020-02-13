@@ -30,7 +30,7 @@ namespace tiki
 		do
 		{
 			char filenameBuffer[ TIKI_MAX_PATH ];
-			convertWidecharToUtf8String( filenameBuffer, TIKI_COUNT( filenameBuffer ), pNotifyInfo->FileName );
+			convertWidecharToUtf8String( filenameBuffer, TIKI_COUNT( filenameBuffer ), pNotifyInfo->FileName, pNotifyInfo->FileNameLength / 2u );
 
 			Path filePath;
 			filePath.setCombinedPath( pBasePath, filenameBuffer );

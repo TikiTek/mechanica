@@ -31,7 +31,7 @@ namespace tiki
 	TIKI_FORCE_INLINE uint	stringLastIndexOf( const char* pString, const char* pSearch, uint index = TIKI_SIZE_T_MAX );
 
 	bool					convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLengthInCharacters, const char* pSourceBuffer );
-	bool					convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer );
+	bool					convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer, uintreg length = 0u );
 
 	void					formatStringBuffer( char* pTargetBuffer, uint targetLength, const char* pFormat, ... );
 	void					formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args );
