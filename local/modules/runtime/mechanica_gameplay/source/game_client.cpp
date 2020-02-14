@@ -128,6 +128,7 @@ namespace tiki
 			}
 
 			createLevelEntities();
+
 			return GameClientLoadResult_Successful;
 		}
 
@@ -355,6 +356,10 @@ namespace tiki
 	void GameClient::createLevelEntities()
 	{
 		const LevelData& levelData = m_pLevel->getData();
-		//levelData.theme
+
+		for( const EntityTemplateData& entityTemplate : levelData.entities )
+		{
+			createEntityFromTemplate(entityTemplate);
+		}
 	}
 }
