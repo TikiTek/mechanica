@@ -28,3 +28,6 @@
 [submodule "blobs/imgui"]
 	path = blobs/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "blobs/pcre2"]
+	path = blobs/pcre2
+	url = https://github.com/TikiTek/pcre2.git
