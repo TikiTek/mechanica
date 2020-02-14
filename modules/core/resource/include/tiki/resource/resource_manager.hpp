@@ -102,7 +102,7 @@ namespace tiki
 		void										threadEntry( const Thread& thread );
 		static int									staticThreadEntry( const Thread& thread );
 
-		void										updateResourceLoading( ResourceRequest* pData );
+		bool										updateResourceLoading( ResourceRequest* pData );
 	};
 }
 

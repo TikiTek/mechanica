@@ -17,7 +17,7 @@ namespace tiki
 		const tinyxml2::XMLError error = m_document.LoadFile( pFilename );
 		if( error != tinyxml2::XML_SUCCESS )
 		{
-			TIKI_TRACE_ERROR( "[toolxml] Parse from file %s returned an error. %s\n", pFilename, m_document.GetErrorStr1() );
+			TIKI_TRACE_ERROR( "[toolxml] Parse from file %s returned an error. %s\n", pFilename, m_document.ErrorStr() );
 			return false;
 		}
 
@@ -29,7 +29,7 @@ namespace tiki
 		const tinyxml2::XMLError error = m_document.Parse( pString );
 		if( error != tinyxml2::XML_SUCCESS )
 		{
-			TIKI_TRACE_ERROR( "[toolxml] XML parser returned an error. %s\n", m_document.GetErrorStr1() );
+			TIKI_TRACE_ERROR( "[toolxml] XML parser returned an error. %s\n", m_document.ErrorStr() );
 			return false;
 		}
 
@@ -49,7 +49,7 @@ namespace tiki
 		const tinyxml2::XMLError error = m_document.SaveFile( pFilename );
 		if( error != tinyxml2::XML_SUCCESS )
 		{
-			TIKI_TRACE_ERROR( "[toolxml] Save to %s failed with error: %s\n", pFilename, m_document.GetErrorStr1() );
+			TIKI_TRACE_ERROR( "[toolxml] Save to %s failed with error: %s\n", pFilename, m_document.ErrorStr() );
 			return false;
 		}
 

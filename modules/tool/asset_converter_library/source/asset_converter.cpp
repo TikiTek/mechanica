@@ -64,6 +64,7 @@ namespace tiki
 		m_pProject		= parameters.pProject;
 		m_ownsProject	= false;
 		m_rebuildForced = parameters.forceRebuild;
+		m_queuedFilesMutex.create();
 		m_changedFilesMutex.create();
 
 		if( m_pProject == nullptr )
@@ -223,6 +224,7 @@ namespace tiki
 		}
 
 		m_changedFilesMutex.dispose();
+		m_queuedFilesMutex.dispose();
 	}
 
 	void AssetConverter::queueAll()
@@ -243,7 +245,6 @@ namespace tiki
 
 	void AssetConverter::startWatch()
 	{
-		m_queuedFilesMutex.create();
 		m_watcher.create( m_pProject->getContentPath().getCompletePath(), 32u );
 		m_watcherThread.create( watcherThreadStaticEntryPoint, this, 8192u, "AssetConverter" );
 	}
@@ -258,7 +259,6 @@ namespace tiki
 		}
 
 		m_watcher.dispose();
-		m_queuedFilesMutex.dispose();
 	}
 
 	bool AssetConverter::isConvertionRunning()

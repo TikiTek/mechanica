@@ -128,7 +128,10 @@ namespace tiki
 				ResourceRequest& data = *m_runningRequests.getBegin();
 				m_runningRequests.removeSortedByValue( data );
 
-				updateResourceLoading( &data );
+				if( !updateResourceLoading( &data ) )
+				{
+					m_runningRequests.push( data );
+				}
 			}
 		}
 	}
@@ -269,7 +272,10 @@ namespace tiki
 				continue;
 			}
 
-			updateResourceLoading( pData );
+			while( !updateResourceLoading( pData ) )
+			{
+				Thread::sleepCurrentThread( 100 );
+			}
 		}
 	}
 
@@ -281,7 +287,7 @@ namespace tiki
 		return 0;
 	}
 
-	void ResourceManager::updateResourceLoading( ResourceRequest* pData )
+	bool ResourceManager::updateResourceLoading( ResourceRequest* pData )
 	{
 		ResourceRequest& request = *pData;
 
@@ -302,7 +308,7 @@ namespace tiki
 			{
 				m_pAssetConverter->queueAll();
 			}
-			return;
+			return false;
 		}
 #endif
 
@@ -310,5 +316,6 @@ namespace tiki
 		traceResourceLoadResult( result, pFileName, request.m_fileNameCrc, request.m_resourceType );
 
 		request.m_isLoading = false;
+		return true;
 	}
 }
