@@ -148,7 +148,7 @@ namespace tiki
 		for( uint i = 0u; i < pParentState->pFragments->getCount(); ++i )
 		{
 			const BreakableFragment& fragment = pParentState->pFragments->getAt( i );
-			createChildBreakable( m_pSpriteComponent->getLayerId( pSpriteState ), ArrayView< float2 >( fragment.points.getData(), fragment.points.getCount() ), parentEntityComponentIterator, pParentState );
+			createChildBreakable( m_pSpriteComponent->getLayerId( pSpriteState ), fragment.points.getView(), parentEntityComponentIterator, pParentState );
 		}
 	}
 
