@@ -29,12 +29,10 @@ elseif use_d3d12 then
 	module:add_library_file( "dxgi" );
 	
 	module:add_dependency( "d3dx12" );
-elseif use_vulkan then
-	module:add_files( "source/global_vulkan/*.*" );
+elseif use_bgfx then
+	module:add_files( "source/global_bgfx/*.*" );
 	
-	module:add_dependency( "vulkan" );
-	
-	module:add_library_file( "vulkan-1" );
+	module:add_dependency( "third_party/bfgx" );
 else
 	throw( "Graphics API not implemented" );
 end
