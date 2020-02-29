@@ -2,13 +2,13 @@ local module = Module:new();
 
 module.import_func = function()
 	if is_windows then
-		use_d3d11	= true;
+		--use_d3d11	= true;
 		--use_d3d12	= true;
-		--use_vulkan	= true;
+		use_bbfx	= true;
 		
 		windowstargetplatformversion( "10.0.18362.0" );
 	elseif is_linux then
-		use_vulkan	= true;
+		use_bgfx	= true;
 	elseif is_apple then
 		use_metal	= true;
 	else
