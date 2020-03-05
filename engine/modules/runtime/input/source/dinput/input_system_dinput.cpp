@@ -561,7 +561,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Keyboard_Down;
 						inputEvent.deviceType	= InputDeviceType_Keyboard;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.keybaordKey.key = mappedKey;
+						inputEvent.data.keyboardKey.key = mappedKey;
 					}
 					else if ( !isPressed && wasPressed )
 					{
@@ -569,7 +569,7 @@ namespace tiki
 						inputEvent.eventType	= InputEventType_Keyboard_Up;
 						inputEvent.deviceType	= InputDeviceType_Keyboard;
 						inputEvent.deviceId		= 0u;
-						inputEvent.data.keybaordKey.key = mappedKey;
+						inputEvent.data.keyboardKey.key = mappedKey;
 					}
 				}
 			}

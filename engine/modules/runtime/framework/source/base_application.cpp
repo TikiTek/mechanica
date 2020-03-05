@@ -265,7 +265,7 @@ namespace tiki
 		InputEvent inputEvent;
 		while( m_pBaseData->inputSystem.popEvent( inputEvent ) )
 		{
-			if( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keybaordKey.key == KeyboardKey_Escape )
+			if( inputEvent.eventType == InputEventType_Keyboard_Down && inputEvent.data.keyboardKey.key == KeyboardKey_Escape )
 			{
 				wantToShutdown = true;
 			}

@@ -109,7 +109,7 @@ namespace tiki
 		{
 			if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 			{
-				switch ( inputEvent.data.keybaordKey.key )
+				switch ( inputEvent.data.keyboardKey.key )
 				{
 				case KeyboardKey_W:
 					m_keyboardState.y = -1.0f;
@@ -143,7 +143,7 @@ namespace tiki
 			}
 			else if ( inputEvent.eventType == InputEventType_Keyboard_Up )
 			{
-				switch ( inputEvent.data.keybaordKey.key )
+				switch ( inputEvent.data.keyboardKey.key )
 				{
 				case KeyboardKey_W:
 				case KeyboardKey_S:
