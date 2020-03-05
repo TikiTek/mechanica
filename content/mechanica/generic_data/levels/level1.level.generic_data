@@ -16,8 +16,47 @@
 												<object type="Transform2dComponentInitData">
 													<field type="float2" name="position">
 														<object type="float2">
-															<field name="x" type="float" value="15.0" />
-															<field name="y" type="float" value="20.0" />
+															<field name="x" type="float" value="0.0" />
+															<field name="y" type="float" value="0.0" />
+														</object>
+													</field>
+												</object>
+											</field>
+										</object>
+									</element>
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum MechanicaComponentType.Player}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="PlayerComponentInitData">
+													<field type="float" name="mass" value="20.0" />
+													<field type="float" name="maxSpeed" value="10.0" />
+													<field type="float" name="runSpeed" value="15.555" />
+													<field type="float" name="sideWalkSpeed" value="4.5" />
+													<field type="float" name="jumpImpulse" value="-18.0" />
+													<field type="float" name="friction" value="10.0" />
+													<field type="float" name="maxMotorTorque" value="2000.0" />
+												</object>
+											</field>
+										</object>
+									</element>
+								</array>
+							</field>
+						</object>
+					</element>
+					<element type="EntityTemplateData">
+						<object type="EntityTemplateData">
+							<field type="{array EntityComponent}" name="components">
+								<array type="EntityComponent">
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum Components2dType.Transform}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="Transform2dComponentInitData">
+													<field type="float2" name="position">
+														<object type="float2">
+															<field name="x" type="float" value="0.0" />
+															<field name="y" type="float" value="6.0" />
 														</object>
 													</field>
 												</object>
@@ -32,6 +71,78 @@
 													<field type="{reference Texture}" name="texture" value="TEXR:island1.texture" />
 													<field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
 												</object>
+											</field>
+										</object>
+									</element>
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum Physics2dComponentType.Body}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="Physics2dBodyComponentInitData">
+													<field type="float" name="density" value="10.0" />
+													<field type="float" name="friction" value="1.0" />
+													<field type="bool" name="freeRotation" value="true" />
+													<field type="uint32" name="materialId" value="{enum MechanicaMaterialId.Island}" />
+													<field type="Physics2dComponentShapeInitData" name="shape">
+														<object type="Physics2dComponentShapeInitData">
+															<field type="Physics2dShapeType" name="type" value="Polygon" />
+															<field type="{array float2}" name="vertices">
+																<array type="float2">
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="-8.141203" />
+																			<field type="float" name="y" value="-2.035966" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="8.988797" />
+																			<field type="float" name="y" value="-2.035966" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="5.788797" />
+																			<field type="float" name="y" value="0.6340338" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="1.458797" />
+																			<field type="float" name="y" value="2.904034" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="-0.351203" />
+																			<field type="float" name="y" value="3.844034" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="-2.931203" />
+																			<field type="float" name="y" value="1.614034" />
+																		</object>
+																	</element>
+																	<element type="float2">
+																		<object type="float2">
+																			<field type="float" name="x" value="-7.091203" />
+																			<field type="float" name="y" value="0.1340338" />
+																		</object>
+																	</element>
+																</array>
+															</field>
+														</object>
+													</field>
+												</object>
+											</field>
+										</object>
+									</element>
+									<element type="EntityComponent">
+										<object type="EntityComponent">
+											<field type="crc32" name="componentType" value="{enum MechanicaComponentType.Wiggle}" />
+											<field type="{pointer ComponentInitData}" name="initData">
+												<object type="WiggleComponentInitData" />
 											</field>
 										</object>
 									</element>
