@@ -132,6 +132,12 @@ namespace tiki
 				if( value.getEnum( enumName, &enumValue ) )
 				{
 					const GenericDataTypeEnum* pEnumType = (const GenericDataTypeEnum*)value.getType();
+					if( pEnumType != pTargetType )
+					{
+						TIKI_TRACE_ERROR( "Enum type '%s' doesn't match value type '%s'. Can't wrote enum value.\n", pEnumType->getName(), pTargetType->getName() );
+						return false;
+					}
+
 					const GenericDataTypeValueType* pValueType = (const GenericDataTypeValueType*)pEnumType->getBaseType();
 
 					GenericDataValue writeValue( pValueType );
@@ -139,14 +145,14 @@ namespace tiki
 					{
 						if( writeValue.setSignedValue( enumValue, pValueType ) )
 						{
-							return writeValueToResource( sectionWriter, pTargetType, writeValue );
+							return writeValueToResource( sectionWriter, pValueType, writeValue );
 						}
 					}
 					else if( pValueType->isUnsignedInteger() )
 					{
 						if( writeValue.setUnsignedValue( (uint64)enumValue, pValueType ) )
 						{
-							return writeValueToResource( sectionWriter, pTargetType, writeValue );
+							return writeValueToResource( sectionWriter, pValueType, writeValue );
 						}
 					}
 				}
