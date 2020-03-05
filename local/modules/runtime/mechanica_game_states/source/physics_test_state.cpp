@@ -189,7 +189,7 @@ namespace tiki
 		}
 		else if ( inputEvent.eventType == InputEventType_Keyboard_Down )
 		{
-			switch ( inputEvent.data.keybaordKey.key )
+			switch ( inputEvent.data.keyboardKey.key )
 			{
 			case KeyboardKey_Left:
 				m_playerJoint.setRevoluteMotorSteed( -14.0f );
@@ -216,7 +216,7 @@ namespace tiki
 		}
 		else if( inputEvent.eventType == InputEventType_Keyboard_Up )
 		{
-			switch( inputEvent.data.keybaordKey.key )
+			switch( inputEvent.data.keyboardKey.key )
 			{
 			case KeyboardKey_Left:
 			case KeyboardKey_Right:
