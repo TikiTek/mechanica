@@ -238,6 +238,11 @@ namespace tiki
 		MutexStackLock lock( m_queuedFilesMutex );
 		for( const Path& file : assetFiles )
 		{
+			if( m_queuedFiles.contains( file ) )
+			{
+				continue;
+			}
+
 			m_queuedFiles.add( file );
 		}
 		TIKI_TRACE_INFO( "[converter] Scan complete: %u elements queued.\n", assetFiles.getCount() );
