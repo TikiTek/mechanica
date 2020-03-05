@@ -102,7 +102,7 @@ namespace tiki
 	{
 		InputEventDeviceData				device;
 
-		InputEventKeyboardKeyData			keybaordKey;
+		InputEventKeyboardKeyData			keyboardKey;
 		InputEventKeyboardCharacterData		keyboardCharacter;
 
 		InputEventMouseMovedData			mouseMoved;
