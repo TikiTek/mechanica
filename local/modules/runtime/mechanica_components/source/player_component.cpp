@@ -127,7 +127,7 @@ namespace tiki
 		{
 			const bool isDown = (inputEvent.eventType == InputEventType_Keyboard_Down);
 
-			switch (inputEvent.data.keybaordKey.key)
+			switch (inputEvent.data.keyboardKey.key)
 			{
 			case KeyboardKey_A:
 			case KeyboardKey_Left:
