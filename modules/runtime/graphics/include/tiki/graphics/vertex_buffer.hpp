@@ -16,17 +16,17 @@ namespace tiki
 		TIKI_FORCE_INLINE			VertexBuffer();
 		TIKI_FORCE_INLINE			~VertexBuffer();
 
-		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic = true, const void* pInitData = nullptr, const char* pDebugName = nullptr );
+		TIKI_FORCE_INLINE bool		create( GraphicsSystem& graphicsSystem, uintreg vertexCount, uintreg vertexStride, bool dynamic = true, const void* pInitData = nullptr, const char* pDebugName = nullptr );
 		TIKI_FORCE_INLINE void		dispose( GraphicsSystem& graphicsSystem );
 
-		TIKI_FORCE_INLINE size_t	getStride() const	{ return m_stride; }
+		TIKI_FORCE_INLINE uintreg	getStride() const	{ return m_stride; }
 
-		TIKI_FORCE_INLINE size_t	getCount() const	{ return m_count; }
+		TIKI_FORCE_INLINE uintreg	getCount() const	{ return m_count; }
 
 	private:
 
-		size_t						m_stride;
-		size_t						m_count;
+		uintreg						m_stride;
+		uintreg						m_count;
 
 	};
 }

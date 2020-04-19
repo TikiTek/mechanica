@@ -20,18 +20,18 @@ namespace tiki
 		HttpResponse	response;
 	};
 
-	static size_t curlReadUploadCallback( char* pBuffer, size_t size, size_t count, void* pUserData )
+	static uintreg curlReadUploadCallback( char* pBuffer, uintreg size, uintreg count, void* pUserData )
 	{
 		MemoryStream* pStream = (MemoryStream*)pUserData;
 
-		return (size_t)pStream->read( pBuffer, size * count );
+		return (uintreg)pStream->read( pBuffer, size * count );
 	}
 
-	static size_t curlWriteReceivingCallback( char *pBuffer, size_t size, size_t count, void* pUserData )
+	static uintreg curlWriteReceivingCallback( char *pBuffer, uintreg size, uintreg count, void* pUserData )
 	{
 		MemoryStream* pStream = (MemoryStream*)pUserData;
 
-		return (size_t)pStream->write( pBuffer, size * count );
+		return (uintreg)pStream->write( pBuffer, size * count );
 	}
 
 	HttpClient::HttpClient()

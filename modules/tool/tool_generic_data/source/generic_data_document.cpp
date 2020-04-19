@@ -1,17 +1,19 @@
 #include "tiki/tool_generic_data/generic_data_document.hpp"
 
+#include "tiki/tool_generic_data/generic_data_document_collection.hpp"
 #include "tiki/tool_generic_data/generic_data_object.hpp"
 #include "tiki/tool_generic_data/generic_data_type_collection.hpp"
+#include "tiki/tool_generic_data/generic_data_types.hpp"
 #include "tiki/tool_xml/xml_attribute.hpp"
 #include "tiki/tool_xml/xml_node.hpp"
 
 namespace tiki
 {
-	GenericDataDocument::GenericDataDocument( GenericDataTypeCollection& collection )
+	GenericDataDocument::GenericDataDocument( GenericDataDocumentCollection& collection )
 		: m_collection( collection )
 	{
-		m_pType		= nullptr;
-		m_pObject	= nullptr;
+		m_pResourceType	= nullptr;
+		m_pObject		= nullptr;
 	}
 
 	GenericDataDocument::~GenericDataDocument()
@@ -19,22 +21,22 @@ namespace tiki
 		dispose();
 	}
 
-	bool GenericDataDocument::create( const GenericDataTypeResource* pResourceType, const GenericDataTypeStruct* pObjectType )
+	bool GenericDataDocument::create( const GenericDataTypeResource* pResourceType, const GenericDataTypeStruct* pObjectType, const GenericDataObject* pParentObject )
 	{
-		if ( pResourceType == nullptr || pObjectType == nullptr )
+		if( pObjectType == nullptr )
 		{
 			return false;
 		}
 
-		m_pType		= pResourceType;
-		m_pObject	= TIKI_NEW( GenericDataObject )( m_collection );
+		m_pResourceType = pResourceType;
+		m_pObject		= TIKI_NEW( GenericDataObject )( m_collection.getTypeCollection() );
 
-		return m_pObject->create( pObjectType, nullptr );
+		return m_pObject->create( pObjectType, pParentObject );
 	}
 
 	void GenericDataDocument::dispose()
 	{
-		m_pType = nullptr;
+		m_pResourceType = nullptr;
 
 		if ( m_pObject != nullptr )
 		{
@@ -42,21 +44,6 @@ namespace tiki
 			TIKI_DELETE( m_pObject );
 			m_pObject = nullptr;
 		}
-	}
-
-	const GenericDataTypeResource* GenericDataDocument::getType() const
-	{
-		return m_pType;
-	}
-
-	GenericDataObject* GenericDataDocument::getObject()
-	{
-		return m_pObject;
-	}
-
-	const GenericDataObject* GenericDataDocument::getObject() const
-	{
-		return m_pObject;
 	}
 
 	bool GenericDataDocument::importFromFile( const char* pFilename )
@@ -95,35 +82,67 @@ namespace tiki
 	bool GenericDataDocument::importFromXml()
 	{
 		XmlElement* pRootNode = m_document.getRoot();
-		if( pRootNode == nullptr || !pRootNode->isName( "tikigenericobjects" ) )
+		if( pRootNode == nullptr || !pRootNode->isName( "generic_data" ) )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromXml] Unable to find root node.\n" );
 			return false;
 		}
 
-		XmlElement* pResourceNode = pRootNode->findFirstChild( "resource" );
-		const GenericDataType* pResourceType = findTypeForNode( pResourceNode, GenericDataTypeType_Resource );
-		if( pResourceType == nullptr )
+		XmlElement* pObjectParentNode = nullptr;;
+		const GenericDataType* pResourceType = nullptr;
 		{
-			return false;
+			XmlElement* pResourceNode = pRootNode->findFirstChild( "resource" );
+			if( pResourceNode != nullptr )
+			{
+				pObjectParentNode = pResourceNode;
+				pResourceType = findTypeForNode( pResourceNode, GenericDataTypeType_Resource );
+				if( pResourceType == nullptr )
+				{
+					return false;
+				}
+			}
+			else
+			{
+				pObjectParentNode = pRootNode;
+			}
 		}
 
-		XmlElement* pObjectNode = pResourceNode->findFirstChild( "object" );
+		XmlElement* pObjectNode = pObjectParentNode->findFirstChild( "object" );
 		const GenericDataType* pObjectType = findTypeForNode( pObjectNode, GenericDataTypeType_Struct );
 		if( pObjectType == nullptr )
 		{
+			TIKI_TRACE_ERROR( "[GenericDataDocument::importFromXml] Unable to find 'object' node.\n" );
 			return false;
+		}
+
+		GenericDataObject* pParentObject = nullptr;
+		const XmlAttribute* pParentAttribute = pObjectNode->findAttribute( "parent" );
+		if( pParentAttribute != nullptr )
+		{
+			GenericDataDocument* pParentDocument = m_collection.loadDocument( pParentAttribute->getValue() );
+			if( pParentDocument == nullptr )
+			{
+				TIKI_TRACE_ERROR( "[GenericDataDocument::importFromXml] Failed to load parent document '%s'.\n", pParentAttribute->getValue() );
+				return false;
+			}
+
+			pParentObject = pParentDocument->getObject();
 		}
 
 		const GenericDataTypeResource* pTypedResourceType	= (const GenericDataTypeResource*)pResourceType;
 		const GenericDataTypeStruct* pTypedObjectType		= (const GenericDataTypeStruct*)pObjectType;
 
-		if( !create( pTypedResourceType, pTypedObjectType ) )
+		if( !create( pTypedResourceType, pTypedObjectType, pParentObject ) )
 		{
 			return false;
 		}
 
-		return m_pObject->importFromXml( pObjectNode, false );
+		GenericDataLoadContext context;
+		context.pTypeCollection		= &m_collection.getTypeCollection();
+		context.pDocumentCollection	= &m_collection;
+		context.isType				= false;
+
+		return m_pObject->importFromXml( pObjectNode, context );
 	}
 
 	bool GenericDataDocument::exportToXml()
@@ -135,7 +154,7 @@ namespace tiki
 	{
 		if ( pNode == nullptr )
 		{
-			TIKI_TRACE_ERROR( "[GenericDataDocument::findTypeForNode] Unable to find resource node.\n" );
+			TIKI_TRACE_ERROR( "[GenericDataDocument::findTypeForNode] Unable to find type node.\n" );
 			return nullptr;
 		}
 
@@ -146,7 +165,7 @@ namespace tiki
 			return nullptr;
 		}
 
-		const GenericDataType* pType = m_collection.findTypeByName( pTypeAtt->getValue() );
+		const GenericDataType* pType = m_collection.getTypeCollection().findTypeByName( pTypeAtt->getValue() );
 		if ( pType == nullptr )
 		{
 			TIKI_TRACE_ERROR( "[GenericDataDocument::findTypeForNode] Type with name '%s' can't found.\n", pTypeAtt->getValue() );

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_POOL_HPP_INCLUDED
-#define TIKI_POOL_HPP_INCLUDED
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
@@ -52,5 +50,3 @@ namespace tiki
 }
 
 #include "../../../source/pool.inl"
-
-#endif // TIKI_POOL_HPP_INCLUDED

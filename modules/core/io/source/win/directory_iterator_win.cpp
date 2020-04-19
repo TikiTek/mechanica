@@ -1,6 +1,5 @@
 #include "tiki/io/directory_iterator.hpp"
 
-#include "tiki/base/string.hpp"
 #include "tiki/io/path.hpp"
 
 namespace tiki
@@ -20,7 +19,7 @@ namespace tiki
 
 	bool DirectoryIterator::create( const char* pPath )
 	{
-		string finalPath = pPath;
+		DynamicString finalPath = pPath;
 		if ( !finalPath.endsWith( '/' ) )
 		{
 			finalPath += "/";

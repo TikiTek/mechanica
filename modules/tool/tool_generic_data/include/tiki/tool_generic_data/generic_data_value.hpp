@@ -13,6 +13,7 @@ namespace tiki
 	class GenericDataType;
 	class GenericDataTypeCollection;
 	class XmlElement;
+	struct GenericDataLoadContext;
 
 	enum GenericDataValueType
 	{
@@ -65,7 +66,7 @@ namespace tiki
 
 		bool						isValid() const;
 
-		string						toString() const;
+		DynamicString				toString() const;
 
 		bool						getBoolean( bool& value ) const;
 		bool						setBoolean( bool value, const GenericDataType* pType = nullptr );
@@ -79,8 +80,8 @@ namespace tiki
 		bool						getFloatingPoint( float64& value ) const;
 		bool						setFloatingPoint( float64 value, const GenericDataType* pType = nullptr);
 
-		bool						getString( string& value ) const;
-		bool						setString( const string& value, const GenericDataType* pType = nullptr);
+		bool						getString( DynamicString& value ) const;
+		bool						setString( const DynamicString& value, const GenericDataType* pType = nullptr);
 
 		bool						getObject( GenericDataObject*& pValue );
 		bool						getObject( const GenericDataObject*& pValue ) const;
@@ -89,17 +90,17 @@ namespace tiki
 		bool						getArray( const GenericDataArray*& pValue ) const;
 		bool						setArray( GenericDataArray* pValue );
 
-		bool						getEnum( string& enumName, sint64* pEnumValue = nullptr ) const;
-		bool						setEnum( const string& valueName, const GenericDataType* pType = nullptr);
+		bool						getEnum( DynamicString& enumName, sint64* pEnumValue = nullptr ) const;
+		bool						setEnum( const DynamicString& valueName, const GenericDataType* pType = nullptr);
 
-		bool						getReference( string& refText ) const;
-		bool						setReference( const string& refText, const GenericDataType* pType = nullptr);
+		bool						getReference( DynamicString& refText ) const;
+		bool						setReference( const DynamicString& refText, const GenericDataType* pType = nullptr);
 
 		bool						getPointer( GenericDataObject*& pValue );
 		bool						getPointer( const GenericDataObject*& pValue ) const;
 		bool						setPointer( GenericDataObject* pValue );
 
-		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection, bool isType );
+		bool						importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, const GenericDataLoadContext& context );
 		bool						exportToXml( XmlElement* pParentNode, const GenericDataContainer* pParent, GenericDataTypeCollection& collection );
 
 		bool						setCopyFromValue( GenericDataTypeCollection& collection, const GenericDataValue* pValue );
@@ -134,7 +135,7 @@ namespace tiki
 		GenericDataValueType	m_valueType;
 
 		Values					m_value;
-		string					m_text;
+		DynamicString					m_text;
 
 		GenericDataTag*			m_pValueTag;
 

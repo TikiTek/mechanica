@@ -11,12 +11,12 @@ namespace tiki
 	struct ConversionAsset
 	{
 		uint					assetId;
-		string					assetName;
+		DynamicString			assetName;
 
 		bool					isAlradyBuilt;
 
 		Path					inputFilePath;
-		string					type;
+		DynamicString			type;
 
 		ConversionParameters	parameters;
 	};

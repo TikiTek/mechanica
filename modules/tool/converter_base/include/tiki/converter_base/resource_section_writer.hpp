@@ -29,38 +29,38 @@ namespace tiki
 
 	public:
 
-						ResourceSectionWriter();
-						~ResourceSectionWriter();
+										ResourceSectionWriter();
+										~ResourceSectionWriter();
 
-		void			writeAlignment( uint alignment );
-		void			writeData( const void* pData, uint length );
-		void			writeReference( const ReferenceKey* pKey );
+		void							writeAlignment( uint alignment );
+		void							writeData( const void* pData, uint length );
+		void							writeReference( const ReferenceKey* pKey );
 
-		void			writeUInt8( uint8 value );
-		void			writeUInt16( uint16 value );
-		void			writeUInt32( uint32 value );
-		void			writeUInt64( uint64 value );
+		void							writeUInt8( uint8 value );
+		void							writeUInt16( uint16 value );
+		void							writeUInt32( uint32 value );
+		void							writeUInt64( uint64 value );
 
-		void			writeSInt8( sint8 value );
-		void			writeSInt16( sint16 value );
-		void			writeSInt32( sint32 value );
-		void			writeSInt64( sint64 value );
+		void							writeSInt8( sint8 value );
+		void							writeSInt16( sint16 value );
+		void							writeSInt32( sint32 value );
+		void							writeSInt64( sint64 value );
 
-		void			writeFloat( float value );
-		void			writeDouble( double value );
+		void							writeFloat( float value );
+		void							writeDouble( double value );
 
-		uint			getCurrentSize() const;
+		uint							getCurrentSize() const;
 
-		ReferenceKey	addString( const string& text );
-		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
-		ReferenceKey	addDataPoint();
+		ReferenceKey					addString( const DynamicString& text );
+		ReferenceKey					addResourceLink( const DynamicString& fileName, crc32 resourceKey, fourcc resourceType );
+		ReferenceKey					addDataPoint();
 
-		ResourceWriter&	getResourceWriter();
+		ResourceWriter&					getResourceWriter();
 
 	private: // friend
 
-		void	create( ResourceWriter*	pResourceWriter, uint sectionId );
-		void	dispose();
+		void							create( ResourceWriter*	pResourceWriter, uint sectionId );
+		void							dispose();
 
 	private:
 

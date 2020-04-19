@@ -23,17 +23,17 @@ namespace tiki
 
 		static bool									handleWindowMessage( void* pUserData, UINT message, WPARAM wParam, LPARAM lParam );
 
-		TIKI_FORCE_INLINE static void				checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState );
-		TIKI_FORCE_INLINE static void				checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY );
-		TIKI_FORCE_INLINE static void				checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState );
-		TIKI_FORCE_INLINE static TouchInputState	getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uint touchMappingCapacity );
+		TIKI_FORCE_INLINE static void				checkControllerTrigger( InputSystem::InputEventArray& events, uintreg controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState );
+		TIKI_FORCE_INLINE static void				checkControllerStick( InputSystem::InputEventArray& events, uintreg controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY );
+		TIKI_FORCE_INLINE static void				checkControllerButton( InputSystem::InputEventArray& events, uintreg controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState );
+		TIKI_FORCE_INLINE static TouchInputState	getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uintreg touchMappingCapacity );
 	}
 
 	struct TouchInputState
 	{
 		bool			isValid;
 		bool			isNewPoint;
-		uint			index;
+		uintreg			index;
 	};
 
 	struct InputSystemState
@@ -191,7 +191,7 @@ namespace tiki
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aMouseButtonMapping ) == MouseButton_Count );
 
-	TIKI_FORCE_INLINE static void input::checkControllerTrigger( InputSystem::InputEventArray& events, uint controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
+	TIKI_FORCE_INLINE static void input::checkControllerTrigger( InputSystem::InputEventArray& events, uintreg controllerIndex, uint32 triggerIndex, uint8 currentState, uint8 previousState )
 	{
 		if ( currentState != previousState )
 		{
@@ -209,7 +209,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static void input::checkControllerStick( InputSystem::InputEventArray& events, uint controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY )
+	TIKI_FORCE_INLINE static void input::checkControllerStick( InputSystem::InputEventArray& events, uintreg controllerIndex, uint32 stickIndex, sint16 currentStateX, sint16 previousStateX, sint16 currentStateY, sint16 previousStateY )
 	{
 		if ( currentStateX != previousStateX || currentStateY != previousStateY )
 		{
@@ -233,7 +233,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static void input::checkControllerButton( InputSystem::InputEventArray& events, uint controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState )
+	TIKI_FORCE_INLINE static void input::checkControllerButton( InputSystem::InputEventArray& events, uintreg controllerIndex, ControllerButton button, uint16 nativeButton, sint16 currentState, sint16 previousState )
 	{
 		const bool isPressed	= isBitSet( currentState, nativeButton );
 		const bool wasPressed	= isBitSet( previousState, nativeButton );
@@ -256,10 +256,10 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE static TouchInputState input::getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uint touchMappingCapacity )
+	TIKI_FORCE_INLINE static TouchInputState input::getTouchInputMapping( uint32 touchId, uint32* pTouchMapping, uintreg touchMappingCapacity )
 	{
-		uint firstFreeIndex = TIKI_SIZE_T_MAX;
-		for (uint i = 0u; i < touchMappingCapacity; ++i)
+		uintreg firstFreeIndex = TIKI_SIZE_T_MAX;
+		for (uintreg i = 0u; i < touchMappingCapacity; ++i)
 		{
 			if ( pTouchMapping[ i ] == touchId )
 			{
@@ -296,12 +296,12 @@ namespace tiki
 
 	bool input::initializeKeyboard( InputSystemPlatformData& platformData, const InputSystemParameters& parameters )
 	{
-		for( uint i = 0u; i < TIKI_COUNT( platformData.keyboardMapping ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( platformData.keyboardMapping ); ++i )
 		{
 			platformData.keyboardMapping[ i ] = 0xffu;
 		}
 
-		for( uint i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( s_aVirtualKeyCodeMapping ); ++i )
 		{
 			const uint8 directInputCode = s_aVirtualKeyCodeMapping[ i ];
 			platformData.keyboardMapping[ directInputCode ] = uint8( i );
@@ -348,7 +348,7 @@ namespace tiki
 		const int touchMask = GetSystemMetrics( SM_DIGITIZER );
 		platformData.isTouchInputReady = isBitSet( touchMask, NID_READY );
 
-		for( uint i = 0u; i < TIKI_COUNT( platformData.touchInputMapping ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( platformData.touchInputMapping ); ++i )
 		{
 			platformData.touchInputMapping[ i ] = InvalidTouchInputMapping;
 		}
@@ -443,7 +443,7 @@ namespace tiki
 		}
 
 		// controller
-		for( uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex )
+		for( uintreg controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex )
 		{
 			if( XInputGetState( DWORD( controllerIndex ), &m_platformData.pStates[ 0u ]->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
@@ -535,7 +535,7 @@ namespace tiki
 			}
 			else
 			{
-				for (uint i = 0u; i < TIKI_COUNT( pCurrentState->aKeyboard ); ++i)
+				for (uintreg i = 0u; i < TIKI_COUNT( pCurrentState->aKeyboard ); ++i)
 				{
 					const KeyboardKey mappedKey = static_cast< KeyboardKey >( m_platformData.keyboardMapping[ i ] );
 					if ( mappedKey >= KeyboardKey_Count )
@@ -591,7 +591,7 @@ namespace tiki
 			}
 			else
 			{
-				for (uint i = 0u; i < MouseButton_Count; ++i)
+				for (uintreg i = 0u; i < MouseButton_Count; ++i)
 				{
 					const bool isPressed = ( pCurrentState->mouse.rgbButtons[ i ] != 0u );
 					const bool wasPressed = ( pPreviousState->mouse.rgbButtons[ i ] != 0u );
@@ -648,7 +648,7 @@ namespace tiki
 		}
 
 		// controller
-		for (uint controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
+		for (uintreg controllerIndex = 0u; controllerIndex < XUSER_MAX_COUNT; ++controllerIndex)
 		{
 			if ( XInputGetState( DWORD( controllerIndex ), &pCurrentState->aController[ controllerIndex ] ) == ERROR_SUCCESS )
 			{
@@ -674,7 +674,7 @@ namespace tiki
 
 				const uint16 currentButtons = currentState.wButtons;
 				const uint16 previousButtons = previousState.wButtons;
-				for (uint i = 0u; i < TIKI_COUNT( s_aControllerButtonMapping ); ++i)
+				for (uintreg i = 0u; i < TIKI_COUNT( s_aControllerButtonMapping ); ++i)
 				{
 					input::checkControllerButton( m_events, controllerIndex, (ControllerButton)i, s_aControllerButtonMapping[ i ], currentButtons, previousButtons );
 				}
@@ -699,7 +699,7 @@ namespace tiki
 		m_events.clear();
 	}
 
-	uint InputSystem::getEventCount() const
+	uintreg InputSystem::getEventCount() const
 	{
 		return m_events.getCount();
 	}
@@ -742,10 +742,10 @@ namespace tiki
 				InputSystemState* pCurrentState = inputSystem.m_platformData.pStates[ inputSystem.m_platformData.currentStateIndex ];
 
 				const HTOUCHINPUT touchHandle = (HTOUCHINPUT)lParam;
-				const uint touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), LOWORD( wParam ) );
+				const uintreg touchInputCount = TIKI_MIN( TIKI_COUNT( pCurrentState->aTouchPoints ), LOWORD( wParam ) );
 				if( GetTouchInputInfo( touchHandle, (UINT)touchInputCount, pCurrentState->aTouchPoints, sizeof( TOUCHINPUT ) ) )
 				{
-					for( uint touchIndex = 0u; touchIndex < touchInputCount; touchIndex++ )
+					for( uintreg touchIndex = 0u; touchIndex < touchInputCount; touchIndex++ )
 					{
 						const TOUCHINPUT& touchInput = pCurrentState->aTouchPoints[ touchIndex ];
 

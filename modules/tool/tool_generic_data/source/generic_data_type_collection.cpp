@@ -28,8 +28,8 @@ namespace tiki
 {
 	struct GenericDataModuleData
 	{
-		string			name;
-		List< string >	dependencies;
+		DynamicString			name;
+		List< DynamicString >	dependencies;
 	};
 
 	struct GenericDataModuleLoadingData
@@ -123,7 +123,7 @@ namespace tiki
 		return m_types;
 	}
 
-	const GenericDataType* GenericDataTypeCollection::findTypeByName( const string& name ) const
+	const GenericDataType* GenericDataTypeCollection::findTypeByName( const DynamicString& name ) const
 	{
 		for (const GenericDataType& type : m_types)
 		{
@@ -147,7 +147,7 @@ namespace tiki
 		}
 	}
 
-	GenericDataTypeMode GenericDataTypeCollection::findModeByName( const string& name ) const
+	GenericDataTypeMode GenericDataTypeCollection::findModeByName( const DynamicString& name ) const
 	{
 		const GenericDataValue* pValue = m_pModeEnum->getValueByName( name );
 
@@ -170,7 +170,7 @@ namespace tiki
 		GenericDataTypeArray* pArrayType = nullptr;
 		if ( !m_arrays.findValue( const_cast< const GenericDataTypeArray** >( &pArrayType ), pBaseType ) )
 		{
-			const string name = "ResArray<" + pBaseType->getName() + ">";
+			const DynamicString name = "ResArray<" + pBaseType->getName() + ">";
 			pArrayType = TIKI_NEW( GenericDataTypeArray )( *this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType );
 			m_arrays.set( pBaseType, pArrayType );
 
@@ -185,7 +185,7 @@ namespace tiki
 		GenericDataTypeReference* pReferenceType = nullptr;
 		if ( !m_references.findValue( const_cast< const GenericDataTypeReference** >( &pReferenceType ), pBaseType ) )
 		{
-			const string name = "ResRef<" + pBaseType->getName() + ">";
+			const DynamicString name = "ResRef<" + pBaseType->getName() + ">";
 			pReferenceType = TIKI_NEW( GenericDataTypeReference )( *this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType );
 			m_references.set( pBaseType, pReferenceType );
 
@@ -200,7 +200,7 @@ namespace tiki
 		GenericDataTypePointer* pPointerType = nullptr;
 		if( !m_pointers.findValue( const_cast<const GenericDataTypePointer**>(&pPointerType), pBaseType ) )
 		{
-			const string name = pBaseType->getName() + "*";
+			const DynamicString name = pBaseType->getName() + "*";
 			pPointerType = TIKI_NEW( GenericDataTypePointer )(*this, name, pBaseType->getFilename(), GenericDataTypeMode_ToolAndRuntime, pBaseType);
 			m_pointers.set( pBaseType, pPointerType );
 
@@ -210,7 +210,7 @@ namespace tiki
 		return pPointerType;
 	}
 
-	const GenericDataType* GenericDataTypeCollection::parseType( const string& typeString )
+	const GenericDataType* GenericDataTypeCollection::parseType( const DynamicString& typeString )
 	{
 		if( GenericDataTag::isTagString( typeString ) )
 		{
@@ -232,14 +232,14 @@ namespace tiki
 		}
 	}
 
-	bool GenericDataTypeCollection::parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
+	bool GenericDataTypeCollection::parseValue( GenericDataValue* pTargetValue, const DynamicString& valueString, const GenericDataType* pType, const GenericDataType* pParentType )
 	{
 		if ( pType == nullptr )
 		{
 			return false;
 		}
 
-		string content = valueString;
+		DynamicString content = valueString;
 		if( GenericDataTag::isTagString( valueString ) )
 		{
 			GenericDataTag* pTag = TIKI_NEW( GenericDataTag );
@@ -361,13 +361,13 @@ namespace tiki
 		static const char* s_pFactoriesCreateFormat = "\t\t%sGenericDataResource::registerResourceType( resourceManager );\n";
 		static const char* s_pFactoriesDisposeFormat = "\t\t%sGenericDataResource::unregisterResourceType( resourceManager );\n";
 
-		string factoriesIncludeCode = "";
-		string factoriesCreateCode = "";
-		string factoriesDisposeCode = "";
-		Map<string, GenericDataExportData> moduleCode;
+		DynamicString factoriesIncludeCode = "";
+		DynamicString factoriesCreateCode = "";
+		DynamicString factoriesDisposeCode = "";
+		Map<DynamicString, GenericDataExportData> moduleCode;
 		for (const GenericDataType& type : m_types)
 		{
-			const string& moduleName = type.getModule();
+			const DynamicString& moduleName = type.getModule();
 			if ( moduleName.isEmpty() )
 			{
 				continue;
@@ -419,7 +419,7 @@ namespace tiki
 			const auto& kvp = moduleCode.getPairAt( moduleIndex );
 			const auto& moduleData = m_modules[ kvp.key ];
 
-			const string fileName		= kvp.key + ".hpp";
+			const DynamicString fileName		= kvp.key + ".hpp";
 			const Path fullPath( targetDir.getCompletePath(), fileName.cStr() );
 
 			if ( kvp.value.containsResource )
@@ -427,13 +427,13 @@ namespace tiki
 				factoriesIncludeCode += formatDynamicString( s_pFactoriesIncludeFormat, fileName.cStr() );
 			}
 
-			string referencesCode = "";
+			DynamicString referencesCode = "";
 			for (uint refIndex = 0u; refIndex < kvp.value.references.getCount(); ++refIndex)
 			{
 				referencesCode += formatDynamicString( s_pReference, kvp.value.references[ refIndex ]->getBaseType()->getName().cStr() );
 			}
 
-			string dependenciesIncludeCode = "";
+			DynamicString dependenciesIncludeCode = "";
 			for (uint depIndex = 0u; depIndex < moduleData.dependencies.getCount(); ++depIndex)
 			{
 				dependenciesIncludeCode += formatDynamicString( s_pDependencyInclude, moduleData.dependencies[ depIndex ].cStr() );
@@ -443,7 +443,7 @@ namespace tiki
 				dependenciesIncludeCode += "\n";
 			}
 
-			string finalCode = formatDynamicString(
+			DynamicString finalCode = formatDynamicString(
 				s_pBaseFormat,
 				(kvp.value.containsString ? s_pStringInclude : ""),
 				(kvp.value.containsResource ? s_pResourceInclude : ""),
@@ -488,10 +488,10 @@ namespace tiki
 														"}\n"
 														"\n";
 
-		const string headerFileName		= "generic_data_factories.hpp";
+		const DynamicString headerFileName		= "generic_data_factories.hpp";
 		const Path headerFullPath( targetDir.getCompletePath(), headerFileName.cStr() );
 
-		const string headerFinalCode	= formatDynamicString( s_pFactoriesHeaderFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
+		const DynamicString headerFinalCode	= formatDynamicString( s_pFactoriesHeaderFormat, factoriesIncludeCode.cStr(), factoriesCreateCode.cStr(), factoriesDisposeCode.cStr() );
 
 		FileWriteResult result = file::writeToFileIfNotEquals( headerFullPath, headerFinalCode );
 		if( result != FileWriteResult_NoChanged )
@@ -600,11 +600,11 @@ namespace tiki
 			data.filePath		= typeFiles[ i ];
 			data.pRootNode		= nullptr;
 			data.isLoaded		= false;
-			data.data.name		= data.filePath.getFilename();
+			data.data.name		= data.filePath.getBasename();
 
 			if( data.document.loadFromFile( data.filePath.getCompletePath() ) )
 			{
-				data.pRootNode = data.document.findFirstChild( "generictypes" );
+				data.pRootNode = data.document.findFirstChild( "generic_types" );
 				if( data.pRootNode == nullptr )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataTypeCollection::create] '%s' has no root node.\n", data.filePath.getCompletePath() );
@@ -673,7 +673,7 @@ namespace tiki
 		return ok;
 	}
 
-	bool GenericDataTypeCollection::parseFile( XmlElement* pRootNode, const string& filename, const string& moduleName )
+	bool GenericDataTypeCollection::parseFile( XmlElement* pRootNode, const DynamicString& filename, const DynamicString& moduleName )
 	{
 		bool ok = true;
 		XmlElement* pChildNode = pRootNode->getFirstChild();

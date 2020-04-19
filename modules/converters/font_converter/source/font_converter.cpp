@@ -32,7 +32,7 @@ namespace tiki
 		return typeCrc == s_fontTypeCrc;
 	}
 
-	void FontConverter::getInputExtensions( List< string >& extensions ) const
+	void FontConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		extensions.pushBack( ".ttf" );
 	}
@@ -42,7 +42,7 @@ namespace tiki
 		return s_pFontTypeName;
 	}
 
-	bool FontConverter::initializeConverter()
+	bool FontConverter::initializeConverter( const ConversionContext& context )
 	{
 		return true;
 	}
@@ -62,10 +62,10 @@ namespace tiki
 			return false;
 		}
 
-		string allChars = asset.parameters.getOptionalString( "chars", "" );
+		DynamicString allChars = asset.parameters.getOptionalString( "chars", "" );
 		if ( allChars.isEmpty() )
 		{
-			allChars = string( 256u );
+			allChars = DynamicString( 256u );
 			for (uint charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
 			{
 				allChars[ charIndex ] = (char)charIndex;
@@ -86,8 +86,8 @@ namespace tiki
 
 		FT_GlyphSlot slot = face->glyph;
 
-		const size_t baseSize	= (size_t)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
-		const size_t imageSize	= getNextPowerOfTwo( baseSize );
+		const uintreg baseSize	= (uintreg)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
+		const uintreg imageSize	= getNextPowerOfTwo( baseSize );
 		const float floatSize	= (float)imageSize;
 
 		const uint imageWidth	= ( mode3D ? fontSize * allChars.getLength() : imageSize );
@@ -98,10 +98,10 @@ namespace tiki
 
 		uint2 imagePos = { 3u, 3u };
 
-		const size_t rowPitch = ( image.getWidth() * image.getChannelCount() );
+		const uintreg rowPitch = ( image.getWidth() * image.getChannelCount() );
 
 		List< FontChar > chars;
-		for (size_t charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
+		for (uintreg charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
 		{
 			const char c = allChars[ charIndex ];
 			const int glyph_index = FT_Get_Char_Index( face, c );
@@ -149,11 +149,11 @@ namespace tiki
 			const uint yOffset = (mode3D ? (fontSize / 2u) - (slot->bitmap.rows / 2u) : imagePos.y + (fontSize - slot->bitmap_top));
 
 			float* pRow = image.getData() + ( yOffset * rowPitch ) + ( xOffset * image.getChannelCount() );
-			for (size_t y = 0u; y < (size_t)slot->bitmap.rows; ++y)
+			for (uintreg y = 0u; y < (uintreg)slot->bitmap.rows; ++y)
 			{
-				for (size_t x = 0u; x < (size_t)slot->bitmap.width; ++x)
+				for (uintreg x = 0u; x < (uintreg)slot->bitmap.width; ++x)
 				{
-					const size_t index = ( y * slot->bitmap.pitch ) + x;
+					const uintreg index = ( y * slot->bitmap.pitch ) + x;
 
 					pRow[ x * image.getChannelCount() ] = (float)slot->bitmap.buffer[ index ] / 255.0f;
 				}

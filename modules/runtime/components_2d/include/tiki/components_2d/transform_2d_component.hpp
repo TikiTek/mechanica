@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_TRANSFORM2DCOMPONENT_HPP_INCLUDED
-#define TIKI_TRANSFORM2DCOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -39,5 +37,3 @@ namespace tiki
 
 	};
 }
-
-#endif // TIKI_TRANSFORM2DCOMPONENT_HPP_INCLUDED

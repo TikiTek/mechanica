@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED
-#define TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED
 
 #include <Box2D/Common/b2Draw.h>
 
@@ -39,5 +37,3 @@ namespace tiki
 }
 
 #endif
-
-#endif // TIKI_PHYSICS2DDEBUGDRAW_HPP_INCLUDED

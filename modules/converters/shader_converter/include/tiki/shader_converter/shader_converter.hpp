@@ -16,46 +16,46 @@ namespace tiki
 
 	public:
 
-							ShaderConverter();
-		virtual				~ShaderConverter();
+								ShaderConverter();
+		virtual					~ShaderConverter();
 
 	protected:
 
-		virtual uint32		getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
-		virtual bool		canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
+		virtual uint32			getConverterRevision( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
+		virtual bool			canConvertType( crc32 typeCrc ) const TIKI_OVERRIDE_FINAL;
 
-		virtual void		getInputExtensions( List< string >& extensions ) const TIKI_OVERRIDE_FINAL;
-		virtual const char*	getOutputType() const TIKI_OVERRIDE_FINAL;
+		virtual void			getInputExtensions( List< DynamicString >& extensions ) const TIKI_OVERRIDE_FINAL;
+		virtual const char*		getOutputType() const TIKI_OVERRIDE_FINAL;
 
-		virtual bool		initializeConverter() TIKI_OVERRIDE_FINAL;
-		virtual void		disposeConverter() TIKI_OVERRIDE_FINAL;
+		virtual bool			initializeConverter( const ConversionContext& context ) TIKI_OVERRIDE_FINAL;
+		virtual void			disposeConverter() TIKI_OVERRIDE_FINAL;
 
-		virtual bool		startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_OVERRIDE_FINAL;
+		virtual bool			startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		struct ShaderArguments
 		{
-			ShaderType		type;
+			ShaderType			type;
 
-			string			fileName;
-			string			outputName;
+			DynamicString		fileName;
+			DynamicString		outputName;
 
-			string			version;
-			string			entryPoint;
-			string			defineCode;
+			DynamicString		version;
+			DynamicString		entryPoint;
+			DynamicString		defineCode;
 
-			bool			debugMode;
+			bool				debugMode;
 		};
 
-		const char*			m_pBaseSourceCode;
+		const char*				m_pBaseSourceCode	= nullptr;
 
-		List< string >		m_includePathes;
+		List< DynamicString >	m_includePathes;
 
-		mutable Mutex		m_openGlMutex;
+		mutable Mutex			m_openGlMutex;
 
-		bool				compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
-		bool				compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
-		bool				compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
+		bool					compilePlatformShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler, GraphicsApi targetApi ) const;
+		bool					compileD3dShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
+		bool					compileVulkanShader( Array< uint8 >& targetData, const ShaderArguments& args, ShaderIncludeHandler& includeHandler ) const;
 	};
 }

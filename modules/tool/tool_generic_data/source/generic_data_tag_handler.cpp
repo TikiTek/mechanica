@@ -66,7 +66,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	bool GenericDataTagHandler::resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const
+	bool GenericDataTagHandler::resolveValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const
 	{
 		if( pTag == nullptr )
 		{
@@ -84,7 +84,7 @@ namespace tiki
 			tagTree.add( pTag );
 		}
 
-		string content = pDepestTag->getContent();
+		DynamicString content = pDepestTag->getContent();
 		for( uint i = tagTree.getCount() - 1u; i < tagTree.getCount(); --i )
 		{
 			const GenericDataTag* pCurrentTag = tagTree[ i ];
@@ -176,7 +176,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, string& enumValue, const string& content ) const
+	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, DynamicString& enumValue, const DynamicString& content ) const
 	{
 		const int dotIndex = content.indexOf( '.' );
 		if( dotIndex == -1 )
@@ -185,7 +185,7 @@ namespace tiki
 			return false;
 		}
 
-		const string enumTypeName = content.subString( 0u, dotIndex );
+		const DynamicString enumTypeName = content.subString( 0u, dotIndex );
 		const GenericDataType* pEnumType = m_collection.findTypeByName( enumTypeName );
 		if( pEnumType == nullptr || pEnumType->getType() != GenericDataTypeType_Enum )
 		{
@@ -198,9 +198,9 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, const GenericDataEnumValue** ppEnumValue, const string& content ) const
+	bool GenericDataTagHandler::parseEnum( const GenericDataTypeEnum** ppEnumType, const GenericDataEnumValue** ppEnumValue, const DynamicString& content ) const
 	{
-		string enumName;
+		DynamicString enumName;
 		if( !parseEnum( ppEnumType, enumName, content ) )
 		{
 			return false;
@@ -218,7 +218,7 @@ namespace tiki
 		return false;
 	}
 
-	string GenericDataTagHandler::encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const
+	DynamicString GenericDataTagHandler::encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const
 	{
 		TIKI_ASSERT( pEnumType->isValidValue( enumValue ) );
 		return formatDynamicString( "%s.%s", pEnumType->getName().cStr(), enumValue.name.cStr() );
@@ -274,7 +274,7 @@ namespace tiki
 		return m_collection.makePointerType( pTypedType );
 	}
 
-	bool GenericDataTagHandler::resolveEnumValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	bool GenericDataTagHandler::resolveEnumValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
 		const GenericDataTypeEnum* pEnumType = nullptr;
 		if( !parseEnum( &pEnumType, targetContent, targetContent ) )
@@ -300,13 +300,13 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTagHandler::resolveReferenceValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	bool GenericDataTagHandler::resolveReferenceValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
 		TIKI_NOT_IMPLEMENTED;
 		return false;
 	}
 
-	bool GenericDataTagHandler::resolveBitValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	bool GenericDataTagHandler::resolveBitValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
 		const sint64 shift = string_tools::parseSInt64( targetContent.cStr() );
 		const sint64 value = 1ll << shift;
@@ -315,7 +315,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTagHandler::resolveOffsetValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	bool GenericDataTagHandler::resolveOffsetValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
 		if( pParentType != nullptr && pParentType->getType() == GenericDataTypeType_Struct )
 		{
@@ -355,7 +355,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataTagHandler::resolveCrcValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
+	bool GenericDataTagHandler::resolveCrcValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
 	{
 		targetContent = string_tools::toString( crcString( targetContent ) );
 		return true;

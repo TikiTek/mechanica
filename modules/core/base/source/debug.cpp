@@ -1,7 +1,6 @@
 
 #include "tiki/base/debug.hpp"
 
-#include "tiki/base/string.hpp"
 #include "tiki/base/dynamic_string.hpp"
 
 #include <stdarg.h>
@@ -37,7 +36,7 @@ namespace tiki
 		pArgs = startList;
 #endif
 
-		string message( formattedStringLength );
+		DynamicString message( formattedStringLength );
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 		_vsprintf_s_l(
 			(char*)message.cStr(),

@@ -29,16 +29,16 @@ namespace tiki
 		const XmlElement*		findNext( const XmlElement* pElement ) const;
 		const XmlElement*		findNext( const char* pName, const XmlElement* pElement ) const;
 
-		const XmlAttribute*	findAttributeByName( const char* pName, const XmlElement* pElement ) const;
+		const XmlAttribute*		findAttributeByName( const char* pName, const XmlElement* pElement ) const;
 
-		size_t					getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const;
+		uintreg					getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const;
 
 	private:
 
-		XmlElement*			m_pNode;
+		XmlElement*				m_pNode;
 		void*					m_pData;
 
-		static void*			allocateMemory( ::size_t _bytes, void* pUserData );
-		static void			errorHandler( const char* pErrorMessage, const char* pBegin, const char* pCurrent );
+		static void*			allocateMemory( uintreg _bytes, void* pUserData );
+		static void				errorHandler( const char* pErrorMessage, const char* pBegin, const char* pCurrent );
 	};
 }

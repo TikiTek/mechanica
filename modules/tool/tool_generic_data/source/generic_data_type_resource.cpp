@@ -5,14 +5,14 @@
 
 namespace tiki
 {
-	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType )
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
 		, m_pBaseType( pBaseType )
 		, m_isGenericData( isGenericDataType )
 	{
 	}
 
-	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const string& postFix, fourcc fourCC )
+	GenericDataTypeResource::GenericDataTypeResource( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const DynamicString& postFix, fourcc fourCC )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Resource, mode )
 		, m_pBaseType( nullptr )
 		, m_isGenericData( false )
@@ -44,7 +44,7 @@ namespace tiki
 
 		uint i = 0u;
 		const char* pFourccText = pFourCcAtt->getValue();
-		const uint charCount = TIKI_MIN( 4u, getStringLength( pFourccText ) );
+		const uint charCount = TIKI_MIN( 4u, getStringSize( pFourccText ) );
 		for (; i < charCount; ++i)
 		{
 			m_fourCC[ i ] = pFourccText[ i ];
@@ -85,7 +85,7 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypeResource::getCodeExportName() const
+	DynamicString GenericDataTypeResource::getCodeExportName() const
 	{
 		if( m_isGenericData )
 		{
@@ -112,7 +112,7 @@ namespace tiki
 		return m_pBaseType;
 	}
 
-	const string& GenericDataTypeResource::getPostFix() const
+	const DynamicString& GenericDataTypeResource::getPostFix() const
 	{
 		return m_postFix;
 	}

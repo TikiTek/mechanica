@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_LINKEDLIST_INL_INCLUDED__
-#define TIKI_LINKEDLIST_INL_INCLUDED__
 
 namespace tiki
 {
@@ -175,5 +173,3 @@ namespace tiki
 		removeSortedByValue( *pValue );
 	}
 }
-
-#endif // TIKI_LINKEDLIST_INL_INCLUDED__

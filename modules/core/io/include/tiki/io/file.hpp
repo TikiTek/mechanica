@@ -24,10 +24,10 @@ namespace tiki
 		bool				remove( const char* pFileName );
 
 		bool				readAllText( const char* pFileName, Array< char >& targetContent  );
-		bool				readAllBytes( const char* pFileName, Array< uint8 >& buffer, size_t alignment = TIKI_DEFAULT_ALIGNMENT );
+		bool				readAllBytes( const char* pFileName, Array< uint8 >& buffer, uintreg alignment = TIKI_DEFAULT_ALIGNMENT );
 
-		bool				writeAllBytes( const char* pFileName, const uint8* pData, size_t dataLength );
-		FileWriteResult		writeToFileIfNotEquals( const Path& filePath, const string& content );
+		bool				writeAllBytes( const char* pFileName, const uint8* pData, uintreg dataLength );
+		FileWriteResult		writeToFileIfNotEquals( const Path& filePath, const DynamicString& content );
 
 		crc32				getLastChangeCrc( const char* pFileName );
 	}

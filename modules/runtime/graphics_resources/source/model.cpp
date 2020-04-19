@@ -65,7 +65,7 @@ namespace tiki
 		}
 
 		m_geometries.create( modelInitData.geometrieCount );
-		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+		for (uintreg i = 0u; i < m_geometries.getCount(); ++i)
 		{
 			const ModelGeometryInitData* pGeometryInitData = modelInitData.geometries[ i ].getData();
 			m_geometries[ i ].initialize( factory.graphicsSystem, *pGeometryInitData, m_pMaterial );
@@ -85,7 +85,7 @@ namespace tiki
 			m_pHierarchy = nullptr;
 		}
 
-		for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+		for (uintreg i = 0u; i < m_geometries.getCount(); ++i)
 		{
 			m_geometries[ i ].dispose( factory.graphicsSystem );
 		}

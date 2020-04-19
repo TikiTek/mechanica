@@ -19,7 +19,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pQuery == nullptr );
 
-		if ( sqlite3_prepare( dataBase.m_pDatabase, pSql, (int)getStringLength( pSql ), &m_pQuery, &m_pLastError ) != SQLITE_OK )
+		if ( sqlite3_prepare( dataBase.m_pDatabase, pSql, (int)getStringSize( pSql ), &m_pQuery, &m_pLastError ) != SQLITE_OK )
 		{
 			return false;
 		}

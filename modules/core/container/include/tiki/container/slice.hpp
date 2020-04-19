@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SLICE_HPP_INCLUDED
-#define TIKI_SLICE_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -71,5 +69,3 @@ namespace tiki
 }
 
 #include "../../../source/slice.inl"
-
-#endif // TIKI_SLICE_HPP_INCLUDED

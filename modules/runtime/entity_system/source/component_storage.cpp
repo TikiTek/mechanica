@@ -31,9 +31,9 @@ namespace tiki
 		TIKI_ASSERT( m_pMemory == nullptr );
 	}
 
-	bool ComponentStorage::create( uint chunkSize, uint chunkCount, const ComponentTypeRegister& typeRegister )
+	bool ComponentStorage::create( uintreg chunkSize, uintreg chunkCount, const ComponentTypeRegister& typeRegister )
 	{
-		if ( chunkSize < MinChunkSize || chunkSize > MaxChunkSize || !isValueAligned( chunkSize, (uint)ChunkAlignment ) )
+		if ( chunkSize < MinChunkSize || chunkSize > MaxChunkSize || !isValueAligned( chunkSize, (uintreg)ChunkAlignment ) )
 		{
 			return false;
 		}
@@ -42,7 +42,7 @@ namespace tiki
 		m_chunkCount	= chunkCount;
 		m_chunkSize		= chunkSize;
 
-		const uint dataSize = chunkSize * chunkCount;
+		const uintreg dataSize = chunkSize * chunkCount;
 		m_pMemory = static_cast< uint8* >( TIKI_ALLOC_ALIGNED( dataSize, ChunkAlignment ) );
 
 		if ( !m_chunks.create( chunkCount ) )
@@ -51,20 +51,20 @@ namespace tiki
 			return false;
 		}
 
-		const uint typeCount = typeRegister.getMaxTypeCount();
+		const uintreg typeCount = typeRegister.getMaxTypeCount();
 		if ( !m_firstChunk.create( typeCount ) || !m_lastState.create( typeCount ) )
 		{
 			dispose();
 			return false;
 		}
 
-		for (uint i = 0u; i < m_firstChunk.getCount(); ++i)
+		for (uintreg i = 0u; i < m_firstChunk.getCount(); ++i)
 		{
 			m_firstChunk[ i ] = nullptr;
 			m_lastState[ i ] = nullptr;
 		}
 
-		for (uint i = 0u; i < chunkCount; ++i)
+		for (uintreg i = 0u; i < chunkCount; ++i)
 		{
 			ComponentChunk& chunk = m_chunks[ i ];
 
@@ -108,13 +108,13 @@ namespace tiki
 
 		if ( pChunk == nullptr )
 		{
-			for (uint chunkIndex = 0u; chunkIndex < m_chunks.getCount(); ++chunkIndex)
+			for (uintreg chunkIndex = 0u; chunkIndex < m_chunks.getCount(); ++chunkIndex)
 			{
 				ComponentChunk& chunk = m_chunks[ chunkIndex ];
 
 				if ( chunk.typeId == InvalidComponentTypeId )
 				{
-					const uint stateSize = m_pTypeRegister->getTypeStateSize( typeId );
+					const uintreg stateSize = m_pTypeRegister->getTypeStateSize( typeId );
 					TIKI_ASSERT( stateSize >= sizeof( ComponentState ) );
 
 					chunk.pNextChunkOfSameType	= nullptr;
@@ -129,7 +129,7 @@ namespace tiki
 					}
 
 					ComponentState* pPrevState = nullptr;
-					for (uint stateIndex = 0u; stateIndex < chunk.maxCount; ++stateIndex)
+					for (uintreg stateIndex = 0u; stateIndex < chunk.maxCount; ++stateIndex)
 					{
 						ComponentState* pState = (ComponentState*)( chunk.pData + ( stateSize * stateIndex ) );
 
@@ -209,7 +209,7 @@ namespace tiki
 			pState->pNextComponentOfSameType->pPrevComponentOfSameType = pState->pPrevComponentOfSameType;
 		}
 
-		const uint chunkIndex = (uint)( ( (size_t)pState - (size_t)m_pMemory ) / m_chunkSize );
+		const uintreg chunkIndex = (uintreg)( ( (uintreg)pState - (uintreg)m_pMemory ) / m_chunkSize );
 		ComponentChunk& chunk = m_chunks[ chunkIndex ];
 		TIKI_ASSERT( chunk.typeId == pState->typeId );
 

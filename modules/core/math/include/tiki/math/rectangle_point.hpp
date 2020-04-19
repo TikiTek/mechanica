@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_RECTANGLEPOINT_HPP_INCLUDED
-#define TIKI_RECTANGLEPOINT_HPP_INCLUDED
 
 namespace tiki
 {
@@ -14,5 +12,3 @@ namespace tiki
 		RectanglePoint_Count
 	};
 }
-
-#endif // TIKI_RECTANGLEPOINT_HPP_INCLUDED

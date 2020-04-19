@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_CONVERSION_RESULT_HPP_INCLUDED
-#define TIKI_CONVERSION_RESULT_HPP_INCLUDED
 
 #include "tiki/base/path.hpp"
 #include "tiki/container/list.hpp"
@@ -24,15 +22,15 @@ namespace tiki
 
 		struct TraceInfo
 		{
-			TraceLevel	level;
-			string		message;
+			TraceLevel				level;
+			DynamicString			message;
 		};
 
 		struct Dependency
 		{
-			DependencyType	type;
-			string			identifier;
-			sint64			intValue;
+			DependencyType			type;
+			DynamicString			identifier;
+			sint64					intValue;
 		};
 
 		const List< TraceInfo >&	getTraceInfos() const;
@@ -41,15 +39,13 @@ namespace tiki
 
 		void						addInputFile( const Path& filePath );
 		void						addOutputFile( const Path& filePath );
-		void						addDependency( DependencyType type, string identifier, sint64 intValue );
-		void						addTraceInfo( TraceLevel level, const string& message );
+		void						addDependency( DependencyType type, const DynamicString& identifier, sint64 intValue );
+		void						addTraceInfo( TraceLevel level, const DynamicString& message );
 
 	private:
 
-		List< TraceInfo >	m_traceInfos;
-		List< Path >		m_outputFiles;
-		List< Dependency >	m_dependencies;
+		List< TraceInfo >			m_traceInfos;
+		List< Path >				m_outputFiles;
+		List< Dependency >			m_dependencies;
 	};
 }
-
-#endif // TIKI_CONVERSION_RESULT_HPP_INCLUDED

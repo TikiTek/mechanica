@@ -15,34 +15,34 @@ namespace tiki
 		m_pVertexShader			= nullptr;
 		m_pVertexInputBinding	= nullptr;
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apVertexSamplerStates ); ++i)
 		{
 			m_apVertexSamplerStates[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexTextures ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apVertexTextures ); ++i)
 		{
 			m_apVertexTextures[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apVertexConstants ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apVertexConstants ); ++i)
 		{
 			m_apVertexConstants[ i ] = nullptr;
 		}
 
 		m_pPixelShader = nullptr;
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelSamplerStates ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apPixelSamplerStates ); ++i)
 		{
 			m_apPixelSamplerStates[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelTextures ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apPixelTextures ); ++i)
 		{
 			m_apPixelTextures[ i ] = nullptr;
 		}
 
-		for (size_t i = 0u; i < TIKI_COUNT( m_apPixelConstants ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apPixelConstants ); ++i)
 		{
 			m_apPixelConstants[ i ] = nullptr;
 		}

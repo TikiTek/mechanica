@@ -24,7 +24,7 @@ namespace tiki
 		TIKI_FORCE_INLINE					SizedArray();
 		TIKI_FORCE_INLINE					~SizedArray();
 
-		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
+		TIKI_FORCE_INLINE bool				create( uintreg capacity, uintreg aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
 		TIKI_FORCE_INLINE void				dispose();
 
 		TIKI_FORCE_INLINE void				clear();
@@ -34,16 +34,16 @@ namespace tiki
 
 		TIKI_FORCE_INLINE Reference			push();
 		TIKI_FORCE_INLINE Reference			push( ConstReference value );
-		TIKI_FORCE_INLINE Iterator			pushRange( uint count );
-		TIKI_FORCE_INLINE Iterator			pushRange( ConstIterator pData, uint count );
+		TIKI_FORCE_INLINE Iterator			pushRange( uintreg count );
+		TIKI_FORCE_INLINE Iterator			pushRange( ConstIterator pData, uintreg count );
 
 		TIKI_FORCE_INLINE bool				pop( Reference value );
 
-		TIKI_FORCE_INLINE void				removeUnsortedByIndex( uint index );
+		TIKI_FORCE_INLINE void				removeUnsortedByIndex( uintreg index );
 		TIKI_FORCE_INLINE bool				removeUnsortedByValue( ConstReference value );
 
-		TIKI_FORCE_INLINE uint				getCount() const	{ return m_count; }
-		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_capacity; }
+		TIKI_FORCE_INLINE uintreg				getCount() const	{ return m_count; }
+		TIKI_FORCE_INLINE uintreg				getCapacity() const	{ return m_capacity; }
 
 		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_pData; }
 		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_pData; }
@@ -57,11 +57,11 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			getLast()			{ return (*this)[ m_count - 1u ]; }
 		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return (*this)[ m_count - 1u ]; }
 
-		TIKI_FORCE_INLINE uint				getIndexOfIterator( ConstIterator pValue ) const;
-		TIKI_FORCE_INLINE uint				getIndexOfValue( ConstReference value ) const;
+		TIKI_FORCE_INLINE uintreg				getIndexOfIterator( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uintreg				getIndexOfValue( ConstReference value ) const;
 
-		TIKI_FORCE_INLINE Reference			operator[]( uint index );
-		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
+		TIKI_FORCE_INLINE Reference			operator[]( uintreg index );
+		TIKI_FORCE_INLINE ConstReference	operator[]( uintreg index ) const;
 
 		TIKI_FORCE_INLINE Slice< T >		toSlice();
 		TIKI_FORCE_INLINE ArrayView< T >	toArrayView() const;
@@ -75,8 +75,8 @@ namespace tiki
 	private:
 
 		Type*	m_pData;
-		uint	m_count;
-		uint	m_capacity;
+		uintreg	m_count;
+		uintreg	m_capacity;
 	};
 }
 

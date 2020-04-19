@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_FLAGMASK_INL_INCLUDED
-#define TIKI_FLAGMASK_INL_INCLUDED
 
 #include "tiki/base/assert.hpp"
 
@@ -97,5 +95,3 @@ namespace tiki
 		return TStorage( 1 ) << TStorage( value );
 	}
 }
-
-#endif // TIKI_FLAGMASK_INL_INCLUDED

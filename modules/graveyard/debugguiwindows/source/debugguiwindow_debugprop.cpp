@@ -61,7 +61,7 @@ namespace tiki
 		m_folderNodes.create( folderNames.getCount() );
 		m_propNodes.create( debugProperties.getCount() );
 
-		for (uint folderIndex = 0u; folderIndex < m_folderNodes.getCount(); ++folderIndex)
+		for (uintreg folderIndex = 0u; folderIndex < m_folderNodes.getCount(); ++folderIndex)
 		{
 			const string& name = folderNames[ folderIndex ];
 			TreeFolderNode& node = m_folderNodes[ folderIndex ];
@@ -104,7 +104,7 @@ namespace tiki
 			else
 			{
 				const string parentName = name.subString( 0, lastIndex - 1 );
-				for (uint parentIndex = 0u; parentIndex < folderIndex; ++parentIndex)
+				for (uintreg parentIndex = 0u; parentIndex < folderIndex; ++parentIndex)
 				{
 					if ( folderNames[ parentIndex ] == parentName )
 					{
@@ -115,7 +115,7 @@ namespace tiki
 			}
 		}
 
-		uint propIndex = 0;
+		uintreg propIndex = 0;
 		for (DebugProp& prop : debugProperties)
 		{
 			TreePropNode& node = m_propNodes[ propIndex ];
@@ -152,7 +152,7 @@ namespace tiki
 			pathName = pathName.subString( 0, pathName.lastIndexOf( '/' ) );
 
 			node.parentIndex = TIKI_SIZE_T_MAX;
-			for (uint parentIndex = 0u; parentIndex < m_folderNodes.getCount(); ++parentIndex)
+			for (uintreg parentIndex = 0u; parentIndex < m_folderNodes.getCount(); ++parentIndex)
 			{
 				if (folderNames[ parentIndex ] == pathName )
 				{
@@ -173,7 +173,7 @@ namespace tiki
 	{
 		m_baseLayout.dispose();
 
-		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_folderNodes.getCount(); ++i)
 		{
 			TreeFolderNode& node = m_folderNodes[ i ];
 
@@ -187,7 +187,7 @@ namespace tiki
 			node.nameLabel.dispose();
 		}
 
-		for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_propNodes.getCount(); ++i)
 		{
 			TreePropNode& node = m_propNodes[ i ];
 
@@ -348,7 +348,7 @@ namespace tiki
 	{
 		if ( guiEvent.eventType == DebugGuiEventType_Click )
 		{
-			for (uint parentIndex = 0u; parentIndex < m_folderNodes.getCount(); ++parentIndex)
+			for (uintreg parentIndex = 0u; parentIndex < m_folderNodes.getCount(); ++parentIndex)
 			{
 				TreeFolderNode& parentNode = m_folderNodes[ parentIndex ];
 
@@ -367,7 +367,7 @@ namespace tiki
 		}
 		else if( guiEvent.eventType == DebugGuiEventType_ValueChanged )
 		{
-			for( uint i = 0u; i < m_propNodes.getCount(); ++i )
+			for( uintreg i = 0u; i < m_propNodes.getCount(); ++i )
 			{
 				TreePropNode& node = m_propNodes[ i ];
 
@@ -405,7 +405,7 @@ namespace tiki
 
 		parentNode.expandButton.setText( "-" );
 
-		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_folderNodes.getCount(); ++i)
 		{
 			TreeFolderNode& node = m_folderNodes[ i ];
 
@@ -415,7 +415,7 @@ namespace tiki
 			}
 		}
 
-		for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_propNodes.getCount(); ++i)
 		{
 			TreePropNode& node = m_propNodes[ i ];
 
@@ -534,7 +534,7 @@ namespace tiki
 		float nearestAbsDistance = f32::maxValue;
 		TreeNode* pNearestNode = nullptr;
 
-		for (uint i = 0u; i < m_folderNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_folderNodes.getCount(); ++i)
 		{
 			TreeNode& node = m_folderNodes[ i ];
 			if ( &node != pExcludeNode && isNodeNearest( node, nearestAbsDistance, position.y, up ) )
@@ -543,7 +543,7 @@ namespace tiki
 			}
 		}
 
-		for (uint i = 0u; i < m_propNodes.getCount(); ++i)
+		for (uintreg i = 0u; i < m_propNodes.getCount(); ++i)
 		{
 			TreeNode& node = m_propNodes[ i ];
 			if ( &node != pExcludeNode && isNodeNearest( node, nearestAbsDistance, position.y, up ) )

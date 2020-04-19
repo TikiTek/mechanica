@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_USER_DATA_HPP_INCLUDED
-#define TIKI_USER_DATA_HPP_INCLUDED
 
 namespace tiki
 {
@@ -28,5 +26,3 @@ namespace tiki
 		void*	pElement;
 	};
 }
-
-#endif // TIKI_USER_DATA_HPP_INCLUDED

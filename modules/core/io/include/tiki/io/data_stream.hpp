@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_STRAM_HPP_INCLUDED
-#define TIKI_STRAM_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -36,5 +34,3 @@ namespace tiki
 
 	};
 }
-
-#endif

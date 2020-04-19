@@ -95,13 +95,13 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		if ( m_pAssetConverter != nullptr && s_enableAssetConverterWatch )
 		{
-			Array< string > files;
+			Array< DynamicString > files;
 			if ( m_pAssetConverter->getChangedFiles( files ) )
 			{
 				for (uint i = 0u; i < files.getCount(); ++i)
 				{
-					const string& file = files[ i ];
-					const string fileName = path::getFilename( file );
+					const DynamicString& file = files[ i ];
+					const DynamicString fileName = path::getFilename( file );
 					const crc32 resourceKey = crcString( fileName );
 
 					Resource* pResource = nullptr;

@@ -15,7 +15,7 @@ namespace tiki
 	class XmlReader
 	{
 		TIKI_NONCOPYABLE_CLASS( XmlReader );
-		friend void* xmlAlloc(size_t _bytes, void* pUserData);
+		friend void* xmlAlloc(uintreg _bytes, void* pUserData);
 
 	public:
 
@@ -34,7 +34,7 @@ namespace tiki
 
 		const XmlAttribute*	findAttributeByName( const char* pName, const XmlElement* pElement ) const;
 
-		size_t				getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const;
+		uintreg				getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const;
 
 	private:
 

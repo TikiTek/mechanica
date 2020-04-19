@@ -13,6 +13,6 @@
 		</Expand>
 	</Type>
 	<Type Name="tiki::Path">
-		<DisplayString>{{ path="{m_prefix,sb}/{m_directory,sb}/{m_filename,sb}{m_extension,sb}" }}</DisplayString>
+		<DisplayString>{{ path="{m_prefix,sb}/{m_directory,sb}/{m_basename,sb}{m_extension,sb}" }}</DisplayString>
 	</Type>
 </AutoVisualizer>

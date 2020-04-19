@@ -2,7 +2,7 @@
 
 namespace tiki
 {
-	FileWriteResult file::writeToFileIfNotEquals( const Path& filePath, const string& content )
+	FileWriteResult file::writeToFileIfNotEquals( const Path& filePath, const DynamicString& content )
 	{
 		AutoArray< char > currentContent;
 		file::readAllText( filePath.getCompletePath(), currentContent );

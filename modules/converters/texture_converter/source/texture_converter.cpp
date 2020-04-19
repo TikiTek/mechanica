@@ -26,7 +26,7 @@ namespace tiki
 		return typeCrc == s_textureTypeCrc;
 	}
 
-	void TextureConverter::getInputExtensions( List< string >& extensions ) const
+	void TextureConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		extensions.pushBack( ".psd" );
 		extensions.pushBack( ".png" );
@@ -37,7 +37,7 @@ namespace tiki
 		return s_pTextureTypeName;
 	}
 
-	bool TextureConverter::initializeConverter()
+	bool TextureConverter::initializeConverter( const ConversionContext& context )
 	{
 		return true;
 	}
@@ -54,10 +54,10 @@ namespace tiki
 			return false;
 		}
 
-		string mapCrop = asset.parameters.getOptionalString( "crop", "" );
+		DynamicString mapCrop = asset.parameters.getOptionalString( "crop", "" );
 		if ( !mapCrop.isEmpty() )
 		{
-			Array< string > values;
+			Array< DynamicString > values;
 			mapCrop.split( values, "," );
 
 			if ( values.getCount() != 4u )
@@ -69,7 +69,7 @@ namespace tiki
 			{
 				uint4 rect = { 0, 0, uint32( image.getWidth() ), uint32( image.getHeight() ) };
 				uint32* pRect = &rect.x;
-				for (size_t k = 0u; k < 4u; ++k)
+				for( uintreg k = 0u; k < 4u; ++k )
 				{
 					pRect[ k ] = string_tools::parseUInt32( values[ k ].cStr() );
 				}
@@ -85,8 +85,8 @@ namespace tiki
 			image.covertGamma( HdrImage::GammaType_Linear );
 		}
 
-		const string scaleX = asset.parameters.getOptionalString( "width", "/1" );
-		const string scaleY = asset.parameters.getOptionalString( "height", "/1" );
+		const DynamicString scaleX = asset.parameters.getOptionalString( "width", "/1" );
+		const DynamicString scaleY = asset.parameters.getOptionalString( "height", "/1" );
 
 		if ( ( scaleX[ 0u ] == '/' || scaleX[ 0u ] == '*' ) && ( scaleY[ 0u ] == '/' || scaleY[ 0u ] == '*' ) )
 		{
@@ -130,7 +130,7 @@ namespace tiki
 			writerParameters.mipMapCount = ( 63u - countLeadingZeros64( TIKI_MIN( image.getWidth(), image.getHeight() ) ) ) + 1u;
 		}
 
-		const string dimentionsString = asset.parameters.getOptionalString( "type" , "2d" ).toLower();
+		const DynamicString dimentionsString = asset.parameters.getOptionalString( "type" , "2d" ).toLower();
 		if ( dimentionsString == "1d" )
 		{
 			writerParameters.targetType = TextureType_1d;

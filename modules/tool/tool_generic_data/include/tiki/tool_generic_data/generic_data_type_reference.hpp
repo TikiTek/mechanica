@@ -13,7 +13,7 @@ namespace tiki
 
 	public:
 
-										GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType );
+										GenericDataTypeReference( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType );
 		virtual							~GenericDataTypeReference();
 
 		virtual bool					loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
@@ -21,7 +21,7 @@ namespace tiki
 
 		virtual uint					getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint					getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string					getCodeExportName() const TIKI_OVERRIDE_FINAL;
+		virtual DynamicString			getCodeExportName() const TIKI_OVERRIDE_FINAL;
 		virtual crc32					getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
 		const GenericDataTypeResource*	getBaseType() const;

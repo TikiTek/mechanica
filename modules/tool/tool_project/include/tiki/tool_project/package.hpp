@@ -15,21 +15,23 @@ namespace tiki
 
 	public:
 
-		const string&			getName() const { return m_name; }
+		const DynamicString&	getName() const { return m_name; }
 		const Path&				getFilename() const { return m_filename; }
-		const Path&				getBasepath() const { return m_basepath; }
+		const Path&				getBasepath() const { return m_basePath; }
 
-		const string&			getDescription() const { return m_description; }
-		void					setDescription( const string& value ) { m_description = value; }
-		const string&			getAuthor() const { return m_author; }
-		void					setAuthor( const string& value ) { m_author = value; }
+		const DynamicString&	getDescription() const { return m_description; }
+		void					setDescription( const DynamicString& value ) { m_description = value; }
+		const DynamicString&	getAuthor() const { return m_author; }
+		void					setAuthor( const DynamicString& value ) { m_author = value; }
 
 		const List< Package* >&	getDependencies() const { return m_dependencies; }
 		void					addDependencies( Package* pPackage );
 		void					removeDependencies( Package* pPackage );
 
-		const Path&				getGenericDataTypesPath() const { return m_genericDataTypesPath; }
-		void					setGenericDataTypesPath( const Path& value ) { m_genericDataTypesPath = value; }
+		const Path&				getGenericTypesPath() const { return m_genericTypesPath; }
+		void					setGenericTypesPath( const Path& value ) { m_genericTypesPath = value; }
+		const Path&				getGenericDataPath() const { return m_genericDataPath; }
+		void					setGenericDataPath( const Path& value ) { m_genericDataPath = value; }
 		const Path&				getAssetTemplatesPath() const { return m_assetTemplatesPath; }
 		void					setAssetTemplatesPath( const Path& value ) { m_assetTemplatesPath = value; }
 
@@ -39,22 +41,23 @@ namespace tiki
 	private: // friend
 
 		bool					create( const Path& filePath );
-		void					create( const Path& contentPath, const string& packageName );
+		void					create( const Path& contentPath, const DynamicString& packageName );
 
 		bool					writeToFile() const;
 
 	private:
 
-		string					m_name;
+		DynamicString			m_name;
 		Path					m_filename;
-		Path					m_basepath;
+		Path					m_basePath;
 
-		string					m_description;
-		string					m_author;
+		DynamicString			m_description;
+		DynamicString			m_author;
 
 		List< Package* >		m_dependencies;
 
-		Path					m_genericDataTypesPath;
+		Path					m_genericTypesPath;
+		Path					m_genericDataPath;
 		Path					m_assetTemplatesPath;
 	};
 }

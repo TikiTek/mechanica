@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, GenericDataValueTypeType type )
+	GenericDataTypeValueType::GenericDataTypeValueType( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, GenericDataValueTypeType type )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_ValueType, mode )
 		, m_type( type )
 	{
@@ -53,7 +53,7 @@ namespace tiki
 		return s_aSizes[ m_type ];
 	}
 
-	string GenericDataTypeValueType::getCodeExportName() const
+	DynamicString GenericDataTypeValueType::getCodeExportName() const
 	{
 		if( m_type == GenericDataTypeValueTypeType_String )
 		{

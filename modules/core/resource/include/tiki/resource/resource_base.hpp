@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_RESOURCE_BASE_HPP_INCLUDED
-#define TIKI_RESOURCE_BASE_HPP_INCLUDED
 
 #include "tiki/resource/resource_definition.hpp"
 
@@ -10,8 +8,8 @@ namespace tiki
 
 	struct ResourceId
 	{
-		crc32	nameCrc;
-		fourcc	type;
+		crc32				nameCrc;
+		fourcc				type;
 	};
 
 	inline bool operator==( ResourceId lhs, ResourceId rhs )
@@ -31,9 +29,9 @@ namespace tiki
 			key = TIKI_INVALID_CRC32;
 		}
 
-		crc32	key;
+		crc32				key;
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		string	fileName;
+		DynamicString		fileName;
 #endif
 	};
 
@@ -102,5 +100,3 @@ namespace tiki
 		}
 	};
 }
-
-#endif // TIKI_RESOURCE_BASE_HPP_INCLUDED

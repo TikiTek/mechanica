@@ -13,7 +13,7 @@ namespace tiki
 		TIKI_ASSERT( m_pResourceWriter == nullptr );
 	}
 
-	void ResourceSectionWriter::create( ResourceWriter* pResourceWriter, uint sectionId )
+	void ResourceSectionWriter::create( ResourceWriter* pResourceWriter, uintreg sectionId )
 	{
 		m_pResourceWriter	= pResourceWriter;
 		m_sectionId			= sectionId;
@@ -26,19 +26,19 @@ namespace tiki
 		m_sectionData.dispose();
 	}
 
-	uint ResourceSectionWriter::getCurrentSize() const
+	uintreg ResourceSectionWriter::getCurrentSize() const
 	{
 		TIKI_ASSERT( m_pResourceWriter != nullptr );
-		return (uint)m_sectionData.getLength();
+		return (uintreg)m_sectionData.getLength();
 	}
 
-	ReferenceKey ResourceSectionWriter::addString( const string& text )
+	ReferenceKey ResourceSectionWriter::addString( const DynamicString& text )
 	{
 		TIKI_ASSERT( m_pResourceWriter != nullptr );
 		return m_pResourceWriter->addString( text );
 	}
 
-	ReferenceKey ResourceSectionWriter::addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType )
+	ReferenceKey ResourceSectionWriter::addResourceLink( const DynamicString& fileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( m_pResourceWriter != nullptr );
 		return m_pResourceWriter->addResourceLink( fileName, resourceKey, resourceType );
@@ -51,7 +51,7 @@ namespace tiki
 		ReferenceKey key;
 		key.type					= ReferenceType_Pointer;
 		key.identifier				= m_sectionId;
-		key.offsetInTargetSection	= (uint)m_sectionData.getLength();
+		key.offsetInTargetSection	= (uintreg)m_sectionData.getLength();
 
 		return key;
 	}
@@ -62,7 +62,7 @@ namespace tiki
 		return *m_pResourceWriter;
 	}
 
-	void ResourceSectionWriter::writeAlignment( uint alignment )
+	void ResourceSectionWriter::writeAlignment( uintreg alignment )
 	{
 		TIKI_ASSERT( m_pResourceWriter != nullptr );
 
@@ -83,7 +83,7 @@ namespace tiki
 		{
 			ResourceReferenceData& data = m_sectionReferences.add();
 			data.key				= *pKey;
-			data.offsetInSection	= uint( m_sectionData.getLength() );
+			data.offsetInSection	= uintreg( m_sectionData.getLength() );
 		}
 
 		// reserve space for the pointer
@@ -91,7 +91,7 @@ namespace tiki
 		m_sectionData.write( &zero, 8u );
 	}
 
-	void ResourceSectionWriter::writeData( const void* pData, uint length )
+	void ResourceSectionWriter::writeData( const void* pData, uintreg length )
 	{
 		TIKI_ASSERT( m_pResourceWriter != nullptr );
 		m_sectionData.write( pData, length );

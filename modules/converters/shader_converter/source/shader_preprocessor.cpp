@@ -14,15 +14,15 @@ namespace tiki
 {
 	struct ShaderFeature
 	{
-		string	name;
+		DynamicString	name;
 
-		uint32	startBit;
-		uint32	bitCount;
+		uint32			startBit;
+		uint32			bitCount;
 
-		uint32	maxValue;
+		uint32			maxValue;
 	};
 
-	static void addFeature( List< ShaderFeature >& features, const string& name, uint32 maxValue )
+	static void addFeature( List< ShaderFeature >& features, const DynamicString& name, uint32 maxValue )
 	{
 		const ShaderFeature* pLastFeature = nullptr;
 		if ( features.getCount() > 0u )
@@ -47,11 +47,11 @@ namespace tiki
 		features.add( feature );
 	}
 
-	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const char** pShaderTypes, uint typeCount, const string& featuresLine )
+	static void parseShaderFeatures( bool* pShaderEnabled, List< ShaderFeature >* pShaderFeatures, const char** pShaderTypes, uint typeCount, const DynamicString& featuresLine )
 	{
 		for (uint i = 0u; i < typeCount; ++i)
 		{
-			const string search = formatDynamicString( "%s-features=", pShaderTypes[ i ] );
+			const DynamicString search = formatDynamicString( "%s-features=", pShaderTypes[ i ] );
 
 			const int index = featuresLine.indexOf( search );
 			if( i != 0 )
@@ -63,14 +63,14 @@ namespace tiki
 			{
 				const int baseIndex = int( index + search.getLength() );
 				const int length = featuresLine.indexOf( ' ', baseIndex ) - baseIndex;
-				const string featuresString = featuresLine.subString( baseIndex, length );
+				const DynamicString featuresString = featuresLine.subString( baseIndex, length );
 
-				Array< string > featuresList;
+				Array< DynamicString > featuresList;
 				featuresString.trim().split( featuresList, "," );
 
 				for (uint j = 0u; j < featuresList.getCount(); ++j)
 				{
-					string name = featuresList[ j ];
+					DynamicString name = featuresList[ j ];
 					uint32 maxValue = 1u;
 
 					int arrayIndex = name.indexOf( '[' );
@@ -84,7 +84,7 @@ namespace tiki
 							continue;
 						}
 
-						const string maxValueString = name.subString( arrayIndex, arrayLength );
+						const DynamicString maxValueString = name.subString( arrayIndex, arrayLength );
 						maxValue	= string_tools::parseUInt32( maxValueString.cStr() ) - 1u;
 						name		= name.subString( 0u, arrayIndex - 1 );
 					}
@@ -107,9 +107,9 @@ namespace tiki
 		}
 	}
 
-	static string resolveIncludes( const string& shaderCode, const List< string >& includeDirs )
+	static DynamicString resolveIncludes( const DynamicString& shaderCode, const List< DynamicString >& includeDirs )
 	{
-		string resultCode = shaderCode;
+		DynamicString resultCode = shaderCode;
 
 		int errorCode;
 		PCRE2_SIZE errorOffset;
@@ -148,10 +148,10 @@ namespace tiki
 			const char* pMatchBegin = resultCode.cStr() + pOffsets[ 2u ];
 			PCRE2_SIZE matchLength = pOffsets[ 3u ] - pOffsets[ 2u ];
 
-			string path = string( pMatchBegin, matchLength );
+			DynamicString path = DynamicString( pMatchBegin, matchLength );
 			for (uint i = 0u; i < includeDirs.getCount(); ++i)
 			{
-				const string fullPath = path::combine( includeDirs[ i ], path );
+				const DynamicString fullPath = path::combine( includeDirs[ i ], path );
 				if ( file::exists( fullPath.cStr() ) )
 				{
 					path = fullPath;
@@ -161,7 +161,7 @@ namespace tiki
 
 			if ( !file::exists( path.cStr() ) )
 			{
-				const string fullPath = path::combine( lastPath.getDirectoryWithPrefix(), path );
+				const DynamicString fullPath = path::combine( lastPath.getDirectoryWithPrefix(), path );
 				if( !file::exists( fullPath.cStr() ) )
 				{
 					TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
@@ -183,7 +183,7 @@ namespace tiki
 				break;
 			}
 
-			const string fileText = string( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
+			const DynamicString fileText = DynamicString( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
 			resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
 			resultCode = resultCode.insert( fileText, expBeginIndex );
 
@@ -202,9 +202,9 @@ namespace tiki
 		return resultCode;
 	}
 
-	static string createDefineString( List< ShaderFeature >& features, uint32 bitMask )
+	static DynamicString createDefineString( List< ShaderFeature >& features, uint32 bitMask )
 	{
-		string defineString = "";
+		DynamicString defineString = "";
 
 		for (uint i = 0u; i < features.getCount(); ++i)
 		{
@@ -217,13 +217,13 @@ namespace tiki
 		return defineString;
 	}
 
-	void ShaderPreprocessor::create( const string& shaderText, const List< string >& includePathes )
+	void ShaderPreprocessor::create( const DynamicString& shaderText, const List< DynamicString >& includePathes )
 	{
 		// resolve includes
 		m_sourceCode = resolveIncludes( shaderText, includePathes );
 
 		// parse features
-		const string featuresLine = m_sourceCode.subString( 0u, m_sourceCode.indexOf( '\n' ) );
+		const DynamicString featuresLine = m_sourceCode.subString( 0u, m_sourceCode.indexOf( '\n' ) );
 
 		if ( featuresLine.startsWith( "//" ) == false )
 		{

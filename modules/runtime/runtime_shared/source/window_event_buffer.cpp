@@ -2,7 +2,7 @@
 
 namespace tiki
 {
-	bool WindowEventBuffer::create( uint maxEventCount )
+	bool WindowEventBuffer::create( uintreg maxEventCount )
 	{
 		return m_events.create( maxEventCount );
 	}
@@ -33,7 +33,7 @@ namespace tiki
 		return event;
 	}
 
-	size_t WindowEventBuffer::getEventCount() const
+	uintreg WindowEventBuffer::getEventCount() const
 	{
 		return m_events.getCount();
 	}

@@ -1127,7 +1127,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pTextFormat );
-		const string text = formatDynamicStringArgs( pTextFormat, argptr );
+		const DynamicString text = formatDynamicStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
 		DebugRenderTextCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderTextCommand >( text.getLength() + 1u );
@@ -1143,7 +1143,7 @@ namespace tiki
 	{
 		va_list argptr;
 		va_start( argptr, pTextFormat );
-		const string text = formatDynamicStringArgs( pTextFormat, argptr );
+		const DynamicString text = formatDynamicStringArgs( pTextFormat, argptr );
 		va_end( argptr );
 
 		DebugRenderText3DCommand* pCommand = s_debugRenderer.allocateCommand2D< DebugRenderText3DCommand >( text.getLength() + 1u );

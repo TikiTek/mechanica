@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_GENERIC_DATA_CONTAINER_HPP_INCLUDED
-#define TIKI_GENERIC_DATA_CONTAINER_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/types.hpp"
@@ -13,6 +11,7 @@ namespace tiki
 	class GenericDataValue;
 	class ResourceSectionWriter;
 	class XmlElement;
+	struct GenericDataLoadContext;
 
 	class GenericDataContainer
 	{
@@ -22,7 +21,7 @@ namespace tiki
 
 		virtual const GenericDataType*	getParentType() const TIKI_PURE;
 
-		bool							importFromXml( XmlElement* pObjectNode, bool isType );
+		bool							importFromXml( XmlElement* pObjectNode, const GenericDataLoadContext& context );
 		bool							exportToXml( XmlElement* pParentNode );
 
 		virtual bool					initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const TIKI_PURE;
@@ -48,5 +47,3 @@ namespace tiki
 #endif
 	};
 }
-
-#endif // TIKI_GENERICDATACONTAINER_HPP_INCLUDED

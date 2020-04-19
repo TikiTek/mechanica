@@ -8,8 +8,8 @@ namespace tiki
 {
 	struct ShaderVariant
 	{
-		crc32	bitMask;
-		string	defineCode;
+		crc32			bitMask;
+		DynamicString	defineCode;
 	};
 
 	class ShaderPreprocessor
@@ -18,18 +18,18 @@ namespace tiki
 
 	public:
 
-		void					create( const string& shaderText, const List< string >& includePathes );
+		void					create( const DynamicString& shaderText, const List< DynamicString >& includePathes );
 		void					dispose();
 
 		bool					isTypeEnabled( ShaderType type ) const				{ return m_variants[ type ].getCount() != 0u; }
-		size_t					getVariantCount( ShaderType type ) const			{ return m_variants[ type ].getCount(); }
-		const ShaderVariant&	getVariantByIndex( ShaderType type, size_t index )	{ return m_variants[ type ][ index ]; }
+		uintreg					getVariantCount( ShaderType type ) const			{ return m_variants[ type ].getCount(); }
+		const ShaderVariant&	getVariantByIndex( ShaderType type, uintreg index )	{ return m_variants[ type ][ index ]; }
 
-		const string&			getSourceCode() const								{ return m_sourceCode; };
+		const DynamicString&	getSourceCode() const								{ return m_sourceCode; };
 
 	private:
 
-		string					m_sourceCode;
+		DynamicString			m_sourceCode;
 
 		Array< ShaderVariant >	m_variants[ ShaderType_Count ];
 	};

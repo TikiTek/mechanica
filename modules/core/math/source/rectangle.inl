@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_RECTANGLE_INL_INCLUDED
-#define TIKI_RECTANGLE_INL_INCLUDED
 
 #include "tiki/math/matrix.hpp"
 
@@ -87,5 +85,3 @@ namespace tiki
 		vector::add( extends, _extents );
 	}
 }
-
-#endif // TIKI_RECTANGLE_INL_INCLUDED

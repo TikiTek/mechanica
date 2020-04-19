@@ -14,7 +14,7 @@ namespace tiki
 	struct VertexFormatParameters
 	{
 		const VertexAttribute*	pAttributes;
-		size_t					attributeCount;
+		uintreg					attributeCount;
 	};
 
 	class VertexFormat : public GraphicsStateObject
@@ -27,10 +27,10 @@ namespace tiki
 
 		bool					isCreated() const;
 
-		const VertexAttribute&	getAttributeByIndex( uint index ) const { return m_attributes[ index ]; }
-		uint					getAttributeCount() const { return m_attributes.getCount(); }
+		const VertexAttribute&	getAttributeByIndex( uintreg index ) const { return m_attributes[ index ]; }
+		uintreg					getAttributeCount() const { return m_attributes.getCount(); }
 
-		uint					getVertexStride( uint streamIndex ) const { return m_vertexStride[ streamIndex ]; }
+		uintreg					getVertexStride( uintreg streamIndex ) const { return m_vertexStride[ streamIndex ]; }
 
 	private: // friend
 
@@ -40,6 +40,6 @@ namespace tiki
 	private:
 
 		FixedSizedArray< VertexAttribute, GraphicsSystemLimits_MaxVertexAttributes >	m_attributes;
-		FixedSizedArray< uint, GraphicsSystemLimits_MaxInputStreams >					m_vertexStride;
+		FixedSizedArray< uintreg, GraphicsSystemLimits_MaxInputStreams >					m_vertexStride;
 	};
 }

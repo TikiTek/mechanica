@@ -28,11 +28,11 @@ namespace tiki
 									DescriptorPoolD3d12();
 									~DescriptorPoolD3d12();
 
-		bool						create( ID3D12Device* pDevice, uint maxDescriptorCount, DescriptorType type, const char* pDebugName );
+		bool						create( ID3D12Device* pDevice, uintreg maxDescriptorCount, DescriptorType type, const char* pDebugName );
 		void						dispose();
 
 		DescriptorHandle			allocateDescriptor();
-		bool						allocateRange( DescriptorHandle* pOutput, uint count );
+		bool						allocateRange( DescriptorHandle* pOutput, uintreg count );
 		void						freeDescriptor( DescriptorHandle handle );
 
 		D3D12_CPU_DESCRIPTOR_HANDLE	getCpuHandle( DescriptorHandle handle ) const;
@@ -43,7 +43,7 @@ namespace tiki
 	private:
 
 		ID3D12DescriptorHeap*		m_pHeap;
-		size_t						m_descriptorSize;
+		uintreg						m_descriptorSize;
 		Array< uint64 >				m_freeMask;
 
 	};

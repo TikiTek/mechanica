@@ -35,7 +35,7 @@ namespace tiki
 			containsString		= false;
 		}
 
-		string									code;
+		DynamicString							code;
 		List< const GenericDataTypeReference* >	references;
 		bool									containsResource;
 		bool									containsArray;
@@ -49,23 +49,23 @@ namespace tiki
 
 	public:
 
-									GenericDataType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeType type, GenericDataTypeMode mode );
+									GenericDataType( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeType type, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
 		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_PURE;
 		XmlElement*					createXmlElement( XmlDocument& document, const char* pName ) const;
 		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
 
-		const string&				getName() const { return m_name; }
-		const string&				getModule() const { return m_module; }
-		void						setModule( const string& value ) { m_module = value; }
-		const string&				getFilename() const { return m_filename; }
+		const DynamicString&		getName() const { return m_name; }
+		const DynamicString&		getModule() const { return m_module; }
+		void						setModule( const DynamicString& value ) { m_module = value; }
+		const DynamicString&		getFilename() const { return m_filename; }
 		GenericDataTypeMode			getMode() const { return m_mode; }
 		GenericDataTypeType			getType() const { return m_type; }
 
 		virtual uint				getAlignment() const TIKI_PURE;
 		virtual uint				getSize() const TIKI_PURE;
-		virtual string				getCodeExportName() const TIKI_PURE;
+		virtual DynamicString		getCodeExportName() const TIKI_PURE;
 		virtual crc32				getTypeCrc() const TIKI_PURE;
 
 		virtual bool				isTypeCompatible( const GenericDataType* pType ) const { return pType == this; }
@@ -81,9 +81,9 @@ namespace tiki
 
 	private:
 
-		string						m_name;
-		string						m_module;
-		string						m_filename;
+		DynamicString						m_name;
+		DynamicString						m_module;
+		DynamicString						m_filename;
 
 		GenericDataTypeType			m_type;
 		GenericDataTypeMode			m_mode;

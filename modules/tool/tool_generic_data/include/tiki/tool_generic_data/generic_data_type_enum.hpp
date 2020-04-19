@@ -10,7 +10,7 @@ namespace tiki
 
 	struct GenericDataEnumValue
 	{
-		string				name;
+		DynamicString		name;
 		bool				hasValue;
 		GenericDataValue*	pValue;
 		GenericDataTypeMode	mode;
@@ -22,7 +22,7 @@ namespace tiki
 
 	public:
 
-											GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType );
+											GenericDataTypeEnum( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType );
 		virtual								~GenericDataTypeEnum();
 
 		virtual bool						loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
@@ -30,16 +30,16 @@ namespace tiki
 
 		virtual uint						getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint						getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string						getCodeExportName() const TIKI_OVERRIDE_FINAL;
+		virtual DynamicString				getCodeExportName() const TIKI_OVERRIDE_FINAL;
 		virtual crc32						getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
 		const GenericDataType*				getBaseType() const;
 
-		void								addValue( const string& name, sint64 value, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
-		void								removeValue( const string& name );
+		void								addValue( const DynamicString& name, sint64 value, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
+		void								removeValue( const DynamicString& name );
 
-		GenericDataValue*					getValueByName( const string& name );
-		const GenericDataValue*				getValueByName( const string& name ) const;
+		GenericDataValue*					getValueByName( const DynamicString& name );
+		const GenericDataValue*				getValueByName( const DynamicString& name ) const;
 		const List< GenericDataEnumValue >&	getValues() const;
 
 		bool								isValidValue( const GenericDataEnumValue& enumValue ) const;

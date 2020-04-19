@@ -136,7 +136,7 @@ namespace tiki
 			{
 				stringItems[ stringIndex ].offsetInBlock = uint32( stream.getPosition() - header.offsetInFile - header.stringOffsetInResource );
 
-				const string& text = resource.strings[ stringIndex ].text;
+				const DynamicString& text = resource.strings[ stringIndex ].text;
 				stream.write( text.cStr(), text.getLength() + 1u );
 			}
 
@@ -163,7 +163,7 @@ namespace tiki
 		return true;
 	}
 
-	void ResourceWriter::openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
+	void ResourceWriter::openResource( const DynamicString& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion )
 	{
 		TIKI_ASSERT( m_pCurrentResource == nullptr );
 
@@ -206,7 +206,7 @@ namespace tiki
 		sectionWriter.dispose();
 	}
 
-	ReferenceKey ResourceWriter::addString( const string& text )
+	ReferenceKey ResourceWriter::addString( const DynamicString& text )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 
@@ -220,7 +220,7 @@ namespace tiki
 		return key;
 	}
 
-	ReferenceKey ResourceWriter::addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType )
+	ReferenceKey ResourceWriter::addResourceLink( const DynamicString& fileName, crc32 resourceKey, fourcc resourceType )
 	{
 		TIKI_ASSERT( m_pCurrentResource != nullptr );
 

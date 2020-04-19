@@ -37,8 +37,8 @@ namespace tiki
 
 	struct ShaderConstantInfo
 	{
-		uint32	slotIndex;
-		string	name;
+		uint32			slotIndex;
+		DynamicString	name;
 	};
 
 	class BasicIncludeHandler
@@ -47,7 +47,7 @@ namespace tiki
 
 	public:
 
-		BasicIncludeHandler( ConversionResult& result, const List< string >& includePathes )
+		BasicIncludeHandler( ConversionResult& result, const List< DynamicString >& includePathes )
 			: m_result( result )
 			, m_includePathes( includePathes )
 		{
@@ -57,12 +57,12 @@ namespace tiki
 		{
 		}
 
-		bool loadFile( const char* pFileName, const void** ppData, uint* pSizeInBytes )
+		bool loadFile( const char* pFileName, const void** ppData, uintreg* pSizeInBytes )
 		{
 			bool found = false;
 
-			const string inputFilename = pFileName;
-			string fullName = inputFilename;
+			const DynamicString inputFilename = pFileName;
+			DynamicString fullName = inputFilename;
 
 			if( file::exists( inputFilename.cStr() ) )
 			{
@@ -70,7 +70,7 @@ namespace tiki
 			}
 			else
 			{
-				for( uint i = 0u; i < m_includePathes.getCount(); ++i )
+				for( uintreg i = 0u; i < m_includePathes.getCount(); ++i )
 				{
 					fullName = path::combine( m_includePathes[ i ], inputFilename );
 
@@ -111,7 +111,7 @@ namespace tiki
 	private:
 
 		ConversionResult&		m_result;
-		const List< string >&	m_includePathes;
+		const List< DynamicString >&	m_includePathes;
 	};
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
@@ -121,7 +121,7 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, const List< string >& includePathes )
+		ShaderIncludeHandler( ConversionResult& result, const List< DynamicString >& includePathes )
 			: BasicIncludeHandler( result, includePathes )
 		{
 		}
@@ -129,7 +129,7 @@ namespace tiki
 		virtual HRESULT	STDMETHODCALLTYPE Open( D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes )
 		{
 			const void* pData = nullptr;
-			uint dataSize = 0u;
+			uintreg dataSize = 0u;
 			if ( loadFile( pFileName, &pData, &dataSize ) )
 			{
 				*ppData = pData;
@@ -165,19 +165,19 @@ namespace tiki
 	struct FppContext
 	{
 		const char* pSourceData;
-		uint		sourceLength;
-		uint		sourcePosition;
+		uintreg		sourceLength;
+		uintreg		sourcePosition;
 
 		char*		pTargetData;
-		uint		targetLength;
-		uint		targetPosition;
+		uintreg		targetLength;
+		uintreg		targetPosition;
 	};
 
 	static char*	fppRead( char* pBuffer, int size, void* pUserData );
 	static void		fppWrite( int c, void* pUserData );
 	static void		fppError( void* pUserData, char* pFormatString, va_list data );
 
-	//static string	preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler );
+	//static DynamicString	preprocessSourceCode( const DynamicString& sourceCode, const DynamicString& fileName, const ShaderIncludeHandler* pIncludeHandler );
 
 	ShaderConverter::ShaderConverter()
 	{
@@ -197,7 +197,7 @@ namespace tiki
 		return typeCrc == s_shaderTypeCrc;
 	}
 
-	void ShaderConverter::getInputExtensions( List< string >& extensions ) const
+	void ShaderConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		extensions.pushBack( ".fx" );
 	}
@@ -207,7 +207,7 @@ namespace tiki
 		return s_pShaderTypeName;
 	}
 
-	bool ShaderConverter::initializeConverter()
+	bool ShaderConverter::initializeConverter( const ConversionContext& context )
 	{
 		m_pBaseSourceCode =	"#define TIKI_ON 2-\n"
 							"#define TIKI_OFF 1-\n"
@@ -215,14 +215,16 @@ namespace tiki
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
 		Array< char > charArray;
+		// TODO: put shader include dirs in package config
+		TIKI_NOT_IMPLEMENTED;
 		if ( file::readAllText( "../../shaderinc.lst", charArray ) )
 		{
-			const string text = charArray.getBegin();
+			const DynamicString text = charArray.getBegin();
 
-			Array< string > dirs;
+			Array< DynamicString > dirs;
 			text.split( dirs, "\n" );
 
-			for (uint i = 0u; i < dirs.getCount(); ++i)
+			for (uintreg i = 0u; i < dirs.getCount(); ++i)
 			{
 				m_includePathes.add( dirs[ i ].trim() );
 			}
@@ -245,7 +247,7 @@ namespace tiki
 
 	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
-		List< string > includePathes = m_includePathes;
+		List< DynamicString > includePathes = m_includePathes;
 		includePathes.pushBack( asset.inputFilePath.getDirectoryWithPrefix() );
 
 		Path additionalPath;
@@ -257,11 +259,11 @@ namespace tiki
 
 		ShaderIncludeHandler includeHandler( result, includePathes );
 
-		const string shaderStart[]	= { "vs", "ps", "gs", "hs", "ds", "cs" };
-		const string shaderDefine[]	= { "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
+		const DynamicString shaderStart[]	= { "vs", "ps", "gs", "hs", "ds", "cs" };
+		const DynamicString shaderDefine[]	= { "TIKI_VERTEX_SHADER", "TIKI_PIXEL_SHADER", "TIKI_GEOMETRY_SHADER", "TIKI_HULL_SHADER", "TIKI_DOMAIN_SHADER", "TIKI_COMPUTE_SHADER" };
 
-		string functionNames[ ShaderType_Count ];
-		for (uint i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
+		DynamicString functionNames[ ShaderType_Count ];
+		for (uintreg i = 0u; i < TIKI_COUNT( shaderStart ); ++i)
 		{
 			functionNames[ i ] = asset.parameters.getOptionalString( shaderStart[ i ] + "_function_name", "main" );
 		}
@@ -273,7 +275,7 @@ namespace tiki
 			return false;
 		}
 
-		const string sourceCode = charArray.getBegin();
+		const DynamicString sourceCode = charArray.getBegin();
 		charArray.dispose();
 
 		const bool debugMode = asset.parameters.getOptionalBool( "compile_debug", false );
@@ -291,7 +293,7 @@ namespace tiki
 			resourceWriter.openDataSection( sectionWriter, SectionType_Main );
 
 			List< ShaderVariantData > shaderVariants;
-			for (uint typeIndex = 0u; typeIndex < ShaderType_Count; ++typeIndex )
+			for (uintreg typeIndex = 0u; typeIndex < ShaderType_Count; ++typeIndex )
 			{
 				const ShaderType type = (ShaderType)typeIndex;
 
@@ -300,8 +302,8 @@ namespace tiki
 					continue;
 				}
 
-				const uint variantCount = preprocessor.getVariantCount( type );
-				for (uint variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
+				const uintreg variantCount = preprocessor.getVariantCount( type );
+				for (uintreg variantIndex = 0u; variantIndex < variantCount; ++variantIndex )
 				{
 					const ShaderVariant& variant = preprocessor.getVariantByIndex( type, variantIndex );
 
@@ -318,7 +320,7 @@ namespace tiki
 					args.defineCode = m_pBaseSourceCode;
 					args.defineCode += variant.defineCode;
 
-					for( uint defineTypeIndex = 0u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
+					for( uintreg defineTypeIndex = 0u; defineTypeIndex < ShaderType_Count; ++defineTypeIndex )
 					{
 						args.defineCode	+= formatDynamicString( "#define %s %s\n", shaderDefine[ defineTypeIndex ].cStr(), ( typeIndex == defineTypeIndex ? "TIKI_ON" : "TIKI_OFF" ) );
 					}
@@ -347,7 +349,7 @@ namespace tiki
 			sectionWriter.writeUInt32( uint32( shaderVariants.getCount() ) );
 			sectionWriter.writeAlignment( 8u );
 
-			for( uint variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
+			for( uintreg variantIndex = 0u; variantIndex < shaderVariants.getCount(); ++variantIndex )
 			{
 				const ShaderVariantData& shaderVarName = shaderVariants[ variantIndex ];
 
@@ -397,7 +399,7 @@ namespace tiki
 			shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 		}
 
-		const string sourceCode = args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_ON\n#define TIKI_OPENGL4 TIKI_OFF\n#include \"%s\"", args.fileName.cStr() );
+		const DynamicString sourceCode = args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_ON\n#define TIKI_OPENGL4 TIKI_OFF\n#include \"%s\"", args.fileName.cStr() );
 
 		HRESULT result = D3DCompile(
 			sourceCode.cStr(),
@@ -458,7 +460,7 @@ namespace tiki
 	{
 		m_openGlMutex.lock();
 
-		string sourceCode = "#version 440\n" + args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
+		DynamicString sourceCode = "#version 440\n" + args.defineCode + formatDynamicString( "\n#define TIKI_HLSL4 TIKI_OFF\n#define TIKI_OPENGL4 TIKI_ON\n#include \"%s\"\n", args.fileName.cStr() );
 		List< ShaderConstantInfo > constants;
 
 		// preprocessor
@@ -476,20 +478,20 @@ namespace tiki
 				int length;
 				const char* pArgumentBegin;
 				regex.GetSubExp( 1, &pArgumentBegin, &length );
-				const string slotIndex = string( pArgumentBegin, length );
+				const DynamicString slotIndex = DynamicString( pArgumentBegin, length );
 
 				regex.GetSubExp( 2, &pArgumentBegin, &length );
-				const string name = string( pArgumentBegin, length );
+				const DynamicString name = DynamicString( pArgumentBegin, length );
 
 				ShaderConstantInfo& info = constants.add();
 				info.slotIndex	= string_tools::parseSInt32( slotIndex.cStr() );
 				info.name		= name;
 
-				const uint startIndex	= pSearchBegin - sourceCode.cStr();
-				const uint length2		= pSearchEnd - pSearchBegin;
+				const uintreg startIndex	= pSearchBegin - sourceCode.cStr();
+				const uintreg length2		= pSearchEnd - pSearchBegin;
 				sourceCode = sourceCode.remove( startIndex, length2 );
 
-				const string newCode = formatDynamicString( "layout(shared) uniform %s", name.cStr() );
+				const DynamicString newCode = formatDynamicString( "layout(shared) uniform %s", name.cStr() );
 				sourceCode = sourceCode.insert( newCode, startIndex );
 			}
 		}
@@ -529,7 +531,7 @@ namespace tiki
 		const uint32 constantCount = (uint32)constants.getCount();
 		stream.write( &constantCount, sizeof( constantCount ) );
 
-		for (uint i = 0u; i < constantCount; ++i)
+		for (uintreg i = 0u; i < constantCount; ++i)
 		{
 			const ShaderConstantInfo& info = constants[ i ];
 			const uint32 nameLength = (uint32)info.name.getLength();
@@ -543,7 +545,7 @@ namespace tiki
 
 		m_openGlMutex.unlock();
 
-		return targetData.create( static_cast< const uint8* >( stream.getData() ), uint( stream.getLength() ) );
+		return targetData.create( static_cast< const uint8* >( stream.getData() ), uintreg( stream.getLength() ) );
 	}
 
 	char* fppRead( char* pBuffer, int size, void* pUserData )
@@ -592,7 +594,7 @@ namespace tiki
 		debug::trace( pFormatString, TraceLevel_None, data );
 	}
 
-	//string preprocessSourceCode( const string& sourceCode, const string& fileName, const ShaderIncludeHandler* pIncludeHandler )
+	//DynamicString preprocessSourceCode( const DynamicString& sourceCode, const DynamicString& fileName, const ShaderIncludeHandler* pIncludeHandler )
 	//{
 	//	fppTag aTags[ 64u ];
 	//	fppTag* pCurrentTag = aTags;
@@ -606,14 +608,14 @@ namespace tiki
 	//	context.targetLength		= 1024u * 1024u;
 	//	context.targetPosition		= 0u;
 
-	//	for (uint i = 0u; i < pIncludeHandler->getIncludeDirs().getCount(); ++i)
+	//	for (uintreg i = 0u; i < pIncludeHandler->getIncludeDirs().getCount(); ++i)
 	//	{
 	//		pCurrentTag->tag	= FPPTAG_INCLUDE_DIR;
 	//		pCurrentTag->data	= (void*)pIncludeHandler->getIncludeDirs()[ i ].cStr();
 	//		pCurrentTag++;
 	//	}
 
-	//	const string sourceFileName = path::getFilename( fileName );
+	//	const DynamicString sourceFileName = path::getFilename( fileName );
 	//	pCurrentTag->tag	= FPPTAG_INPUT_NAME;
 	//	pCurrentTag->data	= (void*)sourceFileName.cStr();
 	//	pCurrentTag++;
@@ -652,7 +654,7 @@ namespace tiki
 	//	}
 
 	//	context.pTargetData[ context.targetPosition ] = '\0';
-	//	string resultSourceCode = context.pTargetData;
+	//	DynamicString resultSourceCode = context.pTargetData;
 
 	//	TIKI_FREE( context.pTargetData );
 

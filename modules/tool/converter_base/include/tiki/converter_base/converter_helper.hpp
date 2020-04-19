@@ -1,23 +1,20 @@
 #pragma once
-#ifndef __TIKI_CONVERTERHELPER_HPP_INCLUDED__
-#define __TIKI_CONVERTERHELPER_HPP_INCLUDED__
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 
 namespace tiki
 {
-	TIKI_FORCE_INLINE bool readResourceReference( ResourceSectionWriter& sectionWriter, const string& text, ReferenceKey& targetKey )
+	TIKI_FORCE_INLINE bool readResourceReference( ResourceSectionWriter& sectionWriter, const DynamicString& text, ReferenceKey& targetKey )
 	{
 		if ( text.isEmpty() == false && text.countSubstring( ":" ) >= 1u )
 		{
-			Array< string > components;
+			Array< DynamicString > components;
 			text.split( components, ":" );
 			TIKI_ASSERT( components.getCount() >= 2u );
 
-			const string fileName		= components[ 1u ];
+			const DynamicString fileName		= components[ 1u ];
 			const fourcc resourceType	= makeFourcc( components[ 0u ].cStr() );
 			crc32 resourceKey			= 0u;
 
@@ -41,7 +38,7 @@ namespace tiki
 		}
 	}
 
-	TIKI_FORCE_INLINE void writeResourceReference( ResourceSectionWriter& sectionWriter, const string& text )
+	TIKI_FORCE_INLINE void writeResourceReference( ResourceSectionWriter& sectionWriter, const DynamicString& text )
 	{
 		ReferenceKey key;
 		if ( readResourceReference( sectionWriter, text, key ) )
@@ -54,5 +51,3 @@ namespace tiki
 		}
 	}
 }
-
-#endif // __TIKI_CONVERTERHELPER_HPP_INCLUDED__

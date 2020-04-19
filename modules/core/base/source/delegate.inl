@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_DELEGATE_INL_INCLUDED
-#define TIKI_DELEGATE_INL_INCLUDED
 
 #include "tiki/base/assert.hpp"
 
@@ -67,5 +65,3 @@ namespace tiki
 		return (pInstance->*pMethod)( args ... );
 	}
 }
-
-#endif // TIKI_DELEGATE_INL_INCLUDED

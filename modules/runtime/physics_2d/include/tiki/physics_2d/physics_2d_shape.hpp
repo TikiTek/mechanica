@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PHYSICS2DSHAPE_HPP_INCLUDED
-#define TIKI_PHYSICS2DSHAPE_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -17,5 +15,3 @@ namespace tiki
 		virtual b2Shape*	getNativeShape() const TIKI_PURE;
 	};
 }
-
-#endif // TIKI_PHYSICS2DSHAPE_HPP_INCLUDED

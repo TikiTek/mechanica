@@ -31,10 +31,10 @@ namespace tiki
 
 	struct StateDefinition
 	{
-		uint		stateHierarchy[ StateTreeLimits_MaxHierarchyDepth ];
-		uint		hierarchyLength;
+		uintreg		stateHierarchy[ StateTreeLimits_MaxHierarchyDepth ];
+		uintreg		hierarchyLength;
 
-		uint		transitionStepCount;
+		uintreg		transitionStepCount;
 
 		const char*	pName;
 	};
@@ -47,21 +47,21 @@ namespace tiki
 
 		StateTree();
 
-		void						create( StateDefinition* pStateDefinitions, uint stateCount );
+		void						create( StateDefinition* pStateDefinitions, uintreg stateCount );
 		void						dispose();
 
-		void						startTransition( uint stateIndex );
+		void						startTransition( uintreg stateIndex );
 
 		void						updateTree( TransitionState newState );
 
-		uint						getActiveStates( uint* pTargetActiveStates, uint capacity ) const;
+		uintreg						getActiveStates( uintreg* pTargetActiveStates, uintreg capacity ) const;
 
-		bool						isInState( uint stateIndex ) const;
-		uint						getCurrentState() const				{ return ( isInTransition() ? m_transition.currentState : m_currentState ); }
-		uint						getTransitionState() const			{ return m_transition.getCurrentTransitionState(); }
+		bool						isInState( uintreg stateIndex ) const;
+		uintreg						getCurrentState() const				{ return ( isInTransition() ? m_transition.currentState : m_currentState ); }
+		uintreg						getTransitionState() const			{ return m_transition.getCurrentTransitionState(); }
 		bool						isInTransition() const				{ return m_currentState == InvalidStateIndex; }
 
-		uint						getCurrentStep() const	{ return m_transition.currentStep; }
+		uintreg						getCurrentStep() const	{ return m_transition.currentStep; }
 		bool						isCreating() const		{ return m_transition.isInForwardTransition(); }
 		bool						isInitial() const		{ return m_isInitial; }
 
@@ -76,20 +76,20 @@ namespace tiki
 				clear();
 			}
 
-			typedef FixedSizedArray< uint, StateTreeLimits_MaxTransitionPathSize > TransitionPathArray;
+			typedef FixedSizedArray< uintreg, StateTreeLimits_MaxTransitionPathSize > TransitionPathArray;
 
-			uint				sourceState;
-			uint				destinationState;
-			uint				currentState;
+			uintreg				sourceState;
+			uintreg				destinationState;
+			uintreg				currentState;
 
 			TransitionPathArray	path;
-			uint				pathIndex;
+			uintreg				pathIndex;
 
-			uint				targetStep;
-			uint				currentStep;
+			uintreg				targetStep;
+			uintreg				currentStep;
 
 			bool				isInForwardTransition() const		{ return currentState < path[ pathIndex ] && currentState != path[ pathIndex ]; }
-			uint				getCurrentTransitionState() const	{ return isInForwardTransition() ? path[ pathIndex ] : currentState; }
+			uintreg				getCurrentTransitionState() const	{ return isInForwardTransition() ? path[ pathIndex ] : currentState; }
 
 			void				clear()
 			{
@@ -110,11 +110,11 @@ namespace tiki
 		//int							m_transitionSourceState;
 		//int							m_transitionNextState;
 		//int							m_transitionPathDirection;
-		//uint						m_transitionCurrentPathIndex;
+		//uintreg						m_transitionCurrentPathIndex;
 		//int							m_transitionPath[ StateTree_MaxTransitionPathSize ];
-		//uint						m_transitionPathSize;
+		//uintreg						m_transitionPathSize;
 
-		uint						m_currentState;
+		uintreg						m_currentState;
 		bool						m_isInitial;
 
 		StateTreeTransition			m_transition;

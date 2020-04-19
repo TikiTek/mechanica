@@ -5,6 +5,7 @@
 #include "tiki/converter_base/conversion_types.hpp"
 #include "tiki/converter_base/resource_writer.hpp"
 #include "tiki/tool_generic_data/generic_data_document.hpp"
+#include "tiki/tool_generic_data/generic_data_document_collection.hpp"
 #include "tiki/tool_generic_data/generic_data_type_resource.hpp"
 #include "tiki/tool_project/package.hpp"
 #include "tiki/tool_project/project.hpp"
@@ -12,7 +13,6 @@
 namespace tiki
 {
 	static const char* s_pGenericDataTypeName = "generic_data";
-	static const crc32 s_genericDataTypeCrc = crcString( s_pGenericDataTypeName );
 
 	GenericDataConverter::GenericDataConverter()
 	{
@@ -20,19 +20,6 @@ namespace tiki
 
 	GenericDataConverter::~GenericDataConverter()
 	{
-	}
-
-	bool GenericDataConverter::setProject( const Project* pProject )
-	{
-		for( const Package& package : pProject->getPackages() )
-		{
-			if( !m_collection.addPackage( package ) )
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	uint32 GenericDataConverter::getConverterRevision( crc32 typeCrc ) const
@@ -48,15 +35,10 @@ namespace tiki
 
 	bool GenericDataConverter::canConvertType( crc32 typeCrc ) const
 	{
-		if( m_resourceTypeMap.hasKey( typeCrc ) )
-		{
-			return true;
-		}
-
-		return typeCrc == s_genericDataTypeCrc;
+		return m_resourceTypeMap.hasKey( typeCrc );
 	}
 
-	void GenericDataConverter::getInputExtensions( List< string >& extensions ) const
+	void GenericDataConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		extensions.pushBack( ".generic_data" );
 	}
@@ -66,10 +48,18 @@ namespace tiki
 		return s_pGenericDataTypeName;
 	}
 
-	bool GenericDataConverter::initializeConverter()
+	bool GenericDataConverter::initializeConverter( const ConversionContext& context )
 	{
+		for( const Package& package : context.pProject->getPackages() )
+		{
+			if( !m_typeCollection.addPackage( package ) )
+			{
+				return false;
+			}
+		}
+
 		List< const GenericDataType* > resourceTypes;
-		m_collection.findTypesByType( resourceTypes, GenericDataTypeType_Resource );
+		m_typeCollection.findTypesByType( resourceTypes, GenericDataTypeType_Resource );
 
 		for (uint i = 0u; i < resourceTypes.getCount(); ++i)
 		{
@@ -93,52 +83,56 @@ namespace tiki
 
 	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
-		bool ok = true;
+		GenericDataDocumentCollection documentCollection( const_cast< GenericDataTypeCollection& >( m_typeCollection ) );
+		documentCollection.create( context.pProject );
 
-		GenericDataDocument document( *const_cast< GenericDataTypeCollection* >( &m_collection ) );
-		if ( document.importFromFile( asset.inputFilePath.getCompletePath() ) )
+		GenericDataDocument* pDocument = documentCollection.loadDocument( asset.inputFilePath.getCompletePath() );
+		if( pDocument == nullptr )
 		{
-			const string& extension = document.getType()->getPostFix();
+			return false;
+		}
 
-			ResourceWriter resourceWriter;
-			openResourceWriter( resourceWriter, result, asset.assetName.cStr(), extension.cStr() );
+		const GenericDataTypeResource* pResourceType = pDocument->getResourceType();
+		if( pResourceType == nullptr )
+		{
+			TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] '%s' doesn't contain a resource.\n", asset.inputFilePath.getCompletePath() );
+			return false;
+		}
 
-			for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
+		const DynamicString& extension = pResourceType->getPostFix();
+
+		ResourceWriter resourceWriter;
+		openResourceWriter( resourceWriter, result, asset.assetName.cStr(), extension.cStr() );
+
+		bool ok = true;
+		for( const ResourceDefinition& definition : getResourceDefinitions( FlagMask8< ResourceDefinitionFeature >() ) )
+		{
+			resourceWriter.openResource( asset.assetName + "." + extension, pResourceType->getFourCC(), definition, (uint16)pResourceType->getTypeCrc() );
+
+			ResourceSectionWriter sectionWriter;
+			resourceWriter.openDataSection( sectionWriter, SectionType_Main );
+
+			ReferenceKey dataKey;
+			const bool result = pDocument->writeToResource( dataKey, sectionWriter );
+
+			resourceWriter.closeDataSection( sectionWriter );
+
+			if( result )
 			{
-				resourceWriter.openResource( asset.assetName + "." + extension, document.getType()->getFourCC(), definition, (uint16)document.getType()->getTypeCrc() );
-
-				ResourceSectionWriter sectionWriter;
-				resourceWriter.openDataSection( sectionWriter, SectionType_Main );
-
-				ReferenceKey dataKey;
-				const bool result = document.writeToResource( dataKey, sectionWriter );
-
+				resourceWriter.openDataSection( sectionWriter, SectionType_Initializaion );
+				sectionWriter.writeReference( &dataKey );
 				resourceWriter.closeDataSection( sectionWriter );
-
-				if( result )
-				{
-					resourceWriter.openDataSection( sectionWriter, SectionType_Initializaion );
-					sectionWriter.writeReference( &dataKey );
-					resourceWriter.closeDataSection( sectionWriter );
-				}
-				else
-				{
-					TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
-					ok = false;
-				}
-
-				resourceWriter.closeResource();
+			}
+			else
+			{
+				TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to write resource.\n" );
+				ok = false;
 			}
 
-			closeResourceWriter( resourceWriter );
-		}
-		else
-		{
-			TIKI_TRACE_ERROR( "[GenericDataConverter::startConversionJob] Unable to load '%s'.\n", asset.inputFilePath.getCompletePath() );
-			ok = false;
+			resourceWriter.closeResource();
 		}
 
-		document.dispose();
+		closeResourceWriter( resourceWriter );
 		return ok;
 	}
 }

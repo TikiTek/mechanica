@@ -9,22 +9,22 @@ namespace tiki
 		m_isCreated = false;
 	}
 
-	void GameFlowSystem::create( const GameStateDefinition* pDefinition, uint definitionCount )
+	void GameFlowSystem::create( const GameStateDefinition* pDefinition, uintreg definitionCount )
 	{
 		StateDefinition stateTreeDefinitions[ StateTreeLimits_MaxStateCount ];
 
 		m_stateCount		= definitionCount;
 		m_activeStateCount	= 0u;
 
-		for (uint i = 0u; i < definitionCount; ++i)
+		for (uintreg i = 0u; i < definitionCount; ++i)
 		{
 			StateDefinition& targetDef = stateTreeDefinitions[ i ];
 			const GameStateDefinition& def = pDefinition[ i ];
 
 			m_states[ i ] = def;
 
-			uint index = i;
-			uint count = 1u;
+			uintreg index = i;
+			uintreg count = 1u;
 			while ( index != 0u )
 			{
 				index = pDefinition[ index ].parentStateIndex;
@@ -33,7 +33,7 @@ namespace tiki
 			TIKI_ASSERT( count <= StateTreeLimits_MaxHierarchyDepth );
 
 			index = i;
-			for (uint j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
+			for (uintreg j = count - 1u; j != TIKI_SIZE_T_MAX; --j)
 			{
 				targetDef.stateHierarchy[ j ] = index;
 				index = pDefinition[ index ].parentStateIndex;
@@ -64,7 +64,7 @@ namespace tiki
 			GameFlowState* pState = m_states[ m_stateTree.getTransitionState() ].pState;
 			if ( pState != nullptr )
 			{
-				const uint step			= m_stateTree.getCurrentStep();
+				const uintreg step			= m_stateTree.getCurrentStep();
 				const bool isCreateing	= m_stateTree.isCreating();
 				const bool isInital		= m_stateTree.isInitial();
 				result					= pState->processTransitionStep( step, isCreateing, isInital );
@@ -79,33 +79,33 @@ namespace tiki
 			m_activeStateCount = m_stateTree.getActiveStates( m_activeStates, TIKI_COUNT( m_activeStates ) );
 		}
 
-		for (uint i = 0u; i < m_activeStateCount; ++i)
+		for (uintreg i = 0u; i < m_activeStateCount; ++i)
 		{
-			const uint stateIndex = m_activeStates[ i ];
+			const uintreg stateIndex = m_activeStates[ i ];
   			m_states[ stateIndex ].pState->update();
 		}
 	}
 
 	void GameFlowSystem::render( GraphicsContext& graphicsContext ) const
 	{
-		for (uint i = 0u; i < m_activeStateCount; ++i)
+		for (uintreg i = 0u; i < m_activeStateCount; ++i)
 		{
-			const uint stateIndex = m_activeStates[ i ];
+			const uintreg stateIndex = m_activeStates[ i ];
 			m_states[ stateIndex ].pState->render( graphicsContext );
 		}
 
-		for (uint i = 0u; i < m_activeStateCount; ++i)
+		for (uintreg i = 0u; i < m_activeStateCount; ++i)
 		{
-			const uint stateIndex = m_activeStates[ i ];
+			const uintreg stateIndex = m_activeStates[ i ];
 			m_states[ stateIndex ].pState->postRender( graphicsContext );
 		}
 	}
 
 	bool GameFlowSystem::processInputEvent( const InputEvent& inputEvent )
 	{
-		for (uint i = 0u; i < m_activeStateCount; ++i)
+		for (uintreg i = 0u; i < m_activeStateCount; ++i)
 		{
-			const uint stateIndex = m_activeStates[ i ];
+			const uintreg stateIndex = m_activeStates[ i ];
 			if ( m_states[ stateIndex ].pState->processInputEvent( inputEvent ) )
 			{
 				return true;
@@ -117,9 +117,9 @@ namespace tiki
 
 	void GameFlowSystem::processWindowEvent( const WindowEvent& windowEvent )
 	{
-		for (uint i = 0u; i < m_activeStateCount; ++i)
+		for (uintreg i = 0u; i < m_activeStateCount; ++i)
 		{
-			const uint stateIndex = m_activeStates[ i ];
+			const uintreg stateIndex = m_activeStates[ i ];
 			m_states[ stateIndex ].pState->processWindowEvent( windowEvent );
 		}
 	}

@@ -21,7 +21,7 @@
 //
 //	protected:
 //
-//		virtual size_t			getConverterRevision() const { return 1u; }
+//		virtual uintreg			getConverterRevision() const { return 1u; }
 //
 //		virtual crc32	getInputType() const;
 //

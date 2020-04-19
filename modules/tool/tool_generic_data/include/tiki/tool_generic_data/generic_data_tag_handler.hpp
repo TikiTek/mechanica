@@ -42,16 +42,16 @@ namespace tiki
 		const char*					getValueTag( GenericDataValueTag value ) const;
 
 		const GenericDataType*		resolveTypeTag( const GenericDataTag* pTag );
-		bool						resolveValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const;
+		bool						resolveValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType ) const;
 
-		bool						parseEnum( const GenericDataTypeEnum** ppEnumType, string& enumValue, const string& content ) const;
-		bool						parseEnum( const GenericDataTypeEnum** ppEnumType, const GenericDataEnumValue** ppEnumValue, const string& content ) const;
-		string						encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const;
+		bool						parseEnum( const GenericDataTypeEnum** ppEnumType, DynamicString& enumValue, const DynamicString& content ) const;
+		bool						parseEnum( const GenericDataTypeEnum** ppEnumType, const GenericDataEnumValue** ppEnumValue, const DynamicString& content ) const;
+		DynamicString				encodeEnum( const GenericDataTypeEnum* pEnumType, const GenericDataEnumValue& enumValue ) const;
 
 	private:
 
 		typedef const GenericDataType* (GenericDataTagHandler::*TypeTagHandler)( const GenericDataTag* pTag );
-		typedef bool (GenericDataTagHandler::*ValueTagHandler)( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		typedef bool (GenericDataTagHandler::*ValueTagHandler)( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 
 		struct TypeTag
 		{
@@ -76,10 +76,10 @@ namespace tiki
 		const GenericDataType*		resolveReferenceTypeTag( const GenericDataTag* pTag );
 		const GenericDataType*		resolvePointerTypeTag( const GenericDataTag* pTag );
 
-		bool						resolveEnumValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
-		bool						resolveReferenceValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
-		bool						resolveBitValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
-		bool						resolveOffsetValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
-		bool						resolveCrcValueTag( string& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		bool						resolveEnumValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		bool						resolveReferenceValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		bool						resolveBitValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		bool						resolveOffsetValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
+		bool						resolveCrcValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 	};
 }

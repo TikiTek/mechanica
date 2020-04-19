@@ -10,7 +10,7 @@ namespace tiki
 
 	}
 
-	bool ToolModel::create( const string& fileName, float scale )
+	bool ToolModel::create( const DynamicString& fileName, float scale )
 	{
 		m_xml.create( fileName.cStr() );
 
@@ -40,7 +40,7 @@ namespace tiki
 		// Geometries
 		bool isSkinned = false;
 
-		for (size_t i = 0u; i < m_hierarchy.getGeometryInstanceCount(); ++i)
+		for (uintreg i = 0u; i < m_hierarchy.getGeometryInstanceCount(); ++i)
 		{
 			ToolModelGeometrie& geometry = m_geometries.add();
 			geometry.create(
@@ -66,10 +66,10 @@ namespace tiki
 					const XmlAttribute* pIdAtt = m_xml.findAttributeByName( "source", pSkinNode );
 					TIKI_ASSERT( pIdAtt );
 
-					const string id = string( pIdAtt->content ).subString( 1u );
+					const DynamicString id = DynamicString( pIdAtt->content ).subString( 1u );
 
 					bool found = false;
-					for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+					for (uintreg i = 0u; i < m_geometries.getCount(); ++i)
 					{
 						if ( m_geometries[ i ].getDesc().id == id )
 						{
@@ -90,7 +90,7 @@ namespace tiki
 		}
 
 		// transform
-		for (uint i = 0u; i < m_geometries.getCount(); ++i)
+		for (uintreg i = 0u; i < m_geometries.getCount(); ++i)
 		{
 			m_geometries[ i ].transformToInstance();
 
@@ -131,7 +131,7 @@ namespace tiki
 	{
 		if ( m_geometries.getCount() > 0u )
 		{
-			for (size_t i = 0u; i < m_geometries.getCount(); ++i)
+			for (uintreg i = 0u; i < m_geometries.getCount(); ++i)
 			{
 				m_geometries[ i ].dispose();
 			}

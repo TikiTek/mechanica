@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_CIRCLE_HPP_INCLUDED
-#define TIKI_CIRCLE_HPP_INCLUDED
 
 #include "tiki/math/vector.hpp"
 
@@ -39,5 +37,3 @@ namespace tiki
 		}
 	};
 }
-
-#endif // TIKI_CIRCLE_HPP_INCLUDED

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_ARRAYVIEW_INL_INCLUDED
-#define TIKI_ARRAYVIEW_INL_INCLUDED
 
 namespace tiki
 {
@@ -12,14 +10,14 @@ namespace tiki
 	}
 
 	template< typename T >
-	ArrayView<T>::ArrayView( T* pData, uint count )
+	ArrayView<T>::ArrayView( T* pData, uintreg count )
 		: m_pData( pData )
 		, m_count( count )
 	{
 	}
 
 	template< typename T >
-	ArrayView<T>::ArrayView( const T* pData, uint count )
+	ArrayView<T>::ArrayView( const T* pData, uintreg count )
 		: m_pData( pData )
 		, m_count( count )
 	{
@@ -33,7 +31,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint ArrayView< T >::getIndexOfIterator( ConstIterator pValue ) const
+	TIKI_FORCE_INLINE uintreg ArrayView< T >::getIndexOfIterator( ConstIterator pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_pData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -42,9 +40,9 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE size_t ArrayView< T >::getIndexOfValue( ConstReference value ) const
+	TIKI_FORCE_INLINE uintreg ArrayView< T >::getIndexOfValue( ConstReference value ) const
 	{
-		for( uint i = 0u; i < m_count; ++i )
+		for( uintreg i = 0u; i < m_count; ++i )
 		{
 			if( m_pData[ i ] == value )
 			{
@@ -56,11 +54,9 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE const T& ArrayView< T >::operator[]( uint index ) const
+	TIKI_FORCE_INLINE const T& ArrayView< T >::operator[]( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
 }
-
-#endif // TIKI_ARRAYVIEW_INL_INCLUDED

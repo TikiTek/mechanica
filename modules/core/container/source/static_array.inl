@@ -20,7 +20,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE void StaticArray<T>::create( T* pData, size_t count )
+	TIKI_FORCE_INLINE void StaticArray<T>::create( T* pData, uintreg count )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -36,7 +36,7 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE uint StaticArray<T>::getIndexOf( const T* pValue ) const
+	TIKI_FORCE_INLINE uintreg StaticArray<T>::getIndexOf( const T* pValue ) const
 	{
 		TIKI_ASSERT( pValue != nullptr );
 		TIKI_ASSERT( pValue >= getBegin() && pValue < getEnd() );
@@ -45,9 +45,9 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE uint StaticArray<T>::getIndexOf( const T& value ) const
+	TIKI_FORCE_INLINE uintreg StaticArray<T>::getIndexOf( const T& value ) const
 	{
-		for (uint i = 0u; i < m_count; ++i)
+		for (uintreg i = 0u; i < m_count; ++i)
 		{
 			if ( m_pData[ i ] == value )
 			{
@@ -59,14 +59,14 @@ namespace tiki
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE T& StaticArray<T>::operator[]( size_t index )
+	TIKI_FORCE_INLINE T& StaticArray<T>::operator[]( uintreg index )
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
 
 	template<typename T>
-	TIKI_FORCE_INLINE const T& StaticArray<T>::operator[]( size_t index ) const
+	TIKI_FORCE_INLINE const T& StaticArray<T>::operator[]( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];

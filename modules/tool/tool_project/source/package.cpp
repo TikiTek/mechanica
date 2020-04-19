@@ -20,26 +20,20 @@ namespace tiki
 
 	void Package::findGenericDataTypeFiles( List< Path >& targetList ) const
 	{
-		Path genericDataPath;
-		genericDataPath.setCombinedPath( m_basepath, m_genericDataTypesPath );
-
-		directory::findFiles( targetList, genericDataPath, ".generictypes" );
+		directory::findFiles( targetList, m_genericTypesPath, ".generic_types" );
 	}
 
 	void Package::findAssetTemplateFiles( List< Path >& targetList ) const
 	{
-		Path templatePath;
-		templatePath.setCombinedPath( m_basepath, m_assetTemplatesPath );
-
-		directory::findFiles( targetList, templatePath, ".template" );
+		directory::findFiles( targetList, m_assetTemplatesPath, ".template" );
 	}
 
 	bool Package::create( const Path& filePath )
 	{
-		m_name		= filePath.getFilename();
+		m_name		= filePath.getBasename();
 		m_filename	= filePath;
-		m_basepath	= filePath;
-		m_basepath.setExtension( "" );
+		m_basePath	= filePath;
+		m_basePath.setExtension( "" );
 
 		if( file::exists( m_filename.getCompletePath() ) )
 		{
@@ -76,40 +70,64 @@ namespace tiki
 				TIKI_TRACE_WARNING( "[package] Package has no 'author' node in %s.\n", m_filename.getCompletePath() );
 			}
 
-			const XmlElement* pGenericDataTypesNode = pRootNode->findFirstChild( "genericdatatypes" );
-			if( pGenericDataTypesNode != nullptr )
+			const XmlElement* pGenericDataNode = pRootNode->findFirstChild( "generic_data" );
+			if( pGenericDataNode != nullptr )
 			{
-				m_genericDataTypesPath.setCompletePath( pGenericDataTypesNode->getValue() );
+				const XmlElement* pGenericDataBaseNode = pGenericDataNode->findFirstChild( "base_path" );
+				if( pGenericDataBaseNode != nullptr )
+				{
+					m_genericDataPath.setCombinedPath( m_basePath, pGenericDataBaseNode->getValue() );
+
+					const XmlElement* pGenericDataTypesNode = pGenericDataNode->findFirstChild( "types_path" );
+					if( pGenericDataTypesNode != nullptr )
+					{
+						m_genericTypesPath.setCombinedPath( m_genericDataPath, pGenericDataTypesNode->getValue() );
+					}
+					else
+					{
+						//TIKI_TRACE_WARNING( "[package] Package has no 'generic_data/types_path' node in %s.\n", m_filename.getCompletePath() );
+						m_genericTypesPath.setCombinedPath( m_genericDataPath, "types" );
+					}
+				}
+				else
+				{
+					//TIKI_TRACE_WARNING( "[package] Package has no 'generic_data/base_path' node in %s.\n", m_filename.getCompletePath() );
+					m_genericDataPath.setCombinedPath( m_genericDataPath, "generic_data" );
+					m_genericTypesPath.setCombinedPath( m_basePath, "types" );
+				}
 			}
 			else
 			{
-				TIKI_TRACE_WARNING( "[package] Package has no 'genericdatatypes' node in %s.\n", m_filename.getCompletePath() );
+				//TIKI_TRACE_WARNING( "[package] Package has no 'generic_data' node in %s.\n", m_filename.getCompletePath() );
+				m_genericDataPath.setCombinedPath( m_basePath, "generic_data" );
+				m_genericTypesPath.setCombinedPath( m_genericDataPath, "types" );
 			}
 
-			const XmlElement* pAssetTemplatesNode = pRootNode->findFirstChild( "assettemplates" );
+			const XmlElement* pAssetTemplatesNode = pRootNode->findFirstChild( "asset_templates" );
 			if( pAssetTemplatesNode != nullptr )
 			{
-				m_assetTemplatesPath.setCompletePath( pAssetTemplatesNode->getValue() );
+				m_assetTemplatesPath.setCombinedPath( m_basePath, pAssetTemplatesNode->getValue() );
 			}
 			else
 			{
-				TIKI_TRACE_WARNING( "[package] Package has no 'assettemplates' node in %s.\n", m_filename.getCompletePath() );
+				//TIKI_TRACE_WARNING( "[package] Package has no 'asset_templates' node in %s.\n", m_filename.getCompletePath() );
+				m_assetTemplatesPath.setCombinedPath( m_basePath, "templates" );
 			}
 		}
 
 		return true;
 	}
 
-	void Package::create( const Path& contentPath, const string& packageName )
+	void Package::create( const Path& contentPath, const DynamicString& packageName )
 	{
 		m_name = packageName;
 
 		m_filename = contentPath;
-		m_filename.setFilename( packageName.cStr() );
+		m_filename.setBasename( packageName.cStr() );
 		m_filename.setExtension( ".package" );
 
-		m_basepath = contentPath;
-		m_basepath.push( packageName.cStr() );
+		m_basePath = contentPath;
+		m_basePath.push( packageName.cStr() );
 	}
 
 	bool Package::writeToFile() const

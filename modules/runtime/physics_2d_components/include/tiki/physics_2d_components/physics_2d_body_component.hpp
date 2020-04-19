@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PHYSICS2DBODYCOMPONENT_HPP_INCLUDED
-#define TIKI_PHYSICS2DBODYCOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -44,5 +42,3 @@ namespace tiki
 		const Transform2dComponent*		m_pTranformComponent;
 	};
 }
-
-#endif // TIKI_PHYSICS2DBODYCOMPONENT_HPP_INCLUDED

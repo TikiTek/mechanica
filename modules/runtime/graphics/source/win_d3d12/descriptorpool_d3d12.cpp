@@ -16,7 +16,7 @@ namespace tiki
 		TIKI_ASSERT( m_pHeap == nullptr );
 	}
 
-	bool DescriptorPoolD3d12::create( ID3D12Device* pDevice, uint maxDescriptorCount, DescriptorType type, const char* pDebugName )
+	bool DescriptorPoolD3d12::create( ID3D12Device* pDevice, uintreg maxDescriptorCount, DescriptorType type, const char* pDebugName )
 	{
 		static const D3D12_DESCRIPTOR_HEAP_TYPE s_aDescriptorTypeMapping[] =
 		{
@@ -44,14 +44,14 @@ namespace tiki
 		}
 		TIKI_SET_DX_OBJECT_NAME( m_pHeap, pDebugName );
 
-		const size_t maskCount = alignValue< size_t >( maxDescriptorCount, 64u ) / 64u;
+		const uintreg maskCount = alignValue< uintreg >( maxDescriptorCount, 64u ) / 64u;
 		if( !m_freeMask.create( maskCount ) )
 		{
 			dispose();
 			return nullptr;
 		}
 
-		for( size_t i = 0u; i < m_freeMask.getCount(); ++i )
+		for( uintreg i = 0u; i < m_freeMask.getCount(); ++i )
 		{
 			m_freeMask[ i ] = (uint64)-1;
 		}
@@ -67,7 +67,7 @@ namespace tiki
 
 	DescriptorHandle DescriptorPoolD3d12::allocateDescriptor()
 	{
-		size_t maskIndex = 0;
+		uintreg maskIndex = 0;
 		while( maskIndex < m_freeMask.getCount() && m_freeMask[ maskIndex ] == 0u )
 		{
 			maskIndex++;
@@ -87,9 +87,9 @@ namespace tiki
 		return InvalidDescriptorHandle;
 	}
 
-	bool DescriptorPoolD3d12::allocateRange( DescriptorHandle* pOutput, uint count )
+	bool DescriptorPoolD3d12::allocateRange( DescriptorHandle* pOutput, uintreg count )
 	{
-		for( size_t maskIndex = 0; maskIndex < m_freeMask.getCount(); ++maskIndex )
+		for( uintreg maskIndex = 0; maskIndex < m_freeMask.getCount(); ++maskIndex )
 		{
 			if( m_freeMask[ maskIndex ] == 0u )
 			{
@@ -108,7 +108,7 @@ namespace tiki
 
 			const uint32 indexInMask	= uint32( 63u - countLeadingZeros64( firstBit ) );
 			const uint32 firstIndex		= uint32( (maskIndex * 64u) + indexInMask );
-			for( uint i = 0u; i < count; ++i )
+			for( uintreg i = 0u; i < count; ++i )
 			{
 				pOutput[ i ] = (DescriptorHandle)(firstIndex + i);
 			}
@@ -126,8 +126,8 @@ namespace tiki
 	{
 		TIKI_ASSERT( handle != InvalidDescriptorHandle );
 
-		const size_t handleValue	= (size_t)handle;
-		const size_t maskIndex		= handleValue / 64u;
+		const uintreg handleValue	= (uintreg)handle;
+		const uintreg maskIndex		= handleValue / 64u;
 		const uint64 indexInMask	= handleValue % 64u;
 		const uint64 bitToSet		= 1ull << indexInMask;
 
@@ -139,7 +139,7 @@ namespace tiki
 		TIKI_ASSERT( handle != InvalidDescriptorHandle );
 
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dHandle = m_pHeap->GetCPUDescriptorHandleForHeapStart();
-		d3dHandle.ptr += size_t( handle ) * m_descriptorSize;
+		d3dHandle.ptr += uintreg( handle ) * m_descriptorSize;
 
 		return d3dHandle;
 	}
@@ -149,7 +149,7 @@ namespace tiki
 		TIKI_ASSERT( handle != InvalidDescriptorHandle );
 
 		D3D12_GPU_DESCRIPTOR_HANDLE d3dHandle = m_pHeap->GetGPUDescriptorHandleForHeapStart();
-		d3dHandle.ptr += size_t( handle ) * m_descriptorSize;
+		d3dHandle.ptr += uintreg( handle ) * m_descriptorSize;
 
 		return d3dHandle;
 	}

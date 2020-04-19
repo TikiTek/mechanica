@@ -9,7 +9,7 @@ namespace tiki
 {
 	struct GenericDataStructField
 	{
-		string					name;
+		DynamicString			name;
 		const GenericDataType*	pType;
 		GenericDataTypeMode		mode;
 		bool					isInherited;
@@ -23,30 +23,30 @@ namespace tiki
 
 		typedef ArrayView< GenericDataStructField > FieldArrayView;
 
-												GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
+												GenericDataTypeStruct( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType );
 		virtual									~GenericDataTypeStruct();
 
 		virtual bool							loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE;
 		virtual bool							exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_OVERRIDE;
 
-		virtual uint							getAlignment() const TIKI_OVERRIDE;
-		virtual uint							getSize() const TIKI_OVERRIDE;
-		virtual string							getCodeExportName() const TIKI_OVERRIDE;
+		virtual uintreg							getAlignment() const TIKI_OVERRIDE;
+		virtual uintreg							getSize() const TIKI_OVERRIDE;
+		virtual DynamicString					getCodeExportName() const TIKI_OVERRIDE;
 		virtual crc32							getTypeCrc() const TIKI_OVERRIDE;
 
 		const GenericDataTypeStruct*			getBaseType() const;
 		bool									isDerivedType( const GenericDataTypeStruct* pType ) const;
 
-		//void									addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
-		//void									removeField( const string& name );
+		//void									addField( const DynamicString& name, const GenericDataType* pType, GenericDataTypeMode mode = GenericDataTypeMode_ToolAndRuntime );
+		//void									removeField( const DynamicString& name );
 
 		const List< GenericDataStructField >&	getFields() const;
-		uint									getFieldCount() const { return m_fields.getCount(); }
-		const GenericDataStructField*			getFieldByName( const string& name ) const;
-		uint									getFieldIndexByName( const string& name ) const;
+		uintreg									getFieldCount() const { return m_fields.getCount(); }
+		const GenericDataStructField*			getFieldByName( const DynamicString& name ) const;
+		uintreg									getFieldIndexByName( const DynamicString& name ) const;
 
 		FieldArrayView							getLocalFields() const;
-		uint									getLocalFieldOffset() const { return m_localFieldOffset; }
+		uintreg									getLocalFieldOffset() const { return m_localFieldOffset; }
 
 		const GenericDataObject*				getDefaultObject() const { return m_pDefaultObject; }
 
@@ -56,10 +56,10 @@ namespace tiki
 
 		GenericDataObject*						m_pDefaultObject;
 
-		uint									m_alignment;
-		uint									m_size;
+		uintreg									m_alignment;
+		uintreg									m_size;
 
 		List< GenericDataStructField >			m_fields;
-		uint									m_localFieldOffset;
+		uintreg									m_localFieldOffset;
 	};
 }

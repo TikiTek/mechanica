@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	GenericDataTypePointer::GenericDataTypePointer( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
+	GenericDataTypePointer::GenericDataTypePointer( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Pointer, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -37,7 +37,7 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypePointer::getCodeExportName() const
+	DynamicString GenericDataTypePointer::getCodeExportName() const
 	{
 		return formatDynamicString( "ResRef< %s >", m_pBaseType->getCodeExportName().cStr() );
 	}

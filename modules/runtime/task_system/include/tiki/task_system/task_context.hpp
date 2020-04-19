@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_TASKCONTEXT_HPP_INCLUDED__
-#define TIKI_TASKCONTEXT_HPP_INCLUDED__
 
 namespace tiki
 {
@@ -18,5 +16,3 @@ namespace tiki
 		void*			pTaskData;
 	};
 }
-
-#endif // TIKI_TASKCONTEXT_HPP_INCLUDED__

@@ -12,7 +12,7 @@ namespace tiki
 	{
 	}
 
-	TransitionState GameFlowState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState GameFlowState::processTransitionStep( uintreg currentStep, bool isCreating, bool isInital )
 	{
 		if( isCreating )
 		{
@@ -24,12 +24,12 @@ namespace tiki
 		}
 	}
 
-	TransitionState GameFlowState::processCreationStep( size_t currentStep, bool isInital )
+	TransitionState GameFlowState::processCreationStep( uintreg currentStep, bool isInital )
 	{
 		return TransitionState_Finish;
 	}
 
-	TransitionState GameFlowState::processDestructionStep( size_t currentStep, bool isInital )
+	TransitionState GameFlowState::processDestructionStep( uintreg currentStep, bool isInital )
 	{
 		return TransitionState_Finish;
 	}

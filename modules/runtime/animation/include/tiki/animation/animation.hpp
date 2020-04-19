@@ -56,7 +56,7 @@ namespace tiki
 		static void				registerResourceType( ResourceManager& resourceManager );
 		static void				unregisterResourceType( ResourceManager& resourceManager );
 
-		void					sample( AnimationJoint* pTargetJoints, size_t jointCount, const ModelHierarchy& hierarchy, const float time ) const;
+		void					sample( AnimationJoint* pTargetJoints, uintreg jointCount, const ModelHierarchy& hierarchy, const float time ) const;
 
 	protected:
 

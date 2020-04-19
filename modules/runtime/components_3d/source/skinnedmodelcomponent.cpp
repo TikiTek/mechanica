@@ -15,7 +15,7 @@ namespace tiki
 		const Model*	pModel;
 
 		Matrix43		modelPose[ 256u ];
-		uint			jointCount;
+		uintreg			jointCount;
 	};
 
 	SkinnedModelComponent::SkinnedModelComponent()
@@ -119,13 +119,13 @@ namespace tiki
 	//	SkinnedModelComponent::dispose( this );
 	//}
 
-	//const Matrix& SkinnedModelComponent::getJointMatrix( uint index ) const
+	//const Matrix& SkinnedModelComponent::getJointMatrix( uintreg index ) const
 	//{
 	//	TIKI_ASSERT( index >= 0 && index < m_poseMatrices.getCount() );
 	//	return m_poseMatrices[ index ];
 	//}
 
-	//void SkinnedModelComponent::getJointPoseMatrix( uint index, Matrix& mat ) const
+	//void SkinnedModelComponent::getJointPoseMatrix( uintreg index, Matrix& mat ) const
 	//{
 	//	TIKI_ASSERT( index >= 0 && index < m_poseMatrices.getCount() );
 	//	mat = m_pModel->getHierarchy()->getSkinToBoneMatrix( index );
@@ -157,9 +157,9 @@ namespace tiki
 
 	//void SkinnedModelComponent::render( GpuContext* pContext )
 	//{
-	//	const size_t componentCount = s_pool.getCount();
+	//	const uintreg componentCount = s_pool.getCount();
 
-	//	for (size_t i = 0u; i < componentCount; ++i)
+	//	for (uintreg i = 0u; i < componentCount; ++i)
 	//	{
 	//		SkinnedModelComponent* pCurrentComp = s_pool[ i ];
 
@@ -175,7 +175,7 @@ namespace tiki
 	//			Vector3 p1;
 	//			Vector3 p2;
 	//			
-	//			for (size_t j = 0u; j < hierarchy.getJointCount(); ++j)
+	//			for (uintreg j = 0u; j < hierarchy.getJointCount(); ++j)
 	//			{
 	//				Matrix mtx = pCurrentComp->m_poseMatrices[ j ];
 	//				Matrix mtx2;
@@ -184,7 +184,7 @@ namespace tiki
 	//				pCurrentComp->m_poseMatrices[ j ].mul( mtx2, mtx );
 	//			}
 
-	//			for (size_t j = 1u; j < hierarchy.getJointCount(); ++j)
+	//			for (uintreg j = 1u; j < hierarchy.getJointCount(); ++j)
 	//			{
 	//				const uint16 parent = hierarchy.getParentByIndex( j );
 	//				if ( parent == ModelHierarchy::InvalidBoneIndex ) continue;
@@ -206,7 +206,7 @@ namespace tiki
 
 	//		Pose* pPose = s_skinningBuffer.map( 1u );
 
-	//		size_t j = 0u;
+	//		uintreg j = 0u;
 	//		for (; j < pCurrentComp->m_poseMatrices.getCount(); ++j)
 	//		{
 	//			pPose->pose[ j ] = pCurrentComp->m_poseMatrices[ j ];
@@ -217,8 +217,8 @@ namespace tiki
 
 	//		pContext->setMaterial( pCurrentComp->m_pMaterial );
 
-	//		const size_t geoCount = pCurrentComp->m_pModel->getGeometryCount();
-	//		for (size_t j = 0u; j < geoCount; ++j)
+	//		const uintreg geoCount = pCurrentComp->m_pModel->getGeometryCount();
+	//		for (uintreg j = 0u; j < geoCount; ++j)
 	//		{
 	//			const ModelGeometry& geometry = pCurrentComp->m_pModel->getGeometryByIndex( j );
 

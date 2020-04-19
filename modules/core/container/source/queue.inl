@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_QUEUE_INL_INCLUDED
-#define TIKI_QUEUE_INL_INCLUDED
 
 #include "tiki/base/memory.hpp"
 
@@ -154,5 +152,3 @@ namespace tiki
 		return m_capacity;
 	}
 }
-
-#endif // TIKI_QUEUE_INL_INCLUDED

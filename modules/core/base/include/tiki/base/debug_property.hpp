@@ -62,7 +62,7 @@ namespace tiki
 		const char*		getModule() const	{ return m_pModule; }
 		const char*		getName() const
 		{
-			uint index = stringLastIndexOf( m_pName, '/' );
+			uintreg index = stringLastIndexOf( m_pName, '/' );
 			index = ( index == TIKI_SIZE_T_MAX ? 0u : index + 1u );
 
 			return m_pName + index;

@@ -36,7 +36,7 @@ namespace tiki
 		return true;
 	}
 
-	void XmlDocument::saveToString( string& target )
+	void XmlDocument::saveToString( DynamicString& target )
 	{
 		tinyxml2::XMLPrinter printer;
 		m_document.Print( &printer );
