@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes>
+<generic_types>
 	<enum name="MechanicaMaterialId">
 		<value name="Charakter" />
 		<value name="Chain" />
@@ -20,4 +20,4 @@
 		<value name="UI" />
 		<value name="Emissive" />
 	</enum>
-</generictypes> 
+</generic_types> 

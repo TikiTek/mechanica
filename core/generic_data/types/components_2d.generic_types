@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes base="components">
+<generic_types base="components">
 	<enum name="Components2dType">
 		<value name="Transform" value="{crc Transform2dComponent}" />
 		<value name="Sprite" value="{crc SpriteComponent}" />
@@ -28,4 +28,4 @@
 		<field type="{array float2}" name="uvs" />
 		<field type="uint32" name="layerId" />
 	</struct>
-</generictypes> 
+</generic_types> 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes base="components">
+<generic_types base="components">
 	<enum name="MechanicaComponentType">
 		<value name="Breakable" value="{crc BreakableComponent}" />
 		<value name="Player" value="{crc PlayerComponent}" />
@@ -27,4 +27,4 @@
 	</struct>
 	<struct name="WiggleComponentInitData" base="ComponentInitData">
 	</struct>
-</generictypes> 
+</generic_types> 

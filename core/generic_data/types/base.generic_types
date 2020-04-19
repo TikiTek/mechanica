@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes>
+<generic_types>
 	<!-- byte -->
 	<struct name="byte2">
 		<field name="x" type="uint8" />
@@ -112,4 +112,4 @@
 		<field name="z" type="float" />
 		<field name="w" type="float" />
 	</struct>
-</generictypes>
+</generic_types>

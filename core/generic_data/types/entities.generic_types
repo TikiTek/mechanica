@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes base="components">
+<generic_types base="components">
 	<struct name="EntityComponent">
 		<field type="crc32" name="componentType" />
 		<field type="{pointer ComponentInitData}" name="initData" />
@@ -8,4 +8,4 @@
 		<field type="{array EntityComponent}" name="components" />
 	</struct>
 	<resource name="EntityTemplate" base="EntityTemplateData" postfix="entity" fourcc="ETPL" />
-</generictypes> 
+</generic_types> 
