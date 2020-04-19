@@ -5,6 +5,9 @@
     <dependencies>
         <package name="core"/>
     </dependencies>
-    <genericdatatypes>generic_data/types</genericdatatypes>
-    <assettemplates>templates</assettemplates>
+    <generic_data>
+		<base_path>generic_data</base_path>
+		<types_path>types</types_path>
+	</generic_data>
+    <asset_templates>templates</asset_templates>
 </package>
