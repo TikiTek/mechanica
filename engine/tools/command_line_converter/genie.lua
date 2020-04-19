@@ -1,8 +1,18 @@
 -- library/tools/command_line_converter/project
 
-include "../../../buildtools/genie_scripts"
+include "../../.."
 
-dofile( "../command_line_converter.lua" );
+local module = Module:new( "command_line_converter" );
+
+module:add_files( "source/*.*" );
+module:add_files( "*.lua" );
+
+module:add_dependency( "config" );
+module:add_dependency( "tool/asset_converter_library" );
+
+module:set_define( "TIKI_BUILD_TOOLS", "TIKI_OFF" );
+
+module:add_library_file( "converterlibrary" );
 
 local project = Project:new(
 	"command_line_converter",

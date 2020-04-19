@@ -1,15 +1,21 @@
 -- library/tools/resource_code_generator/project
 
-include "../../../buildtools/genie_scripts"
+include "../../.."
 
-dofile( "../resource_code_generator.lua" );
+local module = Module:new( "resource_code_generator" );
+
+module:add_files( "source/*.*" );
+module:add_files( "*.lua" );
+
+module:add_dependency( "config" );
+module:add_dependency( "tool/tool_base" );
 
 local project = Project:new(
 	"resource_code_generator",
 	"c2d4d778-6f7a-4f18-b601-c4619ce5a3c1",
 	{ "x32", "x64" },
 	{ "Debug", "Release" },
-	find_module( 'resource_code_generator' ),
+	module,
 	ProjectTypes.consoleApplication
 );
 

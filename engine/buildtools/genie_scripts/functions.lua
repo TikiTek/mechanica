@@ -204,5 +204,5 @@ function get_config_dir( platform, configuration )
 		throw( "get_config_dir: too few arguments." );
 	end
 
-	return _OPTIONS[ "outpath" ] .. "/" .. platform .. "/" .. configuration;
+	return _OPTIONS[ "to" ] .. "/" .. platform .. "/" .. configuration;
 end
