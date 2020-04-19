@@ -253,7 +253,7 @@ namespace tiki
 
 				renderer.setShaderMode( pDrawCommand->TextureId != nullptr ? ImmediateShaderMode_Texture : ImmediateShaderMode_Color );
 				graphicsContext.setPixelShaderTexture( 0u, (const TextureData*)pDrawCommand->TextureId );
-				graphicsContext.setScissorRectangle( createAxisAlignedRectangleMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
+				graphicsContext.setScissorRectangle( AxisAlignedRectangle::createMinMax( pDrawCommand->ClipRect.x, pDrawCommand->ClipRect.y, pDrawCommand->ClipRect.z, pDrawCommand->ClipRect.w ) );
 				graphicsContext.drawIndexedGeometry( pDrawCommand->ElemCount, indexOffset, vertexOffset );
 
 				indexOffset += pDrawCommand->ElemCount;
@@ -298,23 +298,23 @@ namespace tiki
 		case InputEventType_Keyboard_Down:
 			{
 				const bool down = (inputEvent.eventType == InputEventType_Keyboard_Down);
-				if( inputEvent.data.keybaordKey.key == KeyboardKey_LeftControl ||
-					inputEvent.data.keybaordKey.key == KeyboardKey_RightControl )
+				if( inputEvent.data.keyboardKey.key == KeyboardKey_LeftControl ||
+					inputEvent.data.keyboardKey.key == KeyboardKey_RightControl )
 				{
 					io.KeyCtrl = down;
 				}
-				else if( inputEvent.data.keybaordKey.key == KeyboardKey_LeftShift ||
-						 inputEvent.data.keybaordKey.key == KeyboardKey_RightShift )
+				else if( inputEvent.data.keyboardKey.key == KeyboardKey_LeftShift ||
+						 inputEvent.data.keyboardKey.key == KeyboardKey_RightShift )
 				{
 					io.KeyShift = down;
 				}
-				else if( inputEvent.data.keybaordKey.key == KeyboardKey_LeftAlt ||
-						 inputEvent.data.keybaordKey.key == KeyboardKey_RightAlt )
+				else if( inputEvent.data.keyboardKey.key == KeyboardKey_LeftAlt ||
+						 inputEvent.data.keyboardKey.key == KeyboardKey_RightAlt )
 				{
 					io.KeyAlt = down;
 				}
 
-				io.KeysDown[ inputEvent.data.keybaordKey.key ] = down;
+				io.KeysDown[ inputEvent.data.keyboardKey.key ] = down;
 			}
 			return true;
 

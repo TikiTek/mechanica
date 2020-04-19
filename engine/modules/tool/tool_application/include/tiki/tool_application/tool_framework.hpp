@@ -15,7 +15,7 @@ namespace tiki
 
 	namespace tool
 	{
-		Path							getFile( const string& filename );
+		Path							getFile( const DynamicString& filename );
 
 		bool							loadImage( TextureData& target, ConstMemoryBlock imageData );
 		bool							loadImageFromFile( TextureData& target, const Path& filename );

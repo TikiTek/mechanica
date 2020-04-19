@@ -14,8 +14,8 @@ namespace tiki
 
 		virtual EditableFile*		openFile( const Path& fileName ) TIKI_PURE;
 
-		string						getFileTypeName() const { return m_fileTypeName; }
-		string						getFileExtension() const { return m_fileExtension; }
+		DynamicString				getFileTypeName() const { return m_fileTypeName; }
+		DynamicString				getFileExtension() const { return m_fileExtension; }
 
 		const ToolImage&			getEditableIcon() const { return m_fileIcon; };
 

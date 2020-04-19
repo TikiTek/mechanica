@@ -13,11 +13,14 @@ namespace tiki
 {
 	GenericDataEditor::GenericDataEditor( EditorInterface& editor, ResourceManager& resourceManager, GraphicsSystem& graphicsSystem )
 		: FileEditor( editor, getGenericDataEditorResource( GenericDataEditorResources_BrowserFileGenericData ), "Generic Data", ".generic_data" )
+		, m_documentCollection( m_typeCollection )
 	{
 		for( const Package& package : m_editor.getProject().getPackages() )
 		{
 			m_typeCollection.addPackage( package );
 		}
+
+		m_documentCollection.create( m_editor.getProject() );
 
 		TIKI_VERIFY( m_renderer.create( resourceManager, graphicsSystem ) );
 	}
