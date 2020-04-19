@@ -46,7 +46,7 @@ namespace tiki
 		bool											create();
 		void											dispose();
 
-		void											startLoadLevel( ResourceRequestPool& requestPool, string levelName );
+		void											startLoadLevel( ResourceRequestPool& requestPool, DynamicString levelName );
 		GameClientLoadResult							finalizeLoadLevel( ResourceRequestPool& requestPool );
 		const LevelGenericDataResource*					getLevel() const { return m_pLevel; }
 		void											unloadLevel( ResourceRequestPool& requestPool );

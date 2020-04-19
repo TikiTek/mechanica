@@ -112,9 +112,9 @@ namespace tiki
 		m_entitySystem.dispose();
 	}
 
-	void GameClient::startLoadLevel( ResourceRequestPool& requestPool, string levelName )
+	void GameClient::startLoadLevel( ResourceRequestPool& requestPool, DynamicString levelName )
 	{
-		const string levelResourceName = levelName + ".level";
+		const DynamicString levelResourceName = levelName + ".level";
 		requestPool.beginLoadResource( &m_pLevel, levelResourceName.cStr() );
 	}
 

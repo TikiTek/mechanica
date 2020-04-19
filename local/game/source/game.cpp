@@ -236,7 +236,7 @@ namespace tiki
 		return data;
 	}
 
-	GameTransitionData GameTransitionData::createPlay( const string& levelName )
+	GameTransitionData GameTransitionData::createPlay( const DynamicString& levelName )
 	{
 		GameTransitionData data;
 		data.state			= GameState_Play;

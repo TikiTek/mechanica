@@ -28,7 +28,7 @@ namespace tiki
 
 	struct GameTransitionPlayerData
 	{
-		string						levelName;
+		DynamicString				levelName;
 	};
 
 	struct GameTransitionData
@@ -37,7 +37,7 @@ namespace tiki
 		GameTransitionPlayerData	play;
 
 		static GameTransitionData	createMenu();
-		static GameTransitionData	createPlay( const string& levelName );
+		static GameTransitionData	createPlay( const DynamicString& levelName );
 		static GameTransitionData	createExit();
 	};
 
