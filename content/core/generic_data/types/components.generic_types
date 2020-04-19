@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes base="base">
+<generic_types base="base">
 	<struct name="ComponentInitData">
 	</struct>
 	<enum name="ComponentsType">
@@ -8,4 +8,4 @@
 	<struct name="LifeTimeComponentInitData" base="ComponentInitData">
 		<field type="timems" name="lifeTimeInMs" />
 	</struct>
-</generictypes> 
+</generic_types> 

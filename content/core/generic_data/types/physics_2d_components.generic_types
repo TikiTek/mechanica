@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<generictypes base="components">
+<generic_types base="components">
 	<enum name="Physics2dComponentType">
 		<value name="Body" value="{crc Physics2dBodyComponent}" />
 		<value name="Collider" value="{crc Physics2dColliderComponent}" />
@@ -61,4 +61,4 @@
 			<filter fieldName="type" value="{enum Physics2dJointType.Revolute}" />
 		</field>
 	</struct>
-</generictypes> 
+</generic_types> 
