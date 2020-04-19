@@ -23,6 +23,9 @@ module.import_func = function( project )
 	local command_line = exe_path .. " " .. arguments;
 
 	prebuildcommands { command_line };
-	os.execute( command_line );
+	
+	if _ACTION ~= "targets" then
+		os.execute( command_line );
+	end
 end
 

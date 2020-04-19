@@ -50,7 +50,12 @@ use_vulkan	= false;
 
 use_sdl		= false;
 
-if _ACTION == "vs2015" or _ACTION == "vs2017" or _ACTION == "vs2019" then
+local action = _ACTION;
+if action == "targets" then
+	action = _OPTIONS[ "targets_action" ]
+end
+
+if action == "vs2015" or action == "vs2017" or action == "vs2019" then
 	module:set_define( "WIN_NT" );
 	module:set_define( "WIN32" );
 	module:set_define( "_WIN32" );
@@ -67,22 +72,22 @@ if _ACTION == "vs2015" or _ACTION == "vs2017" or _ACTION == "vs2019" then
 	--use_sdl	= true;
 	
 	global_configuration.enable_unity_builds = true	
-elseif _ACTION == "gmake" or _ACTION == "codeblocks" or _ACTION == "codelite" or _ACTION == "eclipse" then
+elseif action == "gmake" or action == "codeblocks" or action == "codelite" or action == "eclipse" then
 	use_gcc		= true;
 	use_vulkan	= true;
 	use_sdl		= true;
 	
-	if _ACTION == "codeblocks" then
+	if action == "codeblocks" then
 	end
 	
-	--if _ACTION == "codelite" then
+	--if action == "codelite" then
 	--	include( "codelite" );
-	--elseif _ACTION == "codeblocks" then
+	--elseif action == "codeblocks" then
 	--	include( "codeblocks" );
-	--elseif _ACTION == "eclipse" then
+	--elseif action == "eclipse" then
 	--	include( "eclipse" );
 	--end
-elseif _ACTION == "xcode" then
+elseif action == "xcode" then
 	use_clang	= true;
 	use_vulkan	= true;	
 else

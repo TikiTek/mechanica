@@ -1,10 +1,9 @@
-
 newoption{ trigger = "script", description = "Script to load" };
-newoption{ trigger = "outpath", description = "Location for generated project files" };
+newoption{ trigger = "to", description = "Location for generated project files" };
 newoption{ trigger = "project", description = "Name of the Project" };
 
-if not _OPTIONS["outpath"] then
-	error("No outpath specified.")
+if not _OPTIONS[ "to" ] then
+	error("No 'to' option specified.")
 end
 
 if not _OPTIONS["script"] then
@@ -17,7 +16,7 @@ global_configuration = {
 }
 
 dofile( path.join( global_configuration.scripts_path, "thirdparty/datadumper.lua" ) );
-dofile( path.join( global_configuration.scripts_path, "global.lua" ) );
+dofile( path.join( global_configuration.scripts_path, "functions.lua" ) );
 
 function is_build_required( source_file, target_file )
 	if not source_file then
@@ -47,7 +46,7 @@ function execute_build_steps()
 	local config = {
 		project_name = _OPTIONS[ "project" ],
 		build_path = path.getabsolute( "." ),
-		output_path = path.getabsolute( _OPTIONS["outpath"] )		
+		output_path = path.getabsolute( _OPTIONS[ "to" ] )		
 	};
 
 	local script_file = path.join( config.build_path, _OPTIONS[ "script" ] );

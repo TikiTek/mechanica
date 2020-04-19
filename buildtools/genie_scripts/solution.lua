@@ -55,25 +55,25 @@ function Solution:finalize()
 	solution( self.name );
 	configurations( var_configurations );
 	platforms( var_platforms );
-	location( _OPTIONS[ "outpath" ] )
-
-	--toolchain( _OPTIONS[ "outpath" ], "" );
+	location( _OPTIONS[ "to" ] )
 
 	while #self.projects > 0 do
 		local project = self.projects[ next( self.projects ) ];
-		print( "Project: " .. project.name );
+		if _ACTION ~= "targets" then
+			print( "Project: " .. project.name );
+		end
 
-		_OPTIONS[ "generated_files_dir" ] = path.getabsolute( path.join( _OPTIONS[ "outpath" ], "generated_files", project.name ) );
+		_OPTIONS[ "generated_files_dir" ] = path.getabsolute( path.join( _OPTIONS[ "to" ], "generated_files", project.name ) );
 		if not os.isdir( _OPTIONS[ "generated_files_dir" ] ) then
 			os.mkdir( _OPTIONS[ "generated_files_dir" ] )
 		end
 
-		project:finalize_project( _OPTIONS[ "outpath" ], self );
+		project:finalize_project( _OPTIONS[ "to" ], self );
 		table.remove_value( self.projects, project );
 	end
 	
 	--local genie_exe = global_configuration.genie_path
 	--configuration{ 'Project' }
 	--kind( 'Makefile' );
-	--buildcommands{ 'cd ..\\project', genie_exe .. ' /outpath=../build ' .. _ACTION };
+	--buildcommands{ 'cd ..\\project', genie_exe .. ' --to=../build ' .. _ACTION };
 end

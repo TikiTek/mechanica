@@ -112,7 +112,7 @@ function Project:add_install( pattern, target_path, configuration, platform )
 end
 
 function Project:finalize_create_directories( project_pathes, configuration, platform )
-	project_pathes.root_dir = _OPTIONS[ "outpath" ];
+	project_pathes.root_dir = _OPTIONS[ "to" ];
 	if not os.isdir( project_pathes.root_dir ) then
 		os.mkdir( project_pathes.root_dir );
 	end
@@ -198,9 +198,10 @@ function Project:finalize_build_steps( config, project_pathes, project_name )
 	
 	local command_line = {
 		genie_exe,
-		"/project=" .. self.name,
-		"/outpath=" .. relative_build_dir,
-		"/script=" .. path.join( relative_build_dir, pre_build_steps_filename ),
+		"--quiet",
+		"--project=" .. self.name,
+		"--to=" .. relative_build_dir,
+		"--script=" .. path.join( relative_build_dir, pre_build_steps_filename ),
 		"buildsteps"
 	};
 	prebuildcommands{ table.concat( command_line, " " ) };
@@ -215,9 +216,10 @@ function Project:finalize_build_steps( config, project_pathes, project_name )
 
 	command_line = {
 		genie_exe,
-		"/project=" .. self.name,
-		"/outpath=" .. relative_build_dir,
-		"/script=" .. path.join( relative_build_dir, post_build_steps_filename ),
+		"--quiet",
+		"--project=" .. self.name,
+		"--to=" .. relative_build_dir,
+		"--script=" .. path.join( relative_build_dir, post_build_steps_filename ),
 		"buildsteps"
 	};
 	postbuildcommands{ table.concat( command_line, " " ) };
@@ -295,11 +297,15 @@ function Project:finalize_project( target_path, solution )
 
 	for _,build_platform in pairs( self.platforms ) do
 		for j,build_config in pairs( self.configurations ) do
-			print( "Configuration: " .. build_platform .. "/" .. build_config );
+			if _ACTION ~= "targets" then
+				print( "Configuration: " .. build_platform .. "/" .. build_config );
+			end
 			configuration{ build_platform, build_config };
 
 			project_pathes = {};
-			self:finalize_create_directories( project_pathes, build_config, build_platform );
+			if _ACTION ~= "targets" then
+				self:finalize_create_directories( project_pathes, build_config, build_platform );
+			end
 
 			targetdir( project_pathes.build_dir );
 			debugdir( project_pathes.build_dir );
@@ -323,34 +329,39 @@ function Project:finalize_project( target_path, solution )
 			
 			self:finalize_binary( config, project_pathes.build_dir );
 			self:finalize_config( config );
-			self:finalize_build_steps( config, project_pathes, self.name );
-		end
-	end
-
-	local shader_file_name = _OPTIONS[ "outpath" ] .. "/shaderinc.lst";
-	local shader_lines = {};
-	if io.exists( shader_file_name ) then
-		for line in io.lines( shader_file_name ) do 
-			shader_lines[ #shader_lines + 1 ] = line
-		end	
-	end
-	for _,dir in pairs( config_global.shader_dirs ) do
-		if table.index_of( shader_lines, dir ) == -1 then
-			table.insert( shader_lines, dir );
-		end
-	end
-	
-	local shader_file = io.open( shader_file_name, "w" );
-	if shader_file ~= nil then		
-		for i,dir in pairs( shader_lines ) do
-			--print( "Shader: " .. dir );
-
-			if i > 1 then
-				shader_file:write( "\n" );
+			
+			if _ACTION ~= "targets" then
+				self:finalize_build_steps( config, project_pathes, self.name );
 			end
-
-			shader_file:write( dir );
 		end
-		shader_file:close();
+	end
+
+	if _ACTION ~= "targets" then
+		local shader_file_name = _OPTIONS[ "to" ] .. "/shaderinc.lst";
+		local shader_lines = {};
+		if io.exists( shader_file_name ) then
+			for line in io.lines( shader_file_name ) do 
+				shader_lines[ #shader_lines + 1 ] = line
+			end	
+		end
+		for _,dir in pairs( config_global.shader_dirs ) do
+			if table.index_of( shader_lines, dir ) == -1 then
+				table.insert( shader_lines, dir );
+			end
+		end
+		
+		local shader_file = io.open( shader_file_name, "w" );
+		if shader_file ~= nil then		
+			for i,dir in pairs( shader_lines ) do
+				--print( "Shader: " .. dir );
+
+				if i > 1 then
+					shader_file:write( "\n" );
+				end
+
+				shader_file:write( dir );
+			end
+			shader_file:close();
+		end
 	end
 end

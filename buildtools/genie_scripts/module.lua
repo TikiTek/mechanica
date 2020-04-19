@@ -255,24 +255,26 @@ function Module:finalize_module( config, configuration, platform, project, solut
 			files( all_files );
 			excludes( all_files );
 			
-			local create_unity = true
-			if os.isfile( unity_file_name ) then
-				local unity_file = io.open( unity_file_name, "r" );
-				if unity_file ~= nil then
-					local unity_current_content = unity_file:read("*all");
-					if unity_current_content == unity_content then
-						create_unity = false;
-					end					
-					unity_file:close();
+			if _ACTION ~= "targets" then
+				local create_unity = true
+				if os.isfile( unity_file_name ) then
+					local unity_file = io.open( unity_file_name, "r" );
+					if unity_file ~= nil then
+						local unity_current_content = unity_file:read("*all");
+						if unity_current_content == unity_content then
+							create_unity = false;
+						end					
+						unity_file:close();
+					end
 				end
-			end
-			
-			if create_unity then
-				print( "Create Unity file: " .. path.getbasename( unity_file_name ) .. "." .. ext );
-				local unity_file = io.open( unity_file_name, "w" );
-				if unity_file ~= nil then
-					unity_file:write( unity_content );
-					unity_file:close();
+				
+				if create_unity then
+					print( "Create Unity file: " .. path.getbasename( unity_file_name ) .. "." .. ext );
+					local unity_file = io.open( unity_file_name, "w" );
+					if unity_file ~= nil then
+						unity_file:write( unity_content );
+						unity_file:close();
+					end
 				end
 			end
 			

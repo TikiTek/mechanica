@@ -1,15 +1,22 @@
--- library/tools/generic_data_code_generator/project
+-- library/tools/generic_data_code_generator
 
-include "../../../buildtools/genie_scripts"
+include "../../.."
 
-dofile( "../generic_data_code_generator.lua" );
+local module = Module:new( "generic_data_code_generator" );
+
+module:add_files( "source/*.*" );
+module:add_files( "*.lua" );
+
+module:add_dependency( "config" );
+module:add_dependency( "tool/tool_base" );
+module:add_dependency( "tool/tool_generic_data" );
 
 local project = Project:new(
 	"generic_data_code_generator",
 	"18544de3-a9d2-41b9-82dd-3d3077e320ff",
 	{ "x32", "x64" },
 	{ "Debug", "Release" },
-	find_module( 'generic_data_code_generator' ),
+	module,
 	ProjectTypes.consoleApplication
 );
 
