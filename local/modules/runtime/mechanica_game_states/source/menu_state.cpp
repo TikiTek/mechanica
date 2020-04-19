@@ -36,7 +36,7 @@ namespace tiki
 		m_pParentState	= nullptr;
 	}
 
-	TransitionState MenuState::processCreationStep( size_t currentStep, bool isInital )
+	TransitionState MenuState::processCreationStep( uintreg currentStep, bool isInital )
 	{
 		switch( currentStep )
 		{
@@ -72,7 +72,7 @@ namespace tiki
 		return TransitionState_Finish;
 	}
 
-	TransitionState MenuState::processDestructionStep( size_t currentStep, bool isInital )
+	TransitionState MenuState::processDestructionStep( uintreg currentStep, bool isInital )
 	{
 		switch( currentStep )
 		{

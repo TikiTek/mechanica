@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PLAYERCOMPONENT_HPP_INCLUDED
-#define TIKI_PLAYERCOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -49,5 +47,3 @@ namespace tiki
 		static bool					distanceRayCastCallback( const Physics2dCollisionObject* pObject, const Vector2& point, void* pUserData );
 	};
 }
-
-#endif // TIKI_PLAYERCOMPONENT_HPP_INCLUDED

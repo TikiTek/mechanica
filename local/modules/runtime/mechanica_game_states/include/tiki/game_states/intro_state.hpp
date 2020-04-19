@@ -25,7 +25,7 @@ namespace tiki
 		void					create( ApplicationState* pParentState );
 		void					dispose();
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
+		virtual TransitionState	processTransitionStep( uintreg currentStep, bool isCreating, bool isInital );
 
 		virtual void			update();
 		virtual void			render( GraphicsContext& graphicsContext );

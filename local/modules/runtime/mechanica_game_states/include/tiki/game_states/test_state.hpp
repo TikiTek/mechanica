@@ -38,7 +38,7 @@ namespace tiki
 		void					create( Game* pGame, ApplicationState* pApplicationState );
 		void					dispose();
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE_FINAL;
+		virtual TransitionState	processTransitionStep( uintreg currentStep, bool isCreating, bool isInital ) TIKI_OVERRIDE_FINAL;
 
 		virtual void			update() TIKI_OVERRIDE_FINAL;
 		virtual void			render( GraphicsContext& graphicsContext ) TIKI_OVERRIDE_FINAL;

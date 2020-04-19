@@ -37,7 +37,7 @@ namespace tiki
 		m_pGame = nullptr;
 	}
 
-	TransitionState BasicTestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState BasicTestState::processTransitionStep( uintreg currentStep, bool isCreating, bool isInital )
 	{
 		switch ( currentStep )
 		{
