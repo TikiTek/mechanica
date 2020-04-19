@@ -513,6 +513,11 @@ namespace tiki
 
 	void InputSystem::update()
 	{
+		if( GetFocus() != (HWND)m_platformData.windowHandle )
+		{
+			return;
+		}
+
 		const InputSystemState* pPreviousState = m_platformData.pStates[ m_platformData.currentStateIndex ];
 
 		m_platformData.currentStateIndex = 1u - m_platformData.currentStateIndex;
