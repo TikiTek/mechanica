@@ -28,7 +28,7 @@ namespace tiki
 		m_pGame			= nullptr;
 	}
 
-	TransitionState PhysicsTestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState PhysicsTestState::processTransitionStep( uintreg currentStep, bool isCreating, bool isInital )
 	{
 		switch ( currentStep )
 		{

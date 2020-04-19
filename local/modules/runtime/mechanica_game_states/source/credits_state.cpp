@@ -25,7 +25,7 @@ namespace tiki
 		m_pParentState = nullptr;
 	}
 
-	TransitionState CreditsState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState CreditsState::processTransitionStep( uintreg currentStep, bool isCreating, bool isInital )
 	{
 		return TransitionState_Finish;
 	}

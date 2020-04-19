@@ -34,7 +34,7 @@ namespace tiki
 		m_pApplicationState	= nullptr;
 	}
 
-	TransitionState PlayState::processCreationStep( size_t currentStep, bool isInital )
+	TransitionState PlayState::processCreationStep( uintreg currentStep, bool isInital )
 	{
 		switch( currentStep )
 		{
@@ -86,7 +86,7 @@ namespace tiki
 		return TransitionState_Finish;
 	}
 
-	TransitionState PlayState::processDestructionStep( size_t currentStep, bool isInital )
+	TransitionState PlayState::processDestructionStep( uintreg currentStep, bool isInital )
 	{
 		switch( currentStep )
 		{

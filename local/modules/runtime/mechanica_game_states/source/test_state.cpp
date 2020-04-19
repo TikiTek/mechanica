@@ -46,7 +46,7 @@ namespace tiki
 		m_pApplicationState = nullptr;
 	}
 
-	TransitionState TestState::processTransitionStep( size_t currentStep, bool isCreating, bool isInital )
+	TransitionState TestState::processTransitionStep( uintreg currentStep, bool isCreating, bool isInital )
 	{
 		switch ( currentStep )
 		{
