@@ -1,6 +1,5 @@
 @echo off
-cd project
-..\..\..\library\buildtools\genie\genie.exe /outpath=../build vs2019
+..\..\library\buildtools\genie\genie.exe /to=build vs2019
 if errorlevel 1 goto error
 goto exit
 
@@ -8,4 +7,3 @@ goto exit
 pause
 
 :exit
-cd ..
