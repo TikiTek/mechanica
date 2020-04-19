@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<tikigenericobjects>
+<generic_data>
 	<resource type="LevelTheme">
 		<object type="LevelThemeData">
 			<field type="float3" name="bloomCutOffThreshold">
@@ -169,4 +169,4 @@
 			</field>
 		</object>
 	</resource>
-</tikigenericobjects>
+</generic_data>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<tikigenericobjects>
+<generic_data>
 	<resource type="MenuBundle">
 		<object type="MechanicaMenuBundle">
 			<field type="{reference Texture}" name="background" value="TEXR:menu_background.texture" />
@@ -149,4 +149,4 @@
 			</field>
 		</object>
 	</resource>
-</tikigenericobjects>
+</generic_data>

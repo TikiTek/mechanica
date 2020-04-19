@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<generic_data>
+	<object type="EntityTemplateData">
+		<field type="{array EntityComponent}" name="components">
+			<array type="EntityComponent">
+				<element type="EntityComponent">
+					<object type="EntityComponent">
+						<field type="crc32" name="componentType" value="{enum Components2dType.Transform}" />
+						<field type="{pointer ComponentInitData}" name="initData">
+							<object type="Transform2dComponentInitData">
+								<field type="float2" name="position">
+									<object type="float2">
+										<field name="x" type="float" value="0.0" />
+										<field name="y" type="float" value="0.0" />
+									</object>
+								</field>
+							</object>
+						</field>
+					</object>
+				</element>
+				<element type="EntityComponent">
+					<object type="EntityComponent">
+						<field type="crc32" name="componentType" value="{enum MechanicaComponentType.Player}" />
+						<field type="{pointer ComponentInitData}" name="initData">
+							<object type="PlayerComponentInitData">
+								<field type="float" name="mass" value="20.0" />
+								<field type="float" name="maxSpeed" value="10.0" />
+								<field type="float" name="runSpeed" value="15.555" />
+								<field type="float" name="sideWalkSpeed" value="4.5" />
+								<field type="float" name="jumpImpulse" value="-18.0" />
+								<field type="float" name="friction" value="10.0" />
+								<field type="float" name="maxMotorTorque" value="2000.0" />
+							</object>
+						</field>
+					</object>
+				</element>
+			</array>
+		</field>
+	</object>
+</generic_data>
