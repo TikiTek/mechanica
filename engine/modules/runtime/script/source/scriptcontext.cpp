@@ -99,7 +99,7 @@ namespace tiki
 		return true;
 	}
 
-	void* ScriptContext::allocateMemory( void* pUserData, void* pPointer, size_t osize, size_t nsize )
+	void* ScriptContext::allocateMemory( void* pUserData, void* pPointer, uintreg osize, uintreg nsize )
 	{
 		if( nsize == 0u )
 		{

@@ -10,7 +10,7 @@ namespace tiki
 	static const float s_jointRotationFactor		= 3.0518513e-005f;
 	static const float s_jointRotationTangentFactor	= 7.6293945e-006f;
 
-	bool AnimationBuilder::create( uint lengthInFrames, uint jointCount, uint framesPerChunk, float constEpsilon )
+	bool AnimationBuilder::create( uintreg lengthInFrames, uintreg jointCount, uintreg framesPerChunk, float constEpsilon )
 	{
 		TIKI_ASSERT( framesPerChunk <= 64 );
 
@@ -26,7 +26,7 @@ namespace tiki
 		m_maxScaleTangent		= 0.0f;
 
 		uint16 lastEndTime = 0u;
-		for (uint i = 0; i < chunkCount; ++i)
+		for (uintreg i = 0; i < chunkCount; ++i)
 		{
 			ChunkHeader& header = m_headers.add();
 			header.startTime	= lastEndTime;
@@ -73,7 +73,7 @@ namespace tiki
 		m_defaultPoseScale.dispose();
 	}
 
-	void AnimationBuilder::setJointData( uint jointIndex, const AnimationSpline& rotation, const AnimationSpline& position, const AnimationSpline& scale, const Matrix44& defaultPose )
+	void AnimationBuilder::setJointData( uintreg jointIndex, const AnimationSpline& rotation, const AnimationSpline& position, const AnimationSpline& scale, const Matrix44& defaultPose )
 	{
 		TIKI_ASSERT( jointIndex < m_jointCount );
 		TIKI_ASSERT( m_jointRotationKeys.getCount() != 0 );
@@ -107,17 +107,17 @@ namespace tiki
 		TIKI_ASSERT( scaleKeys.getCount() == 0u );
 
 		rotationKeys.reserve( rotation.getKeyCount() );
-		for (uint i = 0; i < rotation.getKeyCount(); ++i)
+		for (uintreg i = 0; i < rotation.getKeyCount(); ++i)
 		{
 			rotationKeys.add( rotation.getKeyByIndex( i ) );
 		}
 
 		positionKeys.reserve( position.getKeyCount() );
-		for (uint i = 0; i < position.getKeyCount(); ++i)
+		for (uintreg i = 0; i < position.getKeyCount(); ++i)
 		{
 			positionKeys.add( position.getKeyByIndex( i ) );
 
-			for (uint j = 0; j < 3u; ++j)
+			for (uintreg j = 0; j < 3u; ++j)
 			{
 				m_maxPositionValue		= TIKI_MAX( m_maxPositionValue, fabsf( position.getKeyByIndex( i ).aValues[ j ] ) );
 				m_maxPositionTangent	= TIKI_MAX( m_maxPositionTangent, fabsf( position.getKeyByIndex( i ).aControls[ j ] ) );
@@ -125,11 +125,11 @@ namespace tiki
 		}
 
 		scaleKeys.reserve( scale.getKeyCount() );
-		for (uint i = 0; i < scale.getKeyCount(); ++i)
+		for (uintreg i = 0; i < scale.getKeyCount(); ++i)
 		{
 			scaleKeys.add( scale.getKeyByIndex( i ) );
 
-			for (uint j = 0; j < 3u; ++j)
+			for (uintreg j = 0; j < 3u; ++j)
 			{
 				m_maxScaleValue		= TIKI_MAX( m_maxScaleValue, fabsf( scale.getKeyByIndex( i ).aValues[ j ] ) );
 				m_maxScaleTangent	= TIKI_MAX( m_maxScaleTangent, fabsf( scale.getKeyByIndex( i ).aControls[ j ] ) );
@@ -137,7 +137,7 @@ namespace tiki
 		}
 	}
 
-	void AnimationBuilder::setConstantJointData( uint jointIndex, const Quaternion& rotation, const Vector3& position, const Vector3& scale, const Matrix44& defaultPose )
+	void AnimationBuilder::setConstantJointData( uintreg jointIndex, const Quaternion& rotation, const Vector3& position, const Vector3& scale, const Matrix44& defaultPose )
 	{
 		TIKI_ASSERT( jointIndex < m_jointCount );
 
@@ -188,7 +188,7 @@ namespace tiki
 		resourceWriter.openDataSection(  sectionWriter, SectionType_Main, 16u );
 		const ReferenceKey animationDataKey = sectionWriter.addDataPoint();
 
-		for (uint i = 0; i < m_headers.getCount(); ++i)
+		for (uintreg i = 0; i < m_headers.getCount(); ++i)
 		{
 			ChunkHeader& header = m_headers[ i ];
 			header.dataOffset = sectionWriter.getCurrentSize();
@@ -257,7 +257,7 @@ namespace tiki
 		sectionWriter.writeReference( &animationDataKey );
 
 		// write header
-		for (uint i = 0; i < m_headers.getCount(); ++i)
+		for (uintreg i = 0; i < m_headers.getCount(); ++i)
 		{
 			const ChunkHeader& header = m_headers[ i ];
 
@@ -283,14 +283,14 @@ namespace tiki
 		resourceWriter.closeDataSection( sectionWriter );
 	}
 
-	void AnimationBuilder::writeChunkData( ResourceSectionWriter& sectionWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< AnimationSplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uint dimensions, bool normalizeValue, float factor, float factorTangent )
+	void AnimationBuilder::writeChunkData( ResourceSectionWriter& sectionWriter, uint16& interpolatedJointCount, uint16& usedJointCount, uint16& defaultPoseJointCount, const Array< List< AnimationSplineKey > >& sourceData, const Array< DecomposedValue >& defaultPose, ChunkHeader& header, uintreg dimensions, bool normalizeValue, float factor, float factorTangent )
 	{
 		List< uint64 > masks;
 		List< sint16 > interpolationData;
 		List< sint16 > constantData;
 		List< uint16 > defaultPoseJointIndices;
 
-		for (uint jointIndex = 0; jointIndex < m_jointCount; ++jointIndex)
+		for (uintreg jointIndex = 0; jointIndex < m_jointCount; ++jointIndex)
 		{
 			List< AnimationSplineKey > sourceKeys;
 			const uint64 mask = generateBitMaskAndFindKeys( sourceKeys, sourceData[ jointIndex ], header.startTime, header.endTime, dimensions, normalizeValue );
@@ -308,7 +308,7 @@ namespace tiki
 					const AnimationSplineKey& key0 = sourceKeys[ 0u ];
 					const AnimationSplineKey& key1 = sourceKeys[ 1u ];
 
-					for (uint i = 0; i < dimensions; ++i)
+					for (uintreg i = 0; i < dimensions; ++i)
 					{
 						if ( !f32::isEquals( key0.aValues[ i ], key1.aValues[ i ], m_constEpsilon ) )
 						{
@@ -321,7 +321,7 @@ namespace tiki
 				if ( isConstJoint )
 				{
 					bool isEquals = true;
-					for (uint i = 0; i < dimensions; ++i)
+					for (uintreg i = 0; i < dimensions; ++i)
 					{
 						if (!f32::isEquals( defaultPose[ jointIndex ].aValues[ i ], sourceKeys[ 0 ].aValues[ i ], m_constEpsilon ) )
 						{
@@ -346,7 +346,7 @@ namespace tiki
 					masks.add(mask);
 					interpolationData.add( sint16( jointIndex ) );
 
-					for (uint k = 0; k < sourceKeys.getCount(); ++k)
+					for (uintreg k = 0; k < sourceKeys.getCount(); ++k)
 					{
 						fillDataArray( interpolationData, sourceKeys[ k ], dimensions, factor, factorTangent, false );
 					}
@@ -359,22 +359,22 @@ namespace tiki
 		}
 
 		sectionWriter.writeAlignment( 8u );
-		for (uint i = 0u; i < masks.getCount(); ++i)
+		for (uintreg i = 0u; i < masks.getCount(); ++i)
 		{
 			sectionWriter.writeUInt64( masks[ i ] );
 		}
 
-		for (uint i = 0u; i < interpolationData.getCount(); ++i)
+		for (uintreg i = 0u; i < interpolationData.getCount(); ++i)
 		{
 			sectionWriter.writeSInt16( interpolationData[ i ] );
 		}
 
-		for (uint i = 0u; i < constantData.getCount(); ++i)
+		for (uintreg i = 0u; i < constantData.getCount(); ++i)
 		{
 			sectionWriter.writeSInt16( constantData[ i ] );
 		}
 
-		for (uint i = 0u; i < defaultPoseJointIndices.getCount(); ++i)
+		for (uintreg i = 0u; i < defaultPoseJointIndices.getCount(); ++i)
 		{
 			sectionWriter.writeUInt16( defaultPoseJointIndices[ i ] );
 		}
@@ -382,7 +382,7 @@ namespace tiki
 		defaultPoseJointCount = uint16( defaultPoseJointIndices.getCount() );
 	}
 
-	void AnimationBuilder::fillDataArray( List< sint16 >& target, const AnimationSplineKey& sourceKey, uint dimensions, float factor, float factorTangent, bool isConstKey )
+	void AnimationBuilder::fillDataArray( List< sint16 >& target, const AnimationSplineKey& sourceKey, uintreg dimensions, float factor, float factorTangent, bool isConstKey )
 	{
 		const sint16 aValues[] =
 		{
@@ -392,7 +392,7 @@ namespace tiki
 			(sint16)(sourceKey.aValues[ 3u ] / factor)
 		};
 
-		for (uint i = 0; i < dimensions; ++i)
+		for (uintreg i = 0; i < dimensions; ++i)
 		{
 			target.add( aValues[ i ] );
 		}
@@ -407,14 +407,14 @@ namespace tiki
 				(sint16)(sourceKey.aControls[ 3u ] / factorTangent)
 			};
 
-			for (uint i = 0; i < dimensions; ++i)
+			for (uintreg i = 0; i < dimensions; ++i)
 			{
 				target.add( aControls[ i ] );
 			}
 		}
 	}
 
-	AnimationSplineKey AnimationBuilder::createInterpolatedKey( const AnimationSplineKey& leftKey, const AnimationSplineKey& rightKey, uint time, uint dimensions, bool normalizeValue )
+	AnimationSplineKey AnimationBuilder::createInterpolatedKey( const AnimationSplineKey& leftKey, const AnimationSplineKey& rightKey, uintreg time, uintreg dimensions, bool normalizeValue )
 	{
 		TIKI_ASSERT( dimensions <= SplineLimits_MaxDimensions );
 
@@ -424,7 +424,7 @@ namespace tiki
 		key.time = (uint16)time;
 		AnimationSplineKey::sampleHermite( key.aValues, dimensions, leftKey, rightKey, koeff );
 
-		for (uint i = 0; i < dimensions; ++i)
+		for (uintreg i = 0; i < dimensions; ++i)
 		{
 			key.aControls[ i ] = f32::lerp( leftKey.aControls[ i ], rightKey.aControls[ i ], koeff );
 		}
@@ -432,13 +432,13 @@ namespace tiki
 		if ( normalizeValue )
 		{
 			float lengthSquad = 0.0f;
-			for (uint i = 0; i < dimensions; ++i)
+			for (uintreg i = 0; i < dimensions; ++i)
 			{
 				lengthSquad += key.aValues[ i ] * key.aValues[ i ];
 			}
 			const float length = 1.0f / (float)sqrt( lengthSquad );
 
-			for (uint i = 0; i < dimensions; ++i)
+			for (uintreg i = 0; i < dimensions; ++i)
 			{
 				key.aValues[ i ] *= length;
 			}
@@ -447,7 +447,7 @@ namespace tiki
 		return key;
 	}
 
-	uint64 AnimationBuilder::generateBitMaskAndFindKeys( List< AnimationSplineKey >& targetList, const List< AnimationSplineKey >& sourceKeys, uint16 startTime, uint16 endTime, uint dimensions, bool normalizeValue )
+	uint64 AnimationBuilder::generateBitMaskAndFindKeys( List< AnimationSplineKey >& targetList, const List< AnimationSplineKey >& sourceKeys, uint16 startTime, uint16 endTime, uintreg dimensions, bool normalizeValue )
 	{
 		if (sourceKeys.getCount() == 0u)
 		{
@@ -464,7 +464,7 @@ namespace tiki
 			const float* f2 = sourceKeys[ 1 ].aValues;
 
 			bool equals = true;
-			for (uint i = 0; i < dimensions; ++i)
+			for (uintreg i = 0; i < dimensions; ++i)
 			{
 				if (!f32::isEquals( f1[ i ], f2[ i ], 0.0001f ))
 				{
@@ -480,11 +480,11 @@ namespace tiki
 			}
 		}
 
-		uint firstIndex	= TIKI_SIZE_T_MAX;
-		uint lastIndex	= TIKI_SIZE_T_MAX;
+		uintreg firstIndex	= TIKI_SIZE_T_MAX;
+		uintreg lastIndex	= TIKI_SIZE_T_MAX;
 		AnimationSplineKey firstKey;
 		AnimationSplineKey lastKey;
-		for (uint i = 0; i < sourceKeys.getCount(); i++)
+		for (uintreg i = 0; i < sourceKeys.getCount(); i++)
 		{
 			if ( firstIndex == TIKI_SIZE_T_MAX )
 			{
@@ -529,7 +529,7 @@ namespace tiki
 		uint64 mask = 0;
 
 		insertBitMask( targetList, mask, firstKey, startTime );
-		for (uint i = firstIndex; i < lastIndex; i++)
+		for (uintreg i = firstIndex; i < lastIndex; i++)
 		{
 			insertBitMask( targetList, mask, sourceKeys[ i ], startTime );
 		}

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SQLITE_QUERY_HPP_INCLUDED
-#define TIKI_SQLITE_QUERY_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 
@@ -45,5 +43,3 @@ namespace tiki
 		int						findColunmIndexByName( const char* pFieldName ) const;
 	};
 }
-
-#endif // TIKI_SQLITE_QUERY_HPP_INCLUDED

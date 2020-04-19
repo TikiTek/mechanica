@@ -1,7 +1,6 @@
 #include "tiki/tool_generic_data/generic_data_type_struct.hpp"
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/tool_generic_data/generic_data_object.hpp"
 #include "tiki/tool_generic_data/generic_data_type_collection.hpp"
 #include "tiki/tool_xml/xml_attribute.hpp"
@@ -9,7 +8,7 @@
 
 namespace tiki
 {
-	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
+	GenericDataTypeStruct::GenericDataTypeStruct( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeStruct* pBaseType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Struct, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -20,7 +19,7 @@ namespace tiki
 		if ( m_pBaseType != nullptr )
 		{
 			const List< GenericDataStructField >& fields = m_pBaseType->getFields();
-			for (uint i = 0u; i < fields.getCount(); ++i)
+			for (uintreg i = 0u; i < fields.getCount(); ++i)
 			{
 				GenericDataStructField& field = m_fields.add();
 				field				= fields[ i ];
@@ -128,9 +127,9 @@ namespace tiki
 			}
 
 			GenericDataStructField* pValueField = nullptr;
-			const string fieldName = pNameAtt->getValue();
-			const uint fieldIndex = getFieldIndexByName( fieldName );
-			if( fieldIndex == (uint)-1 )
+			const DynamicString fieldName = pNameAtt->getValue();
+			const uintreg fieldIndex = getFieldIndexByName( fieldName );
+			if( fieldIndex == (uintreg)-1 )
 			{
 				TIKI_TRACE_WARNING( "%s(%u): Could not find field aith name '%s'.\n", getFilename().cStr(), pChildNode->getLineNumber(), pNameAtt->getValue() );
 				return false;
@@ -166,7 +165,11 @@ namespace tiki
 				XmlElement* pValueNode = pChildNode->findFirstChild( "value" );
 				if( pValueNode != nullptr )
 				{
-					if( !pDefaultValue->importFromXml( pValueNode, pType, m_pDefaultObject, m_collection, true ) )
+					GenericDataLoadContext context;
+					context.pTypeCollection	= &m_collection;
+					context.isType			= true;
+
+					if( !pDefaultValue->importFromXml( pValueNode, pType, m_pDefaultObject, context ) )
 					{
 						TIKI_TRACE_ERROR( "%s(%u): default value node can't be parsed.\n", getFilename().cStr(), pChildNode->getLineNumber() );
 						ok = false;
@@ -202,8 +205,8 @@ namespace tiki
 		static const char* s_pBaseTypeFormat	= " : public %s";
 		static const char* s_pFieldFormat		= "\t\t%s %s;\n";
 
-		string fieldsCode = "";
-		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		DynamicString fieldsCode = "";
+		for (uintreg i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
 			if ( !isBitSet( field.mode, mode ) || field.isInherited )
@@ -226,7 +229,7 @@ namespace tiki
 			fieldsCode += formatDynamicString( s_pFieldFormat, field.pType->getCodeExportName().cStr(), field.name.cStr() );
 		}
 
-		string baseTypeCode = "";
+		DynamicString baseTypeCode = "";
 		if ( m_pBaseType != nullptr )
 		{
 			baseTypeCode = formatDynamicString( s_pBaseTypeFormat, m_pBaseType->getCodeExportName().cStr() );
@@ -237,25 +240,25 @@ namespace tiki
 		return true;
 	}
 
-	uint GenericDataTypeStruct::getAlignment() const
+	uintreg GenericDataTypeStruct::getAlignment() const
 	{
 		return m_alignment;
 	}
 
-	uint GenericDataTypeStruct::getSize() const
+	uintreg GenericDataTypeStruct::getSize() const
 	{
 		return m_size;
 	}
 
-	string GenericDataTypeStruct::getCodeExportName() const
+	DynamicString GenericDataTypeStruct::getCodeExportName() const
 	{
 		return getName();
 	}
 
 	crc32 GenericDataTypeStruct::getTypeCrc() const
 	{
-		string typeString;
-		for (size_t i = 0u; i < m_fields.getCount(); ++i)
+		DynamicString typeString;
+		for (uintreg i = 0u; i < m_fields.getCount(); ++i)
 		{
 			const GenericDataStructField& field = m_fields[ i ];
 			typeString += formatDynamicString( "%s%08x", field.name.cStr(), field.pType->getTypeCrc() );
@@ -283,7 +286,7 @@ namespace tiki
 		return false;
 	}
 
-	//void GenericDataTypeStruct::addField( const string& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
+	//void GenericDataTypeStruct::addField( const DynamicString& name, const GenericDataType* pType, GenericDataTypeMode mode /* = GenericDataTypeMode_ToolAndRuntime */ )
 	//{
 	//	TIKI_ASSERT( pType != nullptr );
 	//
@@ -294,9 +297,9 @@ namespace tiki
 	//	field.isInherited	= false;
 	//}
 	//
-	//void GenericDataTypeStruct::removeField( const string& name )
+	//void GenericDataTypeStruct::removeField( const DynamicString& name )
 	//{
-	//	for (uint i = 0u; i < m_fields.getCount(); ++i)
+	//	for (uintreg i = 0u; i < m_fields.getCount(); ++i)
 	//	{
 	//		if ( m_fields[ i ].name == name )
 	//		{
@@ -311,9 +314,9 @@ namespace tiki
 		return m_fields;
 	}
 
-	const GenericDataStructField* GenericDataTypeStruct::getFieldByName( const string& name ) const
+	const GenericDataStructField* GenericDataTypeStruct::getFieldByName( const DynamicString& name ) const
 	{
-		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		for (uintreg i = 0u; i < m_fields.getCount(); ++i)
 		{
 			if ( m_fields[ i ].name == name )
 			{
@@ -325,9 +328,9 @@ namespace tiki
 		return nullptr;
 	}
 
-	uint GenericDataTypeStruct::getFieldIndexByName( const string& name ) const
+	uintreg GenericDataTypeStruct::getFieldIndexByName( const DynamicString& name ) const
 	{
-		for( uint i = 0; i < m_fields.getCount(); i++ )
+		for( uintreg i = 0; i < m_fields.getCount(); i++ )
 		{
 			if( m_fields[ i ].name == name )
 			{
@@ -335,7 +338,7 @@ namespace tiki
 			}
 		}
 
-		return (uint)-1;
+		return (uintreg)-1;
 	}
 
 	GenericDataTypeStruct::FieldArrayView GenericDataTypeStruct::getLocalFields() const

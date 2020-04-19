@@ -39,7 +39,7 @@ namespace tiki
 		addDependency( DependencyType_OutputFile, filePath.getCompletePath(), 0 );
 	}
 
-	void ConversionResult::addDependency( DependencyType type, string identifier, sint64 intValue )
+	void ConversionResult::addDependency( DependencyType type, const DynamicString& identifier, sint64 intValue )
 	{
 		Dependency* pDependency = nullptr;
 		for( uint i = 0u; i < m_dependencies.getCount(); ++i )
@@ -70,7 +70,7 @@ namespace tiki
 		}
 	}
 
-	void ConversionResult::addTraceInfo( TraceLevel level, const string& message )
+	void ConversionResult::addTraceInfo( TraceLevel level, const DynamicString& message )
 	{
 		TraceInfo& traceInfo = m_traceInfos.add();
 		traceInfo.level		= level;

@@ -30,7 +30,7 @@ namespace tiki
 	{
 	}
 
-	bool GenericDataContainer::importFromXml( XmlElement* pObjectNode, bool isType )
+	bool GenericDataContainer::importFromXml( XmlElement* pObjectNode, const GenericDataLoadContext& context )
 	{
 		m_pObjectNode = pObjectNode;
 
@@ -59,7 +59,7 @@ namespace tiki
 					{
 						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] addElementValue failed.\n" );
 					}
-					else if ( !pValue->importFromXml( pChildNode, pElementType, this, m_collection, isType ) )
+					else if ( !pValue->importFromXml( pChildNode, pElementType, this, context ) )
 					{
 						result = false;
 					}
@@ -99,35 +99,15 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 	bool GenericDataContainer::writeValueToResource( ResourceSectionWriter& sectionWriter, const GenericDataType* pTargetType, const GenericDataValue& value ) const
 	{
-		//const GenericDataType* pType = value.getType();
-		//pType->isTypeCompatible( pTargetType );
+		TIKI_ASSERT( pTargetType->isTypeCompatible( value.getType() ) );
 
 		sectionWriter.writeAlignment( pTargetType->getAlignment() );
-
-		//const GenericDataTag* pTag = value.getValueTag();
-		//if( pTag != nullptr &&
-		//	pTag->getTag() == "enum" )
-		//{
-		//	const GenericDataTypeEnum* pEnumType = nullptr;
-		//	const GenericDataEnumValue* pEnumValue = nullptr;
-		//	if( !m_collection.getTagHandler().parseEnum( &pEnumType, &pEnumValue, pTag->getContent() ) )
-		//	{
-		//		TIKI_TRACE_ERROR( "[GenericDataContainer::writeValueToResource] Failed to parse enum tag '%s'.\n", pTag->getContent().cStr() );
-		//		return false;
-		//	}
-
-		//	if( pEnumValue != nullptr &&
-		//		pEnumValue->hasValue )
-		//	{
-		//		return writeValueToResource( sectionWriter, pTargetType, *pEnumValue->pValue );
-		//	}
-		//}
 
 		switch( pTargetType->getType() )
 		{
 		case GenericDataTypeType_Enum:
 			{
-				string enumName;
+				DynamicString enumName;
 				sint64 enumValue;
 				if( value.getEnum( enumName, &enumValue ) )
 				{
@@ -371,7 +351,7 @@ namespace tiki
 
 				case GenericDataTypeValueTypeType_String:
 					{
-						string text;
+						DynamicString text;
 						if( value.getString( text ) )
 						{
 							const ReferenceKey key = sectionWriter.addString( text );
@@ -426,7 +406,7 @@ namespace tiki
 
 		case GenericDataTypeType_Reference:
 			{
-				string refText;
+				DynamicString refText;
 				if( !value.getReference( refText ) )
 				{
 					TIKI_TRACE_ERROR( "[GenericDataContainer::writeValueToResource] Value is not a reference.\n" );

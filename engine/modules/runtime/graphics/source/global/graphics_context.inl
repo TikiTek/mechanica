@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_GRAPHICSCONTEXT_INL_INCLUDED__
-#define TIKI_GRAPHICSCONTEXT_INL_INCLUDED__
 
 namespace tiki
 {
@@ -17,7 +15,7 @@ namespace tiki
 		void* pData = beginImmediateGeometry( sizeof( T ), vertexCount );
 		targetArray.create( static_cast< T* >( pData ), vertexCount );
 	}
-	
+
 	template<typename T>
 	void GraphicsContext::endImmediateGeometry( StaticArray< T >& targetArray )
 	{
@@ -25,5 +23,3 @@ namespace tiki
 		endImmediateGeometry();
 	}
 }
-
-#endif // TIKI_GRAPHICSCONTEXT_INL_INCLUDED__

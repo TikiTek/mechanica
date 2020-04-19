@@ -17,7 +17,7 @@ namespace tiki
 							Physics2dPolygonShape();
 							~Physics2dPolygonShape();
 
-		void				create( const Vector2* pVertices, size_t vertexCount );
+		void				create( const Vector2* pVertices, uintreg vertexCount );
 		void				dispose();
 
 		virtual b2Shape*	getNativeShape() const TIKI_OVERRIDE_FINAL;

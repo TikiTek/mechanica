@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_KEYVALUEPAIR_HPP_INCLUDED__
-#define TIKI_KEYVALUEPAIR_HPP_INCLUDED__
 
 namespace tiki
 {
@@ -11,5 +9,3 @@ namespace tiki
 		TValue	value;
 	};
 }
-
-#endif // TIKI_KEYVALUEPAIR_HPP_INCLUDED__

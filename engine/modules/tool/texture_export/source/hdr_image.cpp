@@ -15,7 +15,7 @@
 
 namespace tiki
 {
-	void HdrImage::create( const size_t width, const size_t height, GammaType gamma /*= GammaType_Linear */ )
+	void HdrImage::create( const uintreg width, const uintreg height, GammaType gamma /*= GammaType_Linear */ )
 	{
 		m_gammaType	= gamma;
 
@@ -38,7 +38,7 @@ namespace tiki
 
 	bool HdrImage::createFromFile( const char* pFileName )
 	{
-		const string ext = path::getExtension( pFileName ).toLower();
+		const DynamicString ext = path::getExtension( pFileName ).toLower();
 
 		if( ext == ".psd" )
 		{
@@ -62,7 +62,7 @@ namespace tiki
 		resizeImage( scale.x, scale.y );
 	}
 
-	void HdrImage::resizeImage( uint targetWidth, uint targetHeight )
+	void HdrImage::resizeImage( uintreg targetWidth, uintreg targetHeight )
 	{
 		if ( targetWidth == m_width && targetHeight == m_height )
 		{
@@ -75,7 +75,7 @@ namespace tiki
 		// source: http://paint-mono.googlecode.com/svn/trunk/src/PdnLib/Surface.cs
 		HdrColor* pSourceData = static_cast< HdrColor* >( static_cast< void* >( m_data.getBegin() ) );
 
-		for (uint dstY = 0u; dstY < targetHeight; ++dstY)
+		for (uintreg dstY = 0u; dstY < targetHeight; ++dstY)
 		{
 			double srcTop = (double)( dstY * m_height ) / (double)targetHeight;
 			double srcTopFloor = floor( srcTop );
@@ -87,10 +87,10 @@ namespace tiki
 			double srcBottomWeight = srcBottom - srcBottomFloor;
 			int srcBottomInt = (int)srcBottomFloor;
 
-			const uint destRowIndex = ( dstY * targetWidth );
+			const uintreg destRowIndex = ( dstY * targetWidth );
 			HdrColor* pDest = (HdrColor*)&tempImage[ destRowIndex * ChannelCount ];
 
-			for (uint dstX = 0u; dstX < targetWidth; ++dstX)
+			for (uintreg dstX = 0u; dstX < targetWidth; ++dstX)
 			{
 				double srcLeft = (double)(dstX * m_width) / (double)targetWidth;
 				double srcLeftFloor = floor( srcLeft );
@@ -108,7 +108,7 @@ namespace tiki
 				double alphaSum = 0;
 
 				// left fractional edge
-				const uint sourceLeftIndex = ( ( srcTopInt + 1u ) * m_width ) + srcLeftInt;
+				const uintreg sourceLeftIndex = ( ( srcTopInt + 1u ) * m_width ) + srcLeftInt;
 				HdrColor* pSourceLeft = &pSourceData[ sourceLeftIndex ];
 
 				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
@@ -122,7 +122,7 @@ namespace tiki
 				}
 
 				// right fractional edge
-				const uint sourceRightIndex = ( ( srcTopInt + 1u ) * m_width ) + srcRightInt;
+				const uintreg sourceRightIndex = ( ( srcTopInt + 1u ) * m_width ) + srcRightInt;
 				HdrColor* pSourceRight = &pSourceData[ sourceRightIndex ];
 				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
 				{
@@ -135,7 +135,7 @@ namespace tiki
 				}
 
 				// top fractional edge
-				const uint sourceTopIndex = ( srcTopInt * m_width ) + ( srcLeftInt + 1u );
+				const uintreg sourceTopIndex = ( srcTopInt * m_width ) + ( srcLeftInt + 1u );
 				HdrColor* pSourceTop = &pSourceData[ sourceTopIndex ];
 				for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
 				{
@@ -148,7 +148,7 @@ namespace tiki
 				}
 
 				// bottom fractional edge
-				const uint sourceBottomIndex = ( srcBottomInt * m_width ) + ( srcLeftInt + 1u );
+				const uintreg sourceBottomIndex = ( srcBottomInt * m_width ) + ( srcLeftInt + 1u );
 				HdrColor* pSourceBottom = &pSourceData[ sourceBottomIndex ];
 				for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
 				{
@@ -163,7 +163,7 @@ namespace tiki
 				// center area
 				for (int srcY = srcTopInt + 1; srcY < srcBottomInt; ++srcY)
 				{
-					const uint sourceIndex = ( srcY * m_width ) + ( srcLeftInt + 1u );
+					const uintreg sourceIndex = ( srcY * m_width ) + ( srcLeftInt + 1u );
 					HdrColor* pSource = &pSourceData[ sourceIndex ];
 
 					for (int srcX = srcLeftInt + 1; srcX < srcRightInt; ++srcX)
@@ -260,7 +260,7 @@ namespace tiki
 		Array< float > tempImage;
 		tempImage.create( rect.z * rect.w * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 
-		for (size_t i = 0u; i < rect.w; ++i)
+		for (uintreg i = 0u; i < rect.w; ++i)
 		{
 			const float* row = m_data.getBegin() + ( rect.y * m_width * ChannelCount ) + ( i * m_width * ChannelCount ) + ( rect.x * ChannelCount );
 			memory::copy( &tempImage[ i * rect.z * ChannelCount ], row, rect.z * sizeof( float ) * ChannelCount );
@@ -294,7 +294,7 @@ namespace tiki
 			TIKI_BREAK( "case not implemented" );
 		}
 
-		for (size_t i = 0u; i < m_data.getCount(); ++i)
+		for (uintreg i = 0u; i < m_data.getCount(); ++i)
 		{
 			m_data[ i ] = f32::pow( m_data[ i ], powVal );
 		}
@@ -305,17 +305,17 @@ namespace tiki
 		Array< float > tempImage;
 		tempImage.create( m_data.getCount(), TIKI_DEFAULT_ALIGNMENT, false );
 
-		const uint lineSize = m_width * ChannelCount;
+		const uintreg lineSize = m_width * ChannelCount;
 		switch ( direction )
 		{
 		case FlipDirection_Horizontal:
 			{
 				float* pTargetData = tempImage.getBegin();
-				for (uint y = 0u; y < m_height; ++y)
+				for (uintreg y = 0u; y < m_height; ++y)
 				{
-					for (uint x = m_width - 1u; x < m_width; --x)
+					for (uintreg x = m_width - 1u; x < m_width; --x)
 					{
-						const uint lineOffset = x * ChannelCount;
+						const uintreg lineOffset = x * ChannelCount;
 						memory::copy( pTargetData, &m_data[ y * lineSize + lineOffset ], sizeof( float ) * ChannelCount );
 						pTargetData += ChannelCount;
 					}
@@ -326,7 +326,7 @@ namespace tiki
 		case FlipDirection_Vertical:
 			{
 				float* pTargetData = tempImage.getBegin();
-				for (uint y = m_height - 1u; y < m_height; --y)
+				for (uintreg y = m_height - 1u; y < m_height; --y)
 				{
 					memory::copy( pTargetData, &m_data[ y * lineSize ], lineSize * sizeof( float ) * ChannelCount );
 					pTargetData += lineSize * ChannelCount;
@@ -352,7 +352,7 @@ namespace tiki
 				target.create( m_width * m_height, TIKI_DEFAULT_ALIGNMENT, false );
 				uint8* pTargetData = (uint8*)target.getBegin();
 
-				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
+				for (uintreg i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
 					pTargetData[ i / ChannelCount ] = (uint8)(m_data[ i ] * 255.0f);
 				}
@@ -364,7 +364,7 @@ namespace tiki
 				target.create( m_width * m_height * ChannelCount, TIKI_DEFAULT_ALIGNMENT, false );
 				uint8* pTargetData = (uint8*)target.getBegin();
 
-				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
+				for (uintreg i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
 					pTargetData[ i + 0u ] = (uint8)(m_data[ i + 2u ] * 255.0f);
 					pTargetData[ i + 1u ] = (uint8)(m_data[ i + 1u ] * 255.0f);
@@ -378,9 +378,9 @@ namespace tiki
 				target.create( m_width * m_height * 3u * sizeof( float ), TIKI_DEFAULT_ALIGNMENT, false );
 				float* pTargetData = (float*)target.getBegin();
 
-				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
+				for (uintreg i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
-					const size_t targetIndex = ( i / 4u ) * 3u;
+					const uintreg targetIndex = ( i / 4u ) * 3u;
 
 					pTargetData[ targetIndex + 0u ] = m_data[ i + 2u ];
 					pTargetData[ targetIndex + 1u ] = m_data[ i + 1u ];
@@ -393,7 +393,7 @@ namespace tiki
 				target.create( m_width * m_height * 4u * sizeof( float ), TIKI_DEFAULT_ALIGNMENT, false );
 				float* pTargetData = (float*)target.getBegin();
 
-				for (size_t i = 0u; i < m_data.getCount(); i += ChannelCount)
+				for (uintreg i = 0u; i < m_data.getCount(); i += ChannelCount)
 				{
 					pTargetData[ i + 0u ] = m_data[ i + 2u ];
 					pTargetData[ i + 1u ] = m_data[ i + 1u ];
@@ -439,7 +439,7 @@ namespace tiki
 		}
 
 		const uint8* pPixelData = (const uint8*)pContext->blending_image_data;
-		for( size_t i = 0u; i < m_data.getCount(); ++i )
+		for( uintreg i = 0u; i < m_data.getCount(); ++i )
 		{
 			m_data[ i ] = (float)pPixelData[ i ] / 255.0f;
 		}
@@ -471,7 +471,7 @@ namespace tiki
 			return false;
 		}
 
-		for( size_t i = 0u; i < m_data.getCount(); i += 4u )
+		for( uintreg i = 0u; i < m_data.getCount(); i += 4u )
 		{
 			m_data[ i + 0u ] = (float)pPixelData[ i + 2u ] / 255.0f;
 			m_data[ i + 1u ] = (float)pPixelData[ i + 1u ] / 255.0f;

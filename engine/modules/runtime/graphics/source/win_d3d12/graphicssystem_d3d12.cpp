@@ -19,7 +19,7 @@ namespace tiki
 	{
 		static bool initDevice( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
 		static bool initSwapChain( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params, const uint2& backBufferSize );
-		static bool initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uint frameIndex, DescriptorHandle backBufferColorHandle );
+		static bool initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uintreg frameIndex, DescriptorHandle backBufferColorHandle );
 		static bool initObjects( GraphicsSystemPlatformData& data, const GraphicsSystemParameters& params );
 	}
 
@@ -48,7 +48,7 @@ namespace tiki
 			return false;
 		}
 
-		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
 		{
 			if( FAILED( m_platformData.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &m_platformData.frames[ i ].pRenderCommandAllocator ) ) ) ||
 				FAILED( m_platformData.pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &m_platformData.frames[ i ].pResourceCommandAllocator ) ) ) )
@@ -87,7 +87,7 @@ namespace tiki
 		}
 
 		// create frames
-		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
 		{
 			DescriptorHandle backBufferColorHandle = (i == 0u ? m_backBufferTarget.m_platformData.colorHandles[ 0u ] : InvalidDescriptorHandle);
 			if( !graphics::initFrame( m_platformData, m_platformData.frames[ i ], i, backBufferColorHandle ) )
@@ -177,7 +177,7 @@ namespace tiki
 
 		m_platformData.uploadHeap.dispose();
 
-		for( size_t i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( m_platformData.frames ); ++i )
 		{
 			GraphicsSystemFrame& frame = m_platformData.frames[ i ];
 
@@ -228,7 +228,7 @@ namespace tiki
 #endif
 	}
 
-	bool GraphicsSystem::resize( uint width, uint height )
+	bool GraphicsSystem::resize( uintreg width, uintreg height )
 	{
 		if( m_backBufferTarget.getWidth() == width && m_backBufferTarget.getHeight() == height )
 		{
@@ -368,7 +368,7 @@ namespace tiki
 
 		TIKI_VERIFY( SUCCEEDED( m_platformData.pSwapChain->Present( 1, 0 ) ) );
 		
-		m_platformData.uploadHeap.finalizeFrame( (uint)prevFrame.currentFence );
+		m_platformData.uploadHeap.finalizeFrame( (uintreg)prevFrame.currentFence );
 
 		// swap frame
 		m_platformData.currentSwapBufferIndex = m_platformData.pSwapChain->GetCurrentBackBufferIndex();
@@ -483,7 +483,7 @@ namespace tiki
 		return SUCCEEDED( result );
 	}
 
-	bool graphics::initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uint frameIndex, DescriptorHandle backBufferColorHandle )
+	bool graphics::initFrame( GraphicsSystemPlatformData& data, GraphicsSystemFrame& frame, uintreg frameIndex, DescriptorHandle backBufferColorHandle )
 	{
 		HRESULT result = data.pSwapChain->GetBuffer( (UINT)frameIndex, IID_PPV_ARGS( &frame.pBackBufferColorResouce ) );
 		if( FAILED( result ) )
@@ -537,7 +537,7 @@ namespace tiki
 		FixedSizedArray< CD3DX12_DESCRIPTOR_RANGE, GraphicsDiscriptorIndex_Count > descRanges;
 		FixedArray< CD3DX12_ROOT_PARAMETER, GraphicsDiscriptorIndex_Count > rootParameters;
 
-		size_t i = 0u;
+		uintreg i = 0u;
 		for( ; i < GraphicsDiscriptorIndex_FirstVertexTexture; ++i )
 		{
 			rootParameters[ i ].InitAsConstantBufferView( UINT( i - GraphicsDiscriptorIndex_FirstVertexConstant ), 0u, D3D12_SHADER_VISIBILITY_VERTEX );

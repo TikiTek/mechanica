@@ -85,17 +85,17 @@ namespace tiki
 		return xml_element_find_attribute( (XmlElement*)pElement, pName, nullptr );
 	}
 
-	size_t XmlReader::getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const
+	uintreg XmlReader::getChilds( XmlElementList& targetList, const XmlElement* pElement, const char* pName ) const
 	{
 		TIKI_ASSERT( pElement );
-		const uint count = xml_element_find_elements( (XmlElement*)pElement, pName, nullptr, nullptr );
+		const uintreg count = xml_element_find_elements( (XmlElement*)pElement, pName, nullptr, nullptr );
 		targetList.create( count );
 		xml_element_find_elements( (XmlElement*)pElement, pName, (XmlElement**)targetList.getBegin(), (XmlElement**)targetList.end() );
 
 		return targetList.getCount();
 	}
 
-	/*static*/ void* XmlReader::allocateMemory( ::size_t _bytes, void* pUserData )
+	/*static*/ void* XmlReader::allocateMemory( uintreg _bytes, void* pUserData )
 	{
 		XmlReader* pXml	= static_cast<XmlReader*>(pUserData);
 		pXml->m_pData	= TIKI_ALLOC( _bytes );

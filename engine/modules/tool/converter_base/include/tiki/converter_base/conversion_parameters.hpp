@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_CONVERSION_PARAMETERS_HPP_INCLUDED
-#define TIKI_CONVERSION_PARAMETERS_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/container/map.hpp"
@@ -11,25 +9,23 @@ namespace tiki
 	{
 	public:
 
-		void							copyFrom( const ConversionParameters& parameters );
-		void							addParameter( const string& key, const string& value );
+		void								copyFrom( const ConversionParameters& parameters );
+		void								addParameter( const DynamicString& key, const DynamicString& value );
 
-		string							getString( const string& key ) const;
-		float							getFloat( const string& key ) const;
-		int								getInt( const string& key ) const;
-		bool							getBool( const string& key ) const;
+		DynamicString						getString( const DynamicString& key ) const;
+		float								getFloat( const DynamicString& key ) const;
+		int									getInt( const DynamicString& key ) const;
+		bool								getBool( const DynamicString& key ) const;
 
-		string							getOptionalString( const string& key, const string& defaultValue ) const;
-		float							getOptionalFloat( const string& key, float defaultValue ) const;
-		int								getOptionalInt( const string& key, int defaultValue ) const;
-		bool							getOptionalBool( const string& key, bool defaultValue ) const;
+		DynamicString						getOptionalString( const DynamicString& key, const DynamicString& defaultValue ) const;
+		float								getOptionalFloat( const DynamicString& key, float defaultValue ) const;
+		int									getOptionalInt( const DynamicString& key, int defaultValue ) const;
+		bool								getOptionalBool( const DynamicString& key, bool defaultValue ) const;
 
 	private:
 
-		Map< string, string >			m_parameters;
+		Map< DynamicString, DynamicString >	m_parameters;
 
-		bool							getArgument( string& value, const string& key ) const;
+		bool								getArgument( DynamicString& value, const DynamicString& key ) const;
 	};
 }
-
-#endif // TIKI_CONVERSION_PARAMETERS_HPP_INCLUDED

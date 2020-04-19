@@ -30,7 +30,7 @@ namespace tiki
 
 	private:
 
-		size_t		m_refCount;
+		uintreg		m_refCount;
 		crc32		m_hashValue;
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace tiki
 {
-	GenericDataType::GenericDataType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeType type, GenericDataTypeMode mode )
+	GenericDataType::GenericDataType( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeType type, GenericDataTypeMode mode )
 		: m_collection( collection )
 		, m_name( name )
 		, m_filename( filename )

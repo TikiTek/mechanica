@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED
-#define TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/types.hpp"
@@ -84,5 +82,3 @@ namespace tiki
 		return s_aVertexAttributeFormatElementCountMapping[ format ];
 	}
 }
-
-#endif // TIKI_VERTEXATTRIBUTEFORMAT_HPP__INCLUDED

@@ -44,7 +44,7 @@ namespace tiki
 			context.pTaskSystem	= this;
 			context.workingEvent.create();
 
-			const string threadName = formatDynamicString( "TaskSystem_%u", i );
+			const DynamicString threadName = formatDynamicString( "TaskSystem_%u", i );
 			if ( !context.thread.create( staticThreadEntryPoint, &context, parameters.threadStackSize, threadName.cStr() ) )
 			{
 				dispose();

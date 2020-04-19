@@ -10,36 +10,36 @@ namespace tiki
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float value )												{ return _mm_set_ps1( value ); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float x, const float y, const float z, const float w )		{ return _mm_set_ps( x, y, z, w ); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues )											{ return _mm_load_ps( pValues ); }
-	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues, const size_t offset )						{ return _mm_load_ps( pValues + offset ); }
+	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues, const uintreg offset )						{ return _mm_load_ps( pValues + offset ); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues )											{ return _mm_loadu_ps( pValues ); }
-	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues, const size_t offset )						{ return _mm_loadu_ps( pValues + offset ); }
+	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues, const uintreg offset )					{ return _mm_loadu_ps( pValues + offset ); }
 
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32 value )												{ return _mm_set1_epi32( value ); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32 x, const sint32 y, const sint32 z, const sint32 w )	{ return _mm_set_epi32( x, y, z, w ); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues )											{ return _mm_load_si128( (vi32*)pValues ); }
-	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues, const size_t offset )						{ return _mm_load_si128( (vi32*)(pValues + offset) ); }
+	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues, const uintreg offset )					{ return _mm_load_si128( (vi32*)(pValues + offset) ); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues )											{ return _mm_loadu_si128( (vi32*)pValues ); }
-	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues, const size_t offset )					{ return _mm_loadu_si128( (vi32*)(pValues + offset) ); }
+	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues, const uintreg offset )					{ return _mm_loadu_si128( (vi32*)(pValues + offset) ); }
 
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16 value )												{ return _mm_set1_epi16( value ); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16 a, const sint16 b, const sint16 c, const sint16 d, const sint16 e, const sint16 f, const sint16 g, const sint16 h )	{ return _mm_set_epi16( a, b, c, d, e, f, g, h ); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues )											{ return _mm_load_si128( (vi16*)pValues ); }
-	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues, const size_t offset )						{ return _mm_load_si128( (vi16*)(pValues + offset) ); }
+	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues, const uintreg offset )					{ return _mm_load_si128( (vi16*)(pValues + offset) ); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues )											{ return _mm_loadu_si128( (vi16*)pValues ); }
-	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues, const size_t offset )					{ return _mm_loadu_si128( (vi16*)(pValues + offset) ); }
+	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues, const uintreg offset )					{ return _mm_loadu_si128( (vi16*)(pValues + offset) ); }
 
 	//////////////////////////////////////////////////////////////////////////
 	// store
 
 	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const vf32 value)								{ _mm_store_ps( pTarget, value ); }
-	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const size_t offset, const vf32 value)			{ _mm_store_ps( pTarget + offset, value ); }
+	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const uintreg offset, const vf32 value)			{ _mm_store_ps( pTarget + offset, value ); }
 	TIKI_SIMD_INLINE float	simd::get_f32_x( const vf32 value )												{ return value.m128_f32[ 0u ]; }
 	TIKI_SIMD_INLINE float	simd::get_f32_y( const vf32 value )												{ return value.m128_f32[ 1u ]; }
 	TIKI_SIMD_INLINE float	simd::get_f32_z( const vf32 value )												{ return value.m128_f32[ 2u ]; }
 	TIKI_SIMD_INLINE float	simd::get_f32_w( const vf32 value )												{ return value.m128_f32[ 3u ]; }
 
 	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const vi32 value )								{ _mm_store_si128( (vi32*)pTarget, value ); }
-	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const size_t offset, const vi32 value )			{ _mm_store_si128( (vi32*)( pTarget + offset ), value ); }
+	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const uintreg offset, const vi32 value )		{ _mm_store_si128( (vi32*)( pTarget + offset ), value ); }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_x( const vi32 value )												{ return value.m128i_i32[ 0u ]; }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_y( const vi32 value )												{ return value.m128i_i32[ 1u ]; }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_z( const vi32 value )												{ return value.m128i_i32[ 2u ]; }
@@ -72,7 +72,7 @@ namespace tiki
 
 	TIKI_SIMD_INLINE vi32	simd::convert_i16l_to_i32( const vi16 value )									{ return _mm_srai_epi32( _mm_unpacklo_epi16( value, value ), 16u ); }
 	TIKI_SIMD_INLINE vi32	simd::convert_i16h_to_i32( const vi16 value )									{ return _mm_srai_epi32( _mm_unpackhi_epi16( value, value ), 16u ); }
-	
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// special

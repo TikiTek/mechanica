@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SPRITECOMPONENT_HPP_INCLUDED
-#define TIKI_SPRITECOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -41,5 +39,3 @@ namespace tiki
 		const Transform2dComponent*	m_pTransformComponent;
 	};
 }
-
-#endif // TIKI_SPRITECOMPONENT_HPP_INCLUDED

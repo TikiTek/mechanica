@@ -58,33 +58,33 @@ namespace tiki
 	struct MemoryBlock
 	{
 		void*		pStart;
-		uint		size;
+		uintreg		size;
 	};
 
 	struct ConstMemoryBlock
 	{
 		const void*	pStart;
-		uint		size;
+		uintreg		size;
 	};
 
 	namespace memory
 	{
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		void*					allocateAlignedMemory( uint size, const char* pFileName, int lineNumber, uint alignment, bool zeroMemory );
+		void*					allocateAlignedMemory( uintreg size, const char* pFileName, int lineNumber, uintreg alignment, bool zeroMemory );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	allocateAlignedObject( const char* pFileName, int lineNumber, uint alignment, bool zeroMemory );
+		TIKI_FORCE_INLINE T*	allocateAlignedObject( const char* pFileName, int lineNumber, uintreg alignment, bool zeroMemory );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, const char* pFileName, int lineNumber, uint alignment, bool constructElements);
+		TIKI_FORCE_INLINE T*	newArrayAligned( uintreg count, const char* pFileName, int lineNumber, uintreg alignment, bool constructElements);
 #else
-		void*					allocateAlignedMemory( uint size, uint alignment, bool zeroMemory );
+		void*					allocateAlignedMemory( uintreg size, uintreg alignment, bool zeroMemory );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	allocateAlignedObject( uint alignment, bool zeroMemory );
+		TIKI_FORCE_INLINE T*	allocateAlignedObject( uintreg alignment, bool zeroMemory );
 
 		template<typename T>
-		TIKI_FORCE_INLINE T*	newArrayAligned( uint count, uint alignment, bool constructElements );
+		TIKI_FORCE_INLINE T*	newArrayAligned( uintreg count, uintreg alignment, bool constructElements );
 #endif
 
 		void					freeAligned( void* pPtr );
@@ -96,7 +96,7 @@ namespace tiki
 		TIKI_FORCE_INLINE void	deleteObjectAligned( T* pPtr );
 
 		template<typename T>
-		TIKI_FORCE_INLINE void	deleteArrayAligned( T* pArray, uint count );
+		TIKI_FORCE_INLINE void	deleteArrayAligned( T* pArray, uintreg count );
 
 		template<typename T>
 		TIKI_FORCE_INLINE void	callDefaultConstructor( T* pObject );
@@ -104,14 +104,14 @@ namespace tiki
 		template<typename T>
 		void					callDestructor( T* pObject );
 
-		int						compare( const void* pData1, const void* pData2, uint sizeInBytes );
-		void					copy( void* pTargetData, const void* pSourceData, uint sizeInBytes );
+		int						compare( const void* pData1, const void* pData2, uintreg sizeInBytes );
+		void					copy( void* pTargetData, const void* pSourceData, uintreg sizeInBytes );
 
-		TIKI_FORCE_INLINE void	set8( void* pTargetData, uint count, uint8 value );
-		TIKI_FORCE_INLINE void	set16( void* pTargetData, uint count, uint16 value );
-		TIKI_FORCE_INLINE void	set32( void* pTargetData, uint count, uint32 value );
-		TIKI_FORCE_INLINE void	set64( void* pTargetData, uint count, uint64 value );
-		TIKI_FORCE_INLINE void	zero( void* pTargetData, uint sizeInBytes );
+		TIKI_FORCE_INLINE void	set8( void* pTargetData, uintreg count, uint8 value );
+		TIKI_FORCE_INLINE void	set16( void* pTargetData, uintreg count, uint16 value );
+		TIKI_FORCE_INLINE void	set32( void* pTargetData, uintreg count, uint32 value );
+		TIKI_FORCE_INLINE void	set64( void* pTargetData, uintreg count, uint64 value );
+		TIKI_FORCE_INLINE void	zero( void* pTargetData, uintreg sizeInBytes );
 
 		template<typename T>
 		TIKI_FORCE_INLINE void	zero( T& pTargetData );

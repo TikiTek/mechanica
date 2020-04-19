@@ -2,22 +2,22 @@
 
 namespace tiki
 {
-	string path::checkSlashes( const string& path )
+	DynamicString path::checkSlashes( const DynamicString& path )
 	{
 		return path.replace('\\', '/').toLower();
 	}
 
-	string path::getFilename( const string& fullPath )
+	DynamicString path::getFilename( const DynamicString& fullPath )
 	{
-		string fileName = checkSlashes( fullPath );
+		DynamicString fileName = checkSlashes( fullPath );
 		sint32 index = fileName.lastIndexOf( '/' ) + 1;
 
 		return fileName.subString( index, fileName.getLength() - index );
 	}
 
-	string path::getFilenameWithoutExtension( const string& fullPath )
+	DynamicString path::getFilenameWithoutExtension( const DynamicString& fullPath )
 	{
-		string fileName = checkSlashes( fullPath );
+		DynamicString fileName = checkSlashes( fullPath );
 
 		sint32 index = fileName.lastIndexOf( '/' ) + 1;
 		fileName = fullPath.subString( index, fileName.getLength() - index );
@@ -28,7 +28,7 @@ namespace tiki
 		return fileName;
 	}
 
-	string path::getExtension( const string& fullPath )
+	DynamicString path::getExtension( const DynamicString& fullPath )
 	{
 		const sint32 index = fullPath.lastIndexOf( '.' );
 		if ( index == -1 )
@@ -39,13 +39,13 @@ namespace tiki
 		return fullPath.subString( uint( index )  );
 	}
 
-	string path::getDirectoryName( const string& fullPath )
+	DynamicString path::getDirectoryName( const DynamicString& fullPath )
 	{
-		string dirName = checkSlashes( fullPath );
+		DynamicString dirName = checkSlashes( fullPath );
 		return dirName.subString( 0, dirName.lastIndexOf( '/' ) );
 	}
 
-	string path::combine( const string& path1, const string& path2 )
+	DynamicString path::combine( const DynamicString& path1, const DynamicString& path2 )
 	{
 		if( path1.isEmpty() )
 		{
@@ -61,20 +61,20 @@ namespace tiki
 
 		int rightV = (i2 == '/' || i2 == '\\' ? 1 : 0);
 
-		string left		= path1.subString( 0, path1.getLength() - ( i1 == '/' || i1 == '\\' ? 1 : 0 ) );
-		string right	= path2.subString( rightV, path2.getLength() - rightV );
+		DynamicString left		= path1.subString( 0, path1.getLength() - ( i1 == '/' || i1 == '\\' ? 1 : 0 ) );
+		DynamicString right	= path2.subString( rightV, path2.getLength() - rightV );
 
 		return checkSlashes( left + "/" + right );
 	}
 
-	string path::combine( const string& path1, const string& path2, const string& path3 )
+	DynamicString path::combine( const DynamicString& path1, const DynamicString& path2, const DynamicString& path3 )
 	{
 		return combine( path1, combine( path2, path3 ) );
 	}
 
-	//string path::getAbsolutePath( const string& path )
+	//DynamicString path::getAbsolutePath( const DynamicString& path )
 	//{
-	//	const string slashPath = checkSlashes( path );
+	//	const DynamicString slashPath = checkSlashes( path );
 
 	//	const bool beginWithDrive	= ( slashPath.subString( 1u, 2 ) == ":/" );
 	//	const bool containsDots		= ( slashPath.contains( "/../" ) || slashPath.contains( "/./" ) );
@@ -83,7 +83,7 @@ namespace tiki
 	//		// is already absolute
 	//		return slashPath;
 	//	}
-	//	string fullPath = slashPath;
+	//	DynamicString fullPath = slashPath;
 	//	if ( !beginWithDrive )
 	//	{
 	//		fullPath = path::combine( platform::getCurrentPath().getCompletePath(), slashPath );

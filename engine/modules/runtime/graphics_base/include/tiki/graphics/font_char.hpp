@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_FONTRECTANGLE_HPP__INCLUDED
-#define TIKI_FONTRECTANGLE_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -16,5 +14,3 @@ namespace tiki
 		uint16	y2;
 	};
 }
-
-#endif // TIKI_FONTRECTANGLE_HPP__INCLUDED

@@ -16,9 +16,9 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-	void* memory::allocateAlignedMemory( uint size, const char* pFileName, int lineNumber, uint alignment, bool zeroMemory )
+	void* memory::allocateAlignedMemory( uintreg size, const char* pFileName, int lineNumber, uintreg alignment, bool zeroMemory )
 #else
-	void* memory::allocateAlignedMemory( size_t size, size_t alignment, bool zeroMemory )
+	void* memory::allocateAlignedMemory( uintreg size, uintreg alignment, bool zeroMemory )
 #endif
 	{
 		TIKI_ASSERT( alignment != TIKI_DEFAULT_ALIGNMENT );
@@ -40,7 +40,7 @@ namespace tiki
 			memory::zero( pMemory, size );
 		}
 
-		TIKI_ASSERT( (uint)pMemory % alignment == 0u );
+		TIKI_ASSERT( (uintreg)pMemory % alignment == 0u );
 		return pMemory;
 	}
 
@@ -57,12 +57,12 @@ namespace tiki
 #endif
 	}
 
-	int	memory::compare( const void* pData1, const void* pData2, uint sizeInBytes )
+	int	memory::compare( const void* pData1, const void* pData2, uintreg sizeInBytes )
 	{
 		return memcmp( pData1, pData2, sizeInBytes );
 	}
 
-	void memory::copy( void* pTargetData, const void* pSourceData, uint sizeInBytes )
+	void memory::copy( void* pTargetData, const void* pSourceData, uintreg sizeInBytes )
 	{
 		memcpy( pTargetData, pSourceData, sizeInBytes );
 	}

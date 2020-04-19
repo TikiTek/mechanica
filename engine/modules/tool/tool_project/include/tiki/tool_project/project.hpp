@@ -27,42 +27,42 @@ namespace tiki
 		const Path&						getContentPath() const { return m_contentPath; }
 		const Path&						getAssetBuildPath() const { return m_assetBuildPath; }
 
-		const string&					getName() const { return m_name; }
-		void							setName( const string& value ) { m_name = value; }
+		const DynamicString&			getName() const { return m_name; }
+		void							setName( const DynamicString& value ) { m_name = value; }
 
-		const string&					getDescription() const { return m_description; }
-		void							setDescription( const string& value ) { m_description = value; }
+		const DynamicString&			getDescription() const { return m_description; }
+		void							setDescription( const DynamicString& value ) { m_description = value; }
 
-		const string&					getVersion() const { return m_version; }
-		void							setVersion( const string& value ) { m_version = value; }
+		const DynamicString&			getVersion() const { return m_version; }
+		void							setVersion( const DynamicString& value ) { m_version = value; }
 
 		const List< PlatformType >&		getPlatforms() const { return m_platforms; }
 		void							addPlatform( PlatformType value );
 		void							removePlatform( PlatformType value );
 
-		Package*						addPackage( const string& packageName );
-		Package*						findPackage( const string& packageName );
-		const Package*					findPackage( const string& packageName ) const;
+		Package*						addPackage( const DynamicString& packageName );
+		Package*						findPackage( const DynamicString& packageName );
+		const Package*					findPackage( const DynamicString& packageName ) const;
 		const LinkedList< Package >&	getPackages() const;
 
 		bool							writeToFile();
 
 	private:
 
-		bool					m_isValid;
+		bool							m_isValid;
 
-		Path					m_projectPath;
-		Path					m_contentPath;
-		Path					m_assetBuildPath;
+		Path							m_projectPath;
+		Path							m_contentPath;
+		Path							m_assetBuildPath;
 
-		string					m_name;
-		string					m_description;
-		string					m_version;
-		List< PlatformType >	m_platforms;
+		DynamicString					m_name;
+		DynamicString					m_description;
+		DynamicString					m_version;
+		List< PlatformType >			m_platforms;
 
-		ChunkedPool< Package >	m_packagePool;
-		LinkedList< Package >	m_packages;
+		ChunkedPool< Package >			m_packagePool;
+		LinkedList< Package >			m_packages;
 
-		bool					loadFromFile();
+		bool							loadFromFile();
 	};
 }

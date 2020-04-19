@@ -1,6 +1,5 @@
 #pragma once
 
-#include "tiki/base/string.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
 #include "tiki/container/list.hpp"
@@ -16,7 +15,7 @@ namespace tiki
 	public:
 										ToolModel();
 
-		bool							create( const string& fileName, float scale );
+		bool							create( const DynamicString& fileName, float scale );
 		void							dispose();
 
 		bool							parseGeometies( bool calculateTangents );
@@ -25,10 +24,10 @@ namespace tiki
 		const ToolModelHierarchy&		getHierarchy() const { return m_hierarchy; }
 		const ToolModelAnimation&		getAnimation() const { return m_animation; }
 
-		const ToolModelGeometrie&		getGeometryByIndex( size_t index ) const { return m_geometries[ index ]; }
-		size_t							getGeometyCount() const { return m_geometries.getCount(); }
+		const ToolModelGeometrie&		getGeometryByIndex( uintreg index ) const { return m_geometries[ index ]; }
+		uintreg							getGeometyCount() const { return m_geometries.getCount(); }
 
-		TIKI_INLINE float				getScale() const { return m_scale; }
+		float							getScale() const { return m_scale; }
 
 	private:
 

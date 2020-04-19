@@ -9,7 +9,7 @@
 namespace tiki
 {
 	class GenericDataObject;
-	class GenericDataTypeCollection;
+	class GenericDataDocumentCollection;
 	class GenericDataTypeResource;
 	class GenericDataTypeStruct;
 	class ResourceWriter;
@@ -21,16 +21,16 @@ namespace tiki
 
 	public:
 
-		GenericDataDocument( GenericDataTypeCollection& collection );
+		GenericDataDocument( GenericDataDocumentCollection& collection );
 		~GenericDataDocument();
 
-		bool							create( const GenericDataTypeResource* pResourceType, const GenericDataTypeStruct* pObjectType );
+		bool							create( const GenericDataTypeResource* pResourceType, const GenericDataTypeStruct* pObjectType, const GenericDataObject* pParentObject );
 		void							dispose();
 
-		const GenericDataTypeResource*	getType() const;
+		const GenericDataTypeResource*	getResourceType() const { return m_pResourceType; }
 
-		GenericDataObject*				getObject();
-		const GenericDataObject*		getObject() const;
+		GenericDataObject*				getObject() { return m_pObject; }
+		const GenericDataObject*		getObject() const { return m_pObject; }
 
 		bool							importFromFile( const char* pFilename );
 		bool							exportToFile( const char* pFilename );
@@ -41,11 +41,11 @@ namespace tiki
 
 	private:
 
-		GenericDataTypeCollection&		m_collection;
+		GenericDataDocumentCollection&	m_collection;
 
 		XmlDocument						m_document;
 
-		const GenericDataTypeResource*	m_pType;
+		const GenericDataTypeResource*	m_pResourceType;
 		GenericDataObject*				m_pObject;
 
 		bool							importFromXml();

@@ -16,7 +16,7 @@ namespace tiki
 		m_frameCount	= TIKI_SIZE_T_MAX;
 		m_joints.create( hierarchy.getJointCount() );
 
-		for (uint i = 0u; i < m_joints.getCount(); ++i)
+		for (uintreg i = 0u; i < m_joints.getCount(); ++i)
 		{
 			m_joints[ i ].pJoint = &hierarchy.getJointByIndex( i );
 		}
@@ -25,7 +25,7 @@ namespace tiki
 
 		while ( pAnimation )
 		{
-			const uint index = createJoint( pXml, pAnimation, hierarchy );
+			const uintreg index = createJoint( pXml, pAnimation, hierarchy );
 
 			if ( index != TIKI_SIZE_T_MAX )
 			{
@@ -38,7 +38,7 @@ namespace tiki
 
 	void ToolModelAnimation::dispose()
 	{
-		for (uint i = 0u; i < m_joints.getCount(); ++i)
+		for (uintreg i = 0u; i < m_joints.getCount(); ++i)
 		{
 			m_joints[ i ].keys.dispose();
 			m_joints[ i ].samples.dispose();
@@ -50,7 +50,7 @@ namespace tiki
 		}
 	}
 
-	uint ToolModelAnimation::createJoint( const XmlReader* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
+	uintreg ToolModelAnimation::createJoint( const XmlReader* pXml, const _XmlElement* pParentNode, const ToolModelHierarchy& hierarchy )
 	{
 		const XmlElement* pNode = pXml->findFirstChild( "animation", pParentNode );
 
@@ -61,7 +61,7 @@ namespace tiki
 
 		ToolModelSource< float > times;
 		ToolModelSource< Matrix44 > transforms;
-		ToolModelSource< string > interpolators;
+		ToolModelSource< DynamicString > interpolators;
 
 		const XmlElement* pSampler = pXml->findFirstChild( "sampler", pNode );
 		const XmlElement* pChannel = pXml->findFirstChild( "channel", pNode );
@@ -72,15 +72,15 @@ namespace tiki
 		}
 
 		// parse channel
-		string jointName;
+		DynamicString jointName;
 		{
 			const XmlAttribute* pTarget = pXml->findAttributeByName( "target", pChannel );
 
-			const string target = pTarget->content;
-			const uint sli = target.indexOf( '/' );
+			const DynamicString target = pTarget->content;
+			const uintreg sli = target.indexOf( '/' );
 
-			const string first = target.subString( 0u, sli );
-			const string second = target.subString( sli + 1u );
+			const DynamicString first = target.subString( 0u, sli );
+			const DynamicString second = target.subString( sli + 1u );
 
 			if ( second != "matrix" )
 			{
@@ -93,7 +93,7 @@ namespace tiki
 		// parse sampler ans sources
 		{
 			List< const XmlElement* > sourcesNodes;
-			List< string > sourcesIds;
+			List< DynamicString > sourcesIds;
 			{
 				const XmlElement* pSource = pXml->findFirstChild( "source", pNode );
 
@@ -117,12 +117,12 @@ namespace tiki
 				const XmlAttribute* pSemanicAtt	= pXml->findAttributeByName( "semantic", pInput );
 				const XmlAttribute* pSourceAtt	= pXml->findAttributeByName( "source", pInput );
 
-				const string semanticName	= string( pSemanicAtt->content ).toLower();
-				const string sourceName		= string( pSourceAtt->content ).subString( 1u );
+				const DynamicString semanticName	= DynamicString( pSemanicAtt->content ).toLower();
+				const DynamicString sourceName		= DynamicString( pSourceAtt->content ).subString( 1u );
 
 				const XmlElement* pSource = nullptr;
 
-				for (uint i = 0u; i < sourcesIds.getCount(); ++i)
+				for (uintreg i = 0u; i < sourcesIds.getCount(); ++i)
 				{
 					if ( sourcesIds[ i ] == sourceName )
 					{
@@ -153,7 +153,7 @@ namespace tiki
 			}
 		}
 
-		uint index = TIKI_SIZE_T_MAX;
+		uintreg index = TIKI_SIZE_T_MAX;
 
 		if ( times.isCreated() && transforms.isCreated() ) // && interpolators.isCreated()
 		{
@@ -164,7 +164,7 @@ namespace tiki
 				index = hierarchy.getJointData().getIndexOfIterator( pHierachyJoint );
 				ToolModelAnimationJoint& joint = m_joints[ index ];
 
-				uint count = times.data.getCount();
+				uintreg count = times.data.getCount();
 				if ( times.data.getCount() != ( transforms.data.getCount() / 16u ) )
 				{
 					TIKI_TRACE_WARNING( "different times and transforms count in joint '%s'.\n", pHierachyJoint->name.cStr() );
@@ -175,22 +175,22 @@ namespace tiki
 				{
 					joint.keys.create( count );
 
-					for (uint i = 0u; i < count; ++i)
+					for (uintreg i = 0u; i < count; ++i)
 					{
 						joint.keys[ i ].time		= times.data[ i ];
 						joint.keys[ i ].transform	= transforms.data[ i ];
 					}
 
-					const uint frameCount = (uint)( joint.keys.getLast().time * 60.0f );
+					const uintreg frameCount = (uintreg)( joint.keys.getLast().time * 60.0f );
 					m_frameCount = TIKI_MIN( m_frameCount, frameCount );
 
 					joint.samples.create( frameCount );
 
 					const ToolModelKey* pLeftKey = &joint.keys[ 0u ];
 					const ToolModelKey* pRightKey = &joint.keys[ 1u ];
-					uint rightIndex = 1u;
+					uintreg rightIndex = 1u;
 
-					for (uint i = 0u; i < frameCount; ++i)
+					for (uintreg i = 0u; i < frameCount; ++i)
 					{
 						const float time	= (float)i / 60.0f;
 

@@ -18,14 +18,14 @@ namespace tiki
 		TIKI_ASSERT( m_pTaskSystem == nullptr );
 	}
 
-	void ConverterBase::create( const Path& outputPath, TaskSystem* pTaskSystem )
+	void ConverterBase::create( const Path& outputPath, TaskSystem* pTaskSystem, const ConversionContext& context )
 	{
 		TIKI_ASSERT( m_pTaskSystem == nullptr );
 
 		m_outputPath	= outputPath;
 		m_pTaskSystem	= pTaskSystem;
 
-		initializeConverter();
+		initializeConverter( context );
 	}
 
 	void ConverterBase::dispose()
@@ -48,13 +48,13 @@ namespace tiki
 		}
 	}
 
-	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pFileName, const char* pExtension ) const
+	void ConverterBase::openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pBasename, const char* pExtension ) const
 	{
 		TIKI_ASSERT( m_pTaskSystem != nullptr );
 
 		Path fullPath = m_outputPath;
 		fullPath.push( "" );
-		fullPath.setFilename( pFileName );
+		fullPath.setBasename( pBasename );
 		fullPath.setExtension( pExtension );
 		result.addOutputFile( fullPath );
 

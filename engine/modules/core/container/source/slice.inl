@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SLICE_INL_INCLUDED
-#define TIKI_SLICE_INL_INCLUDED
 
 #include "tiki/base/assert.hpp"
 
@@ -15,7 +13,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	Slice<T>::Slice( T* pData, uint* pCount, uint capacity )
+	Slice<T>::Slice( T* pData, uintreg* pCount, uintreg capacity )
 		: m_pData( pData )
 		, m_pCount( pCount )
 		, m_capacity( capacity )
@@ -45,25 +43,25 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T* Slice< T >::pushRange( uint count )
+	TIKI_FORCE_INLINE T* Slice< T >::pushRange( uintreg count )
 	{
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( *m_pCount + count <= m_capacity );
 
-		const uint currentCount = *m_pCount;
+		const uintreg currentCount = *m_pCount;
 		*m_pCount += count;
 
 		return &m_pData[ currentCount ];
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T* Slice< T >::pushRange( const T* pData, uint count )
+	TIKI_FORCE_INLINE T* Slice< T >::pushRange( const T* pData, uintreg count )
 	{
 		TIKI_ASSERT( count >= 1u );
 		TIKI_ASSERT( *m_pCount + count <= m_capacity );
 
-		const uint currentCount = *m_pCount;
-		for( uint i = 0u; i < count; ++i )
+		const uintreg currentCount = *m_pCount;
+		for( uintreg i = 0u; i < count; ++i )
 		{
 			m_pData[ (*m_pCount)++ ] = pData[ i ];
 		}
@@ -84,7 +82,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE void Slice< T >::removeUnsortedByIndex( uint index )
+	TIKI_FORCE_INLINE void Slice< T >::removeUnsortedByIndex( uintreg index )
 	{
 		TIKI_ASSERT( index < getCount() );
 		m_pData[ index ] = m_pData[ --(*m_pCount) ];
@@ -93,7 +91,7 @@ namespace tiki
 	template< typename T >
 	TIKI_FORCE_INLINE bool Slice< T >::removeUnsortedByValue( const T& value )
 	{
-		for( uint i = 0u; i < getCount(); ++i )
+		for( uintreg i = 0u; i < getCount(); ++i )
 		{
 			if( m_pData[ i ] == value )
 			{
@@ -106,7 +104,7 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint Slice< T >::getIndexOfIterator( const T* pValue ) const
+	TIKI_FORCE_INLINE uintreg Slice< T >::getIndexOfIterator( const T* pValue ) const
 	{
 		TIKI_ASSERT( pValue >= m_pData );
 		TIKI_ASSERT( pValue < getEnd() );
@@ -115,9 +113,9 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE uint Slice< T >::getIndexOfValue( const T& value ) const
+	TIKI_FORCE_INLINE uintreg Slice< T >::getIndexOfValue( const T& value ) const
 	{
-		for( uint i = 0u; i < m_count; ++i )
+		for( uintreg i = 0u; i < m_count; ++i )
 		{
 			if( m_pData[ i ] == value )
 			{
@@ -129,19 +127,17 @@ namespace tiki
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE T& Slice< T >::operator[]( uint index )
+	TIKI_FORCE_INLINE T& Slice< T >::operator[]( uintreg index )
 	{
 		TIKI_ASSERT( index < getCount() );
 		return m_pData[ index ];
 	}
 
 	template< typename T >
-	TIKI_FORCE_INLINE const T& Slice< T >::operator[]( uint index ) const
+	TIKI_FORCE_INLINE const T& Slice< T >::operator[]( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ];
 	}
 
 }
-
-#endif // TIKI_SLICE_INL_INCLUDED

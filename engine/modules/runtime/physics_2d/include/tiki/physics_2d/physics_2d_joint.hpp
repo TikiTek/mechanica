@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PHYSICS2DJOINT_HPP_INCLUDED
-#define TIKI_PHYSICS2DJOINT_HPP_INCLUDED
 
 class b2Joint;
 
@@ -22,11 +20,9 @@ namespace tiki
 		void		dispose( Physics2dWorld& world );
 
 		void		setRevoluteMotorSteed( float motorSpeed );
-		
+
 	private:
 
 		b2Joint*	m_pJoint;
 	};
 }
-
-#endif // TIKI_PHYSICS2DJOINT_HPP_INCLUDED

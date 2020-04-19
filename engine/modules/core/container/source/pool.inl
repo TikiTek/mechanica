@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_POOL_INL_INCLUDED__
-#define TIKI_POOL_INL_INCLUDED__
 
 #include "tiki/base/types.hpp"
 #include "tiki/base/memory.hpp"
@@ -137,5 +135,3 @@ namespace tiki
 		m_count--;
 	}
 }
-
-#endif // TIKI_POOL_INL_INCLUDED__

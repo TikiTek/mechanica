@@ -121,12 +121,12 @@ namespace tiki
 		return m_pType;
 	}
 
-	//bool GenericDataObject::hasField( const string& name ) const
+	//bool GenericDataObject::hasField( const DynamicString& name ) const
 	//{
 	//	return m_fields.hasKey( name );
 	//}
 
-	const string& GenericDataObject::getFieldName( uint index ) const
+	const DynamicString& GenericDataObject::getFieldName( uint index ) const
 	{
 		return m_fields[ index ].name;
 	}
@@ -158,7 +158,7 @@ namespace tiki
 		return m_fields[ index ].pValue;
 	}
 
-	GenericDataValue* GenericDataObject::getFieldValue( const string& name, bool createMissing )
+	GenericDataValue* GenericDataObject::getFieldValue( const DynamicString& name, bool createMissing )
 	{
 		const uint index = m_pType->getFieldIndexByName( name );
 		if( index == (uint)-1 )
@@ -169,7 +169,7 @@ namespace tiki
 		return getFieldValue( index, createMissing );
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldValue( const string& name ) const
+	const GenericDataValue* GenericDataObject::getFieldValue( const DynamicString& name ) const
 	{
 		const uint index = m_pType->getFieldIndexByName( name );
 		if( index == (uint)-1 )
@@ -207,7 +207,7 @@ namespace tiki
 		return m_fields[ index ].pValue;
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const string& name ) const
+	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const DynamicString& name ) const
 	{
 		const uint index = m_pType->getFieldIndexByName( name );
 		if( index == (uint)-1 )
@@ -228,7 +228,7 @@ namespace tiki
 		}
 	}
 
-	bool GenericDataObject::removeField( const string& name )
+	bool GenericDataObject::removeField( const DynamicString& name )
 	{
 		const uint index = m_pType->getFieldIndexByName( name );
 		if( index == (uint)-1 )

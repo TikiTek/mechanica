@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tiki/base/crc32.hpp"
-#include "tiki/base/string.hpp"
 #include "tiki/base/string_tools.hpp"
 #include "tiki/base/types.hpp"
 #include "tiki/container/array.hpp"
@@ -10,20 +9,20 @@
 
 namespace tiki
 {
-	static void stringSourceToFloat( float& target, const Array< string >& source )
+	static void stringSourceToFloat( float& target, const Array< DynamicString >& source )
 	{
 		target = string_tools::parseFloat32( source[ 0u ].cStr() );
 	}
 
-	static void stringSourceToString( string& target, const Array< string >& source )
+	static void stringSourceToString( DynamicString& target, const Array< DynamicString >& source )
 	{
 		target = source[ 0u ];
 	}
 
-	static void stringSourceToMatrix( Matrix44& target, const Array< string >& source )
+	static void stringSourceToMatrix( Matrix44& target, const Array< DynamicString >& source )
 	{
 		float* pMatrix = &target.x.x;
-		for (size_t i = 0u; i < 16u; ++i)
+		for (uintreg i = 0u; i < 16u; ++i)
 		{
 			pMatrix[ i ] = string_tools::parseFloat32( source[ i ].cStr() );
 		}
@@ -34,17 +33,17 @@ namespace tiki
 	{
 		struct Technique
 		{
-			string	name;
-			string	type;
+			DynamicString	name;
+			DynamicString	type;
 		};
 
-		string				id;
-		string				target;
+		DynamicString				id;
+		DynamicString				target;
 		crc32				crcId;
 
-		size_t				count;
-		size_t				stride;
-		size_t				userData;
+		uintreg				count;
+		uintreg				stride;
+		uintreg				userData;
 		VertexSementic		semantic;
 
 		Array< Technique >	techniques;
@@ -53,14 +52,14 @@ namespace tiki
 	template<typename T>
 	struct ToolModelSource : public ToolModelSourceBase
 	{
-		typedef void(*ConvertFunc)(T&, const Array< string >&);
+		typedef void(*ConvertFunc)(T&, const Array< DynamicString >&);
 
 		Array< T >			data;
 
-		bool			create( const XmlReader* pXml, const XmlElement* pNode, ConvertFunc pConvertFunc, size_t elementCount )
+		bool				create( const XmlReader* pXml, const XmlElement* pNode, ConvertFunc pConvertFunc, uintreg elementCount )
 		{
-			string arrayId;
-			string techniqueSource;
+			DynamicString arrayId;
+			DynamicString techniqueSource;
 
 			const XmlAttribute* pIdAtt		= pXml->findAttributeByName( "id", pNode );
 
@@ -102,7 +101,7 @@ namespace tiki
 				const XmlAttribute* pSourceAtt	= pXml->findAttributeByName( "source", pAccessorNode );
 
 				count			= string_tools::parseUInt32( pCountAtt->content );
-				techniqueSource	= string( pSourceAtt->content ).subString( 1u );
+				techniqueSource	= DynamicString( pSourceAtt->content ).subString( 1u );
 
 				if ( pStrideAtt != nullptr )
 				{
@@ -115,7 +114,7 @@ namespace tiki
 
 				techniques.create( count );
 
-				size_t techIndex = 0u;
+				uintreg techIndex = 0u;
 				const XmlElement* pParam = pXml->findFirstChild( "param", pAccessorNode );
 				while ( pParam )
 				{
@@ -131,7 +130,7 @@ namespace tiki
 
 					if ( pNameAtt != nullptr )
 					{
-						string fieldName = string( pNameAtt->content ).toLower();
+						DynamicString fieldName = DynamicString( pNameAtt->content ).toLower();
 
 						if ( fieldName == "s" )
 						{
@@ -164,21 +163,21 @@ namespace tiki
 					return false;
 				}
 
-				const size_t arrayCount = string_tools::parseUInt32( pCountAtt->content );
+				const uintreg arrayCount = string_tools::parseUInt32( pCountAtt->content );
 				data.create( arrayCount );
 
 				Tokenizer tokenizer;
 				tokenizer.create( pArrayNode->content, " \t\n\r", true );
 
-				Array< string > sourceValues;
+				Array< DynamicString > sourceValues;
 				sourceValues.create( elementCount );
 
-				size_t i = 0u;
-				size_t c = 0u;
-				size_t stringIndex = 0;
-				while ( stringIndex != (size_t)-1 )
+				uintreg i = 0u;
+				uintreg c = 0u;
+				uintreg stringIndex = 0;
+				while ( stringIndex != (uintreg)-1 )
 				{
-					string value = tokenizer.findNext( &stringIndex );
+					DynamicString value = tokenizer.findNext( &stringIndex );
 
 					if ( !value.isEmpty() )
 					{
@@ -226,11 +225,11 @@ namespace tiki
 
 		float* pValues = &mtx.x.x;
 
-		size_t j = 0u;
-		size_t stringIndex = 0;
-		while ( stringIndex != (size_t)-1 )
+		uintreg j = 0u;
+		uintreg stringIndex = 0;
+		while ( stringIndex != (uintreg)-1 )
 		{
-			const string value = token.findNext( &stringIndex );
+			const DynamicString value = token.findNext( &stringIndex );
 
 			if ( !value.isEmpty() )
 			{

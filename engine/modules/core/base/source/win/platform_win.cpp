@@ -121,7 +121,7 @@ namespace tiki
 				continue;
 			}
 
-			const uint nameLength = getStringLength( pName );
+			const uint nameLength = getStringSize( pName );
 			if( pArgument[ nameLength ] == '=' )
 			{
 				*ppValue = pArgument + nameLength + 1u;

@@ -46,21 +46,21 @@ namespace tiki
 			isSkinned		= false;
 		}
 
-		string		id;
-		string		name;
+		DynamicString					id;
+		DynamicString					name;
 
-		float		scale;
+		float							scale;
 
-		bool		hasNormals;
-		bool		hasTangents;
-		bool		hasBinormals;
+		bool							hasNormals;
+		bool							hasTangents;
+		bool							hasBinormals;
 
-		bool		hasColor;
-		bool		hasTexcoord;
+		bool							hasColor;
+		bool							hasTexcoord;
 
-		bool		isSkinned;
-		Matrix44	shapeMatrix;
-		Matrix44	instanceMatrix;
+		bool							isSkinned;
+		Matrix44						shapeMatrix;
+		Matrix44						instanceMatrix;
 	};
 
 	class ToolModelGeometrie

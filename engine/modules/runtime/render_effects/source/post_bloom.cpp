@@ -102,7 +102,7 @@ namespace tiki
 		m_pShader = nullptr;
 	}
 
-	bool PostProcessBloom::resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount /*= TIKI_SIZE_T_MAX*/ )
+	bool PostProcessBloom::resize( GraphicsSystem& graphicsSystem, uintreg width, uintreg height, uintreg passCount /*= TIKI_SIZE_T_MAX*/ )
 	{
 		if( m_width == width && m_height == height && (m_passCount == passCount ||passCount == TIKI_SIZE_T_MAX) )
 		{
@@ -131,7 +131,7 @@ namespace tiki
 			graphicsContext.unmapBuffer( m_cutoffPixelConstants );
 		}
 
-		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
+		for (uintreg passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
 			graphicsContext.beginRenderPass( m_renderTargets[ passIndex ] );
 			graphicsContext.clear( m_renderTargets[ passIndex ], TIKI_COLOR_TRANSPARENT );
@@ -209,7 +209,7 @@ namespace tiki
 
 		uint16 passWidth	= uint16( m_width );
 		uint16 passHeight	= uint16( m_height );
-		for (uint passIndex = 0u; passIndex < m_passCount; ++passIndex)
+		for (uintreg passIndex = 0u; passIndex < m_passCount; ++passIndex)
 		{
 			TIKI_ASSERT( passWidth > 0u );
 			TIKI_ASSERT( passHeight > 0u );
@@ -237,12 +237,12 @@ namespace tiki
 
 	void PostProcessBloom::disposeRenderTargets( GraphicsSystem& graphicsSystem )
 	{
-		for (uint i = 0u; i < m_renderTargets.getCount(); ++i)
+		for (uintreg i = 0u; i < m_renderTargets.getCount(); ++i)
 		{
 			m_renderTargets[ i ].dispose( graphicsSystem );
 		}
 
-		for (uint i = 0u; i < m_textures.getCount(); ++i)
+		for (uintreg i = 0u; i < m_textures.getCount(); ++i)
 		{
 			m_textures[ i ].dispose( graphicsSystem );
 		}

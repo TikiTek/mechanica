@@ -6,7 +6,7 @@
 
 namespace tiki
 {
-	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
+	GenericDataTypeEnum::GenericDataTypeEnum( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeValueType* pBaseType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Enum, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -18,7 +18,7 @@ namespace tiki
 
 	GenericDataTypeEnum::~GenericDataTypeEnum()
 	{
-		for( uint i = 0u; i < m_values.getCount(); ++i )
+		for( uintreg i = 0u; i < m_values.getCount(); ++i )
 		{
 			TIKI_DELETE( m_values[ i ].pValue );
 		}
@@ -121,8 +121,8 @@ namespace tiki
 		static const char* s_pValueFormat			= "\t\t%s_%s,\n";
 		static const char* s_pValueFormatWithValue	= "\t\t%s_%s = %d,\n";
 
-		string valuesCode;
-		for (uint i = 0u; i < m_values.getCount(); ++i)
+		DynamicString valuesCode;
+		for( uintreg i = 0u; i < m_values.getCount(); ++i )
 		{
 			const GenericDataEnumValue& value = m_values[ i ];
 
@@ -139,16 +139,16 @@ namespace tiki
 			}
 		}
 
-		string invalidValue = "-1";
+		DynamicString invalidValue = "-1";
 		if( m_pBaseType->isUnsignedInteger() )
 		{
 			const uint64 maxValue = (1ull << (m_pBaseType->getSize() * 8u)) - 1ull;
 
-			string format = formatDynamicString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
+			DynamicString format = formatDynamicString( "0x%%0%ix", m_pBaseType->getSize() * 2u );
 			invalidValue = formatDynamicString( format.cStr(), maxValue );
 		}
 
-		string baseString = "";
+		DynamicString baseString = "";
 		if( m_pBaseType != m_collection.getEnumDefaultBaseType() )
 		{
 			baseString = ": " + m_pBaseType->getCodeExportName();
@@ -167,7 +167,7 @@ namespace tiki
 		return true;
 	}
 
-	uint GenericDataTypeEnum::getAlignment() const
+	uintreg GenericDataTypeEnum::getAlignment() const
 	{
 		if( m_pBaseType == nullptr )
 		{
@@ -177,7 +177,7 @@ namespace tiki
 		return m_pBaseType->getAlignment();
 	}
 
-	uint GenericDataTypeEnum::getSize() const
+	uintreg GenericDataTypeEnum::getSize() const
 	{
 		if( m_pBaseType == nullptr )
 		{
@@ -187,15 +187,15 @@ namespace tiki
 		return m_pBaseType->getSize();
 	}
 
-	string GenericDataTypeEnum::getCodeExportName() const
+	DynamicString GenericDataTypeEnum::getCodeExportName() const
 	{
 		return getName();
 	}
 
 	crc32 GenericDataTypeEnum::getTypeCrc() const
 	{
-		string typeString;
-		for (size_t i = 0u; i < m_values.getCount(); ++i)
+		DynamicString typeString;
+		for (uintreg i = 0u; i < m_values.getCount(); ++i)
 		{
 			typeString += m_values[ i ].name;
 		}
@@ -208,7 +208,7 @@ namespace tiki
 		return m_pBaseType;
 	}
 
-	void GenericDataTypeEnum::addValue( const string& name, sint64 value, GenericDataTypeMode mode /*= GenericDataTypeMode_ToolAndRuntime */ )
+	void GenericDataTypeEnum::addValue( const DynamicString& name, sint64 value, GenericDataTypeMode mode /*= GenericDataTypeMode_ToolAndRuntime */ )
 	{
 		GenericDataEnumValue& field = m_values.add();
 		field.name		= name;
@@ -217,9 +217,9 @@ namespace tiki
 		field.mode		= mode;
 	}
 
-	void GenericDataTypeEnum::removeValue( const string& name )
+	void GenericDataTypeEnum::removeValue( const DynamicString& name )
 	{
-		for (uint i = 0u; i < m_values.getCount(); ++i)
+		for (uintreg i = 0u; i < m_values.getCount(); ++i)
 		{
 			if ( m_values[ i ].name == name )
 			{
@@ -229,9 +229,9 @@ namespace tiki
 		}
 	}
 
-	GenericDataValue* GenericDataTypeEnum::getValueByName( const string& name )
+	GenericDataValue* GenericDataTypeEnum::getValueByName( const DynamicString& name )
 	{
-		for( uint i = 0u; i < m_values.getCount(); ++i )
+		for( uintreg i = 0u; i < m_values.getCount(); ++i )
 		{
 			if( m_values[ i ].name == name )
 			{
@@ -242,7 +242,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	const GenericDataValue* GenericDataTypeEnum::getValueByName( const string& name ) const
+	const GenericDataValue* GenericDataTypeEnum::getValueByName( const DynamicString& name ) const
 	{
 		return const_cast<GenericDataTypeEnum*>(this)->getValueByName( name );
 	}

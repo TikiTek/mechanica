@@ -48,7 +48,7 @@
 //
 //	bool NavMeshConverter::startConversionJob( const ConversionParameters& params ) const
 //	{
-//		for (size_t i = 0u; i < params.inputFiles.getCount(); ++i)
+//		for (uintreg i = 0u; i < params.inputFiles.getCount(); ++i)
 //		{
 //			const ConversionInputFile& file = params.inputFiles[ i ];
 //			
@@ -136,11 +136,11 @@
 //
 //		Vector3 rmin, rmax;
 //
-//		const uint nverts = meshGeometry.getVertexCount(); 
+//		const uintreg nverts = meshGeometry.getVertexCount(); 
 //
 //		float* pverts = TIKI_NEW float[ nverts * 3 ];
 //
-//		for( uint i = 0; i < nverts; i++ )
+//		for( uintreg i = 0; i < nverts; i++ )
 //		{
 //			int di = i * 3;
 //			const ToolModelVertex& t = meshGeometry.getVertexByIndex( i );
@@ -157,7 +157,7 @@
 //		indices.create( meshGeometry.getIndexCount() );
 //		memory::copy( indices.getData(), meshGeometry.getIndexData(), sizeof(int) * meshGeometry.getIndexCount() );
 //
-//		for( uint i = 0; i < indices.getCount(); i += 3 )
+//		for( uintreg i = 0; i < indices.getCount(); i += 3 )
 //		{
 //			int tmp = indices[ i + 1 ];
 //			indices[ i + 1 ] = indices[ i + 2 ];

@@ -359,7 +359,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 
-		const uint textLength = getStringSize( pText );
+		const uintreg textLength = getStringSize( pText );
 		if ( textLength == 0u )
 		{
 			return;
@@ -374,15 +374,15 @@ namespace tiki
 
 		m_pContext->setPixelShaderTexture( 0u, &font.getTextureData() );
 
-		const size_t vertexCount = textLength * 4u;
+		const uintreg vertexCount = textLength * 4u;
 
 		StaticArray< ImmediateVertex > vertices;
 		m_pContext->beginImmediateGeometry( vertices, vertexCount );
 
 		float x = 0.0f;
-		for (size_t charIndex = 0u; charIndex < textLength; charIndex++)
+		for (uintreg charIndex = 0u; charIndex < textLength; charIndex++)
 		{
-			const size_t vertexIndex = charIndex * 4u;
+			const uintreg vertexIndex = charIndex * 4u;
 			const FontChar& character = chars[ charIndex ];
 
 			const float charWidth	= character.width;
@@ -425,7 +425,7 @@ namespace tiki
 		m_pContext->endImmediateGeometry();
 	}
 
-	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uint capacity ) const
+	void ImmediateRenderer::beginImmediateGeometry( StaticArray< ImmediateVertex >& vertices, uintreg capacity ) const
 	{
 		TIKI_ASSERT( m_pContext != nullptr );
 		return m_pContext->beginImmediateGeometry( vertices, capacity );

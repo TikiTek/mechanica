@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_ASSET_CONVERTER_STATUS_HPP_INCLUDED
-#define TIKI_ASSET_CONVERTER_STATUS_HPP_INCLUDED
 
 #include "tiki/asset_converter_interface/asset_converter_types.hpp"
 #include "tiki/base/delegate.hpp"
@@ -20,18 +18,18 @@ namespace tiki
 
 	struct AssetLog
 	{
-		TraceLevel	level;
-		string		message;
+		TraceLevel					level;
+		DynamicString				message;
 	};
 
 	struct AssetStatus
 	{
-		uint32				assetId;
-		string				assetName;
-		Path				inputFilepath;
+		uint32						assetId;
+		DynamicString				assetName;
+		Path						inputFilepath;
 
-		AssetStage			stage;
-		List< AssetLog >	logs;
+		AssetStage					stage;
+		List< AssetLog >			logs;
 	};
 
 	class AssetConverterStatus
@@ -50,16 +48,14 @@ namespace tiki
 
 	protected:
 
-		uint32					m_buildId;
-		List< AssetStatus >		m_assets;
+		uint32						m_buildId = 0u;
+		List< AssetStatus >			m_assets;
 
-		List< ChangedDelegate >	m_changedListener;
-		
-								AssetConverterStatus() { }
-		virtual					~AssetConverterStatus() { }
+		List< ChangedDelegate >		m_changedListener;
 
-		void					notifyChangedListner();
+									AssetConverterStatus() { }
+		virtual						~AssetConverterStatus() { }
+
+		void						notifyChangedListner();
 	};
 }
-
-#endif // TIKI_ASSET_CONVERTER_STATUS_HPP_INCLUDED

@@ -10,7 +10,7 @@ namespace tiki
 	{
 	}
 
-	void Physics2dPolygonShape::create( const Vector2* pVertices, size_t vertexCount )
+	void Physics2dPolygonShape::create( const Vector2* pVertices, uintreg vertexCount )
 	{
 		m_shape.Set( (const b2Vec2*)pVertices, (int)vertexCount );
 	}

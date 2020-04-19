@@ -26,14 +26,14 @@ namespace tiki
 									ConverterBase();
 		virtual						~ConverterBase();
 
-		void						create( const Path& outputPath, TaskSystem* pTaskSystem );
+		void						create( const Path& outputPath, TaskSystem* pTaskSystem, const ConversionContext& context );
 		void						dispose();
 
 		void						convert( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const;
 
 	protected:
 
-		void						openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pFileName, const char* pExtension ) const;
+		void						openResourceWriter( ResourceWriter& writer, ConversionResult& result, const char* pBasename, const char* pExtension ) const;
 		void						closeResourceWriter( ResourceWriter& writer ) const;
 
 		TaskId						queueTask( TaskFunc pFunc, void* pData, TaskId dependingTaskId = InvalidTaskId ) const;
@@ -44,10 +44,10 @@ namespace tiki
 		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
 		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_PURE;
 
-		virtual void				getInputExtensions( List< string >& extensions ) const TIKI_PURE;
+		virtual void				getInputExtensions( List< DynamicString >& extensions ) const TIKI_PURE;
 		virtual const char*			getOutputType() const TIKI_PURE;
 
-		virtual bool				initializeConverter() TIKI_PURE;
+		virtual bool				initializeConverter( const ConversionContext& context ) TIKI_PURE;
 		virtual void				disposeConverter() TIKI_PURE;
 
 		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_PURE;

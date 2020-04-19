@@ -20,9 +20,9 @@ namespace tiki
 								GameFlowState();
 		virtual					~GameFlowState();
 
-		virtual TransitionState	processTransitionStep( size_t currentStep, bool isCreating, bool isInital );
-		virtual TransitionState	processCreationStep( size_t currentStep, bool isInital );
-		virtual TransitionState	processDestructionStep( size_t currentStep, bool isInital );
+		virtual TransitionState	processTransitionStep( uintreg currentStep, bool isCreating, bool isInital );
+		virtual TransitionState	processCreationStep( uintreg currentStep, bool isInital );
+		virtual TransitionState	processDestructionStep( uintreg currentStep, bool isInital );
 
 		virtual void			update() TIKI_PURE;
 		virtual void			render( GraphicsContext& graphicsContext ) { }

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_LIBRARY_TYPES_HPP_INCLUDED
-#define TIKI_LIBRARY_TYPES_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -13,5 +11,3 @@
 #else
 #	error "Platform not supported"
 #endif
-
-#endif // TIKI_LIBRARY_TYPES_HPP_INCLUDED

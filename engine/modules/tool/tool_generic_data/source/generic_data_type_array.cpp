@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType )
+	GenericDataTypeArray::GenericDataTypeArray( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Array, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -37,7 +37,7 @@ namespace tiki
 		return 16u;
 	}
 
-	string GenericDataTypeArray::getCodeExportName() const
+	DynamicString GenericDataTypeArray::getCodeExportName() const
 	{
 		return formatDynamicString( "ResArray< %s >", m_pBaseType->getCodeExportName().cStr() );
 	}

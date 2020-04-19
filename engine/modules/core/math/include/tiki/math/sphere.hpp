@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SPHERE_HPP_INCLUDED
-#define TIKI_SPHERE_HPP_INCLUDED
 
 #include "tiki/math/vector.hpp"
 
@@ -27,5 +25,3 @@ namespace tiki
 		}
 	};
 }
-
-#endif // TIKI_SPHERE_HPP_INCLUDED

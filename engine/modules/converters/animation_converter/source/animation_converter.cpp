@@ -33,7 +33,7 @@ namespace tiki
 		return typeCrc == s_animationTypeCrc;
 	}
 
-	void AnimationConverter::getInputExtensions( List< string >& extensions ) const
+	void AnimationConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		TIKI_NOT_IMPLEMENTED;
 		//extensions.pushBack( ".dae" );
@@ -44,7 +44,7 @@ namespace tiki
 		return s_pAnimationTypeName;
 	}
 
-	bool AnimationConverter::initializeConverter()
+	bool AnimationConverter::initializeConverter( const ConversionContext& context )
 	{
 		return true;
 	}
@@ -57,7 +57,7 @@ namespace tiki
 	{
 		float paramScale = asset.parameters.getOptionalFloat( "scale", 1.0f );
 
-		string preboundModelName = asset.parameters.getString( "prebound_model" );
+		DynamicString preboundModelName = asset.parameters.getString( "prebound_model" );
 		if ( !file::exists( preboundModelName.cStr() ) )
 		{
 			preboundModelName = path::combine( path::getDirectoryName( asset.inputFilePath.getCompletePath() ), preboundModelName );

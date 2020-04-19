@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_DEBUGRENDERER_HPP_INCLUDED
-#define TIKI_DEBUGRENDERER_HPP_INCLUDED
 
 #include "tiki/graphics/color.hpp"
 
@@ -59,5 +57,3 @@ namespace tiki
 	}
 #endif
 }
-
-#endif // TIKI_DEBUGRENDERER_HPP_INCLUDED

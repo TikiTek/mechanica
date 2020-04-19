@@ -89,11 +89,11 @@ namespace tiki
 		void						disposeRasterizerState( const RasterizerState*& pRasterizerState );
 
 		const SamplerState*			createSamplerState( const SamplerStateParamters& creationParameters );
-		const SamplerState*			createSamplerState( AddressMode addressU = AddressMode_Clamp, AddressMode addressV = AddressMode_Clamp, AddressMode addressW = AddressMode_Clamp, FilterMode magFilter = FilterMode_Linear, FilterMode mipFilter = FilterMode_Linear, size_t maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
+		const SamplerState*			createSamplerState( AddressMode addressU = AddressMode_Clamp, AddressMode addressV = AddressMode_Clamp, AddressMode addressW = AddressMode_Clamp, FilterMode magFilter = FilterMode_Linear, FilterMode mipFilter = FilterMode_Linear, uintreg maxAnisotropy = 1, Color borderColor = TIKI_COLOR_BLACK );
 		void						disposeSamplerState( const SamplerState*& pSamplerState );
 
 		const VertexFormat*			createVertexFormat( const VertexFormatParameters& creationParameters );
-		const VertexFormat*			createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount );
+		const VertexFormat*			createVertexFormat( const VertexAttribute* pVertexAttributes, uintreg vertexAttrubuteCount );
 		void						disposeVertexFormat( const VertexFormat*& pVertexFormat );
 
 		const VertexInputBinding*	createVertexInputBinding( const VertexInputBindingParameters& parameters );
@@ -119,7 +119,7 @@ namespace tiki
 			MaxVertexInputBindingCount	= 32u
 		};
 
-		uint												m_frameNumber;
+		uintreg												m_frameNumber;
 
 		GraphicsSystemPlatformData							m_platformData;
 		GraphicsContext										m_commandBuffer;

@@ -16,7 +16,7 @@ namespace tiki
 		TIKI_ASSERT( m_count == 0u );
 	}
 
-	TIKI_FORCE_INLINE bool VertexBuffer::create( GraphicsSystem& graphicsSystem, size_t vertexCount, size_t vertexStride, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/, const char* pDebugName /*= nullptr*/ )
+	TIKI_FORCE_INLINE bool VertexBuffer::create( GraphicsSystem& graphicsSystem, uintreg vertexCount, uintreg vertexStride, bool dynamic /*= true*/, const void* pInitData /*= nullptr*/, const char* pDebugName /*= nullptr*/ )
 	{
 		m_stride	= vertexStride;
 		m_count		= vertexCount;

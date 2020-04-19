@@ -2,7 +2,7 @@
 
 namespace tiki
 {
-	void Tokenizer::create( const string& text, const string& token, bool tokenIsCharList /*= false */ )
+	void Tokenizer::create( const DynamicString& text, const DynamicString& token, bool tokenIsCharList /*= false */ )
 	{
 		m_text			= text;
 		m_token			= token;
@@ -18,20 +18,20 @@ namespace tiki
 		m_token		= "";
 	}
 
-	string Tokenizer::findNext( uint* pIndex /*= nullptr */ )
+	DynamicString Tokenizer::findNext( uintreg* pIndex /*= nullptr */ )
 	{
-		uint nextIndex = TIKI_SIZE_T_MAX;
+		uintreg nextIndex = TIKI_SIZE_T_MAX;
 
 		if ( m_tokenAsChars )
 		{
 			bool found = false;
-			uint index = m_currentIndex - 1u;
+			uintreg index = m_currentIndex - 1u;
 			const char* pText = m_text.cStr();
 			do
 			{
 				const char tc = pText[ ++index ];
 
-				for (uint i = 0u; i < m_token.getLength(); ++i)
+				for (uintreg i = 0u; i < m_token.getLength(); ++i)
 				{
 					if ( tc == m_token[ i ])
 					{
@@ -78,7 +78,7 @@ namespace tiki
 			return "";
 		}
 
-		string part = m_text.subString( m_currentIndex, sint( nextIndex - m_currentIndex ) );
+		DynamicString part = m_text.subString( m_currentIndex, sint( nextIndex - m_currentIndex ) );
 		m_currentIndex = nextIndex;
 
 		return part;

@@ -11,36 +11,36 @@ namespace tiki
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float value )												{ return SimdVector(); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float x, const float y, const float z, const float w )		{ return SimdVector(); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues, const size_t offset )						{ return SimdVector(); }
+	TIKI_SIMD_INLINE vf32	simd::set_f32( const float* pValues, const uintreg offset )						{ return SimdVector(); }
 	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues, const size_t offset )						{ return SimdVector(); }
+	TIKI_SIMD_INLINE vf32	simd::set_f32u( const float* pValues, const uintreg offset )					{ return SimdVector(); }
 
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32 value )												{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32 x, const sint32 y, const sint32 z, const sint32 w )	{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues, const size_t offset )						{ return SimdVector(); }
+	TIKI_SIMD_INLINE vi32	simd::set_i32( const sint32* pValues, const uintreg offset )					{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues, const size_t offset )					{ return SimdVector(); }
+	TIKI_SIMD_INLINE vi32	simd::set_i32u( const sint32* pValues, const uintreg offset )					{ return SimdVector(); }
 
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16 value )												{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16 a, const sint16 b, const sint16 c, const sint16 d, const sint16 e, const sint16 f, const sint16 g, const sint16 h )	{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues, const size_t offset )						{ return SimdVector(); }
+	TIKI_SIMD_INLINE vi16	simd::set_i16( const sint16* pValues, const uintreg offset )					{ return SimdVector(); }
 	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues )											{ return SimdVector(); }
-	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues, const size_t offset )					{ return SimdVector(); }
+	TIKI_SIMD_INLINE vi16	simd::set_i16u( const sint16* pValues, const uintreg offset )					{ return SimdVector(); }
 
 	//////////////////////////////////////////////////////////////////////////
 	// store
 
 	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const vf32 value)								{ }
-	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const size_t offset, const vf32 value)			{ }
+	TIKI_SIMD_INLINE void	simd::get_f32( float* pTarget, const uintreg offset, const vf32 value)			{ }
 	TIKI_SIMD_INLINE float	simd::get_f32_x( const vf32 value )												{ return value.f32s.x; }
 	TIKI_SIMD_INLINE float	simd::get_f32_y( const vf32 value )												{ return value.f32s.y; }
 	TIKI_SIMD_INLINE float	simd::get_f32_z( const vf32 value )												{ return value.f32s.z; }
 	TIKI_SIMD_INLINE float	simd::get_f32_w( const vf32 value )												{ return value.f32s.w; }
 
 	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const vi32 value )								{ }
-	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const size_t offset, const vi32 value )			{ }
+	TIKI_SIMD_INLINE void	simd::get_i32( sint32* pTarget, const uintreg offset, const vi32 value )		{ }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_x( const vi32 value )												{ return value.s32s.x; }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_y( const vi32 value )												{ return value.s32s.y; }
 	TIKI_SIMD_INLINE sint32	simd::get_i32_z( const vi32 value )												{ return value.s32s.z; }
@@ -85,7 +85,6 @@ namespace tiki
 
 	TIKI_SIMD_INLINE vf32	simd::rsqrt_f32( const vf32 value )												{ return SimdVector(); } // r = 1.0f / sqrt( value )
 	TIKI_SIMD_INLINE vf32	simd::dot4_f32( const vf32 v1, const vf32 v2 )									{ const float dot = (v1.f32s.x * v2.f32s.x) + (v1.f32s.y * v2.f32s.y) + (v1.f32s.z * v2.f32s.z) + (v1.f32s.w * v2.f32s.w); const SimdVector result = { dot, dot, dot, dot }; return result; }
-	
 }
 
 #endif // __TIKI_SIMD_FLOATEMULATION_INL_INCLUDED__

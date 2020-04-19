@@ -6,9 +6,9 @@ namespace tiki
 {
 	GraphicsSystem::GraphicsSystem()
 	{
-		TIKI_COMPILETIME_ASSERT( TIKI_OFFSETOF( GraphicsSystem, m_platformData ) == sizeof(uint) );
+		TIKI_COMPILETIME_ASSERT( TIKI_OFFSETOF( GraphicsSystem, m_platformData ) == sizeof(uintreg) );
 
-		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
 		{
 			m_pStockVertexFormats[ i ] = nullptr;
 		}
@@ -66,7 +66,7 @@ namespace tiki
 
 	void GraphicsSystem::dispose()
 	{
-		for (uint i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_pStockVertexFormats ); ++i)
 		{
 			if ( m_pStockVertexFormats[ i ] != nullptr )
 			{
@@ -220,7 +220,7 @@ namespace tiki
 		return pState;
 	}
 
-	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU /* = AddressMode_Clamp */, AddressMode addressV /* = AddressMode_Clamp */, AddressMode addressW /* = AddressMode_Clamp */, FilterMode magFilter /* = FilterMode_Linear */, FilterMode mipFilter /* = FilterMode_Linear */, size_t maxAnisotropy /* = 1 */, Color borderColor /* = TIKI_COLOR_BLACK */ )
+	const SamplerState* GraphicsSystem::createSamplerState( AddressMode addressU /* = AddressMode_Clamp */, AddressMode addressV /* = AddressMode_Clamp */, AddressMode addressW /* = AddressMode_Clamp */, FilterMode magFilter /* = FilterMode_Linear */, FilterMode mipFilter /* = FilterMode_Linear */, uintreg maxAnisotropy /* = 1 */, Color borderColor /* = TIKI_COLOR_BLACK */ )
 	{
 		SamplerStateParamters creationParameters;
 		creationParameters.addressU			= addressU;
@@ -264,7 +264,7 @@ namespace tiki
 		return pVertexFormat;
 	}
 
-	const VertexFormat* GraphicsSystem::createVertexFormat( const VertexAttribute* pVertexAttributes, uint vertexAttrubuteCount )
+	const VertexFormat* GraphicsSystem::createVertexFormat( const VertexAttribute* pVertexAttributes, uintreg vertexAttrubuteCount )
 	{
 		VertexFormatParameters creationParameters;
 		creationParameters.pAttributes		= pVertexAttributes;

@@ -32,7 +32,7 @@ namespace tiki
 		return typeCrc == s_modelTypeCrc;
 	}
 
-	void ModelConverter::getInputExtensions( List< string >& extensions ) const
+	void ModelConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
 		extensions.pushBack( ".dae" );
 	}
@@ -42,7 +42,7 @@ namespace tiki
 		return s_pModelTypeName;
 	}
 
-	bool ModelConverter::initializeConverter()
+	bool ModelConverter::initializeConverter( const ConversionContext& context )
 	{
 		return true;
 	}
@@ -53,9 +53,9 @@ namespace tiki
 
 	bool ModelConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
-		const string material	= asset.parameters.getOptionalString( "material", "" );
-		const float scale		= asset.parameters.getOptionalFloat( "scale", 1.0f );
-		const bool calcTangents	= asset.parameters.getOptionalBool( "calculate_tangents", true );
+		const DynamicString material	= asset.parameters.getOptionalString( "material", "" );
+		const float scale				= asset.parameters.getOptionalFloat( "scale", 1.0f );
+		const bool calcTangents			= asset.parameters.getOptionalBool( "calculate_tangents", true );
 
 		ToolModel model;
 		if( !model.create( asset.inputFilePath.getCompletePath(), scale ) ||

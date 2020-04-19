@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PHYSICS2DJOINTCOMPONENT_HPP_INCLUDED
-#define TIKI_PHYSICS2DJOINTCOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -32,5 +30,3 @@ namespace tiki
 		Physics2dWorld*					m_pPhysicsWorld;
 	};
 }
-
-#endif // TIKI_PHYSICS2DJOINTCOMPONENT_HPP_INCLUDED

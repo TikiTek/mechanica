@@ -8,68 +8,68 @@
 
 namespace tiki
 {
-	string string_tools::toString( sint8 value )
+	DynamicString string_tools::toString( sint8 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%i", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( sint16 value )
+	DynamicString string_tools::toString( sint16 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%i", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( sint32 value )
+	DynamicString string_tools::toString( sint32 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%i", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( sint64 value )
+	DynamicString string_tools::toString( sint64 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%lli", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( uint8 value )
+	DynamicString string_tools::toString( uint8 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%u", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( uint16 value )
+	DynamicString string_tools::toString( uint16 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%u", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( uint32 value )
+	DynamicString string_tools::toString( uint32 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%u", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( uint64 value )
+	DynamicString string_tools::toString( uint64 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%llu", value );
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( float32 value )
+	DynamicString string_tools::toString( float32 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%f", value );
 
-		uint index = getStringLength( buffer ) - 1u;
+		uint index = getStringSize( buffer ) - 1u;
 		while( index > 0 )
 		{
 			if( buffer[ index - 1u ] == '.' || buffer[ index ] != '0' )
@@ -84,15 +84,15 @@ namespace tiki
 			index--;
 		}
 
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
-	string string_tools::toString( float64 value )
+	DynamicString string_tools::toString( float64 value )
 	{
 		char buffer[ 64u ];
 		sprintf( buffer, "%f", value );
 
-		uint index = getStringLength( buffer ) - 1u;
+		uint index = getStringSize( buffer ) - 1u;
 		while( index > 0 )
 		{
 			if( buffer[ index - 1u ] == '.' || buffer[ index ] != '0' )
@@ -107,7 +107,7 @@ namespace tiki
 			index--;
 		}
 
-		return string( buffer );
+		return DynamicString( buffer );
 	}
 
 	sint8 string_tools::parseSInt8( const char* pString )

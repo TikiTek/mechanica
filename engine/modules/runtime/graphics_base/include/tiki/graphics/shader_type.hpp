@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SHADERTYPE_HPP__INCLUDED
-#define TIKI_SHADERTYPE_HPP__INCLUDED
 
 namespace tiki
 {
@@ -18,5 +16,3 @@ namespace tiki
 		ShaderType_Count
 	};
 }
-
-#endif // TIKI_SHADERTYPE_HPP__INCLUDED

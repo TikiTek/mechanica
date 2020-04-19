@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_AXISALIGNEDRECTANGLE_INL_INCLUDED
-#define TIKI_AXISALIGNEDRECTANGLE_INL_INCLUDED
 
 namespace tiki
 {
@@ -102,5 +100,3 @@ namespace tiki
 		return AxisAlignedRectangle::createCentered( Vector2::zero, extends );
 	}
 }
-
-#endif // TIKI_AXISALIGNEDRECTANGLE_INL_INCLUDED

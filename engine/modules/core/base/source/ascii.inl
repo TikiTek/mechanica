@@ -57,7 +57,31 @@ namespace tiki
 
 	TIKI_FORCE_INLINE bool ascii::isNewLine( char c )
 	{
-		return c == '\n' || c == '\r'; // depends on OS
+		return c == '\n' || c == '\r'; // depends on OS and on windows two character
+	}
+
+	TIKI_FORCE_INLINE bool ascii::isCharacterEqual( char c1, char c2, AsciiCompareType compareType )
+	{
+		switch( compareType )
+		{
+		case AsciiCompareType::CaseSensitive:
+			return isCharacterEqualCaseSensitive( c1, c2 );
+
+		case AsciiCompareType::CaseInsensitive:
+			return isCharacterEqualCaseInsensitive( c1, c2 );
+		}
+
+		return false;
+	}
+
+	TIKI_FORCE_INLINE bool ascii::isCharacterEqualCaseSensitive( char c1, char c2 )
+	{
+		return c1 == c2;
+	}
+
+	TIKI_FORCE_INLINE bool ascii::isCharacterEqualCaseInsensitive( char c1, char c2 )
+	{
+		return toLower( c1 ) == toLower( c2 );
 	}
 
 	TIKI_FORCE_INLINE char ascii::toLower( char c )

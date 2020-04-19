@@ -70,7 +70,7 @@ namespace tiki
 
 		D3D11_INPUT_ELEMENT_DESC desc[ GraphicsSystemLimits_MaxVertexAttributes ];
 
-		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
+		for (uintreg i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
 		{
 			const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
 

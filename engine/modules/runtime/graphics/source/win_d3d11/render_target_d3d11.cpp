@@ -32,7 +32,7 @@ namespace tiki
 	RenderTarget::~RenderTarget()
 	{
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		for (uint i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_platformData.pColorViews ); ++i)
 		{
 			TIKI_ASSERT( m_platformData.pColorViews[ i ] == nullptr );
 		}
@@ -41,14 +41,14 @@ namespace tiki
 #endif
 	}
 
-	bool RenderTarget::create( GraphicsSystem& graphicsSystem, uint16 width, uint16 height, const TextureData** ppColorBuffers, uint colorBufferCount, const TextureData* pDepthBuffer )
+	bool RenderTarget::create( GraphicsSystem& graphicsSystem, uint16 width, uint16 height, const TextureData** ppColorBuffers, uintreg colorBufferCount, const TextureData* pDepthBuffer )
 	{
 		TIKI_ASSERT( colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
 
 		m_width				= width;
 		m_height			= height;
 
-		for (size_t i = 0u; i < colorBufferCount; ++i)
+		for (uintreg i = 0u; i < colorBufferCount; ++i)
 		{
 			TIKI_ASSERT( ppColorBuffers[ i ] != nullptr );
 			m_colorBuffers.push( ppColorBuffers[ i ] );
@@ -104,7 +104,7 @@ namespace tiki
 
 	void RenderTarget::dispose( GraphicsSystem& graphicsSystem )
 	{
-		for (size_t i = 0u; i < m_colorBuffers.getCount(); ++i)
+		for (uintreg i = 0u; i < m_colorBuffers.getCount(); ++i)
 		{
 			if ( m_platformData.pColorViews[ i ] != nullptr )
 			{

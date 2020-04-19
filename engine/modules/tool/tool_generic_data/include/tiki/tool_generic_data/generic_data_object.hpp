@@ -35,21 +35,21 @@ namespace tiki
 
 		const GenericDataObject*		getParentObject() const { return m_pParentObject; }
 
-		//bool							hasField( const string& name ) const;
+		//bool							hasField( const DynamicString& name ) const;
 		uint							getFieldCount() const { return m_fields.getCount(); }
 
-		const string&					getFieldName( uint index ) const;
+		const DynamicString&			getFieldName( uint index ) const;
 		const GenericDataType*			getFieldType( uint index ) const;
 		GenericDataValue*				getFieldValue( uint index, bool createMissing );
 		const GenericDataValue*			getFieldValue( uint index ) const;
 		bool							setFieldValue( uint index, GenericDataValue* pValue );
-		GenericDataValue*				getFieldValue( const string& name, bool createMissing );
-		const GenericDataValue*			getFieldValue( const string& name ) const;
+		GenericDataValue*				getFieldValue( const DynamicString& name, bool createMissing );
+		const GenericDataValue*			getFieldValue( const DynamicString& name ) const;
 		const GenericDataValue*			getFieldOrDefaultValue( uint index ) const;
-		const GenericDataValue*			getFieldOrDefaultValue( const string& name ) const;
+		const GenericDataValue*			getFieldOrDefaultValue( const DynamicString& name ) const;
 
 		void							removeField( uint index );
-		bool							removeField( const string& name );
+		bool							removeField( const DynamicString& name );
 
 #if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 		bool							writeToResource( ReferenceKey* pDataKey, ResourceSectionWriter& sectionWriter ) const;
@@ -70,9 +70,9 @@ namespace tiki
 
 		struct ObjectField
 		{
-			string					name;
-			const GenericDataType*	pType;
-			GenericDataValue*		pValue;
+			DynamicString				name;
+			const GenericDataType*		pType;
+			GenericDataValue*			pValue;
 		};
 
 		typedef Array< ObjectField > FieldArray;

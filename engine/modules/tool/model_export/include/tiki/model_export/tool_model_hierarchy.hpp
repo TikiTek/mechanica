@@ -20,7 +20,7 @@ namespace tiki
 		const _XmlElement*	pNode;
 
 		uint32				index;
-		string				name;
+		DynamicString		name;
 		crc32				crc;
 
 		bool				used;
@@ -37,7 +37,7 @@ namespace tiki
 	struct ToolModelGeometryInstance
 	{
 		const _XmlElement*	pNode;
-		string				geometryId;
+		DynamicString		geometryId;
 
 		Matrix44			worldTransform;
 	};
@@ -56,7 +56,7 @@ namespace tiki
 		const Array< ToolModelJoint >&		getJointData() const						{ return m_joints; }
 		uint								getJointCount() const						{ return m_joints.getCount(); }
 		const ToolModelJoint&				getJointByIndex( uint index ) const		{ return m_joints[ index ]; }
-		const ToolModelJoint*				getJointByName( const string& name ) const;
+		const ToolModelJoint*				getJointByName( const DynamicString& name ) const;
 
 		const ToolModelGeometryInstance&	getGeometryInstanceByIndex( uint index ) const	{ return m_instances[ index ]; }
 		uint								getGeometryInstanceCount() const				{ return m_instances.getCount(); }

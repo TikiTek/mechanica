@@ -10,7 +10,7 @@
 
 namespace tiki
 {
-	void formatStringBuffer( char* pTargetBuffer, uint bufferSize, const char* pFormat, ... )
+	void formatStringBuffer( char* pTargetBuffer, uintreg bufferSize, const char* pFormat, ... )
 	{
 		va_list argptr;
 		va_start( argptr, pFormat );
@@ -20,7 +20,7 @@ namespace tiki
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 
-	bool convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uint targetLengthInCharacters, const char* pSourceBuffer )
+	bool convertUtf8ToWidecharString( wchar_t* pTargetBuffer, uintreg targetLengthInCharacters, const char* pSourceBuffer )
 	{
 		const int result = MultiByteToWideChar(
 			CP_UTF8,
@@ -34,7 +34,7 @@ namespace tiki
 		return result != 0;
 	}
 
-	bool convertWidecharToUtf8String( char* pTargetBuffer, uint targetLengthInCharacters, const wchar_t* pSourceBuffer, uintreg length /*= 0u*/ )
+	bool convertWidecharToUtf8String( char* pTargetBuffer, uintreg targetLengthInCharacters, const wchar_t* pSourceBuffer, uintreg length /*= 0u*/ )
 	{
 		const int sourceCount = (length == 0u ? -1 : int(length));
 		const int result = WideCharToMultiByte(
@@ -51,7 +51,7 @@ namespace tiki
 		return result != 0;
 	}
 
-	void formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args )
+	void formatStringBufferArgs( char* pTargetBuffer, uintreg targetLength, const char* pFormat, va_list args )
 	{
 		_vsprintf_s_l(
 			pTargetBuffer,
@@ -64,7 +64,7 @@ namespace tiki
 
 #elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
 
-	void formatStringBufferArgs( char* pTargetBuffer, uint targetLength, const char* pFormat, va_list args )
+	void formatStringBufferArgs( char* pTargetBuffer, uintreg targetLength, const char* pFormat, va_list args )
 	{
 		vsnprintf( pTargetBuffer, bufferSize, pFormat, args );
 	}

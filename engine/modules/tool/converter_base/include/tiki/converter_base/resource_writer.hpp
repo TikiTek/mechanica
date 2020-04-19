@@ -14,17 +14,17 @@ namespace tiki
 
 	public:
 
-						ResourceWriter();
-						~ResourceWriter();
+											ResourceWriter();
+											~ResourceWriter();
 
-		void			openResource( const string& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion );
-		void			closeResource();
+		void								openResource( const DynamicString& name, fourcc type, const ResourceDefinition& definition, uint16 resourceFormatVersion );
+		void								closeResource();
 
-		void			openDataSection( ResourceSectionWriter& sectionWriter, SectionType sectionType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
-		void			closeDataSection( ResourceSectionWriter& sectionWriter );
+		void								openDataSection( ResourceSectionWriter& sectionWriter, SectionType sectionType, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		void								closeDataSection( ResourceSectionWriter& sectionWriter );
 
-		ReferenceKey	addString( const string& text );
-		ReferenceKey	addResourceLink( const string& fileName, crc32 resourceKey, fourcc resourceType );
+		ReferenceKey						addString( const DynamicString& text );
+		ReferenceKey						addResourceLink( const DynamicString& fileName, crc32 resourceKey, fourcc resourceType );
 
 	private:
 
@@ -40,38 +40,38 @@ namespace tiki
 
 		struct StringData
 		{
-			string	text;
+			DynamicString					text;
 		};
 
 		struct ResourceLinkData
 		{
-			string	fileName;
-			crc32	resourceKey;
-			fourcc	resourceType;
+			DynamicString					fileName;
+			crc32							resourceKey;
+			fourcc							resourceType;
 		};
 
 		struct ResourceData
 		{
-			fourcc						type;
-			string						name;
-			ResourceDefinition			definition;
+			fourcc							type;
+			DynamicString					name;
+			ResourceDefinition				definition;
 
-			uint16						version;
+			uint16							version;
 
-			List< SectionData >			sections;
-			List< StringData >			strings;
-			List< ResourceLinkData >	links;
+			List< SectionData >				sections;
+			List< StringData >				strings;
+			List< ResourceLinkData >		links;
 		};
 
-		Path					m_filePath;
-		PlatformType			m_platform;
+		Path								m_filePath;
+		PlatformType						m_platform;
 
-		List< ResourceData >	m_resources;
-		ResourceData*			m_pCurrentResource;
+		List< ResourceData >				m_resources;
+		ResourceData*						m_pCurrentResource;
 
-		void					create( const Path& filePath );
-		void					dispose();
+		void								create( const Path& filePath );
+		void								dispose();
 
-		bool					writeToFile();
+		bool								writeToFile();
 	};
 }

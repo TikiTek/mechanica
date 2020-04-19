@@ -13,7 +13,7 @@ namespace tiki
 	{
 	}
 
-	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, size_t size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName )
+	bool BaseBuffer::create( GraphicsSystem& graphicsSystem, uintreg size, bool dynamic, BaseBufferTypes binding, const void* pInitData, const char* pDebugName )
 	{
 		return false;
 	}

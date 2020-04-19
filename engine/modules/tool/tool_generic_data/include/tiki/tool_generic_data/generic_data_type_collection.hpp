@@ -39,10 +39,10 @@ namespace tiki
 		GenericDataTagHandler&			getTagHandler();
 
 		const TypeList&					getTypes() const;
-		const GenericDataType*			findTypeByName( const string& name ) const;
+		const GenericDataType*			findTypeByName( const DynamicString& name ) const;
 		void							findTypesByType( List< const GenericDataType* >& types, GenericDataTypeType typeType ) const;
 
-		GenericDataTypeMode				findModeByName( const string& name ) const;
+		GenericDataTypeMode				findModeByName( const DynamicString& name ) const;
 
 		const GenericDataTypeValueType*	getEnumDefaultBaseType() const;
 
@@ -50,15 +50,15 @@ namespace tiki
 		const GenericDataTypeReference*	makeReferenceType( const GenericDataTypeResource* pBaseType );
 		const GenericDataTypePointer*	makePointerType( const GenericDataTypeStruct* pBaseType );
 
-		const GenericDataType*			parseType( const string& typeString );
-		bool							parseValue( GenericDataValue* pTargetValue, const string& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
+		const GenericDataType*			parseType( const DynamicString& typeString );
+		bool							parseValue( GenericDataValue* pTargetValue, const DynamicString& valueString, const GenericDataType* pType, const GenericDataType* pParentType );
 
 		bool							exportCode( GenericDataTypeMode mode, const Path& targetDir );
 
 	private:
 
 		typedef List< const Package* > PackageList;
-		typedef Map< string, GenericDataModuleData > ModuleMap;
+		typedef Map< DynamicString, GenericDataModuleData > ModuleMap;
 		typedef Map< const GenericDataType*, const GenericDataTypeArray* > TypeArrayMap;
 		typedef Map< const GenericDataTypeResource*, const GenericDataTypeReference* > TypeReferenceMap;
 		typedef Map< const GenericDataTypeStruct*, const GenericDataTypePointer* > TypePointerMap;
@@ -84,6 +84,6 @@ namespace tiki
 		void							registerDefaultResourceTypes();
 
 		bool							loadFiles( const List< Path >& typeFiles );
-		bool							parseFile( XmlElement* pRootNode, const string& filename, const string& moduleName );
+		bool							parseFile( XmlElement* pRootNode, const DynamicString& filename, const DynamicString& moduleName );
 	};
 }

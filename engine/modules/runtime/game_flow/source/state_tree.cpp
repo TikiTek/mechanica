@@ -10,7 +10,7 @@ namespace tiki
 		m_isInitial		= false;
 	}
 
-	void StateTree::create( StateDefinition* pStateDefinitions, uint stateCount )
+	void StateTree::create( StateDefinition* pStateDefinitions, uintreg stateCount )
 	{
 		m_stateDefinition.create( pStateDefinitions, stateCount );
 
@@ -27,16 +27,16 @@ namespace tiki
 		m_stateDefinition.dispose();
 	}
 
-	uint StateTree::getActiveStates( uint* pTargetActiveStates, uint capacity ) const
+	uintreg StateTree::getActiveStates( uintreg* pTargetActiveStates, uintreg capacity ) const
 	{
-		const uint currentStateIndex		= getCurrentState();
-		const uint currentTransitionIndex	= isInTransition() ? m_transition.getCurrentTransitionState() : InvalidStateIndex;
+		const uintreg currentStateIndex		= getCurrentState();
+		const uintreg currentTransitionIndex	= isInTransition() ? m_transition.getCurrentTransitionState() : InvalidStateIndex;
 		const StateDefinition& currentState	= m_stateDefinition[ currentStateIndex ];
 
-		uint activeStateCount = 0u;
-		for (uint i = 1u; i < currentState.hierarchyLength; ++i)
+		uintreg activeStateCount = 0u;
+		for (uintreg i = 1u; i < currentState.hierarchyLength; ++i)
 		{
-			const uint stateIndex = currentState.stateHierarchy[ i ];
+			const uintreg stateIndex = currentState.stateHierarchy[ i ];
 			TIKI_ASSERT( stateIndex != InvalidStateIndex );
 
 			if ( stateIndex == currentTransitionIndex )
@@ -50,15 +50,15 @@ namespace tiki
 		return activeStateCount;
 	}
 
-	bool StateTree::isInState( uint stateIndex ) const
+	bool StateTree::isInState( uintreg stateIndex ) const
 	{
-		const uint currentStateIndex		= getCurrentState();
-		const uint currentTransitionIndex	= isInTransition() ? m_transition.getCurrentTransitionState() : InvalidStateIndex;
+		const uintreg currentStateIndex		= getCurrentState();
+		const uintreg currentTransitionIndex	= isInTransition() ? m_transition.getCurrentTransitionState() : InvalidStateIndex;
 		const StateDefinition& currentState	= m_stateDefinition[ currentStateIndex ];
 
-		for( uint i = 1u; i < currentState.hierarchyLength; ++i )
+		for( uintreg i = 1u; i < currentState.hierarchyLength; ++i )
 		{
-			const uint currentStateIndex = currentState.stateHierarchy[ i ];
+			const uintreg currentStateIndex = currentState.stateHierarchy[ i ];
 			TIKI_ASSERT( currentStateIndex != InvalidStateIndex );
 
 			if( currentStateIndex == currentTransitionIndex )
@@ -75,11 +75,11 @@ namespace tiki
 		return false;
 	}
 
-	void StateTree::startTransition( uint targetStateIndex )
+	void StateTree::startTransition( uintreg targetStateIndex )
 	{
 		TIKI_ASSERT( targetStateIndex < m_stateDefinition.getCount() );
 
-		const uint currentState = isInTransition() ? m_transition.currentState : m_currentState;
+		const uintreg currentState = isInTransition() ? m_transition.currentState : m_currentState;
 
 		if ( m_currentState == targetStateIndex && !isInTransition() )
 		{
@@ -91,11 +91,11 @@ namespace tiki
 		const StateDefinition& sourceDefinition			= m_stateDefinition[ currentState ];
 		const StateDefinition& destinationDefinition	= m_stateDefinition[ targetStateIndex ];
 
-		uint sourceMatchIndex		= 0u;
-		uint destinationMatchIndex	= 0u;
-		for (uint i = sourceDefinition.hierarchyLength - 1u; i != TIKI_SIZE_T_MAX && sourceMatchIndex == 0u; --i)
+		uintreg sourceMatchIndex		= 0u;
+		uintreg destinationMatchIndex	= 0u;
+		for (uintreg i = sourceDefinition.hierarchyLength - 1u; i != TIKI_SIZE_T_MAX && sourceMatchIndex == 0u; --i)
 		{
-			for (uint j = 0u; j < destinationDefinition.hierarchyLength; ++j)
+			for (uintreg j = 0u; j < destinationDefinition.hierarchyLength; ++j)
 			{
 				if ( sourceDefinition.stateHierarchy[ i ] == destinationDefinition.stateHierarchy[ j ] )
 				{
@@ -108,19 +108,19 @@ namespace tiki
 
 		m_transition.path.clear();
 
-		const uint curStart = sourceDefinition.hierarchyLength - 1u;
-		for (uint i = curStart - 1u; i >= sourceMatchIndex && i != TIKI_SIZE_T_MAX; --i)
+		const uintreg curStart = sourceDefinition.hierarchyLength - 1u;
+		for (uintreg i = curStart - 1u; i >= sourceMatchIndex && i != TIKI_SIZE_T_MAX; --i)
 		{
 			m_transition.path.push( sourceDefinition.stateHierarchy[ i ] );
 		}
 
-		for (uint i = destinationMatchIndex + 1u; i < destinationDefinition.hierarchyLength; ++i)
+		for (uintreg i = destinationMatchIndex + 1u; i < destinationDefinition.hierarchyLength; ++i)
 		{
 			m_transition.path.push( destinationDefinition.stateHierarchy[ i ] );
 		}
 
 		TIKI_TRACE_DEBUG( "[statetree] start transition to: %i -> %i, path:", currentState, targetStateIndex );
-		for (uint i = 0u; i < m_transition.path.getCount(); ++i)
+		for (uintreg i = 0u; i < m_transition.path.getCount(); ++i)
 		{
 			TIKI_TRACE_DEBUG( " %i", m_transition.path[ i ] );
 		}
@@ -130,7 +130,7 @@ namespace tiki
 		m_transition.currentState	= currentState;
 
 		const bool forward			= m_transition.isInForwardTransition();
-		const uint transitionState	= ( forward ? m_transition.getCurrentTransitionState() : currentState );
+		const uintreg transitionState	= ( forward ? m_transition.getCurrentTransitionState() : currentState );
 
 		if ( !isInTransition() )
 		{
@@ -181,7 +181,7 @@ namespace tiki
 					else
 					{
 						const bool forward			= m_transition.isInForwardTransition();
-						const uint transitionState	= m_transition.getCurrentTransitionState();
+						const uintreg transitionState	= m_transition.getCurrentTransitionState();
 						m_transition.currentStep	= ( forward ? 0u : m_stateDefinition[ transitionState ].transitionStepCount - 1u );
 						m_transition.targetStep		= ( forward ? m_stateDefinition[ transitionState ].transitionStepCount : InvalidTransitionStep );
 					}

@@ -69,7 +69,7 @@ namespace tiki
 		m_pVertexFormat		= creationParameters.pVertexFormat;
 		m_pShader			= creationParameters.pShader;
 
-		for (size_t i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
+		for (uintreg i = 0u; i < m_pVertexFormat->getAttributeCount(); ++i)
 		{
 			const VertexAttribute& att = m_pVertexFormat->getAttributeByIndex( i );
 			D3D12_INPUT_ELEMENT_DESC& desc = m_platformData.aInputElements[ i ];

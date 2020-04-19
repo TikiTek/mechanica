@@ -12,7 +12,7 @@ namespace tiki
 	{
 		RenderTargetPlatformData()
 		{
-			for( size_t i = 0u; i < TIKI_COUNT( colorHandles ); ++i )
+			for( uintreg i = 0u; i < TIKI_COUNT( colorHandles ); ++i )
 			{
 				colorHandles[ i ] = InvalidDescriptorHandle;
 			}

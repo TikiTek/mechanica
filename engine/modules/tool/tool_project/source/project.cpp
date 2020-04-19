@@ -55,14 +55,27 @@ namespace tiki
 		m_packagePool.dispose();
 	}
 
-	Package* Project::addPackage( const string& packageName )
+	void Project::addPlatform( PlatformType value )
+	{
+		if( !m_platforms.contains( value ) )
+		{
+			m_platforms.pushBack( value );
+		}
+	}
+
+	void Project::removePlatform( PlatformType value )
+	{
+		m_platforms.removeSortedByValue( value );
+	}
+
+	Package* Project::addPackage( const DynamicString& packageName )
 	{
 		Package* pPackage = m_packagePool.push();
 		pPackage->create( m_contentPath, packageName );
 		return pPackage;
 	}
 
-	Package* Project::findPackage( const string& packageName )
+	Package* Project::findPackage( const DynamicString& packageName )
 	{
 		for( Package& package : m_packages )
 		{
@@ -75,7 +88,7 @@ namespace tiki
 		return nullptr;
 	}
 
-	const Package* Project::findPackage( const string& packageName ) const
+	const Package* Project::findPackage( const DynamicString& packageName ) const
 	{
 		return const_cast< Project* >( this )->findPackage( packageName );
 	}

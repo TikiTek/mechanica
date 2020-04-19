@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_RESOURCE_FILE_HPP_INCLUDED
-#define TIKI_RESOURCE_FILE_HPP_INCLUDED
 
 #include "tiki/base/fourcc.hpp"
 #include "tiki/base/types.hpp"
@@ -133,7 +131,7 @@ namespace tiki
 		TIKI_ALIGN_PREFIX( 8 )	struct
 		{
 			const T*	m_pRef;
-			size_t		m_pad0;
+			uintreg		m_pad0;
 		} TIKI_ALIGN_POSTFIX( 8 );
 #endif
 	};
@@ -208,5 +206,3 @@ namespace tiki
 #endif
 	};
 }
-
-#endif // TIKI_RESOURCE_FILE_HPP_INCLUDED

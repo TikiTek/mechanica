@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_DELEGATE_HPP_INCLUDED
-#define TIKI_DELEGATE_HPP_INCLUDED
 
 namespace tiki
 {
@@ -65,5 +63,3 @@ namespace tiki
 }
 
 #include "../../../source/delegate.inl"
-
-#endif // TIKI_DELEGATE_HPP_INCLUDED

@@ -11,7 +11,7 @@ namespace tiki
 
 	public:
 
-		TIKI_FORCE_INLINE void	create( size_t count );
+		TIKI_FORCE_INLINE void	create( uintreg count );
 		TIKI_FORCE_INLINE void	dispose();
 
 		TIKI_FORCE_INLINE T*	findOrAllocate( crc32 hashValue );
@@ -19,7 +19,7 @@ namespace tiki
 	private:
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		uint					m_maxCount;
+		uintreg					m_maxCount;
 #endif
 
 		SizedArray< T >			m_data;

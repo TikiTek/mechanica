@@ -59,7 +59,7 @@ namespace tiki
 
 		lua_State*		m_pState;
 
-		static void*	allocateMemory( void* pUserData, void* pPointer, size_t osize, size_t nsize );
+		static void*	allocateMemory( void* pUserData, void* pPointer, uintreg osize, uintreg nsize );
 
 		void			stackDump();
 

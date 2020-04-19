@@ -25,14 +25,14 @@ namespace tiki
 		TIKI_FORCE_INLINE					Array();
 		TIKI_FORCE_INLINE					~Array();
 
-		TIKI_FORCE_INLINE bool				create( uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
-		TIKI_FORCE_INLINE bool				create( ConstIterator pInitData, uint capacity, size_t aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
+		TIKI_FORCE_INLINE bool				create( uintreg capacity, uintreg aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
+		TIKI_FORCE_INLINE bool				create( ConstIterator pInitData, uintreg capacity, uintreg aligment = TIKI_DEFAULT_ALIGNMENT, bool constructElements = true );
 		TIKI_FORCE_INLINE void				dispose();
 
 		TIKI_FORCE_INLINE void				swap( Array< T >& other );
 
-		TIKI_FORCE_INLINE uint				getCount() const	{ return m_capacity; }
-		TIKI_FORCE_INLINE uint				getCapacity() const	{ return m_capacity; }
+		TIKI_FORCE_INLINE uintreg			getCount() const	{ return m_capacity; }
+		TIKI_FORCE_INLINE uintreg			getCapacity() const	{ return m_capacity; }
 
 		TIKI_FORCE_INLINE Iterator			getBegin()			{ return m_pData; }
 		TIKI_FORCE_INLINE ConstIterator		getBegin() const	{ return m_pData; }
@@ -46,11 +46,11 @@ namespace tiki
 		TIKI_FORCE_INLINE Reference			getLast()			{ return m_pData[ m_capacity - 1u ]; }
 		TIKI_FORCE_INLINE ConstReference	getLast() const		{ return m_pData[ m_capacity - 1u ]; }
 
-		TIKI_FORCE_INLINE uint				getIndexOfIterator( ConstIterator pValue ) const;
-		TIKI_FORCE_INLINE uint				getIndexOfValue( ConstReference value ) const;
+		TIKI_FORCE_INLINE uintreg				getIndexOfIterator( ConstIterator pValue ) const;
+		TIKI_FORCE_INLINE uintreg		getIndexOfValue( ConstReference value ) const;
 
-		TIKI_FORCE_INLINE Reference			operator[]( uint index );
-		TIKI_FORCE_INLINE ConstReference	operator[]( uint index ) const;
+		TIKI_FORCE_INLINE Reference			operator[]( uintreg index );
+		TIKI_FORCE_INLINE ConstReference	operator[]( uintreg index ) const;
 
 		TIKI_FORCE_INLINE Iterator			begin()				{ return getBegin(); }
 		TIKI_FORCE_INLINE ConstIterator		begin() const		{ return getBegin(); }
@@ -60,8 +60,8 @@ namespace tiki
 
 	private:
 
-		T*		m_pData;
-		uint	m_capacity;
+		T*									m_pData;
+		uintreg								m_capacity;
 	};
 
 	template< class T >

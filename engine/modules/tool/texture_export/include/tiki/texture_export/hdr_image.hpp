@@ -33,20 +33,20 @@ namespace tiki
 			FlipDirection_Vertical
 		};
 
-		void			create( const size_t width, const size_t height, GammaType gamma = GammaType_Linear );
+		void			create( const uintreg width, const uintreg height, GammaType gamma = GammaType_Linear );
 		bool			createFromFile( const char* pFileName );
 		void			createFromImage( const HdrImage& imageToCopy );
 
 		void			dispose();
 
-		size_t			getWidth() const		{ return m_width; }
-		size_t			getHeight() const		{ return m_height; }
-		size_t			getChannelCount() const { return ChannelCount; }
+		uintreg			getWidth() const		{ return m_width; }
+		uintreg			getHeight() const		{ return m_height; }
+		uintreg			getChannelCount() const { return ChannelCount; }
 		GammaType		getGammaType() const	{ return m_gammaType; }
 
 		float*			getData() { return m_data.getBegin(); }
 
-		void			resizeImage( uint width, uint height );
+		void			resizeImage( uintreg width, uintreg height );
 		void			resizeImage( const uint2& size );
 		void			cropImage( const uint4& rect );
 		void			covertGamma( GammaType gammaType );
@@ -58,8 +58,8 @@ namespace tiki
 
 		GammaType		m_gammaType;
 
-		size_t			m_width;
-		size_t			m_height;
+		uintreg			m_width;
+		uintreg			m_height;
 
 		Array< float >	m_data;
 

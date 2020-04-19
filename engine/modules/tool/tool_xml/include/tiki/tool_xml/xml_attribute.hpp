@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_XML_ATTRIBUTE_HPP_INCLUDED
-#define TIKI_XML_ATTRIBUTE_HPP_INCLUDED
 
 namespace tinyxml2
 {
@@ -26,5 +24,3 @@ namespace tiki
 		const tinyxml2::XMLAttribute*	getNativeAttribute() const;
 	};
 }
-
-#endif // TIKI_XML_ATTRIBUTE_HPP_INCLUDED

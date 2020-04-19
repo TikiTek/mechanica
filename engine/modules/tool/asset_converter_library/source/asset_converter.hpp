@@ -33,34 +33,35 @@ namespace tiki
 
 	public:
 
-						AssetConverter();
-		virtual			~AssetConverter();
+									AssetConverter();
+		virtual						~AssetConverter();
 
-		virtual bool	create( const AssetConverterParamter& parameters );
-		virtual void	dispose();
+		virtual bool				create( const AssetConverterParamter& parameters );
+		virtual void				dispose();
 
-		virtual void	queueAll() TIKI_OVERRIDE_FINAL;
+		virtual void				queueAll() TIKI_OVERRIDE_FINAL;
 
-		virtual void	startWatch() TIKI_OVERRIDE_FINAL;
-		virtual void	stopWatch() TIKI_OVERRIDE_FINAL;
+		virtual void				startWatch() TIKI_OVERRIDE_FINAL;
+		virtual void				stopWatch() TIKI_OVERRIDE_FINAL;
 
-		virtual bool	isConvertionRunning() TIKI_OVERRIDE_FINAL;
-		virtual bool	popFinishConversion() TIKI_OVERRIDE_FINAL;
-		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_OVERRIDE_FINAL;
+		virtual bool				isConvertionRunning() TIKI_OVERRIDE_FINAL;
+		virtual bool				popFinishConversion() TIKI_OVERRIDE_FINAL;
+		virtual bool				getChangedFiles( Array< DynamicString >& changedFiles ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		typedef List< const ConverterBase* > ConverterList;
+		using StringStringMap = Map< DynamicString, DynamicString >;
 
 		struct TemplateDescription
 		{
 			Path					filePath;
-			string					name;
-			string					type;
+			DynamicString			name;
+			DynamicString			type;
 
 			ConversionParameters	parameters;
 		};
-		typedef Map< string, TemplateDescription > TemplateMap;
+		typedef Map< DynamicString, TemplateDescription > TemplateMap;
 
 		struct ConversionTask
 		{
@@ -96,12 +97,12 @@ namespace tiki
 
 		ConverterList				m_converters;
 		TemplateMap					m_templates;
-		Map< string, string >		m_extensions;
+		StringStringMap				m_extensions;
 
 		Mutex						m_queuedFilesMutex;
 		List< Path >				m_queuedFiles;
 		Mutex						m_changedFilesMutex;
-		List< string >				m_changedFiles;
+		List< DynamicString >		m_changedFiles;
 
 		Atomic< bool >				m_threadWork;
 		Atomic< bool >				m_threadFinish;

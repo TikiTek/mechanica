@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_COLOR_XKCD_HPP_INCLUDED
-#define TIKI_COLOR_XKCD_HPP_INCLUDED
 
 #include "tiki/graphics/color.hpp"
 
@@ -929,5 +927,3 @@
 #define TIKI_COLOR_XKCD_BLUE							TIKI_COLOR( 0x03u, 0x43u, 0xdf, 0xffu )
 #define TIKI_COLOR_XKCD_GREEN							TIKI_COLOR( 0x15u, 0xb0u, 0x1a, 0xffu )
 #define TIKI_COLOR_XKCD_PURPLE							TIKI_COLOR( 0x7eu, 0x1eu, 0x9c, 0xffu )
-
-#endif // TIKI_COLOR_XKCD_HPP_INCLUDED

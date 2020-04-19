@@ -35,7 +35,7 @@ namespace tiki
 
 	public:
 
-									GenericDataTypeValueType( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, GenericDataValueTypeType type );
+									GenericDataTypeValueType( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, GenericDataValueTypeType type );
 		virtual						~GenericDataTypeValueType();
 
 		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
@@ -43,7 +43,7 @@ namespace tiki
 
 		virtual uint				getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint				getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string				getCodeExportName() const TIKI_OVERRIDE_FINAL;
+		virtual DynamicString				getCodeExportName() const TIKI_OVERRIDE_FINAL;
 		virtual crc32				getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
 		GenericDataValueTypeType	getValueType() const;

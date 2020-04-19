@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_LINE2_HPP_INCLUDED
-#define TIKI_LINE2_HPP_INCLUDED
 
 #include "tiki/math/vector.hpp"
 
@@ -43,5 +41,3 @@ namespace tiki
 		}
 	};
 }
-
-#endif // TIKI_LINE2_HPP_INCLUDED

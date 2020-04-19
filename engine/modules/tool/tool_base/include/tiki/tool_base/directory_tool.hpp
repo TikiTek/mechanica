@@ -12,11 +12,11 @@ namespace tiki
 
 	namespace directory
 	{
-		bool	getFiles( List< string >& targetList, const string& path );
-		bool	getDirectories( List< string >& targetList, const string& path );
+		bool	getFiles( List< DynamicString >& targetList, const DynamicString& path );
+		bool	getDirectories( List< DynamicString >& targetList, const DynamicString& path );
 
-		bool	findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive = true );
-		bool	findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive = true );
+		bool	findFiles( List< Path >& targetList, const Path& path, const DynamicString& extension, bool recursive = true );
+		bool	findFiles( List< Path >& targetList, const DynamicString& path, const DynamicString& extension, bool recursive = true );
 	}
 }
 

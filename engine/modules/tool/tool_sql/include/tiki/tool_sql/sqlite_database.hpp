@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_SQLITE_DATABASE_HPP_INCLUDED
-#define TIKI_SQLITE_DATABASE_HPP_INCLUDED
 
 #include "tiki/base/dynamic_string.hpp"
 
@@ -38,5 +36,3 @@ namespace tiki
 
 	};
 }
-
-#endif // TIKI_SQLITE_DATABASE_HPP_INCLUDED

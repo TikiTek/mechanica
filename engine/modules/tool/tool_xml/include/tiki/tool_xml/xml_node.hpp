@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_XML_NODE_HPP_INCLUDED
-#define TIKI_XML_NODE_HPP_INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -55,5 +53,3 @@ namespace tiki
 		const tinyxml2::XMLNode*	getNativeNode() const;
 	};
 }
-
-#endif // TIKI_XML_NODE_HPP_INCLUDED

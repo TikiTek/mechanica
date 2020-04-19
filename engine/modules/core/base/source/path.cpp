@@ -19,44 +19,54 @@ namespace tiki
 		setCombinedPath( pPath1, pPath2 );
 	}
 
+	Path::Path( const Path& path1, const char* pPath2 )
+	{
+		setCombinedPath( path1, pPath2 );
+	}
+
+	Path::Path( const Path& path1, const Path& path2 )
+	{
+		setCombinedPath( path1, path2 );
+	}
+
 	bool Path::isEmpty() const
 	{
 		return isStringEmpty( m_prefix ) &&
 			isStringEmpty( m_directory ) &&
-			isStringEmpty( m_filename ) &&
+			isStringEmpty( m_basename ) &&
 			isStringEmpty( m_extension );
 	}
 
 	void Path::clear()
 	{
-		m_bufferState		= BufferState_Invalid;
+		m_bufferState		= BufferState::Invalid;
 		m_buffer[ 0u ]		= '\0';
 		m_prefix[ 0u ]		= '\0';
 		m_directory[ 0u ]	= '\0';
-		m_filename[ 0u ]	= '\0';
+		m_basename[ 0u ]	= '\0';
 		m_extension[ 0u ]	= '\0';
 	}
 
 	void Path::setCompletePath( const char* pPath )
 	{
-		m_bufferState		= BufferState_Invalid;
+		m_bufferState		= BufferState::Invalid;
 		m_buffer[ 0u ]		= '\0';
 		m_prefix[ 0u ]		= '\0';
 		m_directory[ 0u ]	= '\0';
-		m_filename[ 0u ]	= '\0';
+		m_basename[ 0u ]	= '\0';
 		m_extension[ 0u ]	= '\0';
 
-		const uint pathLength = getStringSize( pPath );
+		const uintreg pathLength = getStringSize( pPath );
 
 		char buffer[ MaxPathLength ];
 		copyString( buffer, sizeof( buffer ), pPath );
 		stringReplace( buffer, '\\', '/' );
 
-		uint currentIndex = 0u;
-		const uint prefixEnd = stringIndexOf( buffer, ':' );
+		uintreg currentIndex = 0u;
+		const uintreg prefixEnd = stringIndexOf( buffer, ':' );
 		if( prefixEnd != TIKI_SIZE_T_MAX )
 		{
-			const uint prefixSize = TIKI_MIN( prefixEnd + 2u, sizeof( m_prefix ) );
+			const uintreg prefixSize = TIKI_MIN( prefixEnd + 2u, sizeof( m_prefix ) );
 			copyString( m_prefix, prefixSize, buffer );
 
 			currentIndex = prefixEnd + 1u;
@@ -67,10 +77,10 @@ namespace tiki
 			currentIndex++;
 		}
 
-		const uint directoryEnd = stringLastIndexOf( buffer, '/' );
+		const uintreg directoryEnd = stringLastIndexOf( buffer, '/' );
 		if( directoryEnd != TIKI_SIZE_T_MAX && directoryEnd != currentIndex )
 		{
-			const uint directorySize = TIKI_MIN( (directoryEnd - currentIndex) + 1u, sizeof( m_directory ) );
+			const uintreg directorySize = TIKI_MIN( (directoryEnd - currentIndex) + 1u, sizeof( m_directory ) );
 			copyString( m_directory, directorySize, buffer + currentIndex );
 
 			currentIndex = directoryEnd + 1u;
@@ -88,6 +98,12 @@ namespace tiki
 		push( path2 );
 	}
 
+	void Path::setCombinedPath( const Path& path1, const char* pPath2 )
+	{
+		*this = path1;
+		push( pPath2 );
+	}
+
 	void Path::setCombinedPath( const Path& path1, const Path& path2 )
 	{
 		*this = path1;
@@ -96,20 +112,20 @@ namespace tiki
 
 	void Path::setFilenameWithExtension( const char* pFilename )
 	{
-		const uint filenameSize = getStringSize( pFilename );
+		const uintreg filenameSize = getStringSize( pFilename );
 
-		uint filenameEnd = stringLastIndexOf( pFilename, '.' );
+		uintreg filenameEnd = stringLastIndexOf( pFilename, '.' );
 		if( filenameEnd == TIKI_SIZE_T_MAX )
 		{
 			filenameEnd = filenameSize + 1u;
 		}
 
-		const uint fileNameSize = TIKI_MIN( filenameEnd + 1u, sizeof( m_filename ) );
-		copyString( m_filename, fileNameSize, pFilename );
+		const uintreg fileNameSize = TIKI_MIN( filenameEnd + 1u, sizeof( m_basename ) );
+		copyString( m_basename, fileNameSize, pFilename );
 
 		if( filenameEnd != filenameSize + 1u )
 		{
-			const uint extensionSize = TIKI_MIN( (filenameSize - filenameEnd) + 1u, sizeof( m_extension ) );
+			const uintreg extensionSize = TIKI_MIN( (filenameSize - filenameEnd) + 1u, sizeof( m_extension ) );
 			copyString( m_extension, extensionSize, pFilename + filenameEnd );
 		}
 		else
@@ -117,25 +133,25 @@ namespace tiki
 			m_extension[ 0u ] = '\0';
 		}
 
-		m_bufferState = BufferState_Invalid;
+		m_bufferState = BufferState::Invalid;
 	}
 
 	void Path::setPrefix( const char* pPrefix )
 	{
 		copyString( m_prefix, sizeof( m_prefix ), pPrefix );
-		m_bufferState = BufferState_Invalid;
+		m_bufferState = BufferState::Invalid;
 	}
 
 	void Path::setDirectory( const char* pDirectory )
 	{
 		copyString( m_directory, sizeof( m_directory ), pDirectory );
-		m_bufferState = BufferState_Invalid;
+		m_bufferState = BufferState::Invalid;
 	}
 
-	void Path::setFilename( const char* pFilename )
+	void Path::setBasename( const char* pBasename )
 	{
-		copyString( m_filename, sizeof( m_filename ), pFilename );
-		m_bufferState = BufferState_Invalid;
+		copyString( m_basename, sizeof( m_basename ), pBasename );
+		m_bufferState = BufferState::Invalid;
 	}
 
 	void Path::setExtension( const char* pExtension )
@@ -154,12 +170,12 @@ namespace tiki
 			copyString( m_extension, sizeof( m_extension ), pExtension );
 		}
 
-		m_bufferState = BufferState_Invalid;
+		m_bufferState = BufferState::Invalid;
 	}
 
 	bool Path::pop()
 	{
-		const uint index = stringLastIndexOf( m_directory, '/' );
+		const uintreg index = stringLastIndexOf( m_directory, '/' );
 		if( index == TIKI_SIZE_T_MAX )
 		{
 			return false;
@@ -168,13 +184,13 @@ namespace tiki
 		setFilenameWithExtension( m_directory + index + 1u );
 		m_directory[ index ] = '\0';
 
-		m_bufferState = BufferState_Invalid;
+		m_bufferState = BufferState::Invalid;
 		return true;
 	}
 
 	void Path::push( const char* pName )
 	{
-		uint index = getStringSize( m_directory );
+		uintreg index = getStringSize( m_directory );
 		copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
 		index++;
 
@@ -193,7 +209,7 @@ namespace tiki
 		const char* pFilename = getFilenameWithExtension();
 		if( !isStringEmpty( pFilename ) )
 		{
-			uint index = getStringSize( m_directory );
+			uintreg index = getStringSize( m_directory );
 			copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
 			index++;
 
@@ -203,14 +219,14 @@ namespace tiki
 
 		if( !isStringEmpty( path.getDirectory() ) )
 		{
-			uint index = getStringSize( m_directory );
+			uintreg index = getStringSize( m_directory );
 			copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
 			index++;
 
 			copyString( m_directory + index, sizeof( m_directory ) - index, path.getDirectory() );
 		}
 
-		setFilename( path.getFilename() );
+		setBasename( path.getBasename() );
 		setExtension( path.getExtension() );
 
 		return true;
@@ -218,19 +234,19 @@ namespace tiki
 
 	const char* Path::getDirectoryWithPrefix() const
 	{
-		buildPath( BufferState_DirectoryWithPrefix );
+		buildPath( BufferState::DirectoryWithPrefix );
 		return m_buffer;
 	}
 
 	const char* Path::getFilenameWithExtension() const
 	{
-		buildPath( BufferState_FilenameWithExtension );
+		buildPath( BufferState::FilenameWithExtension );
 		return m_buffer;
 	}
 
 	const char* Path::getCompletePath() const
 	{
-		buildPath( BufferState_CompletePath );
+		buildPath( BufferState::CompletePath );
 		return m_buffer;
 	}
 
@@ -238,7 +254,7 @@ namespace tiki
 	{
 		return isStringEquals( m_prefix, rhs.m_prefix ) &&
 			isStringEquals( m_directory, rhs.m_directory ) &&
-			isStringEquals( m_filename, rhs.m_filename ) &&
+			isStringEquals( m_basename, rhs.m_basename ) &&
 			isStringEquals( m_extension, rhs.m_extension );
 	}
 
@@ -246,7 +262,7 @@ namespace tiki
 	{
 		return !isStringEquals( m_prefix, rhs.m_prefix ) ||
 			!isStringEquals( m_directory, rhs.m_directory ) ||
-			!isStringEquals( m_filename, rhs.m_filename ) ||
+			!isStringEquals( m_basename, rhs.m_basename ) ||
 			!isStringEquals( m_extension, rhs.m_extension );
 	}
 
@@ -259,12 +275,12 @@ namespace tiki
 
 		switch( targetState )
 		{
-		case BufferState_DirectoryWithPrefix:
+		case BufferState::DirectoryWithPrefix:
 			{
 				char* pBuffer = m_buffer;
-				uint bufferSize = sizeof( m_buffer );
+				uintreg bufferSize = sizeof( m_buffer );
 
-				uint stringSize = copyString( pBuffer, bufferSize, m_prefix );
+				uintreg stringSize = copyString( pBuffer, bufferSize, m_prefix );
 				pBuffer += stringSize;
 				bufferSize -= stringSize;
 
@@ -281,21 +297,21 @@ namespace tiki
 			}
 			break;
 
-		case BufferState_FilenameWithExtension:
+		case BufferState::FilenameWithExtension:
 			{
-				copyString( m_buffer, sizeof( m_buffer ), m_filename );
+				copyString( m_buffer, sizeof( m_buffer ), m_basename );
 
-				const uint bufferSize = getStringSize( m_buffer );
+				const uintreg bufferSize = getStringSize( m_buffer );
 				copyString( m_buffer + bufferSize, sizeof( m_buffer ) - bufferSize, m_extension );
 			}
 			break;
 
-		case BufferState_CompletePath:
+		case BufferState::CompletePath:
 			{
 				char* pBuffer = m_buffer;
-				uint bufferSize = sizeof( m_buffer );
+				uintreg bufferSize = sizeof( m_buffer );
 
-				uint stringSize = copyString( pBuffer, bufferSize, m_prefix );
+				uintreg stringSize = copyString( pBuffer, bufferSize, m_prefix );
 				pBuffer += stringSize;
 				bufferSize -= stringSize;
 
@@ -317,7 +333,7 @@ namespace tiki
 					bufferSize -= stringSize;
 				}
 
-				stringSize = copyString( pBuffer, bufferSize, m_filename );
+				stringSize = copyString( pBuffer, bufferSize, m_basename );
 				pBuffer += stringSize;
 				bufferSize -= stringSize;
 

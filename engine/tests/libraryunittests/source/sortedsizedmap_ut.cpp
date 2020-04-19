@@ -9,20 +9,20 @@ namespace tiki
 
 	TIKI_ADD_TEST( SortedSizedMapIntert )
 	{
-		const uint count	= 10u;
-		const uint maxIndex	= count - 1u;
+		const uintreg count	= 10u;
+		const uintreg maxIndex	= count - 1u;
 
-		SortedSizedMap< uint, uint > map;
+		SortedSizedMap< uintreg, uintreg > map;
 		map.create( count );
 
-		for (uint i = 0u; i < count; ++i)
+		for (uintreg i = 0u; i < count; ++i)
 		{
 			map.set( maxIndex - i, i );
 		}
 
-		for (uint i = 0u; i < count; ++i)
+		for (uintreg i = 0u; i < count; ++i)
 		{
-			uint value = TIKI_SIZE_T_MAX;
+			uintreg value = TIKI_SIZE_T_MAX;
 			map.findValue( &value, i );
 
 			TIKI_UT_CHECK( value == (maxIndex - i) );

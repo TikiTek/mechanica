@@ -21,7 +21,7 @@ namespace tiki
 		pAssetConverter->traceCallback( message, level );
 	}
 
-	static string escapeString( const string& text )
+	static DynamicString escapeString( const DynamicString& text )
 	{
 		return text.replace( "'", "''" ).replace( "\"", "\"\"" );
 	}
@@ -77,6 +77,7 @@ namespace tiki
 
 		TaskSystemParameters taskParameters;
 		taskParameters.maxTaskCount = 1024u;
+		taskParameters.threadCount	= 0u;
 		m_taskSystem.create( taskParameters );
 
 		if( !directory::exists( m_pProject->getAssetBuildPath().getCompletePath() ) )
@@ -108,7 +109,7 @@ namespace tiki
 				"CREATE TABLE traces (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, asset_id INTEGER NOT NULL, level INTEGER, message TEXT);"
 			};
 
-			for( uint i = 0u; i < TIKI_COUNT( pCreateTableSql ); ++i )
+			for( uintreg i = 0u; i < TIKI_COUNT( pCreateTableSql ); ++i )
 			{
 				if( !m_dataBase.executeCommand( pCreateTableSql[ i ] ) )
 				{
@@ -149,21 +150,18 @@ namespace tiki
 			&m_textureConverter
 		};
 
-		if( !m_genericDataConverter.setProject( m_pProject ) )
-		{
-			TIKI_TRACE_ERROR( "AssetConverter: Could not load generic data types!\n" );
-			return false;
-		}
+		ConversionContext context;
+		context.pProject = m_pProject;
 
-		for( uint i = 0u; i < TIKI_COUNT( apConverters ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( apConverters ); ++i )
 		{
 			ConverterBase* pConverter = apConverters[ i ];
 
-			pConverter->create( m_pProject->getAssetBuildPath(), &m_taskSystem );
+			pConverter->create( m_pProject->getAssetBuildPath(), &m_taskSystem, context );
 
-			List< string > extensions;
+			List< DynamicString > extensions;
 			pConverter->getInputExtensions( extensions );
-			for( const string& extenstion : extensions )
+			for( const DynamicString& extenstion : extensions )
 			{
 				m_extensions.set( extenstion, pConverter->getOutputType() );
 			}
@@ -199,7 +197,7 @@ namespace tiki
 			&m_textureConverter
 		};
 
-		for( uint i = 0u; i < TIKI_COUNT( apConverters ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( apConverters ); ++i )
 		{
 			ConverterBase* pConverter = apConverters[ i ];
 
@@ -230,7 +228,7 @@ namespace tiki
 	void AssetConverter::queueAll()
 	{
 		List< Path > assetFiles;
-		for( const KeyValuePair< string, string >& extension : m_extensions )
+		for( const KeyValuePair< DynamicString, DynamicString >& extension : m_extensions )
 		{
 			directory::findFiles( assetFiles, m_pProject->getContentPath(), extension.key );
 		}
@@ -276,7 +274,7 @@ namespace tiki
 		return m_threadFinish.andRelaxed( false );
 	}
 
-	bool AssetConverter::getChangedFiles( Array< string >& changedFiles )
+	bool AssetConverter::getChangedFiles( Array< DynamicString >& changedFiles )
 	{
 		MutexStackLock lock( m_changedFilesMutex );
 
@@ -299,7 +297,7 @@ namespace tiki
 			return false;
 		}
 
-		for( uint i = 0u; i < tasks.getCount(); ++i )
+		for( uintreg i = 0u; i < tasks.getCount(); ++i )
 		{
 			ConversionTask& task = tasks[ i ];
 			task.taskId = m_taskSystem.queueTask( taskConvertFile, &task );
@@ -327,7 +325,7 @@ namespace tiki
 
 	void AssetConverter::traceCallback( const char* message, TraceLevel level )
 	{
-		string line = message;
+		DynamicString line = message;
 		if( !line.endsWith( '\n' ) )
 		{
 			line += "\n";
@@ -381,7 +379,7 @@ namespace tiki
 		}
 
 		TemplateDescription desc;
-		desc.name		= filePath.getFilename();
+		desc.name		= filePath.getBasename();
 		desc.filePath	= filePath;
 		desc.type		= pBaseAtt->getValue();
 
@@ -395,8 +393,8 @@ namespace tiki
 			{
 				TIKI_TRACE_WARNING(
 					"param failed: %s%s\n",
-					(pAttKey == nullptr ? "no key-attribute " : string( "key: " ) + pAttKey->getValue()).cStr(),
-					(pAttValue == nullptr ? "no value-attribute " : string( "value: " ) + pAttValue->getValue()).cStr()
+					(pAttKey == nullptr ? "no key-attribute " : DynamicString( "key: " ) + pAttKey->getValue()).cStr(),
+					(pAttValue == nullptr ? "no value-attribute " : DynamicString( "value: " ) + pAttValue->getValue()).cStr()
 				);
 			}
 			else if( pAttValue == nullptr )
@@ -422,7 +420,7 @@ namespace tiki
 		{
 			MutexStackLock lock( m_queuedFilesMutex );
 
-			for( uint i = 0u; i < m_queuedFiles.getCount(); ++i )
+			for( uintreg i = 0u; i < m_queuedFiles.getCount(); ++i )
 			{
 				const Path& file = m_queuedFiles[ i ];
 
@@ -438,8 +436,8 @@ namespace tiki
 
 		if( filesFromDependencies.getCount() > 0u )
 		{
-			string whereFileName;
-			for( uint i = 0u; i < filesFromDependencies.getCount(); ++i )
+			DynamicString whereFileName;
+			for( uintreg i = 0u; i < filesFromDependencies.getCount(); ++i )
 			{
 				const Path& filePath = filesFromDependencies[ i ];
 
@@ -454,7 +452,7 @@ namespace tiki
 			}
 
 			{
-				const string sql = formatDynamicString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_InputFile, whereFileName.cStr() );
+				const DynamicString sql = formatDynamicString( "SELECT asset.* FROM dependencies as dep, assets as asset WHERE dep.type = '%u' AND asset.id = dep.asset_id AND (%s)", ConversionResult::DependencyType_InputFile, whereFileName.cStr() );
 
 				SqliteQuery query;
 				if( !query.create( m_dataBase, sql.cStr() ) )
@@ -467,12 +465,12 @@ namespace tiki
 				{
 					ConversionAsset asset;
 					asset.inputFilePath.setCombinedPath( query.getTextField( "path" ), query.getTextField( "filename" ) );
-					asset.assetName	= asset.inputFilePath.getFilename();
+					asset.assetName	= asset.inputFilePath.getBasename();
 					asset.type		= query.getTextField( "type" );
 					asset.assetId	= TIKI_SIZE_T_MAX;
 
 					bool found = false;
-					for( uint i = 0u; i < assetsToBuild.getCount(); ++i )
+					for( uintreg i = 0u; i < assetsToBuild.getCount(); ++i )
 					{
 						if( assetsToBuild[ i ].assetName == asset.assetName )
 						{
@@ -496,16 +494,13 @@ namespace tiki
 
 	bool AssetConverter::fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath )
 	{
-		Path assetPath;
-		assetPath.setCompletePath( filePath.getFilename() );
-
 		asset.inputFilePath = filePath;
-		asset.assetName		= assetPath.getFilename();
+		asset.assetName		= filePath.getBasename();
 		asset.assetId		= TIKI_SIZE_T_MAX;
 
-		if( !isStringEmpty( assetPath.getExtension() ) )
+		if( !isStringEmpty( filePath.getExtension() ) )
 		{
-			const string templateName = assetPath.getExtension() + 1u;
+			const DynamicString templateName = filePath.getExtension() + 1u;
 			if( m_templates.hasKey( templateName ) )
 			{
 				const TemplateDescription& templateDescription = m_templates[ templateName ];
@@ -539,7 +534,7 @@ namespace tiki
 		List< ConversionTask > tempTasks;
 
 		bool result = true;
-		for( uint assetIndex = 0u; assetIndex < assetsToBuild.getCount(); ++assetIndex )
+		for( uintreg assetIndex = 0u; assetIndex < assetsToBuild.getCount(); ++assetIndex )
 		{
 			const ConversionAsset& asset = assetsToBuild[ assetIndex ];
 			const crc32 typeCrc = crcString( asset.type );
@@ -589,7 +584,7 @@ namespace tiki
 			return false;
 		}
 
-		for( uint i = 0u; i < tempTasks.getCount(); ++i )
+		for( uintreg i = 0u; i < tempTasks.getCount(); ++i )
 		{
 			ConversionTask& task = tempTasks[ i ];
 
@@ -611,12 +606,12 @@ namespace tiki
 
 		bool result = true;
 
-		string whereFileName;
-		Map< string, ConversionTask* > tasksByFileName;
-		for( uint i = 0u; i < tasks.getCount(); ++i )
+		DynamicString whereFileName;
+		Map< DynamicString, ConversionTask* > tasksByFileName;
+		for( uintreg i = 0u; i < tasks.getCount(); ++i )
 		{
 			ConversionTask& task = tasks[ i ];
-			const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
+			const DynamicString fileName = task.asset.inputFilePath.getFilenameWithExtension();
 
 			if( i != 0u )
 			{
@@ -629,9 +624,9 @@ namespace tiki
 		}
 
 		// read asset ids
-		string whereAssetId;
+		DynamicString whereAssetId;
 		{
-			const string sql = "SELECT id, filename, has_error FROM assets WHERE " + whereFileName;
+			const DynamicString sql = "SELECT id, filename, has_error FROM assets WHERE " + whereFileName;
 
 			SqliteQuery query;
 			if( !query.create( m_dataBase, sql.cStr() ) )
@@ -642,7 +637,7 @@ namespace tiki
 
 			while( query.nextRow() )
 			{
-				const string fileName = query.getTextField( "filename" );
+				const DynamicString fileName = query.getTextField( "filename" );
 
 				ConversionTask* pTask = nullptr;
 				if( tasksByFileName.findValue( &pTask, fileName ) && pTask != nullptr )
@@ -662,7 +657,7 @@ namespace tiki
 				}
 			}
 
-			for( uint i = 0u; i < tasks.getCount(); ++i )
+			for( uintreg i = 0u; i < tasks.getCount(); ++i )
 			{
 				ConversionTask& task = tasks[ i ];
 				if( task.asset.assetId != TIKI_SIZE_T_MAX )
@@ -670,10 +665,10 @@ namespace tiki
 					continue;
 				}
 
-				const string filePath = task.asset.inputFilePath.getDirectoryWithPrefix();
-				const string fileName = task.asset.inputFilePath.getFilenameWithExtension();
+				const DynamicString filePath = task.asset.inputFilePath.getDirectoryWithPrefix();
+				const DynamicString fileName = task.asset.inputFilePath.getFilenameWithExtension();
 
-				const string sql = formatDynamicString(
+				const DynamicString sql = formatDynamicString(
 					"INSERT INTO assets (filename, path, type, has_error) VALUES ('%s', '%s', '%s', '1');",
 					fileName.cStr(),
 					filePath.cStr(),
@@ -695,7 +690,7 @@ namespace tiki
 		// delete old input files
 		if( !whereAssetId.isEmpty() )
 		{
-			const string sql = formatDynamicString( "DELETE FROM input_files WHERE %s;", whereAssetId.cStr() );
+			const DynamicString sql = formatDynamicString( "DELETE FROM input_files WHERE %s;", whereAssetId.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -703,8 +698,8 @@ namespace tiki
 			}
 		}
 
-		string insertInputFiles;
-		for( uint taskIndex = 0u; taskIndex < tasks.getCount(); ++taskIndex )
+		DynamicString insertInputFiles;
+		for( uintreg taskIndex = 0u; taskIndex < tasks.getCount(); ++taskIndex )
 		{
 			ConversionTask& task = tasks[ taskIndex ];
 
@@ -717,7 +712,7 @@ namespace tiki
 			);
 		}
 
-		const string sql = formatDynamicString( "INSERT INTO input_files (asset_id,filename,type) VALUES %s;", insertInputFiles.cStr() );
+		const DynamicString sql = formatDynamicString( "INSERT INTO input_files (asset_id,filename,type) VALUES %s;", insertInputFiles.cStr() );
 		if( !m_dataBase.executeCommand( sql.cStr() ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -739,9 +734,9 @@ namespace tiki
 			return true;
 		}
 
-		string whereAssetId;
-		Map< uint, ConversionTask* > tasksByAssetId;
-		for( uint i = 0u; i < tasks.getCount(); ++i )
+		DynamicString whereAssetId;
+		Map< uintreg, ConversionTask* > tasksByAssetId;
+		for( uintreg i = 0u; i < tasks.getCount(); ++i )
 		{
 			ConversionTask& task = tasks[ i ];
 
@@ -758,7 +753,7 @@ namespace tiki
 		{
 			// check output files
 			{
-				const string sql = formatDynamicString( "SELECT asset_id, filename FROM output_files WHERE %s;", whereAssetId.cStr() );
+				const DynamicString sql = formatDynamicString( "SELECT asset_id, filename FROM output_files WHERE %s;", whereAssetId.cStr() );
 
 				SqliteQuery query;
 				if( !query.create( m_dataBase, sql.cStr() ) )
@@ -769,7 +764,7 @@ namespace tiki
 
 				while( query.nextRow() )
 				{
-					const uint assetId = query.getIntegerField( "asset_id" );
+					const uintreg assetId = query.getIntegerField( "asset_id" );
 
 					ConversionTask* pTask = nullptr;
 					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
@@ -791,7 +786,7 @@ namespace tiki
 
 			// check dependency files
 			{
-				const string sql = formatDynamicString( "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE %s;", whereAssetId.cStr() );
+				const DynamicString sql = formatDynamicString( "SELECT asset_id, type, identifier, value_int FROM dependencies WHERE %s;", whereAssetId.cStr() );
 
 				SqliteQuery query;
 				if( !query.create( m_dataBase, sql.cStr() ) )
@@ -802,7 +797,7 @@ namespace tiki
 
 				while( query.nextRow() )
 				{
-					const uint assetId = query.getIntegerField( "asset_id" );
+					const uintreg assetId = query.getIntegerField( "asset_id" );
 
 					ConversionTask* pTask = nullptr;
 					if( !tasksByAssetId.findValue( &pTask, assetId ) || pTask == nullptr )
@@ -816,7 +811,7 @@ namespace tiki
 					}
 
 					const ConversionResult::DependencyType type = (ConversionResult::DependencyType)query.getIntegerField( "type" );
-					const string identifier	= query.getTextField( "identifier" );
+					const DynamicString identifier	= query.getTextField( "identifier" );
 					const sint64 valueInt	= query.getBigIntField( "value_int" );
 
 					switch( type )
@@ -868,22 +863,22 @@ namespace tiki
 
 	bool AssetConverter::finalizeTasks( List<ConversionTask>& tasks )
 	{
-		string whereAssetId;
-		string whereAssetIdFailed;
-		string whereAssetIdSucceeded;
-		string dependencyValues;
-		string traceValues;
-		string outputFileValues;
+		DynamicString whereAssetId;
+		DynamicString whereAssetIdFailed;
+		DynamicString whereAssetIdSucceeded;
+		DynamicString dependencyValues;
+		DynamicString traceValues;
+		DynamicString outputFileValues;
 
 		bool hasGlobalError = false;
-		for( uint taskIndex = 0u; taskIndex < tasks.getCount(); ++taskIndex )
+		for( uintreg taskIndex = 0u; taskIndex < tasks.getCount(); ++taskIndex )
 		{
 			const ConversionTask& task = tasks[ taskIndex ];
 
 			// dependencies
 			{
 				const List< ConversionResult::Dependency >& dependencies = task.result.getDependencies();
-				for( uint i = 0u; i < dependencies.getCount(); ++i )
+				for( uintreg i = 0u; i < dependencies.getCount(); ++i )
 				{
 					const ConversionResult::Dependency& dependency = dependencies[ i ];
 
@@ -906,7 +901,7 @@ namespace tiki
 			bool hasError = false;
 			{
 				const List< ConversionResult::TraceInfo >& traceInfos = task.result.getTraceInfos();
-				for( uint i = 0u; i < traceInfos.getCount(); ++i )
+				for( uintreg i = 0u; i < traceInfos.getCount(); ++i )
 				{
 					const ConversionResult::TraceInfo& traceInfo = traceInfos[ i ];
 
@@ -938,7 +933,7 @@ namespace tiki
 			// output files
 			{
 				const List< Path >& outputFiles = task.result.getOutputFiles();
-				for( uint i = 0u; i < outputFiles.getCount(); ++i )
+				for( uintreg i = 0u; i < outputFiles.getCount(); ++i )
 				{
 					const Path& outputFilePath = outputFiles[ i ];
 
@@ -967,7 +962,7 @@ namespace tiki
 			}
 			whereAssetId += formatDynamicString( "asset_id = '%u'", task.asset.assetId );
 
-			string& whereAssetIdFiltered = (hasError ? whereAssetIdFailed : whereAssetIdSucceeded);
+			DynamicString& whereAssetIdFiltered = (hasError ? whereAssetIdFailed : whereAssetIdSucceeded);
 			if( !whereAssetIdFiltered.isEmpty() )
 			{
 				whereAssetIdFiltered += " OR ";
@@ -978,7 +973,7 @@ namespace tiki
 		// delete old stuff
 		if( !whereAssetId.isEmpty() )
 		{
-			const string deleteCommand =
+			const DynamicString deleteCommand =
 				"DELETE FROM dependencies WHERE " + whereAssetId + "; " +
 				"DELETE FROM output_files WHERE " + whereAssetId + "; " +
 				"DELETE FROM traces WHERE " + whereAssetId + ";";
@@ -993,7 +988,7 @@ namespace tiki
 		// dependencies
 		if( !dependencyValues.isEmpty() )
 		{
-			const string sql = formatDynamicString( "INSERT INTO dependencies (asset_id,type,identifier,value_int) VALUES %s;", dependencyValues.cStr() );
+			const DynamicString sql = formatDynamicString( "INSERT INTO dependencies (asset_id,type,identifier,value_int) VALUES %s;", dependencyValues.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1004,7 +999,7 @@ namespace tiki
 		// traces
 		if( !traceValues.isEmpty() )
 		{
-			const string sql = formatDynamicString( "INSERT INTO traces (asset_id,level,message) VALUES %s;", traceValues.cStr() );
+			const DynamicString sql = formatDynamicString( "INSERT INTO traces (asset_id,level,message) VALUES %s;", traceValues.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1015,7 +1010,7 @@ namespace tiki
 		// output files
 		if( !outputFileValues.isEmpty() )
 		{
-			const string sql = formatDynamicString( "INSERT INTO output_files (asset_id,filename) VALUES %s;", outputFileValues.cStr() );
+			const DynamicString sql = formatDynamicString( "INSERT INTO output_files (asset_id,filename) VALUES %s;", outputFileValues.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1026,7 +1021,7 @@ namespace tiki
 		// update asset
 		if( !whereAssetIdFailed.isEmpty() )
 		{
-			const string sql = formatDynamicString( "UPDATE assets SET has_error = '1' WHERE %s;", whereAssetIdFailed.cStr() );
+			const DynamicString sql = formatDynamicString( "UPDATE assets SET has_error = '1' WHERE %s;", whereAssetIdFailed.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1036,7 +1031,7 @@ namespace tiki
 
 		if( !whereAssetIdSucceeded.isEmpty() )
 		{
-			const string sql = formatDynamicString( "UPDATE assets SET has_error = '0' WHERE %s;", whereAssetIdSucceeded.cStr() );
+			const DynamicString sql = formatDynamicString( "UPDATE assets SET has_error = '0' WHERE %s;", whereAssetIdSucceeded.cStr() );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1045,7 +1040,7 @@ namespace tiki
 		}
 
 		{
-			const string sql = formatDynamicString( "INSERT INTO builds (buildtime, has_error) VALUES (datetime('now'), %d);", hasGlobalError );
+			const DynamicString sql = formatDynamicString( "INSERT INTO builds (buildtime, has_error) VALUES (datetime('now'), %d);", hasGlobalError );
 			if( !m_dataBase.executeCommand( sql.cStr() ) )
 			{
 				TIKI_TRACE_ERROR( "[converter] SQL command failed. Error: %s\n", m_dataBase.getLastError() );
@@ -1100,7 +1095,7 @@ namespace tiki
 				MutexStackLock lock( m_queuedFilesMutex );
 
 				bool found = false;
-				for( uint i = 0u; i < m_queuedFiles.getCount(); ++i )
+				for( uintreg i = 0u; i < m_queuedFiles.getCount(); ++i )
 				{
 					found |= (m_queuedFiles[ i ] == fileEvent.filePath);
 				}

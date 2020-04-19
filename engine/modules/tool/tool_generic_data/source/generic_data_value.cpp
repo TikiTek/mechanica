@@ -102,7 +102,7 @@ namespace tiki
 		return m_valueType != GenericDataValueType_Invalid;
 	}
 
-	string GenericDataValue::toString() const
+	DynamicString GenericDataValue::toString() const
 	{
 		if( m_pValueTag != nullptr )
 		{
@@ -402,7 +402,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::getString( string& value ) const
+	bool GenericDataValue::getString( DynamicString& value ) const
 	{
 		if( m_valueType == GenericDataValueType_String )
 		{
@@ -413,7 +413,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setString( const string& value, const GenericDataType* pType /*= nullptr*/ )
+	bool GenericDataValue::setString( const DynamicString& value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -506,7 +506,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getEnum( string& enumName, sint64* pEnumValue /*= nullptr*/ ) const
+	bool GenericDataValue::getEnum( DynamicString& enumName, sint64* pEnumValue /*= nullptr*/ ) const
 	{
 		if( m_valueType == GenericDataValueType_Enum )
 		{
@@ -523,7 +523,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setEnum( const string& valueName, const GenericDataType* pType /*= nullptr*/ )
+	bool GenericDataValue::setEnum( const DynamicString& valueName, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -544,7 +544,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getReference( string& refText ) const
+	bool GenericDataValue::getReference( DynamicString& refText ) const
 	{
 		if( m_valueType == GenericDataValueType_Reference )
 		{
@@ -555,7 +555,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setReference( const string& refText, const GenericDataType* pType /*= nullptr*/ )
+	bool GenericDataValue::setReference( const DynamicString& refText, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -607,9 +607,9 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, GenericDataTypeCollection& collection, bool isType )
+	bool GenericDataValue::importFromXml( XmlElement* pNode, const GenericDataType* pType, const GenericDataContainer* pParent, const GenericDataLoadContext& context )
 	{
-		if( !isType )
+		if( !context.isType )
 		{
 			m_pNode = pNode;
 		}
@@ -617,7 +617,7 @@ namespace tiki
 		const XmlAttribute* pValueAtt = pNode->findAttribute( "value" );
 		if( pValueAtt != nullptr )
 		{
-			return collection.parseValue( this, pValueAtt->getValue(), pType, pParent->getParentType() );
+			return context.pTypeCollection->parseValue( this, pValueAtt->getValue(), pType, pParent->getParentType() );
 		}
 		else
 		{
@@ -635,7 +635,7 @@ namespace tiki
 				return false;
 			}
 
-			const GenericDataType* pChildType = collection.parseType( pChildTypeAtt->getValue() );
+			const GenericDataType* pChildType = context.pTypeCollection->parseType( pChildTypeAtt->getValue() );
 			if( pChildType == nullptr )
 			{
 				return false;
@@ -643,7 +643,7 @@ namespace tiki
 
 			if( pChildNode->isName( "array" ) )
 			{
-				pChildType = collection.makeArrayType( pChildType );
+				pChildType = context.pTypeCollection->makeArrayType( pChildType );
 			}
 
 			if( !pType->isTypeCompatible( pChildType ) )
@@ -660,15 +660,35 @@ namespace tiki
 					return false;
 				}
 
+				GenericDataObject* pParentObject = nullptr;
+				const XmlAttribute* pParentAttribute = pChildNode->findAttribute( "parent" );
+				if( pParentAttribute != nullptr )
+				{
+					if( context.pDocumentCollection == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] Object has a parent attribute but no document collection.\n" );
+						return false;
+					}
+
+					GenericDataDocument* pParentDocument = context.pDocumentCollection->loadDocument( pParentAttribute->getValue() );
+					if( pParentDocument == nullptr )
+					{
+						TIKI_TRACE_ERROR( "[GenericDataContainer::importFromXml] Failed to load parent document '%s'.\n", pParentAttribute->getValue() );
+						return false;
+					}
+
+					pParentObject = pParentDocument->getObject();
+				}
+
 				const GenericDataTypeStruct* pTypedChildType = (const GenericDataTypeStruct*)pChildType;
-				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( collection );
-				if( !pObject->create( pTypedChildType, nullptr ) )
+				GenericDataObject* pObject = TIKI_NEW( GenericDataObject )( *context.pTypeCollection );
+				if( !pObject->create( pTypedChildType, pParentObject ) )
 				{
 					TIKI_DELETE( pObject );
 					return false;
 				}
 
-				if( !pObject->importFromXml( pChildNode, isType ) )
+				if( !pObject->importFromXml( pChildNode, context ) )
 				{
 					TIKI_DELETE( pObject );
 					return false;
@@ -685,14 +705,14 @@ namespace tiki
 				TIKI_ASSERT( pChildType->getType() == GenericDataTypeType_Array );
 
 				const GenericDataTypeArray* pTypedChildType = (const GenericDataTypeArray*)pChildType;
-				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( collection );
+				GenericDataArray* pArray = TIKI_NEW( GenericDataArray )( *context.pTypeCollection );
 				if( !pArray->create( pTypedChildType ) )
 				{
 					TIKI_DELETE( pArray );
 					return false;
 				}
 
-				if( !pArray->importFromXml( pChildNode, isType ) )
+				if( !pArray->importFromXml( pChildNode, context ) )
 				{
 					TIKI_DELETE( pArray );
 					return false;

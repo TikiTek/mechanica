@@ -8,31 +8,31 @@ namespace tiki
 	{
 		for( uint i = 0u; i < parameters.m_parameters.getCount(); ++i )
 		{
-			const KeyValuePair< string, string >& kvp = parameters.m_parameters.getPairAt( i );
+			const KeyValuePair< DynamicString, DynamicString >& kvp = parameters.m_parameters.getPairAt( i );
 			m_parameters.set( kvp.key, kvp.value );
 		}
 	}
 
-	void ConversionParameters::addParameter( const string& key, const string& value )
+	void ConversionParameters::addParameter( const DynamicString& key, const DynamicString& value )
 	{
 		m_parameters.set( key, value );
 	}
 
-	string ConversionParameters::getString( const string& key ) const
+	DynamicString ConversionParameters::getString( const DynamicString& key ) const
 	{
-		string value;
+		DynamicString value;
 		if( !getArgument( value, key ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
-			return string();
+			return DynamicString();
 		}
 
 		return value;
 	}
 
-	float ConversionParameters::getFloat( const string& key ) const
+	float ConversionParameters::getFloat( const DynamicString& key ) const
 	{
-		string value;
+		DynamicString value;
 		if( !getArgument( value, key ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
@@ -42,9 +42,9 @@ namespace tiki
 		return string_tools::parseFloat32( value.cStr() );
 	}
 
-	int ConversionParameters::getInt( const string& key ) const
+	int ConversionParameters::getInt( const DynamicString& key ) const
 	{
-		string value;
+		DynamicString value;
 		if( !getArgument( value, key ) )
 		{
 			TIKI_TRACE_ERROR( "[converter] parameters '%s' not found.\n", key.cStr() );
@@ -54,9 +54,9 @@ namespace tiki
 		return string_tools::parseSInt32( value.cStr() );
 	}
 
-	string ConversionParameters::getOptionalString( const string& key, const string& defaultValue ) const
+	DynamicString ConversionParameters::getOptionalString( const DynamicString& key, const DynamicString& defaultValue ) const
 	{
-		string value;
+		DynamicString value;
 		if ( getArgument( value, key ) )
 		{
 			return value;
@@ -65,9 +65,9 @@ namespace tiki
 		return defaultValue;
 	}
 
-	float ConversionParameters::getOptionalFloat( const string& key, float defaultValue ) const
+	float ConversionParameters::getOptionalFloat( const DynamicString& key, float defaultValue ) const
 	{
-		string value;
+		DynamicString value;
 		if ( getArgument( value, key ) )
 		{
 			return string_tools::parseFloat32( value.cStr() );
@@ -76,9 +76,9 @@ namespace tiki
 		return defaultValue;
 	}
 
-	int ConversionParameters::getOptionalInt( const string& key, int defaultValue ) const
+	int ConversionParameters::getOptionalInt( const DynamicString& key, int defaultValue ) const
 	{
-		string value;
+		DynamicString value;
 		if ( getArgument( value, key ) )
 		{
 			return string_tools::parseSInt32( value.cStr() );
@@ -87,7 +87,7 @@ namespace tiki
 		return defaultValue;
 	}
 
-	bool ConversionParameters::getArgument( string& value, const string& key ) const
+	bool ConversionParameters::getArgument( DynamicString& value, const DynamicString& key ) const
 	{
 		if ( m_parameters.findValue( &value, key ) )
 		{
@@ -101,17 +101,17 @@ namespace tiki
 		return false;
 	}
 
-	bool ConversionParameters::getBool( const string& key ) const
+	bool ConversionParameters::getBool( const DynamicString& key ) const
 	{
-		string value;
+		DynamicString value;
 		TIKI_VERIFY( getArgument( value, key ) );
 
 		return value.toLower() == "true";
 	}
 
-	bool ConversionParameters::getOptionalBool( const string& key, bool defaultValue ) const
+	bool ConversionParameters::getOptionalBool( const DynamicString& key, bool defaultValue ) const
 	{
-		string value;
+		DynamicString value;
 		if ( getArgument( value, key ) )
 		{
 			return value.toLower() == "true";

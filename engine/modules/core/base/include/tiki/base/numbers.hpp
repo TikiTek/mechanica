@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_NUMBERS_HPP__INCLUDED
-#define TIKI_NUMBERS_HPP__INCLUDED
 
 #include "tiki/base/types.hpp"
 
@@ -96,5 +94,3 @@ namespace tiki
 		}
 	}
 }
-
-#endif // TIKI_NUMBERS_HPP__INCLUDED

@@ -66,7 +66,7 @@ namespace tiki
 
 		m_pRenderTarget = nullptr;
 
-		for (uint i = 0u; i < TIKI_COUNT( m_apRenderPassesStack ); ++i)
+		for (uintreg i = 0u; i < TIKI_COUNT( m_apRenderPassesStack ); ++i)
 		{
 			m_apRenderPassesStack[ i ] = nullptr;
 		}
@@ -82,7 +82,7 @@ namespace tiki
 		m_pGraphicsSystem				= nullptr;
 		m_platformData.pCommandList		= nullptr;
 
-		for( uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
+		for( uintreg i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
 		{
 			GraphicsSystemPlatform::safeRelease( &m_platformData.pipelineStates[ i ].pPpielineState );
 		}
@@ -112,7 +112,7 @@ namespace tiki
 
 		float4 floatColor;
 		color::toFloat4( floatColor, color );
-		for( size_t i = 0u; i < renderTarget.m_colorBufferCount; ++i )
+		for( uintreg i = 0u; i < renderTarget.m_colorBufferCount; ++i )
 		{
 			TIKI_ASSERT( renderTarget.m_platformData.colorHandles[ i ] != InvalidDescriptorHandle );
 			m_platformData.pCommandList->ClearRenderTargetView( renderTargetPool.getCpuHandle( renderTarget.m_platformData.colorHandles[ i ] ), &floatColor.x, 0u, nullptr );
@@ -137,7 +137,7 @@ namespace tiki
 		DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( *m_pGraphicsSystem );
 
 		D3D12_CPU_DESCRIPTOR_HANDLE aD3dHandles[ GraphicsSystemLimits_MaxRenderTargetViews ];
-		for( size_t i = 0u; i < renderTarget.m_colorBufferCount; ++i )
+		for( uintreg i = 0u; i < renderTarget.m_colorBufferCount; ++i )
 		{
 			aD3dHandles[ i ] = renderTargetPool.getCpuHandle( renderTarget.m_platformData.colorHandles[ i ] );
 		}
@@ -209,7 +209,7 @@ namespace tiki
 			DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( *m_pGraphicsSystem );
 
 			D3D12_CPU_DESCRIPTOR_HANDLE aD3dHandles[ GraphicsSystemLimits_MaxRenderTargetViews ];
-			for( size_t i = 0u; i < renderTarget.m_colorBufferCount; ++i )
+			for( uintreg i = 0u; i < renderTarget.m_colorBufferCount; ++i )
 			{
 				aD3dHandles[ i ] = renderTargetPool.getCpuHandle( renderTarget.m_platformData.colorHandles[ i ] );
 			}
@@ -281,7 +281,7 @@ namespace tiki
 		m_pVertexInputBinding = pVertexInputBinding;
 	}
 
-	void GraphicsContext::setVertexShaderSamplerState( uint slot, const SamplerState* pSampler )
+	void GraphicsContext::setVertexShaderSamplerState( uintreg slot, const SamplerState* pSampler )
 	{
 		if ( m_apVertexSamplerStates[ slot ] != pSampler )
 		{
@@ -294,7 +294,7 @@ namespace tiki
 		}
 	}
 
-	void GraphicsContext::setVertexShaderTexture( uint slot, const TextureData* pTextureData )
+	void GraphicsContext::setVertexShaderTexture( uintreg slot, const TextureData* pTextureData )
 	{
 		if ( m_apVertexTextures[ slot ] != pTextureData )
 		{
@@ -307,7 +307,7 @@ namespace tiki
 		}
 	}
 
-	void GraphicsContext::setVertexShaderConstant( uint slot, const ConstantBuffer& buffer )
+	void GraphicsContext::setVertexShaderConstant( uintreg slot, const ConstantBuffer& buffer )
 	{
 		if ( m_apVertexConstants[ slot ] != &buffer )
 		{
@@ -336,7 +336,7 @@ namespace tiki
 		m_pPixelShader = pShader;
 	}
 
-	void GraphicsContext::setPixelShaderSamplerState( uint slot, const SamplerState* pSampler )
+	void GraphicsContext::setPixelShaderSamplerState( uintreg slot, const SamplerState* pSampler )
 	{
 		if ( m_apPixelSamplerStates[ slot ] != pSampler )
 		{
@@ -349,7 +349,7 @@ namespace tiki
 		}
 	}
 
-	void GraphicsContext::setPixelShaderTexture( uint slot, const TextureData* pTextureData )
+	void GraphicsContext::setPixelShaderTexture( uintreg slot, const TextureData* pTextureData )
 	{
 		if ( m_apPixelTextures[ slot ] != pTextureData )
 		{
@@ -362,7 +362,7 @@ namespace tiki
 		}
 	}
 
-	void GraphicsContext::setPixelShaderConstant( uint slot, const ConstantBuffer& buffer )
+	void GraphicsContext::setPixelShaderConstant( uintreg slot, const ConstantBuffer& buffer )
 	{
 		if ( m_apPixelConstants[ slot ] != &buffer)
 		{
@@ -402,7 +402,7 @@ namespace tiki
 		m_platformData.pCommandList->IASetIndexBuffer( &bufferView );
 	}
 
-	void GraphicsContext::setVertexBuffer( uint slot, const VertexBuffer& vertexBuffer )
+	void GraphicsContext::setVertexBuffer( uintreg slot, const VertexBuffer& vertexBuffer )
 	{
 		D3D12_VERTEX_BUFFER_VIEW bufferView;
 		if( vertexBuffer.m_isDynamic )
@@ -420,7 +420,7 @@ namespace tiki
 		m_platformData.pCommandList->IASetVertexBuffers( (UINT)slot, 1u, &bufferView );
 	}
 
-	void* GraphicsContext::beginImmediateGeometry( uint vertexStride, uint vertexCount )
+	void* GraphicsContext::beginImmediateGeometry( uintreg vertexStride, uintreg vertexCount )
 	{
 		if( !m_immediateVertexData.create( *m_pGraphicsSystem, vertexCount, vertexStride ) )
 		{
@@ -444,7 +444,7 @@ namespace tiki
 		m_immediateVertexData.dispose( *m_pGraphicsSystem );
 	}
 
-	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
+	void GraphicsContext::drawGeometry( uintreg vertexCount, uintreg baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
 
@@ -452,7 +452,7 @@ namespace tiki
 		m_platformData.pCommandList->DrawInstanced( (UINT)vertexCount, 1u, (UINT)baseVertexOffset, 0u );
 	}
 
-	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
+	void GraphicsContext::drawIndexedGeometry( uintreg indexCount, uintreg baseIndexOffset /*= 0u*/, uintreg baseVertexOffset /*= 0u*/ )
 	{
 		TIKI_ASSERT( validateDrawCall() );
 
@@ -505,7 +505,7 @@ namespace tiki
 			const crc32 crc = crcBytes( aRelevantStates, sizeof( aRelevantStates ) );
 
 			ID3D12PipelineState* pPipelineState = nullptr;
-			for( uint i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
+			for( uintreg i = 0u; i < m_platformData.pipelineStates.getCount(); ++i )
 			{
 				const GraphicsContextPipelineState& pipelineState = m_platformData.pipelineStates[ i ];
 
@@ -547,7 +547,7 @@ namespace tiki
 				pipelineDesc.VS						= m_pVertexShader->m_platformData.shaderCode;
 				pipelineDesc.SampleDesc.Count		= 1u;
 
-				for( uint i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
+				for( uintreg i = 0u; i < m_pRenderTarget->m_colorBufferCount; ++i )
 				{
 					PixelFormat colorFormat = m_pRenderTarget->m_colorBuffers[ i ].format;
 					if( colorFormat == PixelFormat_Invalid )

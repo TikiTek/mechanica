@@ -27,22 +27,22 @@ namespace tiki
 		}
 	}
 
-	const string& GenericDataTag::getTag() const
+	const DynamicString& GenericDataTag::getTag() const
 	{
 		return m_tag;
 	}
 
-	void GenericDataTag::setTag( const string& tag )
+	void GenericDataTag::setTag( const DynamicString& tag )
 	{
 		m_tag = tag;
 	}
 
-	const string& GenericDataTag::getContent() const
+	const DynamicString& GenericDataTag::getContent() const
 	{
 		return m_content;
 	}
 
-	void GenericDataTag::setContent( const string& content )
+	void GenericDataTag::setContent( const DynamicString& content )
 	{
 		m_content = content;
 
@@ -69,9 +69,9 @@ namespace tiki
 		m_pChildTag = pChildTag;
 	}
 
-	bool GenericDataTag::parseTagString( const string& rawText )
+	bool GenericDataTag::parseTagString( const DynamicString& rawText )
 	{
-		string text = rawText.trim();
+		DynamicString text = rawText.trim();
 		if( !isTagString( text ) )
 		{
 			return false;
@@ -85,7 +85,7 @@ namespace tiki
 
 		m_tag = text.subString( 1u, contentBeginIndex - 1u );
 
-		const string content = text.subString( contentBeginIndex + 1, text.getLength() - contentBeginIndex - 2 );
+		const DynamicString content = text.subString( contentBeginIndex + 1, text.getLength() - contentBeginIndex - 2 );
 		if( isTagString( content ) )
 		{
 			m_pChildTag = TIKI_NEW( GenericDataTag );
@@ -106,11 +106,11 @@ namespace tiki
 		return true;
 	}
 
-	string GenericDataTag::writeTagString() const
+	DynamicString GenericDataTag::writeTagString() const
 	{
 		if( m_pChildTag != nullptr )
 		{
-			const string childString = m_pChildTag->writeTagString();
+			const DynamicString childString = m_pChildTag->writeTagString();
 			return formatDynamicString( "{%s %s}", m_tag.cStr(), childString.cStr() );
 		}
 		else if ( !m_tag.isEmpty() && !m_content.isEmpty() )
@@ -121,9 +121,9 @@ namespace tiki
 		return "{Invalid Tag}";
 	}
 
-	/*static*/ bool GenericDataTag::isTagString( const string& rawText )
+	/*static*/ bool GenericDataTag::isTagString( const DynamicString& rawText )
 	{
-		string text = rawText.trim();
+		DynamicString text = rawText.trim();
 		return text.getLength() > 4u && text[ 0u ] == '{' && text[ 1u ] != '{' && text[ text.getLength() - 1 ] == '}';
 	}
 }

@@ -24,7 +24,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::create( uint size, uint alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
+	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::create( uintreg size, uintreg alignment /*= TIKI_DEFAULT_ALIGNMENT*/ )
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 
@@ -60,13 +60,13 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCount() const
+	TIKI_FORCE_INLINE uintreg SortedSizedMap<TKey, TValue>::getCount() const
 	{
 		return m_count;
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::getCapacity() const
+	TIKI_FORCE_INLINE uintreg SortedSizedMap<TKey, TValue>::getCapacity() const
 	{
 		return m_capacity;
 	}
@@ -78,21 +78,21 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index )
+	TIKI_FORCE_INLINE TValue& SortedSizedMap<TKey, TValue>::getValueAt( uintreg index )
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const TValue& SortedSizedMap<TKey, TValue>::getValueAt( uint index ) const
+	TIKI_FORCE_INLINE const TValue& SortedSizedMap<TKey, TValue>::getValueAt( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index )
+	TIKI_FORCE_INLINE KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uintreg index )
 	{
 		TIKI_ASSERT( index < m_capacity );
 		if ( index >= m_count )
@@ -103,7 +103,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uint index ) const
+	TIKI_FORCE_INLINE const KeyValuePair<TKey, TValue>& SortedSizedMap<TKey, TValue>::getPairAt( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_capacity );
 		return m_pData[ index ];
@@ -114,7 +114,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pTargetValue != nullptr );
 
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if ( index == TIKI_SIZE_T_MAX )
 		{
 			return false;
@@ -129,7 +129,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_count < m_capacity );
 
-		uint pos = 0u;
+		uintreg pos = 0u;
 		for (; pos < m_count; ++pos)
 		{
 			if ( m_pData[ pos ].key > key )
@@ -138,7 +138,7 @@ namespace tiki
 			}
 		}
 
-		for (uint i = m_count; i > pos; --i)
+		for (uintreg i = m_count; i > pos; --i)
 		{
 			m_pData[ i ] = m_pData[ i - 1 ];
 		}
@@ -151,7 +151,7 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE bool SortedSizedMap<TKey, TValue>::remove( const TKey& key )
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 
 		if ( index == TIKI_SIZE_T_MAX )
 		{
@@ -159,7 +159,7 @@ namespace tiki
 		}
 
 		m_count--;
-		for (uint i = index; i < m_count; ++i)
+		for (uintreg i = index; i < m_count; ++i)
 		{
 			m_pData[ i ] = m_pData[ i + 1u ];
 		}
@@ -168,7 +168,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
+	TIKI_FORCE_INLINE uintreg SortedSizedMap<TKey, TValue>::findIndex( const TKey& key ) const
 	{
 		if ( m_count == 0u )
 		{

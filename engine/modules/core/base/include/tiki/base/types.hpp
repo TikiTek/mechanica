@@ -40,14 +40,16 @@ namespace tiki
 
 	typedef sint32			sint;
 	typedef uint32			uint;
-	typedef uint32			size_t;
+	//typedef uint32			uintreg;
+	typedef uint32			uintptr;	// unsigned integer in size of a pointer
 	typedef uint32			uintreg;	// unsigned integer in size of a CPU register
 
 #elif TIKI_ENABLED( TIKI_BUILD_64BIT )
 
 	typedef sint64			sint;
 	typedef uint64			uint;
-	typedef uint64			size_t;
+	//typedef uint64			uintreg;
+	typedef uint64			uintptr;	// unsigned integer in size of a pointer
 	typedef uint64			uintreg;	// unsigned integer in size of a CPU register
 
 #else
@@ -70,7 +72,7 @@ namespace tiki
 
 #else
 
-#	define TIKI_OFFSETOF( type, member )		( (uint)(&((type*)nullptr)->member) )
+#	define TIKI_OFFSETOF( type, member )		( (uintreg)(&((type*)nullptr)->member) )
 
 #endif
 
@@ -215,7 +217,7 @@ namespace tiki
 	{
 		NonCopyable() = default;
 		NonCopyable( const NonCopyable& ) = delete;
-		NonCopyable&	operator=( const NonCopyable& ) = delete;
+		NonCopyable& operator=( const NonCopyable& ) = delete;
 	};
 
 #	define TIKI_NON_COPYABLE( type_name )				\

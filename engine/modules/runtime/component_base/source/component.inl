@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_COMPONENT_INL_INCLUDED
-#define TIKI_COMPONENT_INL_INCLUDED
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
@@ -42,10 +40,10 @@ namespace tiki
 		{
 			m_pFirstState = pState;
 		}
-				
+
 		return true;
 	}
-		
+
 	template< typename TState, typename TInitData >
 	void Component<TState, TInitData>::disposeState( ComponentState* pState )
 	{
@@ -150,5 +148,3 @@ namespace tiki
 		return (const TState*)entityComponentIterator.getFirstOfType( m_registedTypeId );
 	}
 }
-
-#endif // TIKI_COMPONENT_INL_INCLUDED

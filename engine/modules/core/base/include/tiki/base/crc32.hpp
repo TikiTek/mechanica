@@ -8,7 +8,7 @@
 
 namespace tiki
 {
-	 TIKI_FORCE_INLINE crc32 crcAddBytes( crc32 currentValue, const void* pBytes, size_t len )
+	 TIKI_FORCE_INLINE crc32 crcAddBytes( crc32 currentValue, const void* pBytes, uintreg len )
 	 {
 		 /* CRC polynomial 0xedb88320 */
 		 static const uint32 crc_32_tab[] = {
@@ -68,7 +68,7 @@ namespace tiki
 		 return ~oldcrc32;
 	 }
 
-	 TIKI_FORCE_INLINE crc32 crcBytes( const void* pBytes, size_t lenght )
+	 TIKI_FORCE_INLINE crc32 crcBytes( const void* pBytes, uintreg lenght )
 	 {
 		 return crcAddBytes( 0u, pBytes, lenght );
 	 }
@@ -78,7 +78,7 @@ namespace tiki
 		 return crcBytes( (const uint8*)pString, getStringSize( pString ) );
 	 }
 
-	 TIKI_FORCE_INLINE crc32 crcString( const string& str )
+	 TIKI_FORCE_INLINE crc32 crcString( const DynamicString& str )
 	 {
 		 return crcBytes( (const uint8*)str.cStr(), str.getLength() );
 	 }

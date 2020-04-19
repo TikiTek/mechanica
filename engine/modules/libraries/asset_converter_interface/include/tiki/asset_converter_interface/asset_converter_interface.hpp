@@ -43,7 +43,7 @@ namespace tiki
 
 		virtual bool	isConvertionRunning() = 0;
 		virtual bool	popFinishConversion() = 0;
-		virtual bool	getChangedFiles( Array< string >& changedFiles ) TIKI_PURE;
+		virtual bool	getChangedFiles( Array< DynamicString >& changedFiles ) TIKI_PURE;
 	};
 
 	TIKI_ASSET_CONVERTER_METHOD AssetConverterInterface*	createAssetConverter( const AssetConverterParamter& parameters );

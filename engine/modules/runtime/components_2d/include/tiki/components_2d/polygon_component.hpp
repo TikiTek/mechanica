@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_POLYGONCOMPONENT_HPP_INCLUDED
-#define TIKI_POLYGONCOMPONENT_HPP_INCLUDED
 
 #include "tiki/components/component.hpp"
 
@@ -36,5 +34,3 @@ namespace tiki
 		const Transform2dComponent* m_pTransformComponent;
 	};
 }
-
-#endif // TIKI_POLYGONCOMPONENT_HPP_INCLUDED

@@ -7,7 +7,7 @@
 
 namespace tiki
 {
-	bool directory::getFiles( List< string >& targetList, const string& path )
+	bool directory::getFiles( List< DynamicString >& targetList, const DynamicString& path )
 	{
 		DirectoryIterator iterator;
 		if( !iterator.create( path.cStr() ) )
@@ -28,7 +28,7 @@ namespace tiki
 		return true;
 	}
 
-	bool directory::getDirectories( List< string >& targetList, const string& path )
+	bool directory::getDirectories( List< DynamicString >& targetList, const DynamicString& path )
 	{
 		DirectoryIterator iterator;
 		if( !iterator.create( path.cStr() ) )
@@ -49,21 +49,21 @@ namespace tiki
 		return true;
 	}
 
-	bool directory::findFiles( List< Path >& targetList, const Path& path, const string& extension, bool recursive /*= true */ )
+	bool directory::findFiles( List< Path >& targetList, const Path& path, const DynamicString& extension, bool recursive /*= true */ )
 	{
 		return findFiles( targetList, path.getCompletePath(), extension, recursive );
 	}
 
-	bool directory::findFiles( List< Path >& targetList, const string& path, const string& extension, bool recursive /* = true */ )
+	bool directory::findFiles( List< Path >& targetList, const DynamicString& path, const DynamicString& extension, bool recursive /* = true */ )
 	{
-		List< string > dirFiles;
+		List< DynamicString > dirFiles;
 		if( !directory::getFiles( dirFiles, path ) )
 		{
 			TIKI_TRACE_ERROR( "[genericdata] Unable to find files in '%s'", path.cStr() );
 			return false;
 		}
 
-		for( size_t i = 0u; i < dirFiles.getCount(); ++i )
+		for( uintreg i = 0u; i < dirFiles.getCount(); ++i )
 		{
 			if( path::getExtension( dirFiles[ i ] ) != extension )
 			{
@@ -79,16 +79,16 @@ namespace tiki
 			return true;
 		}
 
-		List< string > dirDirectories;
+		List< DynamicString > dirDirectories;
 		if( !directory::getDirectories( dirDirectories, path ) )
 		{
 			TIKI_TRACE_ERROR( "[genericdata] Unable to find directories in '%s'", path.cStr() );
 			return false;
 		}
 
-		for( size_t i = 0u; i < dirDirectories.getCount(); ++i )
+		for( uintreg i = 0u; i < dirDirectories.getCount(); ++i )
 		{
-			const string subDirectory = path::combine( path, dirDirectories[ i ] );
+			const DynamicString subDirectory = path::combine( path, dirDirectories[ i ] );
 			if( !findFiles( targetList, subDirectory, extension, true ) )
 			{
 				return false;

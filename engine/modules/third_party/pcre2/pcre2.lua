@@ -24,4 +24,5 @@ module:add_files( "src/pcre2_fuzzsupport.c", { exclude = true } );
 module:add_include_dir( "src" );
 
 module:set_define( "HAVE_CONFIG_H" );
+module:set_define( "PCRE2_STATIC" );
 module:set_define( "PCRE2_CODE_UNIT_WIDTH", "8" );

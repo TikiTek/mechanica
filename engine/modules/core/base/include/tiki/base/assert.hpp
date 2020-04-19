@@ -25,7 +25,7 @@
 #if TIKI_ENABLED( TIKI_USE_BREAK )
 #	define TIKI_BREAK( message, ... ) ::tiki::debug::traceError( message, ## __VA_ARGS__ ); ::tiki::debug::breakPoint()
 #else
-#	define TIKI_BREAK( message, ... ) for(;;)
+#	define TIKI_BREAK( message, ... ) *(uintreg)nullptr = 0u
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )

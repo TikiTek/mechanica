@@ -18,7 +18,7 @@ namespace tiki
 		bool					loadFromFile( const char* pFilename );
 		bool					loadFromString( const char* pString );
 
-		void					saveToString( string& target );
+		void					saveToString( DynamicString& target );
 		bool					saveToFile( const char* pFilename );
 
 		XmlElement*				getRoot();

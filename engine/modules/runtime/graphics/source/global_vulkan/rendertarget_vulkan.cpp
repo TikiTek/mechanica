@@ -16,7 +16,7 @@ namespace tiki
 	{
 	}
 
-	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
+	bool RenderTarget::create( GraphicsSystem& graphicsSystem, uintreg width, uintreg height, const RenderTargetBuffer* pColorBuffers, uintreg colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
 		return false;
 	}

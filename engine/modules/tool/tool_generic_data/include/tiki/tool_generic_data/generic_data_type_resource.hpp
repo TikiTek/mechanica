@@ -13,8 +13,8 @@ namespace tiki
 
 	public:
 
-										GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType );
-										GenericDataTypeResource( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const string& postFix, fourcc fourCC );
+										GenericDataTypeResource( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataType* pBaseType, bool isGenericDataType );
+										GenericDataTypeResource( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const DynamicString& postFix, fourcc fourCC );
 		virtual							~GenericDataTypeResource();
 
 		virtual bool					loadFromXml( XmlElement* pTypeNode ) TIKI_OVERRIDE_FINAL;
@@ -22,11 +22,11 @@ namespace tiki
 
 		virtual uint					getAlignment() const TIKI_OVERRIDE_FINAL;
 		virtual uint					getSize() const TIKI_OVERRIDE_FINAL;
-		virtual string					getCodeExportName() const TIKI_OVERRIDE_FINAL;
+		virtual DynamicString			getCodeExportName() const TIKI_OVERRIDE_FINAL;
 		virtual crc32					getTypeCrc() const TIKI_OVERRIDE_FINAL;
 
 		const GenericDataType*			getBaseType() const;
-		const string&					getPostFix() const;
+		const DynamicString&			getPostFix() const;
 		fourcc							getFourCC() const;
 
 	private:
@@ -34,7 +34,7 @@ namespace tiki
 		const GenericDataType*			m_pBaseType;
 
 		bool							m_isGenericData;
-		string							m_postFix;
+		DynamicString					m_postFix;
 		FixedArray< char, 4 >			m_fourCC;
 	};
 }

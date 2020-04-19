@@ -7,7 +7,7 @@
 namespace tiki
 {
 	template<typename T>
-	TIKI_FORCE_INLINE void GraphicsStateObjectCollection< T >::create( size_t count )
+	TIKI_FORCE_INLINE void GraphicsStateObjectCollection< T >::create( uintreg count )
 	{
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 		m_maxCount = 0u;
@@ -31,7 +31,7 @@ namespace tiki
 	{
 		T* pFirst = nullptr;
 
-		for (size_t i = 0u; i < m_data.getCount(); ++i)
+		for (uintreg i = 0u; i < m_data.getCount(); ++i)
 		{
 			if ( m_data[ i ].isCreated() == false )
 			{

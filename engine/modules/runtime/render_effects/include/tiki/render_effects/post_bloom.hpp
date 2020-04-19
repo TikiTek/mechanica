@@ -18,9 +18,9 @@ namespace tiki
 			passCount	= 0u;
 		}
 
-		uint	width;
-		uint	height;
-		uint	passCount;
+		uintreg	width;
+		uintreg	height;
+		uintreg	passCount;
 	};
 
 	struct PostProcessBloomRenderParameters
@@ -43,12 +43,12 @@ namespace tiki
 		bool				createResources( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 		void				dispose( GraphicsSystem& graphicsSystem, ResourceRequestPool& resourcePool );
 
-		bool				resize( GraphicsSystem& graphicsSystem, uint width, uint height, uint passCount = TIKI_SIZE_T_MAX );
+		bool				resize( GraphicsSystem& graphicsSystem, uintreg width, uintreg height, uintreg passCount = TIKI_SIZE_T_MAX );
 
 		void				render( GraphicsContext& graphicsContext, const PostProcessBloomRenderParameters& parameters ) const;
 
 		const TextureData&	getResultData() const;
-		const TextureData&	getResultData( uint index ) const { return m_textures[ index ]; }
+		const TextureData&	getResultData( uintreg index ) const { return m_textures[ index ]; }
 
 	private:
 
@@ -56,9 +56,9 @@ namespace tiki
 
 		PostProcessBlur				m_blur;
 
-		uint						m_width;
-		uint						m_height;
-		uint						m_passCount;
+		uintreg						m_width;
+		uintreg						m_height;
+		uintreg						m_passCount;
 
 		const BlendState*			m_pBlendStateCutoff;
 		const BlendState*			m_pBlendStateAdd;

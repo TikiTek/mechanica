@@ -4,7 +4,7 @@
 
 namespace tiki
 {
-	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const string& name, const string& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
+	GenericDataTypeReference::GenericDataTypeReference( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeMode mode, const GenericDataTypeResource* pBaseType )
 		: GenericDataType( collection, name, filename, GenericDataTypeType_Reference, mode )
 		, m_pBaseType( pBaseType )
 	{
@@ -37,7 +37,7 @@ namespace tiki
 		return 8u;
 	}
 
-	string GenericDataTypeReference::getCodeExportName() const
+	DynamicString GenericDataTypeReference::getCodeExportName() const
 	{
 		return m_pBaseType->getCodeExportName();
 	}

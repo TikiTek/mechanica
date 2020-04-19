@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_PATH_HPP
-#define TIKI_PATH_HPP
 
 #include "tiki/base/dynamic_string.hpp"
 
@@ -8,18 +6,16 @@ namespace tiki
 {
 	namespace path
 	{
-		string	checkSlashes( const string& path );
+		DynamicString	checkSlashes( const DynamicString& path );
 
-		string	getFilename( const string& fullPath );
-		string	getFilenameWithoutExtension( const string& fullPath );
-		string	getExtension( const string& fullPath );
-		string	getDirectoryName( const string& fullPath );
+		DynamicString	getFilename( const DynamicString& fullPath );
+		DynamicString	getFilenameWithoutExtension( const DynamicString& fullPath );
+		DynamicString	getExtension( const DynamicString& fullPath );
+		DynamicString	getDirectoryName( const DynamicString& fullPath );
 
-		string	combine( const string& path1, const string& path2 );
-		string	combine( const string& path1, const string& path2, const string& path3 );
+		DynamicString	combine( const DynamicString& path1, const DynamicString& path2 );
+		DynamicString	combine( const DynamicString& path1, const DynamicString& path2, const DynamicString& path3 );
 
-		//string	getAbsolutePath( const string& path );
+		//DynamicString	getAbsolutePath( const DynamicString& path );
 	}
 }
-
-#endif // TIKI_PATH_HPP

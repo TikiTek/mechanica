@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-	static void checkSize( uint& targetWidth, uint& targetHeight, uint width, uint height )
+	static void checkSize( uintreg& targetWidth, uintreg& targetHeight, uintreg width, uintreg height )
 	{
 		if ( targetWidth == 0u )
 		{
@@ -35,7 +35,7 @@ namespace tiki
 	{
 	}
 
-	bool RenderTarget::create( GraphicsSystem& graphicsSystem, size_t width, size_t height, const RenderTargetBuffer* pColorBuffers, size_t colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
+	bool RenderTarget::create( GraphicsSystem& graphicsSystem, uintreg width, uintreg height, const RenderTargetBuffer* pColorBuffers, uintreg colorBufferCount, const RenderTargetBuffer* pDepthBuffer )
 	{
 		TIKI_ASSERT( colorBufferCount <= GraphicsSystemLimits_RenderTargetSlots );
 
@@ -49,7 +49,7 @@ namespace tiki
 		{
 			TIKI_DECLARE_STACKANDZERO( D3D12_DESCRIPTOR_HEAP_DESC, heapDesc );
 
-			for( size_t i = 0u; i < colorBufferCount; ++i )
+			for( uintreg i = 0u; i < colorBufferCount; ++i )
 			{
 			}
 
@@ -61,7 +61,7 @@ namespace tiki
 		TIKI_ASSERT( pColorBuffers != nullptr || colorBufferCount == 0u );
 
 		DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( graphicsSystem );
-		for (size_t i = 0u; i < m_colorBufferCount; ++i)
+		for (uintreg i = 0u; i < m_colorBufferCount; ++i)
 		{
 			m_colorBuffers[ i ] = pColorBuffers[ i ];
 			TIKI_ASSERT( pColorBuffers[ i ].pDataBuffer != nullptr );
@@ -82,7 +82,7 @@ namespace tiki
 			pDevice->CreateRenderTargetView( pColorBuffers[ i ].pDataBuffer->m_platformData.pResource, &viewDesc, renderTargetPool.getCpuHandle( m_platformData.colorHandles[ i ] ) );
 		}
 
-		for (size_t i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
+		for (uintreg i = m_colorBufferCount; i < TIKI_COUNT( m_colorBuffers ); ++i)
 		{
 			m_colorBuffers[ i ].clear();
 		}
@@ -122,7 +122,7 @@ namespace tiki
 	void RenderTarget::dispose( GraphicsSystem& graphicsSystem )
 	{
 		DescriptorPoolD3d12& renderTargetPool = GraphicsSystemPlatform::getRenderTargetPool( graphicsSystem );
-		for( size_t i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i )
+		for( uintreg i = 0u; i < TIKI_COUNT( m_colorBuffers ); ++i )
 		{
 			if( m_platformData.colorHandles[ i ] != InvalidDescriptorHandle )
 			{

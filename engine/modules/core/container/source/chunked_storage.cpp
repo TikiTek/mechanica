@@ -35,7 +35,7 @@ namespace tiki
 
 		m_chunkSize = parameters.chunkSize;
 
-		const uint dataSize = parameters.chunkSize * parameters.chunkCount;
+		const uintreg dataSize = parameters.chunkSize * parameters.chunkCount;
 		if( !m_typeRegister.create( parameters.typeCount ) ||
 			!m_memory.create( dataSize, parameters.chunkAlignment ) ||
 			!m_chunks.create( parameters.chunkCount ) ||
@@ -46,18 +46,18 @@ namespace tiki
 			return false;
 		}
 
-		for( uint i = 0u; i < m_typeRegister.getCount(); ++i )
+		for( uintreg i = 0u; i < m_typeRegister.getCount(); ++i )
 		{
 			m_typeRegister[ i ] = 0u;
 		}
 
-		for (uint i = 0u; i < m_firstChunk.getCount(); ++i)
+		for (uintreg i = 0u; i < m_firstChunk.getCount(); ++i)
 		{
 			m_firstChunk[ i ] = nullptr;
 			m_lastState[ i ] = nullptr;
 		}
 
-		for (uint i = 0u; i < parameters.chunkCount; ++i)
+		for (uintreg i = 0u; i < parameters.chunkCount; ++i)
 		{
 			Chunk& chunk = m_chunks[ i ];
 
@@ -98,13 +98,13 @@ namespace tiki
 
 		if ( pChunk == nullptr )
 		{
-			for (uint chunkIndex = 0u; chunkIndex < m_chunks.getCount(); ++chunkIndex)
+			for (uintreg chunkIndex = 0u; chunkIndex < m_chunks.getCount(); ++chunkIndex)
 			{
 				Chunk& chunk = m_chunks[ chunkIndex ];
 
 				if ( chunk.typeId == InvalidChunkTypeId )
 				{
-					const uint stateSize = m_typeRegister[ typeId ];
+					const uintreg stateSize = m_typeRegister[ typeId ];
 					TIKI_ASSERT( stateSize >= sizeof( ChunkState ) );
 
 					chunk.pNextChunkOfSameType	= nullptr;
@@ -119,7 +119,7 @@ namespace tiki
 					}
 
 					ChunkState* pPrevState = nullptr;
-					for (uint stateIndex = 0u; stateIndex < chunk.maxCount; ++stateIndex)
+					for (uintreg stateIndex = 0u; stateIndex < chunk.maxCount; ++stateIndex)
 					{
 						ChunkState* pState = (ChunkState*)( chunk.pData + ( stateSize * stateIndex ) );
 
@@ -197,7 +197,7 @@ namespace tiki
 			pState->pNextStateOfSameType->pPrevStateOfSameType = pState->pPrevStateOfSameType;
 		}
 
-		const uint chunkIndex = (uint)( ( (size_t)pState - (size_t)m_memory.getBegin() ) / m_chunkSize );
+		const uintreg chunkIndex = (uintreg)( ( (uintreg)pState - (uintreg)m_memory.getBegin() ) / m_chunkSize );
 		Chunk& chunk = m_chunks[ chunkIndex ];
 		TIKI_ASSERT( chunk.typeId == pState->typeId );
 

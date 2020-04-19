@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_MAP_INL_INCLUDED__
-#define TIKI_MAP_INL_INCLUDED__
 
 #include "tiki/base/assert.hpp"
 #include "tiki/base/memory.hpp"
@@ -50,7 +48,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint Map< TKey, TValue >::getCount() const
+	TIKI_FORCE_INLINE uintreg Map< TKey, TValue >::getCount() const
 	{
 		return m_count;
 	}
@@ -68,21 +66,21 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::getValueAt( uint index )
+	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::getValueAt( uintreg index )
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const TValue& Map< TKey, TValue >::getValueAt( uint index ) const
+	TIKI_FORCE_INLINE const TValue& Map< TKey, TValue >::getValueAt( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_count );
 		return m_pData[ index ].value;
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uint index )
+	TIKI_FORCE_INLINE KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uintreg index )
 	{
 		TIKI_ASSERT( index < m_capacity );
 		if ( index >= m_count )
@@ -93,7 +91,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE const KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uint index ) const
+	TIKI_FORCE_INLINE const KeyValuePair< TKey, TValue >& Map< TKey, TValue >::getPairAt( uintreg index ) const
 	{
 		TIKI_ASSERT( index < m_capacity );
 		return m_pData[ index ];
@@ -102,7 +100,7 @@ namespace tiki
 	template< typename TKey, typename TValue >
 	TIKI_FORCE_INLINE TValue* tiki::Map< TKey, TValue >::find( const TKey& key )
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if( index == TIKI_SIZE_T_MAX )
 		{
 			return nullptr;
@@ -114,7 +112,7 @@ namespace tiki
 	template< typename TKey, typename TValue >
 	TIKI_FORCE_INLINE const TValue* tiki::Map< TKey, TValue >::find( const TKey& key ) const
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if( index == TIKI_SIZE_T_MAX )
 		{
 			return nullptr;
@@ -128,7 +126,7 @@ namespace tiki
 	{
 		TIKI_ASSERT( pTargetValue != nullptr );
 
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if ( index == TIKI_SIZE_T_MAX )
 		{
 			return false;
@@ -141,7 +139,7 @@ namespace tiki
 	template< typename TKey, typename TValue >
 	TIKI_FORCE_INLINE typename Map< TKey, TValue >::InsertResult Map< TKey, TValue >::insertKey( const TKey& key )
 	{
-		const uint pos = findPositionIndex( key );
+		const uintreg pos = findPositionIndex( key );
 
 		Pair& pair1 = m_pData[ pos ];
 		if( pos < m_count && pair1.key == key )
@@ -154,7 +152,7 @@ namespace tiki
 
 		checkArraySize( m_count + 1 );
 
-		for( uint i = m_count; i > pos; --i )
+		for( uintreg i = m_count; i > pos; --i )
 		{
 			m_pData[ i ] = m_pData[ i - 1 ];
 		}
@@ -173,7 +171,7 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::set( const TKey& key, const TValue& value )
 	{
-		const uint pos = findPositionIndex( key );
+		const uintreg pos = findPositionIndex( key );
 
 		Pair& pair1 = m_pData[ pos ];
 		if( pos < m_count && pair1.key == key )
@@ -184,7 +182,7 @@ namespace tiki
 
 		checkArraySize( m_count + 1 );
 
-		for( uint i = m_count; i > pos; --i )
+		for( uintreg i = m_count; i > pos; --i )
 		{
 			m_pData[ i ] = m_pData[ i - 1 ];
 		}
@@ -200,14 +198,14 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE bool Map< TKey, TValue >::remove( const TKey& key )
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if ( index == TIKI_SIZE_T_MAX )
 		{
 			return false;
 		}
 
 		m_count--;
-		for (uint i = index; i < m_count; ++i)
+		for (uintreg i = index; i < m_count; ++i)
 		{
 			m_pData[ i ] = m_pData[ i + 1u ];
 		}
@@ -218,7 +216,7 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE TValue& Map< TKey, TValue >::operator[]( const TKey& key )
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		if ( index == TIKI_SIZE_T_MAX )
 		{
 			return set( key, TValue() );
@@ -230,7 +228,7 @@ namespace tiki
 	template<typename TKey, typename TValue>
 	TIKI_FORCE_INLINE const TValue& Map< TKey, TValue >::operator[]( const TKey& key ) const
 	{
-		const uint index = findIndex( key );
+		const uintreg index = findIndex( key );
 		TIKI_ASSERT( index != TIKI_SIZE_T_MAX );
 
 		return m_pData[index].value;
@@ -257,7 +255,7 @@ namespace tiki
 			m_capacity	= 0u;
 		}
 
-		for( uint i = 0u; i < m_count; ++i )
+		for( uintreg i = 0u; i < m_count; ++i )
 		{
 			m_pData[ i ] = copy.m_pData[ i ];
 		}
@@ -288,7 +286,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint Map< TKey, TValue >::findIndex( const TKey& key ) const
+	TIKI_FORCE_INLINE uintreg Map< TKey, TValue >::findIndex( const TKey& key ) const
 	{
 		if ( m_count == 0u )
 		{
@@ -323,7 +321,7 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint Map< TKey, TValue >::findPositionIndex( const TKey& key ) const
+	TIKI_FORCE_INLINE uintreg Map< TKey, TValue >::findPositionIndex( const TKey& key ) const
 	{
 		if( m_count == 0u )
 		{
@@ -351,13 +349,13 @@ namespace tiki
 			}
 		}
 
-		return uint( rangeStart );
+		return uintreg( rangeStart );
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE uint Map< TKey, TValue >::getNextSize( uint targetSize )
+	TIKI_FORCE_INLINE uintreg Map< TKey, TValue >::getNextSize( uintreg targetSize )
 	{
-		uint capacity = TIKI_MAX( 2u, m_capacity );
+		uintreg capacity = TIKI_MAX( 2u, m_capacity );
 
 		while ( capacity <= targetSize )
 		{
@@ -368,14 +366,14 @@ namespace tiki
 	}
 
 	template<typename TKey, typename TValue>
-	TIKI_FORCE_INLINE void Map< TKey, TValue >::checkArraySize( uint neddedSize )
+	TIKI_FORCE_INLINE void Map< TKey, TValue >::checkArraySize( uintreg neddedSize )
 	{
 		if ( m_capacity < neddedSize )
 		{
-			const uint capacity = getNextSize( neddedSize );
+			const uintreg capacity = getNextSize( neddedSize );
 			Pair* pNewData = TIKI_NEW_ARRAY( Pair, capacity, true );
 
-			for (uint i = 0u; i < m_count; ++i)
+			for (uintreg i = 0u; i < m_count; ++i)
 			{
 				pNewData[ i ] = m_pData[ i ];
 			}
@@ -390,5 +388,3 @@ namespace tiki
 		}
 	}
 }
-
-#endif // TIKI_MAP_INL_INCLUDED__
