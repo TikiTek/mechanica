@@ -16,9 +16,9 @@ namespace tiki
 		dispose();
 	}
 
-	void GenericDataDocumentCollection::create( const Project* pProject )
+	void GenericDataDocumentCollection::create( const Project& project )
 	{
-		m_pProject = pProject;
+		m_pProject = &project;
 	}
 
 	void GenericDataDocumentCollection::dispose()

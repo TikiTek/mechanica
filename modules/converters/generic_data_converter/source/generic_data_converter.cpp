@@ -84,7 +84,7 @@ namespace tiki
 	bool GenericDataConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
 		GenericDataDocumentCollection documentCollection( const_cast< GenericDataTypeCollection& >( m_typeCollection ) );
-		documentCollection.create( context.pProject );
+		documentCollection.create( *context.pProject );
 
 		GenericDataDocument* pDocument = documentCollection.loadDocument( asset.inputFilePath.getCompletePath() );
 		if( pDocument == nullptr )

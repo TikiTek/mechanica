@@ -29,7 +29,7 @@ namespace tiki
 
 	EditableFile* PackageEditor::openFile( const Path& fileName )
 	{
-		Package* pPackage = m_editor.getProject().findPackage( fileName.getFilename() );
+		Package* pPackage = m_editor.getProject().findPackage( fileName.getBasename() );
 		if( pPackage == nullptr )
 		{
 			return nullptr;

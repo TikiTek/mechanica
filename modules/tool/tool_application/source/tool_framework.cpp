@@ -9,7 +9,7 @@
 
 namespace tiki
 {
-	Path tool::getFile( const string& filename )
+	Path tool::getFile( const DynamicString& filename )
 	{
 		Path path( filename.cStr() );
 		if( !file::exists( path.getCompletePath() ) )

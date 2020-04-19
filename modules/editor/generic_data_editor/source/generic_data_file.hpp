@@ -44,7 +44,7 @@ namespace tiki
 
 		void						doObjectUi( GenericDataObject* pObject, bool readOnly );
 		void						doArrayUi( GenericDataArray* pArray, bool readOnly );
-		GenericDataValue*			doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly );
+		GenericDataValue*			doElementUi( const DynamicString& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly );
 		void						doCreateObjectUi( GenericDataValue* pValue );
 		void						doValueUi( GenericDataValue* pValue, bool readOnly );
 		void						doEnumUi( GenericDataValue* pValue, bool readOnly );

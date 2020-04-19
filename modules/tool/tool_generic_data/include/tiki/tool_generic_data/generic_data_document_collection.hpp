@@ -17,7 +17,7 @@ namespace tiki
 									GenericDataDocumentCollection( GenericDataTypeCollection& typeCollection );
 									~GenericDataDocumentCollection();
 
-		void						create( const Project* pProject );
+		void						create( const Project& project );
 		void						dispose();
 
 		GenericDataTypeCollection&	getTypeCollection() { return m_typeCollection; }

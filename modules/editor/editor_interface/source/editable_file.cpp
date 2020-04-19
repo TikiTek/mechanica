@@ -3,7 +3,7 @@
 namespace tiki
 {
 	EditableFile::EditableFile( const Path& filename, BaseEditor* pEditor )
-		: Editable( filename.getFilename(), pEditor )
+		: Editable( filename.getBasename(), pEditor )
 		, m_filename( filename )
 	{
 	}

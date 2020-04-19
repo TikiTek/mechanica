@@ -23,7 +23,7 @@ namespace tiki
 		: EditableFile( fileName, &genericDataEditor )
 		, m_genericDataEditor( genericDataEditor )
 		, m_renderer( renderer )
-		, m_document( genericDataEditor.getTypeCollection() )
+		, m_document( genericDataEditor.getDocumentCollection() )
 		, m_tagsIcon( getGenericDataEditorResource( GenericDataEditorResources_TagEditor ) )
 		, m_valueCreateIcon( getGenericDataEditorResource( GenericDataEditorResources_ValueCreate ) )
 		, m_valueRemoveIcon( getGenericDataEditorResource( GenericDataEditorResources_ValueRemove ) )
@@ -71,7 +71,7 @@ namespace tiki
 			const ImVec2 position = ImGui::GetWindowPos();
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 			TIKI_VERIFY( m_renderer.resize( uint16( size.x ), uint16( size.y ) ) );
-			m_rendererRectangle = createAxisAlignedRectangle( ImGui::Vec2( position ), ImGui::Vec2( size ) );
+			m_rendererRectangle = AxisAlignedRectangle::create( ImGui::Vec2( position ), ImGui::Vec2( size ) );
 
 			ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), size );
 
@@ -143,7 +143,7 @@ namespace tiki
 	{
 		for( uint i = 0u; i < pArray->getCount(); ++i )
 		{
-			const string name = formatDynamicString( "%d", i );
+			const DynamicString name = formatDynamicString( "%d", i );
 			doElementUi( name, pArray->getElement( i ), pArray->getType()->getBaseType(), readOnly );
 		}
 
@@ -160,7 +160,7 @@ namespace tiki
 		}
 	}
 
-	GenericDataValue* GenericDataFile::doElementUi( const string& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly )
+	GenericDataValue* GenericDataFile::doElementUi( const DynamicString& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly )
 	{
 		TIKI_ASSERT( pValue == nullptr || pValue->getType() == pType );
 		const bool canBeOpen = pType->getType() == GenericDataTypeType_Array || pType->getType() == GenericDataTypeType_Struct || pType->getType() == GenericDataTypeType_Pointer;
@@ -353,14 +353,14 @@ namespace tiki
 
 		if( readOnly )
 		{
-			string enumName;
+			DynamicString enumName;
 			if( !pValue->getEnum( enumName ) )
 			{
 				ImGui::Text( "invalid enum" );
 				return;
 			}
 
-			string text = pValue->getType()->getName() + "." + enumName;
+			DynamicString text = pValue->getType()->getName() + "." + enumName;
 			ImGui::Text( text.cStr() );
 			return;
 		}
@@ -420,7 +420,7 @@ namespace tiki
 		}
 
 		bool result = false;
-		string valueText = "";
+		DynamicString valueText = "";
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
 		switch( pValueTypeType->getValueType() )
 		{
@@ -625,7 +625,7 @@ namespace tiki
 
 				if( pTargetType->getType() != GenericDataTypeType_Enum )
 				{
-					string enumTypeName = "";
+					DynamicString enumTypeName = "";
 					if( pEnumType != nullptr )
 					{
 						enumTypeName = pEnumType->getName();
@@ -668,7 +668,7 @@ namespace tiki
 					return;
 				}
 
-				string enumValueName = "";
+				DynamicString enumValueName = "";
 				if( pEnumValue != nullptr )
 				{
 					enumValueName = pEnumValue->name;
