@@ -15,7 +15,6 @@ module:add_dependency( "renderer3dshader" );
 local module = Module:new( "renderer3dshader" );
 
 module:add_files( "source/shader/*.*" );
-module:add_shader_dir( "source" );
 
 module:add_dependency( "graphicsshader" );
 module:add_dependency( "uishader" );

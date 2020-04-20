@@ -1,7 +1,6 @@
 local module = Module:new( "graphics_shader" );
 
 module:add_files( "include/tiki/graphics/shader/*.hpp" );
-module:add_shader_dir( "include" );
 
 local module = Module:new( "graphics" );
 

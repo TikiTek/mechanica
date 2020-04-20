@@ -127,10 +127,6 @@ function Module:set_flag( name, configuration, platform )
 	self.config:set_flag( name, configuration, platform );
 end
 
-function Module:add_shader_dir( shader_dir, configuration, platform )
-	self.config:add_shader_dir( shader_dir, configuration, platform );
-end
-
 function Module:add_binary_dir( binary_dir, configuration, platform )
 	self.config:add_binary_dir( binary_dir, configuration, platform );
 end

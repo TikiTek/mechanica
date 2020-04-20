@@ -1,7 +1,6 @@
 local module = Module:new( "render_effect_shader" );
 
 module:add_files( "source/shader/*.*" );
-module:add_shader_dir( "source" );
 
 module:add_dependency( "graphics_shader" );
 
