@@ -24,7 +24,16 @@ namespace tiki
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
 	bool file::exists( const char* pFileName )
 	{
-		return (GetFileAttributesA( getPlatformFilename( pFileName ).cStr() ) != INVALID_FILE_ATTRIBUTES);
+		const HANDLE fileHandle = CreateFileA( pFileName, 0u, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nullptr );
+		if( fileHandle == INVALID_HANDLE_VALUE )
+		{
+			return false;
+		}
+
+		BY_HANDLE_FILE_INFORMATION information;
+		const bool doesExist = GetFileInformationByHandle( fileHandle, &information ) ? true : false;
+		CloseHandle( fileHandle );
+		return doesExist;
 	}
 
 	bool file::copy( const char* pFrom, const char* pTo, bool overwrite /* = true */ )
@@ -50,44 +59,42 @@ namespace tiki
 
 	bool file::readAllText( const char* pFileName, Array< char >& targetContent  )
 	{
-		FILE* pFile;
-		if ( fopen_s( &pFile, getPlatformFilename( pFileName ).cStr(), "rb" ) )
+		const HANDLE fileHandle = CreateFileA( pFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0u, nullptr );
+		if ( fileHandle == INVALID_HANDLE_VALUE )
 		{
 			return false;
 		}
 
-		fpos_t len;
-		fseek( pFile, 0, SEEK_END );
-		fgetpos( pFile, &len );
-		fseek( pFile, 0, SEEK_SET );
+		const DWORD fileSize = GetFileSize( fileHandle, nullptr );
+		targetContent.create( uintreg( fileSize ) + 1u );
 
-		targetContent.create( (uintreg)len + 1u );
-		fpos_t bytesRead = fread_s(targetContent.getBegin(), (uintreg)len, (uintreg)len, 1u, pFile);
-		TIKI_ASSERT( bytesRead == 1u );
-		fclose( pFile );
+		DWORD bytesRead;
+		ReadFile( fileHandle, targetContent.getBegin(), fileSize, &bytesRead, nullptr );
+		TIKI_ASSERT( bytesRead == fileSize );
 
-		targetContent[ (uintreg)len ] = '\0';
+		CloseHandle( fileHandle );
+
+		targetContent[ fileSize ] = '\0';
 
 		return true;
 	}
 
 	bool file::readAllBytes( const char* pFileName, Array< uint8 >& buffer, uintreg alignment /* = TIKI_DEFAULT_ALIGNMENT */ )
 	{
-		FILE* pFile;
-		fpos_t len;
-
-		if ( fopen_s( &pFile, getPlatformFilename( pFileName ).cStr(), "rb" ) )
+		const HANDLE fileHandle = CreateFileA( pFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0u, nullptr );
+		if( fileHandle == INVALID_HANDLE_VALUE )
 		{
 			return false;
 		}
 
-		fseek( pFile, 0, SEEK_END );
-		fgetpos( pFile, &len );
-		fseek( pFile, 0, SEEK_SET );
+		const DWORD fileSize = GetFileSize( fileHandle, nullptr );
+		buffer.create( fileSize );
 
-		buffer.create( (uintreg)len, alignment );
-		fread_s( buffer.getBegin(), (uintreg)len, (uintreg)len, 1u, pFile );
-		fclose( pFile );
+		DWORD bytesRead;
+		ReadFile( fileHandle, buffer.getBegin(), fileSize, &bytesRead, nullptr );
+		TIKI_ASSERT( bytesRead == fileSize );
+
+		CloseHandle( fileHandle );
 
 		return true;
 	}

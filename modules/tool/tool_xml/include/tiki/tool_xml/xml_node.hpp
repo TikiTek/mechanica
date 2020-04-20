@@ -31,6 +31,8 @@ namespace tiki
 		const XmlElement*			getNextSibling() const;
 		XmlElement*					findNextSibling( const char* pName );
 		const XmlElement*			findNextSibling( const char* pName ) const;
+		XmlElement*					findNextSiblingWithSameName();
+		const XmlElement*			findNextSiblingWithSameName() const;
 
 		XmlElement*					getFirstChild();
 		const XmlElement*			getFirstChild() const;

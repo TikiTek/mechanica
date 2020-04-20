@@ -7,6 +7,7 @@
 
 namespace tiki
 {
+	class Project;
 	class ShaderIncludeHandler;
 	enum GraphicsApi;
 
@@ -49,8 +50,7 @@ namespace tiki
 		};
 
 		const char*				m_pBaseSourceCode	= nullptr;
-
-		List< DynamicString >	m_includePathes;
+		const Project*			m_pProject			= nullptr;
 
 		mutable Mutex			m_openGlMutex;
 

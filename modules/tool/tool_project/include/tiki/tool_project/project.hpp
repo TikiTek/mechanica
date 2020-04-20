@@ -40,6 +40,10 @@ namespace tiki
 		void							addPlatform( PlatformType value );
 		void							removePlatform( PlatformType value );
 
+		const List< Path >&				getShaderIncludeDirectories() const { return m_shaderIncludeDirectories;}
+		void							addShaderIncludeDirectory( const Path& value );
+		void							removeShaderIncludeDirectory( const Path& value );
+
 		Package*						addPackage( const DynamicString& packageName );
 		Package*						findPackage( const DynamicString& packageName );
 		const Package*					findPackage( const DynamicString& packageName ) const;
@@ -59,6 +63,7 @@ namespace tiki
 		DynamicString					m_description;
 		DynamicString					m_version;
 		List< PlatformType >			m_platforms;
+		List< Path >					m_shaderIncludeDirectories;
 
 		ChunkedPool< Package >			m_packagePool;
 		LinkedList< Package >			m_packages;

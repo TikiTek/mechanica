@@ -18,7 +18,7 @@ namespace tiki
 
 	public:
 
-		void					create( const DynamicString& shaderText, const List< DynamicString >& includePathes );
+		void					create( const DynamicString& shaderText, const List< Path >& includePathes );
 		void					dispose();
 
 		bool					isTypeEnabled( ShaderType type ) const				{ return m_variants[ type ].getCount() != 0u; }
