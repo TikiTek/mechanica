@@ -75,10 +75,6 @@ function Project:set_flag( name, configuration, platform )
 	self.config:set_flag( name, configuration, platform );
 end
 
-function Project:add_shader_dir( shader_dir, configuration, platform )
-	self.config:add_shader_dir( shader_dir, configuration, platform );
-end
-
 function Project:add_binary_dir( binary_dir, configuration, platform )
 	self.config:add_binary_dir( binary_dir, configuration, platform );
 end
@@ -334,35 +330,6 @@ function Project:finalize_project( target_path, solution )
 			if _ACTION ~= "targets" then
 				self:finalize_build_steps( config, project_pathes, self.name );
 			end
-		end
-	end
-
-	if _ACTION ~= "targets" then
-		local shader_file_name = _OPTIONS[ "to" ] .. "/shaderinc.lst";
-		local shader_lines = {};
-		if io.exists( shader_file_name ) then
-			for line in io.lines( shader_file_name ) do 
-				shader_lines[ #shader_lines + 1 ] = line
-			end	
-		end
-		for _,dir in pairs( config_global.shader_dirs ) do
-			if table.index_of( shader_lines, dir ) == -1 then
-				table.insert( shader_lines, dir );
-			end
-		end
-		
-		local shader_file = io.open( shader_file_name, "w" );
-		if shader_file ~= nil then		
-			for i,dir in pairs( shader_lines ) do
-				--print( "Shader: " .. dir );
-
-				if i > 1 then
-					shader_file:write( "\n" );
-				end
-
-				shader_file:write( dir );
-			end
-			shader_file:close();
 		end
 	end
 end

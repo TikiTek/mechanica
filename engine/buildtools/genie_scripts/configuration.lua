@@ -7,7 +7,6 @@ Configuration = class{
 	include_dirs = {},
 	library_dirs = {},
 	library_files = {},
-	shader_dirs = {},
 	pre_build_steps = {},
 	post_build_steps = {}
 };
@@ -32,11 +31,6 @@ end
 
 function Configuration:set_flag( name )
 	table.insert( self.flags, name );
-end
-
-function Configuration:add_shader_dir( shader_dir, basePath )
-	self:checkBasePath( basePath );
-	table.insert( self.shader_dirs, path.join( basePath, shader_dir ) );
 end
 
 function Configuration:add_binary_dir( binary_dir, basePath )
@@ -82,7 +76,6 @@ function Configuration:apply_configuration( target )
 	target.library_files = table.join( target.library_files, self.library_files );
 	target.binary_dirs = table.join( target.binary_dirs, self.binary_dirs );
 	target.binary_files = table.join( target.binary_files, self.binary_files );
-	target.shader_dirs = table.join( target.shader_dirs, self.shader_dirs );
 	target.pre_build_steps = table.join( target.pre_build_steps, self.pre_build_steps );
 	target.post_build_steps = table.join( target.post_build_steps, self.post_build_steps );
 end
@@ -154,14 +147,6 @@ function PlatformConfiguration:set_flag( name, configuration, platform )
 		self:get_config( configuration, platform ):set_flag( name, self.base_path );
 	else
 		throw("[set_flag] Invalid args.")
-	end
-end
-
-function PlatformConfiguration:add_shader_dir( shader_dir, configuration, platform )
-	if type( shader_dir ) == "string" then
-		self:get_config( configuration, platform ):add_shader_dir( shader_dir, self.base_path );
-	else
-		throw "[add_shader_dir] Invalid args.";
 	end
 end
 

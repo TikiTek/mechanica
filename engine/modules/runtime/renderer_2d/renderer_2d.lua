@@ -1,7 +1,6 @@
 local module = Module:new( "renderer_2d_shader" );
 
 module:add_files( "source/shader/*.*" );
-module:add_shader_dir( "source" );
 
 module:add_dependency( "graphics_shader" );
 

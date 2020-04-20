@@ -3,7 +3,6 @@
 local module = Module:new( "uishader" );
 
 module:add_files( "include/tiki/ui/shader/*.hpp" );
-module:add_shader_dir( "include" );
 
 local module = Module:new( "ui" );
 
