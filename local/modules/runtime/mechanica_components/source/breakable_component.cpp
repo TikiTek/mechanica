@@ -184,8 +184,10 @@ namespace tiki
 		cutLine.start	= boundingCircle.getPointWithoutCenter( angle1 );
 		cutLine.end		= boundingCircle.getPointWithoutCenter( angle2 );
 
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		debugrenderer::drawLineCircle( boundingCircle, TIKI_COLOR_GREEN );
 		debugrenderer::drawLine( cutLine, TIKI_COLOR_GRAY );
+#endif
 
 		Polygon2 sourcePolygon;
 		sourcePolygon.createPolygon( vertices.getBegin(), vertices.getCount(), vertices.getCount() );
