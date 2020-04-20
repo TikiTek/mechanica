@@ -9,8 +9,6 @@ int tiki::mainEntryPoint()
 	//debug::breakOnAlloc( 1449 );
 	{
 		AssetConverterParamter parameters;
-		parameters.waitForConversion = true;
-
 		AssetConverterInterface* pConverter = createAssetConverter( parameters );
 		if( pConverter == nullptr )
 		{

@@ -56,7 +56,7 @@ if ($fail_targets.Count -gt 0) {
 }
 
 $build_time = New-Timespan -Start $start_time -End (Get-Date)
-$result = "Build done after {0:c}. $build_success_count of $build_count builds succeded." -f $build_time
+$result = "Code Build done after {0:c}. $build_success_count of $build_count builds succeded." -f $build_time
 echo $result
 
 if ($fail_targets.Count -gt 0) {
