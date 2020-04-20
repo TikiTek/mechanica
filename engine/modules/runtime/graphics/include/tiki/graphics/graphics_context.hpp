@@ -18,6 +18,12 @@
 #	error Platform not supported
 #endif
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#	define TIKI_GRAPHICS_VALIDATION TIKI_ON
+#else
+#	define TIKI_GRAPHICS_VALIDATION TIKI_OFF
+#endif
+
 namespace tiki
 {
 	class BaseBuffer;
@@ -164,11 +170,7 @@ namespace tiki
 		VertexBuffer				m_immediateVertexData;
 
 		void						invalidateState();
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-		bool						validateDrawCall() const;
-#endif
-
-		void						prepareDrawCall();
+		void						validateDrawCall() const;
 	};
 }
 

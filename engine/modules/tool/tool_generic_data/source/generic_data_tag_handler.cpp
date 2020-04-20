@@ -21,7 +21,6 @@ namespace tiki
 		static const ValueTag s_aValueTags[] =
 		{
 			{ "enum",		&GenericDataTagHandler::resolveEnumValueTag },		// GenericDataValueTag_Enum
-			{ "reference",	&GenericDataTagHandler::resolveReferenceValueTag },	// GenericDataValueTag_Reference
 			{ "bit",		&GenericDataTagHandler::resolveBitValueTag },		// GenericDataValueTag_Bit
 			{ "offset",		&GenericDataTagHandler::resolveOffsetValueTag },	// GenericDataValueTag_Offset
 			{ "crc",		&GenericDataTagHandler::resolveCrcValueTag }		// GenericDataValueTag_Crc
@@ -112,10 +111,6 @@ namespace tiki
 				}
 
 				content = string_tools::toString( intValue );
-			}
-			else if( pCurrentTag->getTag() == "reference" )
-			{
-				TIKI_NOT_IMPLEMENTED;
 			}
 			else if( pCurrentTag->getTag() == "bit" )
 			{
@@ -298,12 +293,6 @@ namespace tiki
 		}
 
 		return true;
-	}
-
-	bool GenericDataTagHandler::resolveReferenceValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )
-	{
-		TIKI_NOT_IMPLEMENTED;
-		return false;
 	}
 
 	bool GenericDataTagHandler::resolveBitValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType )

@@ -23,7 +23,6 @@ namespace tiki
 	enum GenericDataValueTag
 	{
 		GenericDataValueTag_Enum,
-		GenericDataValueTag_Reference,
 		GenericDataValueTag_Bit,
 		GenericDataValueTag_Offset,
 		GenericDataValueTag_Crc,
@@ -77,7 +76,6 @@ namespace tiki
 		const GenericDataType*		resolvePointerTypeTag( const GenericDataTag* pTag );
 
 		bool						resolveEnumValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
-		bool						resolveReferenceValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 		bool						resolveBitValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 		bool						resolveOffsetValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );
 		bool						resolveCrcValueTag( DynamicString& targetContent, const GenericDataTag* pTag, const GenericDataType* pParentType );

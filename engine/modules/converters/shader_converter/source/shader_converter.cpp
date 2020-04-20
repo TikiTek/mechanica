@@ -214,9 +214,8 @@ namespace tiki
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
-		Array< char > charArray;
 		// TODO: put shader include dirs in package config
-		TIKI_NOT_IMPLEMENTED;
+		Array< char > charArray;
 		if ( file::readAllText( "../../shaderinc.lst", charArray ) )
 		{
 			const DynamicString text = charArray.getBegin();

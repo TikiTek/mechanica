@@ -1,5 +1,7 @@
 #include "tiki/debug_renderer/debug_renderer.hpp"
 
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
+
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/zone_allocator.hpp"
 #include "tiki/container/static_array.hpp"
@@ -18,7 +20,6 @@
 
 namespace tiki
 {
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	class DebugRenderer
 	{
 		TIKI_NONCOPYABLE_CLASS( DebugRenderer );
@@ -1169,5 +1170,6 @@ namespace tiki
 	{
 		s_debugRenderer.flush( renderer, camera, pRenderTarget );
 	}
-#endif
 }
+
+#endif
