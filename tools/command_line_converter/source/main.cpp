@@ -1,7 +1,6 @@
-
-#include "tiki/base/types.hpp"
+#include "tiki/asset_converter_interface/asset_converter_interface.hpp"
 #include "tiki/base/platform.hpp"
-#include "tiki/toollibraries/iassetconverter.hpp"
+#include "tiki/threading/thread.hpp"
 
 int tiki::mainEntryPoint()
 {
@@ -10,33 +9,24 @@ int tiki::mainEntryPoint()
 	//debug::breakOnAlloc( 1449 );
 	{
 		AssetConverterParamter parameters;
-		parameters.sourcePath	= "../../../../../../content";
-		parameters.outputPath	= "../../../../../../gamebuild";
-		parameters.forceRebuild	= platform::hasArgument( "--rebuild" );
+		parameters.waitForConversion = true;
 
-		for( uint i = 0u; i < platform::getArguments().getCount(); ++i )
+		AssetConverterInterface* pConverter = createAssetConverter( parameters );
+		if( pConverter == nullptr )
 		{
-			const string arg = platform::getArguments()[ i ];
-
-			if( arg.startsWith( "--content-dir=" ) )
-			{
-				parameters.sourcePath = arg.subString( getStringSize( "--content-dir=" ) );
-			}
-			else if( arg.startsWith( "--target-dir=" ) )
-			{
-				parameters.outputPath = arg.subString( getStringSize( "--target-dir=" ) );
-			}
+			return 1;
 		}
 
-		IAssetConverter* pConverter = createAssetConverter();
-		pConverter->create( parameters );
+		pConverter->queueAll();
 
-		retValue = pConverter->convertAll();
+		while( pConverter->isConvertionRunning() )
+		{
+			Thread::sleepCurrentThread( 100 );
+		}
 
-		pConverter->dispose();
 		disposeAssetConverter( pConverter );
-	}		
-	
+	}
+
 	debug::dumpMemoryStats();
 
 	return retValue;

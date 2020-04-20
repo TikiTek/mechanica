@@ -53,6 +53,9 @@ use_sdl		= false;
 local action = _ACTION;
 if action == "targets" then
 	action = _OPTIONS[ "targets_action" ]
+	if not action then
+		throw("No 'targets_action' option specified.");
+	end
 end
 
 if action == "vs2015" or action == "vs2017" or action == "vs2019" then
@@ -91,7 +94,7 @@ elseif action == "xcode" then
 	use_clang	= true;
 	use_vulkan	= true;	
 else
-	throw("Build action not supported.");
+	throw("Build action '" .. action .. "' not supported.");
 end
 
 if os.get() == "windows" then

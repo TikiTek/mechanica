@@ -16,7 +16,7 @@ Project = class{
 	uuid = nil,
 	type = nil,
 	lang = ProjectLanguages.cpp,
-	module = nil,
+	module_name = nil,
 	buildoptions = nil,
 	config = nil,
 	platforms = {},
@@ -36,7 +36,7 @@ function find_project( project_name )
 	return nil;
 end
 
-function Project:new( name, uuid, platforms, configurations, module, projectType )
+function Project:new( name, uuid, platforms, configurations, module_name, projectType )
 	if not name then 
 		throw( "[Project:new] No name given." );
 	end
@@ -45,8 +45,8 @@ function Project:new( name, uuid, platforms, configurations, module, projectType
 		throw( "[Project:new] platforms or configurations are invalid." );
 	end
 
-	if not module then 
-		throw( "[Project:new] No module given." );
+	if not module_name then 
+		throw( "[Project:new] No module_name given." );
 	end
 
 	if not projectType then 
@@ -58,12 +58,12 @@ function Project:new( name, uuid, platforms, configurations, module, projectType
 	project_new.uuid			= uuid;
 	project_new.type			= projectType;
 	project_new.config			= PlatformConfiguration:new();
-	project_new.module			= module;
+	project_new.module_name		= module_name;
 	project_new.configurations	= configurations;
 	project_new.platforms		= platforms;
 
 	table.insert( global_project_storage, project_new );
-
+	
 	return project_new;
 end
 
@@ -246,10 +246,11 @@ function Project:finalize_project( target_path, solution )
 		end
 	end
 
+	local project_module = find_module( self.module_name );
 	local modules = {};
-	self.module:resolve_dependency( modules );
+	project_module:resolve_dependency( modules );
 
-	self.module:finalize_module( config_global, nil, nil, self, solution );
+	project_module:finalize_module( config_global, nil, nil, self, solution );
 	for _,cur_module in pairs( modules ) do
 		cur_module:finalize_module( config_global, nil, nil, self, solution );
 	end
@@ -266,7 +267,7 @@ function Project:finalize_project( target_path, solution )
 
 		config_platform[ build_platform ] = Configuration:new()
 
-		self.module:finalize_module( config_platform[ build_platform ], nil, build_platform, self, solution );
+		project_module:finalize_module( config_platform[ build_platform ], nil, build_platform, self, solution );
 		for j,cur_module in pairs( modules ) do
 			cur_module:finalize_module( config_platform[ build_platform ], nil, build_platform, self, solution );
 		end
@@ -284,7 +285,7 @@ function Project:finalize_project( target_path, solution )
 
 		config_configuration[ build_config ] = Configuration:new();
 
-		self.module:finalize_module( config_configuration[ build_config ], build_config, nil, self, solution );
+		project_module:finalize_module( config_configuration[ build_config ], build_config, nil, self, solution );
 		for j,cur_module in pairs( modules ) do
 			cur_module:finalize_module( config_configuration[ build_config ], build_config, nil, self, solution );
 		end
@@ -313,7 +314,7 @@ function Project:finalize_project( target_path, solution )
 		
 			local config = Configuration:new();
 
-			self.module:finalize_module( config, build_config, build_platform, self, solution );
+			project_module:finalize_module( config, build_config, build_platform, self, solution );
 			for k,cur_module in pairs( modules ) do
 				cur_module:finalize_module( config, build_config, build_platform, self, solution );
 			end	

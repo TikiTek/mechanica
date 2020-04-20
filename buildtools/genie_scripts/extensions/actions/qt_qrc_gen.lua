@@ -1,4 +1,3 @@
--- library/buildtools/genie_scripts/extensions/actions/qt_qrc_gen
 return function( data, config )
 	local matches = os.matchfiles( data.source_pattern );
 

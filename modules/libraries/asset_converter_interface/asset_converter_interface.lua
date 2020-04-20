@@ -3,7 +3,7 @@ local asset_converter_library_project = Project:new(
 	"a7beb386-b92c-4c98-9250-c9394bd86b42",
 	{ "x32", "x64" },
 	{ "Debug", "Release", "Master" },
-	find_module( "tool/asset_converter_library" ),
+	"tool/asset_converter_library",
 	ProjectTypes.sharedLibrary
 );
 
