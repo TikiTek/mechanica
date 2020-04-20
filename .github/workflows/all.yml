@@ -13,10 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: test
-      run: PowerShell -Command "echo $PSVersionTable.PSVersion"
-#    - name: make
-#      run: make
+    - name: Build Code
+      run: .\build_code.ps1
+      shell: powershell
 #    - name: make check
 #      run: make check
 #    - name: make distcheck
