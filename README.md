@@ -33,5 +33,5 @@ Special Thanks
 Jeff Israel for [Open Icon Library](https://sourceforge.net/projects/openiconlibrary/) and also to all contributors  
 Lee Thomason for [TinyXML2](https://github.com/leethomason/tinyxml2)  
 Omar Cornut for [Dear ImGui](https://github.com/ocornut/imgui)  
-Sean Barrett for [stb](https://github.com/nothings/stb)
+Sean Barrett for [stb](https://github.com/nothings/stb)  
 Branimir Karadžić for [GENie](https://github.com/bkaradzic/GENie)
