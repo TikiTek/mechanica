@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Build Assets
       run: .\build_assets.ps1
       shell: powershell
