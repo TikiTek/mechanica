@@ -4,7 +4,7 @@
 #include "tiki/math/vector.hpp"
 #include "tiki/math/axis_aligned_rectangle.hpp"
 
-#include <Box2D/Common/b2Math.h>
+#include <box2d/b2_math.h>
 
 namespace tiki
 {

@@ -6,7 +6,7 @@
 #	include "tiki/physics_2d/physics_2d_debug_draw.hpp"
 #endif
 
-#include <Box2D/Dynamics/b2World.h>
+#include <box2d/b2_world.h>
 
 namespace tiki
 {
@@ -36,7 +36,7 @@ namespace tiki
 
 		void		update( double timeStep );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		void		renderDebug();
 #endif
 
@@ -44,7 +44,7 @@ namespace tiki
 
 		b2World					m_world;
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		Physics2dDebugDraw		m_debugDraw;
 #endif
 

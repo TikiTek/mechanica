@@ -6,10 +6,10 @@
 
 #include "physics_2d_internal.hpp"
 
-#include <Box2D/Collision/Shapes/b2PolygonShape.h>
-#include <Box2D/Dynamics/b2Body.h>
-#include <Box2D/Dynamics/b2Fixture.h>
-#include <Box2D/Dynamics/b2World.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_fixture.h>
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_world.h>
 
 namespace tiki
 {
@@ -158,15 +158,15 @@ namespace tiki
 			return 0u;
 		}
 		const b2PolygonShape* pPolygonShape = (const b2PolygonShape*)pShape;
-		const int minCount = TIKI_MIN( (int)targetVertices.getCapacity(), pPolygonShape->GetVertexCount() );
+		const int minCount = TIKI_MIN( (int)targetVertices.getCapacity(), pPolygonShape->m_count );
 
 		targetVertices.clear();
 		for( int i = 0u; i < minCount; ++i )
 		{
-			targetVertices.push( toEngineVector( pPolygonShape->GetVertex( i ) ) );
+			targetVertices.push( toEngineVector( pPolygonShape->m_vertices[ i ] ) );
 		}
 
-		return (uint)pPolygonShape->GetVertexCount();
+		return (uint)pPolygonShape->m_count;
 	}
 
 	AxisAlignedRectangle Physics2dBody::getShapeBounds() const

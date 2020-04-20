@@ -3,7 +3,7 @@
 #include "tiki/base/types.hpp"
 #include "tiki/physics_2d/physics_2d_shape.hpp"
 
-#include <Box2D/Collision/Shapes/b2PolygonShape.h>
+#include <box2d/b2_polygon_shape.h>
 
 namespace tiki
 {

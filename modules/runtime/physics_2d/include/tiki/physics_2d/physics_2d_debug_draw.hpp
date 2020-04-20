@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Box2D/Common/b2Draw.h>
+#include "tiki/debug_renderer/debug_renderer.hpp"
 
-#include "tiki/base/types.hpp"
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#include <box2d/b2_draw.h>
 
 namespace tiki
 {

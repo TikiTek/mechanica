@@ -25,27 +25,28 @@ namespace tiki
 
 	static const int s_aKeyboardMapping[] =
 	{
-		KeyboardKey_Tab,		// ImGuiKey_Tab
-		KeyboardKey_Left,		// ImGuiKey_LeftArrow
-		KeyboardKey_Right,		// ImGuiKey_RightArrow
-		KeyboardKey_Up,			// ImGuiKey_UpArrow
-		KeyboardKey_Down,		// ImGuiKey_DownArrow
-		KeyboardKey_PageUp,		// ImGuiKey_PageUp
-		KeyboardKey_PageDown,	// ImGuiKey_PageDown
-		KeyboardKey_Home,		// ImGuiKey_Home
-		KeyboardKey_End,		// ImGuiKey_End
-		KeyboardKey_Insert,		// ImGuiKey_Insert
-		KeyboardKey_Delete,		// ImGuiKey_Delete
-		KeyboardKey_BackSpace,	// ImGuiKey_Backspace
-		KeyboardKey_Space,		// ImGuiKey_Space
-		KeyboardKey_Return,		// ImGuiKey_Enter
-		KeyboardKey_Escape,		// ImGuiKey_Escape
-		KeyboardKey_A,			// ImGuiKey_A
-		KeyboardKey_C,			// ImGuiKey_C
-		KeyboardKey_V,			// ImGuiKey_V
-		KeyboardKey_X,			// ImGuiKey_X
-		KeyboardKey_Y,			// ImGuiKey_Y
-		KeyboardKey_Z			// ImGuiKey_Z
+		KeyboardKey_Tab,			// ImGuiKey_Tab
+		KeyboardKey_Left,			// ImGuiKey_LeftArrow
+		KeyboardKey_Right,			// ImGuiKey_RightArrow
+		KeyboardKey_Up,				// ImGuiKey_UpArrow
+		KeyboardKey_Down,			// ImGuiKey_DownArrow
+		KeyboardKey_PageUp,			// ImGuiKey_PageUp
+		KeyboardKey_PageDown,		// ImGuiKey_PageDown
+		KeyboardKey_Home,			// ImGuiKey_Home
+		KeyboardKey_End,			// ImGuiKey_End
+		KeyboardKey_Insert,			// ImGuiKey_Insert
+		KeyboardKey_Delete,			// ImGuiKey_Delete
+		KeyboardKey_BackSpace,		// ImGuiKey_Backspace
+		KeyboardKey_Space,			// ImGuiKey_Space
+		KeyboardKey_Return,			// ImGuiKey_Enter
+		KeyboardKey_Escape,			// ImGuiKey_Escape
+		KeyboardKey_NumpadEnter,	// ImGuiKey_KeyPadEnter
+		KeyboardKey_A,				// ImGuiKey_A
+		KeyboardKey_C,				// ImGuiKey_C
+		KeyboardKey_V,				// ImGuiKey_V
+		KeyboardKey_X,				// ImGuiKey_X
+		KeyboardKey_Y,				// ImGuiKey_Y
+		KeyboardKey_Z				// ImGuiKey_Z
 	};
 	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_aKeyboardMapping ) == ImGuiKey_COUNT );
 
