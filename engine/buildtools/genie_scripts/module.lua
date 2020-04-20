@@ -22,10 +22,10 @@ ModuleTypes = {
 
 function add_module_include_path( include_path )
 	if path.isabsolute( include_path ) then
-		table.insert( global_module_include_pathes, include_path );
-	else
-		table.insert( global_module_include_pathes, path.join( os.getcwd(), include_path ) );
+		throw( "add_module_include_path: Please use relative pathes"  )
 	end
+
+	table.insert( global_module_include_pathes, path.getabsolute( path.join( path.getdirectory( _SCRIPT ), include_path ) ) );
 end
 
 function find_module( module_name, importer_name )

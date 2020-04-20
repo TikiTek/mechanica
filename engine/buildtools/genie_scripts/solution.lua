@@ -11,11 +11,10 @@ function add_extension( name )
 	dofile( script_path );
 end
 
-function Solution:new( name )
-	if not name then 
-		throw( "[Project:new] No name given." );
-	end
-	
+function Solution:new()
+	local source = debug.getinfo( 2 ).source;
+	local name = source:match( "([^/]+)/genie.lua$" );
+
 	local solution_new = class_instance( self );
 	solution_new.name = name;
 	

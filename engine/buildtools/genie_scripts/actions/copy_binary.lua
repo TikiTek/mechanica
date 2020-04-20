@@ -1,4 +1,3 @@
--- library/buildtools/genie_scripts/actions/copy_binary
 return function( data, config )
 	if not os.isfile( data.source ) then
 		throw( "[copy_binary] Source file not found at " .. data.source )

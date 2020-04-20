@@ -1,4 +1,3 @@
--- library/buildtools/genie_scripts/actions/install_binary
 return function( data, config )
 	local files = os.matchfiles( path.join( config.output_path, data.pattern ) )
 	local target_path = path.join( global_configuration.root_path, data.target );
