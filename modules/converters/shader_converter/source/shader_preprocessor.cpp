@@ -177,14 +177,14 @@ namespace tiki
 
 			lastPath.setCompletePath( path.cStr() );
 
-			Array< uint8 > fileData;
-			if ( !file::readAllBytes( path.cStr(), fileData ) )
+			Array< char > fileData;
+			if ( !file::readAllText( path.cStr(), fileData ) )
 			{
 				TIKI_TRACE_ERROR( "open include file failed: %s\n", path.cStr() );
 				break;
 			}
 
-			const DynamicString fileText = DynamicString( reinterpret_cast< const char* >( fileData.getBegin() ), fileData.getCount() );
+			const DynamicString fileText = DynamicString( fileData.getBegin() );
 			resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
 			resultCode = resultCode.insert( fileText, expBeginIndex );
 
