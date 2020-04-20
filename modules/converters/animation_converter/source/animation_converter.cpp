@@ -35,7 +35,6 @@ namespace tiki
 
 	void AnimationConverter::getInputExtensions( List< DynamicString >& extensions ) const
 	{
-		TIKI_NOT_IMPLEMENTED;
 		//extensions.pushBack( ".dae" );
 	}
 

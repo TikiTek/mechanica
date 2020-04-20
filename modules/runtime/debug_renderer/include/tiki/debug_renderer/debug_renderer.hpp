@@ -2,9 +2,15 @@
 
 #include "tiki/graphics/color.hpp"
 
+#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#	define TIKI_DEBUG_RENDERER	TIKI_ON
+#else
+#	define TIKI_DEBUG_RENDERER	TIKI_OFF
+#endif
+
 namespace tiki
 {
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 	class Camera;
 	class Frustum;
 	class ImmediateRenderer;

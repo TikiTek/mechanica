@@ -8,12 +8,12 @@
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
 
 #	define TIKI_DEBUGPROP_BOOL( varname, name, defaultValue )						static const bool varname = defaultValue;
-#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue )	static const bool varname = defaultValue;
+#	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue )	static const int varname = defaultValue;
 #	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue )	static const float varname = defaultValue;
 
-#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const bool varname;
-#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const bool varname;
-#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const float varname;
+//#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const bool varname;
+//#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const int varname;
+//#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const float varname;
 
 #else
 
@@ -25,9 +25,9 @@
 #	define TIKI_DEBUGPROP_INT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropInt varname ( name, TIKI_CURRENT_MODULE, defaultValue, minValue, maxValue );
 #	define TIKI_DEBUGPROP_FLOAT( varname, name, defaultValue, minValue, maxValue ) static ::tiki::DebugPropFloat varname ( name, TIKI_CURRENT_MODULE, defaultValue, minValue, maxValue );
 
-#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const ::tiki::DebugPropBool varname;
-#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const ::tiki::DebugPropInt varname;
-#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const ::tiki::DebugPropFloat varname;
+//#	define TIKI_DEBUGPROP_IMPORT_BOOL( varname, name )	static extern const ::tiki::DebugPropBool varname;
+//#	define TIKI_DEBUGPROP_IMPORT_INT( varname, name )	static extern const ::tiki::DebugPropInt varname;
+//#	define TIKI_DEBUGPROP_IMPORT_FLOAT( varname, name )	static extern const ::tiki::DebugPropFloat varname;
 
 #endif
 

@@ -412,10 +412,7 @@ namespace tiki
 	void GraphicsContext::endImmediateGeometry()
 	{
 		unmapBuffer( m_immediateVertexData );
-		if( !validateDrawCall() )
-		{
-			return;
-		}
+		validateDrawCall();
 
 		const UINT offset = 0u;
 		const UINT vertexStride = static_cast< UINT >(m_platformData.immediateVertexStride );
@@ -426,21 +423,13 @@ namespace tiki
 
 	void GraphicsContext::drawGeometry( uint vertexCount, uint baseVertexOffset /*= 0u*/ )
 	{
-		if( !validateDrawCall() )
-		{
-			return;
-		}
-
+		validateDrawCall();
 		m_platformData.pContext->Draw( (UINT)vertexCount, (UINT)baseVertexOffset );
 	}
 
 	void GraphicsContext::drawIndexedGeometry( uint indexCount, uint baseIndexOffset /*= 0u*/, uint baseVertexOffset /*= 0u*/ )
 	{
-		if( !validateDrawCall() )
-		{
-			return;
-		}
-
+		validateDrawCall();
 		m_platformData.pContext->DrawIndexed( (UINT)indexCount, (UINT)baseIndexOffset, (UINT)baseVertexOffset );
 	}
 

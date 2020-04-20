@@ -45,15 +45,15 @@ namespace tiki
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
-		TIKI_NOT_IMPLEMENTED;
+		TIKI_TRACE_ERROR( "[Physics2dJointComponent::internalInitializeState] is not implemented.\n" );
 
-		return true;
+		return false;
 	}
 
 	void Physics2dJointComponent::internalDisposeState( Physics2dJointComponentState* pState )
 	{
 		TIKI_ASSERT( m_pPhysicsWorld != nullptr );
 
-		TIKI_NOT_IMPLEMENTED;
+		pState->joint.dispose( *m_pPhysicsWorld );
 	}
 }

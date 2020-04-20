@@ -339,8 +339,8 @@ namespace tiki
 		}
 		else if( pType->getType() == GenericDataTypeType_Pointer )
 		{
-			TIKI_NOT_IMPLEMENTED;
-			//return pTargetValue->setReference( content, pType );
+			TIKI_TRACE_ERROR( "[GenericDataTypeCollection::parseValue] parsing of pointers is not supported.\n");
+			return false;
 		}
 
 		return false;

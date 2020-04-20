@@ -48,9 +48,9 @@ namespace tiki
 		}
 	}
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-	bool GraphicsContext::validateDrawCall() const
+	void GraphicsContext::validateDrawCall() const
 	{
+#if TIKI_ENABLED( TIKI_GRAPHICS_VALIDATION )
 #define TIKI_VALIDATE_EXPR( expr, message ) if ( !( result &= ( expr ) ) ) TIKI_TRACE_ERROR( "[grpahics] validateDrawCall failed: %s\n", message )
 		bool result = true;
 
@@ -62,16 +62,15 @@ namespace tiki
 		TIKI_VALIDATE_EXPR( m_pVertexInputBinding != nullptr,				"VertexInputBinding must be set" );
 
 		TIKI_ASSERT( result );
-		return result;
 #undef TIKI_VALIDATE_EXPR
-	}
 #endif
+	}
 
 	void GraphicsContext::drawFullScreenQuadPos2()
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
-		TIKI_ASSERT( validateDrawCall() );
+		validateDrawCall();
 
 		StockVertexPos2* pVertices = static_cast< StockVertexPos2* >( beginImmediateGeometry( sizeof( StockVertexPos2 ), 4u ) );
 
@@ -94,7 +93,7 @@ namespace tiki
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
-		TIKI_ASSERT( validateDrawCall() );
+		validateDrawCall();
 
 		StockVertexPos2Tex2* pVertices = static_cast< StockVertexPos2Tex2* >( beginImmediateGeometry( sizeof( StockVertexPos2Tex2 ), 4u ) );
 
@@ -117,7 +116,7 @@ namespace tiki
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
-		TIKI_ASSERT( validateDrawCall() );
+		validateDrawCall();
 
 		StockVertexPos3* pVertices = static_cast< StockVertexPos3* >( beginImmediateGeometry( sizeof( StockVertexPos3 ), 4u ) );
 
@@ -140,7 +139,7 @@ namespace tiki
 	{
 		setPrimitiveTopology( PrimitiveTopology_TriangleStrip );
 
-		TIKI_ASSERT( validateDrawCall() );
+		validateDrawCall();
 
 		StockVertexPos3Tex2* pVertices = static_cast< StockVertexPos3Tex2* >( beginImmediateGeometry( sizeof( StockVertexPos3Tex2 ), 4u ) );
 
