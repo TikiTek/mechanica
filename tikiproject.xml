@@ -9,4 +9,9 @@
 		<platform>linux</platform>
 		<platform>android</platform-->
 	</platforms>
+	<shader_includes>
+		<shader_include>library/modules/runtime/graphics/include</shader_include>
+		<shader_include>library/modules/runtime/renderer_2d/source/shader</shader_include>
+		<shader_include>library/modules/runtime/render_effects/source/shader</shader_include>
+	</shader_includes>
 </tikiproject>
