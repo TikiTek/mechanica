@@ -17,13 +17,15 @@ int tiki::mainEntryPoint()
 			return 1;
 		}
 
-		pConverter->queueAll();
-
-		while( pConverter->isConvertionRunning() )
+		pConverter->startWatch();
+		while( !pConverter->popFinishConversion() )
 		{
 			Thread::sleepCurrentThread( 100 );
 		}
 
+		retValue = pConverter->wasLastBuildSuccessful() ? 0 : 1;
+
+		pConverter->stopWatch();
 		disposeAssetConverter( pConverter );
 	}
 

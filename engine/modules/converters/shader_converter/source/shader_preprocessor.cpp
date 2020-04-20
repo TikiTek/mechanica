@@ -107,7 +107,7 @@ namespace tiki
 		}
 	}
 
-	static DynamicString resolveIncludes( const DynamicString& shaderCode, const List< DynamicString >& includeDirs )
+	static DynamicString resolveIncludes( const DynamicString& shaderCode, const List< Path >& includeDirs )
 	{
 		DynamicString resultCode = shaderCode;
 
@@ -149,20 +149,21 @@ namespace tiki
 			PCRE2_SIZE matchLength = pOffsets[ 3u ] - pOffsets[ 2u ];
 
 			DynamicString path = DynamicString( pMatchBegin, matchLength );
+			Path fullPath;
 			for (uint i = 0u; i < includeDirs.getCount(); ++i)
 			{
-				const DynamicString fullPath = path::combine( includeDirs[ i ], path );
-				if ( file::exists( fullPath.cStr() ) )
+				fullPath.setCombinedPath( includeDirs[ i ], path.cStr() );
+				if ( file::exists( fullPath.getCompletePath() ) )
 				{
-					path = fullPath;
+					path = fullPath.getCompletePath();
 					break;
 				}
 			}
 
 			if ( !file::exists( path.cStr() ) )
 			{
-				const DynamicString fullPath = path::combine( lastPath.getDirectoryWithPrefix(), path );
-				if( !file::exists( fullPath.cStr() ) )
+				fullPath.setCombinedPath( lastPath.getDirectoryWithPrefix(), path.cStr() );
+				if( !file::exists( fullPath.getCompletePath() ) )
 				{
 					TIKI_TRACE_ERROR( "include file not found: %s\n", path.cStr() );
 					resultCode = resultCode.remove( expBeginIndex, uint( expLength ) );
@@ -170,7 +171,7 @@ namespace tiki
 				}
 				else
 				{
-					path = fullPath;
+					path = fullPath.getCompletePath();
 				}
 			}
 
@@ -217,7 +218,7 @@ namespace tiki
 		return defineString;
 	}
 
-	void ShaderPreprocessor::create( const DynamicString& shaderText, const List< DynamicString >& includePathes )
+	void ShaderPreprocessor::create( const DynamicString& shaderText, const List< Path >& includePathes )
 	{
 		// resolve includes
 		m_sourceCode = resolveIncludes( shaderText, includePathes );

@@ -210,8 +210,11 @@ namespace tiki
 		if( !isStringEmpty( pFilename ) )
 		{
 			uintreg index = getStringSize( m_directory );
-			copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
-			index++;
+			if( !isStringEmpty( m_directory ) )
+			{
+				copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
+				index++;
+			}
 
 			copyString( m_directory + index, sizeof( m_directory ) - index, getFilenameWithExtension() );
 			index += getStringSize( pFilename );
@@ -220,8 +223,11 @@ namespace tiki
 		if( !isStringEmpty( path.getDirectory() ) )
 		{
 			uintreg index = getStringSize( m_directory );
-			copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
-			index++;
+			if( !isStringEmpty( m_directory ) )
+			{
+				copyString( m_directory + index, sizeof( m_directory ) - index, "/" );
+				index++;
+			}
 
 			copyString( m_directory + index, sizeof( m_directory ) - index, path.getDirectory() );
 		}

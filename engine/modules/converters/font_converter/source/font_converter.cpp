@@ -86,7 +86,7 @@ namespace tiki
 
 		FT_GlyphSlot slot = face->glyph;
 
-		const uintreg baseSize	= (uintreg)sqrtf( (float)fontSize * (float)fontSize * allChars.getLength() );
+		const uintreg baseSize	= uintreg( sqrtf( float( allChars.getLength() ) + 1.0f ) ) * fontSize * fontSize;
 		const uintreg imageSize	= getNextPowerOfTwo( baseSize );
 		const float floatSize	= (float)imageSize;
 
@@ -118,10 +118,10 @@ namespace tiki
 				continue;
 			}
 
-			const uint imagePosX = imagePos.x + slot->bitmap_left;
-			const uint imagePosY = imagePos.y + slot->bitmap_top;
-			const uint charWidth = slot->bitmap.width + slot->bitmap_left + 2u;
-			const uint charHeight = slot->bitmap.rows + (fontSize - slot->bitmap_top);
+			const uintreg imagePosX		= uintreg( imagePos.x ) + slot->bitmap_left;
+			const uintreg imagePosY		= uintreg( imagePos.y ) + slot->bitmap_top;
+			const uintreg charWidth		= uintreg( slot->bitmap.width ) + slot->bitmap_left + 2u;
+			const uintreg charHeight	= uintreg( slot->bitmap.rows ) + (fontSize - slot->bitmap_top);
 
 			if ( imagePos.x + charWidth + 1u >= image.getWidth() )
 			{
@@ -134,10 +134,24 @@ namespace tiki
 				FontChar& inst = chars.add();
 				inst.width	= (float)charWidth;
 				inst.height	= (float)charHeight;
-				inst.x1		= u16::floatToUnorm( float( imagePos.x )/ floatSize );
-				inst.y1		= u16::floatToUnorm( float( imagePos.y ) / floatSize );
-				inst.x2		= u16::floatToUnorm( float( imagePos.x + charWidth ) / floatSize );
-				inst.y2		= u16::floatToUnorm( float( imagePos.y + charHeight ) / floatSize );
+
+				const float x1 = float( imagePos.x ) / floatSize;
+				const float y1 = float( imagePos.y ) / floatSize;
+				const float x2 = float( imagePos.x + charWidth ) / floatSize;
+				const float y2 = float( imagePos.y + charHeight ) / floatSize;
+				if( x1 < 0.0f || x1 > 1.0f ||
+					y1 < 0.0f || y1 > 1.0f ||
+					x2 < 0.0f || x2 > 1.0f ||
+					y2 < 0.0f || y2 > 1.0f )
+				{
+					TIKI_TRACE_ERROR( "Invalid font character corrdinates: x1: %.06f, y1: %.06f, x2: %.06f, y2: %.06f\n", x1, y1, x2, y2 );
+					return false;
+				}
+
+				inst.x1	= u16::floatToUnorm( x1 );
+				inst.y1	= u16::floatToUnorm( y1 );
+				inst.x2	= u16::floatToUnorm( x2 );
+				inst.y2	= u16::floatToUnorm( y2 );
 
 				if ( charIndex == ' ' )
 				{

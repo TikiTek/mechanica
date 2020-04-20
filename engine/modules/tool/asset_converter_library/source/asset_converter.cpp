@@ -77,7 +77,7 @@ namespace tiki
 
 		TaskSystemParameters taskParameters;
 		taskParameters.maxTaskCount = 1024u;
-		taskParameters.threadCount	= 0u;
+		//taskParameters.threadCount	= 0u;
 		m_taskSystem.create( taskParameters );
 
 		if( !directory::exists( m_pProject->getAssetBuildPath().getCompletePath() ) )
@@ -272,6 +272,11 @@ namespace tiki
 	bool AssetConverter::popFinishConversion()
 	{
 		return m_threadFinish.andRelaxed( false );
+	}
+
+	bool AssetConverter::wasLastBuildSuccessful()
+	{
+		return m_threadSuccessful.andRelaxed( false );
 	}
 
 	bool AssetConverter::getChangedFiles( Array< DynamicString >& changedFiles )
@@ -494,13 +499,16 @@ namespace tiki
 
 	bool AssetConverter::fillAssetFromFilePath( ConversionAsset& asset, const Path& filePath )
 	{
+		Path assetPath;
+		assetPath.setCompletePath( filePath.getBasename() );
+
 		asset.inputFilePath = filePath;
-		asset.assetName		= filePath.getBasename();
+		asset.assetName		= assetPath.getBasename();
 		asset.assetId		= TIKI_SIZE_T_MAX;
 
-		if( !isStringEmpty( filePath.getExtension() ) )
+		if( !isStringEmpty( assetPath.getExtension() ) )
 		{
-			const DynamicString templateName = filePath.getExtension() + 1u;
+			const DynamicString templateName = assetPath.getExtension() + 1u;
 			if( m_templates.hasKey( templateName ) )
 			{
 				const TemplateDescription& templateDescription = m_templates[ templateName ];
@@ -1115,7 +1123,8 @@ namespace tiki
 			if( start )
 			{
 				m_threadWork.setRelaxed( true );
-				startConversion();
+				const bool ok = startConversion();
+				m_threadSuccessful.setRelaxed( ok );
 				m_threadFinish.setRelaxed( true );
 				m_threadWork.setRelaxed( false );
 			}

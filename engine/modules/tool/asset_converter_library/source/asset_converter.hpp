@@ -46,6 +46,7 @@ namespace tiki
 
 		virtual bool				isConvertionRunning() TIKI_OVERRIDE_FINAL;
 		virtual bool				popFinishConversion() TIKI_OVERRIDE_FINAL;
+		virtual bool				wasLastBuildSuccessful() TIKI_OVERRIDE_FINAL;
 		virtual bool				getChangedFiles( Array< DynamicString >& changedFiles ) TIKI_OVERRIDE_FINAL;
 
 	private:
@@ -106,6 +107,7 @@ namespace tiki
 
 		Atomic< bool >				m_threadWork;
 		Atomic< bool >				m_threadFinish;
+		Atomic< bool >				m_threadSuccessful;
 		Thread						m_watcherThread;
 		FileWatcher					m_watcher;
 

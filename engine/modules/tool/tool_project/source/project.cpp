@@ -68,6 +68,21 @@ namespace tiki
 		m_platforms.removeSortedByValue( value );
 	}
 
+	void Project::addShaderIncludeDirectory( const Path& value )
+	{
+		if( m_shaderIncludeDirectories.contains( value ) )
+		{
+			return;
+		}
+
+		m_shaderIncludeDirectories.add( value );
+	}
+
+	void Project::removeShaderIncludeDirectory( const Path& value )
+	{
+		m_shaderIncludeDirectories.removeSortedByValue( value );
+	}
+
 	Package* Project::addPackage( const DynamicString& packageName )
 	{
 		Package* pPackage = m_packagePool.push();
@@ -192,6 +207,19 @@ namespace tiki
 				else
 				{
 					 // TODO
+				}
+
+				const XmlElement* pShaderIncludesNode = pRoot->findFirstChild( "shader_includes" );
+				if( pShaderIncludesNode == nullptr )
+				{
+					TIKI_TRACE_ERROR( "[project] 'shader_includes' node not found in '%s'.\n", filePath.getCompletePath() );
+				}
+				else
+				{
+					for( const XmlElement* pShaderIncludeNode = pShaderIncludesNode->findFirstChild( "shader_include" ); pShaderIncludeNode != nullptr; pShaderIncludeNode = pShaderIncludeNode->findNextSiblingWithSameName() )
+					{
+						m_shaderIncludeDirectories.add().setCombinedPath( m_projectPath, pShaderIncludeNode->getValue() );
+					}
 				}
 			}
 		}

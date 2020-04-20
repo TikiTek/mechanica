@@ -4,6 +4,14 @@
 
 #include "tiki/base/debug.hpp"
 
+//#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+//#	define TIKI_USE_ASSERT	TIKI_ON
+//#	define TIKI_USE_BREAK	TIKI_ON
+//#else
+//#	define TIKI_USE_ASSERT	TIKI_OFF
+//#	define TIKI_USE_BREAK	TIKI_OFF
+//#endif
+
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	define TIKI_USE_ASSERT	TIKI_ON
 #	define TIKI_USE_BREAK	TIKI_ON
@@ -13,9 +21,9 @@
 #endif
 
 #if TIKI_ENABLED( TIKI_USE_ASSERT )
-#	define TIKI_ASSERT( expr ) if ( !(expr) ) ::tiki::debug::breakPoint()
-#	define TIKI_VERIFY( expr ) if ( !(expr) ) ::tiki::debug::breakPoint()
-#	define TIKI_VERIFY0( expr ) if ( (expr) != 0 ) ::tiki::debug::breakPoint()
+#	define TIKI_ASSERT( expr ) if ( !(expr) ) { ::tiki::debug::traceError( #expr ); ::tiki::debug::breakPoint(); }
+#	define TIKI_VERIFY( expr ) if ( !(expr) ) { ::tiki::debug::traceError( #expr ); ::tiki::debug::breakPoint(); }
+#	define TIKI_VERIFY0( expr ) if ( (expr) != 0 ) { ::tiki::debug::traceError( #expr ); ::tiki::debug::breakPoint(); }
 #else
 #	define TIKI_ASSERT( expr )
 #	define TIKI_VERIFY( expr ) expr

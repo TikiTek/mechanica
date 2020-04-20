@@ -47,7 +47,7 @@ namespace tiki
 
 	public:
 
-		BasicIncludeHandler( ConversionResult& result, const List< DynamicString >& includePathes )
+		BasicIncludeHandler( ConversionResult& result, const List< Path >& includePathes )
 			: m_result( result )
 			, m_includePathes( includePathes )
 		{
@@ -60,11 +60,8 @@ namespace tiki
 		bool loadFile( const char* pFileName, const void** ppData, uintreg* pSizeInBytes )
 		{
 			bool found = false;
-
-			const DynamicString inputFilename = pFileName;
-			DynamicString fullName = inputFilename;
-
-			if( file::exists( inputFilename.cStr() ) )
+			Path fullName( pFileName );
+			if( file::exists( pFileName ) )
 			{
 				found = true;
 			}
@@ -72,9 +69,9 @@ namespace tiki
 			{
 				for( uintreg i = 0u; i < m_includePathes.getCount(); ++i )
 				{
-					fullName = path::combine( m_includePathes[ i ], inputFilename );
+					fullName.setCombinedPath( m_includePathes[ i ], pFileName );
 
-					if( file::exists( fullName.cStr() ) )
+					if( file::exists( fullName.getCompletePath() ) )
 					{
 						found = true;
 						break;
@@ -85,9 +82,9 @@ namespace tiki
 			if( found )
 			{
 				Array< char > text;
-				if( !file::readAllText( fullName.cStr(), text ) )
+				if( !file::readAllText( fullName.getCompletePath(), text ) )
 				{
-					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.cStr() );
+					TIKI_TRACE_ERROR( "Could not read File: %s.\n", fullName.getCompletePath() );
 					return false;
 				}
 
@@ -95,7 +92,7 @@ namespace tiki
 				*pSizeInBytes = text.getCapacity();
 				text.dispose();
 
-				m_result.addDependency( ConversionResult::DependencyType_InputFile, fullName, 0 );
+				m_result.addDependency( ConversionResult::DependencyType_InputFile, fullName.getCompletePath(), 0 );
 				return true;
 			}
 
@@ -110,8 +107,8 @@ namespace tiki
 
 	private:
 
-		ConversionResult&		m_result;
-		const List< DynamicString >&	m_includePathes;
+		ConversionResult&	m_result;
+		const List< Path >&	m_includePathes;
 	};
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
@@ -121,7 +118,7 @@ namespace tiki
 
 	public:
 
-		ShaderIncludeHandler( ConversionResult& result, const List< DynamicString >& includePathes )
+		ShaderIncludeHandler( ConversionResult& result, const List< Path >& includePathes )
 			: BasicIncludeHandler( result, includePathes )
 		{
 		}
@@ -214,23 +211,7 @@ namespace tiki
 							"#define TIKI_ENABLED( value ) ( ( value 0 ) == 2 )\n"
 							"#define TIKI_DISABLED( value ) ( ( value 0 ) != 2 )\n\n";
 
-		// TODO: put shader include dirs in package config
-		Array< char > charArray;
-		if ( file::readAllText( "../../shaderinc.lst", charArray ) )
-		{
-			const DynamicString text = charArray.getBegin();
-
-			Array< DynamicString > dirs;
-			text.split( dirs, "\n" );
-
-			for (uintreg i = 0u; i < dirs.getCount(); ++i)
-			{
-				m_includePathes.add( dirs[ i ].trim() );
-			}
-
-			dirs.dispose();
-		}
-		charArray.dispose();
+		m_pProject = context.pProject;
 
 		m_openGlMutex.create();
 
@@ -240,21 +221,12 @@ namespace tiki
 	void ShaderConverter::disposeConverter()
 	{
 		m_openGlMutex.dispose();
-
-		m_includePathes.dispose();
 	}
 
 	bool ShaderConverter::startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const
 	{
-		List< DynamicString > includePathes = m_includePathes;
-		includePathes.pushBack( asset.inputFilePath.getDirectoryWithPrefix() );
-
-		Path additionalPath;
-		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/render_effects/source/shader" );
-		includePathes.add( additionalPath.getCompletePath() );
-
-		additionalPath.setCombinedPath( context.pProject->getProjectPath().getCompletePath(), "library/modules/runtime/renderer_2d/source/shader" );
-		includePathes.add( additionalPath.getCompletePath() );
+		List< Path > includePathes = m_pProject->getShaderIncludeDirectories();
+		includePathes.add().setCompletePath( asset.inputFilePath.getDirectoryWithPrefix() );
 
 		ShaderIncludeHandler includeHandler( result, includePathes );
 
