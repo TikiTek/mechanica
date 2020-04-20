@@ -59,11 +59,21 @@ namespace tiki
 
 	bool file::readAllText( const char* pFileName, Array< char >& targetContent  )
 	{
-		const HANDLE fileHandle = CreateFileA( pFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0u, nullptr );
+		HANDLE fileHandle = CreateFileA( pFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0u, nullptr );
 		if ( fileHandle == INVALID_HANDLE_VALUE )
 		{
-			TIKI_TRACE_ERROR( "[file::readAllText] Failed to open '%s'. Error: %08x\n", pFileName, GetLastError() );
-			return false;
+			const DWORD lastError = GetLastError();
+			if( lastError == ERROR_SHARING_VIOLATION )
+			{
+				Thread::sleepCurrentThread( 50 );
+				fileHandle = CreateFileA( pFileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0u, nullptr );
+			}
+
+			if( fileHandle == INVALID_HANDLE_VALUE )
+			{
+				TIKI_TRACE_ERROR( "[file::readAllText] Failed to open '%s'. Error: %08x\n", pFileName, GetLastError() );
+				return false;
+			}
 		}
 
 		const DWORD fileSize = GetFileSize( fileHandle, nullptr );
