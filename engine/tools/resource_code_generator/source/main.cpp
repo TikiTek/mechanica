@@ -108,8 +108,8 @@ int tiki::mainEntryPoint()
 			}
 
 			const Path filePath( pFile );
-			const DynamicString variabelName = "s_" + toCamelCase( filePath.getFilename(), false );
-			const DynamicString enumValueName = enumName + "_" + toCamelCase( filePath.getFilename() );
+			const DynamicString variabelName = "s_" + toCamelCase( filePath.getBasename(), false );
+			const DynamicString enumValueName = enumName + "_" + toCamelCase( filePath.getBasename() );
 
 			enumNames += "\t\t" + enumValueName + ",\n";
 			resourceValues += "\t\t\t{ " + variabelName + ", sizeof( " + variabelName + " ) },\n";
