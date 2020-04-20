@@ -158,7 +158,9 @@ namespace tiki
 		gameClientUpdateContext.gameTime = m_pGame->getFrameTimer().getTime();
 		m_gameClient.update( gameClientUpdateContext );
 
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		debugrenderer::drawText( Vector2::zero, TIKI_COLOR_GREEN, " Zoom: %.2f, FPS: %.2f", m_pRenderer->getTargetZoom(), 1.0f / timeDelta );
+#endif
 	}
 
 	void TestState::render( GraphicsContext& graphicsContext )

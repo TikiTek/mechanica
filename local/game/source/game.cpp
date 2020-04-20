@@ -38,7 +38,7 @@ namespace tiki
 		parameters.backBufferFormat	= PixelFormat_R10G10B10A2;
 
 #if TIKI_ENABLED( TIKI_BUILD_MASTER )
-		parameters.pGamebuildPath = "./gamebuild/";
+		parameters.assetBuildPath = Path( "./asset_build/" );
 #elif TIKI_ENABLED( TIKI_BUILD_DEBUG )
 		if ( !debug::isDebuggerActive() )
 		{

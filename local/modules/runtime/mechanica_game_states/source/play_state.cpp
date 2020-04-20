@@ -124,8 +124,10 @@ namespace tiki
 		m_levelRenderer.update( updateContext );
 		m_gameClient.update( updateContext );
 
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		debugrenderer::drawText( Vector2::create( 10.0f, 10.0f), TIKI_COLOR_YELLOW, "Zoom: %.3f", m_pApplicationState->getRenderer().getTargetZoom() );
 		debugrenderer::drawText( Vector2::create( 10.0f, 20.0f ), TIKI_COLOR_YELLOW, "Wheel: %.3f", m_scrollState );
+#endif
 	}
 
 	void PlayState::render( GraphicsContext& graphicsContext )
