@@ -1,7 +1,7 @@
 #include "tiki/physics_2d/physics_2d_joint.hpp"
 
-#include <Box2D/Dynamics/Joints/b2RevoluteJoint.h>
-#include <Box2D/Dynamics/Joints/b2RopeJoint.h>
+#include <box2d/b2_revolute_joint.h>
+#include <box2d/b2_rope_joint.h>
 
 namespace tiki
 {

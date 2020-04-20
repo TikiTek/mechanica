@@ -20,7 +20,6 @@ module:add_files( "src/base/ftgasp.c" );
 module:add_files( "src/base/ftglyph.c" );
 module:add_files( "src/base/ftgxval.c" );
 module:add_files( "src/base/ftinit.c" );
-module:add_files( "src/base/ftlcdfil.c" );
 module:add_files( "src/base/ftmm.c" );
 module:add_files( "src/base/ftotval.c" );
 module:add_files( "src/base/ftpatent.c" );

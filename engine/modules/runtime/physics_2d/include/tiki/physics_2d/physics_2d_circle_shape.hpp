@@ -4,7 +4,7 @@
 
 #include "tiki/base/types.hpp"
 
-#include <Box2D/Collision/Shapes/b2CircleShape.h>
+#include <box2d/b2_circle_shape.h>
 
 namespace tiki
 {

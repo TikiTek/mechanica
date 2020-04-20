@@ -1,12 +1,13 @@
 #include "tiki/physics_2d/physics_2d_debug_draw.hpp"
 
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
+
 #include "tiki/debug_renderer/debug_renderer.hpp"
 #include "tiki/graphics/color.hpp"
 #include "tiki/math/vector.hpp"
 
 namespace tiki
 {
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
 	Physics2dDebugDraw::Physics2dDebugDraw()
 	{
 	}
@@ -124,5 +125,6 @@ namespace tiki
 			color2
 		);
 	}
-#endif
 }
+
+#endif

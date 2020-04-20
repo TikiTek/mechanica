@@ -4,7 +4,7 @@
 
 #include "tiki/base/types.hpp"
 
-#include <Box2D/Collision/Shapes/b2PolygonShape.h>
+#include <box2d/b2_polygon_shape.h>
 
 namespace tiki
 {

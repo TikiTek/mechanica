@@ -26,7 +26,7 @@ namespace tiki
 	{
 		m_world.SetGravity( toPhysicsVector( gravity ) );
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		m_debugDraw.create( simulationToDrawFactor );
 		m_world.SetDebugDraw( &m_debugDraw );
 #endif
@@ -34,7 +34,7 @@ namespace tiki
 
 	void Physics2dWorld::dispose()
 	{
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 		m_world.SetDebugDraw( nullptr );
 		m_debugDraw.dispose();
 #endif
@@ -86,12 +86,12 @@ namespace tiki
 		m_world.Step( float32( timeStep ), s_stepVelocityIterations, s_stepPositionIterations );
 	}
 
-#if TIKI_DISABLED( TIKI_BUILD_MASTER )
+#if TIKI_ENABLED( TIKI_DEBUG_RENDERER )
 	void Physics2dWorld::renderDebug()
 	{
 		if ( s_drawDebug )
 		{
-			m_world.DrawDebugData();
+			m_world.DebugDraw();
 		}
 	}
 #endif
