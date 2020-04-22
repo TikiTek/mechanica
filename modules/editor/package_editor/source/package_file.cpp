@@ -4,14 +4,15 @@
 
 namespace tiki
 {
-	PackageFile::PackageFile( const Path& filename, PackageEditor* pEditor )
-		: EditableFile( filename, pEditor )
+	PackageFile::PackageFile( Package& package, PackageEditor* pEditor )
+		: EditableFile( package.getFilename(), pEditor )
+		, m_package( package )
 	{
-		m_author[ 0u ] = '\0';
-		m_desciption[ 0u ] = '\0';
-		m_templates[ 0u ] = '\0';
-		m_genericDataTypes[ 0u ] = '\0';
-		TIKI_VERIFY( load() );
+		m_desciption[ 0u ]		= '\0';
+		m_author[ 0u ]			= '\0';
+		m_genericData[ 0u ]		= '\0';
+		m_genericTypes[ 0u ]	= '\0';
+		m_assetTemplates[ 0u ]	= '\0';
 	}
 
 	PackageFile::~PackageFile()
@@ -20,55 +21,35 @@ namespace tiki
 
 	bool PackageFile::load()
 	{
-		const tinyxml2::XMLError error = m_document.LoadFile( getFileName().getCompletePath() );
-		if( error != tinyxml2::XML_SUCCESS )
-		{
-			return false;
-		}
-
-		tinyxml2::XMLElement* pRoot = m_document.RootElement();
-		TIKI_ASSERT( pRoot != nullptr );
-
-		tinyxml2::XMLElement* pAuthorElement = pRoot->FirstChildElement( "author" );
-		if( pAuthorElement != nullptr )
-		{
-			copyString( m_author, sizeof( m_author ), pAuthorElement->GetText() );
-		}
-
-		tinyxml2::XMLElement* pDescriptionElement = pRoot->FirstChildElement( "description" );
-		if( pDescriptionElement != nullptr )
-		{
-			copyString( m_desciption, sizeof( m_desciption ), pDescriptionElement->GetText() );
-		}
-
-		tinyxml2::XMLElement* pTemplatesElement = pRoot->FirstChildElement( "templates" );
-		if( pTemplatesElement != nullptr )
-		{
-			copyString( m_templates, sizeof( m_templates ), pTemplatesElement->GetText() );
-		}
-
-		tinyxml2::XMLElement* pGenericDataTypesElement = pRoot->FirstChildElement( "genericdatatypes" );
-		if( pGenericDataTypesElement != nullptr )
-		{
-			copyString( m_genericDataTypes, sizeof( m_genericDataTypes ), pGenericDataTypesElement->GetText() );
-		}
+		copyString( m_desciption, sizeof( m_desciption ), m_package.getDescription().cStr() );
+		copyString( m_author, sizeof( m_author ), m_package.getAuthor().cStr() );
+		copyString( m_genericData, sizeof( m_genericData ), m_package.getGenericDataString().cStr() );
+		copyString( m_genericTypes, sizeof( m_genericTypes ), m_package.getGenericTypesString().cStr() );
+		copyString( m_assetTemplates, sizeof( m_assetTemplates ), m_package.getAssetTemplatesString().cStr() );
 
 		return true;
 	}
 
 	bool PackageFile::save()
 	{
-		tinyxml2::XMLElement* pRoot = m_document.RootElement();
-		TIKI_ASSERT( pRoot != nullptr );
+		if( !m_isDirty )
+		{
+			return true;
+		}
 
-		pRoot->SetName( "package" );
+		m_package.setDescription( m_desciption );
+		m_package.setAuthor( m_author );
+		m_package.setGenericDataString( m_genericData );
+		m_package.setGenericTypesString( m_genericTypes );
+		m_package.setAssetTemplatesString( m_assetTemplates );
 
-		findOrCreateElement( "author" )->SetText( m_author );
-		findOrCreateElement( "description" )->SetText( m_desciption );
-		findOrCreateElement( "templates" )->SetText( m_templates );
-		findOrCreateElement( "genericdatatypes" )->SetText( m_genericDataTypes );
+		if( !m_package.writeToFile() )
+		{
+			return false;
+		}
 
-		return m_document.SaveFile( getFileName().getCompletePath() ) == tinyxml2::XML_SUCCESS;
+		m_isDirty = false;
+		return true;
 	}
 
 	void PackageFile::doUi()
@@ -79,21 +60,13 @@ namespace tiki
 		ImGui::Text( "Description:" );
 		m_isDirty |= ImGui::InputText( "  ", m_desciption, sizeof( m_desciption ) );
 
-		ImGui::Text( "Templates folder:" );
-		m_isDirty |= ImGui::InputText( "   ", m_templates, sizeof( m_templates ) );
+		ImGui::Text( "Generic Data base Folder:" );
+		m_isDirty |= ImGui::InputText( "   ", m_genericData, sizeof( m_genericData ) );
 
-		ImGui::Text( "Generic data types folder:" );
-		m_isDirty |= ImGui::InputText( "    ", m_genericDataTypes, sizeof( m_genericDataTypes ) );
-	}
+		ImGui::Text( "Generic Types Folder:" );
+		m_isDirty |= ImGui::InputText( "    ", m_genericTypes, sizeof( m_genericTypes ) );
 
-	tinyxml2::XMLElement* PackageFile::findOrCreateElement( const char* pName )
-	{
-		tinyxml2::XMLElement* pElement = m_document.RootElement()->FirstChildElement( pName );
-		if( pElement == nullptr )
-		{
-			pElement = (tinyxml2::XMLElement*)m_document.RootElement()->InsertEndChild( m_document.NewElement( pName ) );
-		}
-
-		return pElement;
+		ImGui::Text( "Templates Folder:" );
+		m_isDirty |= ImGui::InputText( "     ", m_assetTemplates, sizeof( m_assetTemplates ) );
 	}
 }

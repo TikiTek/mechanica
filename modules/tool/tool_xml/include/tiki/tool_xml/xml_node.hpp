@@ -41,6 +41,7 @@ namespace tiki
 		XmlElement*					findFirstChild( const char* pName );
 		const XmlElement*			findFirstChild( const char* pName ) const;
 
+		XmlElement*					createChild( const char* pName );
 		void						appendChild( XmlElement* pElement );
 		void						removeChild( XmlElement* pElement );
 

@@ -69,7 +69,7 @@ namespace tiki
 		closePackage();
 
 		m_pPackage		= &package;
-		m_pPackageFile	= new PackageFile( package.getFilename(), this );
+		m_pPackageFile	= new PackageFile( package, this );
 
 		if( !m_pPackageFile->load() )
 		{
