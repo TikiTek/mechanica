@@ -60,6 +60,21 @@ namespace tiki
 		m_pGraphicsSystem = nullptr;
 	}
 
+	void GenericDataRenderer::update()
+	{
+		if( m_resourceRequests.isFinish() )
+		{
+			return;
+		}
+
+		m_resourceRequests.update();
+
+		if( m_resourceRequests.isFinish() )
+		{
+			TIKI_VERIFY( m_renderer.createResources( *m_pGraphicsSystem, m_resourceRequests ) );
+		}
+	}
+
 	void GenericDataRenderer::setBaseObject( GenericDataRendererState& state, GenericDataObject* pBaseObject )
 	{
 		if( state.pBaseObject == pBaseObject )
@@ -75,15 +90,7 @@ namespace tiki
 	{
 		if( !m_resourceRequests.isFinish() )
 		{
-			m_resourceRequests.update();
-			if( m_resourceRequests.isFinish() )
-			{
-				TIKI_VERIFY( m_renderer.createResources( *m_pGraphicsSystem, m_resourceRequests ) );
-			}
-			else
-			{
-				return;
-			}
+			return;
 		}
 
 		updateViewInfo( state, state.pBaseObject, nullptr );

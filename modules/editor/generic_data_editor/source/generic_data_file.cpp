@@ -62,22 +62,26 @@ namespace tiki
 
 	void GenericDataFile::doUi()
 	{
-		m_renderer.setBaseObject( m_rendererState, m_document.getObject() );
-
-		ImGui::Columns( 2 );
-
-		if( ImGui::BeginChild( "View", ImVec2( 0.0f, 0.0f ), false, ImGuiWindowFlags_NoInputs ) )
+		const bool canBerendered = !m_rendererState.objectInfos.isEmpty();
+		if( canBerendered )
 		{
-			const ImVec2 position = ImGui::GetWindowPos();
-			const ImVec2 size = ImGui::GetContentRegionAvail();
-			TIKI_VERIFY( m_renderer.resize( uint16( size.x ), uint16( size.y ) ) );
-			m_rendererRectangle = AxisAlignedRectangle::create( ImGui::Vec2( position ), ImGui::Vec2( size ) );
+			m_renderer.setBaseObject( m_rendererState, m_document.getObject() );
 
-			ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), size );
+			ImGui::Columns( 2 );
 
-			ImGui::EndChild();
+			if( ImGui::BeginChild( "View", ImVec2( 0.0f, 0.0f ), false, ImGuiWindowFlags_NoInputs ) )
+			{
+				const ImVec2 position = ImGui::GetWindowPos();
+				const ImVec2 size = ImGui::GetContentRegionAvail();
+				TIKI_VERIFY( m_renderer.resize( uint16( size.x ), uint16( size.y ) ) );
+				m_rendererRectangle = AxisAlignedRectangle::create( ImGui::Vec2( position ), ImGui::Vec2( size ) );
+
+				ImGui::Image( ImGui::Tex( m_renderer.getOutput() ), size );
+
+				ImGui::EndChild();
+			}
+			ImGui::NextColumn();
 		}
-		ImGui::NextColumn();
 
 		if( ImGui::BeginChild( "Data" ) )
 		{
@@ -93,9 +97,13 @@ namespace tiki
 
 			ImGui::EndChild();
 		}
-		ImGui::NextColumn();
 
-		ImGui::Columns( 1 );
+		if( canBerendered )
+		{
+			ImGui::NextColumn();
+
+			ImGui::Columns( 1 );
+		}
 	}
 
 	bool GenericDataFile::processToolInputEvent( const InputEvent& inputEvent )
