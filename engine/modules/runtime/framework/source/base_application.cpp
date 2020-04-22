@@ -1,6 +1,7 @@
 #include "tiki/framework/base_application.hpp"
 
 #include "tiki/base/platform.hpp"
+#include "tiki/base/string_tools.hpp"
 #include "tiki/base/timer.hpp"
 #include "tiki/debug_renderer/debug_renderer.hpp"
 #include "tiki/framework/framework_factories.hpp"
@@ -11,6 +12,8 @@
 #include "tiki/io/game_build_file_system.hpp"
 #include "tiki/resource/resource_manager.hpp"
 #include "tiki/threading/thread.hpp"
+#include "tiki/tool_xml/xml_document.hpp"
+#include "tiki/tool_xml/xml_element.hpp"
 
 #include "generic_data_factories.hpp"
 
@@ -150,6 +153,8 @@ namespace tiki
 		windowParams.height			= m_parameters.screenHeight;
 		windowParams.pWindowTitle	= m_parameters.pWindowTitle;
 
+		loadWindowParameters( windowParams );
+
 		if( !m_pBaseData->mainWindow.create( windowParams ) )
 		{
 			TIKI_TRACE_ERROR( "[BaseApplication] Could not create MainWindow.\n" );
@@ -221,6 +226,8 @@ namespace tiki
 		debugrenderer::shutdown( m_pBaseData->resourceManager );
 #endif
 
+		saveWindowParameters();
+
 		m_pBaseData->immediateRenderer.dispose( m_pBaseData->graphicSystem, m_pBaseData->resourceManager );
 		m_pBaseData->inputSystem.dispose();
 		m_pBaseData->graphicSystem.dispose();
@@ -229,6 +236,72 @@ namespace tiki
 		m_pBaseData->resourceManager.dispose();
 		m_pBaseData->gamebuildFileSystem.dispose();
 		m_pBaseData->mainWindow.dispose();
+	}
+
+	void BaseApplication::loadWindowParameters( WindowParameters& parameters )
+	{
+		Path configPath = platform::getExecutablePath();
+		configPath.push( "config.xml" );
+
+		XmlDocument configDocument;
+		if( !configDocument.loadFromFile( configPath.getCompletePath() ) )
+		{
+			return;
+		}
+
+		const XmlElement* pRootNode = configDocument.findFirstChild( "config" );
+		if( pRootNode == nullptr )
+		{
+			return;
+		}
+
+		const XmlElement* pPositionXNode	= pRootNode->findFirstChild( "positionX" );
+		const XmlElement* pPositionYNode	= pRootNode->findFirstChild( "positionY" );
+		const XmlElement* pSizeXNode		= pRootNode->findFirstChild( "sizeX" );
+		const XmlElement* pSizeYNode		= pRootNode->findFirstChild( "sizeY" );
+		if( pPositionXNode == nullptr ||
+			pPositionYNode == nullptr ||
+			pSizeXNode == nullptr ||
+			pSizeYNode == nullptr )
+		{
+			return;
+		}
+
+		sint16 positionX;
+		sint16 positionY;
+		uint16 sizeX;
+		uint16 sizeY;
+		if( !string_tools::tryParseSInt16( positionX, pPositionXNode->getValue() ) ||
+			!string_tools::tryParseSInt16( positionY, pPositionYNode->getValue() ) ||
+			!string_tools::tryParseUInt16( sizeX, pSizeXNode->getValue() ) ||
+			!string_tools::tryParseUInt16( sizeY, pSizeYNode->getValue() ) )
+		{
+			return;
+		}
+
+		parameters.postionX	= positionX;
+		parameters.postionY	= positionY;
+		parameters.width	= sizeX;
+		parameters.height	= sizeY;
+	}
+
+	void BaseApplication::saveWindowParameters()
+	{
+		Path configPath = platform::getExecutablePath();
+		configPath.push( "config.xml" );
+
+		XmlDocument configDocument;
+
+		XmlElement* pRootNode = configDocument.createChild( "config" );
+
+		const sint2 windowPosition	= m_pBaseData->mainWindow.getPosition();
+		const uint2 windowSize		= m_pBaseData->mainWindow.getSize();
+		pRootNode->createChild( "positionX" )->setValue( string_tools::toString( windowPosition.x ).cStr() );
+		pRootNode->createChild( "positionY" )->setValue( string_tools::toString( windowPosition.y ).cStr() );
+		pRootNode->createChild( "sizeX" )->setValue( string_tools::toString( windowSize.x ).cStr() );
+		pRootNode->createChild( "sizeY" )->setValue( string_tools::toString( windowSize.y ).cStr() );
+
+		configDocument.saveToFile( configPath.getCompletePath() );
 	}
 
 	bool BaseApplication::frame()
@@ -247,7 +320,7 @@ namespace tiki
 		WindowEvent windowEvent;
 		while ( windowEventBuffer.popEvent( windowEvent ) )
 		{
-			if( windowEvent.type == WindowEventType_Destroy )
+			if( windowEvent.type == WindowEventType_Close )
 			{
 				wantToShutdown = true;
 			}

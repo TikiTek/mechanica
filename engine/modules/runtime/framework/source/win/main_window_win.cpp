@@ -83,8 +83,8 @@ namespace tiki
 			"TikiMainWindowClass",
 			params.pWindowTitle,
 			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
+			int( params.postionX ),
+			int( params.postionY ),
 			int( params.width ),
 			int( params.height ),
 			NULL,
@@ -139,6 +139,28 @@ namespace tiki
 		return WindowHandle( m_platformData.windowHandle );
 	}
 
+	sint2 MainWindow::getPosition() const
+	{
+		RECT windowRect;
+		if( !GetWindowRect( m_platformData.windowHandle, &windowRect ) )
+		{
+			return { 0u, 0u };
+		}
+
+		return { sint32( windowRect.left ), sint32( windowRect.top ) };
+	}
+
+	uint2 MainWindow::getSize() const
+	{
+		RECT windowRect;
+		if( !GetWindowRect( m_platformData.windowHandle, &windowRect ) )
+		{
+			return { 0u, 0u };
+		}
+
+		return { uint32( windowRect.right - windowRect.left ), uint32( windowRect.bottom - windowRect.top ) };
+	}
+
 	uint2 MainWindow::getClientSize() const
 	{
 		RECT rect;
@@ -166,9 +188,8 @@ namespace tiki
 			mainWindow.m_eventBuffer.pushEvent( WindowEventType_Create );
 			return true;
 
-		case WM_DESTROY:
-			PostQuitMessage( 0 );
-			mainWindow.m_eventBuffer.pushEvent( WindowEventType_Destroy );
+		case WM_CLOSE:
+			mainWindow.m_eventBuffer.pushEvent( WindowEventType_Close );
 			return true;
 
 		case WM_SIZE:

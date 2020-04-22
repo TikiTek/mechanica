@@ -16,6 +16,7 @@ namespace tiki
 	struct BaseApplicationkData;
 	struct InputEvent;
 	struct WindowEvent;
+	struct WindowParameters;
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 	class Project;
 #endif
@@ -32,8 +33,8 @@ namespace tiki
 			pWindowTitle		= "TikiEngine 3.0";
 		}
 
-		uint					screenWidth;
-		uint					screenHeight;
+		uint16					screenWidth;
+		uint16					screenHeight;
 		PixelFormat				backBufferFormat;
 		bool					fullScreen;
 
@@ -94,6 +95,9 @@ namespace tiki
 
 		bool							initializeFramework();
 		void							shutdownFramework();
+
+		void							loadWindowParameters( WindowParameters& parameters );
+		void							saveWindowParameters();
 
 		bool							frame();
 	};

@@ -53,6 +53,11 @@ namespace tiki
 		delete pEditable;
 	}
 
+	void GenericDataEditor::update()
+	{
+		m_renderer.update();
+	}
+
 	void GenericDataEditor::registerView( GenericDataView& view )
 	{
 		m_renderer.registerView( view );

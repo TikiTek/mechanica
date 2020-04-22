@@ -78,12 +78,15 @@ namespace tiki
 		unregisterFileEditor( m_pPackageEditor );
 
 		TIKI_DELETE( m_pConverterEditor );
+		TIKI_DELETE( m_pEntityTemplateEditor );
 		TIKI_DELETE( m_pGenericDataEditor );
 		TIKI_DELETE( m_pPackageEditor );
 	}
 
 	void Editor::update( float deltaTime )
 	{
+		m_pGenericDataEditor->update();
+
 		if( m_pCurrentEditable != nullptr )
 		{
 			m_pCurrentEditable->update( deltaTime );

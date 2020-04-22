@@ -32,6 +32,8 @@ namespace tiki
 		bool							create( ResourceManager& resourceManager, GraphicsSystem& graphicsSystem );
 		void							dispose();
 
+		void							update();
+
 		void							setBaseObject( GenericDataRendererState& state, GenericDataObject* pBaseObject );
 		void							updateState( GenericDataRendererState& state, float deltaTime );
 		void							renderState( GenericDataRendererState& state, GraphicsContext& graphicsContext );

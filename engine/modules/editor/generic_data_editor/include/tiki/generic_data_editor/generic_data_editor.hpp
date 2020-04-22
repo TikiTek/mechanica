@@ -22,6 +22,7 @@ namespace tiki
 		virtual bool					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
 
+		void							update();
 
 		void							registerView( GenericDataView& view );
 		void							unregisterView( GenericDataView& view );

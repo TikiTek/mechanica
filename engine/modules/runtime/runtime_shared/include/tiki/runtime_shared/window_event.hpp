@@ -11,7 +11,7 @@ namespace tiki
 	enum WindowEventType
 	{
 		WindowEventType_Create,
-		WindowEventType_Destroy,
+		WindowEventType_Close,
 		WindowEventType_SizeChanged
 	};
 

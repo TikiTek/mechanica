@@ -19,24 +19,15 @@ namespace tiki
 {
 	struct WindowParameters
 	{
-		WindowParameters()
-		{
-			instanceHandle	= InvalidInstanceHandle;
+		InstanceHandle	instanceHandle	= InvalidInstanceHandle;
 
-			width			= 0u;
-			height			= 0u;
-			pWindowTitle	= "";
+		sint16			postionX		= 0;
+		sint16			postionY		= 0;
+		uint16			width			= 0u;
+		uint16			height			= 0u;
+		const char*		pWindowTitle	= "";
 
-			maxWindowEvents	= 32u;
-		}
-
-		InstanceHandle	instanceHandle;
-
-		uint			width;
-		uint			height;
-		const char*			pWindowTitle;
-
-		uint			maxWindowEvents;
+		uintreg			maxWindowEvents	= 32u;
 	};
 
 	class MainWindow
@@ -55,6 +46,8 @@ namespace tiki
 		void						update();
 
 		WindowHandle				getHandle() const;
+		sint2						getPosition() const;
+		uint2						getSize() const;
 		uint2						getClientSize() const;
 		WindowEventBuffer&			getEventBuffer();
 
