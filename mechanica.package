@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <package>
     <description>Mechanica Assets</description>
     <author>TikiTek</author>
     <dependencies>
-        <package name="core"/>
+        <package>core</package>
     </dependencies>
     <generic_data>
-		<base_path>generic_data</base_path>
-		<types_path>types</types_path>
-	</generic_data>
+        <base_path>generic_data</base_path>
+        <types_path>types</types_path>
+    </generic_data>
     <asset_templates>templates</asset_templates>
 </package>
