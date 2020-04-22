@@ -27,7 +27,7 @@ namespace tiki
 
 	void XmlNode::setValue( const char* pValue )
 	{
-		getNativeNode()->SetValue( pValue );
+		getNativeNode()->ToElement()->SetText( pValue );
 	}
 
 	XmlNode* XmlNode::getParent()
@@ -108,6 +108,13 @@ namespace tiki
 	const XmlElement* XmlNode::findFirstChild( const char* pName ) const
 	{
 		return (const XmlElement*)getNativeNode()->FirstChildElement( pName );
+	}
+
+	XmlElement* XmlNode::createChild( const char* pName )
+	{
+		tinyxml2::XMLElement* pElement = getNativeNode()->GetDocument()->NewElement( pName );
+		getNativeNode()->InsertEndChild( pElement );
+		return (XmlElement*)pElement;
 	}
 
 	void XmlNode::appendChild( XmlElement* pElement )

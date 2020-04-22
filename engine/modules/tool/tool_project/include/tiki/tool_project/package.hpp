@@ -25,25 +25,29 @@ namespace tiki
 		void					setAuthor( const DynamicString& value ) { m_author = value; }
 
 		const List< Package* >&	getDependencies() const { return m_dependencies; }
-		void					addDependencies( Package* pPackage );
-		void					removeDependencies( Package* pPackage );
+		void					addDependency( Package* pPackage );
+		void					removeDependency( Package* pPackage );
 
 		const Path&				getGenericTypesPath() const { return m_genericTypesPath; }
-		void					setGenericTypesPath( const Path& value ) { m_genericTypesPath = value; }
 		const Path&				getGenericDataPath() const { return m_genericDataPath; }
-		void					setGenericDataPath( const Path& value ) { m_genericDataPath = value; }
 		const Path&				getAssetTemplatesPath() const { return m_assetTemplatesPath; }
-		void					setAssetTemplatesPath( const Path& value ) { m_assetTemplatesPath = value; }
+		const DynamicString&	getGenericTypesString() const { return m_genericTypesString; }
+		const DynamicString&	getGenericDataString() const { return m_genericDataString; }
+		const DynamicString&	getAssetTemplatesString() const { return m_assetTemplatesString; }
+		void					setGenericTypesString( const DynamicString& value );
+		void					setGenericDataString( const DynamicString& value );
+		void					setAssetTemplatesString( const DynamicString& value );
 
 		void					findGenericDataTypeFiles( List< Path >& targetList ) const;
 		void					findAssetTemplateFiles( List< Path >& targetList ) const;
 
+		bool					writeToFile() const;
+
 	private: // friend
 
-		bool					create( const Path& filePath );
-		void					create( const Path& contentPath, const DynamicString& packageName );
+		void					create( const Path& filePath );
 
-		bool					writeToFile() const;
+		bool					load( Project& project );
 
 	private:
 
@@ -56,8 +60,11 @@ namespace tiki
 
 		List< Package* >		m_dependencies;
 
+		DynamicString			m_genericTypesString;
 		Path					m_genericTypesPath;
+		DynamicString			m_genericDataString;
 		Path					m_genericDataPath;
+		DynamicString			m_assetTemplatesString;
 		Path					m_assetTemplatesPath;
 	};
 }

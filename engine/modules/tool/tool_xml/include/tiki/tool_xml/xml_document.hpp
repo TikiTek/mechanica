@@ -27,9 +27,6 @@ namespace tiki
 		XmlElement*				createElement( const char* pName );
 		void					destroyElement( const XmlElement* pElement );
 
-		void					appendNode( XmlElement* pElement );
-		void					removeNode( XmlElement* pElement );
-
 	private:
 
 		tinyxml2::XMLDocument	m_document;

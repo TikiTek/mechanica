@@ -85,8 +85,12 @@ namespace tiki
 
 	Package* Project::addPackage( const DynamicString& packageName )
 	{
+		Path filename = m_contentPath;
+		filename.setBasename( packageName.cStr() );
+		filename.setExtension( ".package" );
+
 		Package* pPackage = m_packagePool.push();
-		pPackage->create( m_contentPath, packageName );
+		pPackage->create( filename );
 		return pPackage;
 	}
 
@@ -120,21 +124,12 @@ namespace tiki
 
 		XmlDocument document;
 
-		XmlElement* pNameNode = document.createElement( "name" );
-		pNameNode->setValue( m_name.cStr() );
+		XmlElement* pRootNode = document.createChild( "tikiproject" );
 
-		XmlElement* pDescriptionNode = document.createElement( "description" );
-		pDescriptionNode->setValue( m_description.cStr() );
+		pRootNode->createChild( "name" )->setValue( m_name.cStr() );
+		pRootNode->createChild( "description" )->setValue( m_description.cStr() );
+		pRootNode->createChild( "version" )->setValue( m_version.cStr() );
 
-		XmlElement* pVersionNode = document.createElement( "version" );
-		pVersionNode->setValue( m_version.cStr() );
-
-		XmlElement* pRootNode = document.createElement( "tikiproject" );
-		pRootNode->appendChild( pNameNode );
-		pRootNode->appendChild( pDescriptionNode );
-		pRootNode->appendChild( pVersionNode );
-
-		document.appendChild( pRootNode );
 		if( !document.saveToFile( filePath.getCompletePath() ) )
 		{
 			TIKI_TRACE_ERROR( "[project] Failed to write '%s'.\n", filePath.getCompletePath() );
@@ -234,13 +229,13 @@ namespace tiki
 		for( const Path& packageFilePath : packageFiles )
 		{
 			Package* pPackage = m_packagePool.push();
-			if( !pPackage->create( packageFilePath ) )
-			{
-				m_packagePool.removeUnsortedByValue( *pPackage );
-				continue;
-			}
-
+			pPackage->create( packageFilePath );
 			m_packages.push( pPackage );
+		}
+
+		for( Package& package : m_packages )
+		{
+			package.load( *this );
 		}
 
 		return ok;

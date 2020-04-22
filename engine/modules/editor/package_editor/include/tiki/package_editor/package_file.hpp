@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-		explicit				PackageFile( const Path& filename, PackageEditor* pEditor );
+		explicit				PackageFile( Package& package, PackageEditor* pEditor );
 		virtual					~PackageFile();
 
 		bool					load();
@@ -22,13 +22,12 @@ namespace tiki
 
 	private:
 
-		tinyxml2::XMLDocument	m_document;
+		Package&				m_package;
 
-		char					m_author[ 128u ];
 		char					m_desciption[ 128u ];
-		char					m_templates[ 128u ];
-		char					m_genericDataTypes[ 128u ];
-
-		tinyxml2::XMLElement*	findOrCreateElement( const char* pName );
+		char					m_author[ 128u ];
+		char					m_genericData[ 128u ];
+		char					m_genericTypes[ 128u ];
+		char					m_assetTemplates[ 128u ];
 	};
 }

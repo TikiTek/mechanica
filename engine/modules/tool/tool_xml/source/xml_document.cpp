@@ -58,31 +58,21 @@ namespace tiki
 
 	XmlElement* XmlDocument::getRoot()
 	{
-		return ( XmlElement* )m_document.RootElement();
+		return (XmlElement*)m_document.RootElement();
 	}
 
 	const XmlElement* XmlDocument::getRoot() const
 	{
-		return ( const XmlElement* )m_document.RootElement();
+		return (const XmlElement*)m_document.RootElement();
 	}
 
 	XmlElement* XmlDocument::createElement( const char* pName )
 	{
-		return ( XmlElement* )m_document.NewElement( pName );
+		return (XmlElement*)m_document.NewElement( pName );
 	}
 
 	void XmlDocument::destroyElement( const XmlElement* pElement )
 	{
 		m_document.DeleteNode( (tinyxml2::XMLNode*)pElement );
-	}
-
-	void XmlDocument::appendNode( XmlElement* pElement )
-	{
-		m_document.InsertEndChild( (tinyxml2::XMLNode*)pElement );
-	}
-
-	void XmlDocument::removeNode( XmlElement* pElement )
-	{
-		m_document.DeleteChild( (tinyxml2::XMLNode*)pElement );
 	}
 }

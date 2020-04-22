@@ -613,7 +613,7 @@ namespace tiki
 				}
 
 			}
-			ImGui::End();
+			ImGui::EndChild();
 		}
 		ImGui::End();
 	}
