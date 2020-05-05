@@ -19,3 +19,4 @@ module:add_dependency( "runtime/graphics" );
 module:add_dependency( "runtime/input" );
 module:add_dependency( "runtime/runtime_shared" );
 module:add_dependency( "runtime/debug_renderer" );
+module:add_dependency( "tool/tool_xml" );
