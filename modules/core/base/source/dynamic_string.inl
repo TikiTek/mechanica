@@ -496,7 +496,12 @@ namespace tiki
 	TIKI_FORCE_INLINE DynamicString& DynamicString::operator=( const DynamicString& rhs )
 	{
 		freeData();
-		allocateDataForString( rhs.m_pData );
+
+		allocateData( rhs.m_stringSize );
+		m_stringSize = rhs.m_stringSize;
+
+		memory::copy( m_pData, rhs.m_pData, m_stringSize );
+		m_pData[ m_stringSize ] = '\0';
 
 		return *this;
 	}

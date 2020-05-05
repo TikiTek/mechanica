@@ -24,7 +24,7 @@ namespace tiki
 
 	uint32 FontConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 2u;
+		return 4u;
 	}
 
 	bool FontConverter::canConvertType( crc32 typeCrc ) const
@@ -65,10 +65,10 @@ namespace tiki
 		DynamicString allChars = asset.parameters.getOptionalString( "chars", "" );
 		if ( allChars.isEmpty() )
 		{
-			allChars = DynamicString( 256u );
-			for (uint charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
+			allChars = DynamicString( 127u - 32u );
+			for (uint charIndex = 32u; charIndex < 127u; ++charIndex)
 			{
-				allChars[ charIndex ] = (char)charIndex;
+				allChars[ charIndex - 32 ] = (char)charIndex;
 			}
 		}
 
@@ -101,6 +101,9 @@ namespace tiki
 		const uintreg rowPitch = ( image.getWidth() * image.getChannelCount() );
 
 		List< FontChar > chars;
+		chars.resize( 256u );
+		memory::zero( chars.getBegin(), chars.getCount() * sizeof( FontChar ) );
+
 		for (uintreg charIndex = 0u; charIndex < allChars.getLength(); ++charIndex)
 		{
 			const char c = allChars[ charIndex ];
@@ -131,7 +134,7 @@ namespace tiki
 
 			if ( !mode3D )
 			{
-				FontChar& inst = chars.add();
+				FontChar& inst = chars[ c ];
 				inst.width	= (float)charWidth;
 				inst.height	= (float)charHeight;
 
