@@ -94,3 +94,78 @@ bool ImGui::ImageButtonTextButton( ImTextureID textureId, const char* pText, ImV
 
 	return pressed;
 }
+
+void ImGui::BeginHorizontalSplitter( ImHorizontalSplitter& splitter, float left, float top, float right, float bottom )
+{
+	splitter.Top				= top;
+	splitter.Bottom				= bottom;
+	splitter.Right				= right;
+	splitter.ElementCount		= 0u;
+	splitter.LastElementRight	= left;
+	splitter.LastElementLeft	= left;
+	splitter.pLastElementWidth	= nullptr;
+}
+
+bool ImGui::BeginHorizontalSplitterElement( ImHorizontalSplitter& splitter, const char* pName, float* pElementWidth )
+{
+	const ImGuiIO& io = ImGui::GetIO();
+
+	float left = splitter.LastElementRight;
+	if( splitter.ElementCount > 0u )
+	{
+		const ImVec2 windowSize = ImVec2( 5.0f, io.DisplaySize.y - splitter.Bottom - splitter.Top );
+		ImGui::SetNextWindowSize( windowSize, ImGuiCond_Always );
+		ImGui::SetNextWindowSizeConstraints( windowSize, windowSize );
+		if( ImGui::Begin( "Splitter", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing /*| ImGuiWindowFlags_NoNav*/ ) )
+		{
+			if( ImGui::IsWindowAppearing() )
+			{
+				ImGui::SetWindowPos( ImVec2( left, splitter.Top ) );
+			}
+
+			if( splitter.pLastElementWidth != nullptr )
+			{
+				const float windowLeft = ImGui::GetWindowPos().x;
+				*splitter.pLastElementWidth = windowLeft - splitter.LastElementLeft;
+				ImGui::SetWindowPos( ImVec2( windowLeft, splitter.Top ) );
+			}
+
+			ImGui::End();
+		}
+
+		left += 5.0f;
+	}
+
+	float width = 0.0f;
+	if( pElementWidth != nullptr )
+	{
+		width = *pElementWidth;
+	}
+	else
+	{
+		width = io.DisplaySize.x - left - 5.0f;
+	}
+
+	ImGui::SetNextWindowPos( ImVec2( left, splitter.Top ), ImGuiCond_Always, ImVec2() );
+	ImGui::SetNextWindowSize( ImVec2( width, io.DisplaySize.y - splitter.Bottom - splitter.Top ), ImGuiCond_Always );
+	if( !ImGui::Begin( pName, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+	{
+		return false;
+	}
+
+	splitter.ElementCount++;
+	splitter.LastElementRight = left + width;
+	splitter.LastElementLeft = left;
+	splitter.pLastElementWidth = pElementWidth;
+
+	return true;
+}
+
+void ImGui::EndHorizontalSplitterElement( ImHorizontalSplitter& splitter )
+{
+	ImGui::End();
+}
+
+void ImGui::EndHorizontalSplitter( ImHorizontalSplitter& splitter )
+{
+}

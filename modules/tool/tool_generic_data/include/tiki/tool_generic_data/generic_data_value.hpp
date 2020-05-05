@@ -48,6 +48,21 @@ namespace tiki
 		GenericDataValueType_Count
 	};
 
+	enum class GenericDataValueLevel
+	{
+		Invalid,
+		Default,
+		Parent,
+		Self
+	};
+
+	struct GenericDataLevelValue
+	{
+		GenericDataValueLevel		level;
+		GenericDataValue*			pValue;
+		const GenericDataValue*		pConstValue;
+	};
+
 	class GenericDataValue
 	{
 		TIKI_NONCOPYABLE_CLASS( GenericDataValue );

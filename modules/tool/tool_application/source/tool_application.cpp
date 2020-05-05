@@ -127,6 +127,7 @@ namespace tiki
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowRounding		= 3.0f;
 		style.WindowPadding			= ImVec2( 5.0f, 5.0f );
+		style.WindowMinSize			= ImVec2( 5.0f, 5.0f );
 		style.FrameRounding			= 2.0f;
 		style.PopupRounding			= 3.0f;
 		style.FramePadding			= ImVec2( 7.0f, 5.0f );

@@ -36,19 +36,19 @@ namespace tiki
 		const GenericDataObject*		getParentObject() const { return m_pParentObject; }
 
 		//bool							hasField( const DynamicString& name ) const;
-		uint							getFieldCount() const { return m_fields.getCount(); }
+		uintreg							getFieldCount() const { return m_fields.getCount(); }
 
-		const DynamicString&			getFieldName( uint index ) const;
-		const GenericDataType*			getFieldType( uint index ) const;
-		GenericDataValue*				getFieldValue( uint index, bool createMissing );
-		const GenericDataValue*			getFieldValue( uint index ) const;
-		bool							setFieldValue( uint index, GenericDataValue* pValue );
+		const DynamicString&			getFieldName( uintreg index ) const;
+		const GenericDataType*			getFieldType( uintreg index ) const;
+		GenericDataValue*				getFieldValue( uintreg index, bool createMissing );
+		const GenericDataValue*			getFieldValue( uintreg index ) const;
+		bool							setFieldValue( uintreg index, GenericDataValue* pValue );
 		GenericDataValue*				getFieldValue( const DynamicString& name, bool createMissing );
 		const GenericDataValue*			getFieldValue( const DynamicString& name ) const;
-		const GenericDataValue*			getFieldOrDefaultValue( uint index ) const;
-		const GenericDataValue*			getFieldOrDefaultValue( const DynamicString& name ) const;
+		GenericDataLevelValue			getFieldLevelValue( uintreg index );
+		GenericDataLevelValue			getFieldLevelValue( const DynamicString& name );
 
-		void							removeField( uint index );
+		void							removeField( uintreg index );
 		bool							removeField( const DynamicString& name );
 
 #if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
@@ -63,8 +63,8 @@ namespace tiki
 		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
 
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
-		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
-		virtual uint					getElementCount() TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		getElementValue( uintreg index ) TIKI_OVERRIDE_FINAL;
+		virtual uintreg					getElementCount() TIKI_OVERRIDE_FINAL;
 
 	private:
 
@@ -81,5 +81,8 @@ namespace tiki
 		const GenericDataObject*		m_pParentObject;
 
 		FieldArray						m_fields;
+
+		GenericDataLevelValue			getFieldLevelValueInternal( uintreg index, bool firstLevel );
+		GenericDataLevelValue			getFieldLevelValueInternal( uintreg index, bool firstLevel ) const;
 	};
 }
