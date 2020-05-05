@@ -12,6 +12,7 @@
 #include "tiki/resource/resource_manager.hpp"
 #include "tiki/resource/resource_request.hpp"
 #include "tiki/tool_application/tool_framework.hpp"
+#include "tiki/tool_application/tool_ui.hpp"
 #include "tiki/tool_project/package.hpp"
 
 #include <imgui.h>
@@ -114,38 +115,18 @@ namespace tiki
 	void Editor::doUi()
 	{
 		doRibbonUi();
-		doBrowserUi();
-		doEditableUi();
+
+		ImHorizontalSplitter splitter;
+		ImGui::BeginHorizontalSplitter( splitter, 5.0f, 106.0f, 5.0f, 5.0f );
+		doFileBrowserUi( splitter );
+		doEditableUi( splitter );
+		ImGui::EndHorizontalSplitter( splitter );
 
 		for( BaseEditor* pEditor : m_editors )
 		{
 			pEditor->doUi();
 		}
 	}
-
-	//Editable* Editor::openEditable( const DynamicString& title, BaseEditor* pEditor )
-	//{
-	//	TIKI_ASSERT( pEditor != nullptr );
-
-	//	for( Editable* pEditable : m_editables )
-	//	{
-	//		if( pEditable->getTitle() == title &&
-	//			pEditable->getEditor() == pEditor )
-	//		{
-	//			m_pCurrentEditable = pEditable;
-	//			return pEditable;
-	//		}
-	//	}
-
-	//	Editable* pEditable = pEditor->openEditable( title );
-	//	if( pEditable != nullptr )
-	//	{
-	//		m_editables.add( pEditable );
-	//	}
-
-	//	m_pCurrentEditable = pEditable;
-	//	return pEditable;
-	//}
 
 	EditableFile* Editor::openFile( const Path& fileName )
 	{
@@ -358,38 +339,6 @@ namespace tiki
 		return pResource->result;
 	}
 
-	//void Editor::markFileAsDirty( EditorEditable* pEditable )
-	//{
-	//	EditorEditable* pEditorFile = (EditorEditable*)pEditable;
-	//	m_pWindow->changeFileTab( pEditable->getEditWidget(), pEditorFile->getTabTitle() );
-	//}
-	//
-	//void Editor::fileOpenShortcut()
-	//{
-	//	QString allFilter = "All supported files (";
-	//	QString filter;
-	//	foreach( IFileEditor* pEditor, m_editors )
-	//	{
-	//		if( !filter.isEmpty() )
-	//		{
-	//			allFilter += " ";
-	//			filter += ";;";
-	//		}
-	//		allFilter += QString( "*.%1" ).arg( pEditor->getFileExtension() );
-	//		filter += QString( "%1 (*.%2)" ).arg( pEditor->getFileTypeName(), pEditor->getFileExtension() );
-	//	}
-	//	filter = allFilter + ");;" + filter + ";;All files (*.*)";
-	//
-	//	const QString fileName = QFileDialog::getOpenFileName(
-	//		getDialogParent(),
-	//		getDialogTitle(),
-	//		getPackagePath().absolutePath(),
-	//		filter
-	//	);
-	//
-	//	openFile( fileName );
-	//}
-
 	void Editor::saveOnCloseCallback( ToolMessageBoxButton button, UserData userData )
 	{
 		Editable* pEditable = static_cast< Editable* >( userData.pContext );
@@ -556,26 +505,18 @@ namespace tiki
 		}
 	}
 
-	void Editor::doBrowserUi()
+	void Editor::doFileBrowserUi( ImHorizontalSplitter& splitter )
 	{
-		const ImGuiIO& io = ImGui::GetIO();
-
-		ImGui::SetNextWindowPos( ImVec2( 5.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
-		ImGui::SetNextWindowSize( ImVec2( 250.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
-		if( ImGui::Begin( "Browser", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		if( ImGui::BeginHorizontalSplitterElement( splitter, "Browser", &m_fileBrowserWidth ) )
 		{
 			m_fileBrowserUi.doUi();
-			ImGui::End();
+			ImGui::EndHorizontalSplitterElement( splitter );
 		}
 	}
 
-	void Editor::doEditableUi()
+	void Editor::doEditableUi( ImHorizontalSplitter& splitter )
 	{
-		const ImGuiIO& io = ImGui::GetIO();
-
-		ImGui::SetNextWindowPos( ImVec2( 260.0f, 106.0f ), ImGuiCond_Always, ImVec2() );
-		ImGui::SetNextWindowSize( ImVec2( io.DisplaySize.x - 265.0f, io.DisplaySize.y - 111.0f ), ImGuiCond_Always );
-		if( ImGui::Begin( "Editable", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav ) )
+		if( ImGui::BeginHorizontalSplitterElement(splitter, "Editable", nullptr ) )
 		{
 			char titleBuffer[ 128u ];
 			for( Editable* pEditable : m_editables )
@@ -618,6 +559,6 @@ namespace tiki
 			}
 			ImGui::EndChild();
 		}
-		ImGui::End();
+		ImGui::EndHorizontalSplitterElement( splitter );
 	}
 }

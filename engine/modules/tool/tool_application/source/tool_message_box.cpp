@@ -59,59 +59,60 @@ namespace tiki
 			return;
 		}
 
-		if( ImGui::BeginPopupModal( m_title.cStr(), &m_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
+		if( !ImGui::BeginPopupModal( m_title.cStr(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
 		{
-			ToolImage* pImage = nullptr;
-			switch( m_icon )
-			{
-			case ToolMessageBoxIcon_Information:
-				pImage = &m_informationIcon;
-				break;
-
-			case ToolMessageBoxIcon_Question:
-				pImage = &m_questionIcon;
-				break;
-
-			case ToolMessageBoxIcon_Warning:
-				pImage = &m_warningIcon;
-				break;
-
-			case ToolMessageBoxIcon_Error:
-				pImage = &m_errorIcon;
-				break;
-
-			default:
-				break;
-			}
-
-			if( pImage != nullptr )
-			{
-				//ImGui::SetCursorPosX(  );
-				ImGui::Image( ImGui::Tex( *pImage ), ImGui::Vec2( pImage->getSize() ) );
-				ImGui::SameLine();
-			}
-
-			ImGui::Text( m_message.cStr() );
-			ImGui::GetItemRectSize();
-
-			for( uint i = 0u; i < ToolMessageBoxButton_Count; ++i )
-			{
-				const ToolMessageBoxButton button = (ToolMessageBoxButton)i;
-				if( !m_buttons.isFlagSet( button ) )
-				{
-					continue;
-				}
-
-				if( ImGui::Button( s_apMessageBoxButtonTexts[ i ] ) )
-				{
-					m_open = false;
-					m_callback.invoke( button, m_userData );
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::SameLine();
-			}
-
-			ImGui::EndPopup();
+			ImGui::OpenPopup( m_title.cStr() );
+			return;
 		}
+
+		ToolImage* pImage = nullptr;
+		switch( m_icon )
+		{
+		case ToolMessageBoxIcon_Information:
+			pImage = &m_informationIcon;
+			break;
+
+		case ToolMessageBoxIcon_Question:
+			pImage = &m_questionIcon;
+			break;
+
+		case ToolMessageBoxIcon_Warning:
+			pImage = &m_warningIcon;
+			break;
+
+		case ToolMessageBoxIcon_Error:
+			pImage = &m_errorIcon;
+			break;
+
+		default:
+			break;
+		}
+
+		if( pImage != nullptr )
+		{
+			ImGui::Image( ImGui::Tex( *pImage ), ImGui::Vec2( pImage->getSize() ) );
+			ImGui::SameLine();
+		}
+
+		ImGui::Text( m_message.cStr() );
+
+		for( uint i = 0u; i < ToolMessageBoxButton_Count; ++i )
+		{
+			const ToolMessageBoxButton button = (ToolMessageBoxButton)i;
+			if( !m_buttons.isFlagSet( button ) )
+			{
+				continue;
+			}
+
+			if( ImGui::Button( s_apMessageBoxButtonTexts[ i ] ) )
+			{
+				m_open = false;
+				m_callback.invoke( button, m_userData );
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+		}
+
+		ImGui::EndPopup();
 	}
 }

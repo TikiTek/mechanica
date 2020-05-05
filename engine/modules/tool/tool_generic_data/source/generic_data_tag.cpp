@@ -13,6 +13,10 @@ namespace tiki
 		{
 			m_pChildTag = new GenericDataTag( pCopyFrom->getChildTag() );
 		}
+		else
+		{
+			m_pChildTag = nullptr;
+		}
 
 		m_tag		= pCopyFrom->getTag();
 		m_content	= pCopyFrom->getContent();

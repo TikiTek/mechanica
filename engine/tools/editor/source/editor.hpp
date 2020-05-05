@@ -10,6 +10,8 @@
 #include "editor_editable_ribbon.hpp"
 #include "editor_file_browser_ui.hpp"
 
+struct ImHorizontalSplitter;
+
 namespace tiki
 {
 	class AssetConverterInterface;
@@ -97,6 +99,7 @@ namespace tiki
 		List< Editable* >				m_editables;
 		Editable*						m_pCurrentEditable;
 
+		float							m_fileBrowserWidth = 350.0f;
 		EditorFileBrowserUi				m_fileBrowserUi;
 		EditorEditableRibbon			m_editableRibbon;
 		ToolMessageBox					m_messageBox;
@@ -114,7 +117,7 @@ namespace tiki
 		void							setPackagePath();
 
 		void							doRibbonUi();
-		void							doBrowserUi();
-		void							doEditableUi();
+		void							doFileBrowserUi( ImHorizontalSplitter& splitter );
+		void							doEditableUi( ImHorizontalSplitter& splitter );
 	};
 }

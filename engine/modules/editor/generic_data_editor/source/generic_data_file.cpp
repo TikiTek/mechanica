@@ -127,14 +127,8 @@ namespace tiki
 		for( uint i = 0u; i < pObject->getFieldCount(); ++i )
 		{
 			bool readOnlyValue = readOnly;
-			GenericDataValue* pValue = pObject->getFieldValue( i, false );
-			if( pValue == nullptr )
-			{
-				pValue			= const_cast< GenericDataValue* >( pObject->getFieldOrDefaultValue( i ) );
-				readOnlyValue	= true;
-			}
-
-			GenericDataValue* pNewValue = doElementUi( pObject->getFieldName( i ), pValue, pObject->getFieldType( i ), readOnlyValue );
+			const GenericDataLevelValue levelValue = pObject->getFieldLevelValue( i );
+			GenericDataValue* pNewValue = doElementUi( pObject->getFieldName( i ), levelValue, pObject->getFieldType( i ) );
 			if( pNewValue != pValue && !readOnly )
 			{
 				pObject->setFieldValue( i, pNewValue );
@@ -152,7 +146,12 @@ namespace tiki
 		for( uint i = 0u; i < pArray->getCount(); ++i )
 		{
 			const DynamicString name = formatDynamicString( "%d", i );
-			doElementUi( name, pArray->getElement( i ), pArray->getType()->getBaseType(), readOnly );
+			GenericDataValue* pNewValue = doElementUi( name, pArray->getElement( i ), pArray->getType()->getBaseType(), readOnly );
+			if( pNewValue == nullptr )
+			{
+				pArray->removeElement( i );
+				m_isDirty = true;
+			}
 		}
 
 		if( !readOnly )
@@ -163,6 +162,7 @@ namespace tiki
 			if( ImGui::Button( "Add Element" ) )
 			{
 				pArray->addElement( true );
+				m_isDirty = true;
 			}
 			ImGui::NextColumn();
 		}
@@ -399,7 +399,7 @@ namespace tiki
 		}
 		ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 4.0f, 3.5f ) );
 
-		if( ImGui::ImageButton( ImGui::Tex( m_tagsIcon ), ImGui::Vec2( m_tagsIcon.getSize() ) ) && !readOnly )
+		if( !readOnly && ImGui::ImageButton( ImGui::Tex( m_tagsIcon ), ImGui::Vec2( m_tagsIcon.getSize() ) ) )
 		{
 			if( pValueTag == nullptr )
 			{

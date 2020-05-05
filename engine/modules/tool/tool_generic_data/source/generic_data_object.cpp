@@ -50,7 +50,7 @@ namespace tiki
 		}
 
 		const List< GenericDataStructField >& structFields = pType->getFields();
-		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		for( uintreg i = 0u; i < m_fields.getCount(); ++i )
 		{
 			ObjectField& field = m_fields[ i ];
 			const GenericDataStructField& structField = structFields[ i ];
@@ -80,7 +80,7 @@ namespace tiki
 		}
 
 		const List< GenericDataStructField >& structFields = m_pType->getFields();
-		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		for( uintreg i = 0u; i < m_fields.getCount(); ++i )
 		{
 			ObjectField& field = m_fields[ i ];
 			const ObjectField& sourceField = pCopyFrom->m_fields[ i ];
@@ -105,7 +105,7 @@ namespace tiki
 
 	void GenericDataObject::dispose()
 	{
-		for (uint i = 0u; i < m_fields.getCount(); ++i)
+		for (uintreg i = 0u; i < m_fields.getCount(); ++i)
 		{
 			ObjectField& field = m_fields[ i ];
 			if( field.pValue != nullptr )
@@ -126,17 +126,17 @@ namespace tiki
 	//	return m_fields.hasKey( name );
 	//}
 
-	const DynamicString& GenericDataObject::getFieldName( uint index ) const
+	const DynamicString& GenericDataObject::getFieldName( uintreg index ) const
 	{
 		return m_fields[ index ].name;
 	}
 
-	const GenericDataType* GenericDataObject::getFieldType( uint index ) const
+	const GenericDataType* GenericDataObject::getFieldType( uintreg index ) const
 	{
 		return m_fields[ index ].pType;
 	}
 
-	GenericDataValue* GenericDataObject::getFieldValue( uint index, bool createMissing )
+	GenericDataValue* GenericDataObject::getFieldValue( uintreg index, bool createMissing )
 	{
 		if( m_fields[ index ].pValue != nullptr )
 		{
@@ -153,15 +153,15 @@ namespace tiki
 		return nullptr;
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldValue( uint index ) const
+	const GenericDataValue* GenericDataObject::getFieldValue( uintreg index ) const
 	{
 		return m_fields[ index ].pValue;
 	}
 
 	GenericDataValue* GenericDataObject::getFieldValue( const DynamicString& name, bool createMissing )
 	{
-		const uint index = m_pType->getFieldIndexByName( name );
-		if( index == (uint)-1 )
+		const uintreg index = m_pType->getFieldIndexByName( name );
+		if( index == (uintreg)-1 )
 		{
 			return nullptr;
 		}
@@ -171,8 +171,8 @@ namespace tiki
 
 	const GenericDataValue* GenericDataObject::getFieldValue( const DynamicString& name ) const
 	{
-		const uint index = m_pType->getFieldIndexByName( name );
-		if( index == (uint)-1 )
+		const uintreg index = m_pType->getFieldIndexByName( name );
+		if( index == (uintreg)-1 )
 		{
 			return nullptr;
 		}
@@ -180,7 +180,7 @@ namespace tiki
 		return getFieldValue( index );
 	}
 
-	bool GenericDataObject::setFieldValue( uint index, GenericDataValue* pValue )
+	bool GenericDataObject::setFieldValue( uintreg index, GenericDataValue* pValue )
 	{
 		ObjectField& field = m_fields[ index ];
 		if( pValue != nullptr && field.pType != pValue->getType() )
@@ -197,28 +197,79 @@ namespace tiki
 		return true;
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( uint index ) const
+	GenericDataLevelValue GenericDataObject::getFieldLevelValue( uintreg index )
 	{
-		if( m_fields[ index ].pValue == nullptr && m_pParentObject != nullptr )
-		{
-			return m_pParentObject->getFieldOrDefaultValue( index );
-		}
-
-		return m_fields[ index ].pValue;
+		return getFieldLevelValueInternal( index, true );
 	}
 
-	const GenericDataValue* GenericDataObject::getFieldOrDefaultValue( const DynamicString& name ) const
+	GenericDataLevelValue GenericDataObject::getFieldLevelValue( const DynamicString& name )
 	{
-		const uint index = m_pType->getFieldIndexByName( name );
-		if( index == (uint)-1 )
+		const uintreg index = m_pType->getFieldIndexByName( name );
+		if( index == (uintreg)-1 )
 		{
-			return nullptr;
+			return { GenericDataValueLevel::Invalid, nullptr, nullptr };
 		}
 
-		return getFieldOrDefaultValue( index );
+		return getFieldLevelValueInternal( index, true );
 	}
 
-	void GenericDataObject::removeField( uint index )
+	GenericDataLevelValue GenericDataObject::getFieldLevelValueInternal( uintreg index, bool firstLevel )
+	{
+		if( m_fields[ index ].pValue != nullptr && firstLevel )
+		{
+			GenericDataValueLevel level;
+			if( this == m_pType->getDefaultObject() )
+			{
+				level = GenericDataValueLevel::Default;
+			}
+			else if( firstLevel )
+			{
+				level = GenericDataValueLevel::Self;
+			}
+			else
+			{
+				level = GenericDataValueLevel::Parent;
+			}
+
+			return { level, m_fields[ index ].pValue, m_fields[ index ].pValue };
+		}
+		else if( m_pParentObject != nullptr )
+		{
+			return m_pParentObject->getFieldLevelValueInternal( index, false );
+		}
+
+		return { GenericDataValueLevel::Invalid, nullptr, nullptr };
+	}
+
+	GenericDataLevelValue GenericDataObject::getFieldLevelValueInternal( uintreg index, bool firstLevel ) const
+	{
+		if( m_fields[ index ].pValue != nullptr && firstLevel )
+		{
+			GenericDataValueLevel level;
+			if( this == m_pType->getDefaultObject() )
+			{
+				level = GenericDataValueLevel::Default;
+			}
+			else if( firstLevel )
+			{
+				level = GenericDataValueLevel::Self;
+			}
+			else
+			{
+				level = GenericDataValueLevel::Parent;
+			}
+
+			return { level, nullptr, m_fields[ index ].pValue };
+		}
+		else if( m_pParentObject != nullptr )
+		{
+			return m_pParentObject->getFieldLevelValueInternal( index, false );
+		}
+
+		return { GenericDataValueLevel::Invalid, nullptr, nullptr };
+	}
+
+	void GenericDataObject::removeField( uintreg index )
 	{
 		ObjectField& field = m_fields[ index ];
 		if( field.pValue != nullptr )
@@ -230,8 +281,8 @@ namespace tiki
 
 	bool GenericDataObject::removeField( const DynamicString& name )
 	{
-		const uint index = m_pType->getFieldIndexByName( name );
-		if( index == (uint)-1 )
+		const uintreg index = m_pType->getFieldIndexByName( name );
+		if( index == (uintreg)-1 )
 		{
 			return false;
 		}
@@ -255,22 +306,11 @@ namespace tiki
 
 		bool ok = true;
 		const List< GenericDataStructField >& fields = m_pType->getFields();
-		for (uint i = 0u; i < fields.getCount(); ++i)
+		for (uintreg i = 0u; i < fields.getCount(); ++i)
 		{
 			const GenericDataStructField& structField = fields[ i ];
 
-			const ObjectField& field = m_fields[ i ];
-			const GenericDataValue* pValue = nullptr;
-			if ( field.pValue == nullptr && m_pParentObject != nullptr )
-			{
-				pValue = m_pParentObject->getFieldOrDefaultValue( i );
-			}
-			else
-			{
-				TIKI_ASSERT( field.pValue != nullptr );
-				pValue = field.pValue;
-			}
-
+			const GenericDataValue* pValue = getFieldLevelValueInternal( i, true ).pConstValue;
 			if ( pValue != nullptr )
 			{
 				TIKI_ASSERT( pValue->getType() == structField.pType );
@@ -297,7 +337,7 @@ namespace tiki
 
 	bool GenericDataObject::initializeXmlElementForValue( XmlElement* pElement, const GenericDataValue* pValue ) const
 	{
-		for( uint i = 0u; i < m_fields.getCount(); ++i )
+		for( uintreg i = 0u; i < m_fields.getCount(); ++i )
 		{
 			const ObjectField& field = m_fields[ i ];
 			if( field.pValue != pValue )
@@ -340,7 +380,7 @@ namespace tiki
 		return getFieldValue( pNameAtt->getValue(), true );
 	}
 
-	GenericDataValue* GenericDataObject::getElementValue( uint index )
+	GenericDataValue* GenericDataObject::getElementValue( uintreg index )
 	{
 		if( index >= m_fields.getCount() )
 		{
@@ -350,7 +390,7 @@ namespace tiki
 		return getFieldValue( index, false );
 	}
 
-	uint GenericDataObject::getElementCount()
+	uintreg GenericDataObject::getElementCount()
 	{
 		return m_fields.getCount();
 	}
