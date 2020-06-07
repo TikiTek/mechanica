@@ -18,15 +18,15 @@ namespace tiki
 		void					registerComponent( ComponentTypeId typeId );
 		void					unregisterComponent();
 
-		virtual bool			initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) TIKI_PURE;
-		virtual void			disposeState( ComponentState* pState ) TIKI_PURE;
+		virtual bool			initializeState( const ComponentEntityIterator& iterator, ComponentState* pState, const ComponentInitData* pInitData ) = 0;
+		virtual void			disposeState( ComponentState* pState ) = 0;
 
 		crc32					getTypeCrc() const { return m_typeCrc; }
 		const char*				getTypeName() const { return m_pTypeName; }
 		uint32					getStateSize() const { return m_stateSize; }
 
 #if TIKI_ENABLED( TIKI_BUILD_DEBUG )
-		virtual bool			checkIntegrity() const TIKI_PURE;
+		virtual bool			checkIntegrity() const = 0;
 #endif
 
 		ComponentTypeId			getTypeId() const { return m_registedTypeId; }
@@ -77,8 +77,8 @@ namespace tiki
 
 						Component( crc32 typeCrc, const char* pTypeName, uint32 stateSize, bool constructState );
 
-		virtual bool	internalInitializeState( const ComponentEntityIterator& iterator, TState* pState, const TInitData* pInitData ) TIKI_PURE;
-		virtual void	internalDisposeState( TState* pState ) TIKI_PURE;
+		virtual bool	internalInitializeState( const ComponentEntityIterator& iterator, TState* pState, const TInitData* pInitData ) = 0;
+		virtual void	internalDisposeState( TState* pState ) = 0;
 	};
 }
 

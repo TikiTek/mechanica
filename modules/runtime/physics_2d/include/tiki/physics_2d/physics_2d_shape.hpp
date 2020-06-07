@@ -12,6 +12,6 @@ namespace tiki
 
 	public:
 
-		virtual b2Shape*	getNativeShape() const TIKI_PURE;
+		virtual b2Shape*	getNativeShape() const = 0;
 	};
 }
