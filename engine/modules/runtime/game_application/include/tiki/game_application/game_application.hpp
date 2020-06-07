@@ -45,15 +45,15 @@ namespace tiki
 		virtual bool				processBaseInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
 		virtual void				processBaseWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
-		virtual void				fillGameParameters( GameApplicationParamters& parameters ) TIKI_PURE;
-		virtual bool				initializeGame() TIKI_PURE;
-		virtual void				shutdownGame() TIKI_PURE;
+		virtual void				fillGameParameters( GameApplicationParamters& parameters ) = 0;
+		virtual bool				initializeGame() = 0;
+		virtual void				shutdownGame() = 0;
 
-		virtual void				updateGame( bool wantToShutdown ) TIKI_PURE;
-		virtual void				renderGame( GraphicsContext& graphicsContext ) const TIKI_PURE;
+		virtual void				updateGame( bool wantToShutdown ) = 0;
+		virtual void				renderGame( GraphicsContext& graphicsContext ) const = 0;
 
-		virtual bool				processGameInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
-		virtual void				processGameWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+		virtual bool				processGameInputEvent( const InputEvent& inputEvent ) = 0;
+		virtual void				processGameWindowEvent( const WindowEvent& windowEvent ) = 0;
 
 		bool						initializeDebugSystems();
 		void						shutdownDebugSystems();

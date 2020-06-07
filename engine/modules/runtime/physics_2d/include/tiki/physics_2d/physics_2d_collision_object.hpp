@@ -18,7 +18,7 @@ namespace tiki
 		uint			getMaterialId() const { return m_materialId; }
 		void			setMaterialId( uint materialId ) { m_materialId = materialId; }
 
-		virtual b2Body*	getNativeObject() const TIKI_PURE;
+		virtual b2Body*	getNativeObject() const = 0;
 
 	protected:
 

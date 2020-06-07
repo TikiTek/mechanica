@@ -24,11 +24,11 @@ namespace tiki
 		virtual TransitionState	processCreationStep( uintreg currentStep, bool isInital );
 		virtual TransitionState	processDestructionStep( uintreg currentStep, bool isInital );
 
-		virtual void			update() TIKI_PURE;
+		virtual void			update() = 0;
 		virtual void			render( GraphicsContext& graphicsContext ) { }
 		virtual void			postRender( GraphicsContext& graphicsContext ) { }
 
-		virtual bool			processInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
+		virtual bool			processInputEvent( const InputEvent& inputEvent ) = 0;
 		virtual void			processWindowEvent( const WindowEvent& windowEvent ) { }
 
 	protected:
