@@ -72,7 +72,7 @@ namespace tiki
 	{
 		for( Editable* pEditable : m_editables )
 		{
-			closeEditableInternal( pEditable );
+			closeEditableInternal( *pEditable );
 		}
 
 		unregisterFileEditor( m_pGenericDataEditor );
@@ -152,14 +152,14 @@ namespace tiki
 
 		if( !file::exists( fileName.getCompletePath() ) )
 		{
-			m_messageBox.open( getDialogTitle(), "File not found. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon_Warning );
+			showMessageBox( "File not found. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon::Warning );
 			return nullptr;
 		}
 
 		FileEditor* pEditor = findEditorForFile( fileName );
 		if( pEditor == nullptr )
 		{
-			m_messageBox.open( getDialogTitle(), "File type is not supported. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon_Warning );
+			showMessageBox( "File type is not supported. Please choose an other file.", ToolMessageBoxButtons_Ok, ToolMessageBoxIcon::Warning );
 			return nullptr;
 		}
 
@@ -169,49 +169,43 @@ namespace tiki
 			return nullptr;
 		}
 
-		openEditable( pFile );
+		openEditable( *pFile );
 		return pFile;
 	}
 
-	void Editor::openEditable( Editable* pEditable )
+	void Editor::openEditable( Editable& editable )
 	{
-		TIKI_ASSERT( pEditable != nullptr );
-
-		if( !m_editables.contains( pEditable ) )
+		if( !m_editables.contains( &editable ) )
 		{
-			m_editables.pushBack( pEditable );
+			m_editables.pushBack( &editable );
 		}
 
-		if( pEditable->getEditor() == m_pPackageEditor )
+		if( &editable.getEditor() == m_pPackageEditor )
 		{
 			setPackagePath();
 		}
 
-		m_pCurrentEditable = pEditable;
+		m_pCurrentEditable = &editable;
 	}
 
-	void Editor::saveEditable( Editable* pEditable )
+	void Editor::saveEditable( Editable& editable )
 	{
-		TIKI_ASSERT( pEditable != nullptr );
-
-		if( !pEditable->isDirty() )
+		if( !editable.isDirty() )
 		{
 			return;
 		}
 
-		if( !pEditable->getEditor()->saveEditable( pEditable ) )
+		if( !editable.getEditor().saveEditable( editable ) )
 		{
 			return;
 		}
 	}
 
-	void Editor::closeEditable( Editable* pEditable )
+	void Editor::closeEditable( Editable& editable )
 	{
-		TIKI_ASSERT( pEditable != nullptr );
-
-		if( pEditable->isDirty() )
+		if( editable.isDirty() )
 		{
-			EditableFile* pFile = pEditable->asFile();
+			EditableFile* pFile = editable.asFile();
 
 			DynamicString fileName;
 			if( pFile != nullptr )
@@ -220,15 +214,15 @@ namespace tiki
 			}
 			else
 			{
-				fileName = pEditable->getTitle();
+				fileName = editable.getTitle();
 			}
 
 			const DynamicString text = "Do you want to save changes of '" + fileName + "'?";
-			m_messageBox.open( getDialogTitle(), text, ToolMessageBoxButtons_YesNoCancel, ToolMessageBoxIcon_Question, ToolMessageBoxCallbackDelegate( this, &Editor::saveOnCloseCallback ), UserData( pEditable ) );
+			showMessageBox( text, ToolMessageBoxButtons_YesNoCancel, ToolMessageBoxIcon::Question, ToolMessageBoxCallbackDelegate( this, &Editor::saveOnCloseCallback ), UserData( &editable ) );
 			return;
 		}
 
-		closeEditableInternal( pEditable );
+		closeEditableInternal( editable );
 	}
 
 	void Editor::closeAll()
@@ -236,7 +230,7 @@ namespace tiki
 		List< Editable* > editables = m_editables;
 		for( Editable* pEditable : editables )
 		{
-			closeEditable( pEditable );
+			closeEditable( *pEditable );
 		}
 	}
 
@@ -288,7 +282,7 @@ namespace tiki
 		return m_packagePath;
 	}
 
-	DynamicString Editor::getDialogTitle() const
+	void Editor::showMessageBox( const DynamicString& message, ToolMessageBoxButtonFlagMask buttons /* = ToolMessageBoxButtons_Ok */, ToolMessageBoxIcon icon /* = ToolMessageBoxIcon::None */, ToolMessageBoxCallbackDelegate callback /* = ToolMessageBoxCallbackDelegate() */, UserData userData /* = UserData() */ )
 	{
 		DynamicString title = "TikiEditor";
 		if( m_pPackageEditor->getPackage() != nullptr )
@@ -296,7 +290,7 @@ namespace tiki
 			title += " - " + m_pPackageEditor->getPackage()->getName();
 		}
 
-		return title;
+		m_messageBox.open( title, message, buttons, icon, callback, userData );
 	}
 
 	EditorResourceResult Editor::getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType )
@@ -341,27 +335,27 @@ namespace tiki
 
 	void Editor::saveOnCloseCallback( ToolMessageBoxButton button, UserData userData )
 	{
-		Editable* pEditable = static_cast< Editable* >( userData.pContext );
+		Editable& editable = *static_cast< Editable* >( userData.pContext );
 
 		switch( button )
 		{
-		case ToolMessageBoxButton_Yes:
-			saveEditable( pEditable );
+		case ToolMessageBoxButton::Yes:
+			saveEditable( editable );
 			break;
 
-		case ToolMessageBoxButton_Cancel:
+		case ToolMessageBoxButton::Cancel:
 			return;
 
 		default:
 			break;
 		}
 
-		closeEditableInternal( pEditable );
+		closeEditableInternal( editable );
 	}
 
-	void Editor::closeEditableInternal( Editable* pEditable )
+	void Editor::closeEditableInternal( Editable& editable )
 	{
-		if( pEditable == m_pCurrentEditable )
+		if( &editable == m_pCurrentEditable )
 		{
 			m_pCurrentEditable = nullptr;
 		}
@@ -371,8 +365,8 @@ namespace tiki
 			m_pCurrentRibbon = nullptr;
 		}
 
-		m_editables.removeSortedByValue( pEditable );
-		pEditable->getEditor()->closeEditable( pEditable );
+		m_editables.removeSortedByValue( &editable );
+		editable.getEditor().closeEditable( editable );
 	}
 
 	void Editor::setProjectPathes()

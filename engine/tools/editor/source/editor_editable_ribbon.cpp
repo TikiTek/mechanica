@@ -34,13 +34,13 @@ namespace tiki
 
 			if( ImGui::ImageButtonTextButton( ImGui::Tex( m_saveEditableIcon ), "Save" ) )
 			{
-				m_editor.saveEditable( m_editor.getCurrentEditable() );
+				m_editor.saveEditable( *m_editor.getCurrentEditable() );
 			}
 			ImGui::SameLine();
 
 			if( ImGui::ImageButtonTextButton( ImGui::Tex( m_closeEditableIcon ), "Close" ) )
 			{
-				m_editor.closeEditable( m_editor.getCurrentEditable() );
+				m_editor.closeEditable( *m_editor.getCurrentEditable() );
 			}
 		}
 	}

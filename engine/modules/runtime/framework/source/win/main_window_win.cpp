@@ -59,13 +59,21 @@ namespace tiki
 
 	bool MainWindow::create( const WindowParameters& params )
 	{
+		const HINSTANCE hInstance = (HINSTANCE)params.instanceHandle;
+
 		TIKI_DECLARE_STACKANDZERO( WNDCLASSEXA, win );
 		win.cbSize			= sizeof( WNDCLASSEXA );
-		win.hInstance		= (HINSTANCE)params.instanceHandle;
+		win.hInstance		= hInstance;
 		win.lpfnWndProc		= &framework::windowProc;
 		win.lpszClassName	= "TikiMainWindowClass";
 		win.hbrBackground	= (HBRUSH)(COLOR_WINDOW + 1);
 		win.hCursor			= LoadCursor( NULL, IDC_ARROW );
+
+		if( params.iconId != 0 )
+		{
+			win.hIcon		= LoadIcon( hInstance, MAKEINTRESOURCE( params.iconId ) );
+			win.hIconSm		= win.hIcon;
+		}
 
 		HRESULT result = RegisterClassExA( &win );
 		if( FAILED( result ) )
@@ -89,7 +97,7 @@ namespace tiki
 			int( params.height ),
 			NULL,
 			NULL,
-			(HINSTANCE)params.instanceHandle,
+			hInstance,
 			&m_platformData.userData
 		);
 
@@ -99,11 +107,6 @@ namespace tiki
 			return false;
 		}
 		m_platformData.windowHandle = hWnd;
-
-		TIKI_DECLARE_STACKANDZERO( STARTUPINFO, startupInfo );
-		startupInfo.cb			= sizeof(startupInfo);
-		startupInfo.dwFlags		= STARTF_USESHOWWINDOW;
-		startupInfo.wShowWindow	= SW_SHOWMINNOACTIVE;
 
 		SetWindowLongPtr( hWnd, GWLP_USERDATA, (LONG_PTR)&m_platformData.userData );
 

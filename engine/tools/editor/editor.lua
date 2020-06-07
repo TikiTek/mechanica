@@ -3,6 +3,9 @@ local module = Module:new();
 module:add_files( "source/*.*" );
 module:add_files( "*.lua" );
 
+module:add_files( "icon/*.h" );
+module:add_files( "icon/*.rc" );
+
 module:add_dependency( "config" );
 module:add_dependency( "core/resource" );
 module:add_dependency( "core/generic_data" );

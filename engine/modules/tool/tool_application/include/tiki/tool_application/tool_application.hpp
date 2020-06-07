@@ -47,17 +47,17 @@ namespace tiki
 		virtual bool				processBaseInputEvent( const InputEvent& inputEvent ) TIKI_OVERRIDE_FINAL;
 		virtual void				processBaseWindowEvent( const WindowEvent& windowEvent ) TIKI_OVERRIDE_FINAL;
 
-		virtual void				fillToolParameters( ToolApplicationParamters& parameters ) TIKI_PURE;
-		virtual bool				initializeTool() TIKI_PURE;
-		virtual void				shutdownTool() TIKI_PURE;
+		virtual void				fillToolParameters( ToolApplicationParamters& parameters ) = 0;
+		virtual bool				initializeTool() = 0;
+		virtual void				shutdownTool() = 0;
 
-		virtual void				updateTool( bool wantToShutdown ) TIKI_PURE;
-		virtual void				renderTool( GraphicsContext& graphicsContext ) const TIKI_PURE;
+		virtual void				updateTool( bool wantToShutdown ) = 0;
+		virtual void				renderTool( GraphicsContext& graphicsContext ) const = 0;
 
-		virtual void				doUi() TIKI_PURE;
+		virtual void				doUi() = 0;
 
-		virtual bool				processToolInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
-		virtual void				processToolWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+		virtual bool				processToolInputEvent( const InputEvent& inputEvent ) = 0;
+		virtual void				processToolWindowEvent( const WindowEvent& windowEvent ) = 0;
 
 	private:
 

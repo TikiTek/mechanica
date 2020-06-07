@@ -7,7 +7,7 @@ namespace tiki
 	template< class TReturn, class ... TParams >
 	Delegate< TReturn, TParams... >::Delegate()
 	{
-		setStaticFunction( nullptr );
+		setNullFunction();
 	}
 
 	template< class TReturn, class ... TParams >
@@ -18,23 +18,33 @@ namespace tiki
 
 	template< class TReturn, class ... TParams >
 	template< class TInstance >
-	Delegate< TReturn, TParams... >::Delegate( TInstance* pInstance, TInstanceMethod< TInstance > pMethod )
+	Delegate< TReturn, TParams... >::Delegate( TInstance* pInstance, InstanceMethod< TInstance > pMethod )
 	{
 		setInstanceMethod< TInstance >( pInstance, pMethod );
 	}
 
 	template< class TReturn, class ... TParams >
+	void Delegate< TReturn, TParams... >::setNullFunction()
+	{
+		new( m_internalCallbackData ) NullCallback();
+	}
+
+	template< class TReturn, class ... TParams >
 	void Delegate< TReturn, TParams... >::setStaticFunction( Function pFunction )
 	{
-		StaticFunctionCallback* pInternalCallback = new(m_internalCallbackData) StaticFunctionCallback();
+		StaticFunctionCallback* pInternalCallback = new( m_internalCallbackData ) StaticFunctionCallback();
+		TIKI_ASSUME( pInternalCallback != nullptr );
+
 		pInternalCallback->pFunction = pFunction;
 	}
 
 	template< class TReturn, class ... TParams >
 	template< class TInstance >
-	void Delegate< TReturn, TParams... >::setInstanceMethod( TInstance* pInstance, TInstanceMethod< TInstance > pMethod )
+	void Delegate< TReturn, TParams... >::setInstanceMethod( TInstance* pInstance, InstanceMethod< TInstance > pMethod )
 	{
 		InstanceMethodCallback< TInstance >* pInternalCallback = new( m_internalCallbackData ) InstanceMethodCallback< TInstance >();
+		TIKI_ASSUME( pInternalCallback != nullptr );
+
 		pInternalCallback->pInstance	= pInstance;
 		pInternalCallback->pMethod		= pMethod;
 	}
@@ -42,13 +52,19 @@ namespace tiki
 	template< class TReturn, class ... TParams >
 	TReturn Delegate< TReturn, TParams... >::invoke( TParams ... args ) const
 	{
-		getCallback()->invoke( args ... );
+		return getCallback()->invoke( args ... );
 	}
 
 	template< class TReturn, class ... TParams >
 	const typename Delegate< TReturn, TParams... >::Callback* Delegate< TReturn, TParams... >::getCallback() const
 	{
 		return (const Callback*)m_internalCallbackData;
+	}
+
+	template< class TReturn, class ... TParams >
+	TReturn Delegate< TReturn, TParams... >::NullCallback::invoke( TParams ... args ) const
+	{
+		return TReturn();
 	}
 
 	template< class TReturn, class ... TParams >

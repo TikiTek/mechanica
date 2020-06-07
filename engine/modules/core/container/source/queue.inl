@@ -4,8 +4,8 @@
 
 namespace tiki
 {
-	template<typename T>
-	Queue<T>::Queue()
+	template< typename T >
+	Queue< T >::Queue()
 	{
 		m_pData		= nullptr;
 
@@ -14,16 +14,16 @@ namespace tiki
 		m_capacity	= 0u;
 	}
 
-	template<typename T>
-	Queue<T>::~Queue()
+	template< typename T >
+	Queue< T >::~Queue()
 	{
 		TIKI_ASSERT( m_pData == nullptr );
 	}
 
-	template<typename T>
-	bool Queue<T>::create( uint capacity, uint alignment /*= TIKI_DEFAULT_ALIGNMENT */ )
+	template< typename T >
+	bool Queue< T >::create( uintreg capacity )
 	{
-		m_pData = TIKI_NEW_ARRAY_ALIGNED( T, capacity, alignment, true );
+		m_pData = TIKI_NEW_ARRAY_ALIGNED( T, capacity, TIKI_DEFAULT_ALIGNMENT, true );
 		if ( m_pData == nullptr )
 		{
 			return false;
@@ -36,8 +36,8 @@ namespace tiki
 		return true;
 	}
 
-	template<typename T>
-	void Queue<T>::dispose()
+	template< typename T >
+	void Queue< T >::dispose()
 	{
 		if ( m_pData != nullptr )
 		{
@@ -50,69 +50,69 @@ namespace tiki
 		m_capacity	= 0u;
 	}
 
-	template<typename T>
-	bool Queue<T>::isEmpty() const
+	template< typename T >
+	bool Queue< T >::isEmpty() const
 	{
 		return m_top == m_bottom;
 	}
 
-	template<typename T>
-	bool Queue<T>::isFull() const
+	template< typename T >
+	bool Queue< T >::isFull() const
 	{
 		return m_top == ( ( m_bottom + 1u ) % m_capacity );
 	}
 
-	template<typename T>
-	T& Queue<T>::push()
+	template< typename T >
+	T& Queue< T >::push()
 	{
 		TIKI_ASSERT( isFull() == false );
 
-		const uint index = m_bottom;
+		const uintreg index = m_bottom;
 		m_bottom = ( m_bottom + 1u ) % m_capacity;
 		return m_pData[ index ];
 	}
 
-	template<typename T>
-	T& Queue<T>::push( ConstReference value )
+	template< typename T >
+	T& Queue< T >::push( ConstReference value )
 	{
 		TIKI_ASSERT( isFull() == false );
 
-		const uint index = m_bottom;
+		const uintreg index = m_bottom;
 		m_bottom = ( m_bottom + 1u ) % m_capacity;
 		m_pData[ index ] = value;
 		return m_pData[ index ];
 	}
-	
-	template<typename T>
-	bool Queue<T>::pop( Reference target )
+
+	template< typename T >
+	bool Queue< T >::pop( Reference target )
 	{
 		if ( isEmpty() == true )
 		{
 			return false;
 		}
 
-		const uint index = m_top;
+		const uintreg index = m_top;
 		m_top = ( m_top + 1u ) % m_capacity;
 		target = m_pData[ index ];
 		return true;
 	}
 
-	template<typename T>
-	T& Queue<T>::getTop()
+	template< typename T >
+	T& Queue< T >::getTop()
 	{
 		TIKI_ASSERT( !isEmpty() );
 		return m_pData[ m_top ];
 	}
 
-	template<typename T>
-	const T& Queue<T>::getTop() const
+	template< typename T >
+	const T& Queue< T >::getTop() const
 	{
 		TIKI_ASSERT( !isEmpty() );
 		return m_pData[ m_top ];
 	}
 
-	template<typename T>
-	T& Queue<T>::getBottom()
+	template< typename T >
+	T& Queue< T >::getBottom()
 	{
 		TIKI_ASSERT( !isEmpty() );
 		if( m_bottom == 0u )
@@ -125,8 +125,8 @@ namespace tiki
 		}
 	}
 
-	template<typename T>
-	const T& Queue<T>::getBottom() const
+	template< typename T >
+	const T& Queue< T >::getBottom() const
 	{
 		TIKI_ASSERT( !isEmpty() );
 		if( m_bottom == 0u )
@@ -139,15 +139,15 @@ namespace tiki
 		}
 	}
 
-	template<typename T>
-	uint Queue<T>::getCount() const
+	template< typename T >
+	uintreg Queue< T >::getCount() const
 	{
-		const uint bottom = m_bottom + ( m_bottom < m_top ? m_capacity : 0u );
+		const uintreg bottom = m_bottom + ( m_bottom < m_top ? m_capacity : 0u );
 		return bottom - m_top;
 	}
 
-	template<typename T>
-	uint Queue<T>::getCapacity() const
+	template< typename T >
+	uintreg Queue< T >::getCapacity() const
 	{
 		return m_capacity;
 	}

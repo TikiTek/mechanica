@@ -40,19 +40,19 @@ namespace tiki
 		return m_pPackageFile;
 	}
 
-	bool PackageEditor::saveEditable( Editable* pEditable )
+	bool PackageEditor::saveEditable( Editable& editable )
 	{
-		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
-		return pPackage->save();
+		PackageFile& package = static_cast< PackageFile& >( editable );
+		return package.save();
 	}
 
-	void PackageEditor::closeEditable( Editable* pEditable )
+	void PackageEditor::closeEditable( Editable& editable )
 	{
-		TIKI_ASSERT( pEditable == m_pPackageFile );
+		TIKI_ASSERT( &editable == m_pPackageFile );
 
-		PackageFile* pPackage = static_cast< PackageFile* >( pEditable );
+		PackageFile& package = static_cast< PackageFile& >( editable );
 		m_pPackageFile = nullptr;
-		delete pPackage;
+		delete &package;
 	}
 
 	void PackageEditor::doUi()
@@ -69,7 +69,7 @@ namespace tiki
 		closePackage();
 
 		m_pPackage		= &package;
-		m_pPackageFile	= new PackageFile( package, this );
+		m_pPackageFile	= new PackageFile( package, *this );
 
 		if( !m_pPackageFile->load() )
 		{
@@ -81,7 +81,7 @@ namespace tiki
 			return false;
 		}
 
-		m_editor.openEditable( m_pPackageFile );
+		m_editor.openEditable( *m_pPackageFile );
 		return true;
 	}
 
@@ -105,6 +105,6 @@ namespace tiki
 			return;
 		}
 
-		m_editor.openEditable( m_pPackageFile );
+		m_editor.openEditable( *m_pPackageFile );
 	}
 }

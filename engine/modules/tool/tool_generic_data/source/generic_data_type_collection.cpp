@@ -152,7 +152,7 @@ namespace tiki
 		const GenericDataValue* pValue = m_pModeEnum->getValueByName( name );
 
 		sint64 intValue = 0;
-		if ( pValue != nullptr && pValue->getSignedValue( intValue ) )
+		if ( pValue != nullptr && pValue->getSignedInteger( intValue ) )
 		{
 			return (GenericDataTypeMode)intValue;
 		}
@@ -300,7 +300,7 @@ namespace tiki
 					return false;
 				}
 
-				return pTargetValue->setSignedValue( value, pType );
+				return pTargetValue->setSignedInteger( value, pType );
 			}
 			else if ( pTypedType->isUnsignedInteger() )
 			{
@@ -311,7 +311,7 @@ namespace tiki
 					return false;
 				}
 
-				return pTargetValue->setUnsignedValue( value, pType );
+				return pTargetValue->setUnsignedInteger( value, pType );
 			}
 			else if ( pTypedType->isFloatingPoint() )
 			{

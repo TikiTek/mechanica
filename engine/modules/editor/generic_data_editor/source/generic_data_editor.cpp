@@ -42,15 +42,15 @@ namespace tiki
 		return pFile;
 	}
 
-	bool GenericDataEditor::saveEditable( Editable* pEditable )
+	bool GenericDataEditor::saveEditable( Editable& editable )
 	{
-		GenericDataFile* pFile = static_cast< GenericDataFile* >( pEditable );
-		return pFile->save();
+		GenericDataFile& file = static_cast< GenericDataFile& >( editable );
+		return file.save();
 	}
 
-	void GenericDataEditor::closeEditable( Editable* pEditable )
+	void GenericDataEditor::closeEditable( Editable& editable )
 	{
-		delete pEditable;
+		delete &editable;
 	}
 
 	void GenericDataEditor::update()

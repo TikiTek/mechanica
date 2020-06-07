@@ -12,7 +12,7 @@ namespace tiki
 	{
 	public:
 
-		virtual EditableFile*		openFile( const Path& fileName ) TIKI_PURE;
+		virtual EditableFile*		openFile( const Path& fileName ) = 0;
 
 		DynamicString				getFileTypeName() const { return m_fileTypeName; }
 		DynamicString				getFileExtension() const { return m_fileExtension; }

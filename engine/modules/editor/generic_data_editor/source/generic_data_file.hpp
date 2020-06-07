@@ -6,13 +6,11 @@
 
 namespace tiki
 {
-	class GenericDataArray;
 	class GenericDataEditor;
+	class GenericDataIterator;
 
 	class GenericDataFile : public EditableFile
 	{
-		TIKI_NONCOPYABLE_CLASS( GenericDataFile );
-
 	public:
 
 									GenericDataFile( const Path& fileName, GenericDataEditor& genericDataEditor, GenericDataRenderer& renderer );
@@ -42,15 +40,13 @@ namespace tiki
 		ToolImage					m_valueCreateIcon;
 		ToolImage					m_valueRemoveIcon;
 
-		void						doObjectUi( GenericDataObject* pObject, bool readOnly );
-		void						doArrayUi( GenericDataArray* pArray, bool readOnly );
-		GenericDataValue*			doElementUi( const DynamicString& name, GenericDataValue* pValue, const GenericDataType* pType, bool readOnly );
-		void						doCreateObjectUi( GenericDataValue* pValue );
-		void						doValueUi( GenericDataValue* pValue, bool readOnly );
-		void						doEnumUi( GenericDataValue* pValue, bool readOnly );
-		void						doValueTypeUi( GenericDataValue* pValue, bool readOnly );
-		void						doValueTagUi( GenericDataTag* pTag, const GenericDataType* pTargetType, bool fixedTag, bool readOnly );
-		void						doResourceUi( GenericDataValue* pValue, bool readOnly );
+		void						doContainerUi( GenericDataIterator& iterator );
+		void						doElementUi( GenericDataIterator& iterator, const DynamicString& name );
+		void						doEnumUi( GenericDataIterator& iterator, const GenericDataValue* pValue, const GenericDataType* pType );
+		void						doValueUi( GenericDataIterator& iterator, const GenericDataValue* pValue, const GenericDataType* pType );
+		void						doValueTagUi( GenericDataIterator& iterator, const GenericDataTag* pTag, const GenericDataType* pTargetType, bool fixedTag );
+		void						doPointerUi( GenericDataIterator& iterator, const GenericDataValue* pValue, const GenericDataType* pType );
+		void						doReferenceUi( GenericDataIterator& iterator, const GenericDataValue* pValue, const GenericDataType* pType );
 
 		DynamicString				getValuePreview( const GenericDataValue* pValue );
 	};

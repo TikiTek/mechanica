@@ -12,15 +12,13 @@ namespace tiki
 	{
 	public:
 
-		virtual						~EditableFile() { }
-
 		const Path&					getFileName() const { return m_filename; }
 
 		virtual EditableFile*		asFile() TIKI_OVERRIDE_FINAL { return this; }
 
 	protected:
 
-									EditableFile( const Path& filename, BaseEditor* pEditor );
+									EditableFile( const Path& filename, BaseEditor& editor );
 
 	private:
 

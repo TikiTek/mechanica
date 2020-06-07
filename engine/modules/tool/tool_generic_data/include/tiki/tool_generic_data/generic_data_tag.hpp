@@ -26,7 +26,7 @@ namespace tiki
 		void					setChildTag( GenericDataTag* pChildTag );
 
 		bool					parseTagString( const DynamicString& rawText );
-		DynamicString			writeTagString() const;
+		DynamicString			toString() const;
 
 		static bool				isTagString( const DynamicString& rawText );
 

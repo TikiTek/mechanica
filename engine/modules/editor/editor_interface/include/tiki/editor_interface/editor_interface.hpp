@@ -3,6 +3,7 @@
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/path.hpp"
 #include "tiki/base/types.hpp"
+#include "tiki/tool_application/tool_message_box.hpp"
 
 namespace tiki
 {
@@ -27,33 +28,33 @@ namespace tiki
 
 		virtual							~EditorInterface() { }
 
-		virtual EditableFile*			openFile( const Path& fileName ) TIKI_PURE;
-		virtual void					openEditable( Editable* pEditable ) TIKI_PURE;
-		virtual void					saveEditable( Editable* pEditable ) TIKI_PURE;
-		virtual void					closeEditable( Editable* pEditable ) TIKI_PURE;
-		virtual void					closeAll() TIKI_PURE;
+		virtual EditableFile*			openFile( const Path& fileName ) = 0;
+		virtual void					openEditable( Editable& editable ) = 0;
+		virtual void					saveEditable( Editable& editable ) = 0;
+		virtual void					closeEditable( Editable& editable ) = 0;
+		virtual void					closeAll() = 0;
 
-		virtual void					registerFileEditor( FileEditor* pEditor ) TIKI_PURE;
-		virtual void					unregisterFileEditor( FileEditor* pEditor ) TIKI_PURE;
-		virtual FileEditor*				findEditorForFile( const Path& fileName ) const TIKI_PURE;
+		virtual void					registerFileEditor( FileEditor* pEditor ) = 0;
+		virtual void					unregisterFileEditor( FileEditor* pEditor ) = 0;
+		virtual FileEditor*				findEditorForFile( const Path& fileName ) const = 0;
 
-		virtual void					addGlobalRibbon( EditorRibbon* pRibbon ) TIKI_PURE;
-		virtual void					removeGlobalRibbon( EditorRibbon* pRibbon ) TIKI_PURE;
+		virtual void					addGlobalRibbon( EditorRibbon* pRibbon ) = 0;
+		virtual void					removeGlobalRibbon( EditorRibbon* pRibbon ) = 0;
 
-		virtual Project&				getProject() TIKI_PURE;
+		virtual Project&				getProject() = 0;
 
-		virtual const Path&				getProjectPath() const TIKI_PURE;
-		virtual const Path&				getContentPath() const TIKI_PURE;
-		virtual const Path&				getPackagePath() const TIKI_PURE;
+		virtual const Path&				getProjectPath() const = 0;
+		virtual const Path&				getContentPath() const = 0;
+		virtual const Path&				getPackagePath() const = 0;
 
-		virtual DynamicString			getDialogTitle() const TIKI_PURE;
+		virtual void					showMessageBox( const DynamicString& message, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon::None, ToolMessageBoxCallbackDelegate callback = ToolMessageBoxCallbackDelegate(), UserData userData = UserData() ) = 0;
 
 		template< class T >
 		inline EditorResourceResult		getResource( const T** ppResource, const DynamicString& fileName );
 
 	private:
 
-		virtual EditorResourceResult	getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType ) TIKI_PURE;
+		virtual EditorResourceResult	getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType ) = 0;
 	};
 }
 

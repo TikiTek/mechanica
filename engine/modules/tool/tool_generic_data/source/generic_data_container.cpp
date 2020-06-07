@@ -123,14 +123,14 @@ namespace tiki
 					GenericDataValue writeValue( pValueType );
 					if( pValueType->isSignedInteger() )
 					{
-						if( writeValue.setSignedValue( enumValue, pValueType ) )
+						if( writeValue.setSignedInteger( enumValue, pValueType ) )
 						{
 							return writeValueToResource( sectionWriter, pValueType, writeValue );
 						}
 					}
 					else if( pValueType->isUnsignedInteger() )
 					{
-						if( writeValue.setUnsignedValue( (uint64)enumValue, pValueType ) )
+						if( writeValue.setUnsignedInteger( (uint64)enumValue, pValueType ) )
 						{
 							return writeValueToResource( sectionWriter, pValueType, writeValue );
 						}
@@ -184,7 +184,7 @@ namespace tiki
 				case GenericDataTypeValueTypeType_SingedInteger64:
 					{
 						sint64 s;
-						if( value.getSignedValue( s ) )
+						if( value.getSignedInteger( s ) )
 						{
 							switch( pValueType->getValueType() )
 							{
@@ -245,7 +245,7 @@ namespace tiki
 				case GenericDataTypeValueTypeType_UnsingedInteger64:
 					{
 						uint64 u;
-						if( value.getUnsignedValue( u ) )
+						if( value.getUnsignedInteger( u ) )
 						{
 							switch( pValueType->getValueType() )
 							{

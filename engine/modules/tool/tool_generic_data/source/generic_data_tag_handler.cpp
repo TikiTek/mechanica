@@ -104,7 +104,7 @@ namespace tiki
 					TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' not found.\n", pEnumType->getName().cStr(), content.cStr() );
 					return false;
 				}
-				else if( !pEnumValue->pValue->getSignedValue( intValue ) )
+				else if( !pEnumValue->pValue->getSignedInteger( intValue ) )
 				{
 					TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), content.cStr() );
 					return false;
@@ -286,7 +286,7 @@ namespace tiki
 		}
 
 		sint64 intValue = 0;
-		if( !pValue->getSignedValue( intValue ) )
+		if( !pValue->getSignedInteger( intValue ) )
 		{
 			TIKI_TRACE_ERROR( "[resolveValueTag] enum value with name '%s_%s' is not an integer.\n", pEnumType->getName().cStr(), targetContent.cStr() );
 			return false;

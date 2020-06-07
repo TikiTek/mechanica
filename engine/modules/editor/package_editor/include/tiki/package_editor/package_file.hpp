@@ -12,7 +12,7 @@ namespace tiki
 
 	public:
 
-		explicit				PackageFile( Package& package, PackageEditor* pEditor );
+		explicit				PackageFile( Package& package, PackageEditor& editor );
 		virtual					~PackageFile();
 
 		bool					load();

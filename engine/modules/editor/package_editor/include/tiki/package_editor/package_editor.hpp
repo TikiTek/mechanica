@@ -20,8 +20,8 @@ namespace tiki
 		virtual					~PackageEditor();
 
 		virtual EditableFile*	openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual bool			saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void			closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual bool			saveEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
+		virtual void			closeEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
 
 		virtual void			doUi() TIKI_OVERRIDE_FINAL;
 

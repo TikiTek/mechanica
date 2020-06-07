@@ -32,7 +32,7 @@ namespace tiki
 		}
 
 		objectInfo.childObjects.clear();
-		for( uint i = 0u; i < pComponentsArray->getCount(); ++i )
+		for( uintreg i = 0u; i < pComponentsArray->getCount(); ++i )
 		{
 			GenericDataValue* pElementValue = pComponentsArray->getElement( i );
 			if( pElementValue == nullptr )

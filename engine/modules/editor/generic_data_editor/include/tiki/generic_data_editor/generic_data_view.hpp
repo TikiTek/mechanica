@@ -31,10 +31,10 @@ namespace tiki
 
 		const GenericDataTypeStruct*	getObjectType() const { return m_pType; }
 
-		virtual void					updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo ) TIKI_PURE;
-		virtual void					renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) TIKI_PURE;
+		virtual void					updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo ) = 0;
+		virtual void					renderObject( Renderer2d& renderer, const GenericDataViewInfo& objectInfo ) = 0;
 
-		//virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) TIKI_PURE;
+		//virtual bool					handleInputEvent( const InputEvent& inputEvent, GenericDataViewState* pState ) = 0;
 
 	protected:
 

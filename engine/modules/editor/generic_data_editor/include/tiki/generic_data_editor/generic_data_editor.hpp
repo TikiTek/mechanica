@@ -19,8 +19,8 @@ namespace tiki
 		virtual							~GenericDataEditor();
 
 		virtual EditableFile*			openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual bool					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual bool					saveEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
+		virtual void					closeEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
 
 		void							update();
 

@@ -18,7 +18,7 @@ namespace tiki
 		"Ignore",
 		"Cancel"
 	};
-	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_apMessageBoxButtonTexts ) == ToolMessageBoxButton_Count );
+	TIKI_COMPILETIME_ASSERT( TIKI_COUNT( s_apMessageBoxButtonTexts ) == (uintreg)ToolMessageBoxButton::Count );
 
 	ToolMessageBox::ToolMessageBox()
 		: m_informationIcon( getToolApplicationResource( ToolApplicationResources_DialogInformation ) )
@@ -26,65 +26,57 @@ namespace tiki
 		, m_warningIcon( getToolApplicationResource( ToolApplicationResources_DialogWarning ) )
 		, m_errorIcon( getToolApplicationResource( ToolApplicationResources_DialogError ) )
 	{
-		m_open		= false;
-		m_icon		= ToolMessageBoxIcon_None;
-		m_buttons	= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ok );
 	}
 
-	void ToolMessageBox::open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons /* = ToolMessageBoxButtons_Ok */, ToolMessageBoxIcon icon /* = ToolMessageBoxIcon_None */, ToolMessageBoxCallbackDelegate callback /* = ToolMessageBoxCallbackDelegate() */, UserData userData /* = UserData() */ )
+	void ToolMessageBox::open( const DynamicString& title, const DynamicString& text, ToolMessageBoxButtonFlagMask buttons /* = ToolMessageBoxButtons_Ok */, ToolMessageBoxIcon icon /* = ToolMessageBoxIcon::None */, ToolMessageBoxCallbackDelegate callback /* = ToolMessageBoxCallbackDelegate() */, UserData userData /* = UserData() */ )
 	{
 		TIKI_ASSERT( buttons.isAnyFlagSet() );
 
-		if( m_open )
-		{
-			TIKI_TRACE_ERROR( "[tool] Can not open another message box while the old one is still open.\n" );
-			return;
-		}
+		Message& message = m_messages.pushBack();
+		message.title		= title;
+		message.text		= text;
+		message.icon		= icon;
+		message.buttons		= buttons;
+		message.callback	= callback;
+		message.userData	= userData;
 
-		m_title		= title;
-		m_message	= message;
-		m_icon		= icon;
-		m_buttons	= buttons;
-		m_open		= true;
-		m_callback	= callback;
-		m_userData	= userData;
-
-		ImGui::OpenPopup( m_title.cStr() );
+		ImGui::OpenPopup( title.cStr() );
 	}
 
 	void ToolMessageBox::doUi()
 	{
-		if( !m_open )
+		if( m_messages.isEmpty() )
 		{
 			return;
 		}
 
-		if( !ImGui::BeginPopupModal( m_title.cStr(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
+		const Message& message = m_messages.getFront();
+		if( !ImGui::BeginPopupModal( message.title.cStr(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
 		{
-			ImGui::OpenPopup( m_title.cStr() );
+			ImGui::OpenPopup( message.title.cStr() );
 			return;
 		}
 
 		ToolImage* pImage = nullptr;
-		switch( m_icon )
+		switch( message.icon )
 		{
-		case ToolMessageBoxIcon_Information:
+		case ToolMessageBoxIcon::None:
+			break;
+
+		case ToolMessageBoxIcon::Information:
 			pImage = &m_informationIcon;
 			break;
 
-		case ToolMessageBoxIcon_Question:
+		case ToolMessageBoxIcon::Question:
 			pImage = &m_questionIcon;
 			break;
 
-		case ToolMessageBoxIcon_Warning:
+		case ToolMessageBoxIcon::Warning:
 			pImage = &m_warningIcon;
 			break;
 
-		case ToolMessageBoxIcon_Error:
+		case ToolMessageBoxIcon::Error:
 			pImage = &m_errorIcon;
-			break;
-
-		default:
 			break;
 		}
 
@@ -94,20 +86,21 @@ namespace tiki
 			ImGui::SameLine();
 		}
 
-		ImGui::Text( m_message.cStr() );
+		ImGui::Text( message.text.cStr() );
 
-		for( uint i = 0u; i < ToolMessageBoxButton_Count; ++i )
+		for( uint i = 0u; i < (uintreg)ToolMessageBoxButton::Count; ++i )
 		{
 			const ToolMessageBoxButton button = (ToolMessageBoxButton)i;
-			if( !m_buttons.isFlagSet( button ) )
+			if( !message.buttons.isFlagSet( button ) )
 			{
 				continue;
 			}
 
 			if( ImGui::Button( s_apMessageBoxButtonTexts[ i ] ) )
 			{
-				m_open = false;
-				m_callback.invoke( button, m_userData );
+				message.callback.invoke( button, message.userData );
+
+				m_messages.popFront();
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();

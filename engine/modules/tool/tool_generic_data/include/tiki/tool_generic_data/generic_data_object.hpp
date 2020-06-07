@@ -46,7 +46,9 @@ namespace tiki
 		GenericDataValue*				getFieldValue( const DynamicString& name, bool createMissing );
 		const GenericDataValue*			getFieldValue( const DynamicString& name ) const;
 		GenericDataLevelValue			getFieldLevelValue( uintreg index );
+		GenericDataLevelValue			getFieldLevelValue( uintreg index ) const;
 		GenericDataLevelValue			getFieldLevelValue( const DynamicString& name );
+		GenericDataLevelValue			getFieldLevelValue( const DynamicString& name ) const;
 
 		void							removeField( uintreg index );
 		bool							removeField( const DynamicString& name );

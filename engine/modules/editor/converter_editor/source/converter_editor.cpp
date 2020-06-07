@@ -19,15 +19,6 @@ namespace tiki
 		m_editor.removeGlobalRibbon( &m_ribbon );
 	}
 
-	bool ConverterEditor::saveEditable( Editable* pEditable )
-	{
-		return true;
-	}
-
-	void ConverterEditor::closeEditable( Editable* pEditable )
-	{
-	}
-
 	void ConverterEditor::convertAll()
 	{
 		//m_pConverter->convertAll();

@@ -202,6 +202,11 @@ namespace tiki
 		return getFieldLevelValueInternal( index, true );
 	}
 
+	GenericDataLevelValue GenericDataObject::getFieldLevelValue( uintreg index ) const
+	{
+		return getFieldLevelValueInternal( index, true );
+	}
+
 	GenericDataLevelValue GenericDataObject::getFieldLevelValue( const DynamicString& name )
 	{
 		const uintreg index = m_pType->getFieldIndexByName( name );
@@ -213,9 +218,20 @@ namespace tiki
 		return getFieldLevelValueInternal( index, true );
 	}
 
+	GenericDataLevelValue GenericDataObject::getFieldLevelValue( const DynamicString& name ) const
+	{
+		const uintreg index = m_pType->getFieldIndexByName( name );
+		if( index == (uintreg)-1 )
+		{
+			return {GenericDataValueLevel::Invalid, nullptr, nullptr};
+		}
+
+		return getFieldLevelValueInternal( index, true );
+	}
+
 	GenericDataLevelValue GenericDataObject::getFieldLevelValueInternal( uintreg index, bool firstLevel )
 	{
-		if( m_fields[ index ].pValue != nullptr && firstLevel )
+		if( m_fields[ index ].pValue != nullptr )
 		{
 			GenericDataValueLevel level;
 			if( this == m_pType->getDefaultObject() )
@@ -243,7 +259,7 @@ namespace tiki
 
 	GenericDataLevelValue GenericDataObject::getFieldLevelValueInternal( uintreg index, bool firstLevel ) const
 	{
-		if( m_fields[ index ].pValue != nullptr && firstLevel )
+		if( m_fields[ index ].pValue != nullptr )
 		{
 			GenericDataValueLevel level;
 			if( this == m_pType->getDefaultObject() )

@@ -6,27 +6,27 @@ namespace tiki
 {
 	bool generic_data::getMemberVector2( Vector2& target, const GenericDataObject* pObject, const DynamicString& memberName )
 	{
-		const GenericDataValue* pVectorValue = pObject->getFieldOrDefaultValue( memberName );
-		if( pVectorValue == nullptr )
+		const GenericDataLevelValue vectorValue = pObject->getFieldLevelValue( memberName );
+		if( vectorValue.pConstValue == nullptr )
 		{
 			return false;
 		}
 
 		const GenericDataObject* pVectorObject = nullptr;
-		pVectorValue->getObject( pVectorObject );
+		vectorValue.pConstValue->getObject( pVectorObject );
 		if( pVectorObject == nullptr )
 		{
 			return false;
 		}
 
-		const GenericDataValue* pXValue = pVectorObject->getFieldValue( "x" );
-		const GenericDataValue* pYValue = pVectorObject->getFieldValue( "y" );
-		if( pXValue == nullptr || pYValue == nullptr )
+		const GenericDataLevelValue xValue = pVectorObject->getFieldLevelValue( "x" );
+		const GenericDataLevelValue yValue = pVectorObject->getFieldLevelValue( "y" );
+		if( xValue.pConstValue == nullptr || yValue.pConstValue == nullptr )
 		{
 			return false;
 		}
 
-		return pXValue->getFloatingPoint( target.x ) &&
-			pYValue->getFloatingPoint( target.y );
+		return xValue.pConstValue->getFloatingPoint( target.x ) &&
+			yValue.pConstValue->getFloatingPoint( target.y );
 	}
 }
