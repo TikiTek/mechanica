@@ -18,9 +18,6 @@ namespace tiki
 									ConverterEditor( EditorInterface& editor, AssetConverterInterface* pAssetConverter );
 		virtual						~ConverterEditor();
 
-		virtual bool				saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void				closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-
 	private:
 
 		AssetConverterInterface*	m_pConverter;

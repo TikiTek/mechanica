@@ -7,58 +7,62 @@ namespace tiki
 	{
 	public:
 
-		typedef TReturn( *Function )( TParams ... );
+		using Function = TReturn( * )( TParams ... );
 
 		template< class TInstance >
-		using TInstanceMethod = TReturn( TInstance::* )( TParams ... );
+		using InstanceMethod = TReturn( TInstance::* )( TParams ... );
 
-							Delegate();
-		explicit			Delegate( Function pFunction );
+										Delegate();
+		explicit						Delegate( Function pFunction );
 		template< class TInstance >
-		explicit			Delegate( TInstance* pInstance, TInstanceMethod< TInstance > pMethod );
+		explicit						Delegate( TInstance* pInstance, InstanceMethod< TInstance > pMethod );
 
-		void				setStaticFunction( Function pFunction );
+		void							setNullFunction();
+		void							setStaticFunction( Function pFunction );
 		template< class TInstance >
-		void				setInstanceMethod( TInstance* pInstance, TInstanceMethod< TInstance > pMethod );
+		void							setInstanceMethod( TInstance* pInstance, InstanceMethod< TInstance > pMethod );
 
-		TReturn				invoke( TParams ... args ) const;
+		TReturn							invoke( TParams ... args ) const;
 
 	private:
 
 		struct Callback
 		{
-			virtual TReturn	invoke( TParams ... args ) const TIKI_PURE;
+			virtual TReturn				invoke( TParams ... args ) const = 0;
+		};
+
+		struct NullCallback : public Callback
+		{
+			virtual TReturn				invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
 		};
 
 		struct StaticFunctionCallback : public Callback
 		{
-			Function		pFunction;
+			Function					pFunction = nullptr;
 
-			virtual TReturn	invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
+			virtual TReturn				invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
 		};
 
-		struct DefaultInstanceMethod
+		struct DefaultInstance
 		{
-			TReturn			defaultFunction( TParams ... args );
 		};
 
 		template< class TInstance >
 		struct InstanceMethodCallback : public Callback
 		{
-			TInstance*						pInstance;
-			TInstanceMethod< TInstance >	pMethod;
+			TInstance*					pInstance	= nullptr;
+			InstanceMethod< TInstance >	pMethod		= nullptr;
 
-			virtual TReturn	invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
+			virtual TReturn				invoke( TParams ... args ) const TIKI_OVERRIDE_FINAL;
 		};
 
-		enum
-		{
-			InternalDelegateSize = TIKI_MAX( sizeof( StaticFunctionCallback ), sizeof( InstanceMethodCallback< DefaultInstanceMethod > ) )
-		};
+		static constexpr uintreg		InternalDelegateSize		= TIKI_MAX( sizeof( StaticFunctionCallback ), sizeof( InstanceMethodCallback< DefaultInstance > ) );
+		static constexpr uintreg		InternalDelegateAlignment	= TIKI_MAX( TIKI_ALIGNOF( StaticFunctionCallback ), TIKI_ALIGNOF( InstanceMethodCallback< DefaultInstance > ) );
 
-		uint8				m_internalCallbackData[ InternalDelegateSize ];
+		alignas( InternalDelegateAlignment )
+		uint8							m_internalCallbackData[ InternalDelegateSize ];
 
-		const Callback*		getCallback() const;
+		const Callback*					getCallback() const;
 	};
 }
 

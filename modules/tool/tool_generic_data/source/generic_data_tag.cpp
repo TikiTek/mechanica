@@ -110,11 +110,11 @@ namespace tiki
 		return true;
 	}
 
-	DynamicString GenericDataTag::writeTagString() const
+	DynamicString GenericDataTag::toString() const
 	{
 		if( m_pChildTag != nullptr )
 		{
-			const DynamicString childString = m_pChildTag->writeTagString();
+			const DynamicString childString = m_pChildTag->toString();
 			return formatDynamicString( "{%s %s}", m_tag.cStr(), childString.cStr() );
 		}
 		else if ( !m_tag.isEmpty() && !m_content.isEmpty() )

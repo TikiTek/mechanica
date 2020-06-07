@@ -2,10 +2,10 @@
 
 namespace tiki
 {
-	Editable::Editable( const DynamicString& title, BaseEditor* pEditor )
+	Editable::Editable( const DynamicString& title, BaseEditor& editor )
 		: m_isDirty( false )
 		, m_title( title )
-		, m_pEditor( pEditor )
+		, m_editor( editor )
 	{
 	}
 }

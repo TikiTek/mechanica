@@ -2,8 +2,8 @@
 
 namespace tiki
 {
-	EditableFile::EditableFile( const Path& filename, BaseEditor* pEditor )
-		: Editable( filename.getBasename(), pEditor )
+	EditableFile::EditableFile( const Path& filename, BaseEditor& editor )
+		: Editable( filename.getBasename(), editor )
 		, m_filename( filename )
 	{
 	}

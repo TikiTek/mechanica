@@ -17,9 +17,10 @@ namespace tiki
 	public:
 
 		virtual Editable*				openEditable( const DynamicString& title ) { return nullptr; }
-		virtual bool					saveEditable( Editable* pEditable ) { return false; }
-		virtual void					closeEditable( Editable* pEditable ) { }
+		virtual bool					saveEditable( Editable& editable ) { return false; }
+		virtual void					closeEditable( Editable& editable ) { }
 
+		EditorInterface&				getInterface() { return m_editor; }
 		const List< EditorRibbon* >&	getEditableRibbons() const { return m_editableTabs; }
 
 		virtual void					doUi() { }

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef TIKI_RESOURCE_HPP
-#define TIKI_RESOURCE_HPP
 
 #include "tiki/base/crc32.hpp"
 #include "tiki/base/fourcc.hpp"
@@ -39,15 +37,15 @@ namespace tiki
 		const char*			getFileName() const { return ""; }
 #endif
 
-		virtual fourcc		getType() const TIKI_PURE;
+		virtual fourcc		getType() const = 0;
 
 	protected:
 
 							Resource();
 		virtual				~Resource();
 
-		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) TIKI_PURE;
-		virtual void		disposeInternal( const FactoryContext& factoryContext ) TIKI_PURE;
+		virtual bool		createInternal( const ResourceInitData& initData, const FactoryContext& factoryContext ) = 0;
+		virtual void		disposeInternal( const FactoryContext& factoryContext ) = 0;
 
 	private:
 
@@ -63,5 +61,3 @@ namespace tiki
 		bool				releaseReference() const;
 	};
 }
-
-#endif // TIKI_RESOURCE_HPP

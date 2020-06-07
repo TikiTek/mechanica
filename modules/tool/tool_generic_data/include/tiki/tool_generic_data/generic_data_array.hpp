@@ -32,13 +32,14 @@ namespace tiki
 
 		const GenericDataTypeArray*		getType() const;
 		virtual const GenericDataType*	getParentType() const TIKI_OVERRIDE_FINAL;
+		const GenericDataType*			getElementType() const;
 
-		uint							getCount() const;
+		uintreg							getCount() const { return m_elements.getCount(); }
 
 		GenericDataValue*				addElement( bool createContainer );
-		GenericDataValue*				getElement( uint index );
-		const GenericDataValue*			getElement( uint index ) const;
-		bool							removeElement( uint index );
+		GenericDataValue*				getElement( uintreg index );
+		const GenericDataValue*			getElement( uintreg index ) const;
+		bool							removeElement( uintreg index );
 
 #if TIKI_ENABLED( TIKI_GENERIC_DATA_CONVERTER )
 		bool							writeToResource( ReferenceKey& dataKey, ResourceWriter& writer ) const;
@@ -52,13 +53,13 @@ namespace tiki
 		virtual const char*				getNodeName() const TIKI_OVERRIDE_FINAL;
 
 		virtual GenericDataValue*		addElementValue( const XmlElement* pNode ) TIKI_OVERRIDE_FINAL;
-		virtual GenericDataValue*		getElementValue( uint index ) TIKI_OVERRIDE_FINAL;
-		virtual uint					getElementCount() TIKI_OVERRIDE_FINAL;
+		virtual GenericDataValue*		getElementValue( uintreg index ) TIKI_OVERRIDE_FINAL;
+		virtual uintreg					getElementCount() TIKI_OVERRIDE_FINAL;
 
 	private:
 
 		const GenericDataTypeArray*		m_pType;
 
-		List< GenericDataValue* >		m_array;
+		List< GenericDataValue* >		m_elements;
 	};
 }

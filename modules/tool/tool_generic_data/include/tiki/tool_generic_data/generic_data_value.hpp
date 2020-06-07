@@ -86,11 +86,10 @@ namespace tiki
 		bool						getBoolean( bool& value ) const;
 		bool						setBoolean( bool value, const GenericDataType* pType = nullptr );
 
-		bool						getSignedValue( sint64& value ) const;
-		bool						setSignedValue( sint64 value, const GenericDataType* pType = nullptr);
-		bool						getUnsignedValue( uint32& value ) const;
-		bool						getUnsignedValue( uint64& value ) const;
-		bool						setUnsignedValue( uint64 value, const GenericDataType* pType = nullptr);
+		bool						getSignedInteger( sint64& value ) const;
+		bool						setSignedInteger( sint64 value, const GenericDataType* pType = nullptr);
+		bool						getUnsignedInteger( uint64& value ) const;
+		bool						setUnsignedInteger( uint64 value, const GenericDataType* pType = nullptr);
 		bool						getFloatingPoint( float32& value ) const;
 		bool						getFloatingPoint( float64& value ) const;
 		bool						setFloatingPoint( float64 value, const GenericDataType* pType = nullptr);
@@ -150,7 +149,7 @@ namespace tiki
 		GenericDataValueType	m_valueType;
 
 		Values					m_value;
-		DynamicString					m_text;
+		DynamicString			m_text;
 
 		GenericDataTag*			m_pValueTag;
 

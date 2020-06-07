@@ -106,7 +106,7 @@ namespace tiki
 	{
 		if( m_pValueTag != nullptr )
 		{
-			return m_pValueTag->writeTagString();
+			return m_pValueTag->toString();
 		}
 
 		switch( m_valueType )
@@ -196,7 +196,7 @@ namespace tiki
 		return true;
 	}
 
-	bool GenericDataValue::getSignedValue( sint64& value ) const
+	bool GenericDataValue::getSignedInteger( sint64& value ) const
 	{
 		switch( m_valueType )
 		{
@@ -235,7 +235,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setSignedValue( sint64 value, const GenericDataType* pType /*= nullptr*/ )
+	bool GenericDataValue::setSignedInteger( sint64 value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -263,18 +263,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::getUnsignedValue( uint32& value ) const
-	{
-		uint64 tempValue;
-		if( !getUnsignedValue( tempValue ) )
-		{
-			return false;
-		}
-
-		return rangeCheckCast( value, tempValue );
-	}
-
-	bool GenericDataValue::getUnsignedValue( uint64& value ) const
+	bool GenericDataValue::getUnsignedInteger( uint64& value ) const
 	{
 		switch( m_valueType )
 		{
@@ -313,7 +302,7 @@ namespace tiki
 		return false;
 	}
 
-	bool GenericDataValue::setUnsignedValue( uint64 value, const GenericDataType* pType /*= nullptr*/ )
+	bool GenericDataValue::setUnsignedInteger( uint64 value, const GenericDataType* pType /*= nullptr*/ )
 	{
 		if( !checkType( pType ) )
 		{
@@ -777,7 +766,7 @@ namespace tiki
 		}
 		else if( m_pValueTag != nullptr )
 		{
-			m_pNode->setAttribute( "value", m_pValueTag->writeTagString().cStr() );
+			m_pNode->setAttribute( "value", m_pValueTag->toString().cStr() );
 		}
 		else
 		{

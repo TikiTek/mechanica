@@ -6,25 +6,23 @@
 
 namespace tiki
 {
-	template<typename T>
+	template< typename T >
 	class Queue
 	{
 		TIKI_NONCOPYABLE_CLASS( Queue );
 
 	public:
 
-		typedef T			Type;
+		using			Type			= T;
+		using			Iterator		= T*;
+		using			ConstIterator	= const T*;
+		using			Reference		= T&;
+		using			ConstReference	= const T&;
 
-		typedef T*			Iterator;
-		typedef const T*	ConstIterator;
+						Queue();
+						~Queue();
 
-		typedef T&			Reference;
-		typedef const T&	ConstReference;
-
-		Queue();
-		~Queue();
-
-		bool			create( uint capacity, uint alignment = TIKI_DEFAULT_ALIGNMENT );
+		bool			create( uintreg capacity );
 		void			dispose();
 
 		bool			isEmpty() const;
@@ -39,17 +37,16 @@ namespace tiki
 		ConstReference	getTop() const;
 		Reference		getBottom();
 		ConstReference	getBottom() const;
-		
-		uint			getCount() const;
-		uint			getCapacity() const;
+
+		uintreg			getCount() const;
+		uintreg			getCapacity() const;
 
 	private:
 
-		T*		m_pData;
-		uint	m_top;
-		uint	m_bottom;
-		uint	m_capacity;
-
+		T*				m_pData;
+		uintreg			m_top;
+		uintreg			m_bottom;
+		uintreg			m_capacity;
 	};
 }
 

@@ -23,26 +23,19 @@ namespace tiki
 
 	struct BaseApplicationParamters
 	{
-		BaseApplicationParamters()
-		{
-			screenWidth			= 900;
-			screenHeight		= 600;
-			backBufferFormat	= PixelFormat_R8G8B8A8;
-			fullScreen			= false;
+		uint16					screenWidth			= 900u;
+		uint16					screenHeight		= 600u;
+		PixelFormat				backBufferFormat	= PixelFormat_R8G8B8A8;
+		bool					fullScreen			= false;
 
-			pWindowTitle		= "TikiEngine 3.0";
-		}
-
-		uint16					screenWidth;
-		uint16					screenHeight;
-		PixelFormat				backBufferFormat;
-		bool					fullScreen;
-
-		const char*				pWindowTitle;
+		const char*				pWindowTitle		= "TikiEngine 3.0";
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		int						windowIconId		= 0;
+#endif
 
 		Path					assetBuildPath;
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
-		const Project*			pProject = nullptr;
+		const Project*			pProject			= nullptr;
 #endif
 	};
 
@@ -66,16 +59,16 @@ namespace tiki
 										BaseApplication();
 		virtual							~BaseApplication();
 
-		virtual void					fillBaseParameters( BaseApplicationParamters& parameters ) TIKI_PURE;
+		virtual void					fillBaseParameters( BaseApplicationParamters& parameters ) = 0;
 
-		virtual bool					initializeApplication() TIKI_PURE;
-		virtual void					shutdownApplication() TIKI_PURE;
+		virtual bool					initializeApplication() = 0;
+		virtual void					shutdownApplication() = 0;
 
-		virtual void					updateApplication( bool wantToShutdown ) TIKI_PURE;
-		virtual void					renderApplication( GraphicsContext& graphicsContext ) const TIKI_PURE;
+		virtual void					updateApplication( bool wantToShutdown ) = 0;
+		virtual void					renderApplication( GraphicsContext& graphicsContext ) const = 0;
 
-		virtual bool					processBaseInputEvent( const InputEvent& inputEvent ) TIKI_PURE;
-		virtual void					processBaseWindowEvent( const WindowEvent& windowEvent ) TIKI_PURE;
+		virtual bool					processBaseInputEvent( const InputEvent& inputEvent ) = 0;
+		virtual void					processBaseWindowEvent( const WindowEvent& windowEvent ) = 0;
 
 		bool							m_running;
 

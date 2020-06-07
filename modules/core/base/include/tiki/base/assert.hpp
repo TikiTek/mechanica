@@ -4,13 +4,7 @@
 
 #include "tiki/base/debug.hpp"
 
-//#if TIKI_DISABLED( TIKI_BUILD_MASTER )
-//#	define TIKI_USE_ASSERT	TIKI_ON
-//#	define TIKI_USE_BREAK	TIKI_ON
-//#else
-//#	define TIKI_USE_ASSERT	TIKI_OFF
-//#	define TIKI_USE_BREAK	TIKI_OFF
-//#endif
+#define TIKI_USE_ASSUME		TIKI_ON
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )
 #	define TIKI_USE_ASSERT	TIKI_ON
@@ -34,6 +28,12 @@
 #	define TIKI_BREAK( message, ... ) ::tiki::debug::traceError( message, ## __VA_ARGS__ ); ::tiki::debug::breakPoint()
 #else
 #	define TIKI_BREAK( message, ... ) *(uintreg*)nullptr = 0u
+#endif
+
+#if TIKI_ENABLED( TIKI_USE_ASSERT ) && TIKI_ENABLED( TIKI_BUILD_MSVC )
+#	define TIKI_ASSUME( expr ) __assume( expr )
+#else
+#	define TIKI_ASSUME( expr )
 #endif
 
 #if TIKI_DISABLED( TIKI_BUILD_MASTER )

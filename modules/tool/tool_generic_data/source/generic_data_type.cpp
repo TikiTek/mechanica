@@ -34,7 +34,7 @@ namespace tiki
 
 		if( m_pTypeTag != nullptr )
 		{
-			pElement->setAttribute( "type", m_pTypeTag->writeTagString().cStr() );
+			pElement->setAttribute( "type", m_pTypeTag->toString().cStr() );
 		}
 		else
 		{

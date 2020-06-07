@@ -2,6 +2,10 @@
 
 #include "tiki/base/timer.hpp"
 
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#	include "../icon/icon.h"
+#endif
+
 namespace tiki
 {
 	EditorApplication::EditorApplication()
@@ -19,6 +23,9 @@ namespace tiki
 		parameters.pWindowTitle		= "TikiEditor";
 		parameters.screenWidth		= 1600u;
 		parameters.screenHeight		= 900u;
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		parameters.windowIconId		= MAINICON;
+#endif
 		parameters.assetBuildPath	= m_pProject->getAssetBuildPath();
 #if TIKI_ENABLED( TIKI_RESOUCE_ENABLE_CONVERTER )
 		parameters.pProject			= m_pProject;

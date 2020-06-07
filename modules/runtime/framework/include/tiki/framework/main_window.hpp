@@ -28,6 +28,10 @@ namespace tiki
 		const char*		pWindowTitle	= "";
 
 		uintreg			maxWindowEvents	= 32u;
+
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		int				iconId			= 0;
+#endif
 	};
 
 	class MainWindow

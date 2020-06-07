@@ -152,6 +152,9 @@ namespace tiki
 		windowParams.width			= m_parameters.screenWidth;
 		windowParams.height			= m_parameters.screenHeight;
 		windowParams.pWindowTitle	= m_parameters.pWindowTitle;
+#if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+		windowParams.iconId			= m_parameters.windowIconId;
+#endif
 
 		loadWindowParameters( windowParams );
 

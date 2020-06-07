@@ -4,8 +4,8 @@
 
 namespace tiki
 {
-	PackageFile::PackageFile( Package& package, PackageEditor* pEditor )
-		: EditableFile( package.getFilename(), pEditor )
+	PackageFile::PackageFile( Package& package, PackageEditor& editor )
+		: EditableFile( package.getFilename(), editor )
 		, m_package( package )
 	{
 		m_desciption[ 0u ]		= '\0';

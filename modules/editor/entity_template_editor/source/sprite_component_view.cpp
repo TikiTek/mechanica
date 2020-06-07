@@ -47,7 +47,13 @@ namespace tiki
 			return false;
 		}
 
-		return pLayerIdValue->getUnsignedValue( targetLayerId );
+		uint64 tempLayerId;
+		if( !pLayerIdValue->getUnsignedInteger( tempLayerId ) )
+		{
+			return false;
+		}
+
+		return uint32( tempLayerId );
 	}
 
 	void SpriteComponentView::updateObject( GenericDataViewInfo& objectInfo, GenericDataViewInfo* pParentInfo )

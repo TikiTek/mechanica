@@ -85,9 +85,6 @@ namespace tiki
 #define TIKI_CONCAT_HELPER( x1, x2 )	x1 ## x2
 #define TIKI_STRING( text )				# text
 
-#define TIKI_PURE						= 0
-
-
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
 #	define TIKI_SIZE_T_MAX		0xffffffffu

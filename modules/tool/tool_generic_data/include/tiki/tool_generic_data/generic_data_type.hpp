@@ -52,9 +52,9 @@ namespace tiki
 									GenericDataType( GenericDataTypeCollection& collection, const DynamicString& name, const DynamicString& filename, GenericDataTypeType type, GenericDataTypeMode mode );
 		virtual						~GenericDataType();
 
-		virtual bool				loadFromXml( XmlElement* pTypeNode ) TIKI_PURE;
+		virtual bool				loadFromXml( XmlElement* pTypeNode ) = 0;
 		XmlElement*					createXmlElement( XmlDocument& document, const char* pName ) const;
-		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const TIKI_PURE;
+		virtual bool				exportCode( GenericDataExportData& targetData, GenericDataTypeMode mode ) const = 0;
 
 		const DynamicString&		getName() const { return m_name; }
 		const DynamicString&		getModule() const { return m_module; }
@@ -63,10 +63,10 @@ namespace tiki
 		GenericDataTypeMode			getMode() const { return m_mode; }
 		GenericDataTypeType			getType() const { return m_type; }
 
-		virtual uint				getAlignment() const TIKI_PURE;
-		virtual uint				getSize() const TIKI_PURE;
-		virtual DynamicString		getCodeExportName() const TIKI_PURE;
-		virtual crc32				getTypeCrc() const TIKI_PURE;
+		virtual uint				getAlignment() const = 0;
+		virtual uint				getSize() const = 0;
+		virtual DynamicString		getCodeExportName() const = 0;
+		virtual crc32				getTypeCrc() const = 0;
 
 		virtual bool				isTypeCompatible( const GenericDataType* pType ) const { return pType == this; }
 

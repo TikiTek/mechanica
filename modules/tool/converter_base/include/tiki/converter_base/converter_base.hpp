@@ -41,16 +41,16 @@ namespace tiki
 
 		List< ResourceDefinition >	getResourceDefinitions( FlagMask8< ResourceDefinitionFeature > features ) const;
 
-		virtual uint32				getConverterRevision( crc32 typeCrc ) const TIKI_PURE;
-		virtual bool				canConvertType( crc32 typeCrc ) const TIKI_PURE;
+		virtual uint32				getConverterRevision( crc32 typeCrc ) const = 0;
+		virtual bool				canConvertType( crc32 typeCrc ) const = 0;
 
-		virtual void				getInputExtensions( List< DynamicString >& extensions ) const TIKI_PURE;
-		virtual const char*			getOutputType() const TIKI_PURE;
+		virtual void				getInputExtensions( List< DynamicString >& extensions ) const = 0;
+		virtual const char*			getOutputType() const = 0;
 
-		virtual bool				initializeConverter( const ConversionContext& context ) TIKI_PURE;
-		virtual void				disposeConverter() TIKI_PURE;
+		virtual bool				initializeConverter( const ConversionContext& context ) = 0;
+		virtual void				disposeConverter() = 0;
 
-		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const TIKI_PURE;
+		virtual bool				startConversionJob( ConversionResult& result, const ConversionAsset& asset, const ConversionContext& context ) const = 0;
 
 	private:
 

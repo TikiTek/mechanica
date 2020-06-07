@@ -26,11 +26,10 @@ namespace tiki
 
 		virtual bool			rescan() { return true; }
 
-		virtual const char*		getFilenameByCrc( crc32 filenameCrc ) const TIKI_PURE;
+		virtual const char*		getFilenameByCrc( crc32 filenameCrc ) const = 0;
 
-		virtual bool			exists( const char* pFileName ) const TIKI_PURE;
-		virtual DataStream*		open( const char* pFileName, DataAccessMode accessMode ) TIKI_PURE;
-
+		virtual bool			exists( const char* pFileName ) const = 0;
+		virtual DataStream*		open( const char* pFileName, DataAccessMode accessMode ) = 0;
 	};
 }
 

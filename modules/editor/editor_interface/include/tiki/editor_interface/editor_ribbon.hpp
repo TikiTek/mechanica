@@ -12,7 +12,7 @@ namespace tiki
 
 		const DynamicString&	getTitle() const { return m_title; }
 
-		virtual void			doUi() TIKI_PURE;
+		virtual void			doUi() = 0;
 
 	protected:
 

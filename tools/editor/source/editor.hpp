@@ -44,9 +44,9 @@ namespace tiki
 		void							doUi();
 
 		virtual EditableFile*			openFile( const Path& fileName ) TIKI_OVERRIDE_FINAL;
-		virtual void					openEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void					saveEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
-		virtual void					closeEditable( Editable* pEditable ) TIKI_OVERRIDE_FINAL;
+		virtual void					openEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
+		virtual void					saveEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
+		virtual void					closeEditable( Editable& editable ) TIKI_OVERRIDE_FINAL;
 		virtual void					closeAll() TIKI_OVERRIDE_FINAL;
 		Editable*						getCurrentEditable() { return m_pCurrentEditable; }
 
@@ -66,7 +66,7 @@ namespace tiki
 		virtual const Path&				getContentPath() const TIKI_OVERRIDE_FINAL;
 		virtual const Path&				getPackagePath() const TIKI_OVERRIDE_FINAL;
 
-		virtual DynamicString			getDialogTitle() const TIKI_OVERRIDE_FINAL;
+		virtual void					showMessageBox( const DynamicString& message, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon::None, ToolMessageBoxCallbackDelegate callback = ToolMessageBoxCallbackDelegate(), UserData userData = UserData() ) TIKI_OVERRIDE_FINAL;
 
 	private:
 
@@ -111,7 +111,7 @@ namespace tiki
 		virtual EditorResourceResult	getResource( const Resource** ppResource, const char* pFilename, fourcc resourceType ) TIKI_OVERRIDE_FINAL;
 
 		void							saveOnCloseCallback( ToolMessageBoxButton button, UserData userData );
-		void							closeEditableInternal( Editable* pEditable );
+		void							closeEditableInternal( Editable& editable );
 
 		void							setProjectPathes();
 		void							setPackagePath();

@@ -11,19 +11,19 @@ namespace tiki
 	class EditableFile;
 	struct InputEvent;
 
-	class Editable
+	class Editable : NonCopyable
 	{
 	public:
 
 		virtual							~Editable() { }
 
 		const DynamicString&			getTitle() const { return m_title; }
-		BaseEditor*						getEditor() const { return m_pEditor; }
+		BaseEditor&						getEditor() const { return m_editor; }
 		bool							isDirty() const { return m_isDirty; }
 
 		virtual void					update( float deltaTime ) { }
 		virtual void					render( GraphicsContext& graphicsContext ) { }
-		virtual void					doUi() TIKI_PURE;
+		virtual void					doUi() = 0;
 
 		virtual bool					processToolInputEvent( const InputEvent& inputEvent ) { return false; }
 
@@ -33,12 +33,12 @@ namespace tiki
 
 		bool							m_isDirty;
 
-										Editable( const DynamicString& title, BaseEditor* pEditor );
+										Editable( const DynamicString& title, BaseEditor& editor );
 
 	private:
 
 		DynamicString					m_title;
-		BaseEditor*						m_pEditor;
+		BaseEditor&						m_editor;
 	};
 }
 

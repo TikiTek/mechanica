@@ -4,69 +4,70 @@
 #include "tiki/base/dynamic_string.hpp"
 #include "tiki/base/flag_mask.hpp"
 #include "tiki/base/user_data.hpp"
+#include "tiki/container/dynamic_queue.hpp"
 #include "tiki/tool_application/tool_image.hpp"
 
 namespace tiki
 {
-	enum ToolMessageBoxIcon : uint8
+	enum class ToolMessageBoxIcon : uint8
 	{
-		ToolMessageBoxIcon_None,
-		ToolMessageBoxIcon_Information,
-		ToolMessageBoxIcon_Question,
-		ToolMessageBoxIcon_Warning,
-		ToolMessageBoxIcon_Error,
-
-		ToolMessageBoxIcon_Count
+		None,
+		Information,
+		Question,
+		Warning,
+		Error
 	};
 
-	enum ToolMessageBoxButton : uint8
+	enum class ToolMessageBoxButton : uint8
 	{
-		ToolMessageBoxButton_Ok,
-		ToolMessageBoxButton_Yes,
-		ToolMessageBoxButton_No,
-		ToolMessageBoxButton_Abort,
-		ToolMessageBoxButton_Retry,
-		ToolMessageBoxButton_Ignore,
-		ToolMessageBoxButton_Cancel,
+		Ok,
+		Yes,
+		No,
+		Abort,
+		Retry,
+		Ignore,
+		Cancel,
 
-		ToolMessageBoxButton_Count
+		Count
 	};
 	typedef FlagMask8< ToolMessageBoxButton > ToolMessageBoxButtonFlagMask;
 
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_Ok					= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ok );
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_OkCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ok ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Cancel );
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_YesNo				= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Yes ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_No );
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_YesNoCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Yes ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_No ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Cancel );
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_AbortRetryIgnore	= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Abort ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Ignore );
-	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_RetryCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton_Cancel );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_Ok					= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Ok );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_OkCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Ok ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Cancel );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_YesNo				= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Yes ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::No );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_YesNoCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Yes ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::No ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Cancel );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_AbortRetryIgnore	= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Abort ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Ignore );
+	static const ToolMessageBoxButtonFlagMask ToolMessageBoxButtons_RetryCancel			= ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Retry ) | ToolMessageBoxButtonFlagMask( ToolMessageBoxButton::Cancel );
 
 	typedef Delegate< void, ToolMessageBoxButton, UserData > ToolMessageBoxCallbackDelegate;
 
-	class ToolMessageBox
+	class ToolMessageBox : NonCopyable
 	{
-		TIKI_NONCOPYABLE_CLASS( ToolMessageBox );
-
 	public:
 
 					ToolMessageBox();
 
-		void		open( const DynamicString& title, const DynamicString& message, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon_None, ToolMessageBoxCallbackDelegate callback = ToolMessageBoxCallbackDelegate(), UserData userData = UserData() );
+		void		open( const DynamicString& title, const DynamicString& text, ToolMessageBoxButtonFlagMask buttons = ToolMessageBoxButtons_Ok, ToolMessageBoxIcon icon = ToolMessageBoxIcon::None, ToolMessageBoxCallbackDelegate callback = ToolMessageBoxCallbackDelegate(), UserData userData = UserData() );
 
 		void		doUi();
 
 	private:
 
-		ToolImage						m_informationIcon;
-		ToolImage						m_questionIcon;
-		ToolImage						m_warningIcon;
-		ToolImage						m_errorIcon;
+		struct Message
+		{
+			DynamicString					title;
+			DynamicString					text;
+			ToolMessageBoxIcon				icon;
+			ToolMessageBoxButtonFlagMask	buttons;
+			ToolMessageBoxCallbackDelegate	callback;
+			UserData						userData;
+		};
 
-		bool							m_open;
-		DynamicString					m_title;
-		DynamicString					m_message;
-		ToolMessageBoxIcon				m_icon;
-		ToolMessageBoxButtonFlagMask	m_buttons;
-		ToolMessageBoxCallbackDelegate	m_callback;
-		UserData						m_userData;
+		ToolImage							m_informationIcon;
+		ToolImage							m_questionIcon;
+		ToolImage							m_warningIcon;
+		ToolImage							m_errorIcon;
+
+		DynamicQueue< Message >				m_messages;
 	};
 }

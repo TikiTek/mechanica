@@ -78,7 +78,7 @@ namespace tiki
 						}
 						field.hasValue = true;
 
-						if( !field.pValue->getSignedValue( currentValue ) )
+						if( !field.pValue->getSignedInteger( currentValue ) )
 						{
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] enum value is not an integer value.\n", getName().cStr() );
 							return false;
@@ -86,7 +86,7 @@ namespace tiki
 					}
 					else
 					{
-						if( !field.pValue->setSignedValue( currentValue, m_pBaseType ) )
+						if( !field.pValue->setSignedInteger( currentValue, m_pBaseType ) )
 						{
 							TIKI_TRACE_ERROR( "[GenericDataStruct(%s)::readFromXml] unable to set default enum value.\n", getName().cStr() );
 						}
@@ -129,7 +129,7 @@ namespace tiki
 			if ( value.hasValue )
 			{
 				sint64 intValue = 0u;
-				TIKI_VERIFY( value.pValue->getSignedValue( intValue ) );
+				TIKI_VERIFY( value.pValue->getSignedInteger( intValue ) );
 
 				valuesCode += formatDynamicString( s_pValueFormatWithValue, getName().cStr(), value.name.cStr(), intValue );
 			}

@@ -28,27 +28,14 @@ namespace tiki
 
 	struct TextureDescription
 	{
-		TextureDescription()
-		{
-			width		= 0u;
-			height		= 0u;
-			depth		= 1u;
-			arrayCount	= 1u;
-			mipCount	= 1u;
+		uint16			width		= 0u;
+		uint16			height		= 0u;
+		uint16			depth		= 1u;
+		uint16			arrayCount	= 1u;
+		uint8			mipCount	= 1u;
 
-			flags		= TextureFlags_None;
-			format		= PixelFormat_Invalid;
-			type		= TextureType_Invalid;
-		}
-
-		uint16			width;
-		uint16			height;
-		uint16			depth;
-		uint16			arrayCount;
-		uint8			mipCount;
-
-		TextureFlags	flags;
-		PixelFormat		format;
-		TextureType		type;
+		TextureFlags	flags		= TextureFlags_None;
+		PixelFormat		format		= PixelFormat_Invalid;
+		TextureType		type		= TextureType_Invalid;
 	};
 }
