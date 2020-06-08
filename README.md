@@ -2,17 +2,17 @@
 Mechanica
 ============
 
-![C/C++ CI](https://github.com/TikiTek/mechanica/workflows/C/C++%20CI/badge.svg)
+[![Build All](https://github.com/TikiTek/mechanica/workflows/build_all/badge.svg)](https://github.com/TikiTek/mechanica/actions)
 
-The original version of this game was my first game what I've ever made. So I decided to rewrite it in C++ with a solid Framework and Editor. But it is still in progress.
+Original Mechanica written in C# with XNA was the first game I ever made. So I decided to rewrite it in C++ with a solid Framework and Editor. But it's still in progress.
 
 
 Requirements
 ------------
 
-Currently is Visual Studio 2017 recommended.
+Visual Studio 2019 is recommended.
 
-POIs
+Folder Structure
 ----
 | Path					| Description |
 |-----------------------|-------------|
@@ -24,9 +24,9 @@ POIs
 First steps
 -----------
 
-1. Goto to the project folder you want to build/run
-2. Execute the project generation batch-file
-3. Goto 'build' folder and open the solution-file
+1. Goto to the project Folder you want to build/run
+2. Execute the project generation Batch File
+3. Goto 'build' Folder and open the Solution File
 
 Special Thanks
 --------------
