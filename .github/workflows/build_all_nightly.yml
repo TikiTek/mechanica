@@ -1,0 +1,25 @@
+name: build_all_nightly
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1.0.0
+      with:
+        vs-version: 16.5
+    - name: Build Code
+      run: .\build_code.ps1
+      shell: powershell
+    - name: Build Assets
+      run: .\build_assets.ps1
+      shell: powershell
