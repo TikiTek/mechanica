@@ -1,30 +1,40 @@
 [submodule "blobs/lua"]
 	path = blobs/lua
-	url = git@github.com:lua/lua.git
+	url = https://github.com/lua/lua.git
+	branch = master
 [submodule "blobs/freetype"]
 	path = blobs/freetype
 	url = git://git.sv.nongnu.org/freetype/freetype2.git
+	branch = master
 [submodule "blobs/trex"]
 	path = blobs/trex
-	url = git@github.com:kimperator/T-Rex.git
+	url = https://github.com/kimperator/T-Rex.git
+	branch = master
 [submodule "blobs/box2d"]
 	path = blobs/box2d
 	url = https://github.com/erincatto/Box2D.git
+	branch = master
 [submodule "content"]
 	path = content
 	url = git@github.com:TikiTek/mechanica_content.git
+	branch = .
 [submodule "library"]
 	path = library
 	url = git@github.com:TikiTek/mechanica_library.git
+	branch = .
 [submodule "blobs/stb"]
 	path = blobs/stb
 	url = https://github.com/nothings/stb.git
+	branch = master
 [submodule "blobs/tinyxml2"]
 	path = blobs/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+	branch = master
 [submodule "blobs/imgui"]
 	path = blobs/imgui
 	url = https://github.com/ocornut/imgui.git
+	branch = master
 [submodule "blobs/pcre2"]
 	path = blobs/pcre2
 	url = https://github.com/TikiTek/pcre2.git
+	branch = trunk
