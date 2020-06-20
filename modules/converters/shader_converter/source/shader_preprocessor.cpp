@@ -8,7 +8,6 @@
 #include "tiki/io/path.hpp"
 
 #include "TRexpp.h"
-#include <pcre2.h>
 
 namespace tiki
 {
@@ -111,42 +110,31 @@ namespace tiki
 	{
 		DynamicString resultCode = shaderCode;
 
-		int errorCode;
-		PCRE2_SIZE errorOffset;
-		pcre2_code* pIncludeExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*#\\s*include\\s+[<\"](.+)[>\"]\\s*$", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
-		if( pIncludeExpression == nullptr )
-		{
-			TIKI_TRACE_ERROR( "failed to compile RegEx. Error: %d\n", errorCode );
-			return "";
-		}
+		TRexpp includeExpression;
+		includeExpression.Compile( "^\\s*#\\s*include\\s+[<\"](.+)[>\"]\\s*$" );
 
-		pcre2_code* pFeaturesExpression = pcre2_compile( (PCRE2_SPTR8)"^\\s*\\/\\/\\s+(fx|vs|ps|gs|hs|ds|cs)-features=", PCRE2_ZERO_TERMINATED, PCRE2_MULTILINE, &errorCode, &errorOffset, nullptr );
-		if( pFeaturesExpression == nullptr )
-		{
-			TIKI_TRACE_ERROR( "failed to compile RegEx. Error: %d\n", errorCode );
-			return "";
-		}
-
-		pcre2_match_data* pIncludeMatchData = pcre2_match_data_create_from_pattern( pIncludeExpression, nullptr );
-		pcre2_match_data* pFeaturesMatchData = pcre2_match_data_create_from_pattern( pFeaturesExpression, nullptr );
+		//TRexpp featuresExpression;
+		//featuresExpression.Compile( "^\\s*\\/\\/\\s+(fx|vs|ps|gs|hs|ds|cs)-features=" );
 
 		Path lastPath;
-		while( pcre2_match( pIncludeExpression, (PCRE2_SPTR8)resultCode.cStr(), resultCode.getLength(), 0u, 0u, pIncludeMatchData, nullptr ) > 1 )
+		while( includeExpression.Match( resultCode.cStr() ) )
 		{
-			const uint32 offsetCount = pcre2_get_ovector_count( pIncludeMatchData );
-			if( offsetCount < 2u )
+			const char* pExpressionBegin = nullptr;
+			int expLength = 0u;
+			if( !includeExpression.GetSubExp( 0, &pExpressionBegin, &expLength ) )
 			{
-				TIKI_TRACE_ERROR( "not enought offset to replace include: %d\n", offsetCount );
+				TIKI_TRACE_ERROR( "Unable to get include expression.\n" );
 				break;
 			}
+			const uintreg expBeginIndex = pExpressionBegin - resultCode.cStr();
 
-			const PCRE2_SIZE* pOffsets = pcre2_get_ovector_pointer( pIncludeMatchData );
-
-			PCRE2_SIZE expBeginIndex = pOffsets[ 0u ];
-			PCRE2_SIZE expLength = pOffsets[ 1u ] - pOffsets[ 0u ];
-
-			const char* pMatchBegin = resultCode.cStr() + pOffsets[ 2u ];
-			PCRE2_SIZE matchLength = pOffsets[ 3u ] - pOffsets[ 2u ];
+			const char* pMatchBegin = nullptr;
+			int matchLength = 0u;
+			if( !includeExpression.GetSubExp( 1, &pMatchBegin, &matchLength ) )
+			{
+				TIKI_TRACE_ERROR( "Unable to get include match.\n" );
+				break;
+			}
 
 			DynamicString path = DynamicString( pMatchBegin, matchLength );
 			Path fullPath;
@@ -190,16 +178,9 @@ namespace tiki
 
 			fileData.dispose();
 
-			if( pcre2_match( pFeaturesExpression, (PCRE2_SPTR8)resultCode.cStr(), resultCode.getLength(), 0u, 0u, pFeaturesMatchData, nullptr ) > 1 )
-			{
-				break;
-			}
+			break;
 		}
 
-		pcre2_match_data_free( pIncludeMatchData );
-		pcre2_match_data_free( pFeaturesMatchData );
-		pcre2_code_free( pIncludeExpression );
-		pcre2_code_free( pFeaturesExpression );
 		return resultCode;
 	}
 
