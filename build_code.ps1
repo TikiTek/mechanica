@@ -17,7 +17,8 @@ foreach ($solution in $solutions) {
 	
 	try {
 		$targets_command_line = "$($genie) --quiet --file=$($solution)/genie.lua --targets_action=vs2019 targets"
-		$targets = Invoke-Expression $targets_command_line | Out-String | ConvertFrom-Json
+		$targets_json = Invoke-Expression $targets_command_line | Out-String
+		$targets = $targets_json | ConvertFrom-Json
 
 		$generate_command_line = "$($genie) --file=$($solution)/genie.lua --to=build vs2019"
 		Invoke-Expression $generate_command_line
@@ -28,6 +29,7 @@ foreach ($solution in $solutions) {
 	} catch {
 		$fail_targets += "$solution configure"
 		Echo "failed to configure '$($solution)'"
+		Echo $targets_json
 		Echo $_
 		continue
 	}
