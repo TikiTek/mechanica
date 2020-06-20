@@ -1,12 +1,10 @@
--- library/thirdparty/freetype
-
-local module = Module:new( "freetype" );
+local module = Module:new();
 
 module.module_type = ModuleTypes.FilesModule;
 
 module:add_files( "freetype.lua" );
 module:add_files( "zerror.c" );
-module:set_base_path( "blobs/freetype" );
+module:set_base_path( "third_party/freetype" );
 
 module:add_files( "include/*.h" );
 module:add_include_dir( "include" );
