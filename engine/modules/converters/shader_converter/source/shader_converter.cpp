@@ -186,7 +186,7 @@ namespace tiki
 
 	uint32 ShaderConverter::getConverterRevision( crc32 typeCrc ) const
 	{
-		return 1u;
+		return 3u;
 	}
 
 	bool ShaderConverter::canConvertType( crc32 typeCrc ) const

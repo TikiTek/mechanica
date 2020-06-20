@@ -8,7 +8,6 @@ module:add_include_dir( "include" );
 module:add_dependency( "runtime/graphics_base" );
 module:add_dependency( "tool/converter_base" );
 module:add_dependency( "third_party/trex" );
-module:add_dependency( "third_party/pcre2" );
 module:add_dependency( "third_party/dlls" );
 
 if use_msvc then
