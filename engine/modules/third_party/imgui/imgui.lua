@@ -2,7 +2,7 @@ local module = Module:new();
 
 module:add_files( "*.lua" );
 
-module:set_base_path( "blobs/imgui" );
+module:set_base_path( "third_party/imgui" );
 module:add_files( "*.h" );
 module:add_files( "imgui.cpp" );
 module:add_files( "imgui_draw.cpp" );

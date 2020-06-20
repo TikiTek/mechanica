@@ -44,15 +44,25 @@ function find_module( module_name, importer_name )
 	end
 	
 	--print( "Search for: " .. module_name );
+	local module_found = false;
 	for i,include_path in pairs( global_module_include_pathes ) do
 		local import_path = path.join( include_path, import_base );
 		local module_path = path.join( import_path, import_name );
 	
-		--print( "Try include: " .. module_path );
-		if os.isdir( module_path ) then
-			import( import_name, import_path );
-			break;
+		local fileName = path.join( module_path, import_name .. ".lua" );
+		--print( "Try: " .. fileName );
+		if os.isfile( fileName ) then
+			dofile( fileName );
+			module_found = true;
 		end
+	end
+	
+	if not module_found then
+		print( "Module " .. module_name .. " not found. Search pathes:" );
+		for i,include_path in pairs( global_module_include_pathes ) do
+			print( "Path: " .. include_path );
+		end
+		throw( "Can not import " .. module_name );
 	end
 	
 	if ( #global_module_storage > 0 ) then

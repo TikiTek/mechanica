@@ -1,9 +1,7 @@
--- library/thirdparty/stb
-
-local module = Module:new( "stb" );
+local module = Module:new();
 
 module:add_files( "*.lua" );
-module:set_base_path( "blobs/stb" );
+module:set_base_path( "third_party/stb" );
 
 module:add_files( "*.c" );
 module:add_files( "*.h" );
