@@ -24,36 +24,49 @@ function add_module_include_path( include_path )
 	if path.isabsolute( include_path ) then
 		throw( "add_module_include_path: Please use relative pathes"  )
 	end
+	
+	local module_include_path = path.getabsolute( path.join( path.getdirectory( _SCRIPT ), include_path ) );
+	for _, include_path in pairs( global_module_include_pathes ) do
+		if include_path == module_include_path then
+			return;
+		end
+	end
 
-	table.insert( global_module_include_pathes, path.getabsolute( path.join( path.getdirectory( _SCRIPT ), include_path ) ) );
+	table.insert( global_module_include_pathes, module_include_path );
 end
 
 function find_module( module_name, importer_name )
 	local import_name = module_name;
-	local import_base = "."
+	local import_base = ".";
 	local import_name_slash = module_name:find( "/" );
 	if import_name_slash ~= nil then
 		import_name = module_name:sub( import_name_slash + 1 );
 		import_base = module_name:sub( 0, import_name_slash - 1 );
 	end
 
-	for i,module in pairs( global_module_storage ) do
-		if ( module.name == import_name ) then
+	for _, module in pairs( global_module_storage ) do
+		if module.name == import_name then
 			return module;
 		end
 	end
 	
-	--print( "Search for: " .. module_name );
+	--print( "Search for: " .. import_base .. "/" .. import_name );
 	local module_found = false;
-	for i,include_path in pairs( global_module_include_pathes ) do
+	local module_filename = "";
+	for i, include_path in pairs( global_module_include_pathes ) do
 		local import_path = path.join( include_path, import_base );
 		local module_path = path.join( import_path, import_name );
 	
-		local fileName = path.join( module_path, import_name .. ".lua" );
-		--print( "Try: " .. fileName );
-		if os.isfile( fileName ) then
-			dofile( fileName );
+		local filename = path.join( module_path, import_name .. ".lua" );
+		--print( "Try: " .. filename );
+		if os.isfile( filename ) then
+			if module_found then
+				throw( "Module " .. import_name .. " has multiple file locations:\n" .. module_filename .. "\nand:\n" .. filename );
+			end
+		
+			dofile( filename );
 			module_found = true;
+			module_filename = filename;
 		end
 	end
 	
@@ -65,15 +78,15 @@ function find_module( module_name, importer_name )
 		throw( "Can not import " .. module_name );
 	end
 	
-	if ( #global_module_storage > 0 ) then
+	if #global_module_storage > 0 then
 		local last_module = global_module_storage[ #global_module_storage ];
-		if ( last_module.name == import_name ) then
+		if last_module.name == import_name then
 			return last_module;
 		end
 	end
 	
 	print( "Model include directories:" );
-	for i,include_path in pairs( global_module_include_pathes ) do
+	for _, include_path in pairs( global_module_include_pathes ) do
 		print( include_path );
 	end
 	
@@ -93,7 +106,7 @@ function Module:new( name, initFunc )
 
 	for _,module in pairs( global_module_storage ) do
 		if ( module.name == name ) then
-			throw( "Module name already used: " .. name .. "\n" .. module.stack_trace );
+			throw( "Module name already used: " .. name .. "\nmodule " .. module.stack_trace );
 		end
 	end
 

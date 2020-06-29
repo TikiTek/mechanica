@@ -18,5 +18,3 @@ dofile( "module.lua" );
 dofile( "project.lua" );
 dofile( "solution.lua" );
 dofile( "targets.lua" );
-
-add_module_include_path( "../../.." );
