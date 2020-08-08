@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="tiki::DynamicString">
+		<DisplayString>{m_pData,s}</DisplayString>
+		<Expand>
+			<Item Name="[pointer]" ExcludeView="simple">m_pData</Item>
+			<Item Name="[size]" ExcludeView="simple">m_stringSize</Item>
+			<Item Name="[capacity]" ExcludeView="simple">m_dataSize</Item>
+			<ArrayItems>
+				<Size>m_stringSize</Size>
+				<ValuePointer>m_pData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="tiki::Path">
+		<DisplayString Condition="m_prefix[0] == 0 &amp;&amp; m_directory[0] == 0">{{ path="{m_basename,sb}{m_extension,sb}" }}</DisplayString>
+		<DisplayString Condition="m_prefix[0] == 0 &amp;&amp; m_directory[0] != 0">{{ path="{m_directory,sb}/{m_basename,sb}{m_extension,sb}" }}</DisplayString>
+		<DisplayString Condition="m_prefix[0] != 0 &amp;&amp; m_directory[0] != 0">{{ path="{m_prefix,sb}/{m_directory,sb}/{m_basename,sb}{m_extension,sb}" }}</DisplayString>
+	</Type>
+</AutoVisualizer>

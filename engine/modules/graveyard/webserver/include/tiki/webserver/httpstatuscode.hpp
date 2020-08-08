@@ -1,0 +1,72 @@
+#pragma once
+#ifndef TIKI_HTTPSTATUSCODE_HPP_INCLUDED__
+#define TIKI_HTTPSTATUSCODE_HPP_INCLUDED__
+
+namespace tiki
+{
+	enum HttpStatusCode
+	{
+		HttpStatusCode_100_Continue,
+		HttpStatusCode_101_SwitchingProtocols,
+		HttpStatusCode_102_Processing,
+		HttpStatusCode_200_OK,
+		HttpStatusCode_201_Created,
+		HttpStatusCode_202_Accepted,
+		HttpStatusCode_203_NonAuthoritativeInformation,
+		HttpStatusCode_204_NoContent,
+		HttpStatusCode_205_ResetContent,
+		HttpStatusCode_206_PartialContent,
+		HttpStatusCode_207_MultiStatus,
+		HttpStatusCode_208_AlreadyReported,
+		HttpStatusCode_226_ImUsed,
+		HttpStatusCode_300_MultipleChoices,
+		HttpStatusCode_301_MovedPermanently,
+		HttpStatusCode_302_Found,
+		HttpStatusCode_303_SeeOther,
+		HttpStatusCode_304_NotModified,
+		HttpStatusCode_305_UseProxy,
+		HttpStatusCode_307_TemporaryRedirect,
+		HttpStatusCode_308_PermanentRedirect,
+		HttpStatusCode_400_BadRequest,
+		HttpStatusCode_401_Unauthorized,
+		HttpStatusCode_402_PaymentRequired,
+		HttpStatusCode_403_Forbidden,
+		HttpStatusCode_404_NotFound,
+		HttpStatusCode_405_MethodNotAllowed,
+		HttpStatusCode_406_NotAcceptable,
+		HttpStatusCode_407_ProxyAuthenticationRequired,
+		HttpStatusCode_408_RequestTimeOut,
+		HttpStatusCode_409_Conflict,
+		HttpStatusCode_410_Gone,
+		HttpStatusCode_411_LengthRequired,
+		HttpStatusCode_412_PreconditionFailed,
+		HttpStatusCode_413_RequestEntityTooLarge,
+		HttpStatusCode_414_RequestUrlTooLong,
+		HttpStatusCode_415_UnsupportedMediaType,
+		HttpStatusCode_416_RequestedRangeNotSatisfiable,
+		HttpStatusCode_417_ExpectationFailed,
+		HttpStatusCode_420_PolicyNotFulfilled,
+		HttpStatusCode_421_ThereAreTooManyConnectionsFromYourInternetAddress,
+		HttpStatusCode_422_UnprocessableEntity,
+		HttpStatusCode_423_Locked,
+		HttpStatusCode_424_FailedDependency,
+		HttpStatusCode_425_UnorderedCollection,
+		HttpStatusCode_426_UpgradeRequired,
+		HttpStatusCode_428_PreconditionRequired,
+		HttpStatusCode_429_TooManyRequests,
+		HttpStatusCode_431_RequestHeaderFieldsTooLarge,
+		HttpStatusCode_500_InternalServerError,
+		HttpStatusCode_501_NotImplemented,
+		HttpStatusCode_502_BadGateway,
+		HttpStatusCode_503_ServiceUnavailable,
+		HttpStatusCode_504_GatewayTimeOut,
+		HttpStatusCode_505_HTTPVersionNotSupported,
+		HttpStatusCode_506_VariantAlsoNegotiates,
+		HttpStatusCode_507_InsufficientStorage,
+		HttpStatusCode_508_LoopDetected,
+		HttpStatusCode_509_BandwidthLimitExceeded,
+		HttpStatusCode_510_NotExtended
+	};
+}
+
+#endif // TIKI_HTTPSTATUSCODE_HPP_INCLUDED__

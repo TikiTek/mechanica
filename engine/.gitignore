@@ -1,0 +1,8 @@
+*~
+/tests/libraryunittests/build
+/tests/nettest/build
+/tools/command_line_converter/build
+/tools/generic_data_code_generator/build
+/tools/resource_code_generator/build
+/tools/editor/build
+/tools/editor/build

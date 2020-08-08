@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="tiki::Array&lt;*&gt;">
+		<DisplayString>{{ size={m_capacity} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_capacity</Item>
+			<Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
+			<ArrayItems>
+				<Size>m_capacity</Size>
+				<ValuePointer>m_pData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="tiki::FixedSizedArray&lt;*,*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<ArrayItems>
+				<Size>m_count</Size>
+				<ValuePointer>m_aData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="tiki::Map&lt;*,*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
+			<ArrayItems>
+				<Size>m_count</Size>
+				<ValuePointer>m_pData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="tiki::KeyValuePair&lt;*,*&gt;">
+		<DisplayString>{{ key={key}, value={value} }}</DisplayString>
+	</Type>
+	<Type Name="tiki::List&lt;*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
+			<ArrayItems>
+				<Size>m_count</Size>
+				<ValuePointer>m_pData</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="tiki::LinkedList&lt;*&gt;">
+		<DisplayString>{{ size={m_count} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_count</Item>
+			<CustomListItems>
+				<Variable Name="pItem" InitialValue="m_pFirst"/>
+				<Loop>
+					<Break Condition="pItem == nullptr"/>
+					<Item>*pItem</Item>
+					<Exec>pItem = pItem-&gt;pNextItem</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>
