@@ -1,5 +1,3 @@
--- library/modules/tool/toollibraries
-
 local module = Module:new( "toollibraries" );
 
 module:add_files( "include/**/*.hpp" );

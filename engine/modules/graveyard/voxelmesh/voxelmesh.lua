@@ -1,5 +1,3 @@
--- library/modules/runtime/voxelmesh
-
 local module = Module:new( "voxelmesh" );
 
 module:add_files( "source/*.*" );

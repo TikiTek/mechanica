@@ -1,5 +1,3 @@
--- library/thirdparty/qt
-
 local module = Module:new( "qt" );
 
 module.module_type = ModuleTypes.FilesModule;

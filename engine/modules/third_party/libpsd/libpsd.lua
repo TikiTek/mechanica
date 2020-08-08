@@ -1,5 +1,3 @@
--- library/thirdparty/libpsd
-
 local module = Module:new( "libpsd" );
 
 module.module_type = ModuleTypes.FilesModule;

@@ -1,5 +1,3 @@
--- library/modules/runtime/voxelworld
-
 local module = Module:new( "voxelworld" );
 
 module:add_files( "source/*.*" );

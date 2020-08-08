@@ -1,5 +1,3 @@
--- library/modules/runtime/animation
-
 local module = Module:new( "animation" );
 
 module:add_files( "include/**/*.hpp" );

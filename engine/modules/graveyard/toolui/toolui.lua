@@ -1,5 +1,3 @@
--- library/modules/tool/toolui
-
 local module = Module:new( "toolui" );
 
 module:add_files( "source/*.*" );

@@ -1,5 +1,3 @@
--- library/tools/converters/navmeshconverter
-
 local module = Module:new( "navmeshconverter" );
 
 module:add_files( "source/*.*" );

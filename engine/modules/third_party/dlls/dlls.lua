@@ -1,5 +1,3 @@
--- library/thirdparty/dlls
-
 local module = Module:new( "dlls" );
 
 module:add_files( "*.lua" );

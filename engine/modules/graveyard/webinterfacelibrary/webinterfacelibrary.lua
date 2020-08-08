@@ -1,5 +1,3 @@
--- library/modules/tool/webinterfacelibrary
-
 local module = Module:new( "webinterfacelibrary" );
 
 module:add_files( "source/*.*" );

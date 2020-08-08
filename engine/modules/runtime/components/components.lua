@@ -1,5 +1,3 @@
--- library/modules/runtime/components
-
 local module = Module:new( "components" );
 
 module:add_files( "*.lua" );

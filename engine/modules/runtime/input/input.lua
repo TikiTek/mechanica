@@ -1,5 +1,3 @@
--- library/modules/runtime/input
-
 local module = Module:new( "input" );
 
 module:add_files( "include/**/*.*" );

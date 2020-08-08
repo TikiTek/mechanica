@@ -1,5 +1,3 @@
--- library/modules/core/net
-
 local module = Module:new( "net" );
 
 module:add_files( "source/*.*" );

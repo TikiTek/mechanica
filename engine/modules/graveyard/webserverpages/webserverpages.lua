@@ -1,5 +1,3 @@
--- library/modules/runtime/webserverpages
-
 local module = Module:new( "webserverpages" );
 
 module:add_files( "source/*.*" );

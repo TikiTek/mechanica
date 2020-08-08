@@ -1,5 +1,3 @@
--- library/thirdparty/sdl
-
 local module = Module:new( "sdl" );
 
 module.module_type = ModuleTypes.UnityCModule;

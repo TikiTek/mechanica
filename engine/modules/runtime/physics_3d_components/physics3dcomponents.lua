@@ -1,5 +1,3 @@
--- library/modules/runtime/physics3dcomponents
-
 local module = Module:new( "physics3dcomponents" );
 
 module:add_files( "physics3dcomponents.lua" );

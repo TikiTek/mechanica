@@ -1,5 +1,3 @@
--- library/thirdparty/mongoose
-
 local module = Module:new( "mongoose" );
 
 module.module_type = ModuleTypes.UnityCModule;

@@ -1,5 +1,3 @@
--- library/modules/tool/editorbase
-
 local module = Module:new( "editorbase" );
 
 module:add_files( "source/*.*" );

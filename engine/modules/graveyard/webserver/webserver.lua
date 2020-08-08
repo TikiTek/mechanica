@@ -1,5 +1,3 @@
--- library/modules/tool/webserver
-
 local module = Module:new( "webserver" );
 
 module:add_files( "source/*.*" );

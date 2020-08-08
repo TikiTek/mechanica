@@ -1,5 +1,3 @@
--- library/modules/runtime/debuggui
-
 local module = Module:new( "debuggui" );
 
 module:add_files( "include/**/*.hpp" );

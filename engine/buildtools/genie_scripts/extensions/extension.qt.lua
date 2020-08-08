@@ -1,4 +1,4 @@
--- library/buildtools/extensions/extension.qt
+-- engine/buildtools/extensions/extension.qt
 
 qt_dir = "E:/Misc/Qt5.9.4/5.9.4/msvc2017_64" --TODO: find real path e.g. os.getenv("QTDIR")
 
