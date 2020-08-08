@@ -1,4 +1,4 @@
--- library/tools/command_line_converter
+-- engine/tools/command_line_converter
 
 include( "../../.." );
 add_module_include_path( "../.." );

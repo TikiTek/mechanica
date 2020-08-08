@@ -1,11 +1,11 @@
 $start_time = Get-Date
-$genie = Join-Path -Path $PSScriptRoot -ChildPath "library\buildtools\genie\genie.exe"
+$genie = Join-Path -Path $PSScriptRoot -ChildPath "engine\buildtools\genie\genie.exe"
 
 $solutions = @(
-	"library/tools/command_line_converter",
-	"library/tools/editor",
-	"library/tools/generic_data_code_generator",
-	"library/tools/resource_code_generator",
+	"engine/tools/command_line_converter",
+	"engine/tools/editor",
+	"engine/tools/generic_data_code_generator",
+	"engine/tools/resource_code_generator",
 	"local/game"
 )
 

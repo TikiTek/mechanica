@@ -5,7 +5,7 @@ function Module:add_resources( pattern )
 	local exe_name = iff( is_windows, "resource_code_generator.exe", "resource_code_generator" );
 	
 	local step_data = {
-		tool_path = path.join( global_configuration.root_path, 'library/buildtools/resource_code_generator/' .. exe_name ),
+		tool_path = path.join( global_configuration.root_path, 'engine/buildtools/resource_code_generator/' .. exe_name ),
 		input_pattern = full_pattern,
 		output_name = self.name
 	}

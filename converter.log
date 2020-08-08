@@ -1,0 +1,390 @@
+[converter] Scan complete: 129 elements queued.
+[converter] started
+[converter] Scan complete: 129 elements queued.
+[converter] No Converter found for file: 'e:/development/mechanica/content/mechanica/generic_data/entities/player.generic_data'.
+Building asset: 2d_composite.shader.fx
+Building asset: background_cloud_big_1.png
+Building asset: default.level_theme.generic_data
+Building asset: bloom.shader.fx
+Building asset: blur.shader.fx
+Building asset: menu_bundle.menu_bundle.generic_data
+Building asset: level1.level.generic_data
+Building asset: immediate.shader.fx
+Building asset: background_cloud_big_0.png
+Building asset: 2d_sprite.shader.fx
+Building asset: background_cloud_big_2.png
+Building asset: background_cloud_big_3.png
+Building asset: background_cloud_bottom_0.png
+Building asset: background_cloud_bottom_1.png
+Building asset: background_cloud_small_0.png
+Building asset: background_cloud_small_1.png
+Building asset: background_cloud_small_2.png
+Building asset: background_cloud_small_3.png
+Building asset: background_cloud_small_4.png
+Building asset: background_cloud_small_5.png
+Building asset: background_cloud_small_6.png
+Building asset: background_color_0.png
+Building asset: background_color_1.png
+Building asset: background_island_0.png
+Building asset: background_island_1.png
+Building asset: background_island_2.png
+Building asset: background_island_3.png
+Building asset: background_island_4.png
+Building asset: bridge.png
+Building asset: island1.png
+Building asset: island10.png
+Building asset: island1b.png
+Building asset: island2.png
+Building asset: island2b.png
+Building asset: island2c.png
+Building asset: island4.png
+Building asset: island5.png
+Building asset: island5c.png
+Building asset: island6.png
+Building asset: island7.png
+Building asset: island7b.png
+Building asset: island8.png
+Building asset: island9.png
+Building asset: island9d.png
+Building asset: islandd2a.png
+Building asset: islandd2b.png
+Building asset: islandd2c.png
+Building asset: islandf1.png
+Building asset: islandm1.png
+Building asset: islandm1b.png
+Building asset: islandn0.png
+Building asset: islandnewton1.png
+Building asset: islandnewton2.png
+Building asset: islandnewton3.png
+Building asset: islando1.png
+Building asset: islando1b.png
+Building asset: islando2a.png
+Building asset: islando2b.png
+Building asset: islando2c.png
+Building asset: islandw1.png
+Building asset: metal_platform.png
+Building asset: metal_platform_small.png
+Building asset: movingplatform.png
+Building asset: movingplatformsmall.png
+Building asset: newton.png
+Building asset: pipe_broken_left.png
+Building asset: pipe_broken_right.png
+Building asset: pipe_end.png
+Building asset: pipe_middle.png
+Building asset: pipe_start.png
+Building asset: wasserrad.png
+Building asset: menu_admiral.png
+Building asset: menu_connection.png
+Building asset: menu_background.png
+Building asset: menu_robo.png
+Building asset: menu_item_audio0.png
+Building asset: menu_item_audio1.png
+Building asset: menu_item_audio_text.png
+Building asset: menu_item_back0.png
+Building asset: menu_item_back1.png
+Building asset: menu_item_back_text.png
+Building asset: menu_item_exit0.png
+Building asset: menu_item_exit1.png
+Building asset: menu_item_exit_text.png
+Building asset: menu_item_level10.png
+Building asset: menu_item_level11.png
+Building asset: menu_item_level1_text.png
+Building asset: menu_item_level20.png
+Building asset: menu_item_level21.png
+Building asset: menu_item_level2_text.png
+Building asset: menu_item_level30.png
+Building asset: menu_item_level31.png
+Building asset: menu_item_level3_text.png
+Building asset: menu_item_level40.png
+Building asset: menu_item_level41.png
+Building asset: menu_item_level4_text.png
+Building asset: menu_item_play0.png
+Building asset: menu_item_play1.png
+Building asset: menu_item_play_text.png
+Building asset: menu_item_resume0.png
+Building asset: menu_item_resume1.png
+Building asset: menu_item_resume_text.png
+Building asset: menu_item_settings0.png
+Building asset: menu_item_settings1.png
+Building asset: menu_item_settings_text.png
+Building asset: menu_item_team0.png
+Building asset: menu_item_team1.png
+Building asset: menu_item_team_text.png
+Building asset: menu_item_video0.png
+Building asset: menu_item_video1.png
+Building asset: menu_item_video_text.png
+Building asset: menu_circle_00.png
+Building asset: menu_circle_01.png
+Building asset: menu_circle_02.png
+Building asset: menu_circle_10.png
+Building asset: menu_circle_11.png
+Building asset: menu_circle_12.png
+Building asset: menu_circle_big_0.png
+Building asset: menu_circle_big_1.png
+Building asset: menu_circle_big_2.png
+Building asset: checker.texture.psd
+Building asset: color_black.texture.psd
+Building asset: color_white.texture.psd
+Building asset: touch_dpad.texture.psd
+Building asset: touch_dpad_point.texture.psd
+Building asset: touch_point.texture.psd
+Building asset: debug.font_12.ttf
+Building asset: transformers.font_16.ttf
+[converter] shutdown
+essage:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_sprite.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: blur_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/blur.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: bloom_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: 2d_composite_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Building asset: background_cloud_small_2.png
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Building asset: background_cloud_small_3.png
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: 2d_composite_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: tiki/graphics/shader/immediaterenderer_shader.hpp.
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+failed to compile shader. error message:
+../../../engine/modules/runtime/graphics/source/shader/immediate.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: 2d_composite_shader.hpp.
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/renderer_2d/source/shader/2d_composite.fx(7,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Could find File: tiki/graphics/shader/platform.fxh.
+Building asset: background_cloud_small_4.png
+Building asset: background_cloud_small_5.png
+Could find File: bloom_shader.hpp.
+failed to compile shader. error message:
+../../../engine/modules/runtime/render_effects/source/shader/bloom.fx(6,1-37): error X3000: unrecognized identifier 'TIKI_VERTEX_TO_PIXEL_DEFINITION_BEGIN'
+
+Building asset: background_cloud_small_6.png
+Building asset: background_color_0.png
+Building asset: background_color_1.png
+Building asset: background_island_0.png
+Building asset: background_island_1.png
+Building asset: background_island_2.png
+Building asset: background_island_3.png
+Building asset: background_island_4.png
+Building asset: bridge.png
+Building asset: island1.png
+Building asset: island10.png
+Building asset: island1b.png
+Building asset: island2.png
+Building asset: island2b.png
+Building asset: island2c.png
+Building asset: island4.png
+Building asset: island5.png
+Building asset: island5c.png
+Building asset: island6.png
+Building asset: island7.png
+Building asset: island7b.png
+Building asset: island8.png
+Building asset: island9.png
+Building asset: island9d.png
+Building asset: islandd2a.png
+Building asset: islandd2b.png
+Building asset: islandd2c.png
+Building asset: islandf1.png
+Building asset: islandm1.png
+Building asset: islandm1b.png
+Building asset: islandn0.png
+Building asset: islandnewton1.png
+Building asset: islandnewton2.png
+Building asset: islandnewton3.png
+Building asset: islando1.png
+Building asset: islando1b.png
+Building asset: islando2a.png
+Building asset: islando2b.png
+Building asset: islando2c.png
+Building asset: islandw1.png
+Building asset: metal_platform.png
+Building asset: metal_platform_small.png
+Building asset: movingplatform.png
+Building asset: movingplatformsmall.png
+Building asset: newton.png
+Building asset: pipe_broken_left.png
+Building asset: pipe_broken_right.png
+Building asset: pipe_end.png
+Building asset: pipe_middle.png
+Building asset: pipe_start.png
+Building asset: wasserrad.png
+Building asset: menu_admiral.png
+Building asset: menu_connection.png
+Building asset: menu_background.png
+Building asset: menu_robo.png
+Building asset: menu_item_audio0.png
+Building asset: menu_item_audio1.png
+Building asset: menu_item_audio_text.png
+Building asset: menu_item_back0.png
+Building asset: menu_item_back1.png
+Building asset: menu_item_back_text.png
+Building asset: menu_item_exit0.png
+Building asset: menu_item_exit1.png
+Building asset: menu_item_exit_text.png
+Building asset: menu_item_level10.png
+Building asset: menu_item_level11.png
+Building asset: menu_item_level1_text.png
+Building asset: menu_item_level20.png
+Building asset: menu_item_level21.png
+Building asset: menu_item_level2_text.png
+Building asset: menu_item_level30.png
+Building asset: menu_item_level31.png
+Building asset: menu_item_level3_text.png
+Building asset: menu_item_level40.png
+Building asset: menu_item_level41.png
+Building asset: menu_item_level4_text.png
+Building asset: menu_item_play0.png
+Building asset: menu_item_play1.png
+Building asset: menu_item_play_text.png
+Building asset: menu_item_resume0.png
+Building asset: menu_item_resume1.png
+Building asset: menu_item_resume_text.png
+Building asset: menu_item_settings0.png
+Building asset: menu_item_settings1.png
+Building asset: menu_item_settings_text.png
+Building asset: menu_item_team0.png
+Building asset: menu_item_team1.png
+Building asset: menu_item_team_text.png
+Building asset: menu_item_video0.png
+Building asset: menu_item_video1.png
+Building asset: menu_item_video_text.png
+Building asset: menu_circle_00.png
+Building asset: menu_circle_01.png
+Building asset: menu_circle_02.png
+Building asset: menu_circle_10.png
+Building asset: menu_circle_11.png
+Building asset: menu_circle_12.png
+Building asset: menu_circle_big_0.png
+Building asset: menu_circle_big_1.png
+Building asset: menu_circle_big_2.png
+Building asset: checker.texture.psd
+Building asset: color_black.texture.psd
+Building asset: color_white.texture.psd
+Building asset: touch_dpad.texture.psd
+Building asset: touch_dpad_point.texture.psd
+Building asset: touch_point.texture.psd
+Building asset: debug.font_12.ttf
+Building asset: transformers.font_16.ttf
+[converter] Conversion of '2d_composite.shader.fx' failed!
+[converter] Conversion of '2d_sprite.shader.fx' failed!
+[converter] Conversion of 'bloom.shader.fx' failed!
+[converter] Conversion of 'blur.shader.fx' failed!
+[converter] Conversion of 'immediate.shader.fx' failed!
+[converter] shutdown
