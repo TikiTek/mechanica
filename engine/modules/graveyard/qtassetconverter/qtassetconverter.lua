@@ -1,5 +1,3 @@
--- library/modules/runtime/qtassetconverter
-
 local module = Module:new( "qtassetconverter" );
 
 module:add_files( "include/**/*.*" );

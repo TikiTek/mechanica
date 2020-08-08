@@ -1,5 +1,3 @@
--- library/modules/runtime/qtapplication
-
 local module = Module:new( "qtapplication" );
 
 module:add_files( "include/**/*.*" );

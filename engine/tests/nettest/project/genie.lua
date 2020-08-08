@@ -1,4 +1,4 @@
--- library/tests/nettest/project
+-- engine/tests/nettest/project
 
 include "../../../buildtools/genie_scripts"
 

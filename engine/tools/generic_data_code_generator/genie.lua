@@ -1,4 +1,4 @@
--- library/tools/generic_data_code_generator
+-- engine/tools/generic_data_code_generator
 
 include( "../../.." );
 add_module_include_path( "../.." );

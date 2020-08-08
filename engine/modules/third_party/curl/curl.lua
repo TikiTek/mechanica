@@ -1,5 +1,3 @@
--- library/thirdparty/curl
-
 local module = Module:new( "curl" );
 
 module.module_type = ModuleTypes.FilesModule;

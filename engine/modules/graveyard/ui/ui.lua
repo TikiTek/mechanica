@@ -1,5 +1,3 @@
--- library/modules/runtime/ui
-
 local module = Module:new( "uishader" );
 
 module:add_files( "include/tiki/ui/shader/*.hpp" );

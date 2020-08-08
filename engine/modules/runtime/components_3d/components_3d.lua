@@ -1,5 +1,3 @@
--- library/modules/runtime/components3d
-
 local module = Module:new( "components3d" );
 
 module:add_files( "source/*.*" );

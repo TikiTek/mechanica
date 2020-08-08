@@ -1,5 +1,3 @@
--- library/modules/runtime/script
-
 local module = Module:new( "script" );
 
 module:add_files( "include/tiki/**/*.*" );

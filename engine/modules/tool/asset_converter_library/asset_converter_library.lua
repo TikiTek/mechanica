@@ -1,5 +1,3 @@
--- library/modules/tool/asset_converter_library
-
 local module = Module:new( "asset_converter_library" );
 
 module:add_files( "source/*.*" );

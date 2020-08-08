@@ -1,5 +1,3 @@
--- library/modules/editor/mechanica_level_renderer
-
 local module = Module:new( "mechanica_level_renderer" );
 
 module:add_files( "source/*.*" );

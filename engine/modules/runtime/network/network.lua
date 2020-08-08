@@ -1,5 +1,3 @@
--- library/modules/runtime/network
-
 local module = Module:new( "network" );
 
 module:add_files( "include/**/*.*" );

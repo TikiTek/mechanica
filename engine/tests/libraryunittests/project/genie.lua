@@ -1,4 +1,4 @@
--- library/tests/unittest/project
+-- engine/tests/unittest/project
 
 include "../../../buildtools/genie_scripts"
 

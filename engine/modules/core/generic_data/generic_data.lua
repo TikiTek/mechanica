@@ -12,18 +12,18 @@ module:add_dependency( "core/resource" );
 
 module.import_func = function( project )
 	local output_path = path.getabsolute( _OPTIONS[ "generated_files_dir" ] );
-	
+
 	module:add_include_dir( output_path );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
-	
+
 	local exe_name = iff(is_windows, "generic_data_code_generator.exe", "generic_data_code_generator");
-	local exe_path = path.join( global_configuration.root_path, "library/buildtools/generic_data_code_generator/" .. exe_name );
+	local exe_path = path.join( global_configuration.root_path, "engine/buildtools/generic_data_code_generator/" .. exe_name );
 	local content_path = path.join( global_configuration.root_path, "content" );
 	local arguments = "--content-dir=" .. content_path .. " --target-dir=" .. output_path;
 	local command_line = exe_path .. " " .. arguments;
 
 	prebuildcommands { command_line };
-	
+
 	if _ACTION ~= "targets" then
 		os.execute( command_line );
 	end

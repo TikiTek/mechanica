@@ -1,5 +1,3 @@
--- library/thirdparty/sqlite
-
 local module = Module:new( "sqlite" );
 
 module.module_type = ModuleTypes.FilesModule;

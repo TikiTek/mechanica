@@ -1,5 +1,3 @@
--- library/thirdparty/directx
-
 local module = Module:new( "directx" );
 
 module:add_files( "*.lua" );

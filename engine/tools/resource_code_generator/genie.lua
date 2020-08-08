@@ -1,4 +1,4 @@
--- library/tools/resource_code_generator
+-- engine/tools/resource_code_generator
 
 include( "../../.." );
 add_module_include_path( "../.." );

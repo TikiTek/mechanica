@@ -1,5 +1,3 @@
--- library/thirdparty/vulkan
-
 local module = Module:new( "vulkan" );
 
 module:add_files( "vulkan.lua" );

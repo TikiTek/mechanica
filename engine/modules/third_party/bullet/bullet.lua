@@ -1,5 +1,3 @@
--- library/thirdparty/bullet
-
 local module = Module:new( "bullet" );
 
 module.module_type = ModuleTypes.FilesModule;

@@ -1,5 +1,5 @@
 $start_time = Get-Date
-$asset_converter = Join-Path -Path $PSScriptRoot -ChildPath "library\tools\command_line_converter\build\x64\Release\command_line_converter.exe"
+$asset_converter = Join-Path -Path $PSScriptRoot -ChildPath "engine\tools\command_line_converter\build\x64\Release\command_line_converter.exe"
 
 Echo "Building Assets..."
 Invoke-Expression $asset_converter

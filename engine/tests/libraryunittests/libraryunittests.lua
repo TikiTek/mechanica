@@ -1,5 +1,3 @@
--- library/tests/libraryunittests
-
 local module = Module:new( "libraryunittests" );
 
 module:add_files( "source/*.*" );

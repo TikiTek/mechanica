@@ -1,5 +1,3 @@
--- library/modules/runtime/physics3d
-
 local module = Module:new( "physics3d" );
 
 module:add_files( "physics3d.lua" );

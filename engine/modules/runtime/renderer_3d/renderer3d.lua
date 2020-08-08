@@ -1,5 +1,3 @@
--- library/modules/runtime/renderer3d
-
 local module = Module:new( "renderer3d" );
 
 module:add_files( "source/*.*" );

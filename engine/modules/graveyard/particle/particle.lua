@@ -1,5 +1,3 @@
--- library/modules/runtime/particle
-
 local module = Module:new( "particle" );
 
 module:add_files( "include/**/*.*" );

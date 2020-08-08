@@ -1,5 +1,3 @@
--- library/modules/editor/converter_editor
-
 local module = Module:new( "converter_editor" );
 
 module:add_files( "*.lua" );

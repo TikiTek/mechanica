@@ -1,4 +1,4 @@
--- library/tools/editor
+-- engine/tools/editor
 
 include( "../../.." );
 add_extension( "resources" );

@@ -1,5 +1,3 @@
--- library/tests/nettest
-
 local module = Module:new( "nettest" );
 
 module:add_files( "source/*.*" );
