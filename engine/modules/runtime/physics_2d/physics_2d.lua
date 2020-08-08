@@ -7,4 +7,5 @@ module:add_files( "include/**/*.hpp" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "core/math" );
-module:add_dependency( "third_party/box2d" );
+
+module:add_external( "https://github.com/erincatto/box2d.git" )

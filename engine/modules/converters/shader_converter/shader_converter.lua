@@ -6,11 +6,10 @@ module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "runtime/graphics_base" );
+module:add_dependency( "tool/tool_base" );
 module:add_dependency( "tool/converter_base" );
-module:add_dependency( "third_party/trex" );
-module:add_dependency( "third_party/dlls" );
 
-if use_msvc then
+if tiki.platform == Platforms.Windows then
 	module:add_library_file( "d3dcompiler" );
-	module:add_binary_file( "d3dcompiler_46.dll" );
+	--module:add_binary_file( "d3dcompiler_46.dll" );
 end

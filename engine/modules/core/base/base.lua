@@ -6,9 +6,9 @@ module:add_files( "*.lua" );
 module:add_files( "*.natvis" );
 module:add_include_dir( "include" );
 
-if is_windows then
+if tiki.platform == Platforms.Windows then
 	module:add_files( "source/win/*.cpp" );
-elseif is_linux then
+elseif tiki.platform == Platforms.Linux then
 	module:add_files( "source/posix/*.cpp" );
 
 	module:add_library_file( "pthread" );
