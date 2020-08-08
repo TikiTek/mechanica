@@ -7,6 +7,7 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "core/base" );
 module:add_dependency( "core/container" );
-module:add_dependency( "third_party/trex" );
+
+module:add_external( "https://github.com/kimperator/T-Rex.git" )
 
 module:set_define( "TIKI_BUILD_TOOLS", "TIKI_ON" );

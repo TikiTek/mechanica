@@ -55,7 +55,7 @@ namespace tiki
 		const Color color2 = color::fromFloatRGBA( color.r, color.g, color.b, color.a );
 
 		Vector3 center = Vector3::zero;
-		for( uint i = 0u; i < vertexCount; ++i )
+		for(uintreg i = 0u; i < uintreg( vertexCount ); ++i )
 		{
 			vector::add( center, toEngineVector( vertices[ i ], 0.0f ) );
 		}

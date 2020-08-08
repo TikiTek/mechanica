@@ -41,7 +41,7 @@ namespace tiki
 				HANDLE handle = INVALID_HANDLE_VALUE;
 				do
 				{
-					handle = CreateFile( filePath.getCompletePath(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+					handle = CreateFileA( filePath.getCompletePath(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 
 					if ( handle == INVALID_HANDLE_VALUE )
 					{

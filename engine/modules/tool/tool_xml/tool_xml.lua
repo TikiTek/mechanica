@@ -6,4 +6,5 @@ module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "runtime/base" );
-module:add_dependency( "third_party/tinyxml2" );
+
+module:add_external( "https://github.com/leethomason/tinyxml2.git" )

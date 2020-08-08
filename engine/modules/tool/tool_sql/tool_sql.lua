@@ -6,4 +6,5 @@ module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
 module:add_dependency( "core/base" );
-module:add_dependency( "third_party/sqlite" );
+
+module:add_external( "https://www.sqlite.org/@3320300" )

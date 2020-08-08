@@ -8,4 +8,5 @@ module:add_include_dir( "include" );
 module:add_dependency( "runtime/graphics_base" );
 module:add_dependency( "tool/converter_base" );
 module:add_dependency( "tool/texture_export" );
-module:add_dependency( "third_party/freetype" );
+
+module:add_external( "git://git.sv.nongnu.org/freetype/freetype2.git" )

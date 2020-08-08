@@ -282,7 +282,7 @@ namespace tiki
 				clearCircle( circle );
 
 				const uint64 angleType = random.nextUniformUInt64( 0u, 1u );
-				const uint64 textureIndex = random.nextUniformUInt64( 0u, bundle.circleSmall.getCount() );
+				const uintreg textureIndex = uintreg( random.nextUniformUInt64( 0u, bundle.circleSmall.getCount() ) );
 
 				switch( i )
 				{

@@ -1,6 +1,6 @@
 #include "tiki/tool_sql/sqlite_query.hpp"
 
-#include "sqlite/sqlite3.h"
+#include "sqlite3.h"
 
 namespace tiki
 {
