@@ -336,44 +336,6 @@ else
 print(spaces..linePrefix.."("..type(value)..") "..tostring(value))
 end
 end
-function io.exists( file_name )
-local file_handle = io.open( file_name, "r" )
-if file_handle then
-file_handle:close()
-return true
-end
-return false
-end
-function io.readfile( file_name )
-local file_handle = io.open( file_name, "r" )
-local result = ""
-if file_handle then
-result = file_handle:read( "*a" )
-file_handle:close()
-end
-return result
-end
-function io.writefile( file_name, content )
-local file_handle = io.open( file_name, "w" )
-if file_handle then
-file_handle:write( content )
-file_handle:close()
-return true
-end
-return false
-end
-function table.flatten( array_array )
-if type( array_array ) ~= "table" then
-throw( "table.flatten: invalid argument" )
-end
-local target = {}
-for i,array in pairs( array_array ) do
-for j,val in pairs( array ) do
-target[ #target + 1 ] = val
-end
-end
-return target
-end
 function table.uniq( array )
 local hash = {}
 local target = {}
@@ -384,33 +346,6 @@ target[ #target + 1 ] = val
 end
 end
 return target
-end
-function table.index_of( table, object )
-local result = -1
- 
-if type( table ) ~= "table" then
-throw( "not a table" )
-end
-local count = #table
-for i = 0,count do
-if table[ i ] == object then
-result = i
-break
-end
-end
-return result
-end
-function table.contains_value( table2, value )
-if type( table2 ) ~= "table" then
-throw( "not a table" )
-end
-local count = #table2
-for i = 0,count do
-if table2[ i ] == value then
-return true
-end
-end
-return false
 end
 function table.remove_value( table2, value )
 if type( table2 ) ~= "table" then
@@ -423,6 +358,13 @@ table.remove(table2, i )
 break
 end
 end
+end
+function table.length( table2 )
+local count = 0
+for _ in pairs( table2 ) do
+count = count + 1
+end
+return count
 end
 function copy_instance( target, source )
 for name,value in pairs( source ) do
@@ -484,8 +426,64 @@ end
 
 -- base/configuration.lua
 
+ConfigurationRuntimeTypeInformation = {
+On= "On",
+Off= "Off"
+}
+ConfigurationExceptionHandling = {
+Default= "Defult",
+On= "On",
+Off= "Off",
+SEH= "SEH"
+}
+ConfigurationFloatingPoint = {
+Default= "Default",
+Fast= "Fast",
+Strict= "Strict"
+}
+ConfigurationOptimization = {
+Off= "Off",
+On= "On",
+Debug= "Debug",
+Size= "Size",
+Speed= "Speed",
+Full= "Full"
+}
+ConfigurationCppDialect = {
+Default= "Default",
+Cpp98= "C++98",
+Cpp11= "C++11",
+Cpp14= "C++14",
+Cpp17= "C++17"
+}
+ConfigurationSymbols = {
+Default= "Default",
+Off= "Off",
+On= "On",
+FastLink= "FastLink",
+Full= "Full"
+}
+ConfigurationPrecompiledHeader = {
+Off= "Off",
+On= "On"
+}
+ConfigurationMultiProcessorCompile = {
+Off= "Off",
+On= "On"
+}
+ConfigurationSettings = {
+RuntimeTypeInformation= 1,
+ExceptionHandling= 2,
+FloatingPoint= 3,
+Optimization= 4,
+CppDialect= 5,
+Symbols= 6,
+PrecompiledHeader= 7,
+MultiProcessorCompile= 8
+}
 Configuration = class{
 defines = {},
+settings = {},
 flags = {},
 include_dirs = {},
 library_dirs = {},
@@ -493,44 +491,95 @@ library_files = {},
 pre_build_steps = {},
 post_build_steps = {}
 };
+local global_configuration_setttings = {
+ConfigurationRuntimeTypeInformation,
+ConfigurationExceptionHandling,
+ConfigurationFloatingPoint,
+ConfigurationOptimization,
+ConfigurationCppDialect,
+ConfigurationSymbols,
+ConfigurationPrecompiledHeader,
+ConfigurationMultiProcessorCompile
+}
+assert( #global_configuration_setttings == table.length( ConfigurationSettings ) )
 function Configuration:new()
 return class_instance( self );
-end
-function Configuration:set_define( name, value )
-if value == nil then
-table.insert( self.defines, name );
-else
-table.insert( self.defines, name .. "=" .. value );
-end
 end
 function Configuration:check_base_path( base_path )
 if type( base_path ) ~= "string" then
 throw( "not base_path. too few arguments." )
 end
 end
+function Configuration:set_define( name, value )
+if type( name ) ~= "string" or (value ~= nil and type( value ) ~= "string") then
+throw("[set_define] Invalid args.")
+end
+if value == nil then
+table.insert( self.defines, name );
+else
+table.insert( self.defines, name .. "=" .. value );
+end
+end
 function Configuration:set_flag( name )
+if type( name ) ~= "string" then
+throw("[set_flag] Invalid args.")
+end
 table.insert( self.flags, name );
 end
+function Configuration:set_setting( setting, value )
+if type( setting ) ~= "number" or value == nil then
+throw("[set_setting] Invalid args.")
+end
+if not table.contains( ConfigurationSettings, setting ) then
+throw( "Invalid setting " .. setting )
+end
+local values = global_configuration_setttings[ setting ]
+if not table.contains( values, value ) then
+throw( "'" .. value .. "' is not a valid value for " .. table.keys( ConfigurationSettings )[ setting ] )
+end
+self.settings[ setting ] = value
+end
 function Configuration:add_include_dir( include_dir, base_path )
+if type( include_dir ) ~= "string" then
+throw "[add_include_dir] Invalid args.";
+end
 self:check_base_path( base_path );
 table.insert( self.include_dirs, path.join( base_path, include_dir ) );
 end
 function Configuration:add_library_dir( library_dir, base_path )
+if type( library_dir ) ~= "string" then
+throw "[add_library_dir] Invalid args.";
+end
 self:check_base_path( base_path );
 table.insert( self.library_dirs, path.join( base_path, library_dir ) );
 end
 function Configuration:add_library_file( library_filename )
+if type( library_filename ) ~= "string" then
+throw "[add_library_file] Invalid args.";
+end
 table.insert( self.library_files, library_filename );
 end
 function Configuration:add_pre_build_step( step_script, step_data, step_base_path )
+if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
+throw "[add_pre_build_step] Invalid args.";
+end
 table.insert( self.pre_build_steps, { script = "actions/" .. step_script .. ".lua", base_path = step_base_path, data = step_data } );
 end
 function Configuration:add_post_build_step( step_script, step_data, step_base_path )
+if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
+throw "[add_post_build_step] Invalid args.";
+end
 table.insert( self.post_build_steps, { script = "actions/" .. step_script .. ".lua", base_path = step_base_path, data = step_data } );
 end
 function Configuration:apply_configuration( target )
 if type( target ) ~= "table" then
 throw "[Configuration:apply_configuration] wrong target arguments.";
+end
+for setting, value in pairs( self.settings ) do
+if target.settings[ setting ] and target.settings[ setting ] ~= value then
+throw( "Settings conflict for '" .. table.keys( ConfigurationSettings )[ setting ] .. "' with value '" .. target.settings[ setting ] .. " ' and '" .. value .. "'." )
+end
+target.settings[ setting ] = value
 end
 target.defines = table.join( target.defines, self.defines );
 target.flags = table.join( target.flags, self.flags );
@@ -542,35 +591,38 @@ target.binary_files = table.join( target.binary_files, self.binary_files );
 target.pre_build_steps = table.join( target.pre_build_steps, self.pre_build_steps );
 target.post_build_steps = table.join( target.post_build_steps, self.post_build_steps );
 end
-PlatformConfiguration = class{
+
+-- base/configuration_set.lua
+
+ConfigurationSet = class{
 base_path = "",
 global_config = nil,
 platforms = {},
 configurations = {},
-platformConfigurations = {} 
+ConfigurationSets = {} 
 };
-function PlatformConfiguration:new()
-local platformconfiguration_new = class_instance( self );
-platformconfiguration_new.global_config= Configuration:new();
+function ConfigurationSet:new()
+local ConfigurationSet_new = class_instance( self );
+ConfigurationSet_new.global_config= Configuration:new();
 if tiki.external then
-platformconfiguration_new.base_path= tiki.external.export_path;
+ConfigurationSet_new.base_path= tiki.external.export_path;
 else
-platformconfiguration_new.base_path= os.getcwd();
+ConfigurationSet_new.base_path= os.getcwd();
 end
-return platformconfiguration_new;
+return ConfigurationSet_new;
 end
-function PlatformConfiguration:get_config( configuration, platform )
+function ConfigurationSet:get_config( configuration, platform )
 if ( ( configuration ~= nil and type( configuration ) ~= "string" ) or ( platform ~= nil and type( platform ) ~= "string" ) ) then
-throw "[PlatformConfiguration:get_config] Invalid args";
+throw "[ConfigurationSet:get_config] Invalid args";
 end
 if ( configuration ~= nil and platform ~= nil ) then
-if not self.platformConfigurations[ platform ] then
-self.platformConfigurations[ platform ] = { configurations = {} };
+if not self.ConfigurationSets[ platform ] then
+self.ConfigurationSets[ platform ] = { configurations = {} };
 end
-if not self.platformConfigurations[ platform ].configurations[ configuration ] then
-self.platformConfigurations[ platform ].configurations[ configuration ] = Configuration:new();
+if not self.ConfigurationSets[ platform ].configurations[ configuration ] then
+self.ConfigurationSets[ platform ].configurations[ configuration ] = Configuration:new();
 end
-return self.platformConfigurations[ platform ].configurations[ configuration ];
+return self.ConfigurationSets[ platform ].configurations[ configuration ];
 elseif ( configuration ~= nil and platform == nil ) then
 if not self.configurations[ configuration ] then
 self.configurations[ configuration ] = Configuration:new();
@@ -586,61 +638,37 @@ return self.global_config;
 end
 return nil;
 end
-function PlatformConfiguration:set_base_path( base_path )
+function ConfigurationSet:set_base_path( base_path )
 if path.isabsolute( base_path ) then
 self.base_path = base_path;
 else
 self.base_path = path.join( tiki.root_path, base_path );
 end
 end
-function PlatformConfiguration:set_define( name, value, configuration, platform )
-if ( type( name ) == "string" and ( value == nil or type( value ) == "string" ) ) then
+function ConfigurationSet:set_define( name, value, configuration, platform )
 self:get_config( configuration, platform ):set_define( name, value, self.base_path );
-else
-throw("[set_define] Invalid args.")
 end
-end
-function PlatformConfiguration:set_flag( name, configuration, platform )
-if type( name ) == "string" then
+function ConfigurationSet:set_flag( name, configuration, platform )
 self:get_config( configuration, platform ):set_flag( name, self.base_path );
-else
-throw("[set_flag] Invalid args.")
 end
+function ConfigurationSet:set_setting( setting, value, configuration, platform )
+self:get_config( configuration, platform ):set_setting( setting, value );
 end
-function PlatformConfiguration:add_include_dir( include_dir, configuration, platform )
-if type( include_dir ) == "string" then
+function ConfigurationSet:add_include_dir( include_dir, configuration, platform )
 self:get_config( configuration, platform ):add_include_dir( include_dir, self.base_path );
-else
-throw "[add_include_dir] Invalid args.";
 end
-end
-function PlatformConfiguration:add_library_dir( library_dir, configuration, platform )
-if type( library_dir ) == "string" then
+function ConfigurationSet:add_library_dir( library_dir, configuration, platform )
 self:get_config( configuration, platform ):add_library_dir( library_dir, self.base_path );
-else
-throw "[add_library_dir] Invalid args.";
 end
-end
-function PlatformConfiguration:add_library_file( library_filename, configuration, platform )
-if type( library_filename ) == "string" then
+function ConfigurationSet:add_library_file( library_filename, configuration, platform )
 self:get_config( configuration, platform ):add_library_file( library_filename );
-else
-throw "[add_library_file] Invalid args.";
 end
-end
-function PlatformConfiguration:add_pre_build_step( step_script, step_data, configuration, platform )
-if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
-throw "[add_pre_build_step] Invalid args.";
-end
+function ConfigurationSet:add_pre_build_step( step_script, step_data, configuration, platform )
 self:get_config( configuration, platform ):add_pre_build_step( step_script, step_data, self.base_path );
 end
-function PlatformConfiguration:add_post_build_step( step_script, step_data, configuration, platform )
-if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
-throw "[add_post_build_step] Invalid args.";
-end
+function ConfigurationSet:add_post_build_step( step_script, step_data, configuration, platform )
 self:get_config( configuration, platform ):add_post_build_step( step_script, step_data, self.base_path );
 end
-
 -- base/external.lua
 
 ExternalTypes = {
@@ -658,7 +686,7 @@ import_file = nil,
 import_func = nil,
 module = nil
 }
-global_external_storage = {}
+local global_external_storage = {}
 function External:new( url )
 local external_new = class_instance( self )
 external_new.url= url:match( '(.*)@' ) or url:match( '(.*)$' )
@@ -674,7 +702,7 @@ elseif url_protocol == "https" and external_new.url:endswith( ".git" ) then
 external_new.type = ExternalTypes.Git
 elseif url_protocol == "svn" then
 external_new.type = ExternalTypes.SVN
-elseif url_protocol == "custom" then
+elseif url_protocol == "https" then
 external_new.type = ExternalTypes.Custom
 else
    throw( "External type '" .. url_protocol .. "' used by '" .. url .. "' is not supported." )
@@ -724,6 +752,14 @@ function External:export()
 local externals_dir = path.getabsolute( path.join( _OPTIONS[ "to" ], tiki.externals_dir ) )
 self.export_path = path.join( externals_dir, self.file_path )
 if self.type == ExternalTypes.SVN then
+self:export_svn()
+elseif self.type == ExternalTypes.Git then
+self:export_git()
+else
+os.mkdir( self.export_path )
+end
+end
+function External:export_svn()
 self:check_svn()
 local exists = os.isdir( self.export_path )
 if exists then
@@ -742,7 +778,8 @@ if checkout_result ~= 0 then
 throw( "Failed to checkout '" .. self.url .. "' to '" .. self.export_path .. "' with exit code " .. checkout_result .. "." )
 end
 end
-elseif self.type == ExternalTypes.Git then
+end
+function External:export_git()
 local base_command_line = tiki.git_path .. " -C " .. self.export_path .. " "
 self:check_git()
 local exists = os.isdir( self.export_path )
@@ -778,7 +815,6 @@ print( "Checkout " .. self.url .."..." )
 local checkout_result = os.execute( base_command_line .. "checkout " .. self.version )
 if not checkout_result then
 throw( "Failed to checkout '" .. self.version .. "' for external '" .. self.url .. "'." )
-end
 end
 end
 end
@@ -827,8 +863,6 @@ exclude_files = {},
 optional_files = {},
 stack_trace = ""
 }
-global_module_include_pathes = {}
-global_module_storage = {}
 ModuleTypes = {
 UnityCppModule= 0,
 UnityCModule= 1,
@@ -837,6 +871,8 @@ FilesModule= 2
 if not tiki.default_module_type then
 tiki.default_module_type = ModuleTypes.UnityCppModule
 end
+local global_module_include_pathes = {}
+local global_module_storage = {}
 function add_module_include_path( include_path )
 if path.isabsolute( include_path ) then
 throw( "Please use relative pathes for module include pathes."  )
@@ -895,7 +931,7 @@ for _, include_path in pairs( global_module_include_pathes ) do
 print( include_path )
 end
 local error_text = "Module with name '" .. module_name .. "' not found."
-if ( importer_name ) then
+if importer_name then
 error_text = error_text .. " Imported by " .. importer_name .. "!"
 end
 throw( error_text )
@@ -913,7 +949,7 @@ end
 end
 local module_new = class_instance( self )
 module_new.name= name
-module_new.config= PlatformConfiguration:new()
+module_new.config= ConfigurationSet:new()
 module_new.module_type= tiki.default_module_type
 module_new.stack_trace= debug.traceback()
 table.insert( global_module_storage, module_new )
@@ -944,6 +980,9 @@ self.config:set_define( name, value, configuration, platform )
 end
 function Module:set_flag( name, configuration, platform )
 self.config:set_flag( name, configuration, platform )
+end
+function Module:set_setting( setting, value, configuration, platform )
+self.config:set_setting( setting, value, configuration, platform )
 end
 function Module:add_include_dir( include_dir, configuration, platform )
 self.config:add_include_dir( include_dir, configuration, platform )
@@ -997,7 +1036,7 @@ if #matches == 0 then
 throw( pattern .. "' pattern in '" .. self.name .. "' matches no files." )
 end
 for j, file_name in pairs( matches ) do
-if not io.exists( file_name ) then
+if not os.isfile( file_name ) then
 throw("[finalize] '" .. file_name .. "'  in '" .. self.name .. "' don't exists.")
 end
 if not table.contains( all_files, file_name ) then
@@ -1021,10 +1060,10 @@ end
 for _,pattern in pairs( self.exclude_files ) do
 local matches = os.matchfiles( pattern )
 for j,file_name in pairs( matches ) do
-local index = table.index_of( all_files, file_name )
-while index >= 0 do
+local index = table.indexof( all_files, file_name )
+while index do
 table.remove( all_files, index )
-index = table.index_of( all_files, file_name )
+index = table.indexof( all_files, file_name )
 end
 end
 end
@@ -1105,7 +1144,7 @@ platforms = {},
 configurations = {},
 generated_files_dir = ''
 }
-global_project_storage = {}
+local global_project_storage = {}
 function find_project( project_name )
 for i,project in pairs( global_project_storage ) do
 if ( project.name == project_name ) then
@@ -1128,7 +1167,7 @@ end
 local project_new = class_instance( self )
 project_new.name= name
 project_new.type= project_type
-project_new.module= Module:new( name )
+project_new.module= Module:new( name .. "_project" )
 project_new.configurations= configurations
 project_new.platforms= platforms
 table.insert( global_project_storage, project_new )
@@ -1145,6 +1184,9 @@ self.module:set_define( name, value, configuration, platform )
 end
 function Project:set_flag( name, configuration, platform )
 self.module:set_flag( name, configuration, platform )
+end
+function Project:set_setting( setting, value, configuration, platform )
+self.module:set_setting( setting, value, configuration, platform )
 end
 function Project:add_include_dir( include_dir, configuration, platform )
 self.module:add_include_dir( include_dir, configuration, platform )
@@ -1191,25 +1233,50 @@ end
 return build_dir
 end
 function Project:finalize_config( config )
-local array_defines = table.uniq( config.defines )
-local array_flags = table.uniq( config.flags )
-local array_include_dirs = table.uniq( config.include_dirs )
-local array_library_dirs = table.uniq( config.library_dirs )
-local array_library_files = table.uniq( config.library_files )
-if array_defines then
-defines( array_defines )
+local final_defines = table.uniq( config.defines )
+local final_flags = table.uniq( config.flags )
+local final_include_dirs = table.uniq( config.include_dirs )
+local final_library_dirs = table.uniq( config.library_dirs )
+local final_library_files = table.uniq( config.library_files )
+if final_defines then
+defines( final_defines )
 end
-if array_flags then
-flags( array_flags )
+if final_flags then
+flags( final_flags )
 end
-if array_include_dirs then
-includedirs( array_include_dirs )
+if final_include_dirs then
+includedirs( final_include_dirs )
 end
-if array_library_dirs then
-libdirs( array_library_dirs )
+if final_library_dirs then
+libdirs( final_library_dirs )
 end
-if array_library_files then
-links( array_library_files )
+if final_library_files then
+links( final_library_files )
+end
+for setting, value in pairs( config.settings ) do
+if setting == ConfigurationSettings.RuntimeTypeInformation then
+rtti( value )
+elseif setting == ConfigurationSettings.ExceptionHandling then
+exceptionhandling( value )
+elseif setting == ConfigurationSettings.FloatingPoint then
+floatingpoint( value )
+elseif setting == ConfigurationSettings.Optimization then
+optimize( value )
+elseif setting == ConfigurationSettings.CppDialect then
+cppdialect( value )
+elseif setting == ConfigurationSettings.Symbols then
+symbols( value )
+elseif setting == ConfigurationSettings.PrecompiledHeader then
+if value == ConfigurationPrecompiledHeader.Off then
+flags{ "NoPCH" }
+end
+elseif setting == ConfigurationSettings.MultiProcessorCompile then
+if value == ConfigurationMultiProcessorCompile.On then
+flags{ "MultiProcessorCompile" }
+end
+else
+throw( "Invalid setting " .. setting );
+end
 end
 end
 function Project:finalize_build_steps( config, build_dir )
@@ -1281,6 +1348,7 @@ local config_platform = {}
 for _,build_platform in pairs( self.platforms ) do
 configuration{ build_platform }
 config_platform[ build_platform ] = Configuration:new()
+solution:finalize_configuration( config_platform[ build_platform ], nil, build_platform )
 self.module:finalize_configuration( config_platform[ build_platform ], nil, build_platform )
 for j,cur_module in pairs( modules ) do
 cur_module:finalize_configuration( config_platform[ build_platform ], nil, build_platform )
@@ -1290,6 +1358,7 @@ local config_configuration = {}
 for _,build_config in pairs( self.configurations ) do
 configuration{ build_config }
 config_configuration[ build_config ] = Configuration:new()
+solution:finalize_configuration( config_configuration[ build_config ], build_config, nil )
 self.module:finalize_configuration( config_configuration[ build_config ], build_config, nil )
 for j,cur_module in pairs( modules ) do
 cur_module:finalize_configuration( config_configuration[ build_config ], build_config, nil )
@@ -1309,6 +1378,7 @@ debugdir( build_dir )
 objdir( path.join( build_dir, "obj" ) )
 end
 local config = Configuration:new()
+solution:finalize_configuration( config, build_config, build_platform )
 self.module:finalize_configuration( config, build_config, build_platform )
 for k,cur_module in pairs( modules ) do
 cur_module:finalize_configuration( config, build_config, build_platform )
@@ -1327,6 +1397,7 @@ end
 
 Solution = class{
 name = nil,
+config = nil,
 projects = {}
 }
 function add_extension( name )
@@ -1339,7 +1410,8 @@ local source = debug.getinfo( 2 ).source
 name = source:match( "([^/]+)/genie.lua$" )
 end
 local solution_new = class_instance( self )
-solution_new.name = name
+solution_new.name= name
+solution_new.config= ConfigurationSet:new()
 return solution_new
 end
 function Solution:add_project( project )
@@ -1388,11 +1460,32 @@ configuration{ "Project" }
 kind( "Makefile" )
 buildcommands{ _PREMAKE_COMMAND .. " /scripts=.. /to=" .. _OPTIONS[ "to" ] .. " " .. _ACTION }
 end
-function finalize_solution( ... )
+function Solution:finalize_configuration( config, configuration, platform )
+self.config:get_config( configuration, platform ):apply_configuration( config )
+end
+function finalize_default_solution( ... )
 local projects = {...}
 local source = debug.getinfo( 2 ).source
 local name = source:match( "([^/]+)/premake5.lua$" )
 local solution = Solution:new( name )
+solution.config:set_define( "DEBUG", nil, "Debug" );
+solution.config:set_define( "_DEBUG", nil, "Debug" );
+solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Debug, "Debug" );
+solution.config:set_setting( ConfigurationSettings.Symbols, ConfigurationSymbols.Full, "Debug" );
+solution.config:set_setting( ConfigurationSettings.FloatingPoint, ConfigurationFloatingPoint.Fast, "Debug" );
+solution.config:set_define( "NDEBUG", nil, "Release" );
+solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Speed, "Release" );
+solution.config:set_setting( ConfigurationSettings.Symbols, ConfigurationSymbols.Default, "Release" );
+solution.config:set_setting( ConfigurationSettings.FloatingPoint, ConfigurationFloatingPoint.Fast, "Release" );
+solution.config:set_define( "NDEBUG", nil, "Master" );
+solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Speed, "Master" );
+solution.config:set_setting( ConfigurationSettings.Symbols, ConfigurationSymbols.Default, "Master" );
+solution.config:set_setting( ConfigurationSettings.FloatingPoint, ConfigurationFloatingPoint.Fast, "Master" );
+solution.config:set_setting( ConfigurationSettings.CppDialect, ConfigurationCppDialect.Cpp11 );
+solution.config:set_setting( ConfigurationSettings.RuntimeTypeInformation, ConfigurationRuntimeTypeInformation.Off );
+solution.config:set_setting( ConfigurationSettings.ExceptionHandling, ConfigurationExceptionHandling.Off );
+solution.config:set_setting( ConfigurationSettings.PrecompiledHeader, ConfigurationPrecompiledHeader.Off );
+solution.config:set_setting( ConfigurationSettings.MultiProcessorCompile, ConfigurationMultiProcessorCompile.On );
 for _, project in ipairs( projects ) do
 solution:add_project( project )
 end
@@ -1400,7 +1493,7 @@ solution:finalize()
 end
 
 -- base/buildsteps.lua
-if _ACTION == 'buildsteps'
+if _ACTION == 'buildsteps' then
 newoption{ trigger = "script", description = "Script to load" }
 newoption{ trigger = "project", description = "Name of the Project" }
 end
@@ -1617,6 +1710,64 @@ tiki.files[ "extensions/actions/qt_ui.lua" ] = "return function( data, config )\
 "throw( \"uic return an error\" );\n" ..
 "end\n" ..
 "end"
+-- externals/https/www.sqlite.org/tiki.lua
+tiki.files[ "externals/https/www.sqlite.org/tiki.lua" ] = "-- https/sqlite.org\n" ..
+"local version_name = \"sqlite-amalgamation-\" .. tiki.external.version\n" ..
+"local download_path = path.join( tiki.external.export_path, \"source_code.zip\" )\n" ..
+"if not os.isfile( download_path ) then\n" ..
+"local download_url = \"https://www.sqlite.org/2020/\" .. version_name .. \".zip\"\n" ..
+"print( \"Download: \" .. download_url )\n" ..
+"local result_str, result_code = http.download( download_url, download_path )\n" ..
+"if result_code ~= 200 then\n" ..
+"throw( \"SQLite download failed with error \" .. result_code .. \": \" .. result_str )\n" ..
+"end\n" ..
+"zip.extract( download_path, tiki.external.export_path )\n" ..
+"end\n" ..
+"local sqlite_project = Project:new(\n" ..
+"\"sqlite\",\n" ..
+"{ \"x32\", \"x64\" },\n" ..
+"{ \"Debug\", \"Release\" },\n" ..
+"ProjectTypes.StaticLibrary\n" ..
+");\n" ..
+"sqlite_project.module.module_type = ModuleTypes.FilesModule;\n" ..
+"sqlite_project:add_files( version_name .. \"/*.h\" );\n" ..
+"sqlite_project:add_files( version_name .. \"/*.c\" );\n" ..
+"module:add_library_file( \"sqlite\" );\n" ..
+"module:add_include_dir( version_name );\n" ..
+"module.import_func = function( project, solution )\n" ..
+"solution:add_project( sqlite_project );\n" ..
+"end\n" ..
+""
+-- externals/https/sourceforge.net/projects/libpsd/tiki.lua
+tiki.files[ "externals/https/sourceforge.net/projects/libpsd/tiki.lua" ] = "-- https/sourceforge.net/projects/libpsd\n" ..
+"local version_name = \"libpsd-0.9\"\n" ..
+"local download_path = path.join( tiki.external.export_path, \"source_code.zip\" )\n" ..
+"if not os.isfile( download_path ) then\n" ..
+"local download_url = \"https://downloads.sourceforge.net/project/libpsd/libpsd/0.9/libpsd-0.9.zip\"\n" ..
+"print( \"Download: \" .. download_url )\n" ..
+"local result_str, result_code = http.download( download_url, download_path )\n" ..
+"if result_code ~= 200 then\n" ..
+"throw( \"libpsd download failed with error \" .. result_code .. \": \" .. result_str )\n" ..
+"end\n" ..
+"zip.extract( download_path, tiki.external.export_path )\n" ..
+"end\n" ..
+"local libpsd_project = Project:new(\n" ..
+"\"libpsd\",\n" ..
+"{ \"x32\", \"x64\" },\n" ..
+"{ \"Debug\", \"Release\" },\n" ..
+"ProjectTypes.StaticLibrary\n" ..
+");\n" ..
+"libpsd_project.module.module_type = ModuleTypes.FilesModule;\n" ..
+"libpsd_project:add_include_dir( version_name .. \"/include\" );\n" ..
+"libpsd_project:add_files( version_name .. \"/include/*.h\" );\n" ..
+"libpsd_project:add_files( version_name .. \"/src/*.h\" );\n" ..
+"libpsd_project:add_files( version_name .. \"/src/*.c\" );\n" ..
+"module:add_library_file( \"libpsd\" );\n" ..
+"module:add_include_dir( version_name .. \"/include\" );\n" ..
+"module.import_func = function( project, solution )\n" ..
+"solution:add_project( libpsd_project );\n" ..
+"end\n" ..
+""
 -- externals/https/github.com/kimperator/T-Rex.git/tiki.lua
 tiki.files[ "externals/https/github.com/kimperator/T-Rex.git/tiki.lua" ] = "-- https/github.com/kimperator/T-Rex.git\n" ..
 "local trex_project = Project:new(\n" ..
@@ -1689,7 +1840,8 @@ tiki.files[ "externals/https/github.com/ocornut/imgui.git/tiki.lua" ] = "-- http
 "module:add_include_dir( \".\" );\n" ..
 "module.import_func = function( project, solution )\n" ..
 "solution:add_project( imgui_project );\n" ..
-"end"
+"end\n" ..
+""
 -- externals/git/git.sv.nongnu.org/freetype/freetype2.git/tiki.lua
 tiki.files[ "externals/git/git.sv.nongnu.org/freetype/freetype2.git/tiki.lua" ] = "-- git/git.sv.nongnu.org/freetype/freetype2.git\n" ..
 "local freetype_project = Project:new(\n" ..
