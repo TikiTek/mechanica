@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generic_types>
+	<enum name="MechanicaLocaTag">
+		<value name="Title" />
+		<value name="LevelName" />
+	</enum>
+</generic_types> 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generic_types base="components">
+	<enum name="Components2dType">
+		<value name="Transform" value="{crc Transform2dComponent}" />
+		<value name="Sprite" value="{crc SpriteComponent}" />
+		<value name="Polygon" value="{crc PolygonComponent}" />
+	</enum>
+	<struct name="Transform2dComponentInitData" base="ComponentInitData">
+		<field type="float2" name="position" />
+		<field type="float" name="rotation" />
+		<field type="float2" name="scale">
+			<value>
+				<object type="float2">
+					<field name="x" type="float" value="1.0" />
+					<field name="y" type="float" value="1.0" />
+				</object>
+			</value>
+		</field>
+	</struct>
+	<struct name="SpriteComponentInitData" base="ComponentInitData">
+		<field type="{reference Texture}" name="texture" />
+		<field type="float2" name="offset" />
+		<field type="uint32" name="layerId" />
+	</struct>
+	<struct name="PolygonComponentInitData" base="ComponentInitData">
+		<field type="{reference Texture}" name="texture" />
+		<field type="{array float2}" name="points" />
+		<field type="{array float2}" name="uvs" />
+		<field type="uint32" name="layerId" />
+	</struct>
+</generic_types> 

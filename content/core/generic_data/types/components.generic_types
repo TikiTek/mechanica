@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generic_types base="base">
+	<struct name="ComponentInitData">
+	</struct>
+	<enum name="ComponentsType">
+		<value name="LifeTime" value="{crc LifeTimeComponent}" />
+	</enum>
+	<struct name="LifeTimeComponentInitData" base="ComponentInitData">
+		<field type="timems" name="lifeTimeInMs" />
+	</struct>
+</generic_types> 

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tikigenericobjects>
+  <resource type="EntityTemplate">
+    <object type="EntityTemplateData">
+      <field type="{array EntityComponent}" name="components">
+        <array type="EntityComponent">
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Components2dType.Transform}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="Transform2dComponentInitData" />
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Components2dType.Sprite}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="SpriteComponentInitData">
+                  <field type="uint32" name="layerId" value="{enum MechanicaRenderLayer.Islands}" />
+                  <field type="{reference Texture}" name="texture" value="TEXR:islandO2b.texture" />
+                </object>
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum Physics2dComponentType.Body}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="Physics2dBodyComponentInitData">
+                  <field type="float" name="density" value="10.0" />
+                  <field type="float" name="friction" value="1.0" />
+                  <field type="bool" name="freeRotation" value="true" />
+                  <field type="uint32" name="materialId" value="{enum MechanicaMaterialId.Island}" />
+                  <field type="Physics2dComponentShapeInitData" name="shape">
+                    <object type="Physics2dComponentShapeInitData">
+                      <field type="Physics2dShapeType" name="type" value="{enum Physics2dShapeType.Polygon}" />
+                      <field type="{array float2}" name="vertices">
+                        <array type="float2">
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-0.07" />
+                              <field type="float" name="y" value="1.54" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="1.2" />
+                              <field type="float" name="y" value="1.7" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-1.48" />
+                              <field type="float" name="y" value="-4.77" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-1.76" />
+                              <field type="float" name="y" value="-1.46" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-2.41" />
+                              <field type="float" name="y" value="-1.71" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-2.03" />
+                              <field type="float" name="y" value="0.4" />
+                            </object>
+                          </element>
+                          <element type="float2">
+                            <object type="float2">
+                              <field type="float" name="x" value="-1.66" />
+                              <field type="float" name="y" value="0.67" />
+                            </object>
+                          </element>
+                        </array>
+                      </field>
+                    </object>
+                  </field>
+                </object>
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum MechanicaComponentType.Breakable}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="BreakableComponentInitData">
+                  <field type="float" name="destructionForce" value="10.0" />
+                  <field type="uint32" name="fragmentMaxDepth" value="5" />
+                  <field type="float" name="fragmentMinBreakAfterSeconds" value="0.1" />
+                  <field type="float" name="fragmentMaxBreakAfterSeconds" value="0.8" />
+                  <field type="uint32" name="fragmentMaterialId" value="{enum MechanicaMaterialId.Island}" />
+                  <field type="{array BreakableFragment}" name="fragments">
+                    <array type="BreakableFragment">
+                      <element type="BreakableFragment">
+                        <object type="BreakableFragment">
+                          <field type="{array float2}" name="points">
+                            <array type="float2">
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-2.92" />
+                                  <field type="float" name="y" value="-4.78" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.48" />
+                                  <field type="float" name="y" value="-4.77" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.66" />
+                                  <field type="float" name="y" value="0.67" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-2.03" />
+                                  <field type="float" name="y" value="0.4" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-2.41" />
+                                  <field type="float" name="y" value="-1.71" />
+                                </object>
+                              </element>
+                            </array>
+                          </field>
+                        </object>
+                      </element>
+                      <element type="BreakableFragment">
+                        <object type="BreakableFragment">
+                          <field type="{array float2}" name="points">
+                            <array type="float2">
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.76" />
+                                  <field type="float" name="y" value="-1.46" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.48" />
+                                  <field type="float" name="y" value="-4.77" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="0.77" />
+                                  <field type="float" name="y" value="-4.82" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.07" />
+                                  <field type="float" name="y" value="1.54" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.26" />
+                                  <field type="float" name="y" value="2.37" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.89" />
+                                  <field type="float" name="y" value="3.59" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.13" />
+                                  <field type="float" name="y" value="3.4" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-1.66" />
+                                  <field type="float" name="y" value="0.67" />
+                                </object>
+                              </element>
+                            </array>
+                          </field>
+                        </object>
+                      </element>
+                      <element type="BreakableFragment">
+                        <object type="BreakableFragment">
+                          <field type="{array float2}" name="points">
+                            <array type="float2">
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.04" />
+                                  <field type="float" name="y" value="-0.47" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="0.77" />
+                                  <field type="float" name="y" value="-4.82" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="2.86" />
+                                  <field type="float" name="y" value="-4.79" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="1.68" />
+                                  <field type="float" name="y" value="-1.31" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="1.14" />
+                                  <field type="float" name="y" value="0.15" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="0.95" />
+                                  <field type="float" name="y" value="0.3" />
+                                </object>
+                              </element>
+                            </array>
+                          </field>
+                        </object>
+                      </element>
+                      <element type="BreakableFragment">
+                        <object type="BreakableFragment">
+                          <field type="{array float2}" name="points">
+                            <array type="float2">
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.89" />
+                                  <field type="float" name="y" value="3.59" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="-0.04" />
+                                  <field type="float" name="y" value="-0.47" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="1.14" />
+                                  <field type="float" name="y" value="0.15" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="1.2" />
+                                  <field type="float" name="y" value="1.7" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="0.85" />
+                                  <field type="float" name="y" value="3.37" />
+                                </object>
+                              </element>
+                              <element type="float2">
+                                <object type="float2">
+                                  <field type="float" name="x" value="0.06" />
+                                  <field type="float" name="y" value="5.1" />
+                                </object>
+                              </element>
+                            </array>
+                          </field>
+                        </object>
+                      </element>
+                    </array>
+                  </field>
+                </object>
+              </field>
+            </object>
+          </element>
+          <element type="EntityComponent">
+            <object type="EntityComponent">
+              <field type="crc32" name="componentType" value="{enum MechanicaComponentType.Wiggle}" />
+              <field type="{pointer ComponentInitData}" name="initData">
+                <object type="WiggleComponentInitData" />
+              </field>
+            </object>
+          </element>
+        </array>
+      </field>
+    </object>
+  </resource>
+</tikigenericobjects>

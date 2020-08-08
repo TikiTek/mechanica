@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generic_types>
+	<struct name="MenuElement">
+		<field type="{reference Texture}" name="texture" />
+		<field type="{reference Texture}" name="textureHover" />
+		<field type="{reference Texture}" name="textureText" />
+		<field type="string" name="action" />
+	</struct>
+	<struct name="CircleTextures">
+		<field type="{reference Texture}" name="texture0" />
+		<field type="{reference Texture}" name="texture1" />
+		<field type="{reference Texture}" name="texture2" />
+	</struct>
+	<struct name="MechanicaMenuBundle">
+		<field type="{reference Texture}" name="background" />
+		<field type="{reference Texture}" name="circleBigText" />
+		<field type="{reference Texture}" name="menuConnection" />
+		<field type="{reference Texture}" name="robo" />
+		<field type="CircleTextures" name="circleBig" />
+		<field type="{array CircleTextures}" name="circleSmall" />
+		<field type="{array MenuElement}" name="menuElements" />
+		<field type="{array MenuElement}" name="levelElement" />
+		<field type="{array MenuElement}" name="settingsElements" />
+	</struct>
+	<resource name="MenuBundle" base="MechanicaMenuBundle" postfix="menu_bundle" fourcc="MMBU" />
+</generic_types> 

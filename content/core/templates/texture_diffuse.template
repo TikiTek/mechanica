@@ -1,0 +1,4 @@
+<template base="texture">
+	<param key="width" value="/1" />
+	<param key="height" value="/1" />
+</template>

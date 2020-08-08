@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<generic_types base="components">
+	<struct name="EntityComponent">
+		<field type="crc32" name="componentType" />
+		<field type="{pointer ComponentInitData}" name="initData" />
+	</struct>
+	<struct name="EntityTemplateData">
+		<field type="{array EntityComponent}" name="components" />
+	</struct>
+	<resource name="EntityTemplate" base="EntityTemplateData" postfix="entity" fourcc="ETPL" />
+</generic_types> 
