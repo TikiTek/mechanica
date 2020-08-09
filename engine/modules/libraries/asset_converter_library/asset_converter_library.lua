@@ -1,7 +1,7 @@
 local asset_converter_library_project = Project:new(
 	"asset_converter_library",
 	{ "x32", "x64" },
-	{ "Debug", "Release", "Master" },
+	{ "Debug", "Release" },
 	ProjectTypes.SharedLibrary
 );
 

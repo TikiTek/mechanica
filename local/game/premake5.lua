@@ -5,7 +5,7 @@ include( "../.." )
 local project = Project:new(
 	"game",
 	{ "x32", "x64" },
-	{ "Debug", "Release", "Master" },
+	{ "Debug", "Release" }, -- diabled for now: "Master" },
 	ProjectTypes.WindowApplication
 )
 
