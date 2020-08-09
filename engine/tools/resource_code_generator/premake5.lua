@@ -15,6 +15,6 @@ project:add_files( "*.lua" );
 project:add_dependency( "config" );
 project:add_dependency( "tool/tool_base" );
 
-project:add_install( "*.exe", "engine/buildtools/resource_code_generator", "Release" );
+project:add_install( "*.exe", "../../buildtools/resource_code_generator", "Release" );
 
 finalize_default_solution( project )
