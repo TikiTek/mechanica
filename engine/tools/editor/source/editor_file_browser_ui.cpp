@@ -2,7 +2,7 @@
 
 #include "tiki/io/directory_iterator.hpp"
 
-#include "res_editor.hpp"
+#include "res_editor_project.hpp"
 
 namespace tiki
 {
@@ -21,9 +21,9 @@ namespace tiki
 
 	void EditorFileBrowserUi::create()
 	{
-		m_packageIcon.createFromMemory( getEditorResource( EditorResources_BrowserPackage ) );
-		m_folderIcon.createFromMemory( getEditorResource( EditorResources_BrowserFolder ) );
-		m_unknownIcon.createFromMemory( getEditorResource( EditorResources_BrowserFileUnknown ) );
+		m_packageIcon.createFromMemory( getEditorProjectResource( EditorProjectResources_BrowserPackage ) );
+		m_folderIcon.createFromMemory( getEditorProjectResource( EditorProjectResources_BrowserFolder ) );
+		m_unknownIcon.createFromMemory( getEditorProjectResource( EditorProjectResources_BrowserFileUnknown ) );
 
 		m_nodes.create( 128u );
 	}
