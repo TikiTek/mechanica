@@ -12,18 +12,33 @@
 tiki::InstanceHandle				s_instanceHandle;
 tiki::StaticArray< const char* >	s_arguments;
 
-char**								s_ppArguments;
-int									s_argumentCount;
-
 #if TIKI_ENABLED( TIKI_SDL )
 #	include "SDL_main.h"
 #endif
 
+#if TIKI_ENABLED( TIKI_BUILD_WINDOW_APP )
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
+{
+	s_instanceHandle = (tiki::InstanceHandle)hInstance;
+
+	// TODO:
+	//int argc;
+	//char** argv = CommandLineToArgvW( GetCommandLineW(), &argc );
+	// convert to utf8
+	//LocalFree(szArglist);
+	//s_arguments.create((const char**)argv, (tiki::uint)argc);
+
+	s_arguments.create( nullptr, 0u );
+
+	const int returnValue = tiki::platform::startApplication();
+
+	s_arguments.dispose();
+	return returnValue;
+}
+#else
 int main( int argc, char** argv )
 {
-	s_instanceHandle	= (tiki::InstanceHandle)GetModuleHandle( nullptr );
-	s_ppArguments		= argv;
-	s_argumentCount		= argc;
+	s_instanceHandle = (tiki::InstanceHandle)GetModuleHandle( nullptr );
 
 	s_arguments.create( (const char**)argv, (tiki::uint)argc );
 
@@ -32,6 +47,7 @@ int main( int argc, char** argv )
 	s_arguments.dispose();
 	return returnValue;
 }
+#endif
 
 #endif
 
@@ -137,16 +153,6 @@ namespace tiki
 		}
 
 		return false;
-	}
-
-	char** platform::getArgumentPointer()
-	{
-		return s_ppArguments;
-	}
-
-	int& platform::getArgumentCount()
-	{
-		return s_argumentCount;
 	}
 #endif
 }

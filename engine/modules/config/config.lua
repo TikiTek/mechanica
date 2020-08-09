@@ -5,6 +5,13 @@ Compilers = {
 	Clang = 3
 }
 
+GraphicsApis = {
+	Stub,
+	D3D11 = 0,
+	D3D12 = 1,
+	Vulkan = 2
+}
+
 local module = Module:new();
 
 --module.import_func = function()
@@ -66,5 +73,18 @@ module:set_define( "TIKI_BUILD_64BIT", "TIKI_ON", nil, "x64" );
 module:set_define( "TIKI_BUILD_MSVC", iff( compiler == Compilers.MSVC, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_GCC", iff( compiler == Compilers.GCC, "TIKI_ON", "TIKI_OFF" ) );
 module:set_define( "TIKI_BUILD_CLANG", iff( compiler == Compilers.Clang, "TIKI_ON", "TIKI_OFF" ) );
+
+graphics_api = GraphicsApis.Stub
+if tiki.platform == Platforms.Windows then
+	graphics_api = GraphicsApis.D3D11
+elseif tiki.platform == Platforms.Linux then
+	graphics_api = GraphicsApis.Vulkan
+else
+	throw( "Operating System not supported." );
+end
+
+module:set_define( "TIKI_GRAPHICS_D3D11", iff( graphics_api == GraphicsApis.D3D11, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_D3D12", iff( graphics_api == GraphicsApis.D3D12, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_GRAPHICS_VULKAN", iff( graphics_api == GraphicsApis.Vulkan, "TIKI_ON", "TIKI_OFF" ) );
 
 --module:set_flag( "FatalWarnings" );
