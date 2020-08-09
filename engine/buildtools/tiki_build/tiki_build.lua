@@ -224,7 +224,7 @@ function DataDumper(value, varname, fastmode, ident)
   end
 end
 -- base/globals.lua
-newoption{ trigger = "quiet", description = "does nothing" }
+newoption{ trigger = "quiet", description = "Hide all traces" }
 newoption{ trigger = "to", description = "Location for generated project files. Default: ./build" }
 Platforms = {
 Unknown= 0,
@@ -278,6 +278,15 @@ end
 
 -- base/functions.lua
 
+local lua_print = print
+function print(msg, ...)
+if not _OPTIONS.quiet then
+lua_print( msg )
+end
+end
+function quietf(msg, ...)
+lua_print(string.format(msg, ...))
+end
 function throw( text )
 print( debug.traceback() )
 error( text )
@@ -1611,22 +1620,26 @@ newaction {
 
 -- base/targets.lua
 newoption{ trigger = "targets_action", description = "Action to simulate" }
-function print_targets(sln)
-local vstudio_configs = premake.vstudio.buildconfigs( sln )
+function print_targets( wks )
 local result = "[\n"
-for i,config in pairs( vstudio_configs ) do
+local i = 1
+for cfg in premake.workspace.eachconfig(wks) do
+if cfg.buildcfg ~= "Project" then
 if i ~= 1 then
 result = result .. ", \n"
 end
-result = result .. "\t{ \"config\": \"" .. config[ "buildcfg" ] .. "\", \"platform\": \"" .. config[ "platform" ] .. "\" }"
+local platform = premake.vstudio.solutionPlatform(cfg)
+result = result .. "\t{ \"config\": \"" .. cfg.buildcfg .. "\", \"platform\": \"" .. platform .. "\" }"
+i = i + 1
+end
 end
 result = result .. "\n]"
-print( result )
+quietf( result )
 end
 newaction {
-   trigger     = "targets",
-   description = "Print Targets",
-   onsolution  = print_targets
+   trigger= "targets",
+   description= "Print Targets",
+   onWorkspace= print_targets
 }
 -- actions/qt_qrc.lua
 tiki.files[ "actions/qt_qrc.lua" ] = "return function( data, config )\n" ..
