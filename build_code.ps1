@@ -16,12 +16,12 @@ foreach ($solution in $solutions) {
 	Echo "Solution: $($solution)"
 	
 	try {
+		$generate_command_line = "$($premake) --file=$($solution)/premake5.lua --to=build vs2019"
+		Invoke-Expression $generate_command_line
+
 		$targets_command_line = "$($premake) --quiet --file=$($solution)/premake5.lua --targets_action=vs2019 targets"
 		$targets_json = Invoke-Expression $targets_command_line | Out-String
 		$targets = $targets_json | ConvertFrom-Json
-
-		$generate_command_line = "$($premake) --file=$($solution)/premake5.lua --to=build vs2019"
-		Invoke-Expression $generate_command_line
 
 		$sln_dir = Join-Path -Path $PSScriptRoot -ChildPath "$($solution)/build"
 		$sln_file = "$(Split-Path $solution -Leaf).sln"
