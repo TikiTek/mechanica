@@ -21,9 +21,12 @@ asset_converter_library_project:add_dependency( "converters/model_converter" );
 asset_converter_library_project:add_dependency( "converters/animation_converter" );
 asset_converter_library_project:add_dependency( "converters/generic_data_converter" );
 
-local module = Module:new();
+local module = Module:new( "asset_converter_library" );
 
 module.import_func = function( project, solution )
-	project:add_library_file( "asset_converter_library" );
+	if project ~= asset_converter_library_project then
+		project:add_project_dependency( asset_converter_library_project )
+	end
+	
 	solution:add_project( asset_converter_library_project );
 end

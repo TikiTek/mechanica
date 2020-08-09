@@ -8,6 +8,6 @@ module:add_include_dir( "include" );
 module:add_dependency( "core/base" );
 module:add_dependency( "core/container" );
 
-module:add_external( "https://github.com/kimperator/T-Rex.git" )
+module:add_external( "https://github.com/TikiTek/thirdparty_trex.git" )
 
 module:set_define( "TIKI_BUILD_TOOLS", "TIKI_ON" );

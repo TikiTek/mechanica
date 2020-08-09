@@ -22,7 +22,7 @@ namespace tiki
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
 		return GraphicsApi_Vulkan;
 #else
-#	error not supported
+#	error "Unsupported Graphics API"
 #endif
 	}
 

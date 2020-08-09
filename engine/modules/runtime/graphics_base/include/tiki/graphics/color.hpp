@@ -13,6 +13,8 @@
 #	define TIKI_COLORMODE_ABGR	TIKI_ON
 #elif TIKI_ENABLED( TIKI_GRAPHICS_VULKAN )
 #	define TIKI_COLORMODE_ABGR	TIKI_ON
+#else
+#	error "Unsupported Graphics API "
 #endif
 
 #ifndef TIKI_COLORMODE_RGBA
