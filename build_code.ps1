@@ -1,5 +1,5 @@
 $start_time = Get-Date
-$genie = Join-Path -Path $PSScriptRoot -ChildPath "engine\buildtools\genie\genie.exe"
+$premake = Join-Path -Path $PSScriptRoot -ChildPath "engine\buildtools\tiki_build\premake5.exe"
 
 $solutions = @(
 	"engine/tools/command_line_converter",
@@ -16,11 +16,11 @@ foreach ($solution in $solutions) {
 	Echo "Solution: $($solution)"
 	
 	try {
-		$targets_command_line = "$($genie) --quiet --file=$($solution)/genie.lua --targets_action=vs2019 targets"
+		$targets_command_line = "$($premake) --quiet --file=$($solution)/premake5.lua --targets_action=vs2019 targets"
 		$targets_json = Invoke-Expression $targets_command_line | Out-String
 		$targets = $targets_json | ConvertFrom-Json
 
-		$generate_command_line = "$($genie) --file=$($solution)/genie.lua --to=build vs2019"
+		$generate_command_line = "$($premake) --file=$($solution)/premake5.lua --to=build vs2019"
 		Invoke-Expression $generate_command_line
 
 		$sln_dir = Join-Path -Path $PSScriptRoot -ChildPath "$($solution)/build"
