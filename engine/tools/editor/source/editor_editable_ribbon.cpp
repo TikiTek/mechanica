@@ -2,7 +2,7 @@
 
 #include "tiki/tool_application/tool_ui.hpp"
 
-#include "res_editor.hpp"
+#include "res_editor_project.hpp"
 
 #include <imgui.h>
 
@@ -11,9 +11,9 @@ namespace tiki
 	EditorEditableRibbon::EditorEditableRibbon( Editor& editor )
 		: EditorRibbon( "File" )
 		, m_editor( editor )
-		, m_openEditableIcon( getEditorResource( EditorResources_EditableOpen ) )
-		, m_saveEditableIcon( getEditorResource( EditorResources_EditableSave ) )
-		, m_closeEditableIcon( getEditorResource( EditorResources_EditableClose ) )
+		, m_openEditableIcon(getEditorProjectResource(EditorProjectResources_EditableOpen ) )
+		, m_saveEditableIcon(getEditorProjectResource(EditorProjectResources_EditableSave ) )
+		, m_closeEditableIcon(getEditorProjectResource( EditorProjectResources_EditableClose ) )
 	{
 	}
 
