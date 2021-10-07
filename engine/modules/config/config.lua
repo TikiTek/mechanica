@@ -88,3 +88,5 @@ module:set_define( "TIKI_GRAPHICS_D3D12", iff( graphics_api == GraphicsApis.D3D1
 module:set_define( "TIKI_GRAPHICS_VULKAN", iff( graphics_api == GraphicsApis.Vulkan, "TIKI_ON", "TIKI_OFF" ) );
 
 --module:set_flag( "FatalWarnings" );
+
+module:set_setting( ConfigurationSettings.MultiProcessorCompile, ConfigurationMultiProcessorCompile.On );

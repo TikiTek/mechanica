@@ -11,7 +11,8 @@ module:add_dependency( "core/container" );
 module:add_dependency( "core/resource" );
 
 module.import_func = function( project )
-	local output_path = path.getabsolute( project.generated_files_dir );
+	local output_path = path.join( path.getabsolute( project.generated_files_dir ), "generic_data" );
+	os.mkdir( output_path )
 
 	module:add_include_dir( output_path );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
