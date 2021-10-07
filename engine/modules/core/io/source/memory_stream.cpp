@@ -14,26 +14,6 @@ namespace tiki
 		m_capacity	= 0u;
 	}
 
-	MemoryStream::MemoryStream( const MemoryStream& copy )
-	{
-		*this = copy;
-	}
-
-	void MemoryStream::operator=( const MemoryStream& copy )
-	{
-		m_pos		= copy.m_pos;
-		m_length	= copy.m_length;
-		m_capacity	= copy.m_capacity;
-
-		if ( m_pData != nullptr )
-		{
-			TIKI_FREE( m_pData );
-		}
-
-		m_pData = (uint8*)TIKI_ALLOC( (uint)m_capacity );
-		memory::copy( m_pData, copy.m_pData, (uint)m_length );
-	}
-
 	MemoryStream::~MemoryStream()
 	{
 		dispose();

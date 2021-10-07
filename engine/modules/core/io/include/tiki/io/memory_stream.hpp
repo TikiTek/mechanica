@@ -8,13 +8,12 @@ namespace tiki
 {
 	class MemoryStream : public DataStream
 	{
+		TIKI_NON_COPYABLE( MemoryStream );
+
 	public:
 
 							MemoryStream();
-							MemoryStream( const MemoryStream& copy );
 		virtual				~MemoryStream();
-
-		void				operator=( const MemoryStream& copy );
 
 		void				create( FileSize capacity = 0u );
 		void				create( const void* pData, FileSize length );

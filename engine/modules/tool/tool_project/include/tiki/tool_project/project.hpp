@@ -40,7 +40,7 @@ namespace tiki
 		void							addPlatform( PlatformType value );
 		void							removePlatform( PlatformType value );
 
-		const List< Path >&				getShaderIncludeDirectories() const { return m_shaderIncludeDirectories;}
+		const List< Path >&				getShaderIncludeDirectories() const { return m_shaderIncludeDirectories; }
 		void							addShaderIncludeDirectory( const Path& value );
 		void							removeShaderIncludeDirectory( const Path& value );
 
