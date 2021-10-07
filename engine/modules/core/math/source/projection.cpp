@@ -32,7 +32,7 @@ namespace tiki
 
 		createMatrix();
 	}
-	
+
 	void Projection::createOrthographicCenter( float width, float height, float nearPlane, float farPlane )
 	{
 		TIKI_ASSERT( nearPlane >= 0.0f );
@@ -96,8 +96,9 @@ namespace tiki
 				const float depthRange = m_farPlane / ( m_farPlane - m_nearPlane );
 				const float aspectRatio = m_width / m_height;
 
-				const float yScale = 1.0f / tanf( m_fieldOfView * 0.5f );
-				const float xScale = yScale / aspectRatio;
+				const float halfFov	= m_fieldOfView * 0.5f;
+				const float yScale	= cosf( halfFov ) / sinf( halfFov );
+				const float xScale	= aspectRatio * yScale;
 
 				m_matrix.x.x = xScale;
 				m_matrix.y.y = yScale;

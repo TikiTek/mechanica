@@ -16,7 +16,7 @@ module.import_func = function( project )
 	module:add_include_dir( output_path );
 	files( { path.join( output_path, "*.hpp" ), path.join( output_path, "*.cpp" ) } );
 
-	local exe_name = iff( tiki.platform == Platforms.Windows, ".exe", "" );
+	local exe_name = iff( tiki.target_platform == Platforms.Windows, ".exe", "" );
 	local exe_path = path.join( tiki.project_path, "engine/buildtools/generic_data_code_generator/generic_data_code_generator" .. exe_name );
 	local content_path = path.join( tiki.project_path, "content" );
 	local arguments = "--content-dir=" .. content_path .. " --target-dir=" .. output_path;

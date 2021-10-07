@@ -2,12 +2,7 @@
 
 include( "../../.." );
 
-local project = Project:new(
-	"generic_data_code_generator",
-	{ "x32", "x64" },
-	{ "Debug", "Release" },
-	ProjectTypes.ConsoleApplication
-);
+local project = Project:new( "generic_data_code_generator", ProjectTypes.ConsoleApplication );
 
 project:add_files( "source/*.*" );
 project:add_files( "*.lua" );

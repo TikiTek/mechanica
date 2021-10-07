@@ -7,4 +7,4 @@ module:add_include_dir( "include" );
 
 module:add_dependency( "core/base" );
 
-module:add_external( "https://www.sqlite.org/@3320300" )
+module:add_external( "https://www.sqlite.org@3320300" )

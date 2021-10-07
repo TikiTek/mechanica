@@ -2,12 +2,7 @@
 
 include( "../../.." );
 
-local project = Project:new(
-	"command_line_converter",
-	{ "x32", "x64" },
-	{ "Debug", "Release" },
-	ProjectTypes.ConsoleApplication
-);
+local project = Project:new( "command_line_converter", ProjectTypes.ConsoleApplication );
 
 project:add_files( "source/*.*" );
 project:add_files( "*.lua" );

@@ -1,9 +1,4 @@
-local asset_converter_library_project = Project:new(
-	"asset_converter_library",
-	{ "x32", "x64" },
-	{ "Debug", "Release" },
-	ProjectTypes.SharedLibrary
-);
+local asset_converter_library_project = Project:new( "asset_converter_library", ProjectTypes.SharedLibrary );
 
 asset_converter_library_project:add_files( "source/*.*" );
 asset_converter_library_project:add_files( "*.lua" );

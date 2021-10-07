@@ -1,6 +1,7 @@
 #include "tiki/threading/atomic.hpp"
 
 #if TIKI_ENABLED( TIKI_PLATFORM_WIN )
+#	include <immintrin.h>
 #	include <xatomic.h>
 #endif
 
@@ -10,19 +11,22 @@ namespace tiki
 {
 	/*static*/ uint32 AtomicAccesorTraits< uint32_atomic >::loadRelaxed( const uint32_atomic* pValue )
 	{
-		return __iso_volatile_load32( (const volatile __int32*)pValue );
+		return _InterlockedOr( (volatile long*)pValue, 0 );
+		//return __iso_volatile_load32( (const volatile __int32*)pValue );
 	}
 
 	/*static*/ uint32 AtomicAccesorTraits< uint32_atomic >::loadAquire( const uint32_atomic* pValue )
 	{
-		const __int32 value = __iso_volatile_load32( (const volatile __int32*)pValue );
-		_ReadWriteBarrier();
+		const __int32 value = _InterlockedOr_HLEAcquire( (volatile long*)pValue, 0 );
+		//const __int32 value = __iso_volatile_load32( (const volatile __int32*)pValue );
+		//_ReadWriteBarrier();
 		return (uint32)value;
 	}
 
 	/*static*/ uint32 AtomicAccesorTraits< uint32_atomic >::loadOrdered( const uint32_atomic* pValue )
 	{
-		const __int32 value = __iso_volatile_load32( (const volatile __int32*)pValue );
+		const __int32 value = _InterlockedOr( (volatile long*)pValue, 0 );
+		//const __int32 value = __iso_volatile_load32( (const volatile __int32*)pValue );
 		_ReadWriteBarrier();
 		return (uint32)value;
 	}

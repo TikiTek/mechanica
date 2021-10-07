@@ -207,7 +207,7 @@ namespace tiki
 		char userName[ 32u ];
 		platform::getUserName( userName, TIKI_COUNT( userName ) );
 
-		if( isStringEquals( userName, "Tim" ) ||
+		if( isStringEquals( userName, "tim" ) ||
 			isStringEquals( userName, "tim.boden" ) ||
 			isStringEquals( userName, "mail" ) )
 		{
@@ -215,7 +215,10 @@ namespace tiki
 			//return GameState_Test;
 			//return GameState_BasicTest;
 			//return GameState_Play;
-			startTransition( GameTransitionData::createPlay( "level1" ) );
+			//startTransition( GameTransitionData::createPlay( "level1" ) );
+			GameTransitionData transitionData;
+			transitionData.state = GameState_Test;
+			startTransition( transitionData );
 			return;
 		}
 #endif

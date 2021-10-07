@@ -25,12 +25,7 @@ if not os.isfile( download_path ) then
 	assert( os.copyfile( source_config_path, target_config_path ) )
 end
 
-local libpsd_project = Project:new(
-	"libpsd",
-	{ "x32", "x64" },
-	{ "Debug", "Release" },
-	ProjectTypes.StaticLibrary
-)
+local libpsd_project = Project:new( "libpsd", ProjectTypes.StaticLibrary )
 
 libpsd_project.module.module_type = ModuleTypes.FilesModule
 

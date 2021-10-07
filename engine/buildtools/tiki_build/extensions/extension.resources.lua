@@ -6,7 +6,7 @@ end )
 ModuleExtensions:add_pre_finalize_hook( function( solution, project, module )
 	for _, pattern in ipairs( module.resources ) do
 		local full_pattern = path.join( module.config.base_path, pattern )
-		local exe_name = iff( tiki.platform == Platforms.Windows, ".exe", "" )
+		local exe_name = iff( tiki.target_platform == Platforms.Windows, ".exe", "" )
 		
 		local step_data = {
 			tool_path = path.join( tiki.project_path, "engine/buildtools/resource_code_generator/resource_code_generator" .. exe_name ),

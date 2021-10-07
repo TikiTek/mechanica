@@ -61,8 +61,8 @@ else
 	throw("Build action '" .. action .. "' not supported.");
 end
 
-module:set_define( "TIKI_PLATFORM_WIN", iff( tiki.platform == Platforms.Windows, "TIKI_ON", "TIKI_OFF" ) );
-module:set_define( "TIKI_PLATFORM_LINUX", iff( tiki.platform == Platforms.Linux, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_PLATFORM_WIN", iff( tiki.target_platform == Platforms.Windows, "TIKI_ON", "TIKI_OFF" ) );
+module:set_define( "TIKI_PLATFORM_LINUX", iff( tiki.target_platform == Platforms.Linux, "TIKI_ON", "TIKI_OFF" ) );
 
 module:set_define( "TIKI_BUILD_32BIT", "TIKI_ON", nil, "x32" );
 module:set_define( "TIKI_BUILD_64BIT", "TIKI_OFF", nil, "x32" );
@@ -75,9 +75,9 @@ module:set_define( "TIKI_BUILD_GCC", iff( compiler == Compilers.GCC, "TIKI_ON", 
 module:set_define( "TIKI_BUILD_CLANG", iff( compiler == Compilers.Clang, "TIKI_ON", "TIKI_OFF" ) );
 
 graphics_api = GraphicsApis.Stub
-if tiki.platform == Platforms.Windows then
+if tiki.target_platform == Platforms.Windows then
 	graphics_api = GraphicsApis.D3D11
-elseif tiki.platform == Platforms.Linux then
+elseif tiki.target_platform == Platforms.Linux then
 	graphics_api = GraphicsApis.Vulkan
 else
 	throw( "Operating System not supported." );

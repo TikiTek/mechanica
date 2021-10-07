@@ -9,7 +9,7 @@ module:add_dependency( "runtime/graphics_base" );
 module:add_dependency( "tool/tool_base" );
 module:add_dependency( "tool/converter_base" );
 
-if tiki.platform == Platforms.Windows then
+if tiki.target_platform == Platforms.Windows then
 	module:add_library_file( "d3dcompiler" );
 	--module:add_binary_file( "d3dcompiler_46.dll" );
 end

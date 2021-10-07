@@ -8,7 +8,7 @@ module:add_include_dir( "include" );
 --if use_sdl then
 --	module:add_files( "source/sdl/*.*" );
 --	module:add_dependency( "sdl" );
-if tiki.platform == Platforms.Windows then
+if tiki.target_platform == Platforms.Windows then
 	module:add_files( "source/win/*.*" );
 else
 	throw "Platform not implemented"

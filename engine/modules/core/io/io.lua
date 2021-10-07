@@ -5,9 +5,9 @@ module:add_files( "include/**/*.hpp" );
 module:add_files( "*.lua" );
 module:add_include_dir( "include" );
 
-if tiki.platform == Platforms.Windows then
+if tiki.target_platform == Platforms.Windows then
 	module:add_files( "source/win/*.*" );
-elseif tiki.platform == Platforms.Linux then
+elseif tiki.target_platform == Platforms.Linux then
 	module:add_files( "source/posix/*.*" );
 else
 	throw "Platform not supported";

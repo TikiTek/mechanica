@@ -2,12 +2,7 @@
 
 include( "../.." )
 
-local project = Project:new(
-	"game",
-	{ "x32", "x64" },
-	{ "Debug", "Release" }, -- diabled for now: "Master" },
-	ProjectTypes.WindowApplication
-)
+local project = Project:new( "game", ProjectTypes.WindowApplication )
 
 project:add_files( "*.lua" )
 

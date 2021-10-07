@@ -1,14 +1,9 @@
 -- engine/tools/editor
 
 include( "../../.." );
-add_extension( "resources" );
+tiki.add_extension( "resources" );
 
-local project = Project:new(
-	"editor",
-	{ "x32", "x64" },
-	{ "Debug", "Release"},
-	ProjectTypes.WindowApplication
-);
+local project = Project:new( "editor", ProjectTypes.WindowApplication );
 
 project:add_files( "source/*.*" );
 project:add_files( "*.lua" );

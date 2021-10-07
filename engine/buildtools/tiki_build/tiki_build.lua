@@ -228,50 +228,64 @@ newoption{ trigger = "quiet", description = "Hide all traces" }
 newoption{ trigger = "to", description = "Location for generated project files. Default: ./build" }
 Platforms = {
 Unknown= 0,
-Windows= 1,
+Android= 1,
 Linux= 2,
-MacOS= 3
+MacOS= 3,
+Windows= 4
 }
-if not tiki then
+if tiki == nil then
 tiki = {}
 end
-if not tiki.files then
+if tiki.files == nil then
 tiki.files = {}
 end
-if not tiki.root_path then
+if tiki.executable_included == nil then
+local current_script = debug.getinfo(1,'S').source
+local is_file = current_script:match( "^@" )
+tiki.executable_included = (not is_file)
+end
+if tiki.root_path == nil then
+if tiki.executable_included then
+tiki.root_path = path.getabsolute( path.getdirectory( _PREMAKE_COMMAND ) )
+else
 tiki.root_path = path.getabsolute( path.getdirectory( _SCRIPT ) )
 end
-if not tiki.enable_unity_builds then
+end
+if tiki.enable_unity_builds == nil then
 tiki.enable_unity_builds = true
 end
 if not _OPTIONS[ "to" ] then
 _OPTIONS[ "to" ] = 'build'
 end
-if not tiki.generated_files_dir then
+if tiki.generated_files_dir == nil then
 tiki.generated_files_dir = 'generated_files'
 end
-if not tiki.externals_dir then
+if tiki.externals_dir == nil then
 tiki.externals_dir = 'externals'
 end
-local hostOs = os.host()
-if hostOs == "windows" then
-tiki.platform = Platforms.Windows
-elseif hostOs == "bsd" or hostOs == "linux" or hostOs == "solaris" then
-tiki.platform = Platforms.Linux
-elseif hostOs == "macosx" then
-tiki.platform = Platforms.MacOS
-else
-tiki.platform = Platforms.Unknown
+function tiki.get_platform_for_premake_string( platform )
+if platform == "android" then
+return Platforms.Android
+elseif platform == "windows" then
+return Platforms.Windows
+elseif platform == "bsd" or platform == "linux" or platform == "solaris" then
+return Platforms.Linux
+elseif platform == "macosx" then
+return Platforms.MacOS
 end
-if not tiki.svn_path then
+return Platforms.Unknown
+end
+tiki.host_platform= tiki.get_platform_for_premake_string( os.host() )
+tiki.target_platform= tiki.get_platform_for_premake_string( os.target() )
+if tiki.svn_path == nil then
 tiki.svn_path = 'svn'
-if tiki.platform == Platforms.Windows then
+if tiki.host_platform == Platforms.Windows then
 tiki.svn_path = tiki.svn_path .. '.exe'
 end
 end
-if not tiki.git_path then
+if tiki.git_path == nil then
 tiki.git_path = 'git'
-if tiki.platform == Platforms.Windows then
+if tiki.host_platform == Platforms.Windows then
 tiki.git_path = tiki.git_path .. '.exe'
 end
 end
@@ -279,17 +293,20 @@ end
 -- base/functions.lua
 
 local lua_print = print
-function print(msg, ...)
+function print(msg)
 if not _OPTIONS.quiet then
 lua_print( msg )
 end
+end
+function quiet(msg)
+lua_print(msg)
 end
 function quietf(msg, ...)
 lua_print(string.format(msg, ...))
 end
 function throw( text )
-print( debug.traceback() )
-error( text )
+lua_print( debug.traceback() )
+error( text, 2 )
 end
 function iff( expr, when_true, when_false )
 if expr then
@@ -426,11 +443,15 @@ function tiki.dofile( file_path )
 local file_func = tiki.loadfile( file_path )
 return file_func()
 end
-function get_config_dir( platform, configuration )
+function tiki.get_config_dir( platform, configuration )
 if platform == nil or configuration == nil then
 throw( "get_config_dir: too few arguments." )
 end
 return _OPTIONS[ "to" ] .. "/" .. platform .. "/" .. configuration
+end
+function tiki.add_extension( name )
+local script_path = "extensions/extension." .. name .. ".lua"
+tiki.dofile( script_path )
 end
 
 -- base/configuration.lua
@@ -572,13 +593,13 @@ function Configuration:add_pre_build_step( step_script, step_data, step_base_pat
 if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
 throw "[add_pre_build_step] Invalid args."
 end
-table.insert( self.pre_build_steps, { script = "actions/" .. step_script .. ".lua", base_path = step_base_path, data = step_data } )
+table.insert( self.pre_build_steps, { script = step_script, base_path = step_base_path, data = step_data } )
 end
 function Configuration:add_post_build_step( step_script, step_data, step_base_path )
 if type( step_script ) ~= "string" or type( step_data ) ~= "table" then
 throw "[add_post_build_step] Invalid args."
 end
-table.insert( self.post_build_steps, { script = "actions/" .. step_script .. ".lua", base_path = step_base_path, data = step_data } )
+table.insert( self.post_build_steps, { script = step_script, base_path = step_base_path, data = step_data } )
 end
 function Configuration:apply_configuration( target )
 if type( target ) ~= "table" then
@@ -718,6 +739,7 @@ end
 ExternalTypes = {
 SVN= 'svn',
 Git= 'git',
+Local= 'local',
 Custom= 'custom'
 }
 External = class{
@@ -746,6 +768,9 @@ elseif url_protocol == "https" and external_new.url:endswith( ".git" ) then
 external_new.type = ExternalTypes.Git
 elseif url_protocol == "svn" then
 external_new.type = ExternalTypes.SVN
+elseif url_protocol == "local" then
+external_new.type = ExternalTypes.Local
+external_new.url = path.getabsolute( path.join( os.getcwd(), string.sub( external_new.url, 9, -1 ) ) )
 elseif url_protocol == "https" then
 external_new.type = ExternalTypes.Custom
 else
@@ -756,6 +781,8 @@ if external_new.type == ExternalTypes.SVN then
 external_new.version = 'HEAD'
 elseif external_new.type == ExternalTypes.Git then
 external_new.version = 'master'
+elseif external_new.type == ExternalTypes.Local then
+external_new.version = 'latest'
 elseif external_new.type == ExternalTypes.Custom then
 external_new.version = 'latest'
 end
@@ -793,6 +820,10 @@ end
 builtin_rmdir(p)
 end
 function External:export()
+if self.type == ExternalTypes.Local then
+self.export_path = self.url
+return
+end
 local externals_dir = path.getabsolute( path.join( _OPTIONS[ "to" ], tiki.externals_dir ) )
 self.export_path = path.join( externals_dir, self.file_path )
 if self.type == ExternalTypes.SVN then
@@ -862,15 +893,25 @@ throw( "Failed to checkout '" .. self.version .. "' for external '" .. self.url 
 end
 end
 end
-function External:load()
+function External:load( additional_import_path )
+local tried_import_files = {}
 local import_file = path.join( self.export_path, "tiki.lua" )
-if not os.isfile( import_file ) then
-import_file = path.join( "externals", self.file_path, "tiki.lua" )
-end
-print( "Load Module from " .. import_file )
 if not tiki.isfile( import_file ) then
+table.insert( tried_import_files, import_file );
+import_file = path.join( "externals", self.file_path, "tiki.lua" )
+if not tiki.isfile( import_file ) then
+table.insert( tried_import_files, import_file );
+import_file = path.join( additional_import_path, "externals", self.file_path, "tiki.lua" )
+end
+end
+if not tiki.isfile( import_file ) then
+table.insert( tried_import_files, import_file );
+for _, file in ipairs( tried_import_files ) do
+print( "Not found: " .. file )
+end
 throw( "Could not find import file for '" .. self.url .. "'." )
 end
+print( "Load Module from " .. import_file )
 self.import_file = import_file
 self.import_func = tiki.loadfile( import_file )
 self.module = Module:new( self.file_path:gsub( "/", '_' ) )
@@ -881,7 +922,7 @@ self.import_func()
 tiki.external = nil
 module = nil
 end
-function find_external_module( url )
+function find_external_module( url, importing_module )
 for _, external in ipairs( global_external_storage ) do
 if external.url == url then
 return external.module
@@ -889,7 +930,7 @@ end
 end
 local external = External:new( url )
 external:export()
-external:load()
+external:load( importing_module.config.base_path )
 return external.module
 end
 
@@ -1043,7 +1084,7 @@ function Module:add_post_build_step( step_script, step_data, configuration, plat
 self.config:add_post_build_step( step_script, step_data, configuration, platform )
 end
 function Module:add_dependency( module_name )
-if not type( module_name ) == "string" then
+if type( module_name ) ~= "string" then
 throw( "module_name of a dependency must be a valid string." )
 end
 table.insert( self.module_dependencies, module_name )
@@ -1063,7 +1104,7 @@ module:resolve_dependency( target_list )
 end
 end
 for _, url in ipairs( self.external_dependencies ) do
-local module = find_external_module( url )
+local module = find_external_module( url, self )
 if not table.contains( target_list, module ) then
 table.insert( target_list, module )
 module:resolve_dependency( target_list )
@@ -1073,12 +1114,12 @@ end
 function Module:finalize_files( project )
 local is_unity_module = tiki.enable_unity_builds and (self.module_type == ModuleTypes.UnityCppModule or self.module_type == ModuleTypes.UnityCModule)
 local all_files = {}
-for _,pattern in pairs( self.source_files ) do
+for _,pattern in ipairs( self.source_files ) do
 local matches = os.matchfiles( pattern )
 if #matches == 0 then
 throw( pattern .. "' pattern in '" .. self.name .. "' matches no files." )
 end
-for j, file_name in pairs( matches ) do
+for _, file_name in ipairs( matches ) do
 if not os.isfile( file_name ) then
 throw("[finalize] '" .. file_name .. "'  in '" .. self.name .. "' don't exists.")
 end
@@ -1087,20 +1128,20 @@ all_files[#all_files+1] = file_name
 end
 end
 end
-for _,pattern in pairs( self.optional_files ) do
+for _,pattern in ipairs( self.optional_files ) do
 local matches = ""
 if path.isabsolute( pattern ) then
 matches = { pattern }
 else
 matches = os.matchfiles( pattern )
 end
-for _,file_name in pairs( matches ) do
+for _,file_name in ipairs( matches ) do
 if not table.contains( all_files, file_name ) then
 all_files[#all_files+1] = file_name
 end
 end
 end
-for _,pattern in pairs( self.exclude_files ) do
+for _,pattern in ipairs( self.exclude_files ) do
 local matches = os.matchfiles( pattern )
 for j,file_name in pairs( matches ) do
 local index = table.indexof( all_files, file_name )
@@ -1119,11 +1160,11 @@ if is_unity_module then
 local ext = iff( self.module_type == ModuleTypes.UnityCModule, "c", "cpp" )
 local unity_file_name = path.join( project.generated_files_dir, self.name .. "_unity." .. ext )
 local c = {}
-c[#c+1] = "// Unity file created by GENie"
+c[#c+1] = "// Unity file created by tiki_build"
 c[#c+1] = ""
 c[#c+1] = "#define TIKI_CURRENT_MODULE \"" .. self.name .. "\""
 c[#c+1] = ""
-for i,file_name in pairs( all_files ) do
+for _,file_name in ipairs( all_files ) do
 if path.iscppfile( file_name ) then
 local relative_file_name = path.getrelative( project.generated_files_dir, file_name )
 c[#c+1] = string.format( "#include \"%s\"", relative_file_name )
@@ -1173,20 +1214,14 @@ ProjectTypes = {
 ConsoleApplication= "ConsoleApp",
 WindowApplication= "WindowedApp",
 SharedLibrary= "SharedLib",
-StaticLibrary= "StaticLib"
-}
-ProjectLanguages = {
-Cpp= "C++",
-Cs= "C#"
+StaticLibrary= "StaticLib",
+Package= "Packaging"
 }
 Project = class{
 name = nil,
 type = nil,
-lang = ProjectLanguages.Cpp,
 module = nil,
 buildoptions = nil,
-platforms = {},
-configurations = {},
 dependencies = {},
 generated_files_dir = ''
 }
@@ -1201,22 +1236,17 @@ end
 throw( "[find_project] Project with name '"..project_name.."' not found." )
 return nil
 end
-function Project:new( name, platforms, configurations, project_type )
-if not name then 
+function Project:new( name, project_type )
+if type( name ) ~= "string" then 
 throw( "No Project name given." )
 end
-if type( platforms ) ~= "table" or type( configurations ) ~= "table" then 
-throw( "Invalid Project platforms or configurations. Please provide an array." )
-end
-if not project_type then 
+if type( project_type ) ~= "string" then 
 throw( "Invalid Project type. Please use the ProjectTypes enum." )
 end
 local project_new = class_instance( self )
 project_new.name= name
 project_new.type= project_type
 project_new.module= Module:new( name .. "_project" )
-project_new.configurations= configurations
-project_new.platforms= platforms
 table.insert( global_project_storage, project_new )
 ProjectExtensions:execute_new_hook( project_new )
 return project_new
@@ -1258,7 +1288,7 @@ function Project:add_external( url )
 self.module:add_external( url )
 end
 function Project:add_project_dependency( project )
-if table.contains( self.dependencies, ptoject ) then
+if table.contains( self.dependencies, project ) then
 return
 end
 table.insert( self.dependencies, project )
@@ -1271,6 +1301,15 @@ target = target_path
 }
 config:add_post_build_step( "install_files", step_data, self.module.config.base_path )
 end
+function Project:execute_build_step( script, data )
+local config = {
+project_name = self.name,
+build_path = path.getabsolute( _OPTIONS[ "to" ] ),
+base_path = self.module.config.base_path,
+output_path = path.getabsolute( _OPTIONS[ "to" ] )
+}
+tiki.execute_build_step( script, data, config )
+end
 function Project:finalize_create_directories()
 self.generated_files_dir = path.getabsolute( path.join( _OPTIONS[ "to" ], tiki.generated_files_dir, self.name ) )
 if not os.isdir( self.generated_files_dir ) then
@@ -1279,7 +1318,7 @@ os.mkdir( self.generated_files_dir )
 end
 end
 function Project:finalize_create_configuration_directories( configuration, platform )
-local build_dir = get_config_dir( platform, configuration )
+local build_dir = tiki.get_config_dir( platform, configuration )
 if not os.isdir( build_dir ) then
 print( "Create:" .. build_dir )
 os.mkdir( build_dir )
@@ -1333,65 +1372,53 @@ throw( "Invalid setting " .. setting )
 end
 end
 end
-function Project:finalize_build_steps( config, build_dir )
+function Project:finalize_build_steps_command_line( steps_name, steps, build_dir )
+if #steps == 0 then
+return {}
+end
 local relative_build_dir = path.getrelative( _OPTIONS[ "to" ], build_dir )
-local system_script = path.getrelative( _OPTIONS[ "to" ], path.join( tiki.root_path, "tiki_build.lua" ) )
-if #config.pre_build_steps > 0 then
-local pre_build_steps_filename = "pre_build_steps_" .. self.name .. ".lua"
-local pre_build_steps_path = path.join( build_dir, pre_build_steps_filename )
-local pre_build_steps_file = io.open( pre_build_steps_path, "w" )
-if pre_build_steps_file ~= nil then
-pre_build_steps_file:write( DataDumper( config.pre_build_steps ) )
-pre_build_steps_file:close()
+local build_steps_filename = steps_name .. "_" .. self.name .. ".lua"
+local build_steps_path = path.join( build_dir, build_steps_filename )
+local build_steps_file = io.open( build_steps_path, "w" )
+if build_steps_file ~= nil then
+build_steps_file:write( DataDumper( steps ) )
+build_steps_file:close()
 end
 local command_line = {
 _PREMAKE_COMMAND,
 "--quiet",
-"--systemscript=" .. system_script,
+"--script=" .. path.join( relative_build_dir, build_steps_filename ),
 "--project=" .. self.name,
 "--to=" .. relative_build_dir,
-"--script=" .. path.join( relative_build_dir, pre_build_steps_filename ),
-"buildsteps"
 }
-prebuildcommands{ table.concat( command_line, " " ) }
+if not tiki.executable_included then
+local system_script = path.getrelative( _OPTIONS[ "to" ], path.join( tiki.root_path, "tiki_build.lua" ) )
+table.insert( command_line, "--systemscript=" .. system_script )
 end
-if #config.post_build_steps > 0 then
-local post_build_steps_filename = "post_build_steps_" .. self.name .. ".lua"
-local post_build_steps_path = path.join( build_dir, post_build_steps_filename )
-local post_build_steps_file = io.open( post_build_steps_path, "w" )
-if post_build_steps_file ~= nil then
-post_build_steps_file:write( DataDumper( config.post_build_steps ) )
-post_build_steps_file:close()
+table.insert( command_line, "buildsteps" )
+return { table.concat( command_line, " " ) }
 end
-command_line = {
-_PREMAKE_COMMAND,
-"--quiet",
-"--systemscript=" .. system_script,
-"--project=" .. self.name,
-"--to=" .. relative_build_dir,
-"--script=" .. path.join( relative_build_dir, post_build_steps_filename ),
-"buildsteps"
-}
-postbuildcommands{ table.concat( command_line, " " ) }
-end
+function Project:finalize_build_steps( config, build_dir )
+local pre_build_steps = self:finalize_build_steps_command_line( "pre_build_steps", config.pre_build_steps, build_dir )
+prebuildcommands( pre_build_steps )
+local post_build_steps = self:finalize_build_steps_command_line( "post_build_steps", config.post_build_steps, build_dir )
+postbuildcommands( post_build_steps )
 end
 function Project:finalize( solution )
 ProjectExtensions:execute_pre_finalize_hook( solution, self )
 project( self.name )
 kind( self.type )
-language( self.lang )
+language( "C++" )
 if self.buildoptions then
 buildoptions( self.buildoptions )
 end
 self:finalize_create_directories()
 local config_project = Configuration:new()
-if self.lang == ProjectLanguages.Cpp then
 config_project:set_define( "TIKI_PROJECT_NAME", self.name )
 local is_library = self.type == ProjectTypes.SharedLibrary or self.type == ProjectTypes.StaticLibrary
 config_project:set_define( "TIKI_BUILD_LIBRARY", iff( is_library, "TIKI_ON", "TIKI_OFF" ) )
 local is_window_app = self.type == ProjectTypes.WindowApplication
 config_project:set_define( "TIKI_BUILD_WINDOW_APP", iff( is_window_app, "TIKI_ON", "TIKI_OFF" ) )
-end
 local modules = {}
 self.module:resolve_dependency( modules )
 for _,cur_module in pairs( modules ) do
@@ -1399,13 +1426,14 @@ cur_module:finalize( solution, self, config_project )
 end
 for _, project in ipairs( self.dependencies ) do
 if project.type == ProjectTypes.SharedLibrary or project.type == ProjectTypes.StaticLibrary then
+print( "Add Lib: " .. project.name )
 config_project:add_library_file( project.name )
 end
 dependson{ project.name }
 end
 self.module:finalize( solution, self, config_project )
 local config_platform = {}
-for _,build_platform in pairs( self.platforms ) do
+for _,build_platform in pairs( solution.platforms ) do
 configuration{ build_platform }
 config_platform[ build_platform ] = Configuration:new()
 solution:finalize_configuration( config_platform[ build_platform ], nil, build_platform )
@@ -1415,7 +1443,7 @@ cur_module:finalize_configuration( config_platform[ build_platform ], nil, build
 end
 end
 local config_configuration = {}
-for _,build_config in pairs( self.configurations ) do
+for _,build_config in pairs( solution.configurations ) do
 configuration{ build_config }
 config_configuration[ build_config ] = Configuration:new()
 solution:finalize_configuration( config_configuration[ build_config ], build_config, nil )
@@ -1424,8 +1452,8 @@ for j,cur_module in pairs( modules ) do
 cur_module:finalize_configuration( config_configuration[ build_config ], build_config, nil )
 end
 end
-for _,build_platform in pairs( self.platforms ) do
-for j,build_config in pairs( self.configurations ) do
+for _,build_platform in pairs( solution.platforms ) do
+for j,build_config in pairs( solution.configurations ) do
 if _ACTION ~= "targets" then
 print( "Configuration: " .. build_platform .. "/" .. build_config )
 end
@@ -1459,21 +1487,23 @@ end
 Solution = class{
 name = nil,
 config = nil,
+configurations = nil,
+platforms = nil,
 projects = {}
 }
 SolutionExtensions = Extendable:new()
-function add_extension( name )
-local script_path = "extensions/extension." .. name .. ".lua"
-tiki.dofile( script_path )
+function Solution:new( name, configurations, platforms )
+if type( name ) ~= "string" then
+throw( "No Solutuion name specified." )
 end
-function Solution:new( name )
-if not name then
-local source = debug.getinfo( 2 ).source
-name = source:match( "([^/]+)/genie.lua$" )
+if type( configurations ) ~= "table" or type( platforms ) ~= "table" then 
+throw( "Invalid Solutuion platforms or configurations. Please provide an array." )
 end
 local solution_new = class_instance( self )
 solution_new.name= name
 solution_new.config= ConfigurationSet:new()
+solution_new.configurations= configurations
+solution_new.platforms= platforms
 SolutionExtensions:execute_new_hook( project_new )
 return solution_new
 end
@@ -1488,24 +1518,10 @@ table.insert( self.projects, project )
 end
 function Solution:finalize()
 SolutionExtensions:execute_pre_finalize_hook( self )
-local var_platforms = {}
-local var_configurations = {}
-for i,project in pairs( self.projects ) do
-for i,platform in pairs( project.platforms ) do
-if not table.contains( var_platforms, platform ) then 
-table.insert( var_platforms, platform )
-end
-end
-for j,configuration in pairs( project.configurations ) do
-if not table.contains( var_configurations, configuration ) then 
-table.insert( var_configurations, configuration )
-end
-end
-end
-table.insert( var_configurations, 'Project' )
+table.insert( self.configurations, 'Project' )
 workspace( self.name )
-configurations( var_configurations )
-platforms( var_platforms )
+configurations( self.configurations )
+platforms( self.platforms )
 systemversion( "latest" )
 location( _OPTIONS[ "to" ] )
 if not os.isdir( _OPTIONS[ "to" ] ) then
@@ -1537,7 +1553,13 @@ function finalize_default_solution( ... )
 local projects = {...}
 local source = debug.getinfo( 2 ).source
 local name = source:match( "([^/]+)/premake5.lua$" )
-local solution = Solution:new( name )
+local configurations = { "Debug", "Release" }
+local platforms = { "x86", "x64" }
+if tiki.target_platform == Platforms.Android then
+table.insert( platforms, "arm" )
+table.insert( platforms, "arm64" )
+end
+local solution = Solution:new( name, configurations, platforms )
 solution.config:set_define( "DEBUG", nil, "Debug" )
 solution.config:set_define( "_DEBUG", nil, "Debug" )
 solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Debug, "Debug" )
@@ -1547,10 +1569,6 @@ solution.config:set_define( "NDEBUG", nil, "Release" )
 solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Speed, "Release" )
 solution.config:set_setting( ConfigurationSettings.Symbols, ConfigurationSymbols.Default, "Release" )
 solution.config:set_setting( ConfigurationSettings.FloatingPoint, ConfigurationFloatingPoint.Fast, "Release" )
-solution.config:set_define( "NDEBUG", nil, "Master" )
-solution.config:set_setting( ConfigurationSettings.Optimization, ConfigurationOptimization.Speed, "Master" )
-solution.config:set_setting( ConfigurationSettings.Symbols, ConfigurationSymbols.Default, "Master" )
-solution.config:set_setting( ConfigurationSettings.FloatingPoint, ConfigurationFloatingPoint.Fast, "Master" )
 solution.config:set_setting( ConfigurationSettings.CppDialect, ConfigurationCppDialect.Cpp11 )
 solution.config:set_setting( ConfigurationSettings.RuntimeTypeInformation, ConfigurationRuntimeTypeInformation.Off )
 solution.config:set_setting( ConfigurationSettings.ExceptionHandling, ConfigurationExceptionHandling.Off )
@@ -1589,7 +1607,18 @@ return true
 end
 return false
 end
-function execute_build_steps()
+function tiki.execute_build_step( script, data, config )
+local script_path = "actions/" .. script .. ".lua"
+if not tiki.isfile( script_path )then
+throw( "Action script file not found at " .. script_path )
+end
+local action_function = tiki.dofile( script_path )
+if type( action_function ) ~= "function" then
+throw( "Script in " .. script_path .. " doesn't contain a function." )
+end
+action_function( data, config )
+end
+function tiki.execute_build_steps()
 local config = {
 project_name = _OPTIONS[ "project" ],
 build_path = path.getabsolute( "." ),
@@ -1601,21 +1630,14 @@ throw( "Script file not found at " .. script_file )
 end
 local build_actions = dofile( script_file )
 for i, action in pairs( build_actions ) do
-if not tiki.isfile( action.script )then
-throw( "Action script file not found at " .. action.script )
-end
-local action_function = tiki.dofile( action.script )
-if type( action_function ) ~= "function" then
-throw( "Script in " .. action.script .. " doesn't contain a function." )
-end
 config.base_path = action.base_path
-action_function( action.data, config )
+tiki.execute_build_step( action.script, action.data, config )
 end
 end
 newaction {
    trigger     = "buildsteps",
    description = "Execute Build Steps",
-   execute     = execute_build_steps
+   execute     = tiki.execute_build_steps
 }
 
 -- base/targets.lua
@@ -1641,6 +1663,79 @@ newaction {
    description= "Print Targets",
    onWorkspace= print_targets
 }
+-- actions/qt_ui.lua
+tiki.files[ "actions/qt_ui.lua" ] = "return function( data, config )\n" ..
+"local uic_exe = path.join( data.qt_dir, \"bin\\uic.exe\" )\n" ..
+"local output_path = path.join( config.build_path, \"qt_files\", config.project_name )\n" ..
+"print( \"UI: \" .. path.getname( data.source_filename ) )\n" ..
+"local command_line = uic_exe .. \" -o \\\"\" .. data.output_filename .. \"\\\" \\\"\" .. data.source_filename .. \"\\\"\"\n" ..
+"if not os.execute( command_line ) then\n" ..
+"throw( \"uic return an error\" )\n" ..
+"end\n" ..
+"end"
+-- actions/copy_files.lua
+tiki.files[ "actions/copy_files.lua" ] = "-- Action to copy files into output folder\n" ..
+"return function( data, config )\n" ..
+"local pattern = path.join( config.base_path, data.pattern );\n" ..
+"local files = os.matchfiles( pattern )\n" ..
+"if #files == 0 then\n" ..
+"throw( \"[copy_files] No source files found for \" .. pattern )\n" ..
+"end\n" ..
+"local target_path = config.output_path\n" ..
+"if data.target then\n" ..
+"target_path = path.join( config.output_path, data.target )\n" ..
+"end\n" ..
+"for _,file in ipairs( files ) do\n" ..
+"local relative_path = path.getrelative( config.base_path, file )\n" ..
+"local target_file = path.join( target_path, relative_path )\n" ..
+"if is_build_required( file, target_file ) then\n" ..
+"local target_dir = path.getdirectory( target_file )\n" ..
+"if not os.isdir( target_dir ) then\n" ..
+"quiet( \"Create \" .. target_dir .. \" directory\" )\n" ..
+"os.mkdir( target_dir )\n" ..
+"end\n" ..
+"quiet( \"Copy \" .. path.getname( target_file ) .. \" to output directory\" )\n" ..
+"os.copyfile( file, target_file )\n" ..
+"end\n" ..
+"end\n" ..
+"end"
+-- actions/copy_file.lua
+tiki.files[ "actions/copy_file.lua" ] = "-- Action to copy a file into output folder\n" ..
+"return function( data, config )\n" ..
+"local source_path = path.join( config.base_path, data.source )\n" ..
+"if not os.isfile( source_path ) then\n" ..
+"throw( \"[copy_binary] Source file not found at \" .. data.source )\n" ..
+"end\n" ..
+"if not data.target then\n" ..
+"data.target = path.getname( data.source )\n" ..
+"end\n" ..
+"local target_path = path.join( config.output_path, data.target )\n" ..
+"if is_build_required( source_path, target_path ) then\n" ..
+"print( \"Copy \" .. data.source .. \" to output directory\" )\n" ..
+"os.copyfile( source_path, target_path )\n" ..
+"end\n" ..
+"end"
+-- actions/qt_moc.lua
+tiki.files[ "actions/qt_moc.lua" ] = "return function( data, config )\n" ..
+"local output_path = path.join( config.build_path, \"qt_files\", config.project_name )\n" ..
+"local output_file = path.join( output_path, data.output_filename )\n" ..
+"if is_build_required( data.source_filename, output_file ) then\n" ..
+"local moc_exe = path.join( data.qt_dir, \"bin\\moc.exe\" )\n" ..
+"local moc_defines = \"-D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB\"\n" ..
+"local moc_include_dirs = {\n" ..
+"path.join( data.qt_dir, \"include\" ),\n" ..
+"path.join( data.qt_dir, \"include\\QtWidgets\" ),\n" ..
+"path.join( data.qt_dir, \"include\\QtGui\" ),\n" ..
+"path.join( data.qt_dir, \"include\\QtCore\" )\n" ..
+"}\n" ..
+"local moc_includes = \"-I\" .. table.concat( moc_include_dirs,\" -I\" )\n" ..
+"local command_line = moc_exe .. \" \\\"\" .. data.source_filename .. \"\\\" -o \\\"\" .. output_file .. \"\\\" \" .. moc_defines .. \" \" .. moc_includes\n" ..
+"print( \"MOC: \" .. path.getname( data.source_filename ) )\n" ..
+"if not os.execute( command_line ) then\n" ..
+"throw( \"moc return an error\" )\n" ..
+"end\n" ..
+"end\n" ..
+"end"
 -- actions/qt_qrc.lua
 tiki.files[ "actions/qt_qrc.lua" ] = "return function( data, config )\n" ..
 "local output_path = path.join( config.build_path, \"qt_files\", config.project_name )\n" ..
@@ -1652,6 +1747,22 @@ tiki.files[ "actions/qt_qrc.lua" ] = "return function( data, config )\n" ..
 "print( \"RCC: \" .. path.getname( data.source_filename ) )\n" ..
 "if not os.execute( command_line ) then\n" ..
 "throw( \"rcc returned an error\" )\n" ..
+"end\n" ..
+"end\n" ..
+"end"
+-- actions/install_files.lua
+tiki.files[ "actions/install_files.lua" ] = "-- Action to install files into a output folder\n" ..
+"return function( data, config )\n" ..
+"local files = os.matchfiles( path.join( config.output_path, data.pattern ) )\n" ..
+"local target_path = path.join( config.base_path, data.target )\n" ..
+"for _,file in pairs( files ) do\n" ..
+"if is_build_required( file, target_path ) then\n" ..
+"print( \"Install \" .. path.getname( file ) .. \" to \" .. target_path )\n" ..
+"local target_file = path.join( target_path, path.getname( file ) )\n" ..
+"local ok, err = os.copyfile( file, target_file )\n" ..
+"if not ok then\n" ..
+"throw( \"Failed to install \" .. file .. \". Error: \" .. err )\n" ..
+"end\n" ..
 "end\n" ..
 "end\n" ..
 "end"
@@ -1679,69 +1790,6 @@ tiki.files[ "actions/qt_qrc_gen.lua" ] = "return function( data, config )\n" ..
 "end\n" ..
 "end\n" ..
 ""
--- actions/copy_file.lua
-tiki.files[ "actions/copy_file.lua" ] = "-- Action to copy a file into output folder\n" ..
-"return function( data, config )\n" ..
-"local source_path = path.join( config.base_path, data.source )\n" ..
-"if not os.isfile( source_path ) then\n" ..
-"throw( \"[copy_binary] Source file not found at \" .. data.source )\n" ..
-"end\n" ..
-"if not data.target then\n" ..
-"data.target = path.getname( data.source )\n" ..
-"end\n" ..
-"local target_path = path.join( config.output_path, data.target )\n" ..
-"if is_build_required( source_path, target_path ) then\n" ..
-"print( \"Copy \" .. data.source .. \" to output directory\" )\n" ..
-"os.copyfile( source_path, target_path )\n" ..
-"end\n" ..
-"end"
--- actions/install_files.lua
-tiki.files[ "actions/install_files.lua" ] = "-- Action to install files into a output folder\n" ..
-"return function( data, config )\n" ..
-"local files = os.matchfiles( path.join( config.output_path, data.pattern ) )\n" ..
-"local target_path = path.join( config.base_path, data.target )\n" ..
-"for _,file in pairs( files ) do\n" ..
-"if is_build_required( file, target_path ) then\n" ..
-"print( \"Install \" .. path.getname( file ) .. \" to \" .. target_path )\n" ..
-"local target_file = path.join( target_path, path.getname( file ) )\n" ..
-"local ok, err = os.copyfile( file, target_file )\n" ..
-"if not ok then\n" ..
-"throw( \"Failed to install \" .. file .. \". Error: \" .. err )\n" ..
-"end\n" ..
-"end\n" ..
-"end\n" ..
-"end"
--- actions/qt_moc.lua
-tiki.files[ "actions/qt_moc.lua" ] = "return function( data, config )\n" ..
-"local output_path = path.join( config.build_path, \"qt_files\", config.project_name )\n" ..
-"local output_file = path.join( output_path, data.output_filename )\n" ..
-"if is_build_required( data.source_filename, output_file ) then\n" ..
-"local moc_exe = path.join( data.qt_dir, \"bin\\moc.exe\" )\n" ..
-"local moc_defines = \"-D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB\"\n" ..
-"local moc_include_dirs = {\n" ..
-"path.join( data.qt_dir, \"include\" ),\n" ..
-"path.join( data.qt_dir, \"include\\QtWidgets\" ),\n" ..
-"path.join( data.qt_dir, \"include\\QtGui\" ),\n" ..
-"path.join( data.qt_dir, \"include\\QtCore\" )\n" ..
-"}\n" ..
-"local moc_includes = \"-I\" .. table.concat( moc_include_dirs,\" -I\" )\n" ..
-"local command_line = moc_exe .. \" \\\"\" .. data.source_filename .. \"\\\" -o \\\"\" .. output_file .. \"\\\" \" .. moc_defines .. \" \" .. moc_includes\n" ..
-"print( \"MOC: \" .. path.getname( data.source_filename ) )\n" ..
-"if not os.execute( command_line ) then\n" ..
-"throw( \"moc return an error\" )\n" ..
-"end\n" ..
-"end\n" ..
-"end"
--- actions/qt_ui.lua
-tiki.files[ "actions/qt_ui.lua" ] = "return function( data, config )\n" ..
-"local uic_exe = path.join( data.qt_dir, \"bin\\uic.exe\" )\n" ..
-"local output_path = path.join( config.build_path, \"qt_files\", config.project_name )\n" ..
-"print( \"UI: \" .. path.getname( data.source_filename ) )\n" ..
-"local command_line = uic_exe .. \" -o \\\"\" .. data.output_filename .. \"\\\" \\\"\" .. data.source_filename .. \"\\\"\"\n" ..
-"if not os.execute( command_line ) then\n" ..
-"throw( \"uic return an error\" )\n" ..
-"end\n" ..
-"end"
 -- extensions/extension.qt.lua
 tiki.files[ "extensions/extension.qt.lua" ] = "-- library/buildtools/extensions/extension.qt\n" ..
 "qt_dir = \"E:/Misc/Qt5.9.4/5.9.4/msvc2017_64\" --TODO: find real path e.g. os.getenv(\"QTDIR\")\n" ..
@@ -1790,11 +1838,16 @@ tiki.files[ "extensions/extension.qt.lua" ] = "-- library/buildtools/extensions/
 "add_build_actions( self, qrc_fullpath, \"rcc\", \"cpp\", qrc_script )\n" ..
 "end"
 -- externals/https/www.sqlite.org/tiki.lua
-tiki.files[ "externals/https/www.sqlite.org/tiki.lua" ] = "-- https/sqlite.org\n" ..
+tiki.files[ "externals/https/www.sqlite.org/tiki.lua" ] = "-- https/www.sqlite.org\n" ..
+"local year = \"2020\" -- TODO\n" ..
+"if tiki.external.version == \"latest\" then\n" ..
+"tiki.external.version = \"3330000\"\n" ..
+"end\n" ..
 "local version_name = \"sqlite-amalgamation-\" .. tiki.external.version\n" ..
-"local download_path = path.join( tiki.external.export_path, \"source_code.zip\" )\n" ..
+"local file_name = version_name .. \".zip\"\n" ..
+"local download_path = path.join( tiki.external.export_path, file_name )\n" ..
 "if not os.isfile( download_path ) then\n" ..
-"local download_url = \"https://www.sqlite.org/2020/\" .. version_name .. \".zip\"\n" ..
+"local download_url = \"https://www.sqlite.org/\" .. year .. \"/\" .. file_name\n" ..
 "print( \"Download: \" .. download_url )\n" ..
 "local result_str, result_code = http.download( download_url, download_path )\n" ..
 "if result_code ~= 200 then\n" ..
@@ -1806,12 +1859,7 @@ tiki.files[ "externals/https/www.sqlite.org/tiki.lua" ] = "-- https/sqlite.org\n
 "throw( \"Failed to extract SQLite\" )\n" ..
 "end\n" ..
 "end\n" ..
-"local sqlite_project = Project:new(\n" ..
-"\"sqlite\",\n" ..
-"{ \"x32\", \"x64\" },\n" ..
-"{ \"Debug\", \"Release\" },\n" ..
-"ProjectTypes.StaticLibrary\n" ..
-")\n" ..
+"local sqlite_project = Project:new( \"sqlite\", ProjectTypes.StaticLibrary )\n" ..
 "sqlite_project.module.module_type = ModuleTypes.FilesModule\n" ..
 "sqlite_project:add_files( version_name .. \"/*.h\" )\n" ..
 "sqlite_project:add_files( version_name .. \"/*.c\" )\n" ..
@@ -1823,12 +1871,7 @@ tiki.files[ "externals/https/www.sqlite.org/tiki.lua" ] = "-- https/sqlite.org\n
 ""
 -- externals/https/github.com/kimperator/T-Rex.git/tiki.lua
 tiki.files[ "externals/https/github.com/kimperator/T-Rex.git/tiki.lua" ] = "-- https/github.com/kimperator/T-Rex.git\n" ..
-"local trex_project = Project:new(\n" ..
-"\"trex\",\n" ..
-"{ \"x32\", \"x64\" },\n" ..
-"{ \"Debug\", \"Release\" },\n" ..
-"ProjectTypes.StaticLibrary\n" ..
-")\n" ..
+"local trex_project = Project:new( \"trex\", ProjectTypes.StaticLibrary )\n" ..
 "trex_project.module.module_type = ModuleTypes.FilesModule\n" ..
 "trex_project:add_files( \"*.h\" )\n" ..
 "trex_project:add_files( \"trex.c\" )\n" ..
@@ -1837,30 +1880,23 @@ tiki.files[ "externals/https/github.com/kimperator/T-Rex.git/tiki.lua" ] = "-- h
 "project:add_project_dependency( trex_project )\n" ..
 "solution:add_project( trex_project )\n" ..
 "end"
--- externals/https/github.com/leethomason/tinyxml2.git/tiki.lua
-tiki.files[ "externals/https/github.com/leethomason/tinyxml2.git/tiki.lua" ] = "-- https/github.com/leethomason/tinyxml2.git\n" ..
-"local tinyxml_project = Project:new(\n" ..
-"\"tinyxml2\",\n" ..
-"{ \"x32\", \"x64\" },\n" ..
-"{ \"Debug\", \"Release\" },\n" ..
-"ProjectTypes.StaticLibrary\n" ..
-")\n" ..
-"module.module_type = ModuleTypes.FilesModule\n" ..
-"tinyxml_project:add_files( \"tinyxml2.h\" )\n" ..
-"tinyxml_project:add_files( \"tinyxml2.cpp\" )\n" ..
+-- externals/https/github.com/ocornut/imgui.git/tiki.lua
+tiki.files[ "externals/https/github.com/ocornut/imgui.git/tiki.lua" ] = "-- https/github.com/ocornut/imgui.git\n" ..
+"local imgui_project = Project:new( \"imgui\", ProjectTypes.StaticLibrary )\n" ..
+"imgui_project:add_files( \"*.h\" )\n" ..
+"imgui_project:add_files( \"imgui.cpp\" )\n" ..
+"imgui_project:add_files( \"imgui_draw.cpp\" )\n" ..
+"imgui_project:add_files( \"imgui_tables.cpp\" )\n" ..
+"imgui_project:add_files( \"imgui_widgets.cpp\" )\n" ..
 "module:add_include_dir( \".\" )\n" ..
 "module.import_func = function( project, solution )\n" ..
-"project:add_project_dependency( tinyxml_project )\n" ..
-"solution:add_project( tinyxml_project )\n" ..
-"end"
+"project:add_project_dependency( imgui_project )\n" ..
+"solution:add_project( imgui_project )\n" ..
+"end\n" ..
+""
 -- externals/https/github.com/erincatto/box2d.git/tiki.lua
 tiki.files[ "externals/https/github.com/erincatto/box2d.git/tiki.lua" ] = "-- https/github.com/erincatto/box2d.git\n" ..
-"local box2d_project = Project:new(\n" ..
-"\"box2d\",\n" ..
-"{ \"x32\", \"x64\" },\n" ..
-"{ \"Debug\", \"Release\" },\n" ..
-"ProjectTypes.StaticLibrary\n" ..
-")\n" ..
+"local box2d_project = Project:new( \"box2d\", ProjectTypes.StaticLibrary )\n" ..
 "box2d_project.module.module_type = ModuleTypes.FilesModule\n" ..
 "box2d_project:add_files( \"include/box2d/*.h\" )\n" ..
 "box2d_project:add_files( \"src/**/*.cpp\" )\n" ..
@@ -1878,21 +1914,14 @@ tiki.files[ "externals/https/github.com/nothings/stb.git/tiki.lua" ] = "-- https
 "module:add_files( \"*.h\" )\n" ..
 "module:add_include_dir( \".\" )\n" ..
 ""
--- externals/https/github.com/ocornut/imgui.git/tiki.lua
-tiki.files[ "externals/https/github.com/ocornut/imgui.git/tiki.lua" ] = "-- https/github.com/ocornut/imgui.git\n" ..
-"local imgui_project = Project:new(\n" ..
-"\"imgui\",\n" ..
-"{ \"x32\", \"x64\" },\n" ..
-"{ \"Debug\", \"Release\" },\n" ..
-"ProjectTypes.StaticLibrary\n" ..
-")\n" ..
-"imgui_project:add_files( \"*.h\" )\n" ..
-"imgui_project:add_files( \"imgui.cpp\" )\n" ..
-"imgui_project:add_files( \"imgui_draw.cpp\" )\n" ..
-"imgui_project:add_files( \"imgui_widgets.cpp\" )\n" ..
+-- externals/https/github.com/leethomason/tinyxml2.git/tiki.lua
+tiki.files[ "externals/https/github.com/leethomason/tinyxml2.git/tiki.lua" ] = "-- https/github.com/leethomason/tinyxml2.git\n" ..
+"local tinyxml_project = Project:new( \"tinyxml2\", ProjectTypes.StaticLibrary )\n" ..
+"module.module_type = ModuleTypes.FilesModule\n" ..
+"tinyxml_project:add_files( \"tinyxml2.h\" )\n" ..
+"tinyxml_project:add_files( \"tinyxml2.cpp\" )\n" ..
 "module:add_include_dir( \".\" )\n" ..
 "module.import_func = function( project, solution )\n" ..
-"project:add_project_dependency( imgui_project )\n" ..
-"solution:add_project( imgui_project )\n" ..
-"end\n" ..
-""
+"project:add_project_dependency( tinyxml_project )\n" ..
+"solution:add_project( tinyxml_project )\n" ..
+"end"
