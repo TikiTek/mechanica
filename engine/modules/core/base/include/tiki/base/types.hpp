@@ -5,7 +5,6 @@
 namespace tiki
 {
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
-
 	typedef unsigned __int8		uint8;
 	typedef unsigned __int16	uint16;
 	typedef unsigned __int32	uint32;
@@ -15,9 +14,7 @@ namespace tiki
 	typedef __int16				sint16;
 	typedef __int32				sint32;
 	typedef __int64				sint64;
-
 #elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
-
 	typedef unsigned char			uint8;
 	typedef unsigned short			uint16;
 	typedef unsigned int			uint32;
@@ -28,19 +25,15 @@ namespace tiki
 	typedef int						sint32;
 	typedef long long int			sint64;
 
-#	define nullptr 0
-
+//#	define nullptr 0
 #else
-
 #	error Platform not supported (or you need to rebuild solution)
-
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_32BIT )
 
 	typedef sint32			sint;
 	typedef uint32			uint;
-	//typedef uint32			uintreg;
 	typedef uint32			uintptr;	// unsigned integer in size of a pointer
 	typedef uint32			uintreg;	// unsigned integer in size of a CPU register
 
@@ -48,7 +41,6 @@ namespace tiki
 
 	typedef sint64			sint;
 	typedef uint64			uint;
-	//typedef uint64			uintreg;
 	typedef uint64			uintptr;	// unsigned integer in size of a pointer
 	typedef uint64			uintreg;	// unsigned integer in size of a CPU register
 
@@ -67,13 +59,9 @@ namespace tiki
 #define TIKI_COUNT( var )					( sizeof( var ) / sizeof( *var ) )
 
 #if TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
-
 #	define TIKI_OFFSETOF( type, member )		( __builtin_offsetof( type, member ) )
-
 #else
-
 #	define TIKI_OFFSETOF( type, member )		( (uintreg)(&((type*)nullptr)->member) )
-
 #endif
 
 #define TIKI_DEFAULT_ALIGNMENT			0u
@@ -92,49 +80,34 @@ namespace tiki
 #	define TIKI_SIZE_T_BYTES	4u
 
 #elif TIKI_ENABLED( TIKI_BUILD_64BIT )
-
 #	define TIKI_SIZE_T_MAX		0xffffffffffffffffu
 #	define TIKI_SIZE_T_BITS		64u
 #	define TIKI_SIZE_T_BYTES	8u
-
 #else
-
 #	error Platform not suppored
-
 #endif
 
 #define TIKI_USE_INLINE TIKI_ON
 
 #if TIKI_ENABLED( TIKI_USE_INLINE )
-
 #	if TIKI_ENABLED( TIKI_BUILD_MSVC )
-
 #		define TIKI_INLINE			inline
 #		define TIKI_FORCE_INLINE	inline //__forceinline
 #		define TIKI_NO_INLINE		__declspec(noinline)
-
 #	elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
-
 #		define TIKI_INLINE			inline
 #		define TIKI_FORCE_INLINE	inline //__attribute__((always_inline))
 #		define TIKI_NO_INLINE		__attribute__((noinline))
-
 #	else
-
 #		error Platform not implemented
-
 #	endif
-
 #else
-
 #	define TIKI_INLINE
 #	define TIKI_FORCE_INLINE
 #	define TIKI_NO_INLINE
-
 #endif
 
 #if TIKI_ENABLED( TIKI_BUILD_MSVC )
-
 #	define TIKI_ALIGN_PREFIX( var )		__declspec( align( var ) )
 #	define TIKI_ALIGN_POSTFIX( var )
 #	define TIKI_ALIGNOF( type )			( __alignof( type ) )
@@ -145,9 +118,7 @@ namespace tiki
 
 #	define TIKI_OVERRIDE				override
 #	define TIKI_FINAL					sealed
-
 #elif TIKI_ENABLED( TIKI_BUILD_GCC ) || TIKI_ENABLED( TIKI_BUILD_CLANG )
-
 #	define TIKI_ALIGN_PREFIX( var )
 #	define TIKI_ALIGN_POSTFIX( var )	__attribute__( ( aligned( var ) ) )
 #	define TIKI_ALIGNOF( type )			( __alignof__( type ) )
@@ -170,14 +141,13 @@ namespace tiki
 #		define TIKI_CPP_17					TIKI_OFF
 #	endif
 
-#if TIKI_ENABLED( TIKI_CPP_11 )
-#	define TIKI_OVERRIDE				override
-#	define TIKI_FINAL					final
-#else
-#	define TIKI_OVERRIDE
-#	define TIKI_FINAL
-#endif
-
+#	if TIKI_ENABLED( TIKI_CPP_11 )
+#		define TIKI_OVERRIDE				override
+#		define TIKI_FINAL					final
+#	else
+#		define TIKI_OVERRIDE
+#		define TIKI_FINAL
+#	endif
 #endif
 
 #define TIKI_OVERRIDE_FINAL				TIKI_OVERRIDE TIKI_FINAL
